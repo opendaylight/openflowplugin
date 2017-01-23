@@ -96,6 +96,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private final MessageSpy messageSpy;
     private final HashedWheelTimer hashedWheelTimer;
 
+    private boolean useSingleLayerSerialization;
+
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
                              final long globalNotificationQuota,
                              final boolean switchFeaturesMandatory,
@@ -107,7 +109,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                              final NotificationPublishService notificationPublishService,
                              final HashedWheelTimer hashedWheelTimer,
                              final ConvertorExecutor convertorExecutor,
-                             final boolean skipTableFeatures) {
+                             final boolean skipTableFeatures,
+                             final boolean useSingleLayerSerialization) {
 
         this.dataBroker = dataBroker;
 
@@ -135,6 +138,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         this.singletonServiceProvider = singletonServiceProvider;
         this.notificationPublishService = notificationPublishService;
         this.messageSpy = messageSpy;
+        this.useSingleLayerSerialization = useSingleLayerSerialization;
     }
 
 
@@ -205,7 +209,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 convertorExecutor,
                 skipTableFeatures,
                 hashedWheelTimer,
-                this);
+                this,
+                useSingleLayerSerialization);
 
         deviceContext.setSalRoleService(new SalRoleServiceImpl(deviceContext, deviceContext));
         deviceContexts.put(deviceInfo, deviceContext);

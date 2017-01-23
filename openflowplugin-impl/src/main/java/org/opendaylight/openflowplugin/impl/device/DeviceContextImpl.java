@@ -159,6 +159,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private volatile CONTEXT_STATE state;
     private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
     private final DeviceManager myManager;
+    private boolean useSingleLayerSerialization;
 
     DeviceContextImpl(
             @Nonnull final ConnectionContext primaryConnectionContext,
@@ -169,7 +170,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             final ConvertorExecutor convertorExecutor,
             final boolean skipTableFeatures,
             final HashedWheelTimer hashedWheelTimer,
-            final DeviceManager myManager) {
+            final DeviceManager myManager,
+            final boolean useSingleLayerSerialization) {
         this.primaryConnectionContext = primaryConnectionContext;
         this.deviceInfo = primaryConnectionContext.getDeviceInfo();
         this.hashedWheelTimer = hashedWheelTimer;
@@ -197,6 +199,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.state = CONTEXT_STATE.INITIALIZATION;
         this.convertorExecutor = convertorExecutor;
         this.skipTableFeatures = skipTableFeatures;
+        this.useSingleLayerSerialization = useSingleLayerSerialization;
         this.initialized = false;
     }
 
@@ -642,6 +645,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.state = CONTEXT_STATE.INITIALIZATION;
         this.primaryConnectionContext = connectionContext;
         this.onPublished();
+    }
+
+    @Override
+    public boolean isUseSingleLayerSerialization() {
+        return useSingleLayerSerialization;
     }
 
     @Override

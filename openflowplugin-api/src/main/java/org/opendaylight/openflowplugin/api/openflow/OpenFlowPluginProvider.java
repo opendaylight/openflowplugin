@@ -84,4 +84,6 @@ public interface OpenFlowPluginProvider extends AutoCloseable, BindingService {
 
     void setMaximumTimerDelay(long maximumTimerDelay);
 
+	void setIsUseSingleLayerSerialization(Boolean useSingleLayerSerialization);
+
 }
