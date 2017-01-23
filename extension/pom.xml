@@ -19,6 +19,7 @@
         <module>openflowplugin-extension-nicira</module>
         <module>openflowplugin-extension-nicira-config</module>
         <module>openflowplugin-extension-onf</module>
+        <module>openflowplugin-extension-onf-config</module>
         <module>test-extension</module>
         <module>features-extension-aggregator</module>
         <module>features-he-extension-aggregator</module>

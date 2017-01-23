@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="openflowplugin-extension-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0">
+    <feature name="odl-openflowplugin-nxm-extensions" version="${project.version}">
+        <configfile finalname="etc/opendaylight/karaf/44-openflowjava-onf-config.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-extension-onf-config/${project.version}/xml/config</configfile>
+    </feature>
+</features>
