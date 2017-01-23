@@ -64,6 +64,7 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
         openflowPluginProvider.setSkipTableFeatures(providerConfig.isSkipTableFeatures());
         openflowPluginProvider.setBasicTimerDelay(providerConfig.getBasicTimerDelay().getValue());
         openflowPluginProvider.setMaximumTimerDelay(providerConfig.getMaximumTimerDelay().getValue());
+        openflowPluginProvider.setIsUseSingleLayerSerialization(providerConfig.isUseSingleLayerSerialization());
 
         openflowPluginProvider.initialize();
 
