@@ -16,6 +16,8 @@
 
     <feature name="odl-openflowplugin-onf-extensions" description="OpenDaylight :: Openflow Plugin :: ONF Extensions" version='${project.version}'>
         <feature version="${project.version}">odl-openflowplugin-southbound</feature>
+        <feature version="${openflowjava.version}">odl-openflowjava-protocol</feature>
+        <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-extension-api/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-extension-onf/{{VERSION}}</bundle>
     </feature>
 

@@ -16,6 +16,10 @@
 
     <name>OpenDaylight :: Openflow Plugin :: ONF Extensions</name>
 
+    <properties>
+        <openflowjava.version>0.9.0-SNAPSHOT</openflowjava.version>
+    </properties>
+
     <dependencies>
         <!-- feature dependencies -->
         <dependency>
@@ -24,6 +28,20 @@
             <version>${project.version}</version>
             <classifier>features</classifier>
             <type>xml</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opendaylight.openflowjava</groupId>
+            <artifactId>odl-openflowjava-protocol</artifactId>
+            <version>${openflowjava.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-extension-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
