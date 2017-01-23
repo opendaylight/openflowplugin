@@ -53,6 +53,11 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>openflowplugin-extension-onf</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>openflowjava-extension-nicira</artifactId>
                 <version>${project.version}</version>
             </dependency>
