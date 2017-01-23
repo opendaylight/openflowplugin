@@ -97,6 +97,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private boolean skipTableFeatures = true;
     private long basicTimerDelay;
     private long maximumTimerDelay;
+    private boolean useSingleLayerSerialization = false;
 
     private final ThreadPoolExecutor threadPool;
     private ClusterSingletonServiceProvider singletonServicesProvider;
@@ -134,8 +135,10 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private void startSwitchConnections() {
         Futures.addCallback(Futures.allAsList(switchConnectionProviders.stream().map(switchConnectionProvider -> {
             // Inject OpenflowPlugin custom serializers and deserializers into OpenflowJava
-            SerializerInjector.injectSerializers(switchConnectionProvider);
-            DeserializerInjector.injectDeserializers(switchConnectionProvider);
+            if (useSingleLayerSerialization) {
+                SerializerInjector.injectSerializers(switchConnectionProvider);
+                DeserializerInjector.injectDeserializers(switchConnectionProvider);
+            }
 
             // Set handler of incoming connections and start switch connection provider
             switchConnectionProvider.setSwitchConnectionHandler(connectionManager);
@@ -175,7 +178,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
     @Override
     public void setFlowRemovedNotification(boolean isFlowRemovedNotificationOn) {
-        this.isFlowRemovedNotificationOn = this.isFlowRemovedNotificationOn;
+        this.isFlowRemovedNotificationOn = isFlowRemovedNotificationOn;
     }
 
     @Override
@@ -249,7 +252,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 notificationPublishService,
                 hashedWheelTimer,
                 convertorManager,
-                skipTableFeatures);
+                skipTableFeatures,
+                useSingleLayerSerialization);
 
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
 
@@ -374,5 +378,10 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
         // Manually shutdown all remaining running threads in pool
         threadPool.shutdown();
+    }
+
+    @Override
+    public void setIsUseSingleLayerSerialization(Boolean useSingleLayerSerialization) {
+        this.useSingleLayerSerialization = useSingleLayerSerialization;
     }
 }

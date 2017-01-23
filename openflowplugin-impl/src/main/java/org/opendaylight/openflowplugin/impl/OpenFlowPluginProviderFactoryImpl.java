@@ -64,6 +64,7 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
         openflowPluginProvider.setSkipTableFeatures(providerConfig.isSkipTableFeatures());
         openflowPluginProvider.setBasicTimerDelay(providerConfig.getBasicTimerDelay().getValue());
         openflowPluginProvider.setMaximumTimerDelay(providerConfig.getMaximumTimerDelay().getValue());
+        openflowPluginProvider.setIsUseSingleLayerSerialization(providerConfig.isUseSingleLayerSerialization());
 
         openflowPluginProvider.initialize();
 
@@ -79,6 +80,7 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
                 "NotificationFlowRemovedOff:{}, " +
                 "BasicTimerDelay:{}, "+
                 "MaximumTimerDelay:{} ",
+                "IsUseSingleLayerSerialization:{} ",
                 providerConfig.isIsStatisticsPollingOn(),
                 providerConfig.isSwitchFeaturesMandatory(),
                 providerConfig.getBarrierCountLimit().getValue(),
@@ -89,7 +91,8 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
                 providerConfig.getThreadPoolTimeout(),
                 providerConfig.isEnableFlowRemovedNotification(),
                 providerConfig.getBasicTimerDelay().getValue(),
-                providerConfig.getMaximumTimerDelay().getValue());
+                providerConfig.getMaximumTimerDelay().getValue(),
+                providerConfig.isUseSingleLayerSerialization());
 
         return openflowPluginProvider;
     }
