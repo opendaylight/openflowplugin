@@ -192,6 +192,13 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>openflowplugin-extension-onf-config</artifactId>
+                <version>${project.version}</version>
+                <type>xml</type>
+                <classifier>config</classifier>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>drop-test-karaf</artifactId>
                 <version>${project.version}</version>
                 <type>xml</type>
