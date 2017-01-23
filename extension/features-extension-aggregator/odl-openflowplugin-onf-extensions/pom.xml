@@ -27,6 +27,20 @@
         </dependency>
 
         <dependency>
+            <groupId>org.opendaylight.openflowjava</groupId>
+            <artifactId>odl-openflowjava-protocol</artifactId>
+            <version>${openflowjava.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-extension-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>openflowplugin-extension-onf</artifactId>
             <version>${project.version}</version>
