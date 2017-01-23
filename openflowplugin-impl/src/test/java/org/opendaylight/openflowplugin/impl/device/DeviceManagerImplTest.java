@@ -156,6 +156,7 @@ public class DeviceManagerImplTest {
                 null,
                 new HashedWheelTimer(),
                 convertorExecutor,
+                false,
                 false);
 
         deviceManager.setDeviceInitializationPhaseHandler(deviceInitPhaseHandler);
