@@ -17,6 +17,7 @@
     <feature name="odl-openflowplugin-onf-extensions" description="OpenDaylight :: Openflow Plugin :: ONF Extensions" version='${project.version}'>
         <feature version="${project.version}">odl-openflowplugin-southbound</feature>
         <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-extension-onf/{{VERSION}}</bundle>
+        <configfile finalname="etc/opendaylight/karaf/44-openflowjava-onf-config.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-extension-onf-config/{{VERSION}}/xml/config</configfile>
     </feature>
 
 </features>
