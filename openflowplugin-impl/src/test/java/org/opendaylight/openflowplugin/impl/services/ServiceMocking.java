@@ -106,7 +106,7 @@ public abstract class ServiceMocking {
 
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimConnectionContext);
         when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessagSpy);
-        when(mockedDeviceContext.getDeviceFlowRegistry()).thenReturn(new DeviceFlowRegistryImpl(dataBroker, NODE_II));
+        when(mockedDeviceContext.getDeviceFlowRegistry()).thenReturn(new DeviceFlowRegistryImpl(DUMMY_VERSION, dataBroker, NODE_II));
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
         when(mockedDeviceContext.getMultiMsgCollector(Matchers.any())).thenReturn(multiMessageCollector);
