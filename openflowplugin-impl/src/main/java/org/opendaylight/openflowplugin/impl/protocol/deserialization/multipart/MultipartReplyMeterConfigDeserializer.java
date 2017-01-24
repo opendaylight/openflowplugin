@@ -106,6 +106,7 @@ public class MultipartReplyMeterConfigDeserializer implements OFDeserializer<Mul
                         break;
 
                 }
+                subItems.add(subItemBuilder.build());
             }
 
             items.add(itemBuilder
