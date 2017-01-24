@@ -42,6 +42,10 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
     private final GroupService<AddGroupInput, AddGroupOutput> addGroup;
     private final GroupService<Group, UpdateGroupOutput> updateGroup;
     private final GroupService<RemoveGroupInput, RemoveGroupOutput> removeGroup;
+    private final GroupMessageService<AddGroupOutput> addGroupMessage;
+    private final GroupMessageService<UpdateGroupOutput> updateGroupMessage;
+    private final GroupMessageService<RemoveGroupOutput> removeGroupMessage;
+
     private final DeviceContext deviceContext;
     private ItemLifecycleListener itemLifecycleListener;
 
@@ -50,6 +54,10 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
         addGroup = new GroupService<>(requestContextStack, deviceContext, AddGroupOutput.class, convertorExecutor);
         updateGroup = new GroupService<>(requestContextStack, deviceContext, UpdateGroupOutput.class, convertorExecutor);
         removeGroup = new GroupService<>(requestContextStack, deviceContext, RemoveGroupOutput.class, convertorExecutor);
+
+        addGroupMessage = new GroupMessageService<>(requestContextStack, deviceContext, AddGroupOutput.class);
+        updateGroupMessage = new GroupMessageService<>(requestContextStack, deviceContext, UpdateGroupOutput.class);
+        removeGroupMessage = new GroupMessageService<>(requestContextStack, deviceContext, RemoveGroupOutput.class);
     }
 
     @Override
@@ -59,7 +67,10 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
 
     @Override
     public Future<RpcResult<AddGroupOutput>> addGroup(final AddGroupInput input) {
-        final ListenableFuture<RpcResult<AddGroupOutput>> resultFuture = addGroup.handleServiceCall(input);
+        final ListenableFuture<RpcResult<AddGroupOutput>> resultFuture = addGroupMessage.isSupported()
+            ? addGroupMessage.processInput(input)
+            : addGroup.handleServiceCall(input);
+
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<AddGroupOutput>>() {
             @Override
             public void onSuccess(RpcResult<AddGroupOutput> result) {
@@ -88,7 +99,10 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
 
     @Override
     public Future<RpcResult<UpdateGroupOutput>> updateGroup(final UpdateGroupInput input) {
-        final ListenableFuture<RpcResult<UpdateGroupOutput>> resultFuture = updateGroup.handleServiceCall(input.getUpdatedGroup());
+        final ListenableFuture<RpcResult<UpdateGroupOutput>> resultFuture = updateGroupMessage.isSupported()
+            ? updateGroupMessage.processInput(input.getUpdatedGroup())
+            : updateGroup.handleServiceCall(input.getUpdatedGroup());
+
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<UpdateGroupOutput>>() {
             @Override
             public void onSuccess(@Nullable RpcResult<UpdateGroupOutput> result) {
@@ -118,7 +132,10 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
 
     @Override
     public Future<RpcResult<RemoveGroupOutput>> removeGroup(final RemoveGroupInput input) {
-        final ListenableFuture<RpcResult<RemoveGroupOutput>> resultFuture = removeGroup.handleServiceCall(input);
+        final ListenableFuture<RpcResult<RemoveGroupOutput>> resultFuture = removeGroupMessage.isSupported()
+            ? removeGroupMessage.processInput(input)
+            : removeGroup.handleServiceCall(input);
+
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<RemoveGroupOutput>>() {
             @Override
             public void onSuccess(@Nullable RpcResult<RemoveGroupOutput> result) {
