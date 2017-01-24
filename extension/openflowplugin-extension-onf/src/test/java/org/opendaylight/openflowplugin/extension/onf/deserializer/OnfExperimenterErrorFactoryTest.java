@@ -33,13 +33,13 @@ public class OnfExperimenterErrorFactoryTest {
 
     @Test
     public void testDeserializeBase() {
-        ByteBuf buffer = ByteBufUtils.buildBuf("ff ff 08 fc 4f 4e 46 00");
+        ByteBuf buffer = ByteBufUtils.buildBuf("ff ff 08 fc 4f 4e 46 00 00 00");
         ErrorMessage builtByFactory = factory.deserialize(buffer);
         Assert.assertEquals("Wrong type", EncodeConstants.EXPERIMENTER_VALUE, builtByFactory.getType().intValue());
         Assert.assertEquals("Wrong type string", "EXPERIMENTER", builtByFactory.getTypeString());
         Assert.assertEquals("Wrong experimenter ID", EncodeConstants.ONF_EXPERIMENTER_ID,
                 builtByFactory.getAugmentation(ExperimenterIdError.class).getExperimenter().getValue().intValue());
-        Assert.assertNull("Data is not null", builtByFactory.getData());
+        Assert.assertNotNull("Data is null", builtByFactory.getData());
     }
 
     @Test
@@ -123,6 +123,11 @@ public class OnfExperimenterErrorFactoryTest {
         builtByFactory = factory.deserialize(buffer);
         Assert.assertEquals("Wrong code", 2315, builtByFactory.getCode().intValue());
         Assert.assertEquals("Wrong code string", "ONFERR_ET_BUNDLE_IN_PROGRESS", builtByFactory.getCodeString());
+
+        buffer = ByteBufUtils.buildBuf("ff ff 09 0c 00 00 00 01");
+        builtByFactory = factory.deserialize(buffer);
+        Assert.assertEquals("Wrong code", 2316, builtByFactory.getCode().intValue());
+        Assert.assertEquals("Wrong code string", "UNKNOWN_CODE", builtByFactory.getCodeString());
     }
 
 }
