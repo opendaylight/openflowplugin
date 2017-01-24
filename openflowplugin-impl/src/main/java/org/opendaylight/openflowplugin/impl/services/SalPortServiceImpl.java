@@ -27,27 +27,35 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 public final class SalPortServiceImpl extends AbstractSimpleService<UpdatePortInput, UpdatePortOutput> implements SalPortService {
     private final ConvertorExecutor convertorExecutor;
     private final VersionConvertorData data;
+    private final PortMessageService<UpdatePortOutput> portMessage;
 
     public SalPortServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConvertorExecutor convertorExecutor) {
         super(requestContextStack, deviceContext, UpdatePortOutput.class);
         this.convertorExecutor = convertorExecutor;
         data = new VersionConvertorData(getVersion());
+        portMessage = new PortMessageService<>(requestContextStack, deviceContext, UpdatePortOutput.class);
     }
 
     @Override
     public Future<RpcResult<UpdatePortOutput>> updatePort(final UpdatePortInput input) {
-        return handleServiceCall(input);
+        return portMessage.isSupported()
+            ? portMessage.handleServiceCall(getPortFromInput(input))
+            : handleServiceCall(input);
     }
 
     @Override
     protected OfHeader buildRequest(final Xid xid, final UpdatePortInput input) throws ServiceException {
-        final Port inputPort = input.getUpdatedPort().getPort().getPort().get(0);
-        final Optional<PortModInput> ofPortModInput = convertorExecutor.convert(inputPort, data);
+        final Optional<PortModInput> ofPortModInput = convertorExecutor
+            .convert(getPortFromInput(input), data);
 
         final PortModInputBuilder mdInput = new PortModInputBuilder(ofPortModInput
                 .orElse(PortConvertor.defaultResult(getVersion())))
                 .setXid(xid.getValue());
 
         return mdInput.build();
+    }
+
+    private Port getPortFromInput(final UpdatePortInput input) {
+        return input.getUpdatedPort().getPort().getPort().get(0);
     }
 }
