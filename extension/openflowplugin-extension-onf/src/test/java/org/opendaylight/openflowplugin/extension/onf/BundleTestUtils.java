@@ -13,21 +13,22 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.common.grouping.BundleProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.common.grouping.BundlePropertyBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.property.grouping.bundle.property.entry.BundlePropertyExperimenterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.property.grouping.bundle.property.entry.bundle.property.experimenter.BundlePropertyExperimenterData;
 
 /**
  * Abstract class for common Converter util methods.
  */
-public abstract class ConverterTestUtils {
+public abstract class BundleTestUtils {
 
-    public static BundleProperty createExperimenterProperty() {
-        final BundlePropertyBuilder propertyBuilder = new BundlePropertyBuilder();
-        propertyBuilder.setType(BundlePropertyType.ONFETBPTEXPERIMENTER);
-        propertyBuilder.setBundlePropertyEntry(new BundlePropertyExperimenterBuilder()
-                .setExperimenter(new ExperimenterId(1L))
-                .setExpType(1L)
-                .setBundlePropertyExperimenterData(null)
-                .build());
-        return propertyBuilder.build();
+    public static BundleProperty createExperimenterProperty(final BundlePropertyExperimenterData data) {
+        return new BundlePropertyBuilder()
+                .setType(BundlePropertyType.ONFETBPTEXPERIMENTER)
+                .setBundlePropertyEntry(new BundlePropertyExperimenterBuilder()
+                        .setExperimenter(new ExperimenterId(1L))
+                        .setExpType(2L)
+                        .setBundlePropertyExperimenterData(data)
+                        .build())
+                .build();
     }
 
 }
