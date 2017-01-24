@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
+import org.opendaylight.openflowplugin.extension.onf.ConverterTestUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleControlType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleFlags;
@@ -42,29 +43,36 @@ public class BundleControlConverterTest {
 
     @Test
     public void testConvertWithProperty() {
+        final boolean withProperty = true;
         final org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.BundleControl original
-                = createMessage(true);
+                = createMessage(withProperty);
         final BundleControl converted = converter.convert(original);
-        Assert.assertEquals("Wrong BundleId", new BundleId(original.getBundleId().getValue()), converted.getBundleId());
-        Assert.assertEquals("Wrong type", BundleControlType.forValue(original.getType().getIntValue()), converted.getType());
-        Assert.assertEquals("Wrong flags", new BundleFlags(original.getFlags().isAtomic(), original.getFlags().isOrdered()), converted.getFlags());
-        Assert.assertEquals("Wrong property type", BundlePropertyType.ONFETBPTEXPERIMENTER, converted.getBundleProperty().get(0).getType());
-        final BundlePropertyExperimenter originalProperty = (BundlePropertyExperimenter) original.getBundleProperty().get(0).getBundlePropertyEntry();
-        final BundlePropertyExperimenter convertedProperty = ((BundlePropertyExperimenter) converted.getBundleProperty().get(0).getBundlePropertyEntry());
-        Assert.assertEquals("Wrong property ExperimenterId", new ExperimenterId(originalProperty.getExperimenter()), convertedProperty.getExperimenter());
-        Assert.assertEquals("Wrong property experimenter type", originalProperty.getExpType(), convertedProperty.getExpType());
-        Assert.assertEquals("Wrong property data", originalProperty.getBundlePropertyExperimenterData(), convertedProperty.getBundlePropertyExperimenterData());
+        testConvert(original, converted, withProperty);
     }
 
     @Test
     public void testConvertWithoutProperty() {
+        final boolean withProperty = false;
         final org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.BundleControl original
-                = createMessage(false);
+                = createMessage(withProperty);
         final BundleControl converted = converter.convert(original);
+        testConvert(original, converted, withProperty);
+    }
+
+    private static void testConvert(final org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.BundleControl original,
+                                    final BundleControl converted, final boolean withProperty) {
         Assert.assertEquals("Wrong BundleId", new BundleId(original.getBundleId().getValue()), converted.getBundleId());
         Assert.assertEquals("Wrong type", BundleControlType.forValue(original.getType().getIntValue()), converted.getType());
         Assert.assertEquals("Wrong flags", new BundleFlags(original.getFlags().isAtomic(), original.getFlags().isOrdered()), converted.getFlags());
-        Assert.assertTrue("Properties not empty", converted.getBundleProperty().isEmpty());
+        if (withProperty) {
+            final BundlePropertyExperimenter originalProperty = (BundlePropertyExperimenter) original.getBundleProperty().get(0).getBundlePropertyEntry();
+            final BundlePropertyExperimenter convertedProperty = ((BundlePropertyExperimenter) converted.getBundleProperty().get(0).getBundlePropertyEntry());
+            Assert.assertEquals("Wrong property ExperimenterId", new ExperimenterId(originalProperty.getExperimenter()), convertedProperty.getExperimenter());
+            Assert.assertEquals("Wrong property experimenter type", originalProperty.getExpType(), convertedProperty.getExpType());
+            Assert.assertEquals("Wrong property data", originalProperty.getBundlePropertyExperimenterData(), convertedProperty.getBundlePropertyExperimenterData());
+        } else {
+            Assert.assertTrue("Properties not empty", converted.getBundleProperty().isEmpty());
+        }
     }
 
     private static org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.BundleControl
@@ -76,17 +84,12 @@ public class BundleControlConverterTest {
         builder.setFlags(new BundleFlags(true, false));
         List<BundleProperty> properties = new ArrayList<>();
         if (withProperty) {
-            final BundlePropertyBuilder propertyBuilder = new BundlePropertyBuilder();
-            propertyBuilder.setType(BundlePropertyType.ONFETBPTEXPERIMENTER);
-            propertyBuilder.setBundlePropertyEntry(new BundlePropertyExperimenterBuilder()
-                    .setExperimenter(new ExperimenterId(1L))
-                    .setExpType(1L)
-                    .setBundlePropertyExperimenterData(null)
-                    .build());
-            properties.add(propertyBuilder.build());
+            properties.add(ConverterTestUtils.createExperimenterProperty());
         }
         builder.setBundleProperty(properties);
         return builder.build();
     }
+
+
 
 }
