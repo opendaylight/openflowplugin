@@ -21,12 +21,13 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.Versi
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortMod;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.PortBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.UpdatedGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContextRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -50,7 +51,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.add.message.grouping.bundle.inner.message.BundlePortModCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.add.message.grouping.bundle.inner.message.BundlePortModCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleAddMessageBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortInputBuilder;
 
 /**
  * Converter for BundleAddMessage messages (ONF approved extension #230).
@@ -92,13 +92,17 @@ public class BundleAddMessageConverter implements
         if (clazz.equals(BundleAddFlowCase.class)) {
             flowModInputs = converterExecutor.convert(new AddFlowInputBuilder((Flow)messageCase).build(), data);
         } else if (clazz.equals(BundleUpdateFlowCase.class)) {
-            flowModInputs = converterExecutor.convert(new UpdateFlowInputBuilder((BundleUpdateFlowCase)messageCase).build(), data);
+            flowModInputs = converterExecutor.convert(new UpdatedFlowBuilder((Flow)messageCase).build(), data);
         } else if (clazz.equals(BundleRemoveFlowCase.class)) {
             flowModInputs = converterExecutor.convert(new RemoveFlowInputBuilder((Flow)messageCase).build(), data);
         }
 
         if (flowModInputs.isPresent()) {
-            return new BundleFlowModCaseBuilder(flowModInputs.get().get(0).build()).build();
+            if (flowModInputs.get().size() == 1) {
+                return new BundleFlowModCaseBuilder(flowModInputs.get().get(0).build()).build();
+            } else {
+                throw new ConversionException("BundleFlowCase conversion unsuccessful - not able to convert to multiple flows.");
+            }
         } else {
             throw new ConversionException("BundleFlowCase conversion unsuccessful.");
         }
@@ -110,7 +114,7 @@ public class BundleAddMessageConverter implements
         if (clazz.equals(BundleAddGroupCase.class)) {
             groupModInput = converterExecutor.convert(new AddGroupInputBuilder((Group)messageCase).build(), data);
         } else if (clazz.equals(BundleUpdateGroupCase.class)) {
-            groupModInput = converterExecutor.convert(new UpdateGroupInputBuilder((BundleUpdateGroupCase)messageCase).build(), data);
+            groupModInput = converterExecutor.convert(new UpdatedGroupBuilder((Group)messageCase).build(), data);
         } else if (clazz.equals(BundleRemoveGroupCase.class)) {
             groupModInput = converterExecutor.convert(new RemoveGroupInputBuilder((Group)messageCase).build(), data);
         }
@@ -126,7 +130,7 @@ public class BundleAddMessageConverter implements
         Optional<PortModInput> portModInput = Optional.empty();
         final Class clazz = messageCase.getImplementedInterface();
         if (clazz.equals(BundleUpdatePortCase.class)) {
-            portModInput = converterExecutor.convert(new UpdatePortInputBuilder((BundleUpdatePortCase)messageCase).build(), data);
+            portModInput = converterExecutor.convert(new PortBuilder(((PortMod)messageCase).getPort().getPort().get(0)).build(), data);
         }
 
         if (portModInput.isPresent()) {
