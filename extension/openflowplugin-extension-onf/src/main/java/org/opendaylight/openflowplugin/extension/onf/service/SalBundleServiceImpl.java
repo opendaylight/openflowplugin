@@ -22,27 +22,23 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.servic
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.Message;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.Messages;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.BundleAddMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.BundleControlBuilder;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Simple bundle extension service.
  */
 public class SalBundleServiceImpl implements SalBundleService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SalBundleServiceImpl.class);
     private final SalExperimenterMessageService experimenterMessageService;
 
     public SalBundleServiceImpl(final SalExperimenterMessageService experimenterMessageService) {
         this.experimenterMessageService = Preconditions.checkNotNull(experimenterMessageService,
                 "SalExperimenterMessageService can not be null!");
-        LOG.info("SalBundleServiceImpl created.");
     }
 
     @Override
@@ -62,7 +58,7 @@ public class SalBundleServiceImpl implements SalBundleService {
         bundleAddMessageBuilder.setBundleId(input.getBundleId());
         bundleAddMessageBuilder.setFlags(input.getFlags());
         bundleAddMessageBuilder.setBundleProperty(input.getBundleProperty());
-        for (Message message : input.getMessage()) {
+        for (Messages message : input.getMessages()) {
             bundleAddMessageBuilder.setBundleInnerMessage(message.getBundleInnerMessage());
             experimenterInputBuilder.setExperimenterMessageOfChoice(bundleAddMessageBuilder.build());
             ListenableFuture<RpcResult<Void>> res = JdkFutureAdapters.listenInPoolThread(
