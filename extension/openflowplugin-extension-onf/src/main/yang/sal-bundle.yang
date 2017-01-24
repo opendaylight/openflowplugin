@@ -5,7 +5,9 @@ module sal-bundle {
     import onf-extensions {prefix onf-ext; revision-date "2017-01-24";}
     import opendaylight-inventory {prefix inv; revision-date "2013-08-19";}
     import sal-experimenter-message {prefix exp-msg; revision-date "2015-10-20";}
-    import sal-flow {prefix flow; revision-date "2013-08-19";}
+    import opendaylight-flow-types {prefix flow-types; revision-date "2013-10-26";}
+    import opendaylight-group-types {prefix group-types; revision-date "2013-10-18";}
+    import opendaylight-port-types {prefix port-types; revision-date "2013-09-25";}
 
     revision "2017-01-24" {
         description "Initial revision of extension bundle service";
@@ -23,8 +25,33 @@ module sal-bundle {
 
     grouping bundle-inner-message-grouping {
         choice bundle-inner-message {
-            case add-flow-case {
-                uses flow:node-flow;
+            case bundle-add-flow-case {
+                uses inv:node-context-ref;
+                uses flow-types:flow;
+            }
+            case bundle-update-flow-case {
+                uses inv:node-context-ref;
+                uses flow-types:flow;
+            }
+            case bundle-remove-flow-case {
+                uses inv:node-context-ref;
+                uses flow-types:flow;
+            }
+            case bundle-add-group-case {
+                uses inv:node-context-ref;
+                uses group-types:group;
+            }
+            case bundle-update-group-case {
+                uses inv:node-context-ref;
+                uses group-types:group;
+            }
+            case bundle-remove-group-case {
+                uses inv:node-context-ref;
+                uses group-types:group;
+            }
+            case bundle-update-port-case {
+                uses inv:node-context-ref;
+                uses port-types:port-mod;
             }
         }
     }
@@ -42,7 +69,7 @@ module sal-bundle {
         input {
             uses inv:node-context-ref;
             uses onf-ext:bundle-common-grouping;
-            list message {
+            list messages {
                 uses bundle-inner-message-grouping;
             }
         }
