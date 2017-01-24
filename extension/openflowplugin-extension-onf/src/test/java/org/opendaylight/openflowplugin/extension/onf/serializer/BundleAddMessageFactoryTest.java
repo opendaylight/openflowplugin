@@ -49,7 +49,7 @@ public class BundleAddMessageFactoryTest {
         builder.setBundleId(new BundleId(1L));
         builder.setFlags(new BundleFlags(true, false));
 
-        BundleInnerMessage innerMessage = AbstractBundleMessageFactoryTest.createPortModCase();
+        BundleInnerMessage innerMessage = AbstractBundleMessageFactoryTest.createBundlePortModCase();
         builder.setBundleInnerMessage(innerMessage);
 
         ByteBuf out = UnpooledByteBufAllocator.DEFAULT.buffer();
@@ -69,7 +69,7 @@ public class BundleAddMessageFactoryTest {
         builder.setBundleId(new BundleId(2L));
         builder.setFlags(new BundleFlags(true, false));
 
-        BundleInnerMessage innerMessage = AbstractBundleMessageFactoryTest.createPortModCase();
+        BundleInnerMessage innerMessage = AbstractBundleMessageFactoryTest.createBundlePortModCase();
         builder.setBundleInnerMessage(innerMessage);
 
         BundlePropertyExperimenterData data = AbstractBundleMessageFactoryTest.createBundleExperimenterPropertyData();
