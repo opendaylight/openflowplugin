@@ -42,6 +42,10 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
     private final MeterService<AddMeterInput, AddMeterOutput> addMeter;
     private final MeterService<Meter, UpdateMeterOutput> updateMeter;
     private final MeterService<RemoveMeterInput, RemoveMeterOutput> removeMeter;
+    private final MeterMessageService<AddMeterOutput> addMeterMessage;
+    private final MeterMessageService<UpdateMeterOutput> updateMeterMessage;
+    private final MeterMessageService<RemoveMeterOutput> removeMeterMessage;
+
     private ItemLifecycleListener itemLifecycleListener;
     private final DeviceContext deviceContext;
 
@@ -50,6 +54,10 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
         addMeter = new MeterService<>(requestContextStack, deviceContext, AddMeterOutput.class, convertorExecutor);
         updateMeter = new MeterService<>(requestContextStack, deviceContext, UpdateMeterOutput.class, convertorExecutor);
         removeMeter = new MeterService<>(requestContextStack, deviceContext, RemoveMeterOutput.class, convertorExecutor);
+
+        addMeterMessage = new MeterMessageService<>(requestContextStack, deviceContext, AddMeterOutput.class);
+        updateMeterMessage = new MeterMessageService<>(requestContextStack, deviceContext, UpdateMeterOutput.class);
+        removeMeterMessage = new MeterMessageService<>(requestContextStack, deviceContext, RemoveMeterOutput.class);
     }
 
     @Override
@@ -59,7 +67,10 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
 
     @Override
     public Future<RpcResult<AddMeterOutput>> addMeter(final AddMeterInput input) {
-        final ListenableFuture<RpcResult<AddMeterOutput>> resultFuture = addMeter.handleServiceCall(input);
+        final ListenableFuture<RpcResult<AddMeterOutput>> resultFuture = addMeterMessage.isSupported()
+            ? addMeterMessage.processInput(input)
+            : addMeter.handleServiceCall(input);
+
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<AddMeterOutput>>() {
             @Override
             public void onSuccess(@Nullable RpcResult<AddMeterOutput> result) {
@@ -87,7 +98,10 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
 
     @Override
     public Future<RpcResult<UpdateMeterOutput>> updateMeter(final UpdateMeterInput input) {
-        final ListenableFuture<RpcResult<UpdateMeterOutput>> resultFuture = updateMeter.handleServiceCall(input.getUpdatedMeter());
+        final ListenableFuture<RpcResult<UpdateMeterOutput>> resultFuture = updateMeterMessage.isSupported()
+            ? updateMeterMessage.processInput(input.getUpdatedMeter())
+            : updateMeter.handleServiceCall(input.getUpdatedMeter());
+
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<UpdateMeterOutput>>() {
 
             @Override
@@ -120,7 +134,10 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
     @Override
     public Future<RpcResult<RemoveMeterOutput>> removeMeter(final RemoveMeterInput input) {
         removeMeter.getDeviceRegistry().getDeviceMeterRegistry().markToBeremoved(input.getMeterId());
-        final ListenableFuture<RpcResult<RemoveMeterOutput>> resultFuture = removeMeter.handleServiceCall(input);
+        final ListenableFuture<RpcResult<RemoveMeterOutput>> resultFuture = removeMeterMessage.isSupported()
+            ? removeMeterMessage.processInput(input)
+            : removeMeter.handleServiceCall(input);
+
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<RemoveMeterOutput>>() {
             @Override
             public void onSuccess(@Nullable RpcResult<RemoveMeterOutput> result) {
