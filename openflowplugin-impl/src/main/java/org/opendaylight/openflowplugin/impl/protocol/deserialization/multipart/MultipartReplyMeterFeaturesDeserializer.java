@@ -40,8 +40,8 @@ public class MultipartReplyMeterFeaturesDeserializer implements OFDeserializer<M
     private static List<Class<? extends MeterBand>> readMeterBands(ByteBuf message) {
         final List<Class<? extends MeterBand>> bandTypes = new ArrayList<>();
         final long typesMask = message.readUnsignedInt();
-        final boolean mbtDROP = (typesMask & (1 << 1)) != 0;
-        final boolean mbtDSCPREMARK = (typesMask & (1 << 2)) != 0;
+        final boolean mbtDROP = (typesMask & (1 << 0)) != 0;
+        final boolean mbtDSCPREMARK = (typesMask & (1 << 1)) != 0;
 
         if (mbtDROP) bandTypes.add(MeterBandDrop.class);
         if (mbtDSCPREMARK) bandTypes.add(MeterBandDscpRemark.class);
