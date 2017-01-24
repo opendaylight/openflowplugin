@@ -230,33 +230,18 @@ public class TableFeaturesMatchFieldDeserializer {
         .build();
 
     /**
-     * Processes match entry header and returns if it have mask, or not
-     * @param in input buffer
-     * @return SetFieldMatchBuilder with hasMask properly set
-     */
-    protected static SetFieldMatchBuilder processHeader(ByteBuf in) {
-        in.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES); // skip oxm_class
-        boolean hasMask = (in.readUnsignedByte() & 1) != 0;
-        in.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES); // skip match entry length
-
-        return new SetFieldMatchBuilder()
-            .setHasMask(hasMask);
-    }
-
-    /**
      * Deserialize match field if deserializer supports it, otherwise returns empty optional
      * @param message input buffer
      * @return set field match
      */
     public Optional<SetFieldMatch> deserialize(ByteBuf message) {
-        int oxmClass = message.getUnsignedShort(message.readerIndex());
-        int oxmField = message.getUnsignedByte(message.readerIndex()
-                + EncodeConstants.SIZE_OF_SHORT_IN_BYTES) >>> 1;
+        int oxmClass = message.readUnsignedShort();
+        int oxmFieldAndMask = message.readUnsignedByte();
+        int oxmField = oxmFieldAndMask >>> 1;
         Long expId = null;
 
         if (oxmClass == EncodeConstants.EXPERIMENTER_VALUE) {
-            expId = message.getUnsignedInt(message.readerIndex() + EncodeConstants.SIZE_OF_SHORT_IN_BYTES
-                    + 2 * EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            expId = message.getUnsignedInt(message.readerIndex());
         }
 
         final MatchEntryDeserializerKey key =
@@ -266,7 +251,8 @@ public class TableFeaturesMatchFieldDeserializer {
 
         return Optional
             .ofNullable(CODE_TO_FIELD.get(key))
-            .map(clazz -> processHeader(message)
+            .map(clazz -> new SetFieldMatchBuilder()
+                    .setHasMask((oxmFieldAndMask & 1) != 0)
                     .setKey(new SetFieldMatchKey(clazz))
                     .setMatchType(clazz)
                     .build());
