@@ -12,16 +12,15 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
-import org.opendaylight.openflowplugin.extension.onf.ConverterTestUtils;
+import org.mockito.Mockito;
+import org.opendaylight.openflowplugin.extension.onf.BundleTestUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleControlType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundlePropertyType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.common.grouping.BundleProperty;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.common.grouping.BundlePropertyBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.property.grouping.bundle.property.entry.BundlePropertyExperimenter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.property.grouping.bundle.property.entry.BundlePropertyExperimenterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.property.grouping.bundle.property.entry.bundle.property.experimenter.BundlePropertyExperimenterData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleControl;
 
 /**
@@ -43,16 +42,15 @@ public class BundleControlConverterTest {
 
     @Test
     public void testConvertWithProperty() {
-        final boolean withProperty = true;
-        final org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.BundleControl original
-                = createMessage(withProperty);
-        final BundleControl converted = converter.convert(original);
-        testConvert(original, converted, withProperty);
+        testConvert(true);
     }
 
     @Test
     public void testConvertWithoutProperty() {
-        final boolean withProperty = false;
+        testConvert(false);
+    }
+
+    private void testConvert(final boolean withProperty) {
         final org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.BundleControl original
                 = createMessage(withProperty);
         final BundleControl converted = converter.convert(original);
@@ -84,12 +82,10 @@ public class BundleControlConverterTest {
         builder.setFlags(new BundleFlags(true, false));
         List<BundleProperty> properties = new ArrayList<>();
         if (withProperty) {
-            properties.add(ConverterTestUtils.createExperimenterProperty());
+            properties.add(BundleTestUtils.createExperimenterProperty(Mockito.mock(BundlePropertyExperimenterData.class)));
         }
         builder.setBundleProperty(properties);
         return builder.build();
     }
-
-
 
 }
