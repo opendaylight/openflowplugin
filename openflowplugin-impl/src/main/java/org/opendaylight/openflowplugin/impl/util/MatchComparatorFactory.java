@@ -8,8 +8,10 @@
 
 package org.opendaylight.openflowplugin.impl.util;
 
+import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
-
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -45,7 +47,7 @@ public final class MatchComparatorFactory {
              * Comparation by whole object
              */
             @Override
-            public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+            public boolean areObjectsEqual(short version, Match statsMatch, Match storedMatch) {
                 return (statsMatch == null) == (storedMatch == null);
             }
         };
@@ -57,7 +59,7 @@ public final class MatchComparatorFactory {
              * Comparation by VLAN
              */
             @Override
-            public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+            public boolean areObjectsEqual(short version, Match statsMatch, Match storedMatch) {
                 if (storedMatch == null) {
                     return false;
                 }
@@ -79,7 +81,7 @@ public final class MatchComparatorFactory {
              * Comparation by tunnel
              */
             @Override
-            public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+            public boolean areObjectsEqual(short version, Match statsMatch, Match storedMatch) {
                 if (storedMatch == null) {
                     return false;
                 }
@@ -101,7 +103,7 @@ public final class MatchComparatorFactory {
              * Comparation by protocol fields
              */
             @Override
-            public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+            public boolean areObjectsEqual(short version, Match statsMatch, Match storedMatch) {
                 if (storedMatch == null) {
                     return false;
                 }
@@ -123,7 +125,7 @@ public final class MatchComparatorFactory {
              * Comparation by metadata
              */
             @Override
-            public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+            public boolean areObjectsEqual(short version, Match statsMatch, Match storedMatch) {
                 if (storedMatch == null) {
                     return false;
                 }
@@ -145,7 +147,7 @@ public final class MatchComparatorFactory {
              * Comparation by layer4
              */
             @Override
-            public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+            public boolean areObjectsEqual(short version, Match statsMatch, Match storedMatch) {
                 if (storedMatch == null) {
                     return false;
                 }
@@ -167,7 +169,7 @@ public final class MatchComparatorFactory {
              * Comparation by layer3
              */
             @Override
-            public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+            public boolean areObjectsEqual(short version, Match statsMatch, Match storedMatch) {
                 if (storedMatch == null) {
                     return false;
                 }
@@ -189,7 +191,7 @@ public final class MatchComparatorFactory {
              * Comparation by Ip
              */
             @Override
-            public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+            public boolean areObjectsEqual(short version, Match statsMatch, Match storedMatch) {
                 if (storedMatch == null) {
                     return false;
                 }
@@ -205,13 +207,39 @@ public final class MatchComparatorFactory {
         };
     }
 
+
+    /**
+     * Converts both ports in node connector id format to number format and compare them
+     *
+     * @param version openflow version
+     * @param left first object to compare
+     * @param right second object to compare
+     * @return true if equal
+     */
+    private static boolean arePortNumbersEqual(short version, NodeConnectorId left, NodeConnectorId right) {
+        final OpenflowVersion ofVersion = OpenflowVersion.get(version);
+
+        final Long leftPort = InventoryDataServiceUtil.portNumberfromNodeConnectorId(ofVersion, left);
+        final Long rightPort = InventoryDataServiceUtil.portNumberfromNodeConnectorId(ofVersion, right);
+
+        if (leftPort == null) {
+            if (rightPort != null) {
+                return false;
+            }
+        } else if (!leftPort.equals(rightPort)) {
+            return false;
+        }
+
+        return true;
+    }
+
     public static SimpleComparator<Match> createInPort() {
         return new SimpleComparator<Match>() {
             /**
              * Comparation by InPort
              */
             @Override
-            public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+            public boolean areObjectsEqual(short version, Match statsMatch, Match storedMatch) {
                 if (storedMatch == null) {
                     return false;
                 }
@@ -219,7 +247,7 @@ public final class MatchComparatorFactory {
                     if (statsMatch.getInPort() != null) {
                         return false;
                     }
-                } else if (!storedMatch.getInPort().equals(statsMatch.getInPort())) {
+                } else if (!arePortNumbersEqual(version, storedMatch.getInPort(), statsMatch.getInPort())) {
                     return false;
                 }
                 return true;
@@ -233,7 +261,7 @@ public final class MatchComparatorFactory {
              * Comparation by InPhyPort
              */
             @Override
-            public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+            public boolean areObjectsEqual(short version, Match statsMatch, Match storedMatch) {
                 if (storedMatch == null) {
                     return false;
                 }
@@ -241,7 +269,7 @@ public final class MatchComparatorFactory {
                     if (statsMatch.getInPhyPort() != null) {
                         return false;
                     }
-                } else if (!storedMatch.getInPhyPort().equals(statsMatch.getInPhyPort())) {
+                } else if (!arePortNumbersEqual(version, storedMatch.getInPhyPort(), statsMatch.getInPhyPort())) {
                     return false;
                 }
                 return true;
@@ -255,7 +283,7 @@ public final class MatchComparatorFactory {
              * Comparation by Ethernet
              */
             @Override
-            public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+            public boolean areObjectsEqual(short version, Match statsMatch, Match storedMatch) {
                 if (storedMatch == null) {
                     return false;
                 }
@@ -277,7 +305,7 @@ public final class MatchComparatorFactory {
              * Comparation by Icmpv4
              */
             @Override
-            public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+            public boolean areObjectsEqual(short version, Match statsMatch, Match storedMatch) {
                 if (storedMatch == null) {
                     return false;
                 }
@@ -299,12 +327,12 @@ public final class MatchComparatorFactory {
              * Compares flows by whole match
              */
             @Override
-            public boolean areObjectsEqual(final Match statsFlow, final Match storedFlow) {
+            public boolean areObjectsEqual(short version, final Match statsFlow, final Match storedFlow) {
                 if (statsFlow == null) {
                     if (storedFlow != null) {
                         return false;
                     }
-                } else if (!compareMatches(statsFlow, storedFlow)) {
+                } else if (!compareMatches(version, statsFlow, storedFlow)) {
                     return false;
                 }
                 return true;
@@ -337,13 +365,13 @@ public final class MatchComparatorFactory {
      * @param storedMatch
      * @return
      */
-    private static boolean compareMatches(final Match statsMatch, final Match storedMatch) {
+    private static boolean compareMatches(final short version, final Match statsMatch, final Match storedMatch) {
         if (statsMatch == storedMatch) {
             return true;
         }
 
         for (SimpleComparator<Match> matchComp : MATCH_COMPARATORS) {
-            if (!matchComp.areObjectsEqual(statsMatch, storedMatch)) {
+            if (!matchComp.areObjectsEqual(version, statsMatch, storedMatch)) {
                 return false;
             }
         }

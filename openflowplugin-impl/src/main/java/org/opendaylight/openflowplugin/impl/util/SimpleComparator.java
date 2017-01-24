@@ -10,6 +10,6 @@ package org.opendaylight.openflowplugin.impl.util;
 
 public interface SimpleComparator<T> {
 
-    boolean areObjectsEqual(T obj1, T obj2);
+    boolean areObjectsEqual(short version, T obj1, T obj2);
 
 }

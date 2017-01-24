@@ -33,6 +33,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -73,9 +74,9 @@ public class DeviceFlowRegistryImplTest {
     public void setUp() throws Exception {
         nodeInstanceIdentifier = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(new NodeId(NODE_ID)));
         when(dataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
-        deviceFlowRegistry = new DeviceFlowRegistryImpl(dataBroker, nodeInstanceIdentifier);
+        deviceFlowRegistry = new DeviceFlowRegistryImpl(OFConstants.OFP_VERSION_1_3, dataBroker, nodeInstanceIdentifier);
         final FlowAndStatisticsMapList flowStats = TestFlowHelper.createFlowAndStatisticsMapListBuilder(1).build();
-        key = FlowRegistryKeyFactory.create(flowStats);
+        key = FlowRegistryKeyFactory.create(OFConstants.OFP_VERSION_1_3, flowStats);
         descriptor = FlowDescriptorFactory.create(key.getTableId(), new FlowId("ut:1"));
 
         Assert.assertEquals(0, deviceFlowRegistry.getAllFlowDescriptors().size());
@@ -103,7 +104,7 @@ public class DeviceFlowRegistryImplTest {
                 .build();
 
         final Map<FlowRegistryKey, FlowDescriptor> allFlowDescriptors = testFill(path, flowCapableNode);
-        final FlowRegistryKey key = FlowRegistryKeyFactory.create(flow);
+        final FlowRegistryKey key = FlowRegistryKeyFactory.create(OFConstants.OFP_VERSION_1_3, flow);
 
         InOrder order = inOrder(dataBroker, readOnlyTransaction);
         order.verify(dataBroker).newReadOnlyTransaction();
@@ -178,7 +179,7 @@ public class DeviceFlowRegistryImplTest {
 
         // store new key with old value
         final FlowAndStatisticsMapList flowStats = TestFlowHelper.createFlowAndStatisticsMapListBuilder(2).build();
-        final FlowRegistryKey key2 = FlowRegistryKeyFactory.create(flowStats);
+        final FlowRegistryKey key2 = FlowRegistryKeyFactory.create(OFConstants.OFP_VERSION_1_3, flowStats);
         deviceFlowRegistry.store(key2, descriptor);
         Assert.assertEquals(2, deviceFlowRegistry.getAllFlowDescriptors().size());
         Assert.assertEquals("ut:1", deviceFlowRegistry.retrieveIdForFlow(key2).getFlowId().getValue());
@@ -197,7 +198,7 @@ public class DeviceFlowRegistryImplTest {
 
         //store new key
         final String alienPrefix = "#UF$TABLE*2-";
-        final FlowRegistryKey key2 = FlowRegistryKeyFactory.create(TestFlowHelper.createFlowAndStatisticsMapListBuilder(2).build());
+        final FlowRegistryKey key2 = FlowRegistryKeyFactory.create(OFConstants.OFP_VERSION_1_3, TestFlowHelper.createFlowAndStatisticsMapListBuilder(2).build());
         newFlowId = deviceFlowRegistry.storeIfNecessary(key2);
 
         Assert.assertTrue(newFlowId.getValue().startsWith(alienPrefix));
