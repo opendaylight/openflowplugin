@@ -76,14 +76,14 @@ public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<Multi
             itemMessage.skipBytes(PADDING_IN_FLOW_STATS_HEADER_02);
 
             itemBuilder
-                .setCookie(new FlowCookie(BigInteger.valueOf(message.readLong())))
-                .setCookieMask(new FlowCookie(BigInteger.valueOf(message.readLong())))
-                .setPacketCount(new Counter64(BigInteger.valueOf(message.readLong())))
-                .setByteCount(new Counter64(BigInteger.valueOf(message.readLong())));
+                .setCookie(new FlowCookie(BigInteger.valueOf(itemMessage.readLong())))
+                .setCookieMask(new FlowCookie(BigInteger.valueOf(itemMessage.readLong())))
+                .setPacketCount(new Counter64(BigInteger.valueOf(itemMessage.readLong())))
+                .setByteCount(new Counter64(BigInteger.valueOf(itemMessage.readLong())));
 
 
             final OFDeserializer<Match> matchDeserializer = registry.getDeserializer(MATCH_KEY);
-            itemBuilder.setMatch(new MatchBuilder(matchDeserializer.deserialize(message)).build());
+            itemBuilder.setMatch(new MatchBuilder(matchDeserializer.deserialize(itemMessage)).build());
 
             final int length = itemMessage.readableBytes();
 
