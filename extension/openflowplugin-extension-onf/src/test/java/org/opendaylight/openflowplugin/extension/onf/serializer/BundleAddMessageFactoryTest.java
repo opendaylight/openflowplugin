@@ -10,6 +10,8 @@ package org.opendaylight.openflowplugin.extension.onf.serializer;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
+import java.util.ArrayList;
+import java.util.Collections;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,14 +20,14 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
-import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortMod;
+import org.opendaylight.openflowplugin.extension.onf.BundleTestUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.add.message.grouping.BundleInnerMessage;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.property.grouping.bundle.property.entry.bundle.property.experimenter.BundlePropertyExperimenterData;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.add.message.grouping.bundle.inner.message.BundleFlowModCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.add.message.grouping.bundle.inner.message.BundleGroupModCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.add.message.grouping.bundle.inner.message.BundlePortModCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleAddMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleAddMessageBuilder;
 
@@ -33,60 +35,74 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
  * Test for {@link org.opendaylight.openflowplugin.extension.onf.serializer.BundleAddMessageFactory}.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class BundleAddMessageFactoryTest {
+public class BundleAddMessageFactoryTest extends AbstractBundleMessageFactoryTest {
 
     private final OFSerializer<BundleAddMessage> factory = new BundleAddMessageFactory();
     @Mock
-    SerializerRegistry registry;
-    @Mock
-    OFSerializer<PortMod> portModSerializer;
-    @Mock
-    OFSerializer<BundlePropertyExperimenterData> propertySerializer;
+    private OFSerializer caseSerializer;
 
     @Test
     public void testSerializeWithoutProperties() {
-        BundleAddMessageBuilder builder = new BundleAddMessageBuilder();
+        testSerialize(false);
+    }
+
+    @Test
+    public void testSerializeWithExperimenterProperty() {
+        testSerialize(true);
+    }
+
+    @Test
+    public void testSerializeFlowModCase() {
+        testSerialize(new BundleFlowModCaseBuilder().build());
+    }
+
+    @Test
+    public void testSerializeGroupModCase() {
+        testSerialize(new BundleGroupModCaseBuilder().build());
+    }
+
+    @Test
+    public void testSerializePortModCase() {
+        testSerialize(new BundlePortModCaseBuilder().build());
+    }
+
+    private void testSerialize(final BundleInnerMessage innerMessage) {
+        testSerialize(false, innerMessage);
+    }
+
+    private void testSerialize(final boolean withProperty) {
+        testSerialize(withProperty, new BundleFlowModCaseBuilder().build());
+    }
+
+    private void testSerialize(final boolean withProperty, final BundleInnerMessage innerMessage) {
+        final BundleAddMessageBuilder builder = new BundleAddMessageBuilder();
         builder.setBundleId(new BundleId(1L));
         builder.setFlags(new BundleFlags(true, false));
 
-        BundleInnerMessage innerMessage = AbstractBundleMessageFactoryTest.createBundlePortModCase();
         builder.setBundleInnerMessage(innerMessage);
 
+        if (withProperty) {
+            builder.setBundleProperty(new ArrayList<>(Collections.singleton(
+                    BundleTestUtils.createExperimenterProperty(propertyExperimenterData))));
+            Mockito.when(registry.getSerializer(Matchers.any()))
+                    .thenReturn(caseSerializer)
+                    .thenReturn(propertySerializer);
+        } else {
+            Mockito.when(registry.getSerializer(Matchers.any())).thenReturn(caseSerializer);
+        }
+
         ByteBuf out = UnpooledByteBufAllocator.DEFAULT.buffer();
-        Mockito.when(registry.getSerializer(Matchers.any(MessageTypeKey.class))).thenReturn(portModSerializer);
         ((SerializerRegistryInjector) factory).injectSerializerRegistry(registry);
         factory.serialize(builder.build(), out);
 
         Assert.assertEquals("Wrong bundle ID", 1L, out.readUnsignedInt());
         long padding = out.readUnsignedShort();
         Assert.assertEquals("Wrong flags", 1, out.readUnsignedShort());
-        Mockito.verify(portModSerializer, Mockito.times(1)).serialize((PortMod)innerMessage, out);
-    }
+        Mockito.verify(caseSerializer).serialize(innerMessage, out);
 
-    @Test
-    public void testSerializeWithExperimenterProperty() {
-        BundleAddMessageBuilder builder = new BundleAddMessageBuilder();
-        builder.setBundleId(new BundleId(2L));
-        builder.setFlags(new BundleFlags(true, false));
-
-        BundleInnerMessage innerMessage = AbstractBundleMessageFactoryTest.createBundlePortModCase();
-        builder.setBundleInnerMessage(innerMessage);
-
-        BundlePropertyExperimenterData data = AbstractBundleMessageFactoryTest.createBundleExperimenterPropertyData();
-        builder.setBundleProperty(AbstractBundleMessageFactoryTest.createListWithBundleExperimenterProperty(data));
-
-        ByteBuf out = UnpooledByteBufAllocator.DEFAULT.buffer();
-        Mockito.when(registry.getSerializer(Matchers.any(MessageTypeKey.class)))
-                .thenReturn(portModSerializer)
-                .thenReturn(propertySerializer);
-        ((SerializerRegistryInjector) factory).injectSerializerRegistry(registry);
-        factory.serialize(builder.build(), out);
-
-        Assert.assertEquals("Wrong bundle ID", 2L, out.readUnsignedInt());
-        long padding = out.readUnsignedShort();
-        Assert.assertEquals("Wrong flags", 1, out.readUnsignedShort());
-        Mockito.verify(portModSerializer, Mockito.times(1)).serialize((PortMod)innerMessage, out);
-        Mockito.verify(propertySerializer, Mockito.times(1)).serialize(data, out);
+        if (withProperty) {
+            Mockito.verify(propertySerializer).serialize(propertyExperimenterData, out);
+        }
     }
 
 }
