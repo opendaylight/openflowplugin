@@ -216,6 +216,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
                 case OFPTFPTAPPLYSETFIELDMISS:
                     propBuilder.setTableFeaturePropType(new ApplySetfieldMissBuilder()
                             .setApplySetfieldMiss(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.apply.setfield.miss.ApplySetfieldMissBuilder()
+                                .setSetFieldMatch(readMatchFields(message, commonPropertyLength))
                                 .build())
                             .build());
                     break;
@@ -259,6 +260,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
             MATCH_FIELD_DESERIALIZER
                 .deserialize(message)
                 .ifPresent(matchField -> matchFields.add(matchField));
+            message.getUnsignedByte(message.readerIndex());
         }
 
         return matchFields;

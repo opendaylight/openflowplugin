@@ -59,13 +59,12 @@ public class MultipartReplyPortDescDeserializer implements OFDeserializer<Multip
                 .build();
     }
 
-
     private static PortConfig readPortConfig(final ByteBuf message) {
         final long input = message.readUnsignedInt();
         final Boolean pcPortDown = ((input) & (1)) != 0;
-        final Boolean pcNRecv = ((input) & (1 << 2)) != 0;
-        final Boolean pcNFwd = ((input) & (1 << 5)) != 0;
-        final Boolean pcNPacketIn = ((input) & (1 << 6)) != 0;
+        final Boolean pcNRecv = ((input) & (1 << 1)) != 0;
+        final Boolean pcNFwd = ((input) & (1 << 2)) != 0;
+        final Boolean pcNPacketIn = ((input) & (1 << 3)) != 0;
         return new PortConfig(pcNFwd, pcNPacketIn, pcNRecv, pcPortDown);
     }
 
