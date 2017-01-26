@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl.connection;
 
 import com.google.common.util.concurrent.FutureCallback;
+import java.util.function.Function;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
@@ -76,5 +77,11 @@ public class OutboundQueueProviderImpl implements OutboundQueueProvider {
     @Override
     public void commitEntry(final Long xid, final OfHeader message, final FutureCallback<OfHeader> callback) {
         outboundQueue.commitEntry(xid, message, callback);
+    }
+
+    @Override
+    public void commitEntry(final Long xid, final OfHeader message, final FutureCallback<OfHeader> callback,
+            final Function<OfHeader, Boolean> isComplete) {
+        outboundQueue.commitEntry(xid, message, callback, isComplete);
     }
 }
