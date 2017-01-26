@@ -46,11 +46,6 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
     private final DeviceContext deviceContext;
     private final RoleService roleService;
 
-    private final Semaphore currentRoleGuard = new Semaphore(1, true);
-
-    @GuardedBy("currentRoleGuard")
-    private OfpRole currentRole = OfpRole.NOCHANGE;
-
     public SalRoleServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
         super(requestContextStack, deviceContext, SetRoleOutput.class);
         this.deviceContext = Preconditions.checkNotNull(deviceContext);
@@ -65,20 +60,6 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
     @Override
     public Future<RpcResult<SetRoleOutput>> setRole(final SetRoleInput input) {
         LOG.info("SetRole called with input:{}", input);
-        try {
-            currentRoleGuard.acquire();
-            LOG.trace("currentRole lock queue length: {} " + currentRoleGuard.getQueueLength());
-        } catch (final InterruptedException e) {
-            LOG.error("Unexpected exception {} for acquire semaphore for input {}", e, input);
-            return RpcResultBuilder.<SetRoleOutput> failed().buildFuture();
-        }
-        // compare with last known role and set if different. If they are same, then return.
-        if (currentRole.equals(input.getControllerRole())) {
-            LOG.info("Role to be set is same as the last known role for the device:{}. Hence ignoring.",
-                    input.getControllerRole());
-            currentRoleGuard.release();
-            return RpcResultBuilder.<SetRoleOutput> success().buildFuture();
-        }
 
         final SettableFuture<RpcResult<SetRoleOutput>> resultFuture = SettableFuture.<RpcResult<SetRoleOutput>> create();
         repeaterForChangeRole(resultFuture, input, 0);
@@ -89,14 +70,12 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
             public void onSuccess(final RpcResult<SetRoleOutput> result) {
                 LOG.debug("SetRoleService for Node: {} is ok Role: {}", input.getNode().getValue(),
                         input.getControllerRole());
-                currentRoleGuard.release();
             }
 
             @Override
             public void onFailure(final Throwable t) {
                 LOG.error("SetRoleService set Role {} for Node: {} fail . Reason {}", input.getControllerRole(),
                         input.getNode().getValue(), t);
-                currentRoleGuard.release();
             }
         });
         return resultFuture;
@@ -140,7 +119,6 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
             public void onSuccess(final RpcResult<SetRoleOutput> result) {
                 if (result.isSuccessful()) {
                     LOG.debug("setRoleOutput received after roleChangeTask execution:{}", result);
-                    currentRole = input.getControllerRole();
                     future.set(RpcResultBuilder.<SetRoleOutput> success().withResult(result.getResult()).build());
                 } else {
                     LOG.error("setRole() failed with errors, will retry: {} times.", MAX_RETRIES - retryCounter);
