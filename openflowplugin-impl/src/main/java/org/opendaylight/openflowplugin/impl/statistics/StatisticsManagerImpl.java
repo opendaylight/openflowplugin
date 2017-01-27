@@ -79,22 +79,22 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         deviceInitPhaseHandler = handler;
     }
 
-    public StatisticsManagerImpl(final RpcProviderRegistry rpcProviderRegistry,
+    public StatisticsManagerImpl(@Nonnull final RpcProviderRegistry rpcProviderRegistry,
                                  final boolean isStatisticsPollingOn,
-                                 final HashedWheelTimer hashedWheelTimer,
-                                 final ConvertorExecutor convertorExecutor,
+                                 @Nonnull final HashedWheelTimer hashedWheelTimer,
+                                 @Nonnull final ConvertorExecutor converterExecutor,
                                  final long basicTimerDelay,
                                  final long maximumTimerDelay) {
-        Preconditions.checkArgument(rpcProviderRegistry != null);
-	    this.converterExecutor = convertorExecutor;
+	    this.converterExecutor = converterExecutor;
         this.controlServiceRegistration = Preconditions.checkNotNull(
                 rpcProviderRegistry.addRpcImplementation(StatisticsManagerControlService.class, this)
         );
         this.isStatisticsPollingOn = isStatisticsPollingOn;
-        this.basicTimerDelay = basicTimerDelay;
-        this.currentTimerDelay = basicTimerDelay;
-        this.maximumTimerDelay = maximumTimerDelay;
         this.hashedWheelTimer = hashedWheelTimer;
+
+        StatisticsManagerImpl.basicTimerDelay = basicTimerDelay;
+        StatisticsManagerImpl.currentTimerDelay = basicTimerDelay;
+        StatisticsManagerImpl.maximumTimerDelay = maximumTimerDelay;
     }
 
     @Override
@@ -117,104 +117,6 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         lifecycleService.setStatContext(statisticsContext);
         lifecycleService.registerDeviceRemovedHandler(this);
         deviceInitPhaseHandler.onDeviceContextLevelUp(deviceInfo, lifecycleService);
-    }
-
-    @VisibleForTesting
-    void pollStatistics(final DeviceState deviceState,
-                        final StatisticsContext statisticsContext,
-                        final TimeCounter timeCounter,
-                        final DeviceInfo deviceInfo) {
-
-        if (!statisticsContext.isSchedulingEnabled()) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Disabled statistics scheduling for device: {}", deviceInfo.getNodeId().getValue());
-            }
-            return;
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("POLLING ALL STATISTICS for device: {}", deviceInfo.getNodeId());
-        }
-
-        timeCounter.markStart();
-        final ListenableFuture<Boolean> deviceStatisticsCollectionFuture = statisticsContext.gatherDynamicData();
-        Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback<Boolean>() {
-            @Override
-            public void onSuccess(final Boolean o) {
-                timeCounter.addTimeMark();
-                calculateTimerDelay(timeCounter);
-                scheduleNextPolling(deviceState, deviceInfo, statisticsContext, timeCounter);
-            }
-
-            @Override
-            public void onFailure(@Nonnull final Throwable throwable) {
-                timeCounter.addTimeMark();
-                LOG.warn("Statistics gathering for single node {} was not successful: {}", deviceInfo.getLOGValue(),
-                        throwable.getMessage());
-                if (LOG.isTraceEnabled()) {
-                    LOG.trace("Gathering for node {} failure: ", deviceInfo.getLOGValue(), throwable);
-                }
-                calculateTimerDelay(timeCounter);
-                if (throwable instanceof IllegalStateException) {
-                    stopScheduling(deviceInfo);
-                } else {
-                    scheduleNextPolling(deviceState, deviceInfo, statisticsContext, timeCounter);
-                }
-            }
-        });
-
-        final long averageTime = TimeUnit.MILLISECONDS.toSeconds(timeCounter.getAverageTimeBetweenMarks());
-        final long statsTimeoutSec = averageTime > 0 ? 3 * averageTime : DEFAULT_STATS_TIMEOUT_SEC;
-        final TimerTask timerTask = timeout -> {
-            if (!deviceStatisticsCollectionFuture.isDone()) {
-                LOG.info("Statistics collection for node {} still in progress even after {} secs", deviceInfo.getLOGValue(), statsTimeoutSec);
-                deviceStatisticsCollectionFuture.cancel(true);
-            }
-        };
-
-        hashedWheelTimer.newTimeout(timerTask, statsTimeoutSec, TimeUnit.SECONDS);
-    }
-
-    private void scheduleNextPolling(final DeviceState deviceState,
-                                     final DeviceInfo deviceInfo,
-                                     final StatisticsContext statisticsContext,
-                                     final TimeCounter timeCounter) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SCHEDULING NEXT STATISTICS POLLING for device: {}", deviceInfo.getNodeId());
-        }
-        if (isStatisticsPollingOn) {
-            final Timeout pollTimeout = hashedWheelTimer.newTimeout(
-                    timeout -> pollStatistics(
-                            deviceState,
-                            statisticsContext,
-                            timeCounter,
-                            deviceInfo),
-                    currentTimerDelay,
-                    TimeUnit.MILLISECONDS);
-            statisticsContext.setPollTimeout(pollTimeout);
-        }
-    }
-
-    @VisibleForTesting
-    void calculateTimerDelay(final TimeCounter timeCounter) {
-        final long averageStatisticsGatheringTime = timeCounter.getAverageTimeBetweenMarks();
-        if (averageStatisticsGatheringTime > currentTimerDelay) {
-            currentTimerDelay *= 2;
-            if (currentTimerDelay > maximumTimerDelay) {
-                currentTimerDelay = maximumTimerDelay;
-            }
-        } else {
-            if (currentTimerDelay > basicTimerDelay) {
-                currentTimerDelay /= 2;
-            } else {
-                currentTimerDelay = basicTimerDelay;
-            }
-        }
-    }
-
-    @VisibleForTesting
-    static long getCurrentTimerDelay() {
-        return currentTimerDelay;
     }
 
     @Override
@@ -245,17 +147,21 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                     final DeviceContext deviceContext = statisticsContext.gainDeviceContext();
                     switch (targetWorkMode) {
                         case COLLECTALL:
-                            scheduleNextPolling(statisticsContext.gainDeviceState(), deviceInfo, statisticsContext, new TimeCounter());
-                            for (final ItemLifeCycleSource lifeCycleSource : deviceContext.getItemLifeCycleSourceRegistry().getLifeCycleSources()) {
+                            scheduleNextPolling(
+                                    statisticsContext.gainDeviceState(),
+                                    deviceInfo,
+                                    statisticsContext,
+                                    new TimeCounter());
+                            for (final ItemLifeCycleSource lifeCycleSource :
+                                    deviceContext.getItemLifeCycleSourceRegistry().getLifeCycleSources()) {
                                 lifeCycleSource.setItemLifecycleListener(null);
                             }
                             break;
                         case FULLYDISABLED:
                             final Optional<Timeout> pollTimeout = statisticsContext.getPollTimeout();
-                            if (pollTimeout.isPresent()) {
-                                pollTimeout.get().cancel();
-                            }
-                            for (final ItemLifeCycleSource lifeCycleSource : deviceContext.getItemLifeCycleSourceRegistry().getLifeCycleSources()) {
+                            pollTimeout.ifPresent(Timeout::cancel);
+                            for (final ItemLifeCycleSource lifeCycleSource :
+                                    deviceContext.getItemLifeCycleSourceRegistry().getLifeCycleSources()) {
                                 lifeCycleSource.setItemLifecycleListener(statisticsContext.getItemLifeCycleListener());
                             }
                             break;
@@ -344,6 +250,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         this.isStatisticsPollingOn = isStatisticsPollingOn;
     }
 
+    @Override
     public void onDeviceRemoved(DeviceInfo deviceInfo) {
         contexts.remove(deviceInfo);
         LOG.debug("Statistics context removed for node {}", deviceInfo.getLOGValue());
@@ -351,11 +258,107 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     @Override
     public void setBasicTimerDelay(final long basicTimerDelay) {
-        this.basicTimerDelay = basicTimerDelay;
+        StatisticsManagerImpl.basicTimerDelay = basicTimerDelay;
     }
 
     @Override
     public void setMaximumTimerDelay(final long maximumTimerDelay) {
-        this.maximumTimerDelay = maximumTimerDelay;
+        StatisticsManagerImpl.maximumTimerDelay = maximumTimerDelay;
     }
+
+    @VisibleForTesting
+    void calculateTimerDelay(final TimeCounter timeCounter) {
+        final long averageStatisticsGatheringTime = timeCounter.getAverageTimeBetweenMarks();
+        if (averageStatisticsGatheringTime > currentTimerDelay) {
+            currentTimerDelay *= 2;
+            if (currentTimerDelay > maximumTimerDelay) {
+                currentTimerDelay = maximumTimerDelay;
+            }
+        } else {
+            if (currentTimerDelay > basicTimerDelay) {
+                currentTimerDelay /= 2;
+            } else {
+                currentTimerDelay = basicTimerDelay;
+            }
+        }
+    }
+
+    @VisibleForTesting
+    static long getCurrentTimerDelay() {
+        return currentTimerDelay;
+    }
+
+    @VisibleForTesting
+    void pollStatistics(final DeviceState deviceState,
+                        final StatisticsContext statisticsContext,
+                        final TimeCounter timeCounter,
+                        final DeviceInfo deviceInfo) {
+
+        if (!statisticsContext.isSchedulingEnabled()) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Disabled statistics scheduling for device: {}", deviceInfo.getNodeId().getValue());
+            }
+            return;
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("POLLING ALL STATISTICS for device: {}", deviceInfo.getNodeId());
+        }
+
+        timeCounter.markStart();
+        final ListenableFuture<Boolean> deviceStatisticsCollectionFuture = statisticsContext.gatherDynamicData();
+        Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback<Boolean>() {
+            @Override
+            public void onSuccess(final Boolean o) {
+                timeCounter.addTimeMark();
+                calculateTimerDelay(timeCounter);
+                scheduleNextPolling(deviceState, deviceInfo, statisticsContext, timeCounter);
+            }
+
+            @Override
+            public void onFailure(@Nonnull final Throwable throwable) {
+                timeCounter.addTimeMark();
+                LOG.warn("Statistics gathering for single node {} was not successful: {}", deviceInfo.getLOGValue(),
+                        throwable.getMessage());
+                if (LOG.isTraceEnabled()) {
+                    LOG.trace("Gathering for node {} failure: ", deviceInfo.getLOGValue(), throwable);
+                }
+                calculateTimerDelay(timeCounter);
+                scheduleNextPolling(deviceState, deviceInfo, statisticsContext, timeCounter);
+            }
+        });
+
+        final long averageTime = TimeUnit.MILLISECONDS.toSeconds(timeCounter.getAverageTimeBetweenMarks());
+        final long statsTimeoutSec = averageTime > 0 ? 3 * averageTime : DEFAULT_STATS_TIMEOUT_SEC;
+        final TimerTask timerTask = timeout -> {
+            if (!deviceStatisticsCollectionFuture.isDone()) {
+                LOG.info("Statistics collection for node {} still in progress even after {} secs",
+                        deviceInfo.getLOGValue(), statsTimeoutSec);
+                deviceStatisticsCollectionFuture.cancel(true);
+            }
+        };
+
+        hashedWheelTimer.newTimeout(timerTask, statsTimeoutSec, TimeUnit.SECONDS);
+    }
+
+    private void scheduleNextPolling(final DeviceState deviceState,
+                                     final DeviceInfo deviceInfo,
+                                     final StatisticsContext statisticsContext,
+                                     final TimeCounter timeCounter) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SCHEDULING NEXT STATISTICS POLLING for device: {}", deviceInfo.getNodeId());
+        }
+        if (isStatisticsPollingOn) {
+            final Timeout pollTimeout = hashedWheelTimer.newTimeout(
+                    timeout -> pollStatistics(
+                            deviceState,
+                            statisticsContext,
+                            timeCounter,
+                            deviceInfo),
+                    currentTimerDelay,
+                    TimeUnit.MILLISECONDS);
+            statisticsContext.setPollTimeout(pollTimeout);
+        }
+    }
+
 }
