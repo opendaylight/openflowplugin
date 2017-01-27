@@ -1,0 +1,8 @@
+Code-Review+1: Robert Varga <nite@hq.sk>
+Code-Review+2: Jozef Bacigal <jozef.bacigal@pantheon.tech>
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Submitted-by: Jozef Bacigal <jozef.bacigal@pantheon.tech>
+Submitted-at: Fri, 27 Jan 2017 13:08:15 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/50903
+Project: openflowplugin
+Branch: refs/heads/master
