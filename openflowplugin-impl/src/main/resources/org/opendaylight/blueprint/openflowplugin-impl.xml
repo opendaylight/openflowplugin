@@ -6,4 +6,6 @@
 
   <service ref="ofPluginProviderFactory" interface="org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProviderFactory"
           odl:type="default"/>
+
+  <odl:action-provider interface="org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService"/>
 </blueprint>
