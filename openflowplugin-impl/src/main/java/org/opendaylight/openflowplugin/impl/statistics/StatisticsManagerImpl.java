@@ -86,7 +86,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                                  final long basicTimerDelay,
                                  final long maximumTimerDelay) {
         Preconditions.checkArgument(rpcProviderRegistry != null);
-	    this.converterExecutor = convertorExecutor;
+        this.converterExecutor = convertorExecutor;
         this.controlServiceRegistration = Preconditions.checkNotNull(
                 rpcProviderRegistry.addRpcImplementation(StatisticsManagerControlService.class, this)
         );
@@ -155,11 +155,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                     LOG.trace("Gathering for node {} failure: ", deviceInfo.getLOGValue(), throwable);
                 }
                 calculateTimerDelay(timeCounter);
-                if (throwable instanceof IllegalStateException) {
-                    stopScheduling(deviceInfo);
-                } else {
-                    scheduleNextPolling(deviceState, deviceInfo, statisticsContext, timeCounter);
-                }
+                scheduleNextPolling(deviceState, deviceInfo, statisticsContext, timeCounter);
             }
         });
 
@@ -329,7 +325,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         }
 
         for (final Iterator<StatisticsContext> iterator = Iterators.consumingIterator(contexts.values().iterator());
-                iterator.hasNext();) {
+             iterator.hasNext();) {
             iterator.next().close();
         }
     }
