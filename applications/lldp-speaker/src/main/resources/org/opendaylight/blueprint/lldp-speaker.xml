@@ -14,7 +14,7 @@
     ]]></odl:default-config>
   </odl:clustered-app-config>
 
-  <odl:rpc-service id="packetProcessingService"
+  <odl:action-service id="packetProcessingService"
       interface="org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService"/>
 
   <bean id="lldpSpeaker" class="org.opendaylight.openflowplugin.applications.lldpspeaker.LLDPSpeaker"
