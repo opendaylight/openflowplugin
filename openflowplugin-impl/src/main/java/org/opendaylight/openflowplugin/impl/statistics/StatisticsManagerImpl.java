@@ -79,22 +79,23 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         deviceInitPhaseHandler = handler;
     }
 
-    public StatisticsManagerImpl(final RpcProviderRegistry rpcProviderRegistry,
+    public StatisticsManagerImpl(@Nonnull final RpcProviderRegistry rpcProviderRegistry,
                                  final boolean isStatisticsPollingOn,
-                                 final HashedWheelTimer hashedWheelTimer,
-                                 final ConvertorExecutor convertorExecutor,
+                                 @Nonnull final HashedWheelTimer hashedWheelTimer,
+                                 final ConvertorExecutor converterExecutor,
                                  final long basicTimerDelay,
                                  final long maximumTimerDelay) {
-        Preconditions.checkArgument(rpcProviderRegistry != null);
-        this.converterExecutor = convertorExecutor;
+        this.converterExecutor = converterExecutor;
         this.controlServiceRegistration = Preconditions.checkNotNull(
                 rpcProviderRegistry.addRpcImplementation(StatisticsManagerControlService.class, this)
         );
         this.isStatisticsPollingOn = isStatisticsPollingOn;
-        this.basicTimerDelay = basicTimerDelay;
-        this.currentTimerDelay = basicTimerDelay;
-        this.maximumTimerDelay = maximumTimerDelay;
         this.hashedWheelTimer = hashedWheelTimer;
+
+        StatisticsManagerImpl.basicTimerDelay = basicTimerDelay;
+        StatisticsManagerImpl.currentTimerDelay = basicTimerDelay;
+        StatisticsManagerImpl.maximumTimerDelay = maximumTimerDelay;
+
     }
 
     @Override
@@ -248,9 +249,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                             break;
                         case FULLYDISABLED:
                             final Optional<Timeout> pollTimeout = statisticsContext.getPollTimeout();
-                            if (pollTimeout.isPresent()) {
-                                pollTimeout.get().cancel();
-                            }
+                            pollTimeout.ifPresent(Timeout::cancel);
                             for (final ItemLifeCycleSource lifeCycleSource : deviceContext.getItemLifeCycleSourceRegistry().getLifeCycleSources()) {
                                 lifeCycleSource.setItemLifecycleListener(statisticsContext.getItemLifeCycleListener());
                             }
@@ -347,11 +346,11 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     @Override
     public void setBasicTimerDelay(final long basicTimerDelay) {
-        this.basicTimerDelay = basicTimerDelay;
+        StatisticsManagerImpl.basicTimerDelay = basicTimerDelay;
     }
 
     @Override
     public void setMaximumTimerDelay(final long maximumTimerDelay) {
-        this.maximumTimerDelay = maximumTimerDelay;
+        StatisticsManagerImpl.maximumTimerDelay = maximumTimerDelay;
     }
 }
