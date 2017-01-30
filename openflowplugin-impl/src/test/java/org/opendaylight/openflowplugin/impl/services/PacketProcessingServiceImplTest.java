@@ -15,6 +15,7 @@ import static org.mockito.Mockito.verify;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.impl.services.sal.PacketProcessingServiceImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
@@ -34,7 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Tr
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
 /**
- * Test for {@link PacketProcessingServiceImpl}.
+ * Test for {@link org.opendaylight.openflowplugin.impl.services.sal.PacketProcessingServiceImpl}.
  */
 public class PacketProcessingServiceImplTest extends ServiceMocking {
 
