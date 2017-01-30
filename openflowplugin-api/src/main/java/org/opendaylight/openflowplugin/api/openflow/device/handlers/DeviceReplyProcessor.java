@@ -12,7 +12,6 @@ import java.util.List;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
@@ -32,36 +31,36 @@ public interface DeviceReplyProcessor {
     /**
      * Method that set future to context in Map
      *
-     * @param xid,
-     * @param ofHeaderList
+     * @param xid xid
+     * @param ofHeaderList openflow header list
      */
-    void processReply(Xid xid, List<MultipartReply> ofHeaderList);
+    void processReply(Xid xid, List<? extends OfHeader> ofHeaderList);
 
     /**
      * Method process async flow removed from device
      *
-     * @param flowRemoved
+     * @param flowRemoved flow removed
      */
     void processFlowRemovedMessage(FlowRemoved flowRemoved);
 
     /**
      * Method process async port status from device
      *
-     * @param portStatus
+     * @param portStatus port status
      */
     void processPortStatusMessage(PortStatusMessage portStatus);
 
     /**
      * Method process async packet in from device
      *
-     * @param packetInMessage
+     * @param packetInMessage packet in message
      */
     void processPacketInMessage(PacketInMessage packetInMessage);
 
     /**
      * Processing of experimenter symmetric message from device
      *
-     * @param notification
+     * @param notification notification
      */
     void processExperimenterMessage(ExperimenterMessage notification);
 }

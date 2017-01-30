@@ -34,8 +34,7 @@ module opendaylight-flow-table-statistics {
     }
 
     grouping flow-table-and-statistics-map {
-        status deprecated;
-        description "RPC calls to fetch flow table statistics.";
+        description "List of flow table and statistic map.";
 
         list flow-table-and-statistics-map {
             key "table-id";
