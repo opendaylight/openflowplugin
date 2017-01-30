@@ -25,21 +25,16 @@ public class OpendaylightDirectStatisticsServiceProvider {
      * @param service the service instance
      */
     public void register(Class<? extends AbstractDirectStatisticsService> type, AbstractDirectStatisticsService service) {
-        if (services.containsKey(type)) return;
-
         services.put(type, service);
     }
 
     /**
      * Lookup direct statistics service.
      *
-     * @param <T>  the type parameter
      * @param type the service type
      * @return the service instance
      */
-    public <T extends AbstractDirectStatisticsService> Optional<T> lookup(Class<T> type) {
-        if (!services.containsKey(type)) return Optional.empty();
-
-        return Optional.of(type.cast(services.get(type)));
+    public Optional<? extends AbstractDirectStatisticsService> lookup(Class<? extends AbstractDirectStatisticsService> type) {
+        return Optional.ofNullable(services.get(type)).map(type::cast);
     }
 }

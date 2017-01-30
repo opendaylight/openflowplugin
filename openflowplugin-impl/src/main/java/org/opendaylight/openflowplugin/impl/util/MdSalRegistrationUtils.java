@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -16,21 +16,23 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.compatibility.Delegator;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
-import org.opendaylight.openflowplugin.impl.services.FlowCapableTransactionServiceImpl;
-import org.opendaylight.openflowplugin.impl.services.NodeConfigServiceImpl;
-import org.opendaylight.openflowplugin.impl.services.PacketProcessingServiceImpl;
-import org.opendaylight.openflowplugin.impl.services.SalEchoServiceImpl;
-import org.opendaylight.openflowplugin.impl.services.SalExperimenterMessageServiceImpl;
-import org.opendaylight.openflowplugin.impl.services.SalExperimenterMpMessageServiceImpl;
-import org.opendaylight.openflowplugin.impl.services.SalFlatBatchServiceImpl;
-import org.opendaylight.openflowplugin.impl.services.SalFlowServiceImpl;
-import org.opendaylight.openflowplugin.impl.services.SalFlowsBatchServiceImpl;
-import org.opendaylight.openflowplugin.impl.services.SalGroupServiceImpl;
-import org.opendaylight.openflowplugin.impl.services.SalGroupsBatchServiceImpl;
-import org.opendaylight.openflowplugin.impl.services.SalMeterServiceImpl;
-import org.opendaylight.openflowplugin.impl.services.SalMetersBatchServiceImpl;
-import org.opendaylight.openflowplugin.impl.services.SalPortServiceImpl;
-import org.opendaylight.openflowplugin.impl.services.SalTableServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.FlowCapableTransactionServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.NodeConfigServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.PacketProcessingServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.SalEchoServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.SalExperimenterMessageServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.SalExperimenterMpMessageServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.SalFlatBatchServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.SalFlowServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.SalFlowsBatchServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.SalGroupServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.SalGroupsBatchServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.SalMeterServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.SalMetersBatchServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.SalPortServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.SalTableServiceImpl;
+import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
+import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightFlowStatisticsServiceImpl;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightFlowTableStatisticsServiceImpl;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightGroupStatisticsServiceImpl;
@@ -38,13 +40,9 @@ import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightMete
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightPortStatisticsServiceImpl;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightQueueStatisticsServiceImpl;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.OpendaylightFlowStatisticsServiceDelegateImpl;
-import org.opendaylight.openflowplugin.impl.statistics.services.direct.FlowDirectStatisticsService;
-import org.opendaylight.openflowplugin.impl.statistics.services.direct.GroupDirectStatisticsService;
-import org.opendaylight.openflowplugin.impl.statistics.services.direct.MeterDirectStatisticsService;
-import org.opendaylight.openflowplugin.impl.statistics.services.direct.NodeConnectorDirectStatisticsService;
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.OpendaylightDirectStatisticsServiceImpl;
-import org.opendaylight.openflowplugin.impl.statistics.services.direct.OpendaylightDirectStatisticsServiceProvider;
-import org.opendaylight.openflowplugin.impl.statistics.services.direct.QueueDirectStatisticsService;
+import org.opendaylight.openflowplugin.impl.statistics.services.direct.multilayer.MultiLayerDirectStatisticsProviderInitializer;
+import org.opendaylight.openflowplugin.impl.statistics.services.direct.singlelayer.SingleLayerDirectStatisticsProviderInitializer;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.OpendaylightDirectStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SalEchoService;
@@ -84,7 +82,7 @@ public class MdSalRegistrationUtils {
      * Method registers all OF services for role {@link OfpRole#BECOMEMASTER}
      *  @param rpcContext    - registration processing is implemented in {@link org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext}
      * @param deviceContext - every service needs {@link org.opendaylight.openflowplugin.api.openflow.device.DeviceContext} as input parameter
-     * @param convertorExecutor
+     * @param convertorExecutor convertor executor
      */
     public static void registerServices(@CheckForNull final RpcContext rpcContext,
                                         @CheckForNull final DeviceContext deviceContext,
@@ -92,6 +90,10 @@ public class MdSalRegistrationUtils {
                                         final ConvertorExecutor convertorExecutor) {
         Preconditions.checkArgument(rpcContext != null);
         Preconditions.checkArgument(deviceContext != null);
+
+        // TODO: Use multipart writer provider from device context
+        final MultipartWriterProvider multipartWriterProvider = MultipartWriterProviderFactory
+            .createDefaultProvider(deviceContext);
 
         // create service instances
         final SalFlowServiceImpl salFlowService = new SalFlowServiceImpl(rpcContext, deviceContext, convertorExecutor);
@@ -105,20 +107,19 @@ public class MdSalRegistrationUtils {
         rpcContext.registerRpcServiceImplementation(FlowCapableTransactionService.class, flowCapableTransactionService);
         rpcContext.registerRpcServiceImplementation(SalMeterService.class, salMeterService);
         rpcContext.registerRpcServiceImplementation(SalGroupService.class, salGroupService);
-        rpcContext.registerRpcServiceImplementation(SalTableService.class, new SalTableServiceImpl(rpcContext, deviceContext, convertorExecutor));
+        rpcContext.registerRpcServiceImplementation(SalTableService.class, new SalTableServiceImpl(rpcContext, deviceContext, convertorExecutor, multipartWriterProvider));
         rpcContext.registerRpcServiceImplementation(SalPortService.class, new SalPortServiceImpl(rpcContext, deviceContext, convertorExecutor));
         rpcContext.registerRpcServiceImplementation(PacketProcessingService.class, new PacketProcessingServiceImpl(rpcContext, deviceContext, convertorExecutor));
         rpcContext.registerRpcServiceImplementation(NodeConfigService.class, new NodeConfigServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(OpendaylightFlowStatisticsService.class, OpendaylightFlowStatisticsServiceImpl.createWithOook(rpcContext, deviceContext, convertorExecutor));
 
         // register direct statistics gathering services
-        final OpendaylightDirectStatisticsServiceProvider statisticsProvider = new OpendaylightDirectStatisticsServiceProvider();
-        statisticsProvider.register(FlowDirectStatisticsService.class, new FlowDirectStatisticsService(rpcContext, deviceContext, convertorExecutor));
-        statisticsProvider.register(GroupDirectStatisticsService.class, new GroupDirectStatisticsService(rpcContext, deviceContext, convertorExecutor));
-        statisticsProvider.register(MeterDirectStatisticsService.class, new MeterDirectStatisticsService(rpcContext, deviceContext, convertorExecutor));
-        statisticsProvider.register(NodeConnectorDirectStatisticsService.class, new NodeConnectorDirectStatisticsService(rpcContext, deviceContext, convertorExecutor));
-        statisticsProvider.register(QueueDirectStatisticsService.class, new QueueDirectStatisticsService(rpcContext, deviceContext, convertorExecutor));
-        rpcContext.registerRpcServiceImplementation(OpendaylightDirectStatisticsService.class, new OpendaylightDirectStatisticsServiceImpl(statisticsProvider));
+        rpcContext.registerRpcServiceImplementation(OpendaylightDirectStatisticsService.class,
+            new OpendaylightDirectStatisticsServiceImpl(deviceContext.canUseSingleLayerSerialization()
+                ? SingleLayerDirectStatisticsProviderInitializer
+                    .createProvider(rpcContext, deviceContext, convertorExecutor, multipartWriterProvider)
+                : MultiLayerDirectStatisticsProviderInitializer
+                    .createProvider(rpcContext, deviceContext, convertorExecutor, multipartWriterProvider)));
 
         // register flat batch services
         rpcContext.registerRpcServiceImplementation(SalFlatBatchService.class, new SalFlatBatchServiceImpl(
@@ -137,7 +138,7 @@ public class MdSalRegistrationUtils {
     /**
      * Support deprecated statistic related services for backward compatibility. The only exception from deprecation is
      * the aggregated flow statistic with match criteria input.
-     *  @param rpcContext
+     * @param rpcContext
      * @param deviceContext
      * @param notificationPublishService
      * @param convertorExecutor
