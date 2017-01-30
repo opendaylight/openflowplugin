@@ -17,12 +17,6 @@ import com.google.common.util.concurrent.FutureFallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
-import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
@@ -113,6 +107,13 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.Nullable;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Utils for gatherig statistics
@@ -258,17 +259,13 @@ public final class StatisticsGatheringUtils {
                                                                    final DeviceFlowRegistry flowRegistry,
                                                                    final boolean initial,
                                                                    final EventIdentifier eventIdentifier) {
-        final ListenableFuture<Void> deleteFuture = initial ? Futures.immediateFuture(null) : deleteAllKnownFlows(deviceInfo,
-                flowRegistry, txFacade);
-        return Futures.transform(deleteFuture, new Function<Void, Boolean>() {
-
-            @Override
-            public Boolean apply(final Void input) {
-                writeFlowStatistics(data, deviceInfo, flowRegistry, txFacade);
-                txFacade.submitTransaction();
-                EventsTimeCounter.markEnd(eventIdentifier);
-                return Boolean.TRUE;
-            }
+        final ListenableFuture<Void> deleteFuture
+                = initial ? Futures.immediateFuture(null) : deleteAllKnownFlows(deviceInfo, flowRegistry, txFacade);
+        return Futures.transform(deleteFuture, (Function<Void, Boolean>) input -> {
+            writeFlowStatistics(data, deviceInfo, flowRegistry, txFacade);
+            txFacade.submitTransaction();
+            EventsTimeCounter.markEnd(eventIdentifier);
+            return Boolean.TRUE;
         });
     }
 
@@ -281,7 +278,8 @@ public final class StatisticsGatheringUtils {
             for (final FlowsStatisticsUpdate flowsStatistics : data) {
                 for (final FlowAndStatisticsMapList flowStat : flowsStatistics.getFlowAndStatisticsMapList()) {
                     final FlowBuilder flowBuilder = new FlowBuilder(flowStat);
-                    flowBuilder.addAugmentation(FlowStatisticsData.class, refineFlowStatisticsAugmentation(flowStat).build());
+                    flowBuilder.addAugmentation(FlowStatisticsData.class,
+                            refineFlowStatisticsAugmentation(flowStat).build());
 
                     final short tableId = flowStat.getTableId();
                     final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(deviceInfo.getVersion(), flowBuilder.build());
@@ -294,8 +292,8 @@ public final class StatisticsGatheringUtils {
                     txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, flowIdent, flowBuilder.build());
                 }
             }
-        } catch (Exception e) {
-            LOG.warn("Not able to write to transaction: {}", e.getMessage());
+        } catch (TransactionChainClosedException e) {
+            LOG.warn("Not able to write to transaction chain: {}", e.getMessage());
         }
     }
 
@@ -332,22 +330,47 @@ public final class StatisticsGatheringUtils {
          * we have to read actual tables with all information before we set empty Flow list, merge is expensive and
          * not applicable for lists
          */
-        return Futures.transform(flowCapableNodeFuture, new AsyncFunction<Optional<FlowCapableNode>, Void>() {
-
-            @Override
-            public ListenableFuture<Void> apply(final Optional<FlowCapableNode> flowCapNodeOpt) throws Exception {
-                if (flowCapNodeOpt.isPresent()) {
-                    for (final Table tableData : flowCapNodeOpt.get().getTable()) {
-                        final Table table = new TableBuilder(tableData).setFlow(Collections.<Flow>emptyList()).build();
-                        final InstanceIdentifier<Table> iiToTable = flowCapableNodePath.child(Table.class, tableData.getKey());
-                        txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);
+        return Futures.transform(
+                flowCapableNodeFuture, (AsyncFunction<Optional<FlowCapableNode>, Void>) flowCapNodeOpt -> {
+                    if (flowCapNodeOpt.isPresent()) {
+                        for (final Table tableData : flowCapNodeOpt.get().getTable()) {
+                            final Table table = new TableBuilder(tableData).setFlow(Collections.<Flow>emptyList()).build();
+                            final InstanceIdentifier<Table> iiToTable
+                                    = flowCapableNodePath.child(Table.class, tableData.getKey());
+                            txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);
+                        }
                     }
-                }
-                readTx.close();
-                return Futures.immediateFuture(null);
-            }
+                    readTx.close();
+                    return Futures.immediateFuture(null);
+                });
+    }
 
-        });
+    public static Optional<FlowCapableNode> deleteAllKnownFlows(final DeviceInfo deviceInfo,
+                                                             final TxFacade txFacade) {
+        final InstanceIdentifier<FlowCapableNode> flowCapableNodePath
+                = assembleFlowCapableNodeInstanceIdentifier(deviceInfo);
+        final ReadOnlyTransaction readTx = txFacade.getReadTransaction();
+        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> flowCapableNodeFuture = readTx.read(
+                LogicalDatastoreType.OPERATIONAL, flowCapableNodePath);
+
+        try {
+            Optional<FlowCapableNode> fcNodeOpt = flowCapableNodeFuture.get();
+            if ( fcNodeOpt != null && fcNodeOpt.isPresent()){
+                for (final Table tableData : flowCapableNodeFuture.get().get().getTable()) {
+                    final Table table = new TableBuilder(tableData).setFlow(Collections.<Flow>emptyList()).build();
+                    final InstanceIdentifier<Table> iiToTable = flowCapableNodePath.child(Table.class, tableData.getKey());
+                    txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);
+                }
+                return fcNodeOpt;
+            }
+        } catch (InterruptedException|ExecutionException e) {
+            LOG.error("Failed to read current OpenFlow node {] operational data", deviceInfo.getNodeId());
+        } finally {
+            if (readTx != null){
+                readTx.close();
+            }
+        }
+        return Optional.absent();
     }
 
     private static void processQueueStatistics(final Iterable<QueueStatisticsUpdate> data, final DeviceInfo deviceInfo, final TxFacade txFacade) throws Exception {
