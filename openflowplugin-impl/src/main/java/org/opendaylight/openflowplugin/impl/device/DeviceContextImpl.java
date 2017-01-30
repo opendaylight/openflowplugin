@@ -23,6 +23,7 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -35,6 +36,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
+import org.opendaylight.openflowplugin.api.ConnectionException;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -66,13 +68,16 @@ import org.opendaylight.openflowplugin.extension.api.exception.ConversionExcepti
 import org.opendaylight.openflowplugin.extension.api.path.MessagePath;
 import org.opendaylight.openflowplugin.impl.common.ItemLifeCycleSourceImpl;
 import org.opendaylight.openflowplugin.impl.common.NodeStaticReplyTranslatorUtil;
+import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
+import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
+import org.opendaylight.openflowplugin.impl.device.initialization.AbstractDeviceInitializer;
+import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProvider;
 import org.opendaylight.openflowplugin.impl.device.listener.MultiMsgCollectorImpl;
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.impl.registry.group.DeviceGroupRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.meter.DeviceMeterRegistryImpl;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
-import org.opendaylight.openflowplugin.impl.util.DeviceInitializationUtils;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.ExperimenterMessageFromDevBuilder;
@@ -91,7 +96,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Error;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
@@ -159,23 +163,27 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private volatile CONTEXT_STATE state;
     private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
     private final DeviceManager myManager;
+    private final DeviceInitializerProvider deviceInitializerProvider;
     private final boolean useSingleLayerSerialization;
 
     DeviceContextImpl(
-            @Nonnull final ConnectionContext primaryConnectionContext,
-            @Nonnull final DataBroker dataBroker,
-            @Nonnull final MessageSpy messageSpy,
-            @Nonnull final TranslatorLibrary translatorLibrary,
-            @Nonnull final DeviceManager manager,
-            final ConvertorExecutor convertorExecutor,
-            final boolean skipTableFeatures,
-            final HashedWheelTimer hashedWheelTimer,
-            final DeviceManager myManager,
-            final boolean useSingleLayerSerialization) {
+        @Nonnull final ConnectionContext primaryConnectionContext,
+        @Nonnull final DataBroker dataBroker,
+        @Nonnull final MessageSpy messageSpy,
+        @Nonnull final TranslatorLibrary translatorLibrary,
+        @Nonnull final DeviceManager manager,
+        final ConvertorExecutor convertorExecutor,
+        final boolean skipTableFeatures,
+        final HashedWheelTimer hashedWheelTimer,
+        final DeviceManager myManager,
+        final boolean useSingleLayerSerialization,
+        final DeviceInitializerProvider deviceInitializerProvider) {
+
         this.primaryConnectionContext = primaryConnectionContext;
         this.deviceInfo = primaryConnectionContext.getDeviceInfo();
         this.hashedWheelTimer = hashedWheelTimer;
         this.myManager = myManager;
+        this.deviceInitializerProvider = deviceInitializerProvider;
         this.deviceState = new DeviceStateImpl();
         this.dataBroker = dataBroker;
         this.auxiliaryConnectionContexts = new HashMap<>();
@@ -295,18 +303,20 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public void processReply(final OfHeader ofHeader) {
-        if (ofHeader instanceof Error) {
-            messageSpy.spyMessage(ofHeader.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
-        } else {
-            messageSpy.spyMessage(ofHeader.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
-        }
+        messageSpy.spyMessage(
+            ofHeader.getImplementedInterface(),
+            (ofHeader instanceof Error)
+                ? MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE
+                : MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
     }
 
     @Override
-    public void processReply(final Xid xid, final List<MultipartReply> ofHeaderList) {
-        for (final MultipartReply multipartReply : ofHeaderList) {
-            messageSpy.spyMessage(multipartReply.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
-        }
+    public void processReply(final Xid xid, final List<? extends OfHeader> ofHeaderList) {
+        ofHeaderList.forEach(header -> messageSpy.spyMessage(
+            header.getImplementedInterface(),
+            (header instanceof Error)
+                ? MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE
+                : MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS));
     }
 
     @Override
@@ -485,8 +495,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public MultiMsgCollector getMultiMsgCollector(final RequestContext<List<MultipartReply>> requestContext) {
-        return new MultiMsgCollectorImpl(this, requestContext);
+    public <T extends OfHeader> MultiMsgCollector<T> getMultiMsgCollector(final RequestContext<List<T>> requestContext) {
+        return new MultiMsgCollectorImpl<>(this, requestContext);
     }
 
     @Override
@@ -648,8 +658,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public boolean isUseSingleLayerSerialization() {
-        return useSingleLayerSerialization;
+    public boolean canUseSingleLayerSerialization() {
+        return useSingleLayerSerialization && getDeviceInfo().getVersion() >= OFConstants.OFP_VERSION_1_3;
     }
 
     @Override
@@ -682,14 +692,21 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.transactionChainManager.activateTransactionManager();
 
         try {
-            DeviceInitializationUtils.initializeNodeInformation(this, switchFeaturesMandatory, this.convertorExecutor);
+            final Optional<AbstractDeviceInitializer> initializer = deviceInitializerProvider
+                .lookup(deviceInfo.getVersion());
+
+            if (initializer.isPresent()) {
+                final MultipartWriterProvider writerProvider = MultipartWriterProviderFactory.createDefaultProvider(this);
+                initializer.get().initialize(this, switchFeaturesMandatory, writerProvider, convertorExecutor);
+            } else {
+                throw new ExecutionException(new ConnectionException("Unsupported version " + deviceInfo.getVersion()));
+            }
         } catch (ExecutionException | InterruptedException e) {
             LOG.warn("Device {} cannot be initialized: ", deviceInfo.getLOGValue(), e);
             return false;
         }
 
         Futures.addCallback(sendRoleChangeToDevice(OfpRole.BECOMEMASTER), new RpcResultFutureCallback());
-
         return this.clusterInitializationPhaseHandler.onContextInstantiateService(getPrimaryConnectionContext());
     }
 
