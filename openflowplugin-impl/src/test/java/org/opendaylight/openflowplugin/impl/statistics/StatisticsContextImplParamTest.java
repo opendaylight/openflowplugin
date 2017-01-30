@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
+import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
@@ -67,7 +68,8 @@ public class StatisticsContextImplParamTest extends StatisticsContextImpMockInit
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
 
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        final StatisticsContextImpl statisticsContext = new StatisticsContextImpl(mockedDeviceInfo, true, lifecycleService ,convertorManager, mockedStatisticsManager);
+        final StatisticsContextImpl<MultipartReply> statisticsContext = new StatisticsContextImpl<>(mockedDeviceInfo, true, lifecycleService ,convertorManager, mockedStatisticsManager,
+            MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext));
 
         final ListenableFuture<RpcResult<List<MultipartReply>>> rpcResult = immediateFuture(RpcResultBuilder.success(Collections.<MultipartReply>emptyList()).build());
         when(mockedStatisticsGatheringService.getStatisticsOfType(any(EventIdentifier.class), any(MultipartType

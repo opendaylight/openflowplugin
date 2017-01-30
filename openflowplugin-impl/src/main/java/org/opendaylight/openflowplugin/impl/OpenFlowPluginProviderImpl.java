@@ -45,6 +45,8 @@ import org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegi
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterManager;
 import org.opendaylight.openflowplugin.impl.connection.ConnectionManagerImpl;
 import org.opendaylight.openflowplugin.impl.device.DeviceManagerImpl;
+import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProvider;
+import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProviderFactory;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.DeserializerInjector;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.SerializerInjector;
 import org.opendaylight.openflowplugin.impl.rpc.RpcManagerImpl;
@@ -98,6 +100,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private long basicTimerDelay;
     private long maximumTimerDelay;
     private boolean useSingleLayerSerialization = false;
+    private final DeviceInitializerProvider deviceInitializerProvider;
 
     private final ThreadPoolExecutor threadPool;
     private ClusterSingletonServiceProvider singletonServicesProvider;
@@ -119,7 +122,9 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 Preconditions.checkNotNull(threadPoolMaxThreads),
                 Preconditions.checkNotNull(threadPoolTimeout), TimeUnit.SECONDS,
                 new SynchronousQueue<>(), "ofppool");
+
         convertorManager = ConvertorManagerFactory.createDefaultManager();
+        deviceInitializerProvider = DeviceInitializerProviderFactory.createDefaultProvider();
     }
 
     @Override
@@ -253,7 +258,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 hashedWheelTimer,
                 convertorManager,
                 skipTableFeatures,
-                useSingleLayerSerialization);
+                useSingleLayerSerialization,
+                deviceInitializerProvider);
 
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
 
