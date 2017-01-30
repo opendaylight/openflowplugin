@@ -42,7 +42,7 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.openflowplugin.impl.rpc.listener.ItemLifecycleListenerImpl;
-import org.opendaylight.openflowplugin.impl.services.RequestContextUtil;
+import org.opendaylight.openflowplugin.impl.services.util.RequestContextUtil;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringOnTheFlyService;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringService;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;

@@ -30,6 +30,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.impl.services.batch.BatchPlanStep;
 import org.opendaylight.openflowplugin.impl.services.batch.BatchStepJob;
 import org.opendaylight.openflowplugin.impl.services.batch.BatchStepType;
+import org.opendaylight.openflowplugin.impl.services.sal.SalFlatBatchServiceImpl;
 import org.opendaylight.openflowplugin.impl.util.FlatBatchUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchInputBuilder;
@@ -102,7 +103,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 /**
- * Test for {@link SalFlatBatchServiceImpl}.
+ * Test for {@link org.opendaylight.openflowplugin.impl.services.sal.SalFlatBatchServiceImpl}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class SalFlatBatchServiceImplTest {

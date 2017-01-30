@@ -17,19 +17,15 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.Event
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.StatisticsGatherer;
 import org.opendaylight.openflowplugin.impl.common.MultipartRequestInputFactory;
 import org.opendaylight.openflowplugin.impl.services.AbstractMultipartService;
-import org.opendaylight.openflowplugin.impl.services.ServiceException;
+import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 4.4.2015.
- */
-public class StatisticsGatheringService extends AbstractMultipartService<MultipartType> implements StatisticsGatherer {
+public class StatisticsGatheringService<T extends OfHeader> extends AbstractMultipartService<MultipartType, T> implements StatisticsGatherer {
 
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsGatheringService.class);
 
@@ -38,7 +34,7 @@ public class StatisticsGatheringService extends AbstractMultipartService<Multipa
     }
 
     @Override
-    public Future<RpcResult<List<MultipartReply>>> getStatisticsOfType(final EventIdentifier eventIdentifier, final MultipartType type) {
+    public Future<RpcResult<List<T>>> getStatisticsOfType(final EventIdentifier eventIdentifier, final MultipartType type) {
         LOG.debug("Getting statistics for node {} of type {}", getDeviceInfo().getNodeId(), type);
         EventsTimeCounter.markStart(eventIdentifier);
         setEventIdentifier(eventIdentifier);
