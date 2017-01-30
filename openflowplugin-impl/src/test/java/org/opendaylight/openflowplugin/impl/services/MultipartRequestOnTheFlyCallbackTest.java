@@ -112,7 +112,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
 
     private AbstractRequestContext<List<MultipartReply>> dummyRequestContext;
     private final EventIdentifier dummyEventIdentifier = new EventIdentifier(DUMMY_EVENT_NAME, DUMMY_DEVICE_ID);
-    private MultipartRequestOnTheFlyCallback multipartRequestOnTheFlyCallback;
+    private AbstractMultipartRequestOnTheFlyCallback multipartRequestOnTheFlyCallback;
     private final short tableId = 0;
 
     @Before
@@ -156,7 +156,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
         };
 
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        multipartRequestOnTheFlyCallback = new MultipartRequestOnTheFlyCallback(dummyRequestContext, String.class,
+        multipartRequestOnTheFlyCallback = new AbstractMultipartRequestOnTheFlyCallback(dummyRequestContext, String.class,
                 mockedDeviceContext.getMessageSpy(),dummyEventIdentifier, mockedDeviceInfo,
                 mockedDeviceContext.getDeviceFlowRegistry(), mockedDeviceContext, convertorManager);
     }

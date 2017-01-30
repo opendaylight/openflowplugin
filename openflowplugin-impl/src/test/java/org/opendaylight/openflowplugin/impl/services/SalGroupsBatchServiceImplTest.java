@@ -23,6 +23,7 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.openflowplugin.impl.services.sal.SalGroupsBatchServiceImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
@@ -64,7 +65,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 /**
- * Test for {@link SalGroupsBatchServiceImpl}.
+ * Test for {@link org.opendaylight.openflowplugin.impl.services.sal.SalGroupsBatchServiceImpl}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class SalGroupsBatchServiceImplTest {
