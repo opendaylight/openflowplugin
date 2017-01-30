@@ -91,7 +91,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Error;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
@@ -303,10 +302,10 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void processReply(final Xid xid, final List<MultipartReply> ofHeaderList) {
-        for (final MultipartReply multipartReply : ofHeaderList) {
-            messageSpy.spyMessage(multipartReply.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
-        }
+    public void processReply(final Xid xid, final List<? extends OfHeader> ofHeaderList) {
+        ofHeaderList.forEach(header -> messageSpy.spyMessage(
+                header.getImplementedInterface(),
+                MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE));
     }
 
     @Override
@@ -485,8 +484,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public MultiMsgCollector getMultiMsgCollector(final RequestContext<List<MultipartReply>> requestContext) {
-        return new MultiMsgCollectorImpl(this, requestContext);
+    public <T extends OfHeader> MultiMsgCollector<T> getMultiMsgCollector(final RequestContext<List<T>> requestContext) {
+        return new MultiMsgCollectorImpl<>(this, requestContext);
     }
 
     @Override

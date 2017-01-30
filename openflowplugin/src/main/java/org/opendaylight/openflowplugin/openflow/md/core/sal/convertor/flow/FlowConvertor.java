@@ -94,7 +94,7 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
      */
     public static final Integer DEFAULT_PRIORITY = Integer.parseInt("8000", 16);
     /**
-     * flow flag: remove
+     * flow flag: removenull;
      */
     public static final boolean DEFAULT_OFPFF_FLOW_REM = false;
     /**
