@@ -13,25 +13,31 @@ import java.util.List;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerFlowMultipartRequestOnTheFlyCallback;
+import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerFlowMultipartRequestOnTheFlyCallback;
+import org.opendaylight.openflowplugin.impl.statistics.datastore.StatisticsWriterProvider;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 
-public abstract class AbstractMultipartOnTheFlyService<I> extends AbstractService<I, List<MultipartReply>> {
-    private final ConvertorExecutor convertorExecutor;
+public abstract class AbstractMultipartOnTheFlyService<I, T extends OfHeader> extends AbstractMultipartService<I, T> {
 
-    protected AbstractMultipartOnTheFlyService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConvertorExecutor convertorExecutor) {
+    private final ConvertorExecutor convertorExecutor;
+    private final StatisticsWriterProvider statisticsWriterProvider;
+
+    protected AbstractMultipartOnTheFlyService(final RequestContextStack requestContextStack,
+                                               final DeviceContext deviceContext,
+                                               final ConvertorExecutor convertorExecutor,
+                                               final StatisticsWriterProvider statisticsWriterProvider) {
         super(requestContextStack, deviceContext);
         this.convertorExecutor = convertorExecutor;
+        this.statisticsWriterProvider = statisticsWriterProvider;
     }
 
     @Override
-    protected final FutureCallback<OfHeader> createCallback(final RequestContext<List<MultipartReply>> context, final Class<?> requestType) {
-        return new MultipartRequestOnTheFlyCallback(context, requestType,
-                getMessageSpy(), getEventIdentifier(), getDeviceInfo(),
-                getDeviceContext().getDeviceFlowRegistry(), getTxFacade(),
-                convertorExecutor);
+    protected final FutureCallback<OfHeader> createCallback(final RequestContext<List<T>> context, final Class<?> requestType) {
+        return canUseSingleLayerSerialization()
+            ? new SingleLayerFlowMultipartRequestOnTheFlyCallback<>(context, requestType, getDeviceContext(), getEventIdentifier(), statisticsWriterProvider)
+            : new MultiLayerFlowMultipartRequestOnTheFlyCallback<>(context, requestType, getDeviceContext(), getEventIdentifier(), statisticsWriterProvider, convertorExecutor);
     }
-
 
 }
