@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.impl.services.sal.FlowCapableTransactionServiceImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
@@ -21,7 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 
 /**
- * Test for {@link FlowCapableTransactionServiceImpl}.
+ * Test for {@link org.opendaylight.openflowplugin.impl.services.sal.FlowCapableTransactionServiceImpl}.
  */
 public class FlowCapableTransactionServiceImplTest extends ServiceMocking {
 

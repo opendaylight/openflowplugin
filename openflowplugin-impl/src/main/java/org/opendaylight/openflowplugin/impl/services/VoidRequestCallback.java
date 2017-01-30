@@ -14,11 +14,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
-final class VoidRequestCallback extends AbstractRequestCallback<Void> {
+public final class VoidRequestCallback extends AbstractRequestCallback<Void> {
     private static final RpcResult<Void> SUCCESS = RpcResultBuilder.<Void>success().build();
 
-    VoidRequestCallback(final RequestContext<Void> context, final Class<?> requestType, final MessageSpy spy) {
-        super(context, requestType, spy);
+    public VoidRequestCallback(final RequestContext<Void> context, final Class<?> requestType, final MessageSpy spy) {
+        super(context, requestType, spy, null);
     }
 
     @Override

@@ -11,12 +11,9 @@ package org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific;
 import java.util.List;
 import java.util.concurrent.Future;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
-/**
- * Created by mirehak on 6/2/15.
- */
-public interface StatisticsGatherer {
-    Future<RpcResult<List<MultipartReply>>> getStatisticsOfType(EventIdentifier eventIdentifier, MultipartType type);
+public interface StatisticsGatherer<T extends OfHeader> {
+    Future<RpcResult<List<T>>> getStatisticsOfType(EventIdentifier eventIdentifier, MultipartType type);
 }

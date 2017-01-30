@@ -1,0 +1,53 @@
+/*
+ * Copyright (c) 2017 Pantheon Technologies s.r.o. and others.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+
+package org.opendaylight.openflowplugin.impl.statistics.services.direct.multilayer;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.openflowplugin.impl.statistics.services.direct.AbstractMeterDirectStatisticsService;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetMeterStatisticsOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetMeterStatisticsOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyMeterCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter._case.MultipartReplyMeter;
+
+public class MeterDirectStatisticsService extends AbstractMeterDirectStatisticsService<MultipartReply> {
+
+    private final VersionConvertorData data;
+
+    public MeterDirectStatisticsService(RequestContextStack requestContextStack, DeviceContext deviceContext, ConvertorExecutor convertorExecutor) {
+        super(requestContextStack, deviceContext, convertorExecutor);
+        data = new VersionConvertorData(getVersion());
+    }
+
+    @Override
+    protected GetMeterStatisticsOutput buildReply(List<MultipartReply> input, boolean success) {
+        final List<MeterStats> meterStats = new ArrayList<>();
+
+        if (success) {
+            for (final MultipartReply mpReply : input) {
+                final MultipartReplyMeterCase caseBody = (MultipartReplyMeterCase) mpReply.getMultipartReplyBody();
+                final MultipartReplyMeter replyBody = caseBody.getMultipartReplyMeter();
+                final Optional<List<MeterStats>> meterStatsList = getConvertorExecutor().convert(replyBody.getMeterStats(), data);
+                meterStatsList.ifPresent(meterStats::addAll);
+            }
+        }
+
+        return new GetMeterStatisticsOutputBuilder()
+            .setMeterStats(meterStats)
+            .build();
+    }
+
+}

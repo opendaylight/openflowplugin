@@ -16,7 +16,9 @@ import java.math.BigInteger;
 import java.util.Objects;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceRegistry;
@@ -26,6 +28,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
+import org.opendaylight.openflowplugin.impl.services.util.RequestContextUtil;
+import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.common.RpcError;
@@ -34,7 +38,7 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-abstract class AbstractService<I, O> {
+public abstract class AbstractService<I, O> {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractService.class);
 
     private final short version;
@@ -42,6 +46,7 @@ abstract class AbstractService<I, O> {
     private final RequestContextStack requestContextStack;
     private final DeviceContext deviceContext;
     private final MessageSpy messageSpy;
+    private final boolean isUseSingleLayerSerialization;
     private EventIdentifier eventIdentifier;
 
     AbstractService(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
@@ -52,6 +57,11 @@ abstract class AbstractService<I, O> {
         this.datapathId = deviceInfo.getDatapathId();
         this.version = deviceInfo.getVersion();
         this.messageSpy = deviceContext.getMessageSpy();
+        this.isUseSingleLayerSerialization = deviceContext.isUseSingleLayerSerialization();
+    }
+
+    public boolean canUseSingleLayer() {
+        return isUseSingleLayerSerialization && version >= OFConstants.OFP_VERSION_1_3;
     }
 
     public EventIdentifier getEventIdentifier() {
@@ -79,7 +89,7 @@ abstract class AbstractService<I, O> {
         return deviceContext;
     }
 
-    protected DeviceRegistry getDeviceRegistry() {
+    public DeviceRegistry getDeviceRegistry() {
         return deviceContext;
     }
 
@@ -104,26 +114,28 @@ abstract class AbstractService<I, O> {
     }
 
     public ListenableFuture<RpcResult<O>> handleServiceCall(@Nonnull final I input,
-            @Nonnull final Function<OfHeader, Boolean> isComplete) {
+            @Nullable final Function<OfHeader, Boolean> isComplete) {
         Preconditions.checkNotNull(input);
 
-        final Class<?> requestType;
-        if (input instanceof DataContainer) {
-            requestType = ((DataContainer) input).getImplementedInterface();
-        } else {
-            requestType = input.getClass();
-        }
+        final Class<?> requestType = input instanceof DataContainer
+            ? DataContainer.class.cast(input).getImplementedInterface()
+            : input.getClass();
+
         getMessageSpy().spyMessage(requestType, MessageSpy.STATISTIC_GROUP.TO_SWITCH_ENTERED);
 
         LOG.trace("Handling general service call");
         final RequestContext<O> requestContext = requestContextStack.createRequestContext();
-        if (requestContext == null) {
+
+        if (Objects.isNull(requestContext)) {
             LOG.trace("Request context refused.");
             getMessageSpy().spyMessage(AbstractService.class, MessageSpy.STATISTIC_GROUP.TO_SWITCH_DISREGARDED);
-            return failedFuture();
+            return Futures.immediateFuture(RpcResultBuilder
+                    .<O>failed()
+                    .withError(RpcError.ErrorType.APPLICATION, "", "Request quota exceeded")
+                    .build());
         }
 
-        if (requestContext.getXid() == null) {
+        if (Objects.isNull(requestContext.getXid())) {
             getMessageSpy().spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_RESERVATION_REJECTED);
             return RequestContextUtil.closeRequestContextWithRpcError(requestContext, "Outbound queue wasn't able to reserve XID.");
         }
@@ -149,11 +161,5 @@ abstract class AbstractService<I, O> {
         }
 
         return requestContext.getFuture();
-    }
-
-    protected static <T> ListenableFuture<RpcResult<T>> failedFuture() {
-        final RpcResult<T> rpcResult = RpcResultBuilder.<T>failed()
-            .withError(RpcError.ErrorType.APPLICATION, "", "Request quota exceeded").build();
-        return Futures.immediateFuture(rpcResult);
     }
 }
