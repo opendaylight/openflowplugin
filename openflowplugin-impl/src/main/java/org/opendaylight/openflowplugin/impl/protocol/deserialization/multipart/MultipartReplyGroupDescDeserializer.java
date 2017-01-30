@@ -53,6 +53,7 @@ public class MultipartReplyGroupDescDeserializer implements OFDeserializer<Multi
 
             message.skipBytes(PADDING_IN_GROUP_DESC_HEADER);
             itemBuilder.setGroupId(new GroupId(message.readUnsignedInt()));
+            itemBuilder.setKey(new GroupDescStatsKey(itemBuilder.getGroupId()));
 
             final List<Bucket> subItems = new ArrayList<>();
             int actualLength = GROUP_DESC_HEADER_LENGTH;
@@ -67,8 +68,6 @@ public class MultipartReplyGroupDescDeserializer implements OFDeserializer<Multi
                     .setWeight(message.readUnsignedShort())
                     .setWatchPort(message.readUnsignedInt())
                     .setWatchGroup(message.readUnsignedInt());
-
-                bucketKey++;
 
                 message.skipBytes(PADDING_IN_BUCKETS_HEADER);
                 final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list
@@ -90,11 +89,11 @@ public class MultipartReplyGroupDescDeserializer implements OFDeserializer<Multi
 
                 bucketBuilder.setAction(actions);
                 subItems.add(bucketBuilder.build());
+                bucketKey++;
                 actualLength += bucketsLength;
             }
 
             items.add(itemBuilder
-                .setKey(new GroupDescStatsKey(itemBuilder.getGroupId()))
                 .setBuckets(new BucketsBuilder()
                     .setBucket(subItems)
                     .build())

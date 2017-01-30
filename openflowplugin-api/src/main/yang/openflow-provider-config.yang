@@ -114,7 +114,7 @@ module openflow-provider-config {
             by device, so serialization and deserialization is faster. Otherwise, models are first serialized to
             Openflow specification models and then to format supported by device, and reversed when deserializing.";
             type boolean;
-            default "false";
+            default "true";
         }
     }
 }
