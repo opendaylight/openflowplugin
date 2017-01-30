@@ -28,6 +28,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
+import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
@@ -43,7 +44,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsContextImplTest.class);
 
     private static final Long TEST_XID = 55L;
-    private StatisticsContextImpl statisticsContext;
+    private StatisticsContextImpl<MultipartReply> statisticsContext;
     private ConvertorManager convertorManager;
 
     @Before
@@ -56,7 +57,9 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
     }
 
     private void initStatisticsContext() {
-        statisticsContext = new StatisticsContextImpl(mockedDeviceInfo, true, lifecycleService, convertorManager, mockedStatisticsManager);
+        statisticsContext = new StatisticsContextImpl<>(mockedDeviceInfo, true, lifecycleService, convertorManager, mockedStatisticsManager,
+            MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext));
+
         statisticsContext.setStatisticsGatheringService(mockedStatisticsGatheringService);
         statisticsContext.setStatisticsGatheringOnTheFlyService(mockedStatisticsOnFlyGatheringService);
     }
@@ -74,7 +77,9 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
      */
     @Test
     public void testClose() throws Exception {
-        final StatisticsContextImpl statisticsContext = new StatisticsContextImpl(mockedDeviceInfo, true, lifecycleService, convertorManager, mockedStatisticsManager);
+        final StatisticsContextImpl<MultipartReply> statisticsContext = new StatisticsContextImpl<>(mockedDeviceInfo, true, lifecycleService, convertorManager, mockedStatisticsManager,
+            MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext));
+
         final RequestContext<Object> requestContext = statisticsContext.createRequestContext();
         statisticsContext.close();
         try {
