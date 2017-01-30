@@ -35,15 +35,15 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 @RunWith(MockitoJUnitRunner.class)
 public class OpendaylightDirectStatisticsServiceImplTest {
     @Mock
-    FlowDirectStatisticsService flowDirectStatisticsService;
+    AbstractFlowDirectStatisticsService flowDirectStatisticsService;
     @Mock
-    GroupDirectStatisticsService groupDirectStatisticsService;
+    AbstractGroupDirectStatisticsService groupDirectStatisticsService;
     @Mock
-    MeterDirectStatisticsService meterDirectStatisticsService;
+    AbstractMeterDirectStatisticsService meterDirectStatisticsService;
     @Mock
-    NodeConnectorDirectStatisticsService nodeConnectorDirectStatisticsService;
+    AbstractPortDirectStatisticsService nodeConnectorDirectStatisticsService;
     @Mock
-    QueueDirectStatisticsService queueDirectStatisticsService;
+    AbstractQueueDirectStatisticsService queueDirectStatisticsService;
 
     @Mock
     GetGroupStatisticsInput getGroupStatisticsInput;
@@ -55,18 +55,18 @@ public class OpendaylightDirectStatisticsServiceImplTest {
     GetMeterStatisticsInput getMeterStatisticsInput;
     @Mock
     GetNodeConnectorStatisticsInput getNodeConnectorStatisticsInput;
-    
+
     private OpendaylightDirectStatisticsService service;
     private OpendaylightDirectStatisticsService emptyService;
 
     @Before
     public void setUp() throws Exception {
         final OpendaylightDirectStatisticsServiceProvider provider = new OpendaylightDirectStatisticsServiceProvider();
-        provider.register(FlowDirectStatisticsService.class, flowDirectStatisticsService);
-        provider.register(GroupDirectStatisticsService.class, groupDirectStatisticsService);
-        provider.register(MeterDirectStatisticsService.class, meterDirectStatisticsService);
-        provider.register(NodeConnectorDirectStatisticsService.class, nodeConnectorDirectStatisticsService);
-        provider.register(QueueDirectStatisticsService.class, queueDirectStatisticsService);
+        provider.register(AbstractFlowDirectStatisticsService.class, flowDirectStatisticsService);
+        provider.register(AbstractGroupDirectStatisticsService.class, groupDirectStatisticsService);
+        provider.register(AbstractMeterDirectStatisticsService.class, meterDirectStatisticsService);
+        provider.register(AbstractPortDirectStatisticsService.class, nodeConnectorDirectStatisticsService);
+        provider.register(AbstractQueueDirectStatisticsService.class, queueDirectStatisticsService);
 
         service = new OpendaylightDirectStatisticsServiceImpl(provider);
         emptyService = new OpendaylightDirectStatisticsServiceImpl(new OpendaylightDirectStatisticsServiceProvider());
@@ -87,7 +87,7 @@ public class OpendaylightDirectStatisticsServiceImplTest {
         assertFalse(result.isSuccessful());
 
         for (RpcError error : result.getErrors()) {
-            assertTrue(error.getMessage().contains(GroupDirectStatisticsService.class.getSimpleName()));
+            assertTrue(error.getMessage().contains(AbstractGroupDirectStatisticsService.class.getSimpleName()));
         }
 
         verify(groupDirectStatisticsService, times(0)).handleAndReply(getGroupStatisticsInput);
@@ -108,7 +108,7 @@ public class OpendaylightDirectStatisticsServiceImplTest {
         assertFalse(result.isSuccessful());
 
         for (RpcError error : result.getErrors()) {
-            assertTrue(error.getMessage().contains(QueueDirectStatisticsService.class.getSimpleName()));
+            assertTrue(error.getMessage().contains(AbstractQueueDirectStatisticsService.class.getSimpleName()));
         }
 
         verify(queueDirectStatisticsService, times(0)).handleAndReply(getQueueStatisticsInput);
@@ -129,7 +129,7 @@ public class OpendaylightDirectStatisticsServiceImplTest {
         assertFalse(result.isSuccessful());
 
         for (RpcError error : result.getErrors()) {
-            assertTrue(error.getMessage().contains(FlowDirectStatisticsService.class.getSimpleName()));
+            assertTrue(error.getMessage().contains(AbstractFlowDirectStatisticsService.class.getSimpleName()));
         }
 
         verify(flowDirectStatisticsService, times(0)).handleAndReply(getFlowStatisticsInput);
@@ -150,7 +150,7 @@ public class OpendaylightDirectStatisticsServiceImplTest {
         assertFalse(result.isSuccessful());
 
         for (RpcError error : result.getErrors()) {
-            assertTrue(error.getMessage().contains(MeterDirectStatisticsService.class.getSimpleName()));
+            assertTrue(error.getMessage().contains(AbstractMeterDirectStatisticsService.class.getSimpleName()));
         }
 
         verify(meterDirectStatisticsService, times(0)).handleAndReply(getMeterStatisticsInput);
@@ -171,7 +171,7 @@ public class OpendaylightDirectStatisticsServiceImplTest {
         assertFalse(result.isSuccessful());
 
         for (RpcError error : result.getErrors()) {
-            assertTrue(error.getMessage().contains(NodeConnectorDirectStatisticsService.class.getSimpleName()));
+            assertTrue(error.getMessage().contains(AbstractPortDirectStatisticsService.class.getSimpleName()));
         }
 
         verify(nodeConnectorDirectStatisticsService, times(0)).handleAndReply(getNodeConnectorStatisticsInput);
