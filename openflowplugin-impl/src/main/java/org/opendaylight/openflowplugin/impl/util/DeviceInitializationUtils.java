@@ -488,7 +488,7 @@ public class DeviceInitializationUtils {
         final OutboundQueue queue = deviceContext.getPrimaryConnectionContext().getOutboundQueueProvider();
 
         final Long reserved = deviceContext.getDeviceInfo().reserveXidForDeviceMessage();
-        final RequestContext<List<MultipartReply>> requestContext = new AbstractRequestContext<List<MultipartReply>>(
+        final RequestContext<List<OfHeader>> requestContext = new AbstractRequestContext<List<OfHeader>>(
                 reserved) {
             @Override
             public void close() {
@@ -513,11 +513,17 @@ public class DeviceInitializationUtils {
                     public void onSuccess(final OfHeader ofHeader) {
                         if (ofHeader instanceof MultipartReply) {
                             final MultipartReply multipartReply = (MultipartReply) ofHeader;
-                            multiMsgCollector.addMultipartMsg(multipartReply);
+                            multiMsgCollector.addMultipartMsg(multipartReply, multipartReply.getFlags().isOFPMPFREQMORE(), null);
+                        } else if (ofHeader instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112
+                                .MultipartReply) {
+                            final org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112
+                                    .MultipartReply multipartReply = (org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112
+                                    .MultipartReply) ofHeader;
+                            multiMsgCollector.addMultipartMsg(multipartReply, multipartReply.isRequestMore(), null);
                         } else if (null != ofHeader) {
                             LOG.info("Unexpected response type received {}.", ofHeader.getClass());
                         } else {
-                            multiMsgCollector.endCollecting();
+                            multiMsgCollector.endCollecting(null);
                             LOG.info("Response received is null.");
                         }
                     }
