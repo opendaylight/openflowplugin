@@ -399,6 +399,10 @@ public final class StatisticsGatheringUtils {
         } catch (InterruptedException|ExecutionException e) {
             LOG.error("cannot obtain current openflow table information");
             return Futures.immediateFailedFuture(e);
+        }finally{
+        	if (readTx != null){
+        		readTx.close();
+        	}
         }
 
         return Futures.immediateCheckedFuture(null);
