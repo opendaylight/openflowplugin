@@ -19,7 +19,9 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -314,8 +316,7 @@ public final class StatisticsGatheringUtils {
                                                                    final boolean initial,
                                                                    final EventIdentifier eventIdentifier) {
         final ListenableFuture<Void> deleteFuture
-                = initial ? Futures.immediateFuture(null) : deleteAllKnownFlows(deviceInfo,
-                flowRegistry, txFacade);
+                = initial ? Futures.immediateFuture(null) : deleteAllKnownFlows(deviceInfo, flowRegistry, txFacade);
         return Futures.transform(deleteFuture, (Function<Void, Boolean>) input -> {
             writeFlowStatistics(data, deviceInfo, flowRegistry, txFacade);
             txFacade.submitTransaction();
@@ -333,8 +334,7 @@ public final class StatisticsGatheringUtils {
             for (final FlowsStatisticsUpdate flowsStatistics : data) {
                 for (final FlowAndStatisticsMapList flowStat : flowsStatistics.getFlowAndStatisticsMapList()) {
                     final FlowBuilder flowBuilder = new FlowBuilder(flowStat);
-                    flowBuilder.addAugmentation(
-                            FlowStatisticsData.class,
+                    flowBuilder.addAugmentation(FlowStatisticsData.class,
                             refineFlowStatisticsAugmentation(flowStat).build());
 
                     final short tableId = flowStat.getTableId();
@@ -350,8 +350,80 @@ public final class StatisticsGatheringUtils {
                 }
             }
         } catch (TransactionChainClosedException e) {
-            LOG.warn("Not able to write to transaction: {}", e.getMessage());
+            LOG.warn("Not able to write to transaction chain: {}", e.getMessage());
         }
+    }
+
+    public static void writeFlowAndTableStatistics(final Iterable<FlowsStatisticsUpdate> data,
+                                                   final DeviceInfo deviceInfo,
+                                                   final DeviceFlowRegistry registry,
+                                                   final TxFacade txFacade,
+                                                   final Optional<FlowCapableNode> flowCapableNode) {
+        final InstanceIdentifier<FlowCapableNode> fNodeIdent = assembleFlowCapableNodeInstanceIdentifier(deviceInfo);
+        try {
+            HashSet<Short> statsFromTables = new HashSet<>();
+            for (final FlowsStatisticsUpdate flowsStatistics : data) {
+                if (flowsStatistics.getFlowAndStatisticsMapList().isEmpty()) {
+                    if (flowCapableNode.isPresent()) {
+                        for (final Table tableData : flowCapableNode.get().getTable()) {
+                            final Table table = new TableBuilder(tableData).setFlow(Collections.<Flow>emptyList()).build();
+                            final InstanceIdentifier<Table> iiToTable
+                                    = fNodeIdent.child(Table.class, tableData.getKey());
+                            txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);
+                        }
+                    }
+                    return;
+
+                }
+                for (final FlowAndStatisticsMapList flowStat : flowsStatistics.getFlowAndStatisticsMapList()) {
+                    statsFromTables.add(flowStat.getTableId());
+                }
+            }
+            if (flowCapableNode.isPresent()) {
+                statsFromTables.forEach(tableId -> {
+                    Table tableData = readTableData(flowCapableNode.get(), tableId);
+                    if (tableData != null) {
+                        final InstanceIdentifier<FlowCapableNode> flowCapableNodePath
+                                = assembleFlowCapableNodeInstanceIdentifier(deviceInfo);
+
+                        final Table table = new TableBuilder(tableData).setFlow(Collections.emptyList()).build();
+                        final InstanceIdentifier<Table> iiToTable = flowCapableNodePath.child(Table.class, new TableKey(tableId));
+                        txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);
+                    }
+                });
+            }
+            for (final FlowsStatisticsUpdate flowsStatistics : data) {
+                for (final FlowAndStatisticsMapList flowStat : flowsStatistics.getFlowAndStatisticsMapList()) {
+                    final FlowBuilder flowBuilder = new FlowBuilder(flowStat);
+                    flowBuilder.addAugmentation(FlowStatisticsData.class,
+                            refineFlowStatisticsAugmentation(flowStat).build());
+
+                    final short tableId = flowStat.getTableId();
+                    final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(flowBuilder.build());
+                    final FlowId flowId = registry.storeIfNecessary(flowRegistryKey);
+
+                    final FlowKey flowKey = new FlowKey(flowId);
+                    flowBuilder.setKey(flowKey);
+                    final TableKey tableKey = new TableKey(tableId);
+                    final InstanceIdentifier<Flow> flowIdent
+                            = fNodeIdent.child(Table.class, tableKey).child(Flow.class, flowKey);
+                    txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, flowIdent, flowBuilder.build());
+                }
+            }
+        } catch (TransactionChainClosedException e) {
+            LOG.warn("Not able to write to transaction chain: {}", e.getMessage());
+        }
+    }
+
+    private static Table readTableData(FlowCapableNode fcNode, short tableId) {
+        if (fcNode.getTable() != null && !fcNode.getTable().isEmpty()) {
+            for (Table table : fcNode.getTable()) {
+                if (table.getId() == tableId) {
+                    return table;
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -387,17 +459,39 @@ public final class StatisticsGatheringUtils {
          */
         return Futures.transform(
                 flowCapableNodeFuture, (AsyncFunction<Optional<FlowCapableNode>, Void>) flowCapNodeOpt -> {
-                if (flowCapNodeOpt.isPresent()) {
-                    for (final Table tableData : flowCapNodeOpt.get().getTable()) {
-                        final Table table = new TableBuilder(tableData).setFlow(Collections.<Flow>emptyList()).build();
-                        final InstanceIdentifier<Table> iiToTable
-                                = flowCapableNodePath.child(Table.class, tableData.getKey());
-                        txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);
+                    if (flowCapNodeOpt.isPresent()) {
+                        for (final Table tableData : flowCapNodeOpt.get().getTable()) {
+                            final Table table = new TableBuilder(tableData).setFlow(Collections.<Flow>emptyList()).build();
+                            final InstanceIdentifier<Table> iiToTable
+                                    = flowCapableNodePath.child(Table.class, tableData.getKey());
+                            txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);
+                        }
                     }
-                }
+                    readTx.close();
+                    return Futures.immediateFuture(null);
+                });
+    }
+
+    public static Optional<FlowCapableNode> readOperNode(final DeviceInfo deviceInfo,
+                                                             final TxFacade txFacade) {
+        final InstanceIdentifier<FlowCapableNode> flowCapableNodePath
+                = assembleFlowCapableNodeInstanceIdentifier(deviceInfo);
+        final ReadOnlyTransaction readTx = txFacade.getReadTransaction();
+        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> flowCapableNodeFuture = readTx.read(
+                LogicalDatastoreType.OPERATIONAL, flowCapableNodePath);
+
+        try {
+            return flowCapableNodeFuture.get();
+        } catch (InterruptedException|ExecutionException e) {
+            LOG.error("Failed to read current OpenFlow node {] operational data", deviceInfo.getNodeId());
+        }finally{
+            if (readTx != null){
                 readTx.close();
-                return Futures.immediateFuture(null);
-            });
+            }
+        }
+
+        return Optional.absent();
+
     }
 
     private static void processQueueStatistics(
