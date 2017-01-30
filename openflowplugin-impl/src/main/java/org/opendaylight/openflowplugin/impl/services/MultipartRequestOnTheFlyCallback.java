@@ -8,25 +8,48 @@
 package org.opendaylight.openflowplugin.impl.services;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicIntegerArray;
+
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionChainClosedException;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
+import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.impl.statistics.SinglePurposeMultipartReplyTranslator;
 import org.opendaylight.openflowplugin.impl.statistics.StatisticsGatheringUtils;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdate;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapList;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -38,11 +61,12 @@ final class MultipartRequestOnTheFlyCallback extends AbstractRequestCallback<Lis
     private final SinglePurposeMultipartReplyTranslator multipartReplyTranslator;
     private final DeviceInfo deviceInfo;
     private final DeviceFlowRegistry registry;
-    private boolean virgin = true;
-    private boolean finished = false;
     private final EventIdentifier doneEventIdentifier;
     private final TxFacade txFacade;
 
+    private Optional<FlowCapableNode> fcNodeOpt;
+    private AtomicBoolean virgin = new AtomicBoolean(true);
+    private AtomicBoolean finished = new AtomicBoolean(false);
 
     public MultipartRequestOnTheFlyCallback(final RequestContext<List<MultipartReply>> context,
                                             final Class<?> requestType,
@@ -70,54 +94,53 @@ final class MultipartRequestOnTheFlyCallback extends AbstractRequestCallback<Lis
 
     @Override
     public void onSuccess(final OfHeader result) {
+
         if (result == null) {
             LOG.info("Ofheader was null.");
-            if (!finished) {
+            if (!finished.getAndSet(true)) {
                 endCollecting();
                 return;
             }
-        } else if (finished) {
+        } else if (finished.get()) {
             LOG.debug("Unexpected multipart response received: xid={}, {}", result.getXid(), result.getImplementedInterface());
             return;
         }
 
         if (!(result instanceof MultipartReply)) {
-            LOG.info("Unexpected response type received {}.", result.getClass());
-            final RpcResultBuilder<List<MultipartReply>> rpcResultBuilder =
-                    RpcResultBuilder.<List<MultipartReply>>failed().withError(RpcError.ErrorType.APPLICATION,
-                            String.format("Unexpected response type received %s.", result.getClass()));
-            setResult(rpcResultBuilder.build());
-            endCollecting();
+            if(!finished.getAndSet(true)) {
+                LOG.info("Unexpected response type received {}.", result.getClass());
+                final RpcResultBuilder<List<MultipartReply>> rpcResultBuilder =
+                        RpcResultBuilder.<List<MultipartReply>>failed().withError(RpcError.ErrorType.APPLICATION,
+                                String.format("Unexpected response type received %s.", result.getClass()));
+                setResult(rpcResultBuilder.build());
+                endCollecting();
+            }
         } else {
             final MultipartReply multipartReply = (MultipartReply) result;
-
+            if (!multipartReply.getFlags().isOFPMPFREQMORE()) {
+                finished.set(true);
+            }
             final MultipartReply singleReply = multipartReply;
             final List<? extends DataObject> multipartDataList = multipartReplyTranslator.translate(
                     deviceInfo.getDatapathId(), deviceInfo.getVersion(), singleReply);
-            final Iterable<? extends DataObject> allMultipartData = multipartDataList;
+            final Iterable<FlowsStatisticsUpdate> allMultipartData = (Iterable<FlowsStatisticsUpdate>) multipartDataList;
 
-            //TODO: following part is focused on flow stats only - need more general approach if used for more than flow stats
-            ListenableFuture<Void> future;
-            if (virgin) {
-                future = StatisticsGatheringUtils.deleteAllKnownFlows(deviceInfo, registry, txFacade);
-                virgin = false;
-            } else {
-                future = Futures.immediateFuture(null);
+            if (virgin.get()) {
+                synchronized (this) {
+                    if (virgin.get()) {
+                        fcNodeOpt = StatisticsGatheringUtils.deleteAllKnownFlows(deviceInfo, txFacade);
+                        virgin.set(false);
+                    }
+                }
             }
 
-            Futures.transform(future, new Function<Void, Void>() {
+            if (!fcNodeOpt.isPresent()) {
+                finished.getAndSet(true);
+                return;
+            }
 
-                @Override
-                public Void apply(final Void input) {
-                    StatisticsGatheringUtils.writeFlowStatistics((Iterable<FlowsStatisticsUpdate>) allMultipartData,
-                            deviceInfo, registry, txFacade);
-
-                    if (!multipartReply.getFlags().isOFPMPFREQMORE()) {
-                        endCollecting();
-                    }
-                    return input;
-                }
-            });
+            StatisticsGatheringUtils.writeFlowStatistics(allMultipartData, deviceInfo, registry, txFacade);
+            txFacade.submitTransaction();
         }
     }
 
@@ -126,8 +149,6 @@ final class MultipartRequestOnTheFlyCallback extends AbstractRequestCallback<Lis
         EventsTimeCounter.markEnd(getEventIdentifier());
         final RpcResult<List<MultipartReply>> rpcResult = RpcResultBuilder.success(Collections.<MultipartReply>emptyList()).build();
         spyMessage(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_OUT_SUCCESS);
-        txFacade.submitTransaction();
         setResult(rpcResult);
-        finished = true;
     }
 }

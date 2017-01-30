@@ -553,8 +553,7 @@ public class StatisticsGatheringUtilsTest {
         final KeyedInstanceIdentifier<Table, TableKey> tablePath = deviceInfo.getNodeInstanceIdentifier()
                 .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tableId));
 
-        StatisticsGatheringUtils.deleteAllKnownFlows(deviceInfo,
-                deviceContext.getDeviceFlowRegistry(), txFacade);
+        StatisticsGatheringUtils.deleteAllKnownFlows(deviceInfo,txFacade);
 
         verify(txFacade).writeToTransaction(
                 LogicalDatastoreType.OPERATIONAL,
