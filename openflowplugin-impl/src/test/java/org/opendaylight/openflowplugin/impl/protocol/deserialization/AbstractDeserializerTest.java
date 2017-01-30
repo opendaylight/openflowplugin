@@ -40,6 +40,7 @@ public abstract class AbstractDeserializerTest {
         factory.setRegistry(registry);
         provider = new DeserializerExtensionProviderImpl(registry, factory);
         DeserializerInjector.injectDeserializers(provider);
+        MessageDeserializerInjector.injectDeserializers(provider);
         init();
     }
 

@@ -40,7 +40,6 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
-import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
@@ -48,8 +47,8 @@ import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRe
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.StatisticsGatherer;
-import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
+import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
@@ -164,18 +163,14 @@ public class StatisticsGatheringUtilsTest {
     @Mock
     private ConnectionContext connectionAdapter;
     @Mock
-    private StatisticsGatherer statisticsService;
+    private StatisticsGatherer<MultipartReply> statisticsService;
     @Mock
     private DeviceInfo deviceInfo;
-    @Mock
-    private TxFacade txFacade;
 
-    private SinglePurposeMultipartReplyTranslator singlePurposeMultipartReplyTranslator;
+    private MultipartWriterProvider provider;
 
     @Before
     public void setUp() throws Exception {
-        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        singlePurposeMultipartReplyTranslator = new SinglePurposeMultipartReplyTranslator(convertorManager);
         when(deviceContext.getDeviceState()).thenReturn(deviceState);
         when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
         when(deviceContext.getDeviceFlowRegistry()).thenReturn(deviceFlowRegistry);
@@ -183,17 +178,17 @@ public class StatisticsGatheringUtilsTest {
         when(deviceContext.getDeviceMeterRegistry()).thenReturn(deviceMeterRegistry);
         when(deviceFlowRegistry.retrieveIdForFlow(Matchers.any(FlowRegistryKey.class))).thenReturn(flowDescriptor);
         when(deviceContext.getReadTransaction()).thenReturn(readTx);
-        when(txFacade.getReadTransaction()).thenReturn(readTx);
+        when(deviceContext.getReadTransaction()).thenReturn(readTx);
         when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionAdapter);
         when(connectionAdapter.getNodeId()).thenReturn(DUMMY_NODE_ID);
         when(connectionAdapter.getFeatures()).thenReturn(features);
         when(features.getDatapathId()).thenReturn(BigInteger.ONE);
         when(features.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
-
         when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         when(deviceInfo.getDatapathId()).thenReturn(BigInteger.ONE);
         when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(dummyNodePath);
         when(deviceInfo.getNodeId()).thenReturn(DUMMY_NODE_ID);
+        provider = MultipartWriterProviderFactory.createDefaultProvider(deviceContext);
     }
 
     @Test
@@ -202,8 +197,7 @@ public class StatisticsGatheringUtilsTest {
         final ArgumentCaptor<InstanceIdentifier> flowPath = ArgumentCaptor.forClass(InstanceIdentifier.class);
         final ArgumentCaptor<Flow> flow = ArgumentCaptor.forClass(Flow.class);
 
-        StatisticsGatheringUtils.writeFlowStatistics(prepareFlowStatisticsData(),
-                deviceInfo, deviceContext.getDeviceFlowRegistry(), deviceContext);
+        provider.lookup(MultipartType.OFPMPFLOW).get().write(prepareFlowStatisticsData().iterator().next(), false);
 
         Mockito.verify(deviceContext).writeToTransaction(
                 dataStoreType.capture(), flowPath.capture(), flow.capture());
@@ -252,7 +246,7 @@ public class StatisticsGatheringUtilsTest {
                 .child(Group.class, new GroupKey(new org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId(groupIdValue)))
                 .augmentation(NodeGroupStatistics.class)
                 .child(GroupStatistics.class);
-        verify(txFacade).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL),
+        verify(deviceContext).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL),
                 Matchers.eq(groupPath), Matchers.any(GroupStatistics.class));
     }
 
@@ -283,7 +277,7 @@ public class StatisticsGatheringUtilsTest {
         verify(deviceContext, Mockito.never()).addDeleteToTxChain(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.<InstanceIdentifier<?>> any());
         verify(deviceGroupRegistry).removeMarked();
         verify(deviceGroupRegistry).store(storedGroupId);
-        verify(txFacade).writeToTransaction(
+        verify(deviceContext).writeToTransaction(
                 Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.eq(groupPath), Matchers.any(Group.class));
     }
 
@@ -317,7 +311,7 @@ public class StatisticsGatheringUtilsTest {
                 .child(Meter.class, new MeterKey(new org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId(meterIdValue)))
                 .augmentation(NodeMeterStatistics.class)
                 .child(MeterStatistics.class);
-        verify(txFacade).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL),
+        verify(deviceContext).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL),
                 Matchers.eq(meterPath), Matchers.any(MeterStatistics.class));
     }
 
@@ -341,7 +335,7 @@ public class StatisticsGatheringUtilsTest {
                 .child(NodeConnector.class, new NodeConnectorKey(new NodeConnectorId("openflow:" + DUMMY_NODE_ID_VALUE + ":11")))
                 .augmentation(FlowCapableNodeConnectorStatisticsData.class)
                 .child(FlowCapableNodeConnectorStatistics.class);
-        verify(txFacade).writeToTransaction(
+        verify(deviceContext).writeToTransaction(
                 Matchers.eq(LogicalDatastoreType.OPERATIONAL),
                 Matchers.eq(portPath),
                 Matchers.any(FlowCapableNodeConnectorStatistics.class));
@@ -371,7 +365,7 @@ public class StatisticsGatheringUtilsTest {
                 .child(Table.class, new TableKey((short) 0))
                 .augmentation(FlowTableStatisticsData.class)
                 .child(FlowTableStatistics.class);
-        verify(txFacade).writeToTransaction(
+        verify(deviceContext).writeToTransaction(
                 Matchers.eq(LogicalDatastoreType.OPERATIONAL),
                 Matchers.eq(tablePath),
                 Matchers.any(FlowTableStatistics.class));
@@ -405,7 +399,7 @@ public class StatisticsGatheringUtilsTest {
                 .child(NodeConnector.class, new NodeConnectorKey(new NodeConnectorId("openflow:" + DUMMY_NODE_ID_VALUE + ":11")))
                 .augmentation(FlowCapableNodeConnector.class)
                 .child(Queue.class, new QueueKey(new QueueId(queueIdValue)));
-        verify(txFacade).writeToTransaction(
+        verify(deviceContext).writeToTransaction(
                 Matchers.eq(LogicalDatastoreType.OPERATIONAL),
                 Matchers.eq(queuePath),
                 Matchers.any(Queue.class));
@@ -456,8 +450,8 @@ public class StatisticsGatheringUtilsTest {
 
         verify(deviceContext, Mockito.never()).addDeleteToTxChain(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.<InstanceIdentifier<?>>any());
 
-        final InOrder inOrder = Mockito.inOrder(txFacade);
-        inOrder.verify(txFacade).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.eq(tablePath), Matchers.any(Table.class));
+        final InOrder inOrder = Mockito.inOrder(deviceContext);
+        inOrder.verify(deviceContext).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.eq(tablePath), Matchers.any(Table.class));
     }
 
     @Test
@@ -486,7 +480,7 @@ public class StatisticsGatheringUtilsTest {
                 .child(Meter.class, new MeterKey(meterId));
         verify(deviceContext, Mockito.never()).addDeleteToTxChain(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.<InstanceIdentifier<?>>any());
         verify(deviceMeterRegistry).store(meterId);
-        verify(txFacade).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.eq(meterPath), Matchers.any(Meter.class));
+        verify(deviceContext).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.eq(meterPath), Matchers.any(Meter.class));
     }
 
     private void fireAndCheck(final MultipartType type, final List<MultipartReply> statsData) throws InterruptedException, ExecutionException, TimeoutException {
@@ -494,15 +488,17 @@ public class StatisticsGatheringUtilsTest {
                 .thenReturn(Futures.immediateFuture(RpcResultBuilder.success(statsData).build()));
 
         final ListenableFuture<Boolean> gatherStatisticsResult = StatisticsGatheringUtils.gatherStatistics(
-                statisticsService,
-                deviceInfo,
-                type,
-                txFacade,
-                deviceContext,
-                false,
-                singlePurposeMultipartReplyTranslator);
-        Assert.assertTrue(gatherStatisticsResult.get(1, TimeUnit.SECONDS).booleanValue());
-        verify(txFacade).submitTransaction();
+            statisticsService,
+            deviceInfo,
+            type,
+            deviceContext,
+            deviceContext,
+            false,
+            ConvertorManagerFactory.createDefaultManager(),
+            provider);
+
+        Assert.assertTrue(gatherStatisticsResult.get(1, TimeUnit.SECONDS));
+        verify(deviceContext).submitTransaction();
     }
 
     private static MultipartReplyMessage assembleMPReplyMessage(final MultipartType type, final MultipartReplyBody mpReplyGroupCaseBld) {
@@ -532,10 +528,10 @@ public class StatisticsGatheringUtilsTest {
         final KeyedInstanceIdentifier<Table, TableKey> tablePath = deviceInfo.getNodeInstanceIdentifier()
                 .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tableId));
 
-        StatisticsGatheringUtils.deleteAllKnownFlows(deviceInfo,
-                deviceContext.getDeviceFlowRegistry(), txFacade);
+        StatisticsGatheringUtils.deleteAllKnownFlows(deviceContext, deviceInfo.getNodeInstanceIdentifier()
+            .augmentation(FlowCapableNode.class), false);
 
-        verify(txFacade).writeToTransaction(
+        verify(deviceContext).writeToTransaction(
                 LogicalDatastoreType.OPERATIONAL,
                 tablePath,
                 tableDataBld.setFlow(Collections.<Flow>emptyList()).build());

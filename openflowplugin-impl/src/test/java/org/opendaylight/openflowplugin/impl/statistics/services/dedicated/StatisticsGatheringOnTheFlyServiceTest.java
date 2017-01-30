@@ -13,11 +13,13 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
+import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
 import org.opendaylight.openflowplugin.impl.services.ServiceMocking;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 
@@ -27,12 +29,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public class StatisticsGatheringOnTheFlyServiceTest extends ServiceMocking {
 
     public static final NodeId NODE_ID = new NodeId(DUMMY_NODE_ID);
-    private StatisticsGatheringOnTheFlyService statisticsGatheringService;
+    private StatisticsGatheringOnTheFlyService<MultipartReply> statisticsGatheringService;
 
     @Override
     protected void setup() {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        statisticsGatheringService = new StatisticsGatheringOnTheFlyService(mockedRequestContextStack, mockedDeviceContext, convertorManager);
+        statisticsGatheringService = new StatisticsGatheringOnTheFlyService<>(mockedRequestContextStack, mockedDeviceContext, convertorManager, MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext));
         Mockito.doReturn(NODE_ID).when(mockedPrimConnectionContext).getNodeId();
         Mockito.when(mockedDeviceInfo.getNodeId()).thenReturn(NODE_ID);
         Mockito.when(mockedDeviceContext.getDeviceInfo().getNodeId()).thenReturn(NODE_ID);
