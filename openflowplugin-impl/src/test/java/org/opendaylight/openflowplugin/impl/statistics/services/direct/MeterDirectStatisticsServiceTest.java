@@ -34,11 +34,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 
 public class MeterDirectStatisticsServiceTest extends AbstractDirectStatisticsServiceTest {
     static final Long METER_NO = 1L;
-    private MeterDirectStatisticsService service;
+    private AbstractMeterDirectStatisticsService service;
 
     @Override
     public void setUp() throws Exception {
-        service = new MeterDirectStatisticsService(requestContextStack, deviceContext, convertorManager);
+        service = new AbstractMeterDirectStatisticsService(requestContextStack, deviceContext, convertorManager);
     }
 
     @Override

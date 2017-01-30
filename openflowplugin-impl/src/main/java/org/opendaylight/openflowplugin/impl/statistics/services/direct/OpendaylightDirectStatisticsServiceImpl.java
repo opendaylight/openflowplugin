@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.impl.statistics.services.direct;
 
-import java.util.Optional;
 import java.util.concurrent.Future;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsOutput;
@@ -43,61 +42,46 @@ public class OpendaylightDirectStatisticsServiceImpl implements OpendaylightDire
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Future<RpcResult<GetGroupStatisticsOutput>> getGroupStatistics(GetGroupStatisticsInput input) {
-        final Optional<GroupDirectStatisticsService> service = provider.lookup(GroupDirectStatisticsService.class);
-
-        if (!service.isPresent()) {
-            return missingImplementation(GroupDirectStatisticsService.class);
-        }
-
-        return service.get().handleAndReply(input);
+        return provider.lookup(AbstractGroupDirectStatisticsService.class)
+                .map(service -> service.handleAndReply(input))
+                .orElse(missingImplementation(AbstractGroupDirectStatisticsService.class));
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Future<RpcResult<GetQueueStatisticsOutput>> getQueueStatistics(GetQueueStatisticsInput input) {
-        final Optional<QueueDirectStatisticsService> service = provider.lookup(QueueDirectStatisticsService.class);
-
-        if (!service.isPresent()) {
-            return missingImplementation(QueueDirectStatisticsService.class);
-        }
-
-        return service.get().handleAndReply(input);
+        return provider.lookup(AbstractQueueDirectStatisticsService.class)
+                .map(service -> service.handleAndReply(input))
+                .orElse(missingImplementation(AbstractGroupDirectStatisticsService.class));
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Future<RpcResult<GetFlowStatisticsOutput>> getFlowStatistics(GetFlowStatisticsInput input) {
-        final Optional<FlowDirectStatisticsService> service = provider.lookup(FlowDirectStatisticsService.class);
-
-        if (!service.isPresent()) {
-            return missingImplementation(FlowDirectStatisticsService.class);
-        }
-
-        return service.get().handleAndReply(input);
+        return provider.lookup(AbstractFlowDirectStatisticsService.class)
+                .map(service -> service.handleAndReply(input))
+                .orElse(missingImplementation(AbstractGroupDirectStatisticsService.class));
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Future<RpcResult<GetMeterStatisticsOutput>> getMeterStatistics(GetMeterStatisticsInput input) {
-        final Optional<MeterDirectStatisticsService> service = provider.lookup(MeterDirectStatisticsService.class);
-
-        if (!service.isPresent()) {
-            return missingImplementation(MeterDirectStatisticsService.class);
-        }
-
-        return service.get().handleAndReply(input);
+        return provider.lookup(AbstractMeterDirectStatisticsService.class)
+                .map(service -> service.handleAndReply(input))
+                .orElse(missingImplementation(AbstractGroupDirectStatisticsService.class));
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Future<RpcResult<GetNodeConnectorStatisticsOutput>> getNodeConnectorStatistics(GetNodeConnectorStatisticsInput input) {
-        final Optional<NodeConnectorDirectStatisticsService> service = provider.lookup(NodeConnectorDirectStatisticsService.class);
-
-        if (!service.isPresent()) {
-            return missingImplementation(NodeConnectorDirectStatisticsService.class);
-        }
-
-        return service.get().handleAndReply(input);
+        return provider.lookup(AbstractPortDirectStatisticsService.class)
+                .map(service -> service.handleAndReply(input))
+                .orElse(missingImplementation(AbstractGroupDirectStatisticsService.class));
     }
 
-    private <T extends DataObject> Future<RpcResult<T>> missingImplementation(Class service) {
+    private static <T extends DataObject> Future<RpcResult<T>> missingImplementation(Class service) {
         return RpcResultBuilder.<T>failed().withError(
                 RpcError.ErrorType.APPLICATION,
                 String.format("No implementation found for direct statistics service %s.", service.getCanonicalName()))

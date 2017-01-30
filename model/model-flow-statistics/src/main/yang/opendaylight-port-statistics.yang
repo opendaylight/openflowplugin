@@ -64,8 +64,6 @@ module opendaylight-port-statistics {
 
     //Notification for node connector statistics update
     grouping node-connector-statistics-and-port-number-map {
-        status deprecated;
-
         description "List of map - node connectors and their statistics";
         list node-connector-statistics-and-port-number-map {
             key "node-connector-id";

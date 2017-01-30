@@ -19,6 +19,7 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
@@ -29,12 +30,12 @@ import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
-final class FlowService<O extends DataObject> extends AbstractSimpleService<FlowModInputBuilder, O> {
+public final class FlowService<O extends DataObject> extends AbstractSimpleService<FlowModInputBuilder, O> {
 
     private final ConvertorExecutor convertorExecutor;
     private final VersionDatapathIdConvertorData data;
 
-    protected FlowService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final Class<O> clazz, final ConvertorExecutor convertorExecutor) {
+    public FlowService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final Class<O> clazz, final ConvertorExecutor convertorExecutor) {
         super(requestContextStack, deviceContext, clazz);
         this.convertorExecutor = convertorExecutor;
         data = new VersionDatapathIdConvertorData(getVersion());
@@ -47,12 +48,12 @@ final class FlowService<O extends DataObject> extends AbstractSimpleService<Flow
         return input.build();
     }
 
-    List<FlowModInputBuilder> toFlowModInputs(final Flow input) {
+    public List<FlowModInputBuilder> toFlowModInputs(final Flow input) {
         final Optional<List<FlowModInputBuilder>> flowModInputBuilders = convertorExecutor.convert(input, data);
         return flowModInputBuilders.orElse(Collections.emptyList());
     }
 
-    ListenableFuture<RpcResult<O>> processFlowModInputBuilders(final List<FlowModInputBuilder> ofFlowModInputs) {
+    public ListenableFuture<RpcResult<O>> processFlowModInputBuilders(final List<FlowModInputBuilder> ofFlowModInputs) {
         final List<ListenableFuture<RpcResult<O>>> partialFutures = new ArrayList<>(ofFlowModInputs.size());
 
         for (final FlowModInputBuilder flowModInputBuilder : ofFlowModInputs) {

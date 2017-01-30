@@ -23,6 +23,7 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.compatibility.Bac
 import org.opendaylight.openflowplugin.impl.services.AbstractMultipartService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.Notification;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -32,7 +33,7 @@ import org.slf4j.LoggerFactory;
 /**
  * pulled up common functionality of notification emitting stats services (backward compatibility relic)
  */
-public abstract class AbstractCompatibleStatService<I, O, N extends Notification> extends AbstractMultipartService<I> implements BackwardCompatibleAtomicService<I, O> {
+public abstract class AbstractCompatibleStatService<I extends DataContainer, O, N extends Notification> extends AbstractMultipartService<I, MultipartReply> implements BackwardCompatibleAtomicService<I, O> {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractCompatibleStatService.class);
 
