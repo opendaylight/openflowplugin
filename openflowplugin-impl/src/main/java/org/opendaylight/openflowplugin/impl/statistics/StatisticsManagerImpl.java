@@ -151,10 +151,14 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                 }
                 calculateTimerDelay(timeCounter);
                 if (throwable instanceof IllegalStateException) {
-                    stopScheduling(deviceInfo);
-                } else {
-                    scheduleNextPolling(deviceState, deviceInfo, statisticsContext, timeCounter);
+                    // There are scenarios which an IllegalStateException exception can be produced and this thread is capturing
+                    // the error. Previous code was calling "stopScheduling(deviceInfo);" method which actually stop the thread
+                    // that gathers the stats. There is a problem with this approach because the controller still keeps ownership
+                    // on the node, continue doing other tasks but statitics are not generated anymore. This fix ensure that
+                    // the stats will continue being gathered.
+                    LOG.error("Exception occurred during statistics collection for node {}, continuing stats collection",deviceInfo.getLOGValue(),throwable);
                 }
+                scheduleNextPolling(deviceState, deviceInfo, statisticsContext, timeCounter);
             }
         });
 
