@@ -8,8 +8,8 @@
 package org.opendaylight.openflowplugin.impl.services;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -43,7 +43,9 @@ import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegi
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
+import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
+import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerFlowMultipartRequestOnTheFlyCallback;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.MessageIntelligenceAgencyImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
@@ -112,7 +114,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
 
     private AbstractRequestContext<List<MultipartReply>> dummyRequestContext;
     private final EventIdentifier dummyEventIdentifier = new EventIdentifier(DUMMY_EVENT_NAME, DUMMY_DEVICE_ID);
-    private MultipartRequestOnTheFlyCallback multipartRequestOnTheFlyCallback;
+    private AbstractMultipartRequestOnTheFlyCallback<MultipartReply> multipartRequestOnTheFlyCallback;
     private final short tableId = 0;
 
     @Before
@@ -156,9 +158,13 @@ public class MultipartRequestOnTheFlyCallbackTest {
         };
 
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        multipartRequestOnTheFlyCallback = new MultipartRequestOnTheFlyCallback(dummyRequestContext, String.class,
-                mockedDeviceContext.getMessageSpy(),dummyEventIdentifier, mockedDeviceInfo,
-                mockedDeviceContext.getDeviceFlowRegistry(), mockedDeviceContext, convertorManager);
+        multipartRequestOnTheFlyCallback = new MultiLayerFlowMultipartRequestOnTheFlyCallback<>(
+            dummyRequestContext,
+            String.class,
+            mockedDeviceContext,
+            dummyEventIdentifier,
+            MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext),
+            convertorManager);
     }
 
 
@@ -267,11 +273,10 @@ public class MultipartRequestOnTheFlyCallbackTest {
         multipartRequestOnTheFlyCallback.onSuccess(mpReplyMessage.build());
 
         final RpcResult<List<MultipartReply>> actualResult = dummyRequestContext.getFuture().get();
-        assertNotNull(actualResult.getErrors());
-        assertTrue(actualResult.getErrors().isEmpty());
-        assertNotNull(actualResult.getResult());
-        assertTrue(actualResult.getResult().isEmpty());
 
+        // Nothing else than flow is supported by on the fly callback
+        assertNotNull(actualResult.getErrors());
+        assertFalse(actualResult.getErrors().isEmpty());
         Mockito.verify(mockedFlowRegistry, Mockito.never()).storeIfNecessary(Matchers.any());
         Mockito.verify(mockedDeviceContext, Mockito.never()).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL),
                 Matchers.<InstanceIdentifier>any(), Matchers.<DataObject>any());
