@@ -71,6 +71,7 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleLi
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
+import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProviderFactory;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowDescriptorFactory;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
@@ -230,7 +231,8 @@ public class DeviceContextImplTest {
                 translatorLibrary,
                 deviceManager,
                 convertorExecutor,
-                false, timer, deviceManager, false);
+                false, timer, deviceManager, false,
+            DeviceInitializerProviderFactory.createDefaultProvider());
         deviceContextSpy = Mockito.spy(deviceContext);
 
         xid = new Xid(atomicLong.incrementAndGet());
@@ -239,16 +241,6 @@ public class DeviceContextImplTest {
 
         Mockito.doNothing().when(deviceContextSpy).writeToTransaction(Mockito.<LogicalDatastoreType>any(), Mockito.<InstanceIdentifier>any(), any());
 
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void testDeviceContextImplConstructorNullDataBroker() throws Exception {
-        new DeviceContextImpl(connectionContext, null, null, translatorLibrary, deviceManager, convertorExecutor,false, timer, deviceManager, false).close();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void testDeviceContextImplConstructorNullTimer() throws Exception {
-        new DeviceContextImpl(null, dataBroker, null, translatorLibrary, deviceManager,convertorExecutor,false, timer, deviceManager, false).close();
     }
 
     @Test
@@ -362,10 +354,15 @@ public class DeviceContextImplTest {
 
     @Test
     public void testProcessReply2() {
-        final MultipartReply mockedMultipartReply = mock(MultipartReply.class);
         final Xid dummyXid = new Xid(DUMMY_XID);
-        deviceContext.processReply(dummyXid, Lists.newArrayList(mockedMultipartReply));
+
+        final Error mockedError = mock(Error.class);
+        deviceContext.processReply(dummyXid, Lists.newArrayList(mockedError));
         verify(messageSpy).spyMessage(any(Class.class), eq(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE));
+
+        final MultipartReply mockedMultipartReply = mock(MultipartReply.class);
+        deviceContext.processReply(dummyXid, Lists.newArrayList(mockedMultipartReply));
+        verify(messageSpy).spyMessage(any(Class.class), eq(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS));
     }
 
     @Test
