@@ -58,6 +58,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTermin
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
+import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProviderFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -145,19 +146,20 @@ public class DeviceManagerImplTest {
         when(mockedWriteTransaction.submit()).thenReturn(mockedFuture);
 
         final DeviceManagerImpl deviceManager = new DeviceManagerImpl(
-                mockedDataBroker,
-                TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA,
-                false,
-                barrierIntervalNanos,
-                barrierCountLimit,
-                messageIntelligenceAgency,
-                true,
-                clusterSingletonServiceProvider,
-                null,
-                new HashedWheelTimer(),
-                convertorExecutor,
-                false,
-                false);
+            mockedDataBroker,
+            TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA,
+            false,
+            barrierIntervalNanos,
+            barrierCountLimit,
+            messageIntelligenceAgency,
+            true,
+            clusterSingletonServiceProvider,
+            null,
+            new HashedWheelTimer(),
+            convertorExecutor,
+            false,
+            false,
+            DeviceInitializerProviderFactory.createDefaultProvider());
 
         deviceManager.setDeviceInitializationPhaseHandler(deviceInitPhaseHandler);
         deviceManager.setDeviceTerminationPhaseHandler(deviceTerminationPhaseHandler);
