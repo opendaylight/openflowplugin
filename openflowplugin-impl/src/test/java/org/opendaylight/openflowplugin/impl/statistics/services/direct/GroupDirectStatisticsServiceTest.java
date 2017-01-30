@@ -34,11 +34,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 
 public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsServiceTest {
     static final Long GROUP_NO = 1L;
-    private GroupDirectStatisticsService service;
+    private AbstractGroupDirectStatisticsService service;
 
     @Override
     public void setUp() throws Exception {
-        service = new GroupDirectStatisticsService(requestContextStack, deviceContext, convertorManager);
+        service = new AbstractGroupDirectStatisticsService(requestContextStack, deviceContext, convertorManager);
     }
 
     @Override

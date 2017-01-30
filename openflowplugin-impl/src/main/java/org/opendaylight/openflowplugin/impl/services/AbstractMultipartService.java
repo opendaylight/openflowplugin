@@ -8,22 +8,40 @@
 package org.opendaylight.openflowplugin.impl.services;
 
 import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;
+import java.util.function.Function;
+import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
+import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerMultipartRequestCallback;
+import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerMultipartRequestCallback;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yangtools.yang.common.RpcResult;
 
-public abstract class AbstractMultipartService<I> extends AbstractService<I, List<MultipartReply>> {
+public abstract class AbstractMultipartService<I, T extends OfHeader> extends AbstractService<I, List<T>> {
+
+    private static final Function<OfHeader, Boolean> ALTERNATE_IS_COMPLETE = message ->
+        !(message instanceof MultipartReply) || !((MultipartReply) message).isRequestMore();
+
     protected AbstractMultipartService(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
         super(requestContextStack, deviceContext);
     }
 
     @Override
-    protected final FutureCallback<OfHeader> createCallback(final RequestContext<List<MultipartReply>> context, final Class<?> requestType) {
-        return new MultipartRequestCallback(context, requestType, getDeviceContext(), getEventIdentifier());
+    protected FutureCallback<OfHeader> createCallback(RequestContext<List<T>> context, Class<?> requestType) {
+        return canUseSingleLayer()
+            ? new SingleLayerMultipartRequestCallback<>(context, requestType, getDeviceContext(), getEventIdentifier())
+            : new MultiLayerMultipartRequestCallback<>(context, requestType, getDeviceContext(), getEventIdentifier());
     }
 
+    @Override
+    public final ListenableFuture<RpcResult<List<T>>> handleServiceCall(@Nonnull final I input) {
+        return canUseSingleLayer()
+            ? super.handleServiceCall(input, ALTERNATE_IS_COMPLETE)
+            : super.handleServiceCall(input);
+    }
 
 }

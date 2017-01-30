@@ -23,6 +23,7 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.openflowplugin.impl.services.sal.SalFlowsBatchServiceImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
@@ -67,7 +68,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Test for {@link SalFlowsBatchServiceImpl}.
+ * Test for {@link org.opendaylight.openflowplugin.impl.services.sal.SalFlowsBatchServiceImpl}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class SalFlowsBatchServiceImplTest {

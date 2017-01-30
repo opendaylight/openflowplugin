@@ -178,7 +178,7 @@ public final class StatisticsGatheringUtils {
                                         deviceInfo.getVersion(), singleReply);
                                 multipartData = multipartDataList.get(0);
                                 allMultipartData = Iterables.concat(allMultipartData, multipartDataList);
-                            }
+                            }List<? extends DataObject>
                         } catch (final Exception e) {
                             LOG.warn("stats processing of type {} for node {} failed during transfomation step",
                                     type, deviceInfo.getNodeId(), e);
