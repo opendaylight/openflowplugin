@@ -15,6 +15,9 @@ import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import io.netty.util.HashedWheelTimer;
+import io.netty.util.Timeout;
+import io.netty.util.TimerTask;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
@@ -37,7 +40,10 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
+import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
+import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.ChangeStatisticsWorkModeInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutputBuilder;
@@ -48,9 +54,6 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import io.netty.util.HashedWheelTimer;
-import io.netty.util.Timeout;
-import io.netty.util.TimerTask;
 
 public class StatisticsManagerImpl implements StatisticsManager, StatisticsManagerControlService {
 
@@ -58,7 +61,6 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     private static final long DEFAULT_STATS_TIMEOUT_SEC = 50L;
     private final ConvertorExecutor converterExecutor;
-
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
     private DeviceTerminationPhaseHandler deviceTerminationPhaseHandler;
 
@@ -102,13 +104,26 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     public void onDeviceContextLevelUp(final DeviceInfo deviceInfo,
                                        final LifecycleService lifecycleService) throws Exception {
 
+        final MultipartWriterProvider statisticsWriterProvider = MultipartWriterProviderFactory
+            .createDefaultProvider(lifecycleService.getDeviceContext());
+
         final StatisticsContext statisticsContext =
-                new StatisticsContextImpl(
-                        deviceInfo,
-                        isStatisticsPollingOn,
-                        lifecycleService,
-                        converterExecutor,
-                        this);
+            lifecycleService.getDeviceContext().canUseSingleLayerSerialization() ?
+                new StatisticsContextImpl<MultipartReply>(
+                    deviceInfo,
+                    isStatisticsPollingOn,
+                    lifecycleService,
+                    converterExecutor,
+                    this,
+                    statisticsWriterProvider) :
+                new StatisticsContextImpl<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
+                    .MultipartReply>(
+                    deviceInfo,
+                    isStatisticsPollingOn,
+                    lifecycleService,
+                    converterExecutor,
+                    this,
+                    statisticsWriterProvider);
 
         Verify.verify(
                 contexts.putIfAbsent(deviceInfo, statisticsContext) == null,
