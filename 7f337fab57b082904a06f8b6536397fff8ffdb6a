@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fafc7978_f5fe8b6a",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsManagerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-01-30T21:30:41Z",
+      "side": 1,
+      "message": "Two changes :\n)1 This exception can be thrown if the connection to the device is not more available. See StatisticsContextImpl.java:297, I think we should change that to throw ConnectionException and catch it here and stop the statistics. Otherwise keep continuing the statistics. Please add log for that warning.\n\n2)Please change it to warn and rephrase the log to \"Exception occurred during statistics collection for node {}, continuing stats collection\",deviceInfo.getLOGValue()\"",
+      "revId": "7f337fab57b082904a06f8b6536397fff8ffdb6a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
