@@ -34,11 +34,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.
 
 public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsServiceTest {
     static final Long QUEUE_NO = 1L;
-    private QueueDirectStatisticsService service;
+    private AbstractQueueDirectStatisticsService service;
 
     @Override
     public void setUp() throws Exception {
-        service = new QueueDirectStatisticsService(requestContextStack, deviceContext, convertorManager);
+        service = new AbstractQueueDirectStatisticsService(requestContextStack, deviceContext, convertorManager);
     }
 
     @Override

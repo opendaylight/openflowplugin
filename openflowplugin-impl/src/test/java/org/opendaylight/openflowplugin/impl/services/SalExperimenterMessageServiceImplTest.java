@@ -20,6 +20,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageToOFJava;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
+import org.opendaylight.openflowplugin.impl.services.sal.SalExperimenterMessageServiceImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SendExperimenterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SendExperimenterInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
@@ -30,7 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
- * Test for {@link SalExperimenterMessageServiceImpl}.
+ * Test for {@link org.opendaylight.openflowplugin.impl.services.sal.SalExperimenterMessageServiceImpl}.
  */
 public class SalExperimenterMessageServiceImplTest extends ServiceMocking {
 
