@@ -101,7 +101,7 @@ public class AbstractCompatibleStatServiceTest extends AbstractStatsServiceTest 
         Mockito.when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
         Mockito.when(deviceInfo.getNodeId()).thenReturn(NODE_ID);
         Mockito.when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
-        Mockito.doAnswer(closeRequestFutureAnswer).when(multiMsgCollector).endCollecting();
+        Mockito.doAnswer(closeRequestFutureAnswer).when(multiMsgCollector).endCollecting(null);
         Mockito.doAnswer(closeRequestFutureAnswer).when(multiMsgCollector).endCollecting(Matchers.any(EventIdentifier.class));
 
         Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)

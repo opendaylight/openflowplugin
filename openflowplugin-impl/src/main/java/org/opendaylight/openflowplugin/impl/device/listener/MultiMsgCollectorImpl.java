@@ -11,14 +11,15 @@ package org.opendaylight.openflowplugin.impl.device.listener;
 import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
@@ -34,54 +35,38 @@ import org.slf4j.LoggerFactory;
  *         </p>
  *         Created: Mar 23, 2015
  */
-public class MultiMsgCollectorImpl implements MultiMsgCollector {
-
+public class MultiMsgCollectorImpl<T extends OfHeader> implements MultiMsgCollector<T> {
     private static final Logger LOG = LoggerFactory.getLogger(MultiMsgCollectorImpl.class);
-
-    private final List<MultipartReply> replyCollection = new ArrayList<>();
-    private final RequestContext<List<MultipartReply>> requestContext;
+    private final List<T> replyCollection = new ArrayList<>();
+    private final RequestContext<List<T>> requestContext;
     private final DeviceReplyProcessor deviceReplyProcessor;
-    private MultipartType msgType;
 
-    public MultiMsgCollectorImpl(final DeviceReplyProcessor deviceReplyProcessor, final RequestContext<List<MultipartReply>> requestContext) {
+    public MultiMsgCollectorImpl(final DeviceReplyProcessor deviceReplyProcessor, final RequestContext<List<T>> requestContext) {
         this.deviceReplyProcessor = Preconditions.checkNotNull(deviceReplyProcessor);
         this.requestContext = Preconditions.checkNotNull(requestContext);
     }
 
     @Override
-    public void addMultipartMsg(final MultipartReply reply) {
-        addMultipartMsg(reply, null);
-    }
-
-    @Override
-    public void addMultipartMsg(@Nonnull final MultipartReply reply, @Nonnull final EventIdentifier eventIdentifier) {
+    public void addMultipartMsg(@Nonnull final T reply, final boolean reqMore, @Nullable final EventIdentifier eventIdentifier) {
         Preconditions.checkNotNull(reply);
+        Preconditions.checkNotNull(requestContext.getXid());
         Preconditions.checkArgument(requestContext.getXid().getValue().equals(reply.getXid()));
         LOG.trace("Try to add Multipart reply msg with XID {}", reply.getXid());
-
-        if (msgType == null) {
-            msgType = reply.getType();
-        }
-
-        if (!msgType.equals(reply.getType())) {
-            LOG.warn("MultiMsgCollector get incorrect multipart msg with type {} but expected type is {}", reply.getType(), msgType);
-        }
-
         replyCollection.add(reply);
-        if (!reply.getFlags().isOFPMPFREQMORE()) {
+
+        if (!reqMore) {
             endCollecting(eventIdentifier);
         }
     }
 
-    public void endCollecting() {
-        endCollecting(null);
-    }
+    @Override
+    public void endCollecting(@Nullable final EventIdentifier eventIdentifier) {
+        final RpcResult<List<T>> rpcResult = RpcResultBuilder.success(replyCollection).build();
 
-    public void endCollecting(final EventIdentifier eventIdentifier) {
-        final RpcResult<List<MultipartReply>> rpcResult = RpcResultBuilder.success(replyCollection).build();
-        if (null != eventIdentifier) {
+        if (Objects.nonNull(eventIdentifier)) {
             EventsTimeCounter.markEnd(eventIdentifier);
         }
+
         requestContext.setResult(rpcResult);
         requestContext.close();
         deviceReplyProcessor.processReply(requestContext.getXid(), replyCollection);
