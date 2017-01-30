@@ -19,11 +19,13 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.OngoingStubbing;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
+import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerMultipartRequestCallback;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
@@ -32,7 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 /**
- * Test for {@link MultipartRequestCallback}.
+ * Test for {@link org.opendaylight.openflowplugin.impl.services.AbstractMultipartRequestCallback}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class MultipartRequestCallbackTest {
@@ -44,18 +46,21 @@ public class MultipartRequestCallbackTest {
     @Mock
     private MessageSpy spy;
     @Mock
-    private MultiMsgCollector multiMsgCollector;
+    private MultiMsgCollector<MultipartReply> multiMsgCollector;
     @Captor
     private ArgumentCaptor<RpcResult<List<MultipartReply>>> rpcResultCapt;
 
-    private MultipartRequestCallback multipartRequestCallback;
+    private AbstractMultipartRequestCallback<MultipartReply> multipartRequestCallback;
 
     @Before
     public void setUp() throws Exception {
         Mockito.doNothing().when(requestContext).setResult(rpcResultCapt.capture());
         Mockito.when(deviceContext.getMessageSpy()).thenReturn(spy);
-        Mockito.when(deviceContext.getMultiMsgCollector(Matchers.<RequestContext>any())).thenReturn(multiMsgCollector);
-        multipartRequestCallback = new MultipartRequestCallback(requestContext, MultipartRequestInput.class, deviceContext);
+
+        final OngoingStubbing<MultiMsgCollector<MultipartReply>> when =
+            Mockito.when(deviceContext.getMultiMsgCollector(Matchers.any()));
+        when.thenReturn(multiMsgCollector);
+        multipartRequestCallback = new MultiLayerMultipartRequestCallback<>(requestContext, MultipartRequestInput.class, deviceContext, null);
     }
 
     /**
@@ -91,6 +96,6 @@ public class MultipartRequestCallbackTest {
     public void testOnSuccess3() throws Exception {
         final MultipartReplyMessage replyMessage = new MultipartReplyMessageBuilder().build();
         multipartRequestCallback.onSuccess(replyMessage);
-        Mockito.verify(multiMsgCollector).addMultipartMsg(Matchers.eq(replyMessage), Matchers.<EventIdentifier>any());
+        Mockito.verify(multiMsgCollector).addMultipartMsg(Matchers.eq(replyMessage), Matchers.eq(false), Matchers.any());
     }
 }

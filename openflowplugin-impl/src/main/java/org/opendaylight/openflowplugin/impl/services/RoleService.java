@@ -19,6 +19,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.role.RoleChangeException;
+import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ControllerRole;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -41,7 +42,7 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
 
     private final DeviceContext deviceContext;
 
-    protected RoleService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final Class<RoleRequestOutput> clazz) {
+    public RoleService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final Class<RoleRequestOutput> clazz) {
         super(requestContextStack, deviceContext, clazz);
         this.deviceContext = deviceContext;
     }

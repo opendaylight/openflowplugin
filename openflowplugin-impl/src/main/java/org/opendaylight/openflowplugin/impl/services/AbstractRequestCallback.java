@@ -16,6 +16,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy.STATISTIC_GROUP;
+import org.opendaylight.openflowplugin.impl.services.util.RequestContextUtil;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Error;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -23,18 +24,11 @@ import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
-abstract class AbstractRequestCallback<T> implements FutureCallback<OfHeader> {
+public abstract class AbstractRequestCallback<T> implements FutureCallback<OfHeader> {
     private final RequestContext<T> context;
     private final Class<?> requestType;
     private final MessageSpy spy;
     private EventIdentifier eventIdentifier;
-
-
-    protected AbstractRequestCallback(final RequestContext<T> context, final Class<?> requestType, final MessageSpy spy) {
-        this.context = Preconditions.checkNotNull(context);
-        this.requestType = Preconditions.checkNotNull(requestType);
-        this.spy = Preconditions.checkNotNull(spy);
-    }
 
     protected AbstractRequestCallback(final RequestContext<T> context,
                                       final Class<?> requestType,
@@ -60,7 +54,7 @@ abstract class AbstractRequestCallback<T> implements FutureCallback<OfHeader> {
     }
 
     @Override
-    public final void onFailure(final Throwable t) {
+    public final void onFailure(@Nonnull final Throwable t) {
         final RpcResultBuilder<T> builder;
         if (null != eventIdentifier) {
             EventsTimeCounter.markEnd(eventIdentifier);
