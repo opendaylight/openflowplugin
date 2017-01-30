@@ -36,8 +36,6 @@ module opendaylight-queue-statistics {
 
     //RPC calls to fetch queue statistics
     grouping queue-id-and-statistics-map {
-        status deprecated;
-
         list queue-id-and-statistics-map {
             key "queue-id node-connector-id";
             leaf queue-id {

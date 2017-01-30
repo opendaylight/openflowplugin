@@ -39,11 +39,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 
 public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsServiceTest {
     static final Short TABLE_NO = 1;
-    private FlowDirectStatisticsService service;
+    private AbstractFlowDirectStatisticsService service;
 
     @Override
     public void setUp() throws Exception {
-        service = new FlowDirectStatisticsService(requestContextStack, deviceContext, convertorManager);
+        service = new AbstractFlowDirectStatisticsService(requestContextStack, deviceContext, convertorManager);
         final DeviceFlowRegistry registry = mock(DeviceFlowRegistry.class);
         when(registry.storeIfNecessary(any())).thenReturn(new FlowId("1"));
         when(deviceContext.getDeviceFlowRegistry()).thenReturn(registry);

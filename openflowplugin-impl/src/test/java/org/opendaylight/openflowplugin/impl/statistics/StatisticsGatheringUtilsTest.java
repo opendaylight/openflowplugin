@@ -48,7 +48,7 @@ import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRe
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.StatisticsGatherer;
-import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
+import org.opendaylight.openflowplugin.impl.common.MultipartReplyTranslatorUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -170,12 +170,12 @@ public class StatisticsGatheringUtilsTest {
     @Mock
     private TxFacade txFacade;
 
-    private SinglePurposeMultipartReplyTranslator singlePurposeMultipartReplyTranslator;
+    private MultipartReplyTranslatorUtil singlePurposeMultipartReplyTranslator;
 
     @Before
     public void setUp() throws Exception {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        singlePurposeMultipartReplyTranslator = new SinglePurposeMultipartReplyTranslator(convertorManager);
+        singlePurposeMultipartReplyTranslator = new MultipartReplyTranslatorUtil(convertorManager);
         when(deviceContext.getDeviceState()).thenReturn(deviceState);
         when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
         when(deviceContext.getDeviceFlowRegistry()).thenReturn(deviceFlowRegistry);

@@ -32,6 +32,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
+import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
@@ -99,31 +100,30 @@ public class DeviceInitializationUtils {
      * InitializationNodeInformation is good to call only for MASTER otherwise we will have not empty transaction
      * for every Cluster Node (SLAVE too) and we will get race-condition by closing Connection.
      *
-     * @param deviceContext
-     * @param switchFeaturesMandatory
-     * @param convertorExecutor
+     * @param deviceContext device context
+     * @param switchFeaturesMandatory switch features mandatory
+     * @param convertorExecutor convertor executor
      */
-    public static void initializeNodeInformation(final DeviceContext deviceContext, final boolean switchFeaturesMandatory, final ConvertorExecutor convertorExecutor) throws ExecutionException, InterruptedException {
-        Preconditions.checkArgument(deviceContext != null);
+    public static void initializeNodeInformation(final DeviceContext deviceContext,
+                                                 final boolean switchFeaturesMandatory,
+                                                 final ConvertorExecutor convertorExecutor) throws ExecutionException, InterruptedException {
+        Preconditions.checkNotNull(deviceContext);
         final DeviceState deviceState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         final DeviceInfo deviceInfo = deviceContext.getDeviceInfo();
         final ConnectionContext connectionContext = Preconditions.checkNotNull(deviceContext.getPrimaryConnectionContext());
         final short version = deviceInfo.getVersion();
-        LOG.trace("initalizeNodeInformation for node {}", deviceInfo.getNodeId());
+        LOG.trace("InitializeNodeInformation for node {}", deviceInfo.getNodeId());
         final SettableFuture<Void> returnFuture = SettableFuture.create();
         addNodeToOperDS(deviceContext, returnFuture);
-        final ListenableFuture<List<RpcResult<List<MultipartReply>>>> deviceFeaturesFuture;
+
         if (OFConstants.OFP_VERSION_1_0 == version) {
             final CapabilitiesV10 capabilitiesV10 = connectionContext.getFeatures().getCapabilitiesV10();
-
             DeviceStateUtil.setDeviceStateBasedOnV10Capabilities(deviceState, capabilitiesV10);
 
-            deviceFeaturesFuture = createDeviceFeaturesForOF10(deviceContext);
             // create empty tables after device description is processed
-            chainTableTrunkWriteOF10(deviceContext, deviceFeaturesFuture);
+            chainTableTrunkWriteOF10(deviceContext, createDeviceFeaturesForOF10(deviceContext));
 
-            final short ofVersion = deviceInfo.getVersion();
-            final TranslatorKey translatorKey = new TranslatorKey(ofVersion, PortGrouping.class.getName());
+            final TranslatorKey translatorKey = new TranslatorKey(version, PortGrouping.class.getName());
             final MessageTranslator<PortGrouping, FlowCapableNodeConnector> translator = deviceContext.oook()
                     .lookupTranslator(translatorKey);
             final BigInteger dataPathId = deviceContext.getDeviceInfo().getDatapathId();
@@ -132,7 +132,7 @@ public class DeviceInitializationUtils {
                 final FlowCapableNodeConnector fcNodeConnector = translator.translate(port, deviceContext.getDeviceInfo(), null);
 
                 final NodeConnectorId nodeConnectorId = NodeStaticReplyTranslatorUtil.nodeConnectorId(
-                        dataPathId.toString(), port.getPortNo(), ofVersion);
+                        dataPathId.toString(), port.getPortNo(), version);
                 final NodeConnectorBuilder ncBuilder = new NodeConnectorBuilder().setId(nodeConnectorId);
                 ncBuilder.addAugmentation(FlowCapableNodeConnector.class, fcNodeConnector);
                 ncBuilder.addAugmentation(FlowCapableNodeConnectorStatisticsData.class,
@@ -177,7 +177,7 @@ public class DeviceInitializationUtils {
         final ListenableFuture<RpcResult<List<MultipartReply>>> replyDesc = getNodeStaticInfo(MultipartType.OFPMPDESC,
                 deviceContext, deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), deviceContext.getDeviceInfo().getVersion());
 
-        return Futures.allAsList(Arrays.asList(replyDesc));
+        return Futures.allAsList(Collections.singletonList(replyDesc));
     }
 
     private static ListenableFuture<List<RpcResult<List<MultipartReply>>>> createDeviceFeaturesForOF13(
@@ -426,26 +426,29 @@ public class DeviceInitializationUtils {
         return IetfInetUtil.INSTANCE.ipAddressFor(remoteAddress.getAddress());
     }
 
-    // FIXME : remove after ovs tableFeatures fix
-    private static void makeEmptyTables(final DeviceContext dContext, final InstanceIdentifier<Node> nodeII,
-                                        final Short nrOfTables) {
+    // FIXME : remove after ovs table features fix
+    public static void makeEmptyTables(final TxFacade txFacade, final DeviceInfo deviceInfo, final Short nrOfTables) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("About to create {} empty tables.", nrOfTables);
+            LOG.debug("About to create {} empty tables for node {}.", nrOfTables, deviceInfo.getLOGValue());
         }
+
         for (int i = 0; i < nrOfTables; i++) {
-            final short tId = (short) i;
-            final InstanceIdentifier<Table> tableII = nodeII.augmentation(FlowCapableNode.class).child(Table.class,
-                    new TableKey(tId));
-            final TableBuilder tableBuilder = new TableBuilder().setId(tId).addAugmentation(
-                    FlowTableStatisticsData.class, new FlowTableStatisticsDataBuilder().build());
-
             try {
-                dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, tableII, tableBuilder.build());
+                txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL,
+                    deviceInfo
+                        .getNodeInstanceIdentifier()
+                        .augmentation(FlowCapableNode.class)
+                        .child(Table.class, new TableKey((short) i)),
+                    new TableBuilder()
+                        .setId((short) i)
+                        .addAugmentation(
+                            FlowTableStatisticsData.class,
+                            new FlowTableStatisticsDataBuilder().build())
+                        .build());
             } catch (final Exception e) {
-                LOG.debug("makeEmptyTables: Failed to write node {} to DS ", dContext.getDeviceInfo().getNodeId().toString(), e);
+                LOG.debug("makeEmptyTables: Failed to write node {} to DS ", deviceInfo.getLOGValue(), e);
             }
-
-        }
+        };
     }
 
     static void createSuccessProcessingCallback(final MultipartType type, final DeviceContext deviceContext,
@@ -488,7 +491,7 @@ public class DeviceInitializationUtils {
         final OutboundQueue queue = deviceContext.getPrimaryConnectionContext().getOutboundQueueProvider();
 
         final Long reserved = deviceContext.getDeviceInfo().reserveXidForDeviceMessage();
-        final RequestContext<List<MultipartReply>> requestContext = new AbstractRequestContext<List<MultipartReply>>(
+        final RequestContext<List<OfHeader>> requestContext = new AbstractRequestContext<List<OfHeader>>(
                 reserved) {
             @Override
             public void close() {
@@ -513,11 +516,17 @@ public class DeviceInitializationUtils {
                     public void onSuccess(final OfHeader ofHeader) {
                         if (ofHeader instanceof MultipartReply) {
                             final MultipartReply multipartReply = (MultipartReply) ofHeader;
-                            multiMsgCollector.addMultipartMsg(multipartReply);
+                            multiMsgCollector.addMultipartMsg(multipartReply, multipartReply.getFlags().isOFPMPFREQMORE(), null);
+                        } else if (ofHeader instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112
+                                .MultipartReply) {
+                            final org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112
+                                    .MultipartReply multipartReply = (org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112
+                                    .MultipartReply) ofHeader;
+                            multiMsgCollector.addMultipartMsg(multipartReply, multipartReply.isRequestMore(), null);
                         } else if (null != ofHeader) {
                             LOG.info("Unexpected response type received {}.", ofHeader.getClass());
                         } else {
-                            multiMsgCollector.endCollecting();
+                            multiMsgCollector.endCollecting(null);
                             LOG.info("Response received is null.");
                         }
                     }

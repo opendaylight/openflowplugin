@@ -43,15 +43,17 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.openflowplugin.impl.rpc.listener.ItemLifecycleListenerImpl;
-import org.opendaylight.openflowplugin.impl.services.RequestContextUtil;
+import org.opendaylight.openflowplugin.impl.services.util.RequestContextUtil;
+import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringOnTheFlyService;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringService;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class StatisticsContextImpl implements StatisticsContext {
+class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
 
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsContextImpl.class);
     private static final String CONNECTION_CLOSED = "Connection closed.";
@@ -62,13 +64,14 @@ class StatisticsContextImpl implements StatisticsContext {
     private final DeviceState devState;
     private final ListenableFuture<Boolean> emptyFuture;
     private final boolean isStatisticsPollingOn;
-    private final SinglePurposeMultipartReplyTranslator multipartReplyTranslator;
     private final Object collectionStatTypeLock = new Object();
+    private final ConvertorExecutor convertorExecutor;
+    private final MultipartWriterProvider statisticsWriterProvider;
     @GuardedBy("collectionStatTypeLock")
     private List<MultipartType> collectingStatType;
 
-    private StatisticsGatheringService statisticsGatheringService;
-    private StatisticsGatheringOnTheFlyService statisticsGatheringOnTheFlyService;
+    private StatisticsGatheringService<T> statisticsGatheringService;
+    private StatisticsGatheringOnTheFlyService<T> statisticsGatheringOnTheFlyService;
     private Timeout pollTimeout;
     private final DeviceInfo deviceInfo;
     private final StatisticsManager myManager;
@@ -85,21 +88,24 @@ class StatisticsContextImpl implements StatisticsContext {
                           final boolean isStatisticsPollingOn,
                           @Nonnull final LifecycleService lifecycleService,
                           @Nonnull final ConvertorExecutor convertorExecutor,
-                          @Nonnull final StatisticsManager myManager) {
+                          @Nonnull final StatisticsManager myManager,
+                          @Nonnull final MultipartWriterProvider statisticsWriterProvider) {
         this.lifecycleService = lifecycleService;
         this.deviceContext = lifecycleService.getDeviceContext();
         this.devState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         this.isStatisticsPollingOn = isStatisticsPollingOn;
-        multipartReplyTranslator = new SinglePurposeMultipartReplyTranslator(convertorExecutor);
+        this.convertorExecutor = convertorExecutor;
         emptyFuture = Futures.immediateFuture(false);
-        statisticsGatheringService = new StatisticsGatheringService(this, deviceContext);
-        statisticsGatheringOnTheFlyService = new StatisticsGatheringOnTheFlyService(this, deviceContext, convertorExecutor);
+        statisticsGatheringService = new StatisticsGatheringService<>(this, deviceContext);
+        statisticsGatheringOnTheFlyService = new StatisticsGatheringOnTheFlyService<>(this,
+            deviceContext, convertorExecutor, statisticsWriterProvider);
         itemLifeCycleListener = new ItemLifecycleListenerImpl(deviceContext);
         statListForCollectingInitialization();
         this.state = CONTEXT_STATE.INITIALIZATION;
         this.deviceInfo = deviceInfo;
         this.myManager = myManager;
         this.lastDataGathering = null;
+        this.statisticsWriterProvider = statisticsWriterProvider;
     }
 
     @Override
@@ -275,7 +281,7 @@ class StatisticsContextImpl implements StatisticsContext {
     private void statChainFuture(final Iterator<MultipartType> iterator, final SettableFuture<Boolean> resultFuture, final boolean initial) {
         if (ConnectionContext.CONNECTION_STATE.RIP.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
             final String errMsg = String.format("Device connection is closed for Node : %s.",
-                    getDeviceInfo().getNodeId());
+                getDeviceInfo().getNodeId());
             LOG.debug(errMsg);
             resultFuture.setException(new ConnectionException(errMsg));
             return;
@@ -306,7 +312,7 @@ class StatisticsContextImpl implements StatisticsContext {
      * Method checks a device state. It returns null for be able continue. Otherwise it returns immediateFuture
      * which has to be returned from caller too
      *
-     * @return
+     * @return future
      */
     @VisibleForTesting
     ListenableFuture<Boolean> deviceConnectionCheck() {
@@ -315,7 +321,7 @@ class StatisticsContextImpl implements StatisticsContext {
             switch (deviceContext.getPrimaryConnectionContext().getConnectionState()) {
                 case RIP:
                     final String errMsg = String.format("Device connection doesn't exist anymore. Primary connection status : %s",
-                            deviceContext.getPrimaryConnectionContext().getConnectionState());
+                        deviceContext.getPrimaryConnectionContext().getConnectionState());
                     resultingFuture = Futures.immediateFailedFuture(new Throwable(errMsg));
                     break;
                 default:
@@ -330,92 +336,107 @@ class StatisticsContextImpl implements StatisticsContext {
     //TODO: Refactor twice sending deviceContext into gatheringStatistics
     private ListenableFuture<Boolean> collectFlowStatistics(final MultipartType multipartType, final boolean initial) {
         return devState.isFlowStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(
-                statisticsGatheringOnTheFlyService,
-                getDeviceInfo(),
-                /*MultipartType.OFPMPFLOW*/ multipartType,
-                deviceContext,
-                deviceContext,
-                initial, multipartReplyTranslator) : emptyFuture;
+            statisticsGatheringOnTheFlyService,
+            getDeviceInfo(),
+            /*MultipartType.OFPMPFLOW*/ multipartType,
+            deviceContext,
+            deviceContext,
+            initial,
+            convertorExecutor,
+            statisticsWriterProvider) : emptyFuture;
     }
 
     private ListenableFuture<Boolean> collectTableStatistics(final MultipartType multipartType) {
         return devState.isTableStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(
-                statisticsGatheringService,
-                getDeviceInfo(),
+            statisticsGatheringService,
+            getDeviceInfo(),
                 /*MultipartType.OFPMPTABLE*/ multipartType,
-                deviceContext,
-                deviceContext,
-                false, multipartReplyTranslator) : emptyFuture;
+            deviceContext,
+            deviceContext,
+            false,
+            convertorExecutor,
+            statisticsWriterProvider) : emptyFuture;
     }
 
     private ListenableFuture<Boolean> collectPortStatistics(final MultipartType multipartType) {
         return devState.isPortStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(
-                statisticsGatheringService,
-                getDeviceInfo(),
+            statisticsGatheringService,
+            getDeviceInfo(),
                 /*MultipartType.OFPMPPORTSTATS*/ multipartType,
-                deviceContext,
-                deviceContext,
-                false, multipartReplyTranslator) : emptyFuture;
+            deviceContext,
+            deviceContext,
+            false,
+            convertorExecutor,
+            statisticsWriterProvider) : emptyFuture;
     }
 
     private ListenableFuture<Boolean> collectQueueStatistics(final MultipartType multipartType) {
         return !devState.isQueueStatisticsAvailable() ? emptyFuture : StatisticsGatheringUtils.gatherStatistics(
-                statisticsGatheringService,
-                getDeviceInfo(),
+            statisticsGatheringService,
+            getDeviceInfo(),
                 /*MultipartType.OFPMPQUEUE*/ multipartType,
-                deviceContext,
-                deviceContext,
-                false, multipartReplyTranslator);
+            deviceContext,
+            deviceContext,
+            false,
+            convertorExecutor,
+            statisticsWriterProvider);
     }
 
     private ListenableFuture<Boolean> collectGroupDescStatistics(final MultipartType multipartType) {
         return devState.isGroupAvailable() ? StatisticsGatheringUtils.gatherStatistics(
-                statisticsGatheringService,
-                getDeviceInfo(),
+            statisticsGatheringService,
+            getDeviceInfo(),
                 /*MultipartType.OFPMPGROUPDESC*/ multipartType,
-                deviceContext,
-                deviceContext,
-                false, multipartReplyTranslator) : emptyFuture;
+            deviceContext,
+            deviceContext,
+            false,
+            convertorExecutor,
+            statisticsWriterProvider) : emptyFuture;
     }
 
     private ListenableFuture<Boolean> collectGroupStatistics(final MultipartType multipartType) {
         return devState.isGroupAvailable() ? StatisticsGatheringUtils.gatherStatistics(
-                statisticsGatheringService,
-                getDeviceInfo(),
+            statisticsGatheringService,
+            getDeviceInfo(),
                 /*MultipartType.OFPMPGROUP*/ multipartType,
-                deviceContext,
-                deviceContext,
-                false, multipartReplyTranslator) : emptyFuture;
+            deviceContext,
+            deviceContext,
+            false,
+            convertorExecutor,
+            statisticsWriterProvider) : emptyFuture;
     }
 
     private ListenableFuture<Boolean> collectMeterConfigStatistics(final MultipartType multipartType) {
         return devState.isMetersAvailable() ? StatisticsGatheringUtils.gatherStatistics(
-                statisticsGatheringService,
-                getDeviceInfo(),
+            statisticsGatheringService,
+            getDeviceInfo(),
                 /*MultipartType.OFPMPMETERCONFIG*/ multipartType,
-                deviceContext,
-                deviceContext,
-                false, multipartReplyTranslator) : emptyFuture;
+            deviceContext,
+            deviceContext,
+            false,
+            convertorExecutor,
+            statisticsWriterProvider) : emptyFuture;
     }
 
     private ListenableFuture<Boolean> collectMeterStatistics(final MultipartType multipartType) {
         return devState.isMetersAvailable() ? StatisticsGatheringUtils.gatherStatistics(
-                statisticsGatheringService,
-                getDeviceInfo(),
+            statisticsGatheringService,
+            getDeviceInfo(),
                 /*MultipartType.OFPMPMETER*/ multipartType,
-                deviceContext,
-                deviceContext,
-                false, multipartReplyTranslator) : emptyFuture;
+            deviceContext,
+            deviceContext,
+            false,
+            convertorExecutor,
+            statisticsWriterProvider) : emptyFuture;
     }
 
     @VisibleForTesting
-    void setStatisticsGatheringService(final StatisticsGatheringService statisticsGatheringService) {
+    void setStatisticsGatheringService(final StatisticsGatheringService<T> statisticsGatheringService) {
         this.statisticsGatheringService = statisticsGatheringService;
     }
 
     @VisibleForTesting
-    void setStatisticsGatheringOnTheFlyService(final StatisticsGatheringOnTheFlyService
-                                                             statisticsGatheringOnTheFlyService) {
+    void setStatisticsGatheringOnTheFlyService(final StatisticsGatheringOnTheFlyService<T> statisticsGatheringOnTheFlyService) {
         this.statisticsGatheringOnTheFlyService = statisticsGatheringOnTheFlyService;
     }
 
@@ -500,7 +521,7 @@ class StatisticsContextImpl implements StatisticsContext {
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailure(@Nonnull Throwable throwable) {
                 LOG.warn("Initial gathering statistics unsuccessful for node {}", deviceInfo.getLOGValue());
                 lifecycleService.closeConnection();
             }
