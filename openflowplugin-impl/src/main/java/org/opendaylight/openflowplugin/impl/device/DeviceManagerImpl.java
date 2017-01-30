@@ -51,9 +51,10 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.Messa
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderKeeper;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.connection.OutboundQueueProviderImpl;
+import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProvider;
 import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
 import org.opendaylight.openflowplugin.impl.lifecycle.LifecycleServiceImpl;
-import org.opendaylight.openflowplugin.impl.services.SalRoleServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.SalRoleServiceImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodesBuilder;
@@ -78,6 +79,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private static final int SPY_RATE = 10;
 
     private final DataBroker dataBroker;
+    private final DeviceInitializerProvider deviceInitializerProvider;
     private final ConvertorExecutor convertorExecutor;
     private TranslatorLibrary translatorLibrary;
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
@@ -109,9 +111,11 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                              final HashedWheelTimer hashedWheelTimer,
                              final ConvertorExecutor convertorExecutor,
                              final boolean skipTableFeatures,
-                             final boolean useSingleLayerSerialization) {
+                             final boolean useSingleLayerSerialization,
+                             final DeviceInitializerProvider deviceInitializerProvider) {
 
         this.dataBroker = dataBroker;
+        this.deviceInitializerProvider = deviceInitializerProvider;
 
         /* merge empty nodes to oper DS to predict any problems with missing parent for Node */
         final WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
@@ -198,7 +202,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         connectionContext.setOutboundQueueHandleRegistration(outboundQueueHandlerRegistration);
 
         final LifecycleService lifecycleService = new LifecycleServiceImpl();
-
         final DeviceContext deviceContext = new DeviceContextImpl(
                 connectionContext,
                 dataBroker,
@@ -209,7 +212,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 skipTableFeatures,
                 hashedWheelTimer,
                 this,
-                useSingleLayerSerialization);
+                useSingleLayerSerialization,
+                deviceInitializerProvider);
 
         deviceContext.setSalRoleService(new SalRoleServiceImpl(deviceContext, deviceContext));
         deviceContexts.put(deviceInfo, deviceContext);
