@@ -28,6 +28,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
+import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
+import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
@@ -75,7 +77,7 @@ public abstract class AbstractDirectStatisticsServiceTest {
     protected NodeConnectorId nodeConnectorId;
     protected KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
     protected ConvertorManager convertorManager;
-
+    protected MultipartWriterProvider multipartWriterProvider;
     protected static NodeRef createNodeRef(String nodeIdValue) {
         InstanceIdentifier<Node> nodePath = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId(nodeIdValue)));
@@ -93,7 +95,6 @@ public abstract class AbstractDirectStatisticsServiceTest {
                 .child(Node.class, new NodeKey(new NodeId(NODE_ID)));
 
         convertorManager = ConvertorManagerFactory.createDefaultManager();
-
         when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
         when(deviceContext.getMultiMsgCollector(any())).thenReturn(multiMsgCollector);
@@ -110,6 +111,7 @@ public abstract class AbstractDirectStatisticsServiceTest {
         when(connectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);
         when(features.getVersion()).thenReturn(OF_VERSION);
         when(features.getDatapathId()).thenReturn(DATAPATH_ID);
+        multipartWriterProvider = MultipartWriterProviderFactory.createDefaultProvider(deviceContext);
         setUp();
     }
 

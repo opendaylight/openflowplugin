@@ -17,16 +17,16 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-final class SimpleRequestCallback<T extends DataObject> extends AbstractRequestCallback<T> {
+public final class SimpleRequestCallback<T extends DataObject> extends AbstractRequestCallback<T> {
     private static final Logger LOG = LoggerFactory.getLogger(SimpleRequestCallback.class);
     private final Class<T> clazz;
 
     private SimpleRequestCallback(final RequestContext<T> context, final Class<?> requestType, final MessageSpy spy, final Class<T> clazz) {
-        super(context, requestType, spy);
+        super(context, requestType, spy, null);
         this.clazz = Preconditions.checkNotNull(clazz);
     }
 
-    static <T extends DataObject> FutureCallback<OfHeader> create(final RequestContext<T> context, final Class<?> requestType, final MessageSpy spy, final Class<T> clazz) {
+    public static <T extends DataObject> FutureCallback<OfHeader> create(final RequestContext<T> context, final Class<?> requestType, final MessageSpy spy, final Class<T> clazz) {
         return new SimpleRequestCallback<>(context, requestType, spy, clazz);
     }
 
