@@ -12,6 +12,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -116,7 +117,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
     private final short tableId = 0;
 
     @Before
-    public void initialization() {
+    public void initialization() throws Exception{
         when(mockedDeviceContext.getMessageSpy()).thenReturn(new MessageIntelligenceAgencyImpl());
         when(mockedNodeId.toString()).thenReturn(DUMMY_NODE_ID);
         when(mockedPrimaryConnection.getNodeId()).thenReturn(mockedNodeId);
@@ -143,8 +144,11 @@ public class MultipartRequestOnTheFlyCallbackTest {
         final FlowCapableNodeBuilder flowNodeBuilder = new FlowCapableNodeBuilder();
         flowNodeBuilder.setTable(Collections.<Table> emptyList());
         final Optional<FlowCapableNode> flowNodeOpt = Optional.of(flowNodeBuilder.build());
+
         final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> flowNodeFuture = Futures.immediateCheckedFuture(flowNodeOpt);
-        when(mockedReadOnlyTx.read(LogicalDatastoreType.OPERATIONAL, nodePath)).thenReturn(flowNodeFuture);
+        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> flowNodeFutureSpy = spy(flowNodeFuture);
+        when(mockedReadOnlyTx.read(LogicalDatastoreType.OPERATIONAL, nodePath)).thenReturn(flowNodeFutureSpy);
+        when(flowNodeFutureSpy.get()).thenReturn(flowNodeOpt);
         when(mockedDeviceContext.getReadTransaction()).thenReturn(mockedReadOnlyTx);
 
         dummyRequestContext = new AbstractRequestContext<List<MultipartReply>>(DUMMY_XID) {
@@ -234,7 +238,10 @@ public class MultipartRequestOnTheFlyCallbackTest {
         final Optional<FlowCapableNode> flowNodeOpt = Optional.of(flowNodeBuilder.build());
         final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> flowNodeFuture = Futures
                 .immediateCheckedFuture(flowNodeOpt);
-        when(mockedReadOnlyTx.read(LogicalDatastoreType.OPERATIONAL, nodePath)).thenReturn(flowNodeFuture);
+        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> flowNodeFutureSpy = spy(flowNodeFuture);
+
+        when(mockedReadOnlyTx.read(LogicalDatastoreType.OPERATIONAL, nodePath)).thenReturn(flowNodeFutureSpy);
+        when(flowNodeFutureSpy.get()).thenReturn(flowNodeOpt);
         when(mockedDeviceContext.getReadTransaction()).thenReturn(mockedReadOnlyTx);
 
         multipartRequestOnTheFlyCallback.onSuccess(mpReplyMessage.build());
@@ -260,20 +267,55 @@ public class MultipartRequestOnTheFlyCallbackTest {
      */
     @Test
     public void testOnSuccessWithValidMultipart2() throws Exception {
+        final MatchBuilder matchBuilder = new MatchBuilder()
+                .setMatchEntry(Collections.<MatchEntry>emptyList());
+        final FlowStatsBuilder flowStatsBuilder = new FlowStatsBuilder()
+                .setTableId(tableId)
+                .setPriority(2)
+                .setCookie(BigInteger.ZERO)
+                .setByteCount(BigInteger.TEN)
+                .setPacketCount(BigInteger.ONE)
+                .setDurationSec(11L)
+                .setDurationNsec(12L)
+                .setMatch(matchBuilder.build())
+                .setFlags(new FlowModFlags(true, false, false, false, false));
+        final MultipartReplyFlowBuilder multipartReplyFlowBuilder = new MultipartReplyFlowBuilder()
+                .setFlowStats(Collections.singletonList(flowStatsBuilder.build()));
+        final MultipartReplyFlowCaseBuilder multipartReplyFlowCaseBuilder = new MultipartReplyFlowCaseBuilder()
+                .setMultipartReplyFlow(multipartReplyFlowBuilder.build());
         final MultipartReplyMessageBuilder mpReplyMessage = new MultipartReplyMessageBuilder()
-                .setType(MultipartType.OFPMPDESC)
-                .setFlags(new MultipartRequestFlags(false));
+                .setType(MultipartType.OFPMPFLOW)
+                .setFlags(new MultipartRequestFlags(false))
+                .setMultipartReplyBody(multipartReplyFlowCaseBuilder.build())
+                .setXid(21L);
+
+        final InstanceIdentifier<FlowCapableNode> nodePath = mockedDeviceInfo.getNodeInstanceIdentifier()
+                .augmentation(FlowCapableNode.class);
+        final FlowCapableNodeBuilder flowNodeBuilder = new FlowCapableNodeBuilder();
+        final TableBuilder tableDataBld = new TableBuilder();
+        tableDataBld.setId(tableId);
+        flowNodeBuilder.setTable(Collections.singletonList(tableDataBld.build()));
+        final Optional<FlowCapableNode> flowNodeOpt = Optional.of(flowNodeBuilder.build());
+        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> flowNodeFuture = Futures
+                .immediateCheckedFuture(flowNodeOpt);
+        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> flowNodeFutureSpy = spy(flowNodeFuture);
+
+        when(mockedReadOnlyTx.read(LogicalDatastoreType.OPERATIONAL, nodePath)).thenReturn(flowNodeFutureSpy);
+        when(flowNodeFutureSpy.get()).thenReturn(flowNodeOpt);
+        when(mockedDeviceContext.getReadTransaction()).thenReturn(mockedReadOnlyTx);
 
         multipartRequestOnTheFlyCallback.onSuccess(mpReplyMessage.build());
+        final InstanceIdentifier<Table> tableIdent = nodePath.child(Table.class, new TableKey(tableId));
 
-        final RpcResult<List<MultipartReply>> actualResult = dummyRequestContext.getFuture().get();
-        assertNotNull(actualResult.getErrors());
-        assertTrue(actualResult.getErrors().isEmpty());
-        assertNotNull(actualResult.getResult());
-        assertTrue(actualResult.getResult().isEmpty());
-
-        Mockito.verify(mockedFlowRegistry, Mockito.never()).storeIfNecessary(Matchers.any());
-        Mockito.verify(mockedDeviceContext, Mockito.never()).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL),
-                Matchers.<InstanceIdentifier>any(), Matchers.<DataObject>any());
+        verify(mockedReadOnlyTx, times(1)).read(LogicalDatastoreType.OPERATIONAL, nodePath);
+        verify(mockedReadOnlyTx, times(1)).close();
+        verify(mockedDeviceContext, times(1)).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
+                eq(tableIdent), Matchers.<Table> any());
+        /*
+         * One call for Table one call for Flow
+         * we are not able to create Flow InstanceIdentifier because we are missing FlowId
+         */
+        verify(mockedDeviceContext, times(2)).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
+                Matchers.<InstanceIdentifier> any(), Matchers.<DataObject> any());
     }
 }
