@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fafc7978_8b871e61",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsManagerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-01-31T07:22:08Z",
+      "side": 1,
+      "message": "Statistics manager and all managers /device, statistics and rpc/ are singletons, meaning they are created only once.",
+      "parentUuid": "fafc7978_748d847b",
+      "range": {
+        "startLine": 95,
+        "startChar": 8,
+        "endLine": 97,
+        "endChar": 68
+      },
+      "revId": "c17c0635164058bedf059fdd6ab0da458dbb22a8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
