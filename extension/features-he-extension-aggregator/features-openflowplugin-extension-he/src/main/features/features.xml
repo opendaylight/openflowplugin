@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<features name="openflowplugin-extension-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
+
+    <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin/${project.version}/xml/features</repository>
+
+    <feature name="odl-openflowplugin-nxm-extensions" description="OpenDaylight :: Openflow Plugin :: Nicira Extensions" version='${project.version}'>
+        <feature version="${project.version}">odl-openflowplugin-southbound</feature>
+        <bundle>mvn:org.opendaylight.openflowplugin/openflowjava-extension-nicira-api/{{VERSION}}</bundle>
+        <bundle>mvn:org.opendaylight.openflowplugin/openflowjava-extension-nicira/{{VERSION}}</bundle>
+        <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-extension-nicira/{{VERSION}}</bundle>
+        <configfile finalname="etc/opendaylight/karaf/43-openflowjava-nx-config.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-extension-nicira-config/{{VERSION}}/xml/config</configfile>
+    </feature>
+
+</features>
