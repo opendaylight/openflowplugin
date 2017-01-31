@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.opendaylight.odlparent</groupId>
+        <artifactId>odlparent-lite</artifactId>
+        <version>1.8.0-SNAPSHOT</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>org.opendaylight.openflowplugin</groupId>
+    <artifactId>features-aggregator</artifactId>
+    <packaging>pom</packaging>
+    <version>0.4.0-SNAPSHOT</version>
+
+    <modules>
+        <module>features-openflowplugin</module>
+        <module>features4-openflowplugin</module>
+        <module>odl-openflowplugin-flow-services-ui</module>
+        <module>odl-openflowplugin-flow-services-rest</module>
+        <module>odl-openflowplugin-flow-services</module>
+        <module>odl-openflowplugin-southbound</module>
+        <module>odl-openflowplugin-nsf-model</module>
+        <module>odl-openflowplugin-drop-test</module>
+        <module>odl-openflowplugin-app-table-miss-enforcer</module>
+        <module>odl-openflowplugin-app-config-pusher</module>
+        <module>odl-openflowplugin-app-topology</module>
+        <module>odl-openflowplugin-app-bulk-o-matic</module>
+        <module>odl-openflowplugin-app-notifications</module>
+        <module>odl-openflowplugin-app-forwardingrules-manager</module>
+        <module>odl-openflowplugin-app-forwardingrules-sync</module>
+    </modules>
+
+</project>

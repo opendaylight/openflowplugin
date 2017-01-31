@@ -45,11 +45,6 @@
       <groupId>org.opendaylight.controller.model</groupId>
       <artifactId>model-inventory</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.core</artifactId>
-      <scope>provided</scope>
-    </dependency>
   </dependencies>
   <scm>
     <connection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</connection>

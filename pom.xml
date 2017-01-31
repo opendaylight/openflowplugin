@@ -40,8 +40,8 @@
       <module>drop-test</module>
       <module>drop-test-karaf</module>
       <module>test-common</module>
-      <module>features</module>
-      <module>features-he</module>
+      <module>features-aggregator</module>
+      <module>features-he-aggregator</module>
       <module>samples/sample-consumer</module>
       <module>samples/learning-switch</module>
       <module>applications</module>
