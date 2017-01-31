@@ -34,7 +34,7 @@
     <!-- feature dependencies -->
     <dependency>
       <groupId>org.opendaylight.openflowplugin</groupId>
-      <artifactId>features-openflowplugin-he</artifactId>
+      <artifactId>features-openflowplugin</artifactId>
       <classifier>features</classifier>
       <type>xml</type>
     </dependency>

@@ -18,8 +18,8 @@
         <module>openflowplugin-extension-api</module>
         <module>openflowplugin-extension-nicira</module>
         <module>openflowplugin-extension-nicira-config</module>
-        <module>features-he</module>
-        <module>features</module>
         <module>test-extension</module>
+        <module>features-extension-aggregator</module>
+        <module>features-he-extension-aggregator</module>
     </modules>
 </project>
