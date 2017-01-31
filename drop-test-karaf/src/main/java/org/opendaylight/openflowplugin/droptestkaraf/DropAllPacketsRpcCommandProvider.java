@@ -13,11 +13,7 @@ import java.io.PrintStream;
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.testcommon.DropTestRpcProvider;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
-
-import com.google.common.base.Preconditions;
 
 @Command(scope = "drop-test", name = "dropAllPacketsRpc", description="drop packet responder involving SalFlowService")
 public class DropAllPacketsRpcCommandProvider extends OsgiCommandSupport {

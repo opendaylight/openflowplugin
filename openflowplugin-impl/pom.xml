@@ -11,6 +11,10 @@
     <artifactId>openflowplugin-impl</artifactId>
     <packaging>bundle</packaging>
 
+    <properties>
+        <karaf.version>4.0.8</karaf.version>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
@@ -126,7 +130,6 @@
         <dependency>
             <groupId>org.apache.karaf.shell</groupId>
             <artifactId>org.apache.karaf.shell.console</artifactId>
-            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>

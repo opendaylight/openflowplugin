@@ -18,17 +18,9 @@
     <repository>mvn:org.opendaylight.yangtools/features-yangtools/${yangtools.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.mdsal.model/features-mdsal-model/${mdsal.model.version}/xml/features</repository>
 
-    <feature name='odl-openflowplugin-all-he' description="OpenDaylight :: Openflow Plugin :: All" version='${project.version}'>
-        <feature version="${project.version}">odl-openflowplugin-southbound-he</feature>
-        <feature version="${project.version}">odl-openflowplugin-flow-services-he</feature>
-        <feature version="${project.version}">odl-openflowplugin-flow-services-rest-he</feature>
-        <feature version="${project.version}">odl-openflowplugin-flow-services-ui-he</feature>
-    </feature>
-
     <feature name='odl-openflowplugin-southbound-he' description="OpenDaylight :: Openflow Plugin :: SouthBound" version='${project.version}'>
         <feature version="${mdsal.version}">odl-mdsal-broker</feature>
         <feature version="${project.version}">odl-openflowplugin-nsf-model-he</feature>
-        <feature version="${openflowjava.version}">odl-openflowjava-protocol</feature>
         <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-common/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-api/{{VERSION}}</bundle>

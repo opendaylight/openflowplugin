@@ -17,9 +17,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalF
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 26.4.2015.
- */
 public class DropTestProviderImpl implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(DropTestProviderImpl.class);
