@@ -9,7 +9,7 @@
   </parent>
   <groupId>org.opendaylight.openflowplugin</groupId>
   <version>0.4.0-SNAPSHOT</version>
-  <artifactId>features-openflowplugin-extension-he</artifactId>
+  <artifactId>features-he-openflowplugin-extension</artifactId>
 
   <packaging>jar</packaging>
 
@@ -34,7 +34,7 @@
     <!-- feature dependencies -->
     <dependency>
       <groupId>org.opendaylight.openflowplugin</groupId>
-      <artifactId>features-openflowplugin-he</artifactId>
+      <artifactId>features-openflowplugin</artifactId>
       <classifier>features</classifier>
       <type>xml</type>
     </dependency>
