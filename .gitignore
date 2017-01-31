@@ -27,3 +27,4 @@ maven-metadata-local.xml
 /.pydevproject
 *.log
 .tox/
+nbactions.xml

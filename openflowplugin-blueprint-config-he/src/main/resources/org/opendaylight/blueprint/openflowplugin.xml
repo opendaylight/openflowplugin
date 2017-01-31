@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
+        odl:use-default-for-reference-types="true">
+
+  <reference id="dataBroker" interface="org.opendaylight.controller.md.sal.binding.api.DataBroker" odl:type="pingpong"/>
+  <reference id="rpcRegistry" interface="org.opendaylight.controller.sal.binding.api.RpcProviderRegistry"/>
+  <reference id="notificationService" interface="org.opendaylight.controller.md.sal.binding.api.NotificationService"/>
+  <reference id="entityOwnershipService" interface="org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService"/>
+
+  <!-- Create the StatisticsManager -->
+  <reference id="statsManagerFactory"
+          interface="org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManagerFactory"/>
+
+  <odl:clustered-app-config id="statsManagerAppConfig"
+      binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.statistics.manager.config.rev160509.StatisticsManagerAppConfig"/>
+
+  <bean id="statsManager" factory-ref="statsManagerFactory" factory-method="newInstance">
+    <argument ref="statsManagerAppConfig"/>
+    <argument ref="dataBroker"/>
+    <argument ref="notificationService"/>
+    <argument ref="rpcRegistry"/>
+    <argument ref="entityOwnershipService"/>
+  </bean>
+
+  <!-- Create the Inventory manager/provider -->
+  <bean id="inventoryManager" class="org.opendaylight.openflowplugin.applications.inventory.manager.InventoryActivator"
+          init-method="start" destroy-method="close">
+    <argument ref="dataBroker"/>
+    <argument ref="notificationService"/>
+    <argument ref="entityOwnershipService"/>
+  </bean>
+
+  <reference id="defaultSwitchConnProvider" interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider"
+             odl:type="openflow-switch-connection-provider-default-impl"/>
+
+  <reference id="legacySwitchConnProvider" interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider"
+             odl:type="openflow-switch-connection-provider-legacy-impl"/>
+
+  <!-- Create OpenflowPluginProvider instance -->
+
+  <bean id="openflowPluginProvider" class="org.opendaylight.openflowplugin.openflow.md.core.sal.OpenflowPluginProvider"
+          init-method="initialization" destroy-method="close" depends-on="statsManager inventoryManager">
+    <property name="dataBroker" ref="dataBroker"/>
+    <property name="rpcRegistry" ref="rpcRegistry"/>
+    <property name="notificationService" ref="notificationService"/>
+    <property name="entityOwnershipService" ref="entityOwnershipService"/>
+    <property name="role" value="NOCHANGE"/>
+    <property name="skipTableFeatures" value="false" />
+    <property name="switchConnectionProviders">
+      <list>
+        <ref component-id="defaultSwitchConnProvider"/>
+        <ref component-id="legacySwitchConnProvider"/>
+      </list>
+    </property>
+  </bean>
+
+  <service ref="openflowPluginProvider" odl:type="openflow-provider-impl">
+    <interfaces>
+      <value>org.opendaylight.openflowplugin.openflow.md.core.sal.OpenflowPluginProvider</value>
+      <value>org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider</value>
+    </interfaces>
+  </service>
+  <odl:action-provider interface="org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService"/>
+
+</blueprint>
