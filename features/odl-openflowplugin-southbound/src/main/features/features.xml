@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="openflowplugin-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0">
+    <feature name="odl-openflowplugin-southbound" version="${project.version}">
+        <configfile finalname="etc/org.opendaylight.openflowplugin.cfg">mvn:org.opendaylight.openflowplugin/openflowplugin-blueprint-config/${project.version}/cfg/config</configfile>
+        <configfile finalname="etc/opendaylight/karaf/42-openflowplugin-Li.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-controller-config/${project.version}/xml/config-Li</configfile>
+    </feature>
+</features>
