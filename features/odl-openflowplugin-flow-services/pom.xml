@@ -4,32 +4,17 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
-        <artifactId>odlparent-lite</artifactId>
+        <artifactId>single-feature-parent</artifactId>
         <version>1.8.0-SNAPSHOT</version>
         <relativePath/>
     </parent>
 
     <groupId>org.opendaylight.openflowplugin</groupId>
-    <artifactId>features-aggregator-he</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>odl-openflowplugin-flow-services</artifactId>
+    <packaging>feature</packaging>
     <version>0.4.0-SNAPSHOT</version>
 
-    <modules>
-        <module>features-openflowplugin-he</module>
-        <module>features4-openflowplugin-he</module>
-        <module>odl-openflowplugin-all-he</module>
-        <module>odl-openflowplugin-southbound-he</module>
-        <module>odl-openflowplugin-flow-services-he</module>
-        <module>odl-openflowplugin-nsf-services-he</module>
-        <module>odl-openflowplugin-nsf-model-he</module>
-        <module>odl-openflowplugin-app-bulk-o-matic-he</module>
-        <module>odl-openflowplugin-app-lldp-speaker-he</module>
-        <module>odl-openflowplugin-app-config-pusher-he</module>
-        <module>odl-openflowplugin-app-table-miss-enforcer-he</module>
-        <module>odl-openflowplugin-drop-test-he</module>
-        <module>odl-openflowplugin-flow-services-ui-he</module>
-        <module>odl-openflowplugin-flow-services-rest-he</module>
-    </modules>
+    <name>OpenDaylight :: Openflow Plugin :: Flow Services</name>
 
     <properties>
         <yangtools.version>1.1.0-SNAPSHOT</yangtools.version>
@@ -111,6 +96,7 @@
             <type>xml</type>
             <scope>runtime</scope>
         </dependency>
+
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>features-mdsal</artifactId>
@@ -164,6 +150,10 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
+            <artifactId>forwardingrules-sync</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>inventory-manager</artifactId>
         </dependency>
         <dependency>
@@ -174,7 +164,37 @@
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>statistics-manager</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-blueprint-config</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-blueprint-config</artifactId>
+            <version>${project.version}</version>
+            <type>cfg</type>
+            <classifier>config</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowjava</groupId>
+            <artifactId>openflowjava-blueprint-config</artifactId>
+            <version>${openflowjava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowjava</groupId>
+            <artifactId>openflowjava-blueprint-config</artifactId>
+            <version>${openflowjava.version}</version>
+            <type>xml</type>
+            <classifier>config</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowjava</groupId>
+            <artifactId>openflowjava-blueprint-config</artifactId>
+            <version>${openflowjava.version}</version>
+            <type>xml</type>
+            <classifier>legacyConfig</classifier>
+        </dependency>
         <dependency>
             <groupId>org.opendaylight.dlux</groupId>
             <artifactId>features-dlux</artifactId>
@@ -199,30 +219,6 @@
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>openflowplugin-impl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowplugin</groupId>
-            <artifactId>openflowplugin-blueprint-config-he</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowjava</groupId>
-            <artifactId>openflowjava-blueprint-config</artifactId>
-            <version>${openflowjava.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowjava</groupId>
-            <artifactId>openflowjava-blueprint-config</artifactId>
-            <version>${openflowjava.version}</version>
-            <type>xml</type>
-            <classifier>config</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowjava</groupId>
-            <artifactId>openflowjava-blueprint-config</artifactId>
-            <version>${openflowjava.version}</version>
-            <type>xml</type>
-            <classifier>legacyConfig</classifier>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
@@ -256,7 +252,7 @@
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>openflowplugin-controller-config</artifactId>
             <type>xml</type>
-            <classifier>config-He</classifier>
+            <classifier>config-Li</classifier>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
@@ -277,5 +273,10 @@
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>bulk-o-matic</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
+            <artifactId>notification-supplier</artifactId>
+        </dependency>
     </dependencies>
+
 </project>

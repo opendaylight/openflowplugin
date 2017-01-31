@@ -4,15 +4,33 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
-        <artifactId>features-parent</artifactId>
+        <artifactId>odlparent-lite</artifactId>
         <version>1.8.0-SNAPSHOT</version>
         <relativePath/>
     </parent>
 
     <groupId>org.opendaylight.openflowplugin</groupId>
-    <artifactId>features-openflowplugin</artifactId>
-    <packaging>jar</packaging>
+    <artifactId>features-aggregator</artifactId>
+    <packaging>pom</packaging>
     <version>0.4.0-SNAPSHOT</version>
+
+    <modules>
+        <module>features-openflowplugin</module>
+        <module>features4-openflowplugin</module>
+        <module>odl-openflowplugin-flow-services-ui</module>
+        <module>odl-openflowplugin-flow-services-rest</module>
+        <module>odl-openflowplugin-flow-services</module>
+        <module>odl-openflowplugin-southbound</module>
+        <module>odl-openflowplugin-nsf-model</module>
+        <module>odl-openflowplugin-drop-test</module>
+        <module>odl-openflowplugin-app-table-miss-enforcer</module>
+        <module>odl-openflowplugin-app-config-pusher</module>
+        <module>odl-openflowplugin-app-topology</module>
+        <module>odl-openflowplugin-app-bulk-o-matic</module>
+        <module>odl-openflowplugin-app-notifications</module>
+        <module>odl-openflowplugin-app-forwardingrules-manager</module>
+        <module>odl-openflowplugin-app-forwardingrules-sync</module>
+    </modules>
 
     <properties>
         <yangtools.version>1.1.0-SNAPSHOT</yangtools.version>

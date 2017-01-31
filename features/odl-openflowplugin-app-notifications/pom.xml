@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.opendaylight.odlparent</groupId>
+        <artifactId>single-feature-parent</artifactId>
+        <version>1.8.0-SNAPSHOT</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>org.opendaylight.openflowplugin</groupId>
+    <artifactId>odl-openflowplugin-app-notifications</artifactId>
+    <packaging>feature</packaging>
+    <version>0.4.0-SNAPSHOT</version>
+
+    <name>OpenDaylight :: Openflow Plugin :: Application - notifications supplier</name>
+
+    <properties>
+        <yangtools.version>1.1.0-SNAPSHOT</yangtools.version>
+        <config.version>0.6.0-SNAPSHOT</config.version>
+        <mdsal.version>1.5.0-SNAPSHOT</mdsal.version>
+        <openflowjava.version>0.9.0-SNAPSHOT</openflowjava.version>
+        <openflowplugin.version>0.4.0-SNAPSHOT</openflowplugin.version>
+        <dlux.version>0.5.0-SNAPSHOT</dlux.version>
+        <lldp.version>0.12.0-SNAPSHOT</lldp.version>
+        <config.configfile.directory>etc/opendaylight/karaf</config.configfile.directory>
+        <restconf.version>1.5.0-SNAPSHOT</restconf.version>
+        <mdsal.model.version>0.10.0-SNAPSHOT</mdsal.model.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- This project -->
+            <dependency>
+                <groupId>org.opendaylight.openflowplugin</groupId>
+                <artifactId>openflowplugin-artifacts</artifactId>
+                <version>${project.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+
+            <!-- YANG tools -->
+            <dependency>
+                <groupId>org.opendaylight.yangtools</groupId>
+                <artifactId>yangtools-artifacts</artifactId>
+                <version>${yangtools.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+
+            <!-- Controller infrastructure -->
+            <dependency>
+                <groupId>org.opendaylight.controller</groupId>
+                <artifactId>config-artifacts</artifactId>
+                <version>${config.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>org.opendaylight.controller</groupId>
+                <artifactId>mdsal-artifacts</artifactId>
+                <version>${mdsal.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+
+            <!-- restconf -->
+            <dependency>
+                <groupId>org.opendaylight.netconf</groupId>
+                <artifactId>restconf-artifacts</artifactId>
+                <version>${restconf.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+
+
+            <!-- OpenFlowJava -->
+            <dependency>
+                <groupId>org.opendaylight.openflowjava</groupId>
+                <artifactId>openflowjava-artifacts</artifactId>
+                <version>${openflowjava.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!-- feature dependencies -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>odl-openflowplugin-southbound</artifactId>
+            <version>${openflowplugin.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
+            <artifactId>notification-supplier</artifactId>
+            <version>${openflowplugin.version}</version>
+        </dependency>
+
+    </dependencies>
+
+</project>
