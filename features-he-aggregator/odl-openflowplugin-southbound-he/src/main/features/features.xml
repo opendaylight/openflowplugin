@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="openflowplugin-he-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0">
+    <feature name="odl-openflowplugin-southbound-he" version="${project.version}">
+        <configfile finalname="etc/opendaylight/karaf/42-openflowplugin-He.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-controller-config/${project.version}/xml/config-He</configfile>
+        <configfile finalname="etc/opendaylight/karaf/43-msg-spy.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-controller-config/${project.version}/xml/configmsgspy</configfile>
+    </feature>
+</features>
