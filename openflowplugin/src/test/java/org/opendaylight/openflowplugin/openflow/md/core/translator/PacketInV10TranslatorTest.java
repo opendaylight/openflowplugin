@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,16 +29,20 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContextOFImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
 import org.opendaylight.openflowplugin.openflow.md.queue.QueueProcessorLightImpl;
+import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PacketInReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessageBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceivedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.SendToController;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -167,23 +172,12 @@ public class PacketInV10TranslatorTest {
         List<DataObject> salPacketIn = packetInV10Translator.translate(cookie,
                 sessionContextOFImpl, message);
 
-        //TODO: rewrite to object and involve object comparison in Assert
-        String expectedString = "[PacketReceived [_ingress=NodeConnectorRef [_value=KeyedInstanceIdentifier"
-                + "{targetType=interface org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector,"
-                + " path=[org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes,"
-                + " org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node["
-                + "key=NodeKey [_id=Uri [_value=openflow:"
-                + datapathId.toString()
-                + "]]],"
-                + " org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector["
-                + "key=NodeConnectorKey [_id=Uri [_value=openflow:"
-                + datapathId.toString()
-                + ":"
-                + message.getInPort().toString()
-                + "]]]]}], _packetInReason=class org.opendaylight.yang.gen.v1.urn.opendaylight."
-                + "packet.service.rev130709.SendToController, _payload=[115, 101, 110, 100, 79, 117,"
-                + " 116, 112, 117, 116, 77, 115, 103, 95, 84, 69, 83, 84], , augmentation=[]]]";
-        Assert.assertEquals(expectedString, salPacketIn.toString());
+        Assert.assertEquals(Collections.singletonList(new PacketReceivedBuilder()
+                .setIngress(InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(datapathId, (long) message.getInPort(), OpenflowVersion.OF10))
+                .setPacketInReason(SendToController.class)
+                .setPayload(data)
+                .build()).toString(), salPacketIn.toString());
+
         LOG.debug("Test translate done.");
     }
 
