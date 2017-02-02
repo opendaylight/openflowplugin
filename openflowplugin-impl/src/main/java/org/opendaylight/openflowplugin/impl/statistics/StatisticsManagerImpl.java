@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.openflowplugin.api.ConnectionException;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -155,9 +156,16 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                     LOG.trace("Gathering for node {} failure: ", deviceInfo.getLOGValue(), throwable);
                 }
                 calculateTimerDelay(timeCounter);
-                if (throwable instanceof IllegalStateException) {
+                if (throwable instanceof ConnectionException) {
+                    // ConnectionException is raised by StatisticsContextImpl class when the connections
+                    // move to RIP state. In this particular case, there is no need to reschedule
+                    // because this statistics manager should be closed soon
+                    LOG.warn("Node {} is no more connected, stopping the statistics collection",
+                            deviceInfo.getLOGValue(),throwable);
                     stopScheduling(deviceInfo);
                 } else {
+                    LOG.warn("Unexpected error occurred during statistics collection for node {}, rescheduling " +
+                            "statistics collections", deviceInfo.getLOGValue(),throwable);
                     scheduleNextPolling(deviceState, deviceInfo, statisticsContext, timeCounter);
                 }
             }

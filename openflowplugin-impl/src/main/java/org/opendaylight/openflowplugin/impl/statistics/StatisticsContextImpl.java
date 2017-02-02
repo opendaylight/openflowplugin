@@ -30,6 +30,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 import org.opendaylight.mdsal.common.api.TransactionChainClosedException;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
+import org.opendaylight.openflowplugin.api.ConnectionException;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -276,7 +277,7 @@ class StatisticsContextImpl implements StatisticsContext {
             final String errMsg = String.format("Device connection is closed for Node : %s.",
                     getDeviceInfo().getNodeId());
             LOG.debug(errMsg);
-            resultFuture.setException(new IllegalStateException(errMsg));
+            resultFuture.setException(new ConnectionException(errMsg));
             return;
         }
         if ( ! iterator.hasNext()) {
