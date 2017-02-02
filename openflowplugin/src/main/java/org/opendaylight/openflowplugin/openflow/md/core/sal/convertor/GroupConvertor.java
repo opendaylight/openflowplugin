@@ -72,6 +72,8 @@ public class GroupConvertor extends Convertor<Group, GroupModInputBuilder, Versi
     private static final Long DEFAULT_WATCH_PORT = OFPP_ANY;
     private static final Long OFPG_ANY = Long.parseLong("ffffffff", 16);
     private static final Long DEFAULT_WATCH_GROUP = OFPG_ANY;
+    private static final String GROUP_ADD_MOD_SUPPORT = "group.add.mod.command.support";
+    private static final Boolean GROUP_ADD_MOD_SUPPORT_TEST = Boolean.getBoolean(GROUP_ADD_MOD_SUPPORT);
     private static final Comparator<Bucket> COMPARATOR = (bucket1, bucket2) -> {
         if (bucket1.getBucketId() == null || bucket2.getBucketId() == null) return 0;
         return bucket1.getBucketId().getValue().compareTo(bucket2.getBucketId().getValue());
@@ -143,12 +145,22 @@ public class GroupConvertor extends Convertor<Group, GroupModInputBuilder, Versi
     @Override
     public GroupModInputBuilder convert(Group source, VersionDatapathIdConvertorData data) {
         GroupModInputBuilder groupModInputBuilder = new GroupModInputBuilder();
-        if (source instanceof AddGroupInput) {
-            groupModInputBuilder.setCommand(GroupModCommand.OFPGCADD);
-        } else if (source instanceof RemoveGroupInput) {
-            groupModInputBuilder.setCommand(GroupModCommand.OFPGCDELETE);
-        } else if (source instanceof UpdatedGroup) {
-            groupModInputBuilder.setCommand(GroupModCommand.OFPGCMODIFY);
+
+        LOG.debug("Property value for GROUP_ADD_MOD_SUPPORT: " + Boolean.getBoolean(GROUP_ADD_MOD_SUPPORT));
+        if(Boolean.getBoolean(GROUP_ADD_MOD_SUPPORT)) {
+            if (source instanceof AddGroupInput || source instanceof UpdatedGroup) {
+                groupModInputBuilder.setCommand(GroupModCommand.OFPGCADDORMOD);
+            } else if (source instanceof RemoveGroupInput) {
+                groupModInputBuilder.setCommand(GroupModCommand.OFPGCDELETE);
+            }
+        } else {
+            if (source instanceof AddGroupInput) {
+                groupModInputBuilder.setCommand(GroupModCommand.OFPGCADD);
+            } else if (source instanceof RemoveGroupInput) {
+                groupModInputBuilder.setCommand(GroupModCommand.OFPGCDELETE);
+            } else if (source instanceof UpdatedGroup) {
+                groupModInputBuilder.setCommand(GroupModCommand.OFPGCMODIFY);
+            }
         }
 
         if (GroupTypes.GroupAll.equals(source.getGroupType())) {
