@@ -30,7 +30,7 @@ public class DeviceMastership implements ClusterSingletonService, AutoCloseable 
 
     public DeviceMastership(final NodeId nodeId, final ClusterSingletonServiceProvider clusterSingletonService) {
         this.nodeId = nodeId;
-        this.identifier = ServiceGroupIdentifier.create(nodeId.getValue());
+        this.identifier = ServiceGroupIdentifier.create(nodeId.getValue() + ":frm");
         this.deviceMastered = false;
         clusterSingletonServiceRegistration = clusterSingletonService.registerClusterSingletonService(this);
     }
