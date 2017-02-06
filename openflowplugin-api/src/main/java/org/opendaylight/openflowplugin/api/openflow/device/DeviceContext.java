@@ -145,5 +145,9 @@ public interface DeviceContext extends
      * @return listenable future from sal role service
      */
     ListenableFuture<RpcResult<SetRoleOutput>> makeDeviceSlave();
+
+    void sendNodeAddedNotification();
+
+    void sendNodeRemovedNotification();
 }
 
