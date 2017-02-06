@@ -343,29 +343,6 @@ module nicira-action {
                     }
                 }
             }
-            case flow-mod-add-match-from-field-case{
-                container flow-mod-add-match-from-field{
-                        leaf flow-mod-num-bits{
-                        type uint16;
-                    }
-
-                    leaf src-field{
-                        type uint32;
-                    }
-
-                    leaf src-ofs{
-                        type uint16;
-                    }
-
-                    leaf dst-field{
-                        type uint32;
-                    }
-
-                    leaf dst-ofs{
-                        type uint16;
-                    }
-                }
-            }
             case flow-mod-add-match-from-value-case{
                 container flow-mod-add-match-from-value{
                         leaf flow-mod-num-bits{
