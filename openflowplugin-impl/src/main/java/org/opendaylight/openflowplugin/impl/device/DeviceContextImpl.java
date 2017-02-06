@@ -19,16 +19,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
-import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
@@ -89,6 +79,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemovedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
@@ -118,6 +110,16 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 public class DeviceContextImpl implements DeviceContext, ExtensionConverterProviderKeeper {
 
@@ -166,6 +168,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final DeviceManager myManager;
     private final DeviceInitializerProvider deviceInitializerProvider;
     private final boolean useSingleLayerSerialization;
+    private Boolean isAddNotificationSent = false;
 
     DeviceContextImpl(
         @Nonnull final ConnectionContext primaryConnectionContext,
@@ -353,6 +356,26 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                         getDeviceInfo().getNodeId(), flowRegKey.getTableId(), flowRemovedNotification.getPriority());
             }
         }
+    }
+
+    @Override
+    public void sendNodeAddedNotification() {
+        if (!isAddNotificationSent) {
+            isAddNotificationSent = true;
+            NodeUpdatedBuilder builder = new NodeUpdatedBuilder();
+            builder.setId(getDeviceInfo().getNodeId());
+            builder.setNodeRef(new NodeRef(getDeviceInfo().getNodeInstanceIdentifier()));
+            LOG.debug("Publishing node added notification for {}", builder.build());
+            notificationPublishService.offerNotification(builder.build());
+        }
+    }
+
+    @Override
+    public void sendNodeRemovedNotification() {
+        NodeRemovedBuilder builder = new NodeRemovedBuilder();
+        builder.setNodeRef(new NodeRef(getDeviceInfo().getNodeInstanceIdentifier()));
+        LOG.debug("Publishing node removed notification for {}", builder.build());
+        notificationPublishService.offerNotification(builder.build());
     }
 
     @Override
@@ -595,6 +618,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Role SLAVE was successfully propagated on device, node {}", deviceInfo.getLOGValue());
                     }
+                    sendNodeAddedNotification();
                 }
 
                 @Override
@@ -641,6 +665,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         } else {
             this.state = CONTEXT_STATE.TERMINATION;
         }
+        sendNodeRemovedNotification();
     }
 
     @Override
@@ -776,6 +801,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Role MASTER was successfully set on device, node {}", deviceInfo.getLOGValue());
             }
+            sendNodeAddedNotification();
         }
 
         @Override
