@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -51,6 +52,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
+import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
@@ -81,11 +83,17 @@ import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnection
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.ExperimenterMessageFromDevBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeUpdated;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemoved;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemovedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
@@ -94,6 +102,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Error;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketIn;
@@ -164,6 +173,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private volatile CONTEXT_STATE state;
     private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
     private final DeviceManager myManager;
+    private Boolean isAddNotificationSent = false;
 
     DeviceContextImpl(
             @Nonnull final ConnectionContext primaryConnectionContext,
@@ -344,6 +354,26 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                         getDeviceInfo().getNodeId(), flowRegKey.getTableId(), flowRemovedNotification.getPriority());
             }
         }
+    }
+
+    @Override
+    public void sendNodeAddedNotification() {
+        if (!isAddNotificationSent) {
+            isAddNotificationSent = true;
+            NodeUpdatedBuilder builder = new NodeUpdatedBuilder();
+            builder.setId(getDeviceInfo().getNodeId());
+            builder.setNodeRef(new NodeRef(getDeviceInfo().getNodeInstanceIdentifier()));
+            LOG.info("Publishing node added notification for {}", builder.build());
+            notificationPublishService.offerNotification(builder.build());
+        }
+    }
+
+    @Override
+    public void sendNodeRemovedNotification() {
+        NodeRemovedBuilder builder = new NodeRemovedBuilder();
+        builder.setNodeRef(new NodeRef(getDeviceInfo().getNodeInstanceIdentifier()));
+        LOG.info("Publishing node removed notification for {}", builder.build());
+        notificationPublishService.offerNotification(builder.build());
     }
 
     @Override
@@ -634,6 +664,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Role SLAVE was successfully propagated on device, node {}", deviceInfo.getLOGValue());
                     }
+                    sendNodeAddedNotification();
                 }
 
                 @Override
@@ -680,6 +711,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         } else {
             this.state = CONTEXT_STATE.TERMINATION;
         }
+        sendNodeRemovedNotification();
     }
 
     @Override
@@ -803,6 +835,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Role MASTER was successfully set on device, node {}", deviceInfo.getLOGValue());
             }
+            sendNodeAddedNotification();
         }
 
         @Override

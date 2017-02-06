@@ -25,25 +25,26 @@ public class DeviceMastership implements ClusterSingletonService, AutoCloseable 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceMastership.class);
     private final NodeId nodeId;
     private final ServiceGroupIdentifier identifier;
-    private final ClusterSingletonServiceRegistration clusterSingletonServiceRegistration;
+    private final ClusterSingletonServiceProvider clusterSingletonServiceProvider;
+    private ClusterSingletonServiceRegistration clusterSingletonServiceRegistration;
     private boolean deviceMastered;
 
     public DeviceMastership(final NodeId nodeId, final ClusterSingletonServiceProvider clusterSingletonService) {
         this.nodeId = nodeId;
         this.identifier = ServiceGroupIdentifier.create(nodeId.getValue());
         this.deviceMastered = false;
-        clusterSingletonServiceRegistration = clusterSingletonService.registerClusterSingletonService(this);
+        this.clusterSingletonServiceProvider = clusterSingletonService;
     }
 
     @Override
     public void instantiateServiceInstance() {
-        LOG.debug("FRM started for: {}", nodeId.getValue());
+        LOG.info("FRM started for: {}", nodeId.getValue());
         deviceMastered = true;
     }
 
     @Override
     public ListenableFuture<Void> closeServiceInstance() {
-        LOG.debug("FRM stopped for: {}", nodeId.getValue());
+        LOG.info("FRM stopped for: {}", nodeId.getValue());
         deviceMastered = false;
         return Futures.immediateFuture(null);
     }
@@ -68,4 +69,8 @@ public class DeviceMastership implements ClusterSingletonService, AutoCloseable 
         return deviceMastered;
     }
 
+    public void registerClusterSingletonService() {
+        LOG.info("FRM: Registering as a cluster singleton service with service id : {}",getIdentifier());
+        clusterSingletonServiceRegistration = clusterSingletonServiceProvider.registerClusterSingletonService(this);
+    }
 }
