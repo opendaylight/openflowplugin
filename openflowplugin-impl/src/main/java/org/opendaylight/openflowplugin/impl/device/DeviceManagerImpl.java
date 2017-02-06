@@ -405,6 +405,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Role SLAVE was successfully propagated on device, node {}", deviceInfo.getLOGValue());
                 }
+                deviceContext.sendNodeAddedNotification();
             }
 
             @Override

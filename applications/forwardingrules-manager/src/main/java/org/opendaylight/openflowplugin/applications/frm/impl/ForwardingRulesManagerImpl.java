@@ -21,6 +21,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
@@ -74,16 +75,20 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private final ForwardingRulesManagerConfig forwardingRulesManagerConfig;
     private FlowNodeConnectorInventoryTranslatorImpl flowNodeConnectorInventoryTranslatorImpl;
     private final ClusterSingletonServiceProvider clusterSingletonServiceProvider;
+    private final NotificationProviderService notificationService;
     private DeviceMastershipManager deviceMastershipManager;
 
     public ForwardingRulesManagerImpl(final DataBroker dataBroker,
                                       final RpcConsumerRegistry rpcRegistry,
                                       final ForwardingRulesManagerConfig config,
-                                      final ClusterSingletonServiceProvider clusterSingletonService) {
+                                      final ClusterSingletonServiceProvider clusterSingletonService,
+                                      final NotificationProviderService notificationService) {
         this.dataService = Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
         this.forwardingRulesManagerConfig = Preconditions.checkNotNull(config, "Configuration for FRM cannot be null");
         this.clusterSingletonServiceProvider = Preconditions.checkNotNull(clusterSingletonService,
                 "ClusterSingletonService provider can not be null");
+        this.notificationService = Preconditions.checkNotNull(notificationService, "Notification publisher service is" +
+                " not available");
 
         Preconditions.checkArgument(rpcRegistry != null, "RpcConsumerRegistry can not be null !");
 
@@ -99,7 +104,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
 
     @Override
     public void start() {
-        this.deviceMastershipManager = new DeviceMastershipManager(clusterSingletonServiceProvider);
+        this.deviceMastershipManager = new DeviceMastershipManager(clusterSingletonServiceProvider,
+                notificationService);
         this.flowListener = new FlowForwarder(this, dataService);
         this.groupListener = new GroupForwarder(this, dataService);
         this.meterListener = new MeterForwarder(this, dataService);
@@ -131,6 +137,9 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         if (this.nodeListener != null) {
             this.nodeListener.close();
             this.nodeListener = null;
+        }
+        if (deviceMastershipManager != null) {
+            deviceMastershipManager.close();
         }
     }
 
