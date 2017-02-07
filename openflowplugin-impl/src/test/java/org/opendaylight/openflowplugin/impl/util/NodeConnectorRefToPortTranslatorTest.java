@@ -68,17 +68,17 @@ public class NodeConnectorRefToPortTranslatorTest extends TestCase {
                 .build();
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test(expected = Exception.class)
     public void testForNotNullablePacketInInGetPortNo() throws Exception {
         NodeConnectorRefToPortTranslator.getPortNoFromPacketIn(null);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test(expected = Exception.class)
     public void testForNotNullablePacketInInToNodeConnectorRef() throws Exception {
         NodeConnectorRefToPortTranslator.toNodeConnectorRef(null, DATA_PATH_ID);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test(expected = Exception.class)
     public void testForNotNullableNodeConnectorRefInFromNodeConnectorRef() throws Exception {
         NodeConnectorRefToPortTranslator.fromNodeConnectorRef(null, OF_VERSION);
     }
