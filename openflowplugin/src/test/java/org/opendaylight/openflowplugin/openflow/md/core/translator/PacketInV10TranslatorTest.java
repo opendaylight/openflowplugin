@@ -182,7 +182,7 @@ public class PacketInV10TranslatorTest {
                 + message.getInPort().toString()
                 + "]]]]}], _packetInReason=class org.opendaylight.yang.gen.v1.urn.opendaylight."
                 + "packet.service.rev130709.SendToController, _payload=[115, 101, 110, 100, 79, 117,"
-                + " 116, 112, 117, 116, 77, 115, 103, 95, 84, 69, 83, 84], , augmentation=[]]]";
+                + " 116, 112, 117, 116, 77, 115, 103, 95, 84, 69, 83, 84], augmentation=[]]]";
         Assert.assertEquals(expectedString, salPacketIn.toString());
         LOG.debug("Test translate done.");
     }
