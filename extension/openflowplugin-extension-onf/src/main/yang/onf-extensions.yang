@@ -187,23 +187,33 @@ module onf-extensions {
         choice bundle-inner-message {
             description "Message added to the bundle.";
             case bundle-flow-mod-case {
-                uses ofproto:flow-mod;
+                container flow-mod-case-data {
+                    uses ofproto:flow-mod;
+                }
             }
             case bundle-group-mod-case {
-                uses ofproto:group-mod;
+                container group-mod-case-data {
+                    uses ofproto:group-mod;
+                }
             }
             case bundle-port-mod-case {
-                uses ofproto:port-mod;
+                container port-mod-case-data {
+                    uses ofproto:port-mod;
+                }
             }
         }
     }
 
     augment "/ofproto:experimenter/ofproto:input/ofproto:experimenter-data-of-choice" {
-        case bundle-control {
-            uses bundle-control-grouping;
+        case bundle-control-onf {
+            container onf-control-grouping-data {
+                uses bundle-control-grouping;
+            }
         }
-        case bundle-add-message {
-            uses bundle-add-message-grouping;
+        case bundle-add-message-onf {
+            container onf-add-message-grouping-data {
+                uses bundle-add-message-grouping;
+            }
         }
     }
 }
