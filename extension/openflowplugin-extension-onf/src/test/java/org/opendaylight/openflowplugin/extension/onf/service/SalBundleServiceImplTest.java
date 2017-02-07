@@ -39,8 +39,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.BundleUpdateFlowCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.BundleUpdateGroupCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.BundleUpdatePortCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.BundleAddMessageBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.BundleControlBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.BundleAddMessageSalBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.BundleControlSalBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.bundle.add.message.sal.SalAddMessageDataBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.bundle.control.sal.SalControlDataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleControlType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
@@ -80,7 +82,9 @@ public class SalBundleServiceImplTest {
                 .build();
         final SendExperimenterInputBuilder experimenterBuilder = new SendExperimenterInputBuilder();
         experimenterBuilder.setNode(NODE_REF);
-        experimenterBuilder.setExperimenterMessageOfChoice(new BundleControlBuilder(input).build());
+        experimenterBuilder.setExperimenterMessageOfChoice(new BundleControlSalBuilder()
+                .setSalControlData(new SalControlDataBuilder(input).build())
+                .build());
         service.controlBundle(input);
         Mockito.verify(experimenterMessageService).sendExperimenter(experimenterBuilder.build());
     }
@@ -95,18 +99,24 @@ public class SalBundleServiceImplTest {
                 .setBundleProperty(properties)
                 .setMessages(innerMessages)
                 .build();
-        final BundleAddMessageBuilder addMessageBuilder = new BundleAddMessageBuilder()
-                .setBundleId(BUNDLE_ID)
-                .setFlags(BUNDLE_FLAGS)
-                .setBundleProperty(properties);
+        final SalAddMessageDataBuilder dataBuilder = new SalAddMessageDataBuilder();
+        dataBuilder.setBundleId(BUNDLE_ID).setFlags(BUNDLE_FLAGS).setBundleProperty(properties);
+
+        final BundleAddMessageSalBuilder addMessageBuilder = new BundleAddMessageSalBuilder();
         final SendExperimenterInputBuilder experimenterBuilder = new SendExperimenterInputBuilder()
                 .setNode(NODE_REF);
         Mockito.when(experimenterMessageService.sendExperimenter(Matchers.any())).thenReturn(SettableFuture.create());
         service.addBundleMessages(input);
         for (Messages msg : innerMessages) {
-            Mockito.verify(experimenterMessageService).sendExperimenter(experimenterBuilder.setExperimenterMessageOfChoice(
-                    addMessageBuilder.setBundleInnerMessage(msg.getBundleInnerMessage()).build()
-            ).build());
+            Mockito.verify(experimenterMessageService)
+                    .sendExperimenter(
+                            experimenterBuilder.setExperimenterMessageOfChoice(
+                                    addMessageBuilder
+                                            .setSalAddMessageData(
+                                                    dataBuilder.setBundleInnerMessage(msg.getBundleInnerMessage()).build()
+                                            ).build()
+                            ).build()
+                    );
         }
     }
 

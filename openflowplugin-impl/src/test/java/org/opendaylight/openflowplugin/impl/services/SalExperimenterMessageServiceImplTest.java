@@ -17,7 +17,7 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.extension.api.ConvertorMessageToOFJava;
+import org.opendaylight.openflowplugin.extension.api.ConverterMessageToOFJava;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SendExperimenterInput;
@@ -39,7 +39,7 @@ public class SalExperimenterMessageServiceImplTest extends ServiceMocking {
     @Mock
     private ExtensionConverterProvider extensionConverterProvider;
     @Mock
-    private ConvertorMessageToOFJava extensionConverter;
+    private ConverterMessageToOFJava extensionConverter;
 
     @Override
     protected void setup() {
