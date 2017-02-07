@@ -16,6 +16,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.compatibility.Delegator;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
+import org.opendaylight.openflowplugin.extension.onf.service.SalBundleServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.FlowCapableTransactionServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.NodeConfigServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.PacketProcessingServiceImpl;
@@ -60,6 +61,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.OpendaylightMeterStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.NodeConfigService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.SalPortService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.OpendaylightPortStatisticsService;
@@ -132,6 +134,12 @@ public class MdSalRegistrationUtils {
                 new SalExperimenterMessageServiceImpl(rpcContext, deviceContext, extensionConverterProvider));
         rpcContext.registerRpcServiceImplementation(SalExperimenterMpMessageService.class,
                 new SalExperimenterMpMessageServiceImpl(rpcContext, deviceContext, extensionConverterProvider));
+
+        //register onf extension bundles
+        rpcContext.registerRpcServiceImplementation(SalBundleService.class,
+                new SalBundleServiceImpl(new SalExperimenterMessageServiceImpl(
+                        rpcContext, deviceContext, extensionConverterProvider
+                )));
     }
 
     /**
