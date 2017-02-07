@@ -157,7 +157,7 @@ module openflow-provider-config {
         leaf ttl-before-drop {
             description "TTL in milliseconds without connection before the context chain shall be dropped";
             type uint32;
-            default 10000;
+            default 1000;
         }
 
         leaf ttl-step {
