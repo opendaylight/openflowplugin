@@ -24,28 +24,28 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.add.message.grouping.bundle.inner.message.BundleGroupModCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.add.message.grouping.bundle.inner.message.BundlePortModCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.common.grouping.BundleProperty;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleAddMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleAddMessageOnf;
 
 /**
  * Translates BundleAddMessage messages (OpenFlow v1.3 extension #230).
  */
-public class BundleAddMessageFactory extends AbstractBundleMessageFactory<BundleAddMessage> {
+public class BundleAddMessageFactory extends AbstractBundleMessageFactory<BundleAddMessageOnf> {
 
     @Override
-    public void serialize(BundleAddMessage input, ByteBuf outBuffer) {
-        outBuffer.writeInt(input.getBundleId().getValue().intValue());
+    public void serialize(BundleAddMessageOnf input, ByteBuf outBuffer) {
+        outBuffer.writeInt(input.getOnfAddMessageGroupingData().getBundleId().getValue().intValue());
         outBuffer.writeZero(2);
-        writeBundleFlags(input.getFlags(), outBuffer);
+        writeBundleFlags(input.getOnfAddMessageGroupingData().getFlags(), outBuffer);
 
         int msgStart = outBuffer.writerIndex();
-        final BundleInnerMessage message = input.getBundleInnerMessage();
+        final BundleInnerMessage message = input.getOnfAddMessageGroupingData().getBundleInnerMessage();
         serializeInnerMessage(message, outBuffer);
         int msgLength = outBuffer.writerIndex() - msgStart;
 
-        List<BundleProperty> bundleProperties = input.getBundleProperty();
+        List<BundleProperty> bundleProperties = input.getOnfAddMessageGroupingData().getBundleProperty();
         if (bundleProperties != null && !bundleProperties.isEmpty()) {
             outBuffer.writeZero(paddingNeeded(msgLength));
-            writeBundleProperties(input.getBundleProperty(), outBuffer);
+            writeBundleProperties(input.getOnfAddMessageGroupingData().getBundleProperty(), outBuffer);
         }
     }
 
