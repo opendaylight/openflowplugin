@@ -28,8 +28,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.add.message.grouping.bundle.inner.message.BundleFlowModCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.add.message.grouping.bundle.inner.message.BundleGroupModCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.add.message.grouping.bundle.inner.message.BundlePortModCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleAddMessage;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleAddMessageBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleAddMessageOnf;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleAddMessageOnfBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.bundle.add.message.onf.OnfAddMessageGroupingDataBuilder;
 
 /**
  * Test for {@link org.opendaylight.openflowplugin.extension.onf.serializer.BundleAddMessageFactory}.
@@ -37,7 +38,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 @RunWith(MockitoJUnitRunner.class)
 public class BundleAddMessageFactoryTest extends AbstractBundleMessageFactoryTest {
 
-    private final OFSerializer<BundleAddMessage> factory = new BundleAddMessageFactory();
+    private final OFSerializer<BundleAddMessageOnf> factory = new BundleAddMessageFactory();
     @Mock
     private OFSerializer caseSerializer;
 
@@ -75,14 +76,15 @@ public class BundleAddMessageFactoryTest extends AbstractBundleMessageFactoryTes
     }
 
     private void testSerialize(final boolean withProperty, final BundleInnerMessage innerMessage) {
-        final BundleAddMessageBuilder builder = new BundleAddMessageBuilder();
-        builder.setBundleId(new BundleId(1L));
-        builder.setFlags(new BundleFlags(true, false));
+        final BundleAddMessageOnfBuilder builder = new BundleAddMessageOnfBuilder();
+        final OnfAddMessageGroupingDataBuilder dataBuilder = new OnfAddMessageGroupingDataBuilder();
+        dataBuilder.setBundleId(new BundleId(1L));
+        dataBuilder.setFlags(new BundleFlags(true, false));
 
-        builder.setBundleInnerMessage(innerMessage);
+        dataBuilder.setBundleInnerMessage(innerMessage);
 
         if (withProperty) {
-            builder.setBundleProperty(new ArrayList<>(Collections.singleton(
+            dataBuilder.setBundleProperty(new ArrayList<>(Collections.singleton(
                     BundleTestUtils.createExperimenterProperty(propertyExperimenterData))));
             Mockito.when(registry.getSerializer(Matchers.any()))
                     .thenReturn(caseSerializer)
