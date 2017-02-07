@@ -1,0 +1,234 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fafc7978_c50d7139",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/action/ConntrackCodec.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-02-07T06:50:49Z",
+      "side": 1,
+      "message": "make these parameters final",
+      "range": {
+        "startLine": 103,
+        "startChar": 60,
+        "endLine": 103,
+        "endChar": 94
+      },
+      "revId": "74b06bc54a356d9e5d0b7a5882599e6097293a22",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_25143d43",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/action/ConntrackCodec.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-02-07T06:50:49Z",
+      "side": 1,
+      "message": "don\u0027t you need null check for natAction.getIpAddressMin()? Also no support for IPv6 range ?",
+      "range": {
+        "startLine": 117,
+        "startChar": 84,
+        "endLine": 118,
+        "endChar": 51
+      },
+      "revId": "74b06bc54a356d9e5d0b7a5882599e6097293a22",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_050f792f",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/action/ConntrackCodec.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-02-07T06:50:49Z",
+      "side": 1,
+      "message": "same as above.",
+      "range": {
+        "startLine": 121,
+        "startChar": 84,
+        "endLine": 122,
+        "endChar": 67
+      },
+      "revId": "74b06bc54a356d9e5d0b7a5882599e6097293a22",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_651e4565",
+        "filename": "extension/openflowjava-extension-nicira/src/main/yang/nicira-action.yang",
+        "patchSetId": 9
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-02-07T06:50:49Z",
+      "side": 1,
+      "message": "put the date in \" \"",
+      "range": {
+        "startLine": 10,
+        "startChar": 58,
+        "endLine": 10,
+        "endChar": 68
+      },
+      "revId": "74b06bc54a356d9e5d0b7a5882599e6097293a22",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_45198178",
+        "filename": "extension/openflowjava-extension-nicira/src/test/java/org/opendaylight/openflowjava/nx/codec/action/ConntrackCodecTest.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-02-07T06:50:49Z",
+      "side": 1,
+      "message": "always user variable ordering like public static final --\u003e public static --\u003e public final",
+      "range": {
+        "startLine": 47,
+        "startChar": 3,
+        "endLine": 48,
+        "endChar": 52
+      },
+      "revId": "74b06bc54a356d9e5d0b7a5882599e6097293a22",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_6a1c5478",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/java/org/opendaylight/openflowplugin/extension/vendor/nicira/convertor/action/ConntrackConvertor.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-02-07T06:50:49Z",
+      "side": 1,
+      "message": "change it to 2015-2017",
+      "range": {
+        "startLine": 2,
+        "startChar": 17,
+        "endLine": 2,
+        "endChar": 21
+      },
+      "revId": "74b06bc54a356d9e5d0b7a5882599e6097293a22",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_6a3574f6",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/java/org/opendaylight/openflowplugin/extension/vendor/nicira/convertor/action/ConntrackConvertor.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-02-07T06:50:49Z",
+      "side": 1,
+      "message": "i believe you don\u0027t need full package name for this object.",
+      "range": {
+        "startLine": 70,
+        "startChar": 16,
+        "endLine": 71,
+        "endChar": 77
+      },
+      "revId": "74b06bc54a356d9e5d0b7a5882599e6097293a22",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_ca3c60e5",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/java/org/opendaylight/openflowplugin/extension/vendor/nicira/convertor/action/ConntrackConvertor.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-02-07T06:50:49Z",
+      "side": 1,
+      "message": "same as above.",
+      "range": {
+        "startLine": 80,
+        "startChar": 16,
+        "endLine": 81,
+        "endChar": 61
+      },
+      "revId": "74b06bc54a356d9e5d0b7a5882599e6097293a22",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_2a2b6c95",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/java/org/opendaylight/openflowplugin/extension/vendor/nicira/convertor/action/ConntrackConvertor.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-02-07T06:50:49Z",
+      "side": 1,
+      "message": "mark it final.",
+      "range": {
+        "startLine": 147,
+        "startChar": 172,
+        "endLine": 147,
+        "endChar": 190
+      },
+      "revId": "74b06bc54a356d9e5d0b7a5882599e6097293a22",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_8a19b88a",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/java/org/opendaylight/openflowplugin/extension/vendor/nicira/convertor/action/ConntrackConvertor.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-02-07T06:50:49Z",
+      "side": 1,
+      "message": "please limit all the statement in 120 chars.",
+      "range": {
+        "startLine": 154,
+        "startChar": 12,
+        "endLine": 157,
+        "endChar": 68
+      },
+      "revId": "74b06bc54a356d9e5d0b7a5882599e6097293a22",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
