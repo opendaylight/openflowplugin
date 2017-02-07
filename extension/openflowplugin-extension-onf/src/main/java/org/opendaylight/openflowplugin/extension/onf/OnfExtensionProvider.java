@@ -24,8 +24,8 @@ import org.opendaylight.openflowplugin.extension.onf.serializer.BundleAddMessage
 import org.opendaylight.openflowplugin.extension.onf.serializer.BundleControlFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.BundleAddMessage;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.BundleControl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.BundleAddMessageSal;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.BundleControlSal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,9 +92,9 @@ public class OnfExtensionProvider {
 
     private void registerConverters() {
         converterRegistrator.registerMessageConvertor(
-                new TypeVersionKey<>(BundleControl.class, OFConstants.OFP_VERSION_1_3), bundleControlConverter);
+                new TypeVersionKey<>(BundleControlSal.class, OFConstants.OFP_VERSION_1_3), bundleControlConverter);
         converterRegistrator.registerMessageConvertor(
-                new TypeVersionKey<>(BundleAddMessage.class, OFConstants.OFP_VERSION_1_3), bundleAddMessageConverter);
+                new TypeVersionKey<>(BundleAddMessageSal.class, OFConstants.OFP_VERSION_1_3), bundleAddMessageConverter);
     }
 
 }

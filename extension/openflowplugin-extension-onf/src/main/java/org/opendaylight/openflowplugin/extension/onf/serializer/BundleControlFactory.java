@@ -9,20 +9,20 @@
 package org.opendaylight.openflowplugin.extension.onf.serializer;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleControl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleControlOnf;
 
 /**
  * Translates BundleControl messages (OpenFlow v1.3 extension #230).
  */
-public class BundleControlFactory extends AbstractBundleMessageFactory<BundleControl> {
+public class BundleControlFactory extends AbstractBundleMessageFactory<BundleControlOnf> {
 
     @Override
-    public void serialize(BundleControl input, ByteBuf outBuffer) {
-        outBuffer.writeInt(input.getBundleId().getValue().intValue());
-        outBuffer.writeShort(input.getType().getIntValue());
-        writeBundleFlags(input.getFlags(), outBuffer);
-        if (input.getBundleProperty() != null) {
-            writeBundleProperties(input.getBundleProperty(), outBuffer);
+    public void serialize(BundleControlOnf input, ByteBuf outBuffer) {
+        outBuffer.writeInt(input.getOnfControlGroupingData().getBundleId().getValue().intValue());
+        outBuffer.writeShort(input.getOnfControlGroupingData().getType().getIntValue());
+        writeBundleFlags(input.getOnfControlGroupingData().getFlags(), outBuffer);
+        if (input.getOnfControlGroupingData().getBundleProperty() != null) {
+            writeBundleProperties(input.getOnfControlGroupingData().getBundleProperty(), outBuffer);
         }
     }
 
