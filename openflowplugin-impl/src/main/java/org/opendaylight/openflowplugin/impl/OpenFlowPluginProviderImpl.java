@@ -406,7 +406,6 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     public void setIsUseSingleLayerSerialization(Boolean useSingleLayerSerialization) {
         this.useSingleLayerSerialization = useSingleLayerSerialization;
     }
-}
 
     @Override
     public void updateTtlBeforeDropInContextChainHolder(final Long ttlBeforeDrop) {
