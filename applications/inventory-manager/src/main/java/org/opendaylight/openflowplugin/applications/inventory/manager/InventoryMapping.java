@@ -32,6 +32,7 @@ public class InventoryMapping {
         builder.setPortNumber(updated.getPortNumber());
         builder.setState(updated.getState());
         builder.setSupported(updated.getSupported());
+        builder.setReason(updated.getReason());
         return builder.build();
     }
 
