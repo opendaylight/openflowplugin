@@ -14,8 +14,10 @@ import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.util.PortTranslatorUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortNumberUni;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 
 /**
  * @author tkubas
@@ -42,6 +44,9 @@ public class PortUpdateTranslator implements MessageTranslator<PortGrouping, Flo
             builder.setState(PortTranslatorUtil.translatePortState(input.getState()));
             builder.setSupported(PortTranslatorUtil.translatePortFeatures(input.getSupportedFeatures()));
             builder.setQueue(Collections.<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.queues.Queue>emptyList());
+        }
+        if (input instanceof PortStatusMessage) {
+            builder.setReason(PortReason.forValue(((PortStatusMessage) input).getReason().getIntValue()));
         }
         builder.setCurrentSpeed(input.getCurrSpeed());
         builder.setHardwareAddress(input.getHwAddr());
