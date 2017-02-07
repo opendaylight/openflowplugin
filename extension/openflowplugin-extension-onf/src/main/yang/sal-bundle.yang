@@ -14,44 +14,56 @@ module sal-bundle {
     }
 
     augment "/exp-msg:send-experimenter/exp-msg:input/exp-msg:experimenter-message-of-choice" {
-        case bundle-control {
-            uses onf-ext:bundle-control-grouping;
+        case bundle-control-sal {
+            container sal-control-data {
+                uses onf-ext:bundle-control-grouping;
+            }
         }
-        case bundle-add-message {
-            uses onf-ext:bundle-common-grouping;
-            uses bundle-inner-message-grouping;
+        case bundle-add-message-sal {
+            container sal-add-message-data {
+                uses onf-ext:bundle-common-grouping;
+                uses bundle-inner-message-grouping;
+            }
         }
     }
 
     grouping bundle-inner-message-grouping {
+        uses inv:node-context-ref;
         choice bundle-inner-message {
             case bundle-add-flow-case {
-                uses inv:node-context-ref;
-                uses flow-types:flow;
+                container add-flow-case-data {
+                    uses flow-types:flow;
+                }
             }
             case bundle-update-flow-case {
-                uses inv:node-context-ref;
-                uses flow-types:flow;
+                container update-flow-case-data {
+                    uses flow-types:flow;
+                }
             }
             case bundle-remove-flow-case {
-                uses inv:node-context-ref;
-                uses flow-types:flow;
+                container remove-flow-case-data {
+                    uses flow-types:flow;
+                }
             }
             case bundle-add-group-case {
-                uses inv:node-context-ref;
-                uses group-types:group;
+                container add-group-case-data {
+                    uses group-types:group;
+                }
             }
             case bundle-update-group-case {
-                uses inv:node-context-ref;
-                uses group-types:group;
+                container update-group-case-data {
+                    uses group-types:group;
+                }
             }
             case bundle-remove-group-case {
-                uses inv:node-context-ref;
-                uses group-types:group;
+                container remove-group-case-data {
+                    uses group-types:group;
+                }
             }
             case bundle-update-port-case {
-                uses inv:node-context-ref;
-                uses port-types:port-mod;
+                container update-port-case-data {
+                    uses port-types:port-mod;
+                }
             }
         }
     }

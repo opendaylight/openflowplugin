@@ -25,28 +25,29 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.common.grouping.BundlePropertyBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.property.grouping.bundle.property.entry.BundlePropertyExperimenterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.property.grouping.bundle.property.entry.bundle.property.experimenter.BundlePropertyExperimenterData;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleControl;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleControlBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleControlOnf;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleControlOnfBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.bundle.control.onf.OnfControlGroupingDataBuilder;
 
 /**
  * Translates BundleControl messages (OpenFlow v1.3 extension #230).
  */
-public class BundleControlFactory implements OFDeserializer<BundleControl>, DeserializerRegistryInjector {
+public class BundleControlFactory implements OFDeserializer<BundleControlOnf>, DeserializerRegistryInjector {
 
     private DeserializerRegistry deserializerRegistry;
 
     @Override
-    public BundleControl deserialize(ByteBuf message) {
+    public BundleControlOnf deserialize(ByteBuf message) {
         BundleId bundleId = new BundleId(message.readUnsignedInt());
         BundleControlType type = BundleControlType.forValue(message.readUnsignedShort());
         BundleFlags flags = createBundleFlags(message.readUnsignedShort());
-        BundleControlBuilder builder = new BundleControlBuilder();
+        OnfControlGroupingDataBuilder builder = new OnfControlGroupingDataBuilder();
         List<BundleProperty> properties = createBundleProperties(message);
-        return builder.setBundleId(bundleId)
-                .setType(type)
-                .setFlags(flags)
-                .setBundleProperty(properties)
-                .build();
+        builder.setBundleId(bundleId)
+               .setType(type)
+               .setFlags(flags)
+               .setBundleProperty(properties);
+        return new BundleControlOnfBuilder().setOnfControlGroupingData(builder.build()).build();
     }
 
     private static BundleFlags createBundleFlags(final int flags) {
