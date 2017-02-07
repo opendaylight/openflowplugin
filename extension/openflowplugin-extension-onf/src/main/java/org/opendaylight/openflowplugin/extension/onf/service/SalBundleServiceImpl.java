@@ -23,8 +23,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.Messages;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.BundleAddMessageBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.BundleControlBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.BundleAddMessageSalBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.BundleControlSalBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.bundle.add.message.sal.SalAddMessageDataBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.bundle.control.sal.SalControlDataBuilder;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -45,7 +47,13 @@ public class SalBundleServiceImpl implements SalBundleService {
     public Future<RpcResult<Void>> controlBundle(ControlBundleInput input) {
         final SendExperimenterInputBuilder experimenterInputBuilder = new SendExperimenterInputBuilder();
         experimenterInputBuilder.setNode(input.getNode());
-        experimenterInputBuilder.setExperimenterMessageOfChoice(new BundleControlBuilder(input).build());
+        experimenterInputBuilder.setExperimenterMessageOfChoice(
+                new BundleControlSalBuilder()
+                        .setSalControlData(
+                                new SalControlDataBuilder(input).build()
+                        )
+                        .build()
+        );
         return experimenterMessageService.sendExperimenter(experimenterInputBuilder.build());
     }
 
@@ -53,14 +61,15 @@ public class SalBundleServiceImpl implements SalBundleService {
     public Future<RpcResult<Void>> addBundleMessages(AddBundleMessagesInput input) {
         final List<ListenableFuture<RpcResult<Void>>> partialResults = new ArrayList<>();
         final SendExperimenterInputBuilder experimenterInputBuilder = new SendExperimenterInputBuilder();
-        final BundleAddMessageBuilder bundleAddMessageBuilder = new BundleAddMessageBuilder();
+        final BundleAddMessageSalBuilder bundleAddMessageBuilder = new BundleAddMessageSalBuilder();
+        final SalAddMessageDataBuilder dataBuilder = new SalAddMessageDataBuilder();
         experimenterInputBuilder.setNode(input.getNode());
-        bundleAddMessageBuilder.setBundleId(input.getBundleId());
-        bundleAddMessageBuilder.setFlags(input.getFlags());
-        bundleAddMessageBuilder.setBundleProperty(input.getBundleProperty());
+        dataBuilder.setBundleId(input.getBundleId());
+        dataBuilder.setFlags(input.getFlags());
+        dataBuilder.setBundleProperty(input.getBundleProperty());
         for (Messages message : input.getMessages()) {
-            bundleAddMessageBuilder.setBundleInnerMessage(message.getBundleInnerMessage());
-            experimenterInputBuilder.setExperimenterMessageOfChoice(bundleAddMessageBuilder.build());
+            dataBuilder.setBundleInnerMessage(message.getBundleInnerMessage());
+            experimenterInputBuilder.setExperimenterMessageOfChoice(bundleAddMessageBuilder.setSalAddMessageData(dataBuilder.build()).build());
             ListenableFuture<RpcResult<Void>> res = JdkFutureAdapters.listenInPoolThread(
                     experimenterMessageService.sendExperimenter(experimenterInputBuilder.build()));
             partialResults.add(res);
