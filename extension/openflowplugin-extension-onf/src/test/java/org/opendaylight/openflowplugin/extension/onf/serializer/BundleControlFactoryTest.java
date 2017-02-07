@@ -26,8 +26,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundlePropertyType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleControl;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleControlBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleControlOnf;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleControlOnfBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.bundle.control.onf.OnfControlGroupingDataBuilder;
 
 /**
  * Test for {@link org.opendaylight.openflowplugin.extension.onf.serializer.BundleControlFactory}.
@@ -35,7 +36,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 @RunWith(MockitoJUnitRunner.class)
 public class BundleControlFactoryTest extends AbstractBundleMessageFactoryTest {
 
-    private final OFSerializer<BundleControl> factory = new BundleControlFactory();
+    private final OFSerializer<BundleControlOnf> factory = new BundleControlFactory();
 
     @Test
     public void testSerializeWithoutProperties() {
@@ -48,20 +49,20 @@ public class BundleControlFactoryTest extends AbstractBundleMessageFactoryTest {
     }
 
     private void testSerialize(final boolean withProperty) {
-        final BundleControlBuilder builder = new BundleControlBuilder();
-        builder.setBundleId(new BundleId(1L));
-        builder.setType(BundleControlType.ONFBCTOPENREQUEST);
-        builder.setFlags(new BundleFlags(true, true));
+        final OnfControlGroupingDataBuilder dataBuilder = new OnfControlGroupingDataBuilder();
+        dataBuilder.setBundleId(new BundleId(1L));
+        dataBuilder.setType(BundleControlType.ONFBCTOPENREQUEST);
+        dataBuilder.setFlags(new BundleFlags(true, true));
 
         if (withProperty) {
-            builder.setBundleProperty((new ArrayList<>(Collections.singleton(
+            dataBuilder.setBundleProperty((new ArrayList<>(Collections.singleton(
                     BundleTestUtils.createExperimenterProperty(propertyExperimenterData)))));
             Mockito.when(registry.getSerializer(Matchers.any(MessageTypeKey.class))).thenReturn(propertySerializer);
             ((SerializerRegistryInjector) factory).injectSerializerRegistry(registry);
         }
 
         ByteBuf out = UnpooledByteBufAllocator.DEFAULT.buffer();
-        factory.serialize(builder.build(), out);
+        factory.serialize(new BundleControlOnfBuilder().setOnfControlGroupingData(dataBuilder.build()).build(), out);
 
         Assert.assertEquals("Wrong bundle ID", 1L, out.readUnsignedInt());
         Assert.assertEquals("Wrong type", BundleControlType.ONFBCTOPENREQUEST.getIntValue(), out.readUnsignedShort());

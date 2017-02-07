@@ -16,7 +16,7 @@ import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.extension.api.ConvertorMessageToOFJava;
+import org.opendaylight.openflowplugin.extension.api.ConverterMessageToOFJava;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerExperimenterMultipartService;
@@ -41,7 +41,7 @@ public class SalExperimenterMpMessageServiceImplTest extends ServiceMocking {
     private ExtensionConverterProvider mockedExtensionConverterProvider;
 
     @Mock
-    private ConvertorMessageToOFJava<ExperimenterMessageOfChoice, DataContainer> mockedExtensionConverter;
+    private ConverterMessageToOFJava<ExperimenterMessageOfChoice, DataContainer> mockedExtensionConverter;
 
     @Override
     protected void setup() {
