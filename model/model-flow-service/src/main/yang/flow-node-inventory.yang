@@ -240,6 +240,9 @@ module flow-node-inventory {
 
     grouping flow-node-connector {
         description "Wrapper of openflow port. TODO::simplify/rename";
+        leaf reason {
+            type port:port-reason;
+        }
         uses port:flow-capable-port;
     }
 
