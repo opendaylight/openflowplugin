@@ -18,7 +18,7 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  * @param <F> input message model - MD-SAL model
  * @param <T> output message model - OFJava-API
  */
-public interface ConvertorMessageToOFJava<F extends ExperimenterMessageOfChoice, T extends DataContainer> {
+public interface ConverterMessageToOFJava<F extends ExperimenterMessageOfChoice, T extends DataContainer> {
 
     /**
      * @param experimenterMessageCase where is vendor's augmentation
