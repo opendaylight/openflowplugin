@@ -11,6 +11,7 @@ import java.math.BigInteger;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorUpdatedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.flow.capable.port.State;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.flow.capable.port.StateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRemoved;
@@ -24,8 +25,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortStateV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class PortTranslatorUtil {
+    private static final Logger logger = LoggerFactory.getLogger(PortTranslatorUtil.class);
     public static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures translatePortFeatures(final PortFeatures apf) {
         org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures napf = null;
         if (apf != null) {
@@ -137,6 +142,13 @@ public abstract class PortTranslatorUtil {
             fcncub.setPeerFeatures(PortTranslatorUtil.translatePortFeatures(port.getPeerFeaturesV10()));
             fcncub.setState(PortTranslatorUtil.translatePortState(port.getStateV10()));
             fcncub.setSupported(PortTranslatorUtil.translatePortFeatures(port.getSupportedFeaturesV10()));
+        }
+        if (port instanceof PortStatusMessage) {
+            if (((PortStatusMessage) port).getReason() != null) {
+                fcncub.setReason(PortReason.forValue(((PortStatusMessage) port).getReason().getIntValue()));
+            }else {
+                logger.debug("PortStatus Message has reason as null");
+            }
         }
         fcncub.setCurrentSpeed(port.getCurrSpeed());
         fcncub.setHardwareAddress(port.getHwAddr());
