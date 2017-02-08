@@ -11,6 +11,7 @@ import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.extension.api.BundleMessageData;
 import org.opendaylight.openflowplugin.extension.api.ConverterMessageToOFJava;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
@@ -47,6 +48,11 @@ public class SalExperimenterMessageServiceImpl extends AbstractVoidService<SendE
         }
 
         final ExperimenterInputBuilder experimenterInputBld;
+
+        if (messageConverter instanceof BundleMessageData) {
+            ((BundleMessageData) messageConverter).setNode(input.getNode());
+            ((BundleMessageData) messageConverter).setXid(xid.getValue());
+        }
 
         try {
             experimenterInputBld = new ExperimenterInputBuilder()
