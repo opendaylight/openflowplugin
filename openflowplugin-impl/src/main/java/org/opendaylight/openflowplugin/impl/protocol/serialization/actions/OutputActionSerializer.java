@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.serialization.actions;
 
+import com.google.common.base.MoreObjects;
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
@@ -24,7 +25,7 @@ public class OutputActionSerializer extends AbstractActionSerializer {
         outBuffer.writeInt(InventoryDataServiceUtil.portNumberfromNodeConnectorId(
                 OpenflowVersion.OF13,
                 outputAction.getOutputNodeConnector().getValue()).intValue());
-        outBuffer.writeShort(outputAction.getMaxLength());
+        outBuffer.writeShort(MoreObjects.firstNonNull(outputAction.getMaxLength(), 0));
         outBuffer.writeZero(ActionConstants.OUTPUT_PADDING);
     }
 

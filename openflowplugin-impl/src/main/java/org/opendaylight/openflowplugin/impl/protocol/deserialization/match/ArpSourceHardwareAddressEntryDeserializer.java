@@ -32,14 +32,15 @@ public class ArpSourceHardwareAddressEntryDeserializer extends AbstractMatchEntr
 
         if (Objects.isNull(layer3Match)) {
             builder.setLayer3Match(new ArpMatchBuilder()
-                    .setArpSourceHardwareAddress(arpBuilder.build())
-                    .build());
-        } else if (ArpMatch.class.isInstance(layer3Match)) {
+                .setArpSourceHardwareAddress(arpBuilder.build())
+                .build());
+        } else if (ArpMatch.class.isInstance(layer3Match)
+            && Objects.isNull(ArpMatch.class.cast(layer3Match).getArpSourceHardwareAddress())) {
             builder.setLayer3Match(new ArpMatchBuilder(ArpMatch.class.cast(layer3Match))
-                    .setArpSourceHardwareAddress(arpBuilder.build())
-                    .build());
+                .setArpSourceHardwareAddress(arpBuilder.build())
+                .build());
         } else {
-            throwErrorOnMalformed(builder, "layer3Match");
+            throwErrorOnMalformed(builder, "layer3Match", "arpSourceHardwareAddress");
         }
     }
 

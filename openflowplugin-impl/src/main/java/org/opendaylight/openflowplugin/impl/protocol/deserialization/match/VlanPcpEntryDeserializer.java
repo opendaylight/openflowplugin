@@ -25,12 +25,12 @@ public class VlanPcpEntryDeserializer extends AbstractMatchEntryDeserializer {
             builder.setVlanMatch(new VlanMatchBuilder()
                     .setVlanPcp(new VlanPcp(pcp))
                     .build());
-        } else if (Objects.nonNull(builder.getVlanMatch().getVlanPcp())) {
+        } else if (Objects.isNull(builder.getVlanMatch().getVlanPcp())) {
             builder.setVlanMatch(new VlanMatchBuilder(builder.getVlanMatch())
                     .setVlanPcp(new VlanPcp(pcp))
                     .build());
         } else {
-            throwErrorOnMalformed(builder, "vlanMatch");
+            throwErrorOnMalformed(builder, "vlanMatch", "vlanPcp");
         }
     }
 

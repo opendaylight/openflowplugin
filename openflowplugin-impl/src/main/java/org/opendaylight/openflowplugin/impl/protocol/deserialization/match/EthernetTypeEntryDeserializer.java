@@ -35,7 +35,7 @@ public class EthernetTypeEntryDeserializer extends AbstractMatchEntryDeserialize
                             .build())
                     .build());
         } else {
-            throwErrorOnMalformed(builder, "ethernetMatch");
+            throwErrorOnMalformed(builder, "ethernetMatch", "ethernetType");
         }
     }
 

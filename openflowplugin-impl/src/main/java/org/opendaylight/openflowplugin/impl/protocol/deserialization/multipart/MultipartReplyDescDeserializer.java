@@ -35,11 +35,11 @@ public class MultipartReplyDescDeserializer implements OFDeserializer<MultipartR
         message.readBytes(dpDescBytes);
 
         return new MultipartReplyDescBuilder()
-                .setManufacturer(new String(mfrDescBytes))
-                .setHardware(new String(hwDescBytes))
-                .setSoftware(new String(swDescBytes))
-                .setSerialNumber(new String(serialNumBytes))
-                .setDescription(new String(dpDescBytes))
+                .setManufacturer(new String(mfrDescBytes).trim())
+                .setHardware(new String(hwDescBytes).trim())
+                .setSoftware(new String(swDescBytes).trim())
+                .setSerialNumber(new String(serialNumBytes).trim())
+                .setDescription(new String(dpDescBytes).trim())
                 .build();
     }
 

@@ -38,7 +38,7 @@ public class EthernetDestinationEntryDeserializer extends AbstractMatchEntryDese
                     .setEthernetDestination(ethernetDestinationBuilder.build())
                     .build());
         } else {
-            throwErrorOnMalformed(builder, "ethernetMatch");
+            throwErrorOnMalformed(builder, "ethernetMatch", "ethernetDestination");
         }
     }
 

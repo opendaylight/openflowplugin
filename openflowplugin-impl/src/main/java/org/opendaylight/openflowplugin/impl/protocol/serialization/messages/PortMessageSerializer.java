@@ -29,6 +29,7 @@ public class PortMessageSerializer extends AbstractMessageSerializer<PortMessage
 
     @Override
     public void serialize(final PortMessage message, final ByteBuf outBuffer) {
+        int index = outBuffer.writerIndex();
         super.serialize(message, outBuffer);
         outBuffer.writeInt(OpenflowPortsUtil.getProtocolPortNumber(OpenflowVersion.OF13, message.getPortNumber()).intValue());
         outBuffer.writeZero(PADDING_IN_PORT_MOD_MESSAGE_01);
@@ -39,7 +40,7 @@ public class PortMessageSerializer extends AbstractMessageSerializer<PortMessage
         outBuffer.writeInt(portConfigBitMask); // Configuration mask
         outBuffer.writeInt(createPortFeaturesBitMask(message.getAdvertisedFeatures()));
         outBuffer.writeZero(PADDING_IN_PORT_MOD_MESSAGE_03);
-        ByteBufUtils.updateOFHeaderLength(outBuffer);
+        outBuffer.setShort(index + 2, outBuffer.writerIndex() - index);
     }
 
     @Override

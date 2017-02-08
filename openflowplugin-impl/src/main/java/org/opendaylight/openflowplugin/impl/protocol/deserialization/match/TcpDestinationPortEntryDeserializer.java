@@ -26,12 +26,13 @@ public class TcpDestinationPortEntryDeserializer extends AbstractMatchEntryDeser
             builder.setLayer4Match(new TcpMatchBuilder()
                     .setTcpDestinationPort(new PortNumber(port))
                     .build());
-        } else if (TcpMatch.class.isInstance(builder.getLayer4Match())) {
+        } else if (TcpMatch.class.isInstance(builder.getLayer4Match())
+            && Objects.isNull(TcpMatch.class.cast(builder.getLayer4Match()).getTcpDestinationPort())) {
             builder.setLayer4Match(new TcpMatchBuilder(TcpMatch.class.cast(builder.getLayer4Match()))
                     .setTcpDestinationPort(new PortNumber(port))
                     .build());
         } else {
-            throwErrorOnMalformed(builder, "layer4Match");
+            throwErrorOnMalformed(builder, "layer4Match", "tcpDestinationPort");
         }
     }
 

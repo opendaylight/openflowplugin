@@ -80,9 +80,11 @@ public class MatchSerializer implements OFSerializer<Match>, HeaderSerializer<Ma
         }
 
         // Serialize match entries
-        entryRegistry.values().stream()
-                .filter(entry -> entry.matchTypeCheck(match))
-                .forEach(entry -> entry.serialize(match, outBuffer));
+        entryRegistry.entrySet().forEach(entry -> {
+            if (entry.getValue().matchTypeCheck(match)) {
+                entry.getValue().serialize(match, outBuffer);
+            }
+        });
 
         // Serialize match extensions
         ExtensionResolvers.getMatchExtensionResolver().getExtension(match).transform(extensions -> {

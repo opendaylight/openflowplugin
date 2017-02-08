@@ -14,20 +14,16 @@ import java.util.ArrayList;
 import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
-import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderDeserializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowjava.util.ExperimenterDeserializerKeyFactory;
-import org.opendaylight.openflowplugin.api.openflow.protocol.deserialization.MessageCodeExperimenterKey;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
-import org.opendaylight.openflowplugin.impl.protocol.deserialization.key.MessageCodeActionExperimenterKey;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.util.ActionUtil;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.util.InstructionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
@@ -55,10 +51,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.wildcards.WildcardSetfieldBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.TableProperties;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.TablePropertiesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,15 +83,22 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
 
             message.skipBytes(PADDING_IN_MULTIPART_REPLY_TABLE_FEATURES);
 
+            final String name = ByteBufUtils.decodeNullTerminatedString(message, MAX_TABLE_NAME_LENGTH);
+            final byte[] match = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            message.readBytes(match);
+            final byte[] write = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            message.readBytes(write);
+
             items.add(itemBuilder
-                    .setName(ByteBufUtils.decodeNullTerminatedString(message, MAX_TABLE_NAME_LENGTH))
-                    .setMetadataMatch(BigInteger.valueOf(message.readLong()))
-                    .setMetadataWrite(BigInteger.valueOf(message.readLong()))
-                    .setConfig(readTableConfig(message))
-                    .setMaxEntries(message.readUnsignedInt())
-                    .setTableProperties(readTableProperties(message,
-                            itemLength - MULTIPART_REPLY_TABLE_FEATURES_STRUCTURE_LENGTH))
-                    .build());
+                .setKey(new TableFeaturesKey(itemBuilder.getTableId()))
+                .setName(name)
+                .setMetadataMatch(new BigInteger(1, match))
+                .setMetadataWrite(new BigInteger(1, write))
+                .setConfig(readTableConfig(message))
+                .setMaxEntries(message.readUnsignedInt())
+                .setTableProperties(readTableProperties(message,
+                    itemLength - MULTIPART_REPLY_TABLE_FEATURES_STRUCTURE_LENGTH))
+                .build());
         }
 
         return builder
@@ -111,7 +116,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
     private final TableProperties readTableProperties(ByteBuf message, int length) {
         final List<TableFeatureProperties> items = new ArrayList<>();
         int tableFeaturesLength = length;
-
+        int order = 0;
         while (tableFeaturesLength > 0) {
             final int propStartIndex = message.readerIndex();
             final TableFeaturesPropType propType = TableFeaturesPropType.forValue(message.readUnsignedShort());
@@ -119,19 +124,25 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
             final int paddingRemainder = propertyLength % EncodeConstants.PADDING;
             tableFeaturesLength -= propertyLength;
             final int commonPropertyLength = propertyLength - COMMON_PROPERTY_LENGTH;
-            final TableFeaturePropertiesBuilder propBuilder = new TableFeaturePropertiesBuilder();
+            final TableFeaturePropertiesBuilder propBuilder = new TableFeaturePropertiesBuilder()
+                .setOrder(order)
+                .setKey(new TableFeaturePropertiesKey(order));
 
             switch (propType) {
                 case OFPTFPTINSTRUCTIONS:
                     propBuilder.setTableFeaturePropType(new InstructionsBuilder()
-                            .setInstructions(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.instructions.InstructionsBuilder()
+                            .setInstructions(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types
+                                .rev131026.table.feature.prop.type.table.feature.prop.type.instructions
+                                .InstructionsBuilder()
                                 .setInstruction(readInstructions(message, commonPropertyLength))
                                 .build())
                             .build());
                     break;
                 case OFPTFPTINSTRUCTIONSMISS:
                     propBuilder.setTableFeaturePropType(new InstructionsMissBuilder()
-                            .setInstructionsMiss(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.instructions.miss.InstructionsMissBuilder()
+                            .setInstructionsMiss(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types
+                                .rev131026.table.feature.prop.type.table.feature.prop.type.instructions.miss
+                                .InstructionsMissBuilder()
                                 .setInstruction(readInstructions(message, commonPropertyLength))
                                 .build())
                             .build());
@@ -152,28 +163,34 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
                     break;
                 case OFPTFPTWRITEACTIONS:
                     propBuilder.setTableFeaturePropType(new WriteActionsBuilder()
-                            .setWriteActions(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.write.actions.WriteActionsBuilder()
+                            .setWriteActions(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026
+                                .table.feature.prop.type.table.feature.prop.type.write.actions.WriteActionsBuilder()
                                 .setAction(readActions(message, commonPropertyLength))
                                 .build())
                             .build());
                     break;
                 case OFPTFPTWRITEACTIONSMISS:
                     propBuilder.setTableFeaturePropType(new WriteActionsMissBuilder()
-                            .setWriteActionsMiss(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.write.actions.miss.WriteActionsMissBuilder()
+                            .setWriteActionsMiss(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types
+                                .rev131026.table.feature.prop.type.table.feature.prop.type.write.actions.miss
+                                .WriteActionsMissBuilder()
                                 .setAction(readActions(message, commonPropertyLength))
                                 .build())
                             .build());
                     break;
                 case OFPTFPTAPPLYACTIONS:
                     propBuilder.setTableFeaturePropType(new ApplyActionsBuilder()
-                            .setApplyActions(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.apply.actions.ApplyActionsBuilder()
+                            .setApplyActions(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026
+                                .table.feature.prop.type.table.feature.prop.type.apply.actions.ApplyActionsBuilder()
                                 .setAction(readActions(message, commonPropertyLength))
                                 .build())
                             .build());
                     break;
                 case OFPTFPTAPPLYACTIONSMISS:
                     propBuilder.setTableFeaturePropType(new ApplyActionsMissBuilder()
-                            .setApplyActionsMiss(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.apply.actions.miss.ApplyActionsMissBuilder()
+                            .setApplyActionsMiss(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types
+                                .rev131026.table.feature.prop.type.table.feature.prop.type.apply.actions.miss
+                                .ApplyActionsMissBuilder()
                                 .setAction(readActions(message, commonPropertyLength))
                                 .build())
                             .build());
@@ -194,28 +211,34 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
                     break;
                 case OFPTFPTWRITESETFIELD:
                     propBuilder.setTableFeaturePropType(new WriteSetfieldBuilder()
-                            .setWriteSetfield(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.write.setfield.WriteSetfieldBuilder()
+                            .setWriteSetfield(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026
+                                .table.feature.prop.type.table.feature.prop.type.write.setfield.WriteSetfieldBuilder()
                                 .setSetFieldMatch(readMatchFields(message, commonPropertyLength))
                                 .build())
                             .build());
                     break;
                 case OFPTFPTWRITESETFIELDMISS:
                     propBuilder.setTableFeaturePropType(new WriteSetfieldMissBuilder()
-                            .setWriteSetfieldMiss(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.write.setfield.miss.WriteSetfieldMissBuilder()
+                            .setWriteSetfieldMiss(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types
+                                .rev131026.table.feature.prop.type.table.feature.prop.type.write.setfield.miss
+                                .WriteSetfieldMissBuilder()
                                 .setSetFieldMatch(readMatchFields(message, commonPropertyLength))
                                 .build())
                             .build());
                     break;
                 case OFPTFPTAPPLYSETFIELD:
                     propBuilder.setTableFeaturePropType(new ApplySetfieldBuilder()
-                            .setApplySetfield(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.apply.setfield.ApplySetfieldBuilder()
+                            .setApplySetfield(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026
+                                .table.feature.prop.type.table.feature.prop.type.apply.setfield.ApplySetfieldBuilder()
                                 .setSetFieldMatch(readMatchFields(message, commonPropertyLength))
                                 .build())
                             .build());
                     break;
                 case OFPTFPTAPPLYSETFIELDMISS:
                     propBuilder.setTableFeaturePropType(new ApplySetfieldMissBuilder()
-                            .setApplySetfieldMiss(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.apply.setfield.miss.ApplySetfieldMissBuilder()
+                            .setApplySetfieldMiss(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types
+                                .rev131026.table.feature.prop.type.table.feature.prop.type.apply.setfield.miss
+                                .ApplySetfieldMissBuilder()
                                 .setSetFieldMatch(readMatchFields(message, commonPropertyLength))
                                 .build())
                             .build());
@@ -243,6 +266,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
             }
 
             items.add(propBuilder.build());
+            order++;
         }
 
 
@@ -259,8 +283,11 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
         while ((message.readerIndex() - startIndex) < length) {
             MATCH_FIELD_DESERIALIZER
                 .deserialize(message)
-                .ifPresent(matchField -> matchFields.add(matchField));
-            message.getUnsignedByte(message.readerIndex());
+                .map(matchFields::add)
+                .orElseGet(() -> {
+                    message.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+                    return Boolean.FALSE;
+                });
         }
 
         return matchFields;
@@ -268,10 +295,11 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
 
     private List<Short> readNextTableIds(ByteBuf message, int length) {
         final List<Short> tableIds = new ArrayList<>();
+        int nextTableLength = length;
 
-        while (length > 0) {
+        while (nextTableLength > 0) {
             tableIds.add(message.readUnsignedByte());
-            length--;
+            nextTableLength -= 1;
         }
 
         return tableIds;
@@ -286,41 +314,18 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
         int offset = 0;
 
         while ((message.readerIndex() - startIndex) < length) {
-            final int type = message.getUnsignedShort(message.readerIndex());
-            HeaderDeserializer<Instruction> deserializer = null;
-
-            if (InstructionConstants.APPLY_ACTIONS_TYPE == type) {
-                deserializer = registry.getDeserializer(
-                        new MessageCodeActionExperimenterKey(
-                            EncodeConstants.OF13_VERSION_ID, type, Instruction.class,
-                            ActionPath.NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION,
-                            null));
-            } else if (InstructionConstants.WRITE_ACTIONS_TYPE == type) {
-                deserializer = registry.getDeserializer(
-                        new MessageCodeActionExperimenterKey(
-                            EncodeConstants.OF13_VERSION_ID, type, Instruction.class,
-                            ActionPath.NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION,
-                            null));
-            } else {
-                Long expId = null;
-
-                if (EncodeConstants.EXPERIMENTER_VALUE == type) {
-                    expId = message.getUnsignedInt(message.readerIndex() +
-                            2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
-                }
-
-                deserializer = registry.getDeserializer(
-                        new MessageCodeExperimenterKey(
-                            EncodeConstants.OF13_VERSION_ID, type, Instruction.class, expId));
-            }
-
-            instructions.add(new InstructionBuilder()
+            try {
+                instructions.add(new InstructionBuilder()
                     .setKey(new InstructionKey(offset))
                     .setOrder(offset)
-                    .setInstruction(deserializer.deserializeHeader(message))
+                    .setInstruction(InstructionUtil
+                        .readInstructionHeader(EncodeConstants.OF13_VERSION_ID, message, registry))
                     .build());
 
-            offset++;
+                offset++;
+            } catch (ClassCastException | IllegalStateException e) {
+                message.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+            }
         }
 
         return instructions;
@@ -343,7 +348,6 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
                 offset++;
             } catch (ClassCastException | IllegalStateException e) {
                 message.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
-                continue;
             }
         }
 
