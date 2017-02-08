@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
@@ -53,7 +52,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.IpMatchFields;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
@@ -101,7 +99,7 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
 
     @Override
     public void serialize(FlowMessage message, ByteBuf outBuffer) {
-        if (isSetVlanIdActionCasePresent(message)) {
+        if (!isVlanMatchPresent(message) && isSetVlanIdActionCasePresent(message)) {
             writeVlanFlow(message, outBuffer);
         } else {
             writeFlow(message, outBuffer);
@@ -156,7 +154,7 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
         final Optional<Short> protocol = Optional
                 .ofNullable(message.getMatch())
                 .flatMap(m -> Optional.ofNullable(m.getIpMatch()))
-                .map(IpMatchFields::getIpProtocol);
+                .flatMap(ipm -> Optional.ofNullable(ipm.getIpProtocol()));
 
         // Update instructions if needed and then serialize all instructions
         Optional.ofNullable(message.getInstructions())
@@ -184,15 +182,18 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
      */
     private static Optional<Instruction> updateInstruction(final Instruction instruction, final Short protocol) {
         if( ApplyActionsCase.class.isInstance(instruction)) {
-            return Optional.ofNullable(ApplyActionsCase.class.cast(instruction).getApplyActions())
-                    .flatMap(aa -> Optional.ofNullable(aa.getAction()))
-                    .map(as -> (Instruction) new ApplyActionsCaseBuilder()
-                            .setApplyActions(new ApplyActionsBuilder()
-                                    .setAction(as.stream()
-                                            .map(a -> updateSetTpActions(a, protocol))
-                                            .collect(Collectors.toList()))
-                                    .build())
-                            .build());
+            return Optional
+                .ofNullable(ApplyActionsCase.class.cast(instruction).getApplyActions())
+                .flatMap(aa -> Optional.ofNullable(aa.getAction()))
+                .map(as -> new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(as
+                            .stream()
+                            .filter(Objects::nonNull)
+                            .map(a -> updateSetTpActions(a, protocol))
+                            .collect(Collectors.toList()))
+                        .build())
+                    .build());
         }
 
         return Optional.empty();
@@ -241,34 +242,24 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
      * @param outBuffer output buffer
      */
     private void writeVlanFlow(final FlowMessage message, final ByteBuf outBuffer) {
-        Optional.ofNullable(message.getMatch())
-                .ifPresent(match -> Optional.ofNullable(match.getVlanMatch())
-                        .map(v -> Stream.of(
-                                new FlowMessageBuilder(message)
-                                        .setMatch(new MatchBuilder(match)
-                                                .setVlanMatch(new VlanMatchBuilder(v)
-                                                        .setVlanId(new VlanIdBuilder()
-                                                                .setVlanIdPresent(v.getVlanId().isVlanIdPresent())
-                                                                .setVlanId(v.getVlanId().getVlanId())
-                                                                .build())
-                                                        .build())
-                                                .build())
-                                        .build())
-                        ).orElseGet(() -> Stream.of(
-                                new FlowMessageBuilder(message)
-                                        .setMatch(new MatchBuilder(match)
-                                                .setVlanMatch(VLAN_MATCH_FALSE)
-                                                .build())
-                                        .setInstructions(new InstructionsBuilder()
-                                                .setInstruction(updateSetVlanIdAction(message))
-                                                .build())
-                                        .build(),
-                                new FlowMessageBuilder(message)
-                                        .setMatch(new MatchBuilder(match)
-                                                .setVlanMatch(VLAN_MATCH_TRUE)
-                                                .build())
-                                        .build())
-                        ).forEach(m -> writeFlow(m, outBuffer)));
+        writeFlow(
+            new FlowMessageBuilder(message)
+                .setMatch(new MatchBuilder(message.getMatch())
+                    .setVlanMatch(VLAN_MATCH_FALSE)
+                    .build())
+                .setInstructions(new InstructionsBuilder()
+                    .setInstruction(updateSetVlanIdAction(message))
+                    .build())
+                .build(),
+            outBuffer);
+
+        writeFlow(
+            new FlowMessageBuilder(message)
+                .setMatch(new MatchBuilder(message.getMatch())
+                    .setVlanMatch(VLAN_MATCH_TRUE)
+                    .build())
+                .build(),
+            outBuffer);
     }
 
     /**
@@ -343,6 +334,18 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
                 flags.isRESETCOUNTS(),
                 flags.isNOPKTCOUNTS(),
                 flags.isNOBYTCOUNTS());
+    }
+
+    /**
+     * Determine if flow contains vlan match
+     * @param flow flow
+     * @return true if flow contains vlan match
+     */
+    private static boolean isVlanMatchPresent(final Flow flow) {
+        return Optional
+            .ofNullable(flow.getMatch())
+            .flatMap(m -> Optional.ofNullable(m.getVlanMatch()))
+            .isPresent();
     }
 
     /**

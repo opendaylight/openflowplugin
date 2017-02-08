@@ -15,7 +15,6 @@ import java.util.Optional;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.util.ActionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupMessage;
@@ -38,6 +37,7 @@ public class GroupMessageSerializer extends AbstractMessageSerializer<GroupMessa
 
     @Override
     public void serialize(GroupMessage message, ByteBuf outBuffer) {
+        int index = outBuffer.writerIndex();
         super.serialize(message, outBuffer);
         outBuffer.writeShort(message.getCommand().getIntValue());
         outBuffer.writeByte(message.getGroupType().getIntValue());
@@ -49,7 +49,7 @@ public class GroupMessageSerializer extends AbstractMessageSerializer<GroupMessa
                 .ifPresent(b -> b.stream()
                         .sorted(COMPARATOR)
                         .forEach(bucket -> {
-                            int index = outBuffer.writerIndex();
+                            int bucketIndex = outBuffer.writerIndex();
                             outBuffer.writeShort(EncodeConstants.EMPTY_LENGTH);
                             outBuffer.writeShort(MoreObjects.firstNonNull(bucket.getWeight(), 0));
                             outBuffer.writeInt(MoreObjects.firstNonNull(bucket.getWatchPort(), OFConstants.OFPG_ANY).intValue());
@@ -63,10 +63,10 @@ public class GroupMessageSerializer extends AbstractMessageSerializer<GroupMessa
                                             registry,
                                             outBuffer)));
 
-                            outBuffer.setShort(index, outBuffer.writerIndex() - index);
+                            outBuffer.setShort(bucketIndex, outBuffer.writerIndex() - bucketIndex);
                         }));
 
-        ByteBufUtils.updateOFHeaderLength(outBuffer);
+        outBuffer.setShort(index + 2, outBuffer.writerIndex() - index);
     }
 
     @Override
