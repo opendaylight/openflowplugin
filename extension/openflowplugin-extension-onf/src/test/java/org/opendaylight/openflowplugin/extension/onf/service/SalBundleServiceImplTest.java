@@ -113,7 +113,7 @@ public class SalBundleServiceImplTest {
                             experimenterBuilder.setExperimenterMessageOfChoice(
                                     addMessageBuilder
                                             .setSalAddMessageData(
-                                                    dataBuilder.setBundleInnerMessage(msg.getBundleInnerMessage()).build()
+                                                    dataBuilder.setNode(NODE_REF).setBundleInnerMessage(msg.getBundleInnerMessage()).build()
                                             ).build()
                             ).build()
                     );
@@ -122,13 +122,13 @@ public class SalBundleServiceImplTest {
 
     private static List<Messages> createMessages() {
         List<Messages> messages  = new ArrayList<>();
-        messages.add(new MessagesBuilder().setBundleInnerMessage(new BundleAddFlowCaseBuilder().build()).build());
-        messages.add(new MessagesBuilder().setBundleInnerMessage(new BundleUpdateFlowCaseBuilder().build()).build());
-        messages.add(new MessagesBuilder().setBundleInnerMessage(new BundleRemoveFlowCaseBuilder().build()).build());
-        messages.add(new MessagesBuilder().setBundleInnerMessage(new BundleAddGroupCaseBuilder().build()).build());
-        messages.add(new MessagesBuilder().setBundleInnerMessage(new BundleUpdateGroupCaseBuilder().build()).build());
-        messages.add(new MessagesBuilder().setBundleInnerMessage(new BundleRemoveGroupCaseBuilder().build()).build());
-        messages.add(new MessagesBuilder().setBundleInnerMessage(new BundleUpdatePortCaseBuilder().build()).build());
+        messages.add(new MessagesBuilder().setNode(NODE_REF).setBundleInnerMessage(new BundleAddFlowCaseBuilder().build()).build());
+        messages.add(new MessagesBuilder().setNode(NODE_REF).setBundleInnerMessage(new BundleUpdateFlowCaseBuilder().build()).build());
+        messages.add(new MessagesBuilder().setNode(NODE_REF).setBundleInnerMessage(new BundleRemoveFlowCaseBuilder().build()).build());
+        messages.add(new MessagesBuilder().setNode(NODE_REF).setBundleInnerMessage(new BundleAddGroupCaseBuilder().build()).build());
+        messages.add(new MessagesBuilder().setNode(NODE_REF).setBundleInnerMessage(new BundleUpdateGroupCaseBuilder().build()).build());
+        messages.add(new MessagesBuilder().setNode(NODE_REF).setBundleInnerMessage(new BundleRemoveGroupCaseBuilder().build()).build());
+        messages.add(new MessagesBuilder().setNode(NODE_REF).setBundleInnerMessage(new BundleUpdatePortCaseBuilder().build()).build());
         return messages;
     }
 
