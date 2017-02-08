@@ -13,10 +13,12 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter64;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.flow.table.and.statistics.map.FlowTableAndStatisticsMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.flow.table.and.statistics.map.FlowTableAndStatisticsMapBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.flow.table.and.statistics.map.FlowTableAndStatisticsMapKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.multipart.reply.multipart.reply.body.MultipartReplyFlowTableStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId;
@@ -36,11 +38,20 @@ public class MultipartReplyFlowTableStatsDeserializer implements OFDeserializer<
 
             message.skipBytes(PADDING_IN_TABLE_HEADER);
 
+            itemBuilder
+                .setKey(new FlowTableAndStatisticsMapKey(itemBuilder.getTableId()))
+                .setActiveFlows(new Counter32(message.readUnsignedInt()));
+
+            final byte[] packetsLooked = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            message.readBytes(packetsLooked);
+            final byte[] packetsMatched = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            message.readBytes(packetsMatched);
+
             items.add(itemBuilder
-                    .setActiveFlows(new Counter32(message.readUnsignedInt()))
-                    .setPacketsLookedUp(new Counter64(BigInteger.valueOf(message.readLong())))
-                    .setPacketsMatched(new Counter64(BigInteger.valueOf(message.readLong())))
-                    .build());
+                .setPacketsLookedUp(new Counter64(new BigInteger(1, packetsLooked)))
+                .setPacketsMatched(new Counter64(new BigInteger(1, packetsMatched)))
+                .build());
+
         }
 
         return builder

@@ -53,7 +53,6 @@ public class Ipv6SourceEntryDeserializer extends AbstractMatchEntryDeserializer 
             } else if (Ipv6Match.class.isInstance(builder.getLayer3Match())) {
                 builder.setLayer3Match(new Ipv6MatchBuilder(Ipv6Match.class.cast(builder.getLayer3Match()))
                         .setIpv6Source(IpConversionUtil.createPrefix(address, mask))
-                        .setIpv6Destination(Ipv6Match.class.cast(builder.getLayer3Match()).getIpv6Destination())
                         .build());
             } else {
                 throwErrorOnMalformed(builder, "layer3Match");

@@ -55,10 +55,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.wildcards.WildcardSetfieldBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.TableProperties;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.TablePropertiesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,15 +87,22 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
 
             message.skipBytes(PADDING_IN_MULTIPART_REPLY_TABLE_FEATURES);
 
+            final String name = ByteBufUtils.decodeNullTerminatedString(message, MAX_TABLE_NAME_LENGTH);
+            final byte[] match = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            message.readBytes(match);
+            final byte[] write = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            message.readBytes(write);
+
             items.add(itemBuilder
-                    .setName(ByteBufUtils.decodeNullTerminatedString(message, MAX_TABLE_NAME_LENGTH))
-                    .setMetadataMatch(BigInteger.valueOf(message.readLong()))
-                    .setMetadataWrite(BigInteger.valueOf(message.readLong()))
-                    .setConfig(readTableConfig(message))
-                    .setMaxEntries(message.readUnsignedInt())
-                    .setTableProperties(readTableProperties(message,
-                            itemLength - MULTIPART_REPLY_TABLE_FEATURES_STRUCTURE_LENGTH))
-                    .build());
+                .setKey(new TableFeaturesKey(itemBuilder.getTableId()))
+                .setName(name)
+                .setMetadataMatch(new BigInteger(1, match))
+                .setMetadataWrite(new BigInteger(1, write))
+                .setConfig(readTableConfig(message))
+                .setMaxEntries(message.readUnsignedInt())
+                .setTableProperties(readTableProperties(message,
+                    itemLength - MULTIPART_REPLY_TABLE_FEATURES_STRUCTURE_LENGTH))
+                .build());
         }
 
         return builder
@@ -111,7 +120,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
     private final TableProperties readTableProperties(ByteBuf message, int length) {
         final List<TableFeatureProperties> items = new ArrayList<>();
         int tableFeaturesLength = length;
-
+        int order = 0;
         while (tableFeaturesLength > 0) {
             final int propStartIndex = message.readerIndex();
             final TableFeaturesPropType propType = TableFeaturesPropType.forValue(message.readUnsignedShort());
@@ -119,7 +128,9 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
             final int paddingRemainder = propertyLength % EncodeConstants.PADDING;
             tableFeaturesLength -= propertyLength;
             final int commonPropertyLength = propertyLength - COMMON_PROPERTY_LENGTH;
-            final TableFeaturePropertiesBuilder propBuilder = new TableFeaturePropertiesBuilder();
+            final TableFeaturePropertiesBuilder propBuilder = new TableFeaturePropertiesBuilder()
+                .setOrder(order)
+                .setKey(new TableFeaturePropertiesKey(order));
 
             switch (propType) {
                 case OFPTFPTINSTRUCTIONS:
@@ -243,6 +254,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
             }
 
             items.add(propBuilder.build());
+            order++;
         }
 
 
@@ -259,8 +271,11 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
         while ((message.readerIndex() - startIndex) < length) {
             MATCH_FIELD_DESERIALIZER
                 .deserialize(message)
-                .ifPresent(matchField -> matchFields.add(matchField));
-            message.getUnsignedByte(message.readerIndex());
+                .map(matchFields::add)
+                .orElseGet(() -> {
+                    message.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+                    return Boolean.FALSE;
+                });
         }
 
         return matchFields;
@@ -268,10 +283,11 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
 
     private List<Short> readNextTableIds(ByteBuf message, int length) {
         final List<Short> tableIds = new ArrayList<>();
+        int nextTableLength = length;
 
-        while (length > 0) {
+        while (nextTableLength > 0) {
             tableIds.add(message.readUnsignedByte());
-            length--;
+            nextTableLength -= 1;
         }
 
         return tableIds;
@@ -289,29 +305,34 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
             final int type = message.getUnsignedShort(message.readerIndex());
             HeaderDeserializer<Instruction> deserializer = null;
 
-            if (InstructionConstants.APPLY_ACTIONS_TYPE == type) {
-                deserializer = registry.getDeserializer(
+            try {
+                if (InstructionConstants.APPLY_ACTIONS_TYPE == type) {
+                    deserializer = registry.getDeserializer(
                         new MessageCodeActionExperimenterKey(
                             EncodeConstants.OF13_VERSION_ID, type, Instruction.class,
                             ActionPath.NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION,
                             null));
-            } else if (InstructionConstants.WRITE_ACTIONS_TYPE == type) {
-                deserializer = registry.getDeserializer(
+                } else if (InstructionConstants.WRITE_ACTIONS_TYPE == type) {
+                    deserializer = registry.getDeserializer(
                         new MessageCodeActionExperimenterKey(
                             EncodeConstants.OF13_VERSION_ID, type, Instruction.class,
                             ActionPath.NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION,
                             null));
-            } else {
-                Long expId = null;
+                } else {
+                    Long expId = null;
 
-                if (EncodeConstants.EXPERIMENTER_VALUE == type) {
-                    expId = message.getUnsignedInt(message.readerIndex() +
+                    if (EncodeConstants.EXPERIMENTER_VALUE == type) {
+                        expId = message.getUnsignedInt(message.readerIndex() +
                             2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
-                }
+                    }
 
-                deserializer = registry.getDeserializer(
+                    deserializer = registry.getDeserializer(
                         new MessageCodeExperimenterKey(
                             EncodeConstants.OF13_VERSION_ID, type, Instruction.class, expId));
+                }
+            } catch (ClassCastException | IllegalStateException e) {
+                message.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+                continue;
             }
 
             instructions.add(new InstructionBuilder()
@@ -343,7 +364,6 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
                 offset++;
             } catch (ClassCastException | IllegalStateException e) {
                 message.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
-                continue;
             }
         }
 

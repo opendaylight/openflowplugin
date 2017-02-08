@@ -202,26 +202,32 @@ public class MultipartReplyTableFeaturesDeserializerTest extends AbstractMultipa
             case OFPTFPTMATCH:
                 buffer.writeShort(OxmMatchConstants.OPENFLOW_BASIC_CLASS);
                 buffer.writeByte(OxmMatchConstants.ARP_OP << 1);
+                buffer.writeByte(EncodeConstants.EMPTY_LENGTH);
                 break;
             case OFPTFPTWILDCARDS:
                 buffer.writeShort(OxmMatchConstants.OPENFLOW_BASIC_CLASS);
                 buffer.writeByte(OxmMatchConstants.ARP_SHA << 1);
+                buffer.writeByte(EncodeConstants.EMPTY_LENGTH);
                 break;
             case OFPTFPTWRITESETFIELD:
                 buffer.writeShort(OxmMatchConstants.OPENFLOW_BASIC_CLASS);
                 buffer.writeByte(OxmMatchConstants.ARP_SPA << 1);
+                buffer.writeByte(EncodeConstants.EMPTY_LENGTH);
                 break;
             case OFPTFPTWRITESETFIELDMISS:
                 buffer.writeShort(OxmMatchConstants.OPENFLOW_BASIC_CLASS);
                 buffer.writeByte(OxmMatchConstants.ARP_THA << 1);
+                buffer.writeByte(EncodeConstants.EMPTY_LENGTH);
                 break;
             case OFPTFPTAPPLYSETFIELD:
                 buffer.writeShort(OxmMatchConstants.OPENFLOW_BASIC_CLASS);
                 buffer.writeByte(OxmMatchConstants.ARP_TPA << 1);
+                buffer.writeByte(EncodeConstants.EMPTY_LENGTH);
                 break;
             case OFPTFPTAPPLYSETFIELDMISS:
                 buffer.writeShort(OxmMatchConstants.OPENFLOW_BASIC_CLASS);
                 buffer.writeByte(OxmMatchConstants.ETH_TYPE << 1);
+                buffer.writeByte(EncodeConstants.EMPTY_LENGTH);
                 break;
             default:
                 break;
