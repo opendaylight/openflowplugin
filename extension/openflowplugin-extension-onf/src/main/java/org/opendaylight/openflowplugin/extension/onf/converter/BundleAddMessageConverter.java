@@ -12,6 +12,7 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.extension.api.BundleMessageDataInjector;
 import org.opendaylight.openflowplugin.extension.api.ConverterMessageToOFJava;
 import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.openflowplugin.extension.onf.OnfConstants;
@@ -22,14 +23,11 @@ import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlowBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortMod;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.PortBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.UpdatedGroupBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContextRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
@@ -60,10 +58,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 /**
  * Converter for BundleAddMessage messages (ONF approved extension #230).
  */
-public class BundleAddMessageConverter implements ConverterMessageToOFJava<BundleAddMessageSal, BundleAddMessageOnf> {
+public class BundleAddMessageConverter implements ConverterMessageToOFJava<BundleAddMessageSal, BundleAddMessageOnf>, BundleMessageDataInjector {
 
     private static final ConvertorExecutor converterExecutor = ConvertorManagerFactory.createDefaultManager();
-    private static final VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
+    private long xid;
+    private NodeRef node;
 
     @Override
     public BundleAddMessageOnf convert(BundleAddMessageSal experimenterMessageCase) throws ConversionException {
@@ -72,14 +71,19 @@ public class BundleAddMessageConverter implements ConverterMessageToOFJava<Bundl
         dataBuilder.setFlags(experimenterMessageCase.getSalAddMessageData().getFlags());
         dataBuilder.setBundleProperty(experimenterMessageCase.getSalAddMessageData().getBundleProperty());
         final BundleInnerMessage innerMessage = experimenterMessageCase.getSalAddMessageData().getBundleInnerMessage();
-        data.setDatapathId(digDatapathId((NodeContextRef)innerMessage));
+        final VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
+        data.setDatapathId(digDatapathId(node));
 
-        if (innerMessage instanceof Flow) {
-            dataBuilder.setBundleInnerMessage(convertBundleFlowCase(innerMessage));
-        } else if (innerMessage instanceof Group) {
-            dataBuilder.setBundleInnerMessage(convertBundleGroupCase(innerMessage));
-        } else if (innerMessage instanceof PortMod) {
-            dataBuilder.setBundleInnerMessage(convertBundlePortCase(innerMessage));
+        if (innerMessage.getImplementedInterface().equals(BundleAddFlowCase.class)   ||
+                innerMessage.getImplementedInterface().equals(BundleUpdateFlowCase.class) ||
+                innerMessage.getImplementedInterface().equals(BundleRemoveFlowCase.class)) {
+            dataBuilder.setBundleInnerMessage(convertBundleFlowCase(innerMessage, data));
+        } else if (innerMessage.getImplementedInterface().equals(BundleAddGroupCase.class) ||
+                innerMessage.getImplementedInterface().equals(BundleUpdateGroupCase.class) ||
+                innerMessage.getImplementedInterface().equals(BundleRemoveGroupCase.class)) {
+            dataBuilder.setBundleInnerMessage(convertBundleGroupCase(innerMessage, data));
+        } else if (innerMessage.getImplementedInterface().equals(BundleUpdatePortCase.class)) {
+            dataBuilder.setBundleInnerMessage(convertBundlePortCase(innerMessage, data));
         } else {
             throw new ConversionException("Unsupported inner message");
         }
@@ -87,15 +91,15 @@ public class BundleAddMessageConverter implements ConverterMessageToOFJava<Bundl
         return new BundleAddMessageOnfBuilder().setOnfAddMessageGroupingData(dataBuilder.build()).build();
     }
 
-    private BundleFlowModCase convertBundleFlowCase(final BundleInnerMessage messageCase) throws ConversionException {
+    private BundleFlowModCase convertBundleFlowCase(final BundleInnerMessage messageCase, final VersionDatapathIdConvertorData data) throws ConversionException {
         Optional<List<FlowModInputBuilder>> flowModInputs = Optional.empty();
         final Class clazz = messageCase.getImplementedInterface();
         if (clazz.equals(BundleAddFlowCase.class)) {
-            flowModInputs = converterExecutor.convert(new AddFlowInputBuilder((Flow)messageCase).build(), data);
+            flowModInputs = converterExecutor.convert(new AddFlowInputBuilder(((BundleAddFlowCase)messageCase).getAddFlowCaseData()).build(), data);
         } else if (clazz.equals(BundleUpdateFlowCase.class)) {
-            flowModInputs = converterExecutor.convert(new UpdatedFlowBuilder((Flow)messageCase).build(), data);
+            flowModInputs = converterExecutor.convert(new UpdatedFlowBuilder(((BundleUpdateFlowCase)messageCase).getUpdateFlowCaseData()).build(), data);
         } else if (clazz.equals(BundleRemoveFlowCase.class)) {
-            flowModInputs = converterExecutor.convert(new RemoveFlowInputBuilder((Flow)messageCase).build(), data);
+            flowModInputs = converterExecutor.convert(new RemoveFlowInputBuilder(((BundleRemoveFlowCase)messageCase).getRemoveFlowCaseData()).build(), data);
         }
 
         if (flowModInputs.isPresent()) {
@@ -103,9 +107,10 @@ public class BundleAddMessageConverter implements ConverterMessageToOFJava<Bundl
                 return new BundleFlowModCaseBuilder()
                         .setFlowModCaseData(
                                 new FlowModCaseDataBuilder(
-                                        flowModInputs
+                                        (flowModInputs
                                                 .get()
                                                 .get(0)
+                                                .setXid(xid))
                                                 .build())
                                         .build())
                         .build();
@@ -117,21 +122,23 @@ public class BundleAddMessageConverter implements ConverterMessageToOFJava<Bundl
         }
     }
 
-    private BundleGroupModCase convertBundleGroupCase(final BundleInnerMessage messageCase) throws ConversionException {
+    private BundleGroupModCase convertBundleGroupCase(final BundleInnerMessage messageCase, final VersionDatapathIdConvertorData data) throws ConversionException {
         Optional<GroupModInputBuilder> groupModInput = Optional.empty();
         final Class clazz = messageCase.getImplementedInterface();
         if (clazz.equals(BundleAddGroupCase.class)) {
-            groupModInput = converterExecutor.convert(new AddGroupInputBuilder((Group)messageCase).build(), data);
+            groupModInput = converterExecutor.convert(new AddGroupInputBuilder(((BundleAddGroupCase)messageCase).getAddGroupCaseData()).build(), data);
         } else if (clazz.equals(BundleUpdateGroupCase.class)) {
-            groupModInput = converterExecutor.convert(new UpdatedGroupBuilder((Group)messageCase).build(), data);
+            groupModInput = converterExecutor.convert(new UpdatedGroupBuilder(((BundleUpdateGroupCase)messageCase).getUpdateGroupCaseData()).build(), data);
         } else if (clazz.equals(BundleRemoveGroupCase.class)) {
-            groupModInput = converterExecutor.convert(new RemoveGroupInputBuilder((Group)messageCase).build(), data);
+            groupModInput = converterExecutor.convert(new RemoveGroupInputBuilder(((BundleRemoveGroupCase)messageCase).getRemoveGroupCaseData()).build(), data);
         }
 
         if (groupModInput.isPresent()) {
             return new BundleGroupModCaseBuilder()
                     .setGroupModCaseData(
-                            new GroupModCaseDataBuilder(groupModInput.get().build())
+                            new GroupModCaseDataBuilder(groupModInput.get()
+                                    .setXid(xid)
+                                    .build())
                             .build()
                     )
                     .build();
@@ -140,18 +147,19 @@ public class BundleAddMessageConverter implements ConverterMessageToOFJava<Bundl
         }
     }
 
-    private BundlePortModCase convertBundlePortCase(final BundleInnerMessage messageCase) throws ConversionException {
+    private BundlePortModCase convertBundlePortCase(final BundleInnerMessage messageCase, final VersionDatapathIdConvertorData data) throws ConversionException {
         Optional<PortModInput> portModInput = Optional.empty();
         final Class clazz = messageCase.getImplementedInterface();
         if (clazz.equals(BundleUpdatePortCase.class)) {
-            portModInput = converterExecutor.convert(new PortBuilder(((PortMod)messageCase).getPort().getPort().get(0)).build(), data);
+            portModInput = converterExecutor.convert(new PortBuilder(((BundleUpdatePortCase)messageCase).getUpdatePortCaseData().getPort().getPort().get(0)).build(), data);
         }
 
         if (portModInput.isPresent()) {
             return new BundlePortModCaseBuilder()
                     .setPortModCaseData(
                             new PortModCaseDataBuilder(portModInput.get())
-                            .build()
+                                    .setXid(xid)
+                                    .build()
                     )
                     .build();
         } else {
@@ -159,8 +167,8 @@ public class BundleAddMessageConverter implements ConverterMessageToOFJava<Bundl
         }
     }
 
-    private static BigInteger digDatapathId(final NodeContextRef ref) {
-        return InventoryDataServiceUtil.dataPathIdFromNodeId(ref.getNode().getValue().firstKeyOf(Node.class).getId());
+    private static BigInteger digDatapathId(final NodeRef ref) {
+        return InventoryDataServiceUtil.dataPathIdFromNodeId(ref.getValue().firstKeyOf(Node.class).getId());
     }
 
     @Override
@@ -173,4 +181,13 @@ public class BundleAddMessageConverter implements ConverterMessageToOFJava<Bundl
         return OnfConstants.ONF_ET_BUNDLE_ADD_MESSAGE;
     }
 
+    @Override
+    public void setXid(long xid) {
+        this.xid = xid;
+    }
+
+    @Override
+    public void setNode(NodeRef node) {
+        this.node = node;
+    }
 }
