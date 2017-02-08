@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fafc7978_1b6239ad",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/TransactionChainManager.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-02-08T01:26:40Z",
+      "side": 1,
+      "message": "this check is required, because plugin collect some initial statistics (one time only e.g switch desc, port desc etc) and submits it to data store. The intention is to write all the switch data before statistics is written, because that actually is interpreted as a node added event when applications receives the data change notification. This flag hold the submit till all the required stats are collected.",
+      "range": {
+        "startLine": 160,
+        "startChar": 12,
+        "endLine": 166,
+        "endChar": 53
+      },
+      "revId": "4015e7d54d549eb08805478b3728cc379a5fd73c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_9bf469d0",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/TransactionChainManager.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 207,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-02-08T01:26:40Z",
+      "side": 1,
+      "message": "Connection will be closed if the first write (that contains switch description, port description and other basic details) fails. We can\u0027t skip writing these data, because these are basic required details. Given that this write is the first write on the tree node of the device, it can fail only if the data store state is not right, like it throws DataStoreUnavailableException. In that case you can do two things (1) Retry the transaction (2) disconnect the device, so device will attempt to connect back and it will do an automatic retry. 1st approach can work in some case, but in a case of DataStoreUnavailableException (specially in clustering scenario) it won\u0027t be useful, because data store can take longer than your retry interval. 2nd approach is better in a sense that device will attempt to connect till data store is available, so once data store is up and running device will be connected successfully and user can configure it.",
+      "range": {
+        "startLine": 200,
+        "startChar": 24,
+        "endLine": 207,
+        "endChar": 110
+      },
+      "revId": "4015e7d54d549eb08805478b3728cc379a5fd73c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
