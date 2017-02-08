@@ -41,7 +41,7 @@ public class VlanVidEntryDeserializer extends AbstractMatchEntryDeserializer {
             builder.setVlanMatch(new VlanMatchBuilder()
                     .setVlanId(vlanIdBuilder.build())
                     .build());
-        } else if (Objects.nonNull(builder.getVlanMatch().getVlanId())) {
+        } else if (Objects.isNull(builder.getVlanMatch().getVlanId())) {
             builder.setVlanMatch(new VlanMatchBuilder(builder.getVlanMatch())
                     .setVlanId(vlanIdBuilder.build())
                     .build());

@@ -32,6 +32,7 @@ public class MultipartReplyExperimenterDeserializer implements OFDeserializer<Mu
     private DeserializerRegistry registry;
 
     @Override
+    @SuppressWarnings("unchecked")
     public MultipartReplyBody deserialize(ByteBuf message) {
         final MultipartReplyExperimenterBuilder builder = new MultipartReplyExperimenterBuilder();
         final long expId = message.readUnsignedInt();
