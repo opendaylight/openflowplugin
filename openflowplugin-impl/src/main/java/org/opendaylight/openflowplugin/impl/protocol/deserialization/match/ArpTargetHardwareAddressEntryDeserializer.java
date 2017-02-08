@@ -34,12 +34,13 @@ public class ArpTargetHardwareAddressEntryDeserializer extends AbstractMatchEntr
             builder.setLayer3Match(new ArpMatchBuilder()
                     .setArpTargetHardwareAddress(arpBuilder.build())
                     .build());
-        } else if (ArpMatch.class.isInstance(layer3Match)) {
+        } else if (ArpMatch.class.isInstance(layer3Match)
+            && Objects.isNull(ArpMatch.class.cast(layer3Match).getArpTargetHardwareAddress())) {
             builder.setLayer3Match(new ArpMatchBuilder(ArpMatch.class.cast(layer3Match))
                     .setArpTargetHardwareAddress(arpBuilder.build())
                     .build());
         } else {
-            throwErrorOnMalformed(builder, "layer3Match");
+            throwErrorOnMalformed(builder, "layer3Match", "arpTargetHardwareAddress");
         }
     }
 

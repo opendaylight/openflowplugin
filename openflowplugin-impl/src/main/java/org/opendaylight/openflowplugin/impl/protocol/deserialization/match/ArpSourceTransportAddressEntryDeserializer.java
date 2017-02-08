@@ -33,7 +33,7 @@ public class ArpSourceTransportAddressEntryDeserializer extends AbstractMatchEnt
                     .setArpSourceTransportAddress(prefix)
                     .build());
         } else {
-            throwErrorOnMalformed(builder, "layer3Match");
+            throwErrorOnMalformed(builder, "layer3Match", "arpSourceTransportAddress");
         }
     }
 

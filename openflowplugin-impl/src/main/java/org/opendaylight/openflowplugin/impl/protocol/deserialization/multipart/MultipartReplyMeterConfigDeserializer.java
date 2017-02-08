@@ -26,6 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.MeterBandHeadersBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.config.stats.reply.MeterConfigStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.config.stats.reply.MeterConfigStatsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.config.stats.reply.MeterConfigStatsKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeaderBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.meter.band.header.MeterBandTypesBuilder;
@@ -110,10 +111,11 @@ public class MultipartReplyMeterConfigDeserializer implements OFDeserializer<Mul
             }
 
             items.add(itemBuilder
-                    .setMeterBandHeaders(new MeterBandHeadersBuilder()
-                        .setMeterBandHeader(subItems)
-                        .build())
-                    .build());
+                .setKey(new MeterConfigStatsKey(itemBuilder.getMeterId()))
+                .setMeterBandHeaders(new MeterBandHeadersBuilder()
+                    .setMeterBandHeader(subItems)
+                    .build())
+                .build());
         }
 
         return builder

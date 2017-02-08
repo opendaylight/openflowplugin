@@ -26,12 +26,13 @@ public class UdpSourcePortEntryDeserializer extends AbstractMatchEntryDeserializ
             builder.setLayer4Match(new UdpMatchBuilder()
                     .setUdpSourcePort(new PortNumber(port))
                     .build());
-        } else if (UdpMatch.class.isInstance(builder.getLayer4Match())) {
+        } else if (UdpMatch.class.isInstance(builder.getLayer4Match())
+            && Objects.isNull(UdpMatch.class.cast(builder.getLayer4Match()).getUdpSourcePort())) {
             builder.setLayer4Match(new UdpMatchBuilder(UdpMatch.class.cast(builder.getLayer4Match()))
                     .setUdpSourcePort(new PortNumber(port))
                     .build());
         } else {
-            throwErrorOnMalformed(builder, "layer4Match");
+            throwErrorOnMalformed(builder, "layer4Match", "udpSourcePort");
         }
     }
 
