@@ -64,12 +64,14 @@ public class SalBundleServiceImpl implements SalBundleService {
         final BundleAddMessageSalBuilder bundleAddMessageBuilder = new BundleAddMessageSalBuilder();
         final SalAddMessageDataBuilder dataBuilder = new SalAddMessageDataBuilder();
         experimenterInputBuilder.setNode(input.getNode());
+        dataBuilder.setNode(input.getNode());
         dataBuilder.setBundleId(input.getBundleId());
         dataBuilder.setFlags(input.getFlags());
         dataBuilder.setBundleProperty(input.getBundleProperty());
         for (Messages message : input.getMessages()) {
             dataBuilder.setBundleInnerMessage(message.getBundleInnerMessage());
-            experimenterInputBuilder.setExperimenterMessageOfChoice(bundleAddMessageBuilder.setSalAddMessageData(dataBuilder.build()).build());
+            experimenterInputBuilder.setExperimenterMessageOfChoice(bundleAddMessageBuilder
+                    .setSalAddMessageData(dataBuilder.build()).build());
             ListenableFuture<RpcResult<Void>> res = JdkFutureAdapters.listenInPoolThread(
                     experimenterMessageService.sendExperimenter(experimenterInputBuilder.build()));
             partialResults.add(res);
