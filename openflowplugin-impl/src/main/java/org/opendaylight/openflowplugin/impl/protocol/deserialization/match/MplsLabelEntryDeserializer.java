@@ -31,7 +31,7 @@ public class MplsLabelEntryDeserializer extends AbstractMatchEntryDeserializer {
                     .setMplsLabel(mplsLabel)
                     .build());
         } else {
-            throwErrorOnMalformed(builder, "protocolMatchFields");
+            throwErrorOnMalformed(builder, "protocolMatchFields", "mplsLabel");
         }
     }
 

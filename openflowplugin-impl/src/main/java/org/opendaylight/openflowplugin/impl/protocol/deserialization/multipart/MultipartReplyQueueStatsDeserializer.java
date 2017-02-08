@@ -12,7 +12,6 @@ import io.netty.buffer.ByteBuf;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
@@ -25,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.m
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.multipart.reply.multipart.reply.body.MultipartReplyQueueStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMapBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMapKey;
 
 public class MultipartReplyQueueStatsDeserializer implements OFDeserializer<MultipartReplyBody> {
 
@@ -35,22 +35,28 @@ public class MultipartReplyQueueStatsDeserializer implements OFDeserializer<Mult
 
         while (message.readableBytes() > 0) {
             final long port = message.readUnsignedInt();
-            final String portName = OpenflowPortsUtil.getPortLogicalName(EncodeConstants.OF13_VERSION_ID, port);
+            final NodeConnectorId nodeConnectorId = new NodeConnectorId(OpenflowPortsUtil.getProtocolAgnosticPortUri(EncodeConstants.OF13_VERSION_ID, port));
+            final QueueId queueId = new QueueId(message.readUnsignedInt());
 
-            // We do not assign datapath ID here, because we simply do not have it
+            final byte[] txBytes = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            message.readBytes(txBytes);
+            final byte[] txPackets = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            message.readBytes(txPackets);
+            final byte[] txErrors = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            message.readBytes(txErrors);
+
             items.add(new QueueIdAndStatisticsMapBuilder()
-                    .setNodeConnectorId(new NodeConnectorId(Objects.isNull(portName)
-                            ? String.valueOf(port)
-                            : portName))
-                    .setQueueId(new QueueId(message.readUnsignedInt()))
-                    .setTransmittedBytes(new Counter64(BigInteger.valueOf(message.readLong())))
-                    .setTransmittedPackets(new Counter64(BigInteger.valueOf(message.readLong())))
-                    .setTransmissionErrors(new Counter64(BigInteger.valueOf(message.readLong())))
-                    .setDuration(new DurationBuilder()
-                        .setSecond(new Counter32(message.readUnsignedInt()))
-                        .setNanosecond(new Counter32(message.readUnsignedInt()))
-                        .build())
-                    .build());
+                .setKey(new QueueIdAndStatisticsMapKey(nodeConnectorId, queueId))
+                .setNodeConnectorId(nodeConnectorId)
+                .setQueueId(queueId)
+                .setTransmittedBytes(new Counter64(new BigInteger(1, txBytes)))
+                .setTransmittedPackets(new Counter64(new BigInteger(1, txPackets)))
+                .setTransmissionErrors(new Counter64(new BigInteger(1, txErrors)))
+                .setDuration(new DurationBuilder()
+                    .setSecond(new Counter32(message.readUnsignedInt()))
+                    .setNanosecond(new Counter32(message.readUnsignedInt()))
+                    .build())
+                .build());
         }
 
         return builder

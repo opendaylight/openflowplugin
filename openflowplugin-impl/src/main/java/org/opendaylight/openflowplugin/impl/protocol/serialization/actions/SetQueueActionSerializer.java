@@ -19,7 +19,7 @@ public class SetQueueActionSerializer extends AbstractActionSerializer {
     public void serialize(Action action, ByteBuf outBuffer) {
         super.serialize(action, outBuffer);
         final SetQueueAction setQueueAction = SetQueueActionCase.class.cast(action).getSetQueueAction();
-        outBuffer.writeByte(setQueueAction.getQueueId().intValue());
+        outBuffer.writeInt(setQueueAction.getQueueId().intValue());
     }
 
     @Override

@@ -38,7 +38,7 @@ public class EthernetSourceEntryDeserializer extends AbstractMatchEntryDeseriali
                     .setEthernetSource(ethernetSourceBuilder.build())
                     .build());
         } else {
-            throwErrorOnMalformed(builder, "ethernetMatch");
+            throwErrorOnMalformed(builder, "ethernetMatch", "ethernetSource");
         }
     }
 

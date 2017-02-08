@@ -29,7 +29,7 @@ public class IpEcnEntryDeserializer extends AbstractMatchEntryDeserializer {
                     .setIpEcn(ecn)
                     .build());
         } else {
-            throwErrorOnMalformed(builder, "ipMatch");
+            throwErrorOnMalformed(builder, "ipMatch", "ipEcn");
         }
     }
 

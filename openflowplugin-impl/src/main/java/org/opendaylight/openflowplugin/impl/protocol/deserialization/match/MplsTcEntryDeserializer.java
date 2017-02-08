@@ -31,7 +31,7 @@ public class MplsTcEntryDeserializer extends AbstractMatchEntryDeserializer {
                     .setMplsTc(mplsTc)
                     .build());
         } else {
-            throwErrorOnMalformed(builder, "protocolMatchFields");
+            throwErrorOnMalformed(builder, "protocolMatchFields", "mplsTc");
         }
     }
 

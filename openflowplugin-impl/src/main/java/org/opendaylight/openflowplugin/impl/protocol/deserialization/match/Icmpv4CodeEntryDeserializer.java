@@ -29,7 +29,7 @@ public class Icmpv4CodeEntryDeserializer extends AbstractMatchEntryDeserializer 
                     .setIcmpv4Code(code)
                     .build());
         } else {
-            throwErrorOnMalformed(builder, "icmpv4Match");
+            throwErrorOnMalformed(builder, "icmpv4Match", "icmpv4Code");
         }
     }
 

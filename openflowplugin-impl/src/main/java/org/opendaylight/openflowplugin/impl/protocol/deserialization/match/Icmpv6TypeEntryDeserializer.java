@@ -29,7 +29,7 @@ public class Icmpv6TypeEntryDeserializer extends AbstractMatchEntryDeserializer 
                     .setIcmpv6Type(type)
                     .build());
         } else {
-            throwErrorOnMalformed(builder, "icmpv6Match");
+            throwErrorOnMalformed(builder, "icmpv6Match", "icmpv6Type");
         }
     }
 
