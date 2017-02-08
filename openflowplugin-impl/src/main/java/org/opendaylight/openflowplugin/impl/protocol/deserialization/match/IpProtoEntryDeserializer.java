@@ -29,7 +29,7 @@ public class IpProtoEntryDeserializer extends AbstractMatchEntryDeserializer {
                     .setIpProtocol(proto)
                     .build());
         } else {
-            throwErrorOnMalformed(builder, "ipMatch");
+            throwErrorOnMalformed(builder, "ipMatch", "ipProtocol");
         }
     }
 

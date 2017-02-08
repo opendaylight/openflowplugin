@@ -17,12 +17,10 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegi
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
-import org.opendaylight.openflowplugin.api.openflow.protocol.deserialization.MessageCodeExperimenterKey;
-import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
-import org.opendaylight.openflowplugin.impl.protocol.deserialization.key.MessageCodeActionExperimenterKey;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.key.MessageCodeMatchKey;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.util.InstructionUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter64;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapList;
@@ -32,7 +30,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCo
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
@@ -62,7 +59,6 @@ public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<Multi
             itemBuilder.setTableId(itemMessage.readUnsignedByte());
             itemMessage.skipBytes(PADDING_IN_FLOW_STATS_HEADER_01);
 
-
             itemBuilder
                 .setDuration(new DurationBuilder()
                         .setSecond(new Counter32(itemMessage.readUnsignedInt()))
@@ -75,12 +71,18 @@ public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<Multi
 
             itemMessage.skipBytes(PADDING_IN_FLOW_STATS_HEADER_02);
 
-            itemBuilder
-                .setCookie(new FlowCookie(BigInteger.valueOf(itemMessage.readLong())))
-                .setCookieMask(new FlowCookie(BigInteger.valueOf(itemMessage.readLong())))
-                .setPacketCount(new Counter64(BigInteger.valueOf(itemMessage.readLong())))
-                .setByteCount(new Counter64(BigInteger.valueOf(itemMessage.readLong())));
+            final byte[] cookie = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            itemMessage.readBytes(cookie);
+            final byte[] packetCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            itemMessage.readBytes(packetCount);
+            final byte[] byteCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            itemMessage.readBytes(byteCount);
 
+            itemBuilder
+                .setCookie(new FlowCookie(new BigInteger(1, cookie)))
+                .setCookieMask(new FlowCookie(OFConstants.DEFAULT_COOKIE_MASK))
+                .setPacketCount(new Counter64(new BigInteger(1, packetCount)))
+                .setByteCount(new Counter64(new BigInteger(1, byteCount)));
 
             final OFDeserializer<Match> matchDeserializer = registry.getDeserializer(MATCH_KEY);
             itemBuilder.setMatch(new MatchBuilder(matchDeserializer.deserialize(itemMessage)).build());
@@ -94,38 +96,11 @@ public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<Multi
                 int offset = 0;
 
                 while ((itemMessage.readerIndex() - startIndex) < length) {
-                    final int type = itemMessage.getUnsignedShort(itemMessage.readerIndex());
-                    OFDeserializer<Instruction> deserializer = null;
-
-                    if (InstructionConstants.APPLY_ACTIONS_TYPE == type) {
-                        deserializer = registry.getDeserializer(
-                                new MessageCodeActionExperimenterKey(
-                                    EncodeConstants.OF13_VERSION_ID, type, Instruction.class,
-                                    ActionPath.NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION,
-                                    null));
-                    } else if (InstructionConstants.WRITE_ACTIONS_TYPE == type) {
-                        deserializer = registry.getDeserializer(
-                                new MessageCodeActionExperimenterKey(
-                                    EncodeConstants.OF13_VERSION_ID, type, Instruction.class,
-                                    ActionPath.NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION,
-                                    null));
-                    } else {
-                        Long expId = null;
-
-                        if (EncodeConstants.EXPERIMENTER_VALUE == type) {
-                            expId = itemMessage.getUnsignedInt(itemMessage.readerIndex() +
-                                    2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
-                        }
-
-                        deserializer = registry.getDeserializer(
-                                new MessageCodeExperimenterKey(
-                                    EncodeConstants.OF13_VERSION_ID, type, Instruction.class, expId));
-                    }
-
                     instructions.add(new InstructionBuilder()
                             .setKey(new InstructionKey(offset))
                             .setOrder(offset)
-                            .setInstruction(deserializer.deserialize(itemMessage))
+                            .setInstruction(InstructionUtil
+                                .readInstruction(EncodeConstants.OF13_VERSION_ID, itemMessage, registry))
                             .build());
 
                     offset++;
@@ -145,7 +120,7 @@ public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<Multi
     }
 
     private static FlowModFlags createFlowModFlagsFromBitmap(int input) {
-        final Boolean _oFPFFSENDFLOWREM = (input & (1 << 0)) > 0;
+        final Boolean _oFPFFSENDFLOWREM = (input & (1)) > 0;
         final Boolean _oFPFFCHECKOVERLAP = (input & (1 << 1)) > 0;
         final Boolean _oFPFFRESETCOUNTS = (input & (1 << 2)) > 0;
         final Boolean _oFPFFNOPKTCOUNTS = (input & (1 << 3)) > 0;

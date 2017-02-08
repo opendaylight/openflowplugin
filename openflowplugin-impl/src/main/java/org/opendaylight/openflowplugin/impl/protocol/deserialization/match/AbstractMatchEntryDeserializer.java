@@ -60,4 +60,14 @@ public abstract class AbstractMatchEntryDeserializer implements MatchEntryDeseri
                 + builder + "#" + propertyName + " contains invalid data.");
     }
 
+    /**
+     * Throw error on malformed match builder input
+     * @param builder match builder
+     * @param propertyName name of property that already containsData
+     */
+    protected static void throwErrorOnMalformed(MatchBuilder builder, String propertyName, String fieldName) {
+        throw new IllegalArgumentException("Match: " + builder.toString() + " is malformed, "
+            + builder + "#" + propertyName + "#" + fieldName + " contains invalid data.");
+    }
+
 }

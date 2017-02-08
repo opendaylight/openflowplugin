@@ -59,14 +59,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.f
 
 public class TableFeaturesMatchFieldDeserializerTest {
     private TableFeaturesMatchFieldDeserializer deserializer = new TableFeaturesMatchFieldDeserializer();
-    private Optional<SetFieldMatch> fieldMatch;
 
     @Test
     public void deserialize() throws Exception {
         ByteBuf buffer = UnpooledByteBufAllocator.DEFAULT.buffer();
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.ARP_OP);
-        fieldMatch = deserializer.deserialize(buffer);
+        Optional<SetFieldMatch> fieldMatch = deserializer.deserialize(buffer);
         assertEquals(ArpOp.class, fieldMatch.get().getKey().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.ARP_SHA);
@@ -228,5 +227,6 @@ public class TableFeaturesMatchFieldDeserializerTest {
         buffer.clear();
         buffer.writeShort(oxmClass);
         buffer.writeByte(oxmField << 1);
+        buffer.writeByte(EncodeConstants.EMPTY_LENGTH);
     }
 }

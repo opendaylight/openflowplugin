@@ -7,15 +7,14 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.action;
 
+import io.netty.buffer.ByteBuf;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
-import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputActionBuilder;
-
-import io.netty.buffer.ByteBuf;
 
 public class OutputActionDeserializer extends AbstractActionDeserializer {
 
@@ -23,16 +22,15 @@ public class OutputActionDeserializer extends AbstractActionDeserializer {
     public Action deserialize(ByteBuf message) {
         processHeader(message);
 
-        final String portNumberAsString = OpenflowPortsUtil
-            .portNumberToString(OpenflowPortsUtil
-                    .getProtocolAgnosticPort(OpenflowVersion.OF13, message.readUnsignedInt()));
+        final Uri portUri = OpenflowPortsUtil
+            .getProtocolAgnosticPortUri(EncodeConstants.OF13_VERSION_ID, message.readUnsignedInt());
 
         final int maxLength = message.readUnsignedShort();
         message.skipBytes(ActionConstants.OUTPUT_PADDING);
 
         return new OutputActionCaseBuilder()
             .setOutputAction(new OutputActionBuilder()
-                    .setOutputNodeConnector(new Uri(portNumberAsString))
+                    .setOutputNodeConnector(portUri)
                     .setMaxLength(maxLength)
                     .build())
             .build();
