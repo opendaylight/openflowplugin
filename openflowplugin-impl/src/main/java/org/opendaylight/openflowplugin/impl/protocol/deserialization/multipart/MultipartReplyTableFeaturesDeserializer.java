@@ -85,10 +85,16 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
 
             message.skipBytes(PADDING_IN_MULTIPART_REPLY_TABLE_FEATURES);
 
+            final String name = ByteBufUtils.decodeNullTerminatedString(message, MAX_TABLE_NAME_LENGTH);
+            final byte[] match = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            message.readBytes(match);
+            final byte[] write = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            message.readBytes(write);
+
             items.add(itemBuilder
-                    .setName(ByteBufUtils.decodeNullTerminatedString(message, MAX_TABLE_NAME_LENGTH))
-                    .setMetadataMatch(BigInteger.valueOf(message.readLong()))
-                    .setMetadataWrite(BigInteger.valueOf(message.readLong()))
+                    .setName(name)
+                    .setMetadataMatch(new BigInteger(1, match))
+                    .setMetadataWrite(new BigInteger(1, write))
                     .setConfig(readTableConfig(message))
                     .setMaxEntries(message.readUnsignedInt())
                     .setTableProperties(readTableProperties(message,
@@ -259,8 +265,11 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
         while ((message.readerIndex() - startIndex) < length) {
             MATCH_FIELD_DESERIALIZER
                 .deserialize(message)
-                .ifPresent(matchField -> matchFields.add(matchField));
-            message.getUnsignedByte(message.readerIndex());
+                .map(matchFields::add)
+                .orElseGet(() -> {
+                    message.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+                    return Boolean.FALSE;
+                });
         }
 
         return matchFields;
@@ -268,10 +277,11 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
 
     private List<Short> readNextTableIds(ByteBuf message, int length) {
         final List<Short> tableIds = new ArrayList<>();
+        int nextTableLength = length;
 
-        while (length > 0) {
+        while (nextTableLength > 0) {
             tableIds.add(message.readUnsignedByte());
-            length--;
+            nextTableLength -= 1;
         }
 
         return tableIds;
@@ -289,29 +299,34 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
             final int type = message.getUnsignedShort(message.readerIndex());
             HeaderDeserializer<Instruction> deserializer = null;
 
-            if (InstructionConstants.APPLY_ACTIONS_TYPE == type) {
-                deserializer = registry.getDeserializer(
+            try {
+                if (InstructionConstants.APPLY_ACTIONS_TYPE == type) {
+                    deserializer = registry.getDeserializer(
                         new MessageCodeActionExperimenterKey(
                             EncodeConstants.OF13_VERSION_ID, type, Instruction.class,
                             ActionPath.NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION,
                             null));
-            } else if (InstructionConstants.WRITE_ACTIONS_TYPE == type) {
-                deserializer = registry.getDeserializer(
+                } else if (InstructionConstants.WRITE_ACTIONS_TYPE == type) {
+                    deserializer = registry.getDeserializer(
                         new MessageCodeActionExperimenterKey(
                             EncodeConstants.OF13_VERSION_ID, type, Instruction.class,
                             ActionPath.NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION,
                             null));
-            } else {
-                Long expId = null;
+                } else {
+                    Long expId = null;
 
-                if (EncodeConstants.EXPERIMENTER_VALUE == type) {
-                    expId = message.getUnsignedInt(message.readerIndex() +
+                    if (EncodeConstants.EXPERIMENTER_VALUE == type) {
+                        expId = message.getUnsignedInt(message.readerIndex() +
                             2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
-                }
+                    }
 
-                deserializer = registry.getDeserializer(
+                    deserializer = registry.getDeserializer(
                         new MessageCodeExperimenterKey(
                             EncodeConstants.OF13_VERSION_ID, type, Instruction.class, expId));
+                }
+            } catch (ClassCastException | IllegalStateException e) {
+                message.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+                continue;
             }
 
             instructions.add(new InstructionBuilder()
@@ -343,7 +358,6 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
                 offset++;
             } catch (ClassCastException | IllegalStateException e) {
                 message.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
-                continue;
             }
         }
 
