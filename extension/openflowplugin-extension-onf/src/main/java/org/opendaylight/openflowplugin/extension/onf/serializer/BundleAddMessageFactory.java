@@ -54,7 +54,8 @@ public class BundleAddMessageFactory extends AbstractBundleMessageFactory<Bundle
         if (clazz.equals(BundleFlowModCase.class)) {
             OFSerializer<FlowMod> serializer = serializerRegistry.getSerializer(
                     new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, FlowModInput.class));
-            serializer.serialize((FlowMod)message, outBuffer);
+            serializer.serialize(((BundleFlowModCase)message)
+                    .getFlowModCaseData(), outBuffer);
         } else if (clazz.equals(BundleGroupModCase.class)) {
             OFSerializer<GroupMod> serializer = serializerRegistry.getSerializer(
                     new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, GroupModInput.class));
