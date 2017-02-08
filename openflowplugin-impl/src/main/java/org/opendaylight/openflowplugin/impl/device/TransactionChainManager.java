@@ -17,6 +17,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
@@ -162,6 +163,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                 }
                 return false;
             }
+
             if (Objects.isNull(wTx)) {
                 if (LOG.isTraceEnabled()) {
                     LOG.trace("nothing to commit - submit returns true");
@@ -192,8 +194,8 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                         }
                     }
                     if (initCommit) {
-                        wTx = null;
                         Optional.ofNullable(lifecycleService).ifPresent(LifecycleService::closeConnection);
+
                     }
                 }
             });
@@ -205,14 +207,20 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
 
     <T extends DataObject> void addDeleteOperationTotTxChain(final LogicalDatastoreType store,
                                                              final InstanceIdentifier<T> path){
-        final WriteTransaction writeTx = getTransactionSafely();
-        if (Objects.nonNull(writeTx)) {
-            writeTx.delete(store, path);
-        } else {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("WriteTx is null for node {}. Delete {} was not realized.", this.nodeId, path);
+
+        // following lock is required to ensure that the transaction obtained by
+        // getTransactionSafely is not being used at the same time to be submmited
+        // by another thread.
+        synchronized (txLock) {
+            final WriteTransaction writeTx = getTransactionSafely();
+            if (Objects.nonNull(writeTx)) {
+                writeTx.delete(store, path);
+            } else {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("WriteTx is null for node {}. Delete {} was not realized.", this.nodeId, path);
+                }
+                throw new TransactionChainClosedException(CANNOT_WRITE_INTO_TRANSACTION);
             }
-            throw new TransactionChainClosedException(CANNOT_WRITE_INTO_TRANSACTION);
         }
     }
 
@@ -220,14 +228,32 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                                                    final InstanceIdentifier<T> path,
                                                    final T data,
                                                    final boolean createParents){
-        final WriteTransaction writeTx = getTransactionSafely();
-        if (Objects.nonNull(writeTx)) {
-            writeTx.put(store, path, data, createParents);
-        } else {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("WriteTx is null for node {}. Write data for {} was not realized.", this.nodeId, path);
+
+        // following lock is required to ensure that the transaction obtained by
+        // getTransactionSafely is not being used at the same time to be submmited
+        // by another thread.
+        synchronized (txLock) {
+
+            // ensure last transaction has been submitted before
+            // writing more actions
+            try{
+                if (lastSubmittedFuture != null){
+                    lastSubmittedFuture.get();
+                    lastSubmittedFuture= null;
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                LOG.error("error submiting last transaction",e);
             }
-            throw new TransactionChainClosedException(CANNOT_WRITE_INTO_TRANSACTION);
+
+            final WriteTransaction writeTx = getTransactionSafely();
+            if (Objects.nonNull(writeTx)) {
+                writeTx.put(store, path, data, createParents);
+            } else {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("WriteTx is null for node {}. Write data for {} was not realized.", this.nodeId, path);
+                }
+                throw new TransactionChainClosedException(CANNOT_WRITE_INTO_TRANSACTION);
+            }
         }
     }
 
@@ -252,13 +278,17 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         }
     }
 
+    // this method is called when someone wants to write or delete something from the transaction
+    // the lock should be in writeToTransaction and addDeleteOperationTotTxChain to ensure that
+    // the transaction used on writting is not submmited before by other thread.
+    // take into account that this class could receive a submitTransaction any time so we need to ensure
+    // that a wtx will never be submitted before writing.
+    @GuardedBy("txLock")
     @Nullable
     private WriteTransaction getTransactionSafely() {
-            synchronized (txLock) {
-                if (wTx == null && TransactionChainManagerStatus.WORKING.equals(transactionChainManagerStatus)) {
-                    Optional.ofNullable(txChainFactory).ifPresent(bindingTransactionChain -> wTx = txChainFactory.newWriteOnlyTransaction());
-                }
-            }
+        if (wTx == null && TransactionChainManagerStatus.WORKING.equals(transactionChainManagerStatus)) {
+            Optional.ofNullable(txChainFactory).ifPresent(bindingTransactionChain -> wTx = txChainFactory.newWriteOnlyTransaction());
+        }
         return wTx;
     }
 
