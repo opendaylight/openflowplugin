@@ -17,6 +17,7 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.extension.api.BundleMessageDataInjector;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConverterMessageToOFJava;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
@@ -139,6 +140,11 @@ public class SalExperimenterMpMessageServiceImpl extends AbstractMultipartServic
 
         if (Objects.isNull(messageConverter)) {
             throw new ServiceException(new ConverterNotFoundException(key.toString()));
+        }
+
+        if (messageConverter instanceof BundleMessageDataInjector) {
+            ((BundleMessageDataInjector) messageConverter).setNode(input.getNode());
+            ((BundleMessageDataInjector) messageConverter).setXid(xid.getValue());
         }
 
         try {
