@@ -28,12 +28,13 @@ public class ArpTargetTransportAddressEntryDeserializer extends AbstractMatchEnt
             builder.setLayer3Match(new ArpMatchBuilder()
                     .setArpTargetTransportAddress(prefix)
                     .build());
-        } else if (ArpMatch.class.isInstance(layer3Match)) {
+        } else if (ArpMatch.class.isInstance(layer3Match)
+            && Objects.isNull(ArpMatch.class.cast(layer3Match).getArpTargetTransportAddress())) {
             builder.setLayer3Match(new ArpMatchBuilder(ArpMatch.class.cast(layer3Match))
                     .setArpTargetTransportAddress(prefix)
                     .build());
         } else {
-            throwErrorOnMalformed(builder, "layer3Match");
+            throwErrorOnMalformed(builder, "layer3Match", "arpTargetTransportAddress");
         }
     }
 

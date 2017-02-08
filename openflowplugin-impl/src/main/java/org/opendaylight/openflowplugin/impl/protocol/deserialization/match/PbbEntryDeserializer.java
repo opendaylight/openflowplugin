@@ -38,7 +38,7 @@ public class PbbEntryDeserializer extends AbstractMatchEntryDeserializer {
                     .setPbb(pbbBuilder.build())
                     .build());
         } else {
-            throwErrorOnMalformed(builder, "protocolMatchFields");
+            throwErrorOnMalformed(builder, "protocolMatchFields", "pbb");
         }
     }
 

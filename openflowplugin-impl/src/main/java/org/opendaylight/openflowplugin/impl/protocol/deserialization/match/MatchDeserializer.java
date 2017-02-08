@@ -83,7 +83,7 @@ public class MatchDeserializer implements OFDeserializer<Match>, HeaderDeseriali
                 + EncodeConstants.SIZE_OF_SHORT_IN_BYTES) >>> 1;
 
         final MatchEntryDeserializerKey key = new MatchEntryDeserializerKey(
-                EncodeConstants.OF13_VERSION_ID,oxmClass, oxmField);
+                EncodeConstants.OF13_VERSION_ID, oxmClass, oxmField);
 
         if (oxmClass == EncodeConstants.EXPERIMENTER_VALUE) {
             long expId = inBuffer.getUnsignedInt(inBuffer.readerIndex()

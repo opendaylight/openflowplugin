@@ -13,16 +13,20 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter64;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.multipart.reply.multipart.reply.body.MultipartReplyGroupStatsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.BucketId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.BucketsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.DurationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.buckets.BucketCounter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.buckets.BucketCounterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.buckets.BucketCounterKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStatsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStatsKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
 
 public class MultipartReplyGroupStatsDeserializer implements OFDeserializer<MultipartReplyBody> {
@@ -47,9 +51,15 @@ public class MultipartReplyGroupStatsDeserializer implements OFDeserializer<Mult
 
             message.skipBytes(PADDING_IN_GROUP_HEADER_02);
 
+            final byte[] packetCountg = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            message.readBytes(packetCountg);
+            final byte[] byteCountg = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            message.readBytes(byteCountg);
+
             itemBuilder
-                .setPacketCount(new Counter64(BigInteger.valueOf(message.readLong())))
-                .setByteCount(new Counter64(BigInteger.valueOf(message.readLong())))
+                .setKey(new GroupStatsKey(itemBuilder.getGroupId()))
+                .setPacketCount(new Counter64(new BigInteger(1, packetCountg)))
+                .setByteCount(new Counter64(new BigInteger(1, byteCountg)))
                 .setDuration(new DurationBuilder()
                         .setSecond(new Counter32(message.readUnsignedInt()))
                         .setNanosecond(new Counter32(message.readUnsignedInt()))
@@ -57,13 +67,22 @@ public class MultipartReplyGroupStatsDeserializer implements OFDeserializer<Mult
 
             final List<BucketCounter> subItems = new ArrayList<>();
             int actualLength = GROUP_BODY_LENGTH;
+            long bucketKey = 0;
 
             while (actualLength < itemLength) {
-                subItems.add(new BucketCounterBuilder()
-                        .setPacketCount(new Counter64(BigInteger.valueOf(message.readLong())))
-                        .setByteCount(new Counter64(BigInteger.valueOf(message.readLong())))
-                        .build());
+                final byte[] packetCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+                message.readBytes(packetCount);
+                final byte[] byteCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+                message.readBytes(byteCount);
 
+                subItems.add(new BucketCounterBuilder()
+                    .setBucketId(new BucketId(bucketKey))
+                    .setKey(new BucketCounterKey(new BucketId(bucketKey)))
+                    .setPacketCount(new Counter64(new BigInteger(1, packetCount)))
+                    .setByteCount(new Counter64(new BigInteger(1, byteCount)))
+                    .build());
+
+                bucketKey++;
                 actualLength += BUCKET_COUNTER_LENGTH;
             }
 

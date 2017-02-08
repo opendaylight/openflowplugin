@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 import java.math.BigInteger;
 import java.util.Objects;
 
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.TunnelBuilder;
 
@@ -22,11 +23,15 @@ public class TunnelIdEntryDeserializer extends AbstractMatchEntryDeserializer {
     public void deserializeEntry(ByteBuf message, MatchBuilder builder) {
         final boolean hasMask = processHeader(message);
 
+        final byte[] tunnelId = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+        message.readBytes(tunnelId);
         final TunnelBuilder tunnelBuilder = new TunnelBuilder()
-            .setTunnelId(BigInteger.valueOf(message.readLong()));
+            .setTunnelId(new BigInteger(1, tunnelId));
 
         if (hasMask) {
-            tunnelBuilder.setTunnelMask(BigInteger.valueOf(message.readLong()));
+            final byte[] tunnelMask = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            message.readBytes(tunnelMask);
+            tunnelBuilder.setTunnelMask(new BigInteger(1, tunnelMask));
         }
 
         if (Objects.isNull(builder.getTunnel())) {
