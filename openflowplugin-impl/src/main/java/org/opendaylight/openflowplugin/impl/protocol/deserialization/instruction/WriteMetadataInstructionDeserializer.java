@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.protocol.deserialization.instructio
 
 import java.math.BigInteger;
 
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadataCaseBuilder;
@@ -24,10 +25,15 @@ public class WriteMetadataInstructionDeserializer extends AbstractInstructionDes
         processHeader(message);
         message.skipBytes(InstructionConstants.PADDING_IN_WRITE_METADATA);
 
+        final byte[] meta = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+        message.readBytes(meta);
+        final byte[] metaMask = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+        message.readBytes(metaMask);
+
         return new WriteMetadataCaseBuilder()
             .setWriteMetadata(new WriteMetadataBuilder()
-                    .setMetadata(BigInteger.valueOf(message.readLong()))
-                    .setMetadataMask(BigInteger.valueOf(message.readLong()))
+                    .setMetadata(new BigInteger(1, meta))
+                    .setMetadataMask(new BigInteger(1, metaMask))
                     .build())
             .build();
     }

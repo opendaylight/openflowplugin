@@ -20,13 +20,16 @@ import org.opendaylight.openflowplugin.impl.protocol.deserialization.util.Action
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.multipart.reply.multipart.reply.body.MultipartReplyGroupDescBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.BucketId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.BucketsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.desc.stats.reply.GroupDescStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.desc.stats.reply.GroupDescStatsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.desc.stats.reply.GroupDescStatsKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
 
 public class MultipartReplyGroupDescDeserializer implements OFDeserializer<MultipartReplyBody>, DeserializerRegistryInjector {
@@ -54,13 +57,18 @@ public class MultipartReplyGroupDescDeserializer implements OFDeserializer<Multi
             final List<Bucket> subItems = new ArrayList<>();
             int actualLength = GROUP_DESC_HEADER_LENGTH;
 
+            long bucketKey = 0;
             while (actualLength < itemLength) {
                 final int bucketsLength = message.readUnsignedShort();
 
                 final BucketBuilder bucketBuilder = new BucketBuilder()
+                    .setBucketId(new BucketId(bucketKey))
+                    .setKey(new BucketKey(new BucketId(bucketKey)))
                     .setWeight(message.readUnsignedShort())
                     .setWatchPort(message.readUnsignedInt())
                     .setWatchGroup(message.readUnsignedInt());
+
+                bucketKey++;
 
                 message.skipBytes(PADDING_IN_BUCKETS_HEADER);
 
@@ -90,10 +98,11 @@ public class MultipartReplyGroupDescDeserializer implements OFDeserializer<Multi
             }
 
             items.add(itemBuilder
-                    .setBuckets(new BucketsBuilder()
-                        .setBucket(subItems)
-                        .build())
-                    .build());
+                .setKey(new GroupDescStatsKey(itemBuilder.getGroupId()))
+                .setBuckets(new BucketsBuilder()
+                    .setBucket(subItems)
+                    .build())
+                .build());
         }
 
         return builder
