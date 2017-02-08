@@ -51,9 +51,8 @@ public class Ipv4DestinationEntryDeserializer extends AbstractMatchEntryDeserial
                         .setIpv4Destination(IpConversionUtil.createPrefix(address, mask))
                         .build());
             } else if (Ipv4Match.class.isInstance(builder.getLayer3Match())) {
-                builder.setLayer3Match(new Ipv4MatchBuilder()
+                builder.setLayer3Match(new Ipv4MatchBuilder(Ipv4Match.class.cast(builder.getLayer3Match()))
                         .setIpv4Destination(IpConversionUtil.createPrefix(address, mask))
-                        .setIpv4Destination(Ipv4Match.class.cast(builder.getLayer3Match()).getIpv4Destination())
                         .build());
             } else {
                 throwErrorOnMalformed(builder, "layer3Match");
@@ -64,9 +63,8 @@ public class Ipv4DestinationEntryDeserializer extends AbstractMatchEntryDeserial
                         .setIpv4Destination(IpConversionUtil.createPrefix(address))
                         .build());
             } else if (Ipv4Match.class.isInstance(builder.getLayer3Match())) {
-                builder.setLayer3Match(new Ipv4MatchBuilder()
+                builder.setLayer3Match(new Ipv4MatchBuilder(Ipv4Match.class.cast(builder.getLayer3Match()))
                         .setIpv4Destination(IpConversionUtil.createPrefix(address))
-                        .setIpv4Source(Ipv4Match.class.cast(builder.getLayer3Match()).getIpv4Source())
                         .build());
             } else {
                 throwErrorOnMalformed(builder, "layer3Match");
@@ -82,12 +80,9 @@ public class Ipv4DestinationEntryDeserializer extends AbstractMatchEntryDeserial
                     .setIpv4DestinationArbitraryBitmask(IpConversionUtil.createArbitraryBitMask(mask))
                     .build());
         } else if (Ipv4MatchArbitraryBitMask.class.isInstance(builder.getLayer3Match())) {
-            final Ipv4MatchArbitraryBitMask match = Ipv4MatchArbitraryBitMask.class.cast(builder.getLayer3Match());
-            builder.setLayer3Match(new Ipv4MatchArbitraryBitMaskBuilder()
+            builder.setLayer3Match(new Ipv4MatchArbitraryBitMaskBuilder(Ipv4MatchArbitraryBitMask.class.cast(builder.getLayer3Match()))
                     .setIpv4DestinationAddressNoMask(address)
                     .setIpv4DestinationArbitraryBitmask(IpConversionUtil.createArbitraryBitMask(mask))
-                    .setIpv4SourceAddressNoMask(match.getIpv4SourceAddressNoMask())
-                    .setIpv4SourceArbitraryBitmask(match.getIpv4SourceArbitraryBitmask())
                     .build());
         } else {
             throwErrorOnMalformed(builder, "layer3Match");

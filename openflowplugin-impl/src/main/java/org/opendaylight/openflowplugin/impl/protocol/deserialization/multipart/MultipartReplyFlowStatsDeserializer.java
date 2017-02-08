@@ -18,6 +18,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.protocol.deserialization.MessageCodeExperimenterKey;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
@@ -62,7 +63,6 @@ public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<Multi
             itemBuilder.setTableId(itemMessage.readUnsignedByte());
             itemMessage.skipBytes(PADDING_IN_FLOW_STATS_HEADER_01);
 
-
             itemBuilder
                 .setDuration(new DurationBuilder()
                         .setSecond(new Counter32(itemMessage.readUnsignedInt()))
@@ -75,12 +75,18 @@ public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<Multi
 
             itemMessage.skipBytes(PADDING_IN_FLOW_STATS_HEADER_02);
 
-            itemBuilder
-                .setCookie(new FlowCookie(BigInteger.valueOf(itemMessage.readLong())))
-                .setCookieMask(new FlowCookie(BigInteger.valueOf(itemMessage.readLong())))
-                .setPacketCount(new Counter64(BigInteger.valueOf(itemMessage.readLong())))
-                .setByteCount(new Counter64(BigInteger.valueOf(itemMessage.readLong())));
+            final byte[] cookie = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            itemMessage.readBytes(cookie);
+            final byte[] packetCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            itemMessage.readBytes(packetCount);
+            final byte[] byteCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            itemMessage.readBytes(byteCount);
 
+            itemBuilder
+                .setCookie(new FlowCookie(new BigInteger(1, cookie)))
+                .setCookieMask(new FlowCookie(OFConstants.DEFAULT_COOKIE_MASK))
+                .setPacketCount(new Counter64(new BigInteger(1, packetCount)))
+                .setByteCount(new Counter64(new BigInteger(1, byteCount)));
 
             final OFDeserializer<Match> matchDeserializer = registry.getDeserializer(MATCH_KEY);
             itemBuilder.setMatch(new MatchBuilder(matchDeserializer.deserialize(itemMessage)).build());
@@ -145,7 +151,7 @@ public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<Multi
     }
 
     private static FlowModFlags createFlowModFlagsFromBitmap(int input) {
-        final Boolean _oFPFFSENDFLOWREM = (input & (1 << 0)) > 0;
+        final Boolean _oFPFFSENDFLOWREM = (input & (1)) > 0;
         final Boolean _oFPFFCHECKOVERLAP = (input & (1 << 1)) > 0;
         final Boolean _oFPFFRESETCOUNTS = (input & (1 << 2)) > 0;
         final Boolean _oFPFFNOPKTCOUNTS = (input & (1 << 3)) > 0;
