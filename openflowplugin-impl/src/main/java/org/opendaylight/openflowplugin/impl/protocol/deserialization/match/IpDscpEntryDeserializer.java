@@ -30,7 +30,7 @@ public class IpDscpEntryDeserializer extends AbstractMatchEntryDeserializer {
                     .setIpDscp(new Dscp(dscp))
                     .build());
         } else {
-            throwErrorOnMalformed(builder, "ipMatch");
+            throwErrorOnMalformed(builder, "ipMatch", "ipDscp");
         }
     }
 

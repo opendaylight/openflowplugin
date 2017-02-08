@@ -29,7 +29,7 @@ public class Icmpv4TypeEntryDeserializer extends AbstractMatchEntryDeserializer 
                     .setIcmpv4Type(type)
                     .build());
         } else {
-            throwErrorOnMalformed(builder, "icmpv4Match");
+            throwErrorOnMalformed(builder, "icmpv4Match", "icmpv4Type");
         }
     }
 

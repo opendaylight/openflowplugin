@@ -42,13 +42,14 @@ public class MeterMessageSerializer extends AbstractMessageSerializer<MeterMessa
 
     @Override
     public void serialize(final MeterMessage message, final ByteBuf outBuffer) {
+        int index = outBuffer.writerIndex();
         super.serialize(message, outBuffer);
         outBuffer.writeShort(message.getCommand().getIntValue());
         outBuffer.writeShort(createMeterFlagsBitMask(
                 MoreObjects.firstNonNull(message.getFlags(), new MeterFlags(false, false, true, false))));
         outBuffer.writeInt(message.getMeterId().getValue().intValue());
         serializeBands(message.getMeterBandHeaders(), outBuffer);
-        ByteBufUtils.updateOFHeaderLength(outBuffer);
+        outBuffer.setShort(index + 2, outBuffer.writerIndex() - index);
     }
 
     @Override

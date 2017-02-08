@@ -23,10 +23,7 @@ public class InPortEntryDeserializer extends AbstractMatchEntryDeserializer {
         final long port = message.readUnsignedInt();
 
         if (Objects.isNull(builder.getInPort())) {
-            final String portName = OpenflowPortsUtil.getPortLogicalName(EncodeConstants.OF13_VERSION_ID, port);
-
-            // We do not assign datapath ID here, because we simply do not have it
-            builder.setInPort(new NodeConnectorId(Objects.isNull(portName) ? String.valueOf(port) : portName));
+            builder.setInPort(new NodeConnectorId(OpenflowPortsUtil.getProtocolAgnosticPortUri(EncodeConstants.OF13_VERSION_ID, port)));
         } else {
             throwErrorOnMalformed(builder, "inPort");
         }

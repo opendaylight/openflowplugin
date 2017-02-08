@@ -28,8 +28,8 @@ public class WriteMetadataInstructionDeserializerTest extends AbstractInstructio
     @Test
     public void testDeserialize() throws Exception {
         final ByteBuf in = UnpooledByteBufAllocator.DEFAULT.buffer();
-        final BigInteger metadata = BigInteger.valueOf(1234567890L);
-        final BigInteger metadataMask = BigInteger.valueOf(9876543210L);
+        final BigInteger metadata = BigInteger.valueOf(1234L);
+        final BigInteger metadataMask = BigInteger.valueOf(9876L);
         writeHeader(in);
         in.writeZero(InstructionConstants.PADDING_IN_WRITE_METADATA);
         in.writeBytes(ByteUtil.convertBigIntegerToNBytes(metadata, EncodeConstants.SIZE_OF_LONG_IN_BYTES));
@@ -37,10 +37,19 @@ public class WriteMetadataInstructionDeserializerTest extends AbstractInstructio
 
         final Instruction instruction = deserializeInstruction(in);
         assertEquals(WriteMetadataCase.class, instruction.getImplementedInterface());
-        assertArrayEquals(metadata.toByteArray(),
-                WriteMetadataCase.class.cast(instruction).getWriteMetadata().getMetadata().toByteArray());
-        assertArrayEquals(metadataMask.toByteArray(),
-                WriteMetadataCase.class.cast(instruction).getWriteMetadata().getMetadataMask().toByteArray());
+
+        assertArrayEquals(
+            ByteUtil
+                .convertBigIntegerToNBytes(metadata, EncodeConstants.SIZE_OF_LONG_IN_BYTES),
+            ByteUtil
+                .convertBigIntegerToNBytes(WriteMetadataCase.class.cast(instruction).getWriteMetadata().getMetadata(), EncodeConstants.SIZE_OF_LONG_IN_BYTES));
+
+        assertArrayEquals(
+            ByteUtil
+                .convertBigIntegerToNBytes(metadataMask, EncodeConstants.SIZE_OF_LONG_IN_BYTES),
+            ByteUtil
+                .convertBigIntegerToNBytes(WriteMetadataCase.class.cast(instruction).getWriteMetadata().getMetadataMask(), EncodeConstants.SIZE_OF_LONG_IN_BYTES));
+
         assertEquals(0, in.readableBytes());
     }
 

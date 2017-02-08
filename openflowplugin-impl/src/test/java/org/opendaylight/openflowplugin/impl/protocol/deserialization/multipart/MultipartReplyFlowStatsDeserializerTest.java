@@ -34,7 +34,7 @@ public class MultipartReplyFlowStatsDeserializerTest extends AbstractMultipartDe
     private static final byte PADDING_IN_FLOW_STATS_HEADER_01 = 1;
     private static final byte PADDING_IN_FLOW_STATS_HEADER_02 = 4;
 
-    private static  final short ITEM_LENGTH = 104;
+    private static  final short ITEM_LENGTH = 96;
     private static  final byte TABLE_ID = 1;
     private static  final int SECOND = 1;
     private static  final int NANOSECOND = 2;
@@ -49,7 +49,6 @@ public class MultipartReplyFlowStatsDeserializerTest extends AbstractMultipartDe
     private static final FlowModFlags FLAGS = new FlowModFlags(
             CHECK_OVERLAP, NO_BYTCOUNTS, NO_PKTCOUNTS, RESET_COUNTS, SEND_FLOWREM);
     private static  final long COOKIE = 2;
-    private static  final long COOKIE_MASK = 3;
     private static  final long PACKET_COUNT = 4;
     private static  final long BYTE_COUNT = 5;
 
@@ -77,7 +76,6 @@ public class MultipartReplyFlowStatsDeserializerTest extends AbstractMultipartDe
                 FLAGS.isNOBYTCOUNTS()));
         buffer.writeZero(PADDING_IN_FLOW_STATS_HEADER_02);
         buffer.writeLong(COOKIE);
-        buffer.writeLong(COOKIE_MASK);
         buffer.writeLong(PACKET_COUNT);
         buffer.writeLong(BYTE_COUNT);
 
@@ -141,7 +139,6 @@ public class MultipartReplyFlowStatsDeserializerTest extends AbstractMultipartDe
         assertEquals(HARD_TIMEOUT, flowAndStatisticsMapList.getHardTimeout().intValue());
         assertTrue(flowAndStatisticsMapList.getFlags().equals(FLAGS));
         assertEquals(COOKIE, flowAndStatisticsMapList.getCookie().getValue().longValue());
-        assertEquals(COOKIE_MASK, flowAndStatisticsMapList.getCookieMask().getValue().longValue());
         assertEquals(BYTE_COUNT, flowAndStatisticsMapList.getByteCount().getValue().longValue());
         assertEquals(PACKET_COUNT, flowAndStatisticsMapList.getPacketCount().getValue().longValue());
 

@@ -36,41 +36,25 @@ public class Ipv4SourceEntryDeserializer extends AbstractMatchEntryDeserializer 
             if (IpConversionUtil.isArbitraryBitMask(mask)) {
                 setArbitraryMatch(builder, address, mask);
             } else {
-                setPrefixMatch(builder, address, mask, hasMask);
+                setPrefixMatch(builder, address, mask);
             }
         } else {
-            setPrefixMatch(builder, address, null, hasMask);
+            setPrefixMatch(builder, address, null);
         }
     }
 
-    private static void setPrefixMatch(final MatchBuilder builder, final Ipv4Address address,
-            final byte[] mask, final boolean hasMask) {
-        if (hasMask) {
-            if (Objects.isNull(builder.getLayer3Match())) {
-                builder.setLayer3Match(new Ipv4MatchBuilder()
-                        .setIpv4Source(IpConversionUtil.createPrefix(address, mask))
-                        .build());
-            } else if (Ipv4Match.class.isInstance(builder.getLayer3Match())) {
-                builder.setLayer3Match(new Ipv4MatchBuilder()
-                        .setIpv4Source(IpConversionUtil.createPrefix(address, mask))
-                        .setIpv4Destination(Ipv4Match.class.cast(builder.getLayer3Match()).getIpv4Destination())
-                        .build());
-            } else {
-                throwErrorOnMalformed(builder, "layer3Match");
-            }
+    private static void setPrefixMatch(final MatchBuilder builder, final Ipv4Address address, final byte[] mask) {
+        if (Objects.isNull(builder.getLayer3Match())) {
+            builder.setLayer3Match(new Ipv4MatchBuilder()
+                .setIpv4Source(IpConversionUtil.createPrefix(address, mask))
+                .build());
+        } else if (Ipv4Match.class.isInstance(builder.getLayer3Match())
+            && Objects.isNull(Ipv4Match.class.cast(builder.getLayer3Match()).getIpv4Source())) {
+            builder.setLayer3Match(new Ipv4MatchBuilder(Ipv4Match.class.cast(builder.getLayer3Match()))
+                .setIpv4Source(IpConversionUtil.createPrefix(address, mask))
+                .build());
         } else {
-            if (Objects.isNull(builder.getLayer3Match())) {
-                builder.setLayer3Match(new Ipv4MatchBuilder()
-                        .setIpv4Source(IpConversionUtil.createPrefix(address))
-                        .build());
-            } else if (Ipv4Match.class.isInstance(builder.getLayer3Match())) {
-                builder.setLayer3Match(new Ipv4MatchBuilder()
-                        .setIpv4Source(IpConversionUtil.createPrefix(address))
-                        .setIpv4Destination(Ipv4Match.class.cast(builder.getLayer3Match()).getIpv4Destination())
-                        .build());
-            } else {
-                throwErrorOnMalformed(builder, "layer3Match");
-            }
+            throwErrorOnMalformed(builder, "layer3Match", "ipv4Source");
         }
     }
 
@@ -81,16 +65,14 @@ public class Ipv4SourceEntryDeserializer extends AbstractMatchEntryDeserializer 
                     .setIpv4SourceAddressNoMask(address)
                     .setIpv4SourceArbitraryBitmask(IpConversionUtil.createArbitraryBitMask(mask))
                     .build());
-        } else if (Ipv4MatchArbitraryBitMask.class.isInstance(builder.getLayer3Match())) {
-            final Ipv4MatchArbitraryBitMask match = Ipv4MatchArbitraryBitMask.class.cast(builder.getLayer3Match());
-            builder.setLayer3Match(new Ipv4MatchArbitraryBitMaskBuilder()
+        } else if (Ipv4MatchArbitraryBitMask.class.isInstance(builder.getLayer3Match())
+            && Objects.isNull(Ipv4MatchArbitraryBitMask.class.cast(builder.getLayer3Match()).getIpv4SourceAddressNoMask())) {
+            builder.setLayer3Match(new Ipv4MatchArbitraryBitMaskBuilder(Ipv4MatchArbitraryBitMask.class.cast(builder.getLayer3Match()))
                     .setIpv4SourceAddressNoMask(address)
                     .setIpv4SourceArbitraryBitmask(IpConversionUtil.createArbitraryBitMask(mask))
-                    .setIpv4DestinationAddressNoMask(match.getIpv4DestinationAddressNoMask())
-                    .setIpv4DestinationArbitraryBitmask(match.getIpv4DestinationArbitraryBitmask())
                     .build());
         } else {
-            throwErrorOnMalformed(builder, "layer3Match");
+            throwErrorOnMalformed(builder, "layer3Match", "ipv4SourceAddressNoMask");
         }
     }
 
