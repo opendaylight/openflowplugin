@@ -73,68 +73,74 @@ module sal-bulk-flow {
     }
 
     rpc flow-test {
-	input {
-	    leaf is-add {
-		type boolean;
-		mandatory true;
-		status current;
-		description "Add or delete";
-	    }
-	    leaf dpn-count {
-		type uint32;
-		mandatory true;
-		status current;
-		description "No of DPNs";
-	    }
-	    leaf flows-per-dpn {
-		type uint32;
-		mandatory true;
-		status current;
-		description "Flows to be pushed per DPN";
-	    }
-	    leaf start-table-id {
-		type uint32;
-		mandatory true;
-		status current;
-		description "Start adding flows from this table id";
-	    }
-	    leaf end-table-id {
-		type uint32;
-		mandatory true;
-		status current;
-		description "The last table to add flows to and then wrap around";
-	    }
-	    leaf batch-size {
-		type uint32;
-		mandatory true;
-		status current;
-		description "batch size";
-	    }
-	    leaf seq {
-		type boolean;
-		mandatory true;
-		status current;
-		description "Whether to use sequential or concurrent writer";
-	    }
-	    leaf tx-chain {
-		type boolean;
-		mandatory true;
-		status current;
-		description "Whether to use PingPong Broker or not. seq is ignored.";
-	    }
-	    leaf sleep-for {
-		type uint32;
-		mandatory true;
-		status current;
-		description "sleep for the given milliseconds";
-	    }
-	    leaf sleep-after {
-		type uint32;
-		mandatory true;
-		status current;
-		description "Sleep after the given number of iterations. Will be used in the concurrent case only";
-	    }
-	}
+        input {
+            leaf create-parents {
+                type boolean;
+                mandatory true;
+                status current;
+                description "Create parents if doesn't exist";
+            }
+            leaf is-add {
+                type boolean;
+                mandatory true;
+                status current;
+                description "Add or delete";
+            }
+            leaf dpn-count {
+                type uint32;
+                mandatory true;
+                status current;
+                description "No of DPNs";
+            }
+            leaf flows-per-dpn {
+                type uint32;
+                mandatory true;
+                status current;
+                description "Flows to be pushed per DPN";
+            }
+            leaf start-table-id {
+                type uint32;
+                mandatory true;
+                status current;
+                description "Start adding flows from this table id";
+            }
+            leaf end-table-id {
+                type uint32;
+                mandatory true;
+                status current;
+                description "The last table to add flows to and then wrap around";
+            }
+            leaf batch-size {
+                type uint32;
+                mandatory true;
+                status current;
+                description "batch size";
+            }
+            leaf seq {
+                type boolean;
+                mandatory true;
+                status current;
+                description "Whether to use sequential or concurrent writer";
+            }
+            leaf tx-chain {
+                type boolean;
+                mandatory true;
+                status current;
+                description "Whether to use PingPong Broker or not. seq is ignored.";
+            }
+            leaf sleep-for {
+                type uint32;
+                mandatory true;
+                status current;
+                description "sleep for the given milliseconds";
+            }
+            leaf sleep-after {
+                type uint32;
+                mandatory true;
+                status current;
+                description "Sleep after the given number of iterations. Will be used in the concurrent case only";
+            }
+        }
     }
 
     rpc read-flow-test {
@@ -216,5 +222,39 @@ module sal-bulk-flow {
 		description "Batch-size which would be sent continuously without any pause, If less than sal-bulk-flow:flow-count, a fixed pause of 40 ms would be introduced";
 	    }
 	}
+    }
+
+    rpc table-test {
+        input {
+            leaf operation {
+                type enumeration {
+                    enum add;
+                    enum delete;
+                }
+                status current;
+                description "Type of operation, add or delete";
+            }
+
+            leaf dpn-count {
+                type uint32;
+                mandatory true;
+                status current;
+                description "Total number of dpns to add these tables";
+            }
+
+            leaf start-table-id {
+                type uint32;
+                mandatory true;
+                status current;
+                description "Starting table id";
+            }
+
+            leaf end-table-id {
+                type uint32;
+                mandatory true;
+                status current;
+                description "Last table id";
+            }
+        }
     }
 }
