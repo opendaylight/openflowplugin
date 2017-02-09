@@ -74,6 +74,12 @@ module sal-bulk-flow {
 
     rpc flow-test {
 	input {
+	    leaf create-parents {
+	        type boolean;
+	        mandatory true;
+	        status current;
+	        description "Create parents if doesn't exist";
+	    }
 	    leaf is-add {
 		type boolean;
 		mandatory true;
@@ -216,5 +222,37 @@ module sal-bulk-flow {
 		description "Batch-size which would be sent continuously without any pause, If less than sal-bulk-flow:flow-count, a fixed pause of 40 ms would be introduced";
 	    }
 	}
+    }
+
+    rpc table-test {
+        input {
+            leaf add {
+                type boolean;
+                mandatory true;
+                status current;
+                description "If true, adds tables, else delete tables";
+            }
+
+            leaf dpn-count {
+                type uint32;
+                mandatory true;
+                status current;
+                description "Total number of dpns to add these tables";
+            }
+
+            leaf start-table-id {
+                type uint32;
+                mandatory true;
+                status current;
+                description "Starting table id";
+            }
+
+            leaf end-table-id {
+                type uint32;
+                mandatory true;
+                status current;
+                description "Last table id";
+            }
+        }
     }
 }
