@@ -9,14 +9,28 @@ package org.opendaylight.openflowplugin.applications.bulk.o.matic;
 
 public interface FlowCounterMBean {
 
-    public long getFlowCount();
+    default public long getFlowCount() {
+        return BulkOMaticUtils.DEFAULT_FLOW_COUNT;
+    }
 
-    public int getReadOpStatus();
+    default public int getReadOpStatus() {
+        return BulkOMaticUtils.DEFUALT_STATUS;
+    }
 
-    public int getWriteOpStatus();
+    default public int getWriteOpStatus() {
+        return BulkOMaticUtils.DEFUALT_STATUS;
+    }
 
-    public long getTaskCompletionTime();
+    default public long getTaskCompletionTime() {
+        return BulkOMaticUtils.DEFAULT_COMPLETION_TIME;
+    }
 
-    public String getUnits();
+    default public String getUnits() {
+        return BulkOMaticUtils.DEFAULT_UNITS;
+    }
+
+    default public long getTableCount() {
+        return BulkOMaticUtils.DEFAULT_TABLE_COUNT;
+    }
 }
 

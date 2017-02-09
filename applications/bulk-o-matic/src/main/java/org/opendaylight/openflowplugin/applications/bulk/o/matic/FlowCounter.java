@@ -78,4 +78,12 @@ public class FlowCounter implements FlowCounterMBean {
             return BulkOMaticUtils.DEFAULT_UNITS;
         }
     }
+
+    @Override
+    public long getTableCount() {
+        if (writer != null) {
+            return writer.getTableCount();
+        }
+        return BulkOMaticUtils.DEFAULT_TABLE_COUNT;
+    }
 }
