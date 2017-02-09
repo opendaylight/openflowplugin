@@ -167,7 +167,7 @@ public class FlowDirectStatisticsService extends AbstractDirectStatisticsService
         final FlowBuilder flowBuilder = new FlowBuilder(flowStatistics)
                 .addAugmentation(FlowStatisticsData.class, flowStatisticsDataBld.build());
 
-        final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(flowBuilder.build());
+        final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(getVersion(), flowBuilder.build());
         return getDeviceRegistry().getDeviceFlowRegistry().storeIfNecessary(flowRegistryKey);
     }
 }

@@ -51,23 +51,24 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     private final DataBroker dataBroker;
     private final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier;
     private final List<ListenableFuture<List<Optional<FlowCapableNode>>>> lastFillFutures = new ArrayList<>();
+    private final Consumer<Flow> flowConsumer;
 
-    // Specifies what to do with flow read from datastore
-    private final Consumer<Flow> flowConsumer = flow -> {
-        // Create flow registry key from flow
-        final FlowRegistryKey key = FlowRegistryKeyFactory.create(flow);
-
-        // Now, we will update the registry, but we will also try to prevent duplicate entries
-        if (!flowRegistry.containsKey(key)) {
-            LOG.trace("Found flow with table ID : {} and flow ID : {}", flow.getTableId(), flow.getId().getValue());
-            final FlowDescriptor descriptor = FlowDescriptorFactory.create(flow.getTableId(), flow.getId());
-            store(key, descriptor);
-        }
-    };
-
-    public DeviceFlowRegistryImpl(final DataBroker dataBroker, final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier) {
+    public DeviceFlowRegistryImpl(final short version, final DataBroker dataBroker, final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier) {
         this.dataBroker = dataBroker;
         this.instanceIdentifier = instanceIdentifier;
+
+        // Specifies what to do with flow read from datastore
+        flowConsumer = flow -> {
+            // Create flow registry key from flow
+            final FlowRegistryKey key = FlowRegistryKeyFactory.create(version, flow);
+
+            // Now, we will update the registry, but we will also try to prevent duplicate entries
+            if (!flowRegistry.containsKey(key)) {
+                LOG.trace("Found flow with table ID : {} and flow ID : {}", flow.getTableId(), flow.getId().getValue());
+                final FlowDescriptor descriptor = FlowDescriptorFactory.create(flow.getTableId(), flow.getId());
+                store(key, descriptor);
+            }
+        };
     }
 
     @Override
