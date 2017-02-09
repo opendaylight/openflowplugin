@@ -65,7 +65,7 @@ public class FlowWriterSequentialTest {
     }
     @Test
     public void testAddFlows() throws Exception {
-        flowWriterSequential.addFlows(1, FLOWS_PER_DPN, 10, 10, (short)0, (short)1);
+        flowWriterSequential.addFlows(1, FLOWS_PER_DPN, 10, 10, (short)0, (short)1, true);
         Mockito.verify(wTx, Mockito.times(FLOWS_PER_DPN)).put(Matchers.<LogicalDatastoreType>any(), Matchers.<InstanceIdentifier<DataObject>>any(), Matchers.<DataObject>any(), Matchers.anyBoolean());
     }
 
