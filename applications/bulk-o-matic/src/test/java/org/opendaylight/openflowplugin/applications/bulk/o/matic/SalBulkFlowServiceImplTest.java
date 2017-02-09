@@ -47,6 +47,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.RemoveFlowsDsInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.RemoveFlowsRpcInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.RemoveFlowsRpcInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.TableTestInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.TableTestInput.Operation;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.TableTestInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.bulk.flow.ds.list.grouping.BulkFlowDsItem;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.bulk.flow.ds.list.grouping.BulkFlowDsItemBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.bulk.flow.list.grouping.BulkFlowItem;
@@ -216,7 +219,8 @@ public class SalBulkFlowServiceImplTest {
                 .setSleepAfter(20L)
                 .setSleepFor(1L)
                 .setStartTableId(1L)
-                .setTxChain(true);
+                .setTxChain(true)
+                .setCreateParents(true);
 
         FlowTestInput flowTestInput = flowTestInputBuilder.build();
 
@@ -260,5 +264,23 @@ public class SalBulkFlowServiceImplTest {
         final FlowRpcAddMultipleInput flowRpcAddMultipleInput = flowRpcAddMultipleInputBuilder.build();
 
         Assert.assertTrue(salBulkFlowService.flowRpcAddMultiple(flowRpcAddMultipleInput).get().isSuccessful());
+    }
+
+    @Test
+    public void testTableTest() throws Exception {
+        final TableTestInputBuilder tableTestInputBuilder = new TableTestInputBuilder()
+                .setStartTableId(0L)
+                .setEndTableId(99L)
+                .setDpnCount(1L)
+                .setOperation(Operation.Add);
+
+        TableTestInput tableTestInput = tableTestInputBuilder.build();
+
+        Assert.assertTrue(salBulkFlowService.tableTest(tableTestInput).get().isSuccessful());
+
+        tableTestInputBuilder.setOperation(Operation.Delete);
+        tableTestInput = tableTestInputBuilder.build();
+
+        Assert.assertTrue(salBulkFlowService.tableTest(tableTestInput).get().isSuccessful());
     }
 }

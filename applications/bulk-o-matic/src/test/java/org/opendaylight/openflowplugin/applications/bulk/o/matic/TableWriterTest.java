@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -33,19 +33,22 @@ import org.slf4j.LoggerFactory;
  * Test for {@link FlowWriterSequential}.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class FlowWriterSequentialTest {
+public class TableWriterTest {
+    private static final Logger LOG = LoggerFactory.getLogger(TableWriterTest.class);
 
-    private static final Logger LOG = LoggerFactory.getLogger(FlowWriterSequentialTest.class);
-    private static final int FLOWS_PER_DPN = 100;
+    private static final int TABLES_PER_DPN = 100;
+    private static final int DPN_COUNT = 1;
+    private static final short START_TABLE_ID = 0;
+    private static final short END_TABLE_ID = 99;
 
     @Mock
     private DataBroker mockDataBroker;
     @Mock
-    private ExecutorService mockFlowPusher;
+    private ExecutorService mockTablePusher;
     @Mock
     private WriteTransaction wTx;
 
-    private FlowWriterSequential flowWriterSequential;
+    private TableWriter tableWriter;
 
     @Before
     public void setUp() throws Exception {
@@ -59,20 +62,19 @@ public class FlowWriterSequentialTest {
                 ((Runnable)invocation.getArguments()[0]).run();
                 return null;
             }
-        }).when(mockFlowPusher).execute(Matchers.<Runnable>any());
+        }).when(mockTablePusher).execute(Matchers.<Runnable>any());
 
-        flowWriterSequential = new FlowWriterSequential(mockDataBroker, mockFlowPusher);
+        tableWriter = new TableWriter(mockDataBroker, mockTablePusher);
     }
     @Test
-    public void testAddFlows() throws Exception {
-        flowWriterSequential.addFlows(1, FLOWS_PER_DPN, 10, 10, (short)0, (short)1, true);
-        Mockito.verify(wTx, Mockito.times(FLOWS_PER_DPN)).put(Matchers.<LogicalDatastoreType>any(), Matchers.<InstanceIdentifier<DataObject>>any(), Matchers.<DataObject>any(), Matchers.anyBoolean());
+    public void testAddTables() throws Exception {
+        tableWriter.addTables(DPN_COUNT, START_TABLE_ID, END_TABLE_ID);
+        Mockito.verify(wTx, Mockito.times(TABLES_PER_DPN)).put(Matchers.<LogicalDatastoreType>any(), Matchers.<InstanceIdentifier<DataObject>>any(), Matchers.<DataObject>any(), Matchers.anyBoolean());
     }
 
     @Test
-    public void testDeleteFlows() throws Exception {
-        flowWriterSequential.deleteFlows(1, FLOWS_PER_DPN, 10, (short)0, (short)1);
-        Mockito.verify(wTx, Mockito.times(FLOWS_PER_DPN)).delete(Matchers.<LogicalDatastoreType>any(), Matchers.<InstanceIdentifier<DataObject>>any());
+    public void testDeleteTables() throws Exception {
+        tableWriter.deleteTables(DPN_COUNT, START_TABLE_ID, END_TABLE_ID);
+        Mockito.verify(wTx, Mockito.times(TABLES_PER_DPN)).delete(Matchers.<LogicalDatastoreType>any(), Matchers.<InstanceIdentifier<DataObject>>any());
     }
-
 }

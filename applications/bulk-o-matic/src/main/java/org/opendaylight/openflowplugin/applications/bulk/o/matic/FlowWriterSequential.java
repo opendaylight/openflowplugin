@@ -9,6 +9,9 @@ package org.opendaylight.openflowplugin.applications.bulk.o.matic;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -18,10 +21,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-
 public class FlowWriterSequential implements FlowCounterMBean {
     private static final Logger LOG = LoggerFactory.getLogger(FlowWriterSequential.class);
     private final DataBroker dataBroker;
@@ -29,9 +28,8 @@ public class FlowWriterSequential implements FlowCounterMBean {
     protected int dpnCount;
     private long startTime;
     private AtomicInteger writeOpStatus = new AtomicInteger(FlowCounter.OperationStatus.INIT.status());
-    private AtomicInteger countDpnWriteCompletion = new AtomicInteger(0);
-    private AtomicLong taskCompletionTime = new AtomicLong(0);
-    private static final String UNITS = "ns";
+    private AtomicInteger countDpnWriteCompletion = new AtomicInteger();
+    private AtomicLong taskCompletionTime = new AtomicLong();
 
     public FlowWriterSequential(final DataBroker dataBroker, ExecutorService flowPusher) {
         this.dataBroker = dataBroker;
@@ -40,14 +38,14 @@ public class FlowWriterSequential implements FlowCounterMBean {
     }
 
     public void addFlows(Integer dpnCount, Integer flowsPerDPN, int batchSize, int sleepMillis,
-                         short startTableId, short endTableId) {
+                         short startTableId, short endTableId, boolean isCreateParents) {
         LOG.info("Using Sequential implementation of Flow Writer.");
         this.dpnCount = dpnCount;
         countDpnWriteCompletion.set(dpnCount);
         startTime = System.nanoTime();
         for (int i = 1; i <= dpnCount; i++) {
             FlowHandlerTask task = new FlowHandlerTask(Integer.toString(i), flowsPerDPN, true, batchSize,
-                    sleepMillis, startTableId, endTableId);
+                    sleepMillis, startTableId, endTableId, isCreateParents);
             flowPusher.execute(task);
         }
     }
@@ -58,19 +56,9 @@ public class FlowWriterSequential implements FlowCounterMBean {
         countDpnWriteCompletion.set(dpnCount);
         for (int i = 1; i <= dpnCount; i++) {
             FlowHandlerTask task = new FlowHandlerTask(Integer.toString(i), flowsPerDPN, false, batchSize, 0,
-                    startTableId, endTableId);
+                    startTableId, endTableId, false);
             flowPusher.execute(task);
         }
-    }
-
-    @Override
-    public long getFlowCount() {
-        return BulkOMaticUtils.DEFAULT_FLOW_COUNT;
-    }
-
-    @Override
-    public int getReadOpStatus() {
-        return BulkOMaticUtils.DEFUALT_STATUS;
     }
 
     @Override
@@ -83,11 +71,6 @@ public class FlowWriterSequential implements FlowCounterMBean {
         return taskCompletionTime.get();
     }
 
-    @Override
-    public String getUnits() {
-        return UNITS;
-    }
-
     private class FlowHandlerTask implements Runnable {
         private final String dpId;
         private final int flowsPerDpn;
@@ -96,6 +79,7 @@ public class FlowWriterSequential implements FlowCounterMBean {
         private final int sleepMillis;
         private final short startTableId;
         private final short endTableId;
+        private final boolean isCreateParents;
 
         public FlowHandlerTask(final String dpId,
                                final int flowsPerDpn,
@@ -103,7 +87,8 @@ public class FlowWriterSequential implements FlowCounterMBean {
                                final int batchSize,
                                int sleepMillis,
                                final short startTableId,
-                               final short endTableId){
+                               final short endTableId,
+                               final boolean isCreateParents){
             this.dpId = BulkOMaticUtils.DEVICE_TYPE_PREFIX + dpId;
             this.add = add;
             this.flowsPerDpn = flowsPerDpn;
@@ -111,6 +96,7 @@ public class FlowWriterSequential implements FlowCounterMBean {
             this.sleepMillis = sleepMillis;
             this.startTableId = startTableId;
             this.endTableId = endTableId;
+            this.isCreateParents = isCreateParents;
         }
 
         @Override
@@ -151,7 +137,7 @@ public class FlowWriterSequential implements FlowCounterMBean {
                                  Flow flow) {
             if (add) {
                 LOG.trace("Adding flow for flowId: {}, flowIid: {}", flowId, flowIid);
-                writeTransaction.put(LogicalDatastoreType.CONFIGURATION, flowIid, flow, true);
+                writeTransaction.put(LogicalDatastoreType.CONFIGURATION, flowIid, flow, isCreateParents);
             } else {
                 LOG.trace("Deleting flow for flowId: {}, flowIid: {}", flowId, flowIid);
                 writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, flowIid);
