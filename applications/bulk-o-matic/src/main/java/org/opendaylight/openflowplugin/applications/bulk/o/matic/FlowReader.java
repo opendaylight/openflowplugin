@@ -8,6 +8,8 @@
 package org.opendaylight.openflowplugin.applications.bulk.o.matic;
 
 import com.google.common.base.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -25,9 +27,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class FlowReader implements Runnable, FlowCounterMBean {
     private static final Logger LOG = LoggerFactory.getLogger(FlowReader.class);
@@ -149,5 +148,10 @@ public class FlowReader implements Runnable, FlowCounterMBean {
     @Override
     public String getUnits() {
         return UNITS;
+    }
+
+    @Override
+    public long getTableCount() {
+        return BulkOMaticUtils.DEFAULT_TABLE_COUNT;
     }
 }

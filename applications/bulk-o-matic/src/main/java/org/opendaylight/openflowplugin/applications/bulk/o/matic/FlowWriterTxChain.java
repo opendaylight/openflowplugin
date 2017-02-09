@@ -9,6 +9,9 @@ package org.opendaylight.openflowplugin.applications.bulk.o.matic;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
@@ -21,10 +24,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class FlowWriterTxChain implements FlowCounterMBean {
     private static final Logger LOG = LoggerFactory.getLogger(FlowWriterTxChain.class);
@@ -43,13 +42,14 @@ public class FlowWriterTxChain implements FlowCounterMBean {
     }
 
     public void addFlows(Integer dpnCount, Integer flowsPerDPN, int batchSize,
-                         int sleepMillis, int sleepAfter, short startTableId, short endTableId) {
+                         int sleepMillis, int sleepAfter, short startTableId, short endTableId,
+                         boolean isCreateParents) {
         LOG.info("Using Transaction Chain Flow Writer Impl");
         countDpnWriteCompletion.set(dpnCount);
         startTime = System.nanoTime();
         for (int i = 1; i <= dpnCount; i++) {
             FlowHandlerTask task = new FlowHandlerTask(Integer.toString(i),
-                    flowsPerDPN, true, batchSize, sleepMillis, sleepAfter, startTableId, endTableId);
+                    flowsPerDPN, true, batchSize, sleepMillis, sleepAfter, startTableId, endTableId, isCreateParents);
             flowPusher.execute(task);
         }
     }
@@ -60,7 +60,7 @@ public class FlowWriterTxChain implements FlowCounterMBean {
         countDpnWriteCompletion.set(dpnCount);
         for (int i = 1; i <= dpnCount; i++) {
             FlowHandlerTask task = new FlowHandlerTask(Integer.toString(i), flowsPerDPN, false, batchSize,
-                    0, 1, startTableId, endTableId);
+                    0, 1, startTableId, endTableId, false);
             flowPusher.execute(task);
         }
     }
@@ -90,6 +90,11 @@ public class FlowWriterTxChain implements FlowCounterMBean {
         return UNITS;
     }
 
+    @Override
+    public long getTableCount() {
+        return BulkOMaticUtils.DEFAULT_TABLE_COUNT;
+    }
+
     private class FlowHandlerTask implements Runnable, TransactionChainListener {
         private final String dpId;
         private final boolean add;
@@ -99,6 +104,7 @@ public class FlowWriterTxChain implements FlowCounterMBean {
         private final int sleepMillis;
         private final short startTableId;
         private final short endTableId;
+        private final boolean isCreateParents;
         private AtomicInteger remainingTxReturn = new AtomicInteger(0);
 
         BindingTransactionChain txChain;
@@ -110,7 +116,8 @@ public class FlowWriterTxChain implements FlowCounterMBean {
                                final int sleepMillis,
                                final int sleepAfter,
                                final short startTableId,
-                               final short endTableId){
+                               final short endTableId,
+                               final boolean isCreateParents){
             this.dpId = BulkOMaticUtils.DEVICE_TYPE_PREFIX + dpId;
             this.add = add;
             this.flowsPerDpn = flowsPerDpn;
@@ -119,6 +126,7 @@ public class FlowWriterTxChain implements FlowCounterMBean {
             this.sleepAfter = sleepAfter;
             this.startTableId = startTableId;
             this.endTableId = endTableId;
+            this.isCreateParents = isCreateParents;
             remainingTxReturn.set(flowsPerDpn/batchSize);
         }
 
@@ -191,7 +199,7 @@ public class FlowWriterTxChain implements FlowCounterMBean {
         private void writeTxToDs(WriteTransaction writeTransaction, String flowId, InstanceIdentifier<Flow> flowIid, Flow flow, Integer sourceIp, Short tableId){
             if (add) {
                 LOG.trace("Adding flow for flowId: {}, flowIid: {}", flowId, flowIid);
-                writeTransaction.put(LogicalDatastoreType.CONFIGURATION, flowIid, flow, true);
+                writeTransaction.put(LogicalDatastoreType.CONFIGURATION, flowIid, flow, isCreateParents);
             } else {
                 LOG.trace("Deleting flow for flowId: {}, flowIid: {}", flowId, flowIid);
                 writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, flowIid);
