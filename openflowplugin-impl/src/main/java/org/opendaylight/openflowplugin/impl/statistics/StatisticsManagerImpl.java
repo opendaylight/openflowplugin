@@ -21,6 +21,7 @@ import io.netty.util.TimerTask;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Future;
@@ -164,8 +165,10 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                             deviceInfo.getLOGValue(),throwable);
                     stopScheduling(deviceInfo);
                 } else {
-                    LOG.warn("Unexpected error occurred during statistics collection for node {}, rescheduling " +
-                            "statistics collections", deviceInfo.getLOGValue(),throwable);
+                    if (!(throwable instanceof CancellationException)) {
+                        LOG.warn("Unexpected error occurred during statistics collection for node {}, rescheduling " +
+                                "statistics collections", deviceInfo.getLOGValue(),throwable);
+                    }
                     scheduleNextPolling(deviceState, deviceInfo, statisticsContext, timeCounter);
                 }
             }
