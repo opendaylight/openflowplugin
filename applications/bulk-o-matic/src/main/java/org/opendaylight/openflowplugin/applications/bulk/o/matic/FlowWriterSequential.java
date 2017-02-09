@@ -40,14 +40,14 @@ public class FlowWriterSequential implements FlowCounterMBean {
     }
 
     public void addFlows(Integer dpnCount, Integer flowsPerDPN, int batchSize, int sleepMillis,
-                         short startTableId, short endTableId) {
+                         short startTableId, short endTableId, boolean isCreateParents) {
         LOG.info("Using Sequential implementation of Flow Writer.");
         this.dpnCount = dpnCount;
         countDpnWriteCompletion.set(dpnCount);
         startTime = System.nanoTime();
         for (int i = 1; i <= dpnCount; i++) {
             FlowHandlerTask task = new FlowHandlerTask(Integer.toString(i), flowsPerDPN, true, batchSize,
-                    sleepMillis, startTableId, endTableId);
+                    sleepMillis, startTableId, endTableId, isCreateParents);
             flowPusher.execute(task);
         }
     }
@@ -58,7 +58,7 @@ public class FlowWriterSequential implements FlowCounterMBean {
         countDpnWriteCompletion.set(dpnCount);
         for (int i = 1; i <= dpnCount; i++) {
             FlowHandlerTask task = new FlowHandlerTask(Integer.toString(i), flowsPerDPN, false, batchSize, 0,
-                    startTableId, endTableId);
+                    startTableId, endTableId, false);
             flowPusher.execute(task);
         }
     }
@@ -88,6 +88,11 @@ public class FlowWriterSequential implements FlowCounterMBean {
         return UNITS;
     }
 
+    @Override
+    public long getTableCount() {
+        return 0;
+    }
+
     private class FlowHandlerTask implements Runnable {
         private final String dpId;
         private final int flowsPerDpn;
@@ -96,6 +101,7 @@ public class FlowWriterSequential implements FlowCounterMBean {
         private final int sleepMillis;
         private final short startTableId;
         private final short endTableId;
+        private final boolean isCreateParents;
 
         public FlowHandlerTask(final String dpId,
                                final int flowsPerDpn,
@@ -103,7 +109,8 @@ public class FlowWriterSequential implements FlowCounterMBean {
                                final int batchSize,
                                int sleepMillis,
                                final short startTableId,
-                               final short endTableId){
+                               final short endTableId,
+                               final boolean isCreateParents){
             this.dpId = BulkOMaticUtils.DEVICE_TYPE_PREFIX + dpId;
             this.add = add;
             this.flowsPerDpn = flowsPerDpn;
@@ -111,6 +118,7 @@ public class FlowWriterSequential implements FlowCounterMBean {
             this.sleepMillis = sleepMillis;
             this.startTableId = startTableId;
             this.endTableId = endTableId;
+            this.isCreateParents = isCreateParents;
         }
 
         @Override
@@ -151,7 +159,7 @@ public class FlowWriterSequential implements FlowCounterMBean {
                                  Flow flow) {
             if (add) {
                 LOG.trace("Adding flow for flowId: {}, flowIid: {}", flowId, flowIid);
-                writeTransaction.put(LogicalDatastoreType.CONFIGURATION, flowIid, flow, true);
+                writeTransaction.put(LogicalDatastoreType.CONFIGURATION, flowIid, flow, isCreateParents);
             } else {
                 LOG.trace("Deleting flow for flowId: {}, flowIid: {}", flowId, flowIid);
                 writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, flowIid);
