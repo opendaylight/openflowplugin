@@ -33,16 +33,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.AddFlowsDsInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.AddFlowsRpcInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.BulkFlowBaseContentGrouping;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.FlowRpcAddMultipleInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.FlowRpcAddTestInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.FlowTestInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.ReadFlowTestInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.RemoveFlowsDsInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.RemoveFlowsRpcInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.SalBulkFlowService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.bulk.flow.ds.list.grouping.BulkFlowDsItem;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
@@ -244,7 +235,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
                 flowTester.addFlows(input.getDpnCount().intValue(), input.getFlowsPerDpn().intValue(),
                         input.getBatchSize().intValue(), input.getSleepFor().intValue(),
                         input.getSleepAfter().intValue(), input.getStartTableId().shortValue(),
-                        input.getEndTableId().shortValue());
+                        input.getEndTableId().shortValue(), input.isCreateParents());
             } else {
                 flowTester.deleteFlows(input.getDpnCount().intValue(), input.getFlowsPerDpn().intValue(),
                         input.getBatchSize().intValue(), input.getStartTableId().shortValue(),
@@ -259,7 +250,8 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
             if (input.isIsAdd()){
                 flowTester.addFlows(input.getDpnCount().intValue(), input.getFlowsPerDpn().intValue(),
                         input.getBatchSize().intValue(), input.getSleepFor().intValue(),
-                        input.getStartTableId().shortValue(), input.getEndTableId().shortValue());
+                        input.getStartTableId().shortValue(), input.getEndTableId().shortValue(),
+                        input.isCreateParents());
             } else {
                 flowTester.deleteFlows(input.getDpnCount().intValue(), input.getFlowsPerDpn().intValue(),
                         input.getBatchSize().intValue(), input.getStartTableId().shortValue(),
@@ -272,12 +264,27 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
                 flowTester.addFlows(input.getDpnCount().intValue(), input.getFlowsPerDpn().intValue(),
                         input.getBatchSize().intValue(), input.getSleepFor().intValue(),
                         input.getSleepAfter().intValue(), input.getStartTableId().shortValue(),
-                        input.getEndTableId().shortValue());
+                        input.getEndTableId().shortValue(), input.isCreateParents());
             } else {
                 flowTester.deleteFlows(input.getDpnCount().intValue(), input.getFlowsPerDpn().intValue(),
                         input.getBatchSize().intValue(), input.getStartTableId().shortValue(),
                         input.getEndTableId().shortValue());
             }
+        }
+        RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.success();
+        return Futures.immediateFuture(rpcResultBuilder.build());
+    }
+
+    @Override
+    public Future<RpcResult<Void>> tableTest(TableTestInput input) {
+        TableWriter writer = new TableWriter(dataBroker, fjService);
+        flowCounterBeanImpl.setWriter(writer);
+        if (input.isAdd()) {
+            writer.addTables(input.getDpnCount().intValue(),
+                    input.getStartTableId().shortValue(), input.getEndTableId().shortValue());
+        } else {
+            writer.deleteTables(input.getDpnCount().intValue(),
+                    input.getStartTableId().shortValue(), input.getEndTableId().shortValue());
         }
         RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.success();
         return Futures.immediateFuture(rpcResultBuilder.build());

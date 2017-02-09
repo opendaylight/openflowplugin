@@ -150,4 +150,9 @@ public class FlowReader implements Runnable, FlowCounterMBean {
     public String getUnits() {
         return UNITS;
     }
+
+    @Override
+    public long getTableCount() {
+        return 0;
+    }
 }
