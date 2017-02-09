@@ -32,6 +32,7 @@ public final class BulkOMaticUtils {
 
     public static final int DEFUALT_STATUS = FlowCounter.OperationStatus.INIT.status();
     public static final int DEFAULT_FLOW_COUNT = 0;
+    public static final int DEFAULT_TABLE_COUNT = 0;
     public static final long DEFAULT_COMPLETION_TIME = 0;
     public static final String DEFAULT_UNITS = "ns";
     public static final String DEVICE_TYPE_PREFIX = "openflow:";

@@ -18,5 +18,7 @@ public interface FlowCounterMBean {
     public long getTaskCompletionTime();
 
     public String getUnits();
+
+    public long getTableCount();
 }
 
