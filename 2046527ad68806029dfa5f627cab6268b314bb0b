@@ -1,0 +1,100 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fafc7978_c441e13a",
+        "filename": "extension/openflowplugin-extension-api/src/main/java/org/opendaylight/openflowplugin/extension/api/BundleMessageData.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 5894
+      },
+      "writtenOn": "2017-02-10T09:47:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fafc7978_ce41023b",
+      "range": {
+        "startLine": 16,
+        "startChar": 17,
+        "endLine": 16,
+        "endChar": 34
+      },
+      "revId": "2046527ad68806029dfa5f627cab6268b314bb0b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_a43c9dc0",
+        "filename": "extension/openflowplugin-extension-api/src/main/java/org/opendaylight/openflowplugin/extension/api/BundleMessageData.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 5894
+      },
+      "writtenOn": "2017-02-10T09:47:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fafc7978_ce3aa2cc",
+      "range": {
+        "startLine": 17,
+        "startChar": 4,
+        "endLine": 20,
+        "endChar": 7
+      },
+      "revId": "2046527ad68806029dfa5f627cab6268b314bb0b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_044c896f",
+        "filename": "extension/openflowplugin-extension-api/src/main/java/org/opendaylight/openflowplugin/extension/api/BundleMessageData.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 5894
+      },
+      "writtenOn": "2017-02-10T09:47:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fafc7978_ae359edc",
+      "range": {
+        "startLine": 23,
+        "startChar": 4,
+        "endLine": 26,
+        "endChar": 7
+      },
+      "revId": "2046527ad68806029dfa5f627cab6268b314bb0b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_e446a54e",
+        "filename": "extension/openflowplugin-extension-onf/src/main/java/org/opendaylight/openflowplugin/extension/onf/converter/BundleAddMessageConverter.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 5894
+      },
+      "writtenOn": "2017-02-10T09:47:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fafc7978_6e2456af",
+      "range": {
+        "startLine": 77,
+        "startChar": 8,
+        "endLine": 89,
+        "endChar": 9
+      },
+      "revId": "2046527ad68806029dfa5f627cab6268b314bb0b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
