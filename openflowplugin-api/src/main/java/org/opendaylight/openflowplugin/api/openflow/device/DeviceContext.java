@@ -130,6 +130,8 @@ public interface DeviceContext extends
 
     void putLifecycleServiceIntoTxChainManager(LifecycleService lifecycleService);
 
+    void replaceConnectionContext(ConnectionContext connectionContext);
+
     boolean isSkipTableFeatures();
 
     /**
@@ -137,8 +139,6 @@ public interface DeviceContext extends
      * @param salRoleService
      */
     void setSalRoleService(@Nonnull final SalRoleService salRoleService);
-
-    void masterSuccessful();
 
     /**
      * Make device slave

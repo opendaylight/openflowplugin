@@ -87,4 +87,6 @@ public interface ContextChain extends AutoCloseable {
      * @return actual primary connection
      */
     ConnectionContext getPrimaryConnectionContext();
+
+    boolean lastStateWasMaster();
 }
