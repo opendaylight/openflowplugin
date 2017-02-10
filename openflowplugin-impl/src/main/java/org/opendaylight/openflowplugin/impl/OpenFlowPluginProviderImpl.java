@@ -352,7 +352,6 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         if (props.containsKey("never-drop-contexts-on")) {
             contextChainHolder.setNeverDropContextChain(Boolean.valueOf(props.get("never-drop-contexts-on").toString()));
         }
-
     }
 
     private static void registerMXBean(final MessageIntelligenceAgency messageIntelligenceAgency) {
@@ -422,5 +421,4 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     public void updateNeverDropContextChains(final Boolean neverDropChain) {
         this.contextChainHolder.setNeverDropContextChain(neverDropChain);
     }
-
 }
