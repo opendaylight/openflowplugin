@@ -8,17 +8,18 @@
 
 package org.opendaylight.openflowplugin.api.openflow.device;
 
+import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.Timeout;
 import java.math.BigInteger;
 import java.util.List;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
@@ -128,8 +129,6 @@ public interface DeviceContext extends
 
     void setSwitchFeaturesMandatory(boolean switchFeaturesMandatory);
 
-    void putLifecycleServiceIntoTxChainManager(LifecycleService lifecycleService);
-
     boolean isSkipTableFeatures();
 
     /**
@@ -137,8 +136,6 @@ public interface DeviceContext extends
      * @param salRoleService
      */
     void setSalRoleService(@Nonnull final SalRoleService salRoleService);
-
-    void masterSuccessful();
 
     /**
      * Make device slave
