@@ -50,7 +50,9 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     private static final String SINGLETON_SERVICE_PROVIDER_WAS_NOT_SET_YET
             = "Singleton service provider was not set yet.";
     private static final long DEFAULT_TTL_STEP = 1000L;
-    private static final long DEFAULT_TTL_BEFORE_DROP = 5000L;
+    private static final long DEFAULT_TTL_BEFORE_DROP = 1000L;
+    private static final boolean STOP = true;
+    private static final boolean START = false;
 
     private DeviceManager deviceManager;
     private RpcManager rpcManager;
@@ -66,7 +68,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     private Boolean neverDropChain;
 
     public ContextChainHolderImpl(final HashedWheelTimer timer) {
-        this.timerIsRunning = false;
+        this.timerIsRunning = START;
         this.timer = timer;
         this.ttlBeforeDrop = DEFAULT_TTL_BEFORE_DROP;
         this.ttlStep = DEFAULT_TTL_STEP;
@@ -226,7 +228,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
                             deviceInfo.getLOGValue());
                 }
                 Futures.addCallback(contextChain.startChain(),
-                        new StartStopChainCallback(deviceInfo, false));
+                        new StartStopChainCallback(deviceInfo, START));
             }
         }
     }
@@ -265,7 +267,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
                 }
             } else {
                 Futures.addCallback(chain.connectionDropped(),
-                        new StartStopChainCallback(deviceInfo, true));
+                        new StartStopChainCallback(deviceInfo, STOP));
             }
         }
     }
@@ -286,14 +288,18 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     }
 
     private void addToSleepingChainsMap(@Nonnull final DeviceInfo deviceInfo, final ContextChain contextChain) {
-        sleepingChains.put(deviceInfo, contextChain);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Put context chain on mattress to sleep for device {}", deviceInfo.getLOGValue());
-        }
-        if (!this.neverDropChain) {
-            timeToLive.put(deviceInfo, this.ttlBeforeDrop);
-            if (!this.timerIsRunning) {
-                startTimer();
+        if (contextChain.lastStateWasMaster()) {
+            destroyContextChain(deviceInfo);
+        } else {
+            sleepingChains.put(deviceInfo, contextChain);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Put context chain on mattress to sleep for device {}", deviceInfo.getLOGValue());
+            }
+            if (!this.neverDropChain) {
+                timeToLive.put(deviceInfo, this.ttlBeforeDrop);
+                if (!this.timerIsRunning) {
+                    startTimer();
+                }
             }
         }
     }
@@ -389,7 +395,9 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         private final boolean stop;
         private final DeviceInfo deviceInfo;
 
-        StartStopChainCallback(final DeviceInfo deviceInfo, final boolean stop) {
+        StartStopChainCallback(
+                final DeviceInfo deviceInfo,
+                final boolean stop) {
 
             this.deviceInfoString = Objects.nonNull(deviceInfo) ? deviceInfo.getLOGValue() : "null";
             this.stopString = stop ? "stop" : "start";
