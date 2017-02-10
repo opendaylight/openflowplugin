@@ -142,8 +142,6 @@ public interface DeviceContext extends
      */
     void setSalRoleService(@Nonnull final SalRoleService salRoleService);
 
-    void masterSuccessful();
-
     /**
      * Make device slave.
      * @return listenable future from sal role service
