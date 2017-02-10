@@ -12,7 +12,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
-import com.google.common.util.concurrent.AsyncFunction;
+import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
@@ -35,6 +35,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
@@ -52,7 +53,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
@@ -72,7 +72,6 @@ import org.opendaylight.openflowplugin.extension.api.exception.ConversionExcepti
 import org.opendaylight.openflowplugin.extension.api.path.MessagePath;
 import org.opendaylight.openflowplugin.impl.common.ItemLifeCycleSourceImpl;
 import org.opendaylight.openflowplugin.impl.common.NodeStaticReplyTranslatorUtil;
-import org.opendaylight.openflowplugin.impl.connection.OutboundQueueProviderImpl;
 import org.opendaylight.openflowplugin.impl.device.listener.MultiMsgCollectorImpl;
 import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
@@ -80,7 +79,6 @@ import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory
 import org.opendaylight.openflowplugin.impl.registry.group.DeviceGroupRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.meter.DeviceMeterRegistryImpl;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
-import org.opendaylight.openflowplugin.impl.services.SalRoleServiceImpl;
 import org.opendaylight.openflowplugin.impl.util.DeviceInitializationUtils;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
@@ -171,7 +169,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
     private final DeviceManager myManager;
     private OutboundQueueProvider outboundQueueProvider;
-    private boolean wasOnceMaster;
 
     DeviceContextImpl(
             @Nonnull final ConnectionContext primaryConnectionContext,
@@ -210,7 +207,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.convertorExecutor = convertorExecutor;
         this.skipTableFeatures = skipTableFeatures;
         this.initialized = false;
-        this.wasOnceMaster = false;
     }
 
     @Override
@@ -639,17 +635,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     LOG.trace("Error occurred on device role setting, probably connection loss: ", throwable);
                 }
             });
-
-//            return Futures.transform(deactivateTxManagerFuture, (AsyncFunction<Void, Void>) aVoid -> {
-//                // Add fallback to remove device from operational DS if setting slave fails
-//                return Futures.withFallback(makeSlaveFuture, t ->
-//                        myManager.removeDeviceFromOperationalDS(deviceInfo));
-//            });
-//        } else {
-//            return Futures.transform(deactivateTxManagerFuture, (AsyncFunction<Void, Void>) aVoid ->
-//                    myManager.removeDeviceFromOperationalDS(deviceInfo));
         }
-
         return deactivateTxManagerFuture;
     }
 
@@ -669,13 +655,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void putLifecycleServiceIntoTxChainManager(final LifecycleService lifecycleService){
-        if (initialized) {
-            this.transactionChainManager.setLifecycleService(lifecycleService);
-        }
-    }
-
-    @Override
     public boolean isSkipTableFeatures() {
         return this.skipTableFeatures;
     }
@@ -688,11 +667,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public void setLifecycleInitializationPhaseHandler(final ClusterInitializationPhaseHandler handler) {
         this.clusterInitializationPhaseHandler = handler;
-    }
-
-    @Override
-    public void masterSuccessful(){
-        this.wasOnceMaster = true;
     }
 
     @Override

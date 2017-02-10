@@ -82,7 +82,6 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
                 "NotificationFlowRemovedOff:{}, " +
                 "BasicTimerDelay:{}, "+
                 "MaximumTimerDelay:{} " +
-                "NotificationFlowRemovedOff:{}" +
                 "TTL before drop:{}" +
                 "Never drop connection:{}" +
                 "TTL step:{}",
