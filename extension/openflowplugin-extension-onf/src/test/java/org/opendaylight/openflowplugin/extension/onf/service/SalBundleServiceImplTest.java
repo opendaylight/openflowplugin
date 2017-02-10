@@ -32,6 +32,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.Messages;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.MessagesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.messages.Message;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.messages.MessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.BundleAddFlowCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.BundleAddGroupCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.BundleRemoveFlowCaseBuilder;
@@ -91,13 +93,15 @@ public class SalBundleServiceImplTest {
 
     @Test
     public void testAddBundleMessages() throws Exception {
-        final List<Messages> innerMessages = createMessages();
+        final List<Message> innerMessages = createMessages();
+        Messages messages = new MessagesBuilder()
+                .setMessage(innerMessages).build();
         final AddBundleMessagesInput input = new AddBundleMessagesInputBuilder()
                 .setNode(NODE_REF)
                 .setBundleId(BUNDLE_ID)
                 .setFlags(BUNDLE_FLAGS)
                 .setBundleProperty(properties)
-                .setMessages(innerMessages)
+                .setMessages(messages)
                 .build();
         final SalAddMessageDataBuilder dataBuilder = new SalAddMessageDataBuilder();
         dataBuilder.setBundleId(BUNDLE_ID).setFlags(BUNDLE_FLAGS).setBundleProperty(properties);
@@ -107,28 +111,28 @@ public class SalBundleServiceImplTest {
                 .setNode(NODE_REF);
         Mockito.when(experimenterMessageService.sendExperimenter(Matchers.any())).thenReturn(SettableFuture.create());
         service.addBundleMessages(input);
-        for (Messages msg : innerMessages) {
+        for (Message msg : innerMessages) {
             Mockito.verify(experimenterMessageService)
                     .sendExperimenter(
                             experimenterBuilder.setExperimenterMessageOfChoice(
                                     addMessageBuilder
                                             .setSalAddMessageData(
-                                                    dataBuilder.setBundleInnerMessage(msg.getBundleInnerMessage()).build()
+                                                    dataBuilder.setNode(NODE_REF).setBundleInnerMessage(msg.getBundleInnerMessage()).build()
                                             ).build()
                             ).build()
                     );
         }
     }
 
-    private static List<Messages> createMessages() {
-        List<Messages> messages  = new ArrayList<>();
-        messages.add(new MessagesBuilder().setBundleInnerMessage(new BundleAddFlowCaseBuilder().build()).build());
-        messages.add(new MessagesBuilder().setBundleInnerMessage(new BundleUpdateFlowCaseBuilder().build()).build());
-        messages.add(new MessagesBuilder().setBundleInnerMessage(new BundleRemoveFlowCaseBuilder().build()).build());
-        messages.add(new MessagesBuilder().setBundleInnerMessage(new BundleAddGroupCaseBuilder().build()).build());
-        messages.add(new MessagesBuilder().setBundleInnerMessage(new BundleUpdateGroupCaseBuilder().build()).build());
-        messages.add(new MessagesBuilder().setBundleInnerMessage(new BundleRemoveGroupCaseBuilder().build()).build());
-        messages.add(new MessagesBuilder().setBundleInnerMessage(new BundleUpdatePortCaseBuilder().build()).build());
+    private static List<Message> createMessages() {
+        List<Message> messages  = new ArrayList<>();
+        messages.add(new MessageBuilder().setBundleInnerMessage(new BundleAddFlowCaseBuilder().build()).build());
+        messages.add(new MessageBuilder().setBundleInnerMessage(new BundleUpdateFlowCaseBuilder().build()).build());
+        messages.add(new MessageBuilder().setBundleInnerMessage(new BundleRemoveFlowCaseBuilder().build()).build());
+        messages.add(new MessageBuilder().setBundleInnerMessage(new BundleAddGroupCaseBuilder().build()).build());
+        messages.add(new MessageBuilder().setBundleInnerMessage(new BundleUpdateGroupCaseBuilder().build()).build());
+        messages.add(new MessageBuilder().setBundleInnerMessage(new BundleRemoveGroupCaseBuilder().build()).build());
+        messages.add(new MessageBuilder().setBundleInnerMessage(new BundleUpdatePortCaseBuilder().build()).build());
         return messages;
     }
 

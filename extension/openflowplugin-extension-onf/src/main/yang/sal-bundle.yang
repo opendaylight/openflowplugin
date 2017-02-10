@@ -81,8 +81,10 @@ module sal-bundle {
         input {
             uses inv:node-context-ref;
             uses onf-ext:bundle-common-grouping;
-            list messages {
-                uses bundle-inner-message-grouping;
+            container messages {
+                list message {
+                    uses bundle-inner-message-grouping;
+                }
             }
         }
     }
