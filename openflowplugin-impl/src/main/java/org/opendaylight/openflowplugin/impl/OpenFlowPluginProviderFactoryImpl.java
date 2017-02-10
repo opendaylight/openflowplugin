@@ -85,7 +85,8 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
                 "NotificationFlowRemovedOff:{}" +
                 "TTL before drop:{}" +
                 "Never drop connection:{}" +
-                "TTL step:{}",
+                "TTL step:{}" +
+                "Immediately drop master:{}",
                 providerConfig.isIsStatisticsPollingOn(),
                 providerConfig.isSwitchFeaturesMandatory(),
                 providerConfig.getBarrierCountLimit().getValue(),
