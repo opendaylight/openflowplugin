@@ -177,6 +177,5 @@ module openflow-provider-config {
             type context-chain-state;
             default WORKING_SLAVE;
         }
-
     }
 }

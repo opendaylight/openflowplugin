@@ -9,8 +9,8 @@ package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Optional;
 import com.google.common.base.Verify;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.CheckedFuture;
@@ -22,9 +22,11 @@ import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import java.math.BigInteger;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -186,7 +188,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final DeviceManager myManager;
     private Boolean isAddNotificationSent = false;
     private OutboundQueueProvider outboundQueueProvider;
-    private boolean wasOnceMaster;
 
     DeviceContextImpl(
         @Nonnull final ConnectionContext primaryConnectionContext,
@@ -226,7 +227,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.convertorExecutor = convertorExecutor;
         this.skipTableFeatures = skipTableFeatures;
         this.initialized = false;
-        this.wasOnceMaster = false;
     }
 
     @Override
@@ -729,7 +729,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 }
             });
         }
-
         return deactivateTxManagerFuture;
     }
 
@@ -750,7 +749,14 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public void close() {
-        this.state = CONTEXT_STATE.TERMINATION;
+        if (CONTEXT_STATE.TERMINATION.equals(getState())){
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("DeviceContext for node {} is already in TERMINATION state.", getDeviceInfo().getLOGValue());
+            }
+        } else {
+            this.state = CONTEXT_STATE.TERMINATION;
+        }
+        sendNodeRemovedNotification();
     }
 
     @Override
@@ -781,11 +787,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public void setLifecycleInitializationPhaseHandler(final ClusterInitializationPhaseHandler handler) {
         this.clusterInitializationPhaseHandler = handler;
-    }
-
-    @Override
-    public void masterSuccessful(){
-        this.wasOnceMaster = true;
     }
 
     @Override
@@ -905,7 +906,23 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         @Override
         public void onSuccess(@Nullable List<Optional<FlowCapableNode>> result) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Finished filling flow registry with flows for node: {}", deviceInfo.getLOGValue());
+                // Count all flows we read from datastore for debugging purposes.
+                // This number do not always represent how many flows were actually added
+                // to DeviceFlowRegistry, because of possible duplicates.
+                long flowCount = Optional.fromNullable(result).asSet().stream()
+                        .flatMap(Collection::stream)
+                        .filter(Objects::nonNull)
+                        .flatMap(flowCapableNodeOptional -> flowCapableNodeOptional.asSet().stream())
+                        .filter(Objects::nonNull)
+                        .filter(flowCapableNode -> Objects.nonNull(flowCapableNode.getTable()))
+                        .flatMap(flowCapableNode -> flowCapableNode.getTable().stream())
+                        .filter(Objects::nonNull)
+                        .filter(table -> Objects.nonNull(table.getFlow()))
+                        .flatMap(table -> table.getFlow().stream())
+                        .filter(Objects::nonNull)
+                        .count();
+
+                LOG.debug("Finished filling flow registry with {} flows for node: {}", flowCount, deviceInfo.getLOGValue());
             }
         }
 

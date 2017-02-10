@@ -38,11 +38,13 @@ public class ContextChainImpl implements ContextChain {
     private DeviceContext deviceContext;
     private RpcContext rpcContext;
     private volatile ContextChainState contextChainState;
+    private volatile ContextChainState lastContextChainState;
     private LifecycleService lifecycleService;
     private ConnectionContext primaryConnectionContext;
 
     public ContextChainImpl(final ConnectionContext connectionContext) {
         this.contextChainState = ContextChainState.INITIALIZED;
+        this.lastContextChainState = ContextChainState.INITIALIZED;
         this.primaryConnectionContext = connectionContext;
     }
 
@@ -79,7 +81,7 @@ public class ContextChainImpl implements ContextChain {
             @Nullable
             @Override
             public Void apply(@Nullable List<Void> input) {
-                LOG.debug("Closed clustering MASTER services for node {}", deviceContext.getDeviceInfo().getLOGValue());
+                LOG.info("Closed clustering MASTER services for node {}", deviceContext.getDeviceInfo().getLOGValue());
                 return null;
             }
         });
@@ -126,9 +128,9 @@ public class ContextChainImpl implements ContextChain {
 
     @Override
     public ListenableFuture<Void> connectionDropped() {
-        ContextChainState oldState = this.contextChainState;
+        this.lastContextChainState = this.contextChainState;
         this.contextChainState = ContextChainState.SLEEPING;
-        if (oldState.equals(ContextChainState.WORKINGMASTER)) {
+        if (this.lastContextChainState.equals(ContextChainState.WORKINGMASTER)) {
             return this.stopChain(true);
         }
         return Futures.immediateFuture(null);
@@ -163,6 +165,11 @@ public class ContextChainImpl implements ContextChain {
     @Override
     public ConnectionContext getPrimaryConnectionContext() {
         return this.primaryConnectionContext;
+    }
+
+    @Override
+    public boolean lastStateWasMaster() {
+        return this.lastContextChainState.equals(ContextChainState.WORKINGMASTER);
     }
 
 }
