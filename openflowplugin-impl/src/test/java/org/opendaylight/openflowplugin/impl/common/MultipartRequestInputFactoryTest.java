@@ -256,7 +256,7 @@ public class MultipartRequestInputFactoryTest {
 
     private void checkEmptyBody(MultipartRequestBody mpRqBody, Class<? extends MultipartRequestBody> expectedMpRqBodyClass) throws Exception {
         Assert.assertTrue(expectedMpRqBodyClass.isAssignableFrom(mpRqBody.getImplementedInterface()));
-        final String expectedDump = expectedMpRqBodyClass.getSimpleName() + " [, augmentation=[]]";
+        final String expectedDump = expectedMpRqBodyClass.getSimpleName() + " [augmentation=[]]";
         Assert.assertEquals(expectedDump, String.valueOf(mpRqBody));
     }
 }
