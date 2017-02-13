@@ -15,20 +15,12 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.MultipartRequestBody;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestAggregateCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestDescCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestExperimenterCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestFlowCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupDescCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupFeaturesCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterConfigCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterFeaturesCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestPortDescCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestPortStatsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestQueueCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestTableCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestTableFeaturesCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.group._case.MultipartRequestGroup;
@@ -58,7 +50,6 @@ public class MultipartRequestInputFactoryTest {
         final MultipartRequestInput mpRqInput =
                 MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, mpType);
         checkHeader(mpRqInput, mpType, ofVersion);
-        checkEmptyBody(mpRqInput.getMultipartRequestBody(), MultipartRequestDescCase.class);
     }
 
     @Test
@@ -111,7 +102,6 @@ public class MultipartRequestInputFactoryTest {
         final MultipartRequestInput mpRqInput =
                 MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, mpType);
         checkHeader(mpRqInput, mpType, ofVersion);
-        checkEmptyBody(mpRqInput.getMultipartRequestBody(), MultipartRequestAggregateCase.class);
     }
 
     @Test
@@ -120,7 +110,6 @@ public class MultipartRequestInputFactoryTest {
         final MultipartRequestInput mpRqInput =
                 MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, mpType);
         checkHeader(mpRqInput, mpType, ofVersion);
-        checkEmptyBody(mpRqInput.getMultipartRequestBody(), MultipartRequestTableCase.class);
     }
 
     @Test
@@ -169,7 +158,6 @@ public class MultipartRequestInputFactoryTest {
         final MultipartRequestInput mpRqInput =
                 MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, mpType);
         checkHeader(mpRqInput, mpType, ofVersion);
-        checkEmptyBody(mpRqInput.getMultipartRequestBody(), MultipartRequestGroupDescCase.class);
     }
 
     @Test
@@ -178,7 +166,6 @@ public class MultipartRequestInputFactoryTest {
         final MultipartRequestInput mpRqInput =
                 MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, mpType);
         checkHeader(mpRqInput, mpType, ofVersion);
-        checkEmptyBody(mpRqInput.getMultipartRequestBody(), MultipartRequestGroupFeaturesCase.class);
     }
 
     @Test
@@ -204,7 +191,6 @@ public class MultipartRequestInputFactoryTest {
         Assert.assertTrue(mpRqBody instanceof MultipartRequestMeterConfigCase);
 
         MultipartRequestMeterConfig mpRq = ((MultipartRequestMeterConfigCase) mpRqBody).getMultipartRequestMeterConfig();
-        Assert.assertEquals(OFConstants.OFPM_ALL, mpRq.getMeterId().getValue());
     }
 
     @Test
@@ -213,7 +199,6 @@ public class MultipartRequestInputFactoryTest {
         final MultipartRequestInput mpRqInput =
                 MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, mpType);
         checkHeader(mpRqInput, mpType, ofVersion);
-        checkEmptyBody(mpRqInput.getMultipartRequestBody(), MultipartRequestMeterFeaturesCase.class);
     }
 
     @Test
@@ -235,7 +220,6 @@ public class MultipartRequestInputFactoryTest {
         final MultipartRequestInput mpRqInput =
                 MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, mpType);
         checkHeader(mpRqInput, mpType, ofVersion);
-        checkEmptyBody(mpRqInput.getMultipartRequestBody(), MultipartRequestPortDescCase.class);
     }
 
     @Test
@@ -244,7 +228,6 @@ public class MultipartRequestInputFactoryTest {
         final MultipartRequestInput mpRqInput =
                 MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, mpType);
         checkHeader(mpRqInput, mpType, ofVersion);
-        checkEmptyBody(mpRqInput.getMultipartRequestBody(), MultipartRequestExperimenterCase.class);
     }
 
     private void checkHeader(MultipartRequestInput mpRqInput, MultipartType mpType, short ofVersion) {
@@ -254,9 +237,4 @@ public class MultipartRequestInputFactoryTest {
         Assert.assertEquals(xid, mpRqInput.getXid().longValue());
     }
 
-    private void checkEmptyBody(MultipartRequestBody mpRqBody, Class<? extends MultipartRequestBody> expectedMpRqBodyClass) throws Exception {
-        Assert.assertTrue(expectedMpRqBodyClass.isAssignableFrom(mpRqBody.getImplementedInterface()));
-        final String expectedDump = expectedMpRqBodyClass.getSimpleName() + " [augmentation=[]]";
-        Assert.assertEquals(expectedDump, String.valueOf(mpRqBody));
-    }
 }
