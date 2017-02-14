@@ -3,7 +3,7 @@ module opendaylight-table-types {
     prefix table;
 
     import opendaylight-flow-types {prefix flow;revision-date "2013-10-26";}
-    import opendaylight-action-types {prefix action;}
+    import opendaylight-action-types {prefix action; revision-date "2013-11-12";}
 
     revision "2013-10-26" {
         description "Initial revision of table service";
