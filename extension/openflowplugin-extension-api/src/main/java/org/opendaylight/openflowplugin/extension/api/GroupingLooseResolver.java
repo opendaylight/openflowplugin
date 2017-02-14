@@ -1,30 +1,28 @@
 /**
  * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 package org.opendaylight.openflowplugin.extension.api;
 
+import com.google.common.base.Preconditions;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
-
 import org.opendaylight.yangtools.yang.binding.Augmentable;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-
 /**
- * Provides augmentation resolving upon given {@link Augmentable}. 
+ * Provides augmentation resolving upon given {@link Augmentable}.
  * Used {@link Augmentation}s do not share {@link Augmentable}.
  * <br>
  * <b>Usage:</b> in case there are multiple {@link Augmentable} classes which might contain
- * corresponding {@link Augmentation}s (1:1..n binding). And those {@link Augmentation}s 
+ * corresponding {@link Augmentation}s (1:1..n binding). And those {@link Augmentation}s
  * are sharing the same grouping so that they could be processed in the same way.
- * 
+ *
  * @param <G> grouping
  */
 public class GroupingLooseResolver<G> {
@@ -63,10 +61,10 @@ public class GroupingLooseResolver<G> {
             Augmentation<T> potential = guessData
                     .getAugmentation((Class<Augmentation<T>>) cls);
             if (potential != null) {
-                return Optional.of((G) potential);
+                return java.util.Optional.of((G) potential);
             }
         }
 
-        return Optional.absent();
+        return Optional.empty();
     }
 }
