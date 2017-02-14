@@ -24,7 +24,6 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderCo
 import org.opendaylight.controller.sal.binding.api.NotificationService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.ControllerActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlOutCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecMplsTtlCaseBuilder;
@@ -38,7 +37,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushPbbActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushVlanActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanIdActionCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.controller.action._case.ControllerActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.copy.ttl.in._case.CopyTtlInBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.copy.ttl.out._case.CopyTtlOutBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.mpls.ttl._case.DecMplsTtlBuilder;
@@ -110,11 +108,8 @@ import org.slf4j.LoggerFactory;
 
 public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvider {
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowPluginBulkGroupTransactionProvider.class);
-    private NodeBuilder testNode;
     private DataBroker dataBroker;
     private final BundleContext ctx;
-    private ProviderContext pc;
-    private FlowBuilder testFlow;
     private final String originalFlowName = "Foo";
     private final NodeErrorListener nodeErrorListener = new NodeErrorListenerLoggingImpl();
     private Registration listener1Reg;
@@ -130,7 +125,6 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
     }
 
     public void onSessionInitiated(ProviderContext session) {
-        pc = session;
         notificationService = session.getSALService(NotificationService.class);
         listener2Reg = notificationService.registerNotificationListener(nodeErrorListener);
         dataBroker = session.getSALService(DataBroker.class);
@@ -146,7 +140,6 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         NodeBuilder builder = new NodeBuilder();
         builder.setId(new NodeId(nodeId));
         builder.setKey(new NodeKey(builder.getId()));
-        testNode = builder;
         return builder;
     }
 
@@ -321,30 +314,6 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction() {
-
-        List<Action> actionList = new ArrayList<Action>();
-        ActionBuilder ab = new ActionBuilder();
-        ControllerActionBuilder controller = new ControllerActionBuilder();
-        controller.setMaxLength(5);
-        ab.setAction(new ControllerActionCaseBuilder().setControllerAction(controller.build()).build());
-        actionList.add(ab.build());
-        // Create an Apply Action
-        ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<Instruction>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
-    }
-
     private static InstructionsBuilder createAppyActionInstruction7() {
 
         List<Action> actionList = new ArrayList<Action>();
@@ -498,11 +467,6 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
                 flow.setMatch(createMatch1().build());
                 flow.setInstructions(createDropInstructions().build());
                 break;
-            case "f5":
-                id += 5;
-                flow.setMatch(createMatch1().build());
-                flow.setInstructions(createAppyActionInstruction().build());
-                break;
             case "f6":
                 id += 6;
                 flow.setMatch(createMatch1().build());
@@ -568,7 +532,6 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         flow.setKey(key);
         flow.setPriority(2);
         flow.setFlowName(originalFlowName + "X" + flowType);
-        testFlow = flow;
         return flow;
     }
 
