@@ -3,7 +3,7 @@ module opendaylight-group-types {
     prefix group;
 
     import ietf-yang-types {prefix yang; revision-date "2013-07-15";}
-    import opendaylight-action-types {prefix action;}
+    import opendaylight-action-types {prefix action; revision-date "2013-11-12";}
     import openflow-protocol { prefix ofproto; revision-date "2013-07-31"; }
     import openflow-types { prefix oft; revision-date "2013-07-31"; }
 

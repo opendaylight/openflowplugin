@@ -28,11 +28,9 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.ControllerActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecNwTtlCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.FloodAllActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushMplsActionCaseBuilder;
@@ -43,14 +41,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwTosActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanIdActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanPcpActionCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SwPathActionCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.controller.action._case.ControllerActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.copy.ttl.in._case.CopyTtlInBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.nw.ttl._case.DecNwTtl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.nw.ttl._case.DecNwTtlBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.drop.action._case.DropAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.drop.action._case.DropActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.flood.all.action._case.FloodAllActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.group.action._case.GroupActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.push.mpls.action._case.PushMplsActionBuilder;
@@ -61,7 +56,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.tos.action._case.SetNwTosActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.vlan.id.action._case.SetVlanIdActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.vlan.pcp.action._case.SetVlanPcpActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.sw.path.action._case.SwPathActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
@@ -203,11 +197,6 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
                 flow.setMatch(createEthernetMatch().build());
                 flow.setInstructions(createDropInstructions().build());
                 break;
-            case "f5":
-                id += 5;
-                flow.setMatch(createMatch1().build());
-                flow.setInstructions(createAppyActionInstruction().build());
-                break;
             case "f6":
                 id += 6;
                 flow.setMatch(createMatch1().build());
@@ -238,11 +227,6 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
                 flow.setMatch(createMatch1().build());
                 flow.setInstructions(createAppyActionInstruction16().build());
                 break;
-            case "f230":
-                id += 23;
-                flow.setMatch(createMatch1().build());
-                flow.setInstructions(createAppyActionInstruction160().build());
-                break;
             case "f34":
                 id += 34;
                 flow.setMatch(createMatch1().build());
@@ -257,11 +241,6 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
                 id += 36;
                 flow.setMatch(createMatch1().build());
                 flow.setInstructions(createAppyActionInstruction28().build());
-                break;
-            case "f42":
-                id += 42;
-                flow.setMatch(createMatch1().build());
-                flow.setInstructions(createAppyActionInstruction34().build());
                 break;
             case "f43":
                 id += 43;
@@ -831,30 +810,6 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction() {
-
-        List<Action> actionList = new ArrayList<Action>();
-        ActionBuilder ab = new ActionBuilder();
-        ControllerActionBuilder controller = new ControllerActionBuilder();
-        controller.setMaxLength(5);
-        ab.setAction(new ControllerActionCaseBuilder().setControllerAction(controller.build()).build());
-        actionList.add(ab.build());
-        // Create an Apply Action
-        ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<Instruction>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
-    }
-
     private static InstructionsBuilder createSentToControllerInstructions() {
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1064,30 +1019,6 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction160() {
-
-        List<Action> actionList = new ArrayList<Action>();
-        ActionBuilder ab = new ActionBuilder();
-
-        FloodAllActionBuilder fldall = new FloodAllActionBuilder();
-        ab.setAction(new FloodAllActionCaseBuilder().setFloodAllAction(fldall.build()).build());
-        actionList.add(ab.build());
-        // Create an Apply Action
-        ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<Instruction>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
-    }
-
     private static InstructionsBuilder createAppyActionInstruction26() {
 
         List<Action> actionList = new ArrayList<Action>();
@@ -1155,31 +1086,6 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         setNwTosActionBuilder.setTos(8);
         ab.setAction(new SetNwTosActionCaseBuilder().setSetNwTosAction(setNwTosActionBuilder.build()).build());
         actionList.add(ab.build());
-        // Create an Apply Action
-        ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<Instruction>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
-    }
-
-    private static InstructionsBuilder createAppyActionInstruction34() {
-
-        List<Action> actionList = new ArrayList<Action>();
-        ActionBuilder ab = new ActionBuilder();
-
-        SwPathActionBuilder swPathAction = new SwPathActionBuilder();
-        ab.setAction(new SwPathActionCaseBuilder().setSwPathAction(swPathAction.build()).build());
-        actionList.add(ab.build());
-
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
         aab.setAction(actionList);
