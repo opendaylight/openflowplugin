@@ -8,12 +8,16 @@
 
 package org.opendaylight.openflowplugin.impl.util;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionResolvers;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
-import java.util.ArrayList;
-import java.util.Collection;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionList;
 
 /**
  * Provides comparator for comparing according to various {@link Match} attributes
@@ -39,12 +43,44 @@ public final class MatchComparatorFactory {
         MATCH_COMPARATORS.add(MatchComparatorFactory.createNull());
         MATCH_COMPARATORS.add(MatchComparatorFactory.createTunnel());
         MATCH_COMPARATORS.add(MatchComparatorFactory.createVlan());
+        MATCH_COMPARATORS.add(MatchComparatorFactory.createExtension());
     }
 
-    public static SimpleComparator<Match> createNull() {
+    private static SimpleComparator<Match> createExtension() {
         return new SimpleComparator<Match>() {
             /**
-             * Comparation by whole object
+             * Compare extension lists
+             */
+            @Override
+            public boolean areObjectsEqual(final short version, final Match statsMatch, final Match storedMatch) {
+                return ExtensionResolvers
+                    .getMatchExtensionResolver()
+                    .getExtension(statsMatch)
+                    .flatMap(statExt -> Optional.ofNullable(statExt.getExtensionList()))
+                    .map(statList -> ExtensionResolvers
+                        .getMatchExtensionResolver()
+                        .getExtension(storedMatch)
+                        .flatMap(storedExt -> Optional.ofNullable(storedExt.getExtensionList()))
+                        .filter(storedList -> statList.size() == storedList.size())
+                        .map(storedList -> {
+                            final Collection<ExtensionList> difference = new HashSet<>(statList);
+                            difference.removeAll(storedList);
+                            return difference.isEmpty();
+                        })
+                        .orElse(false))
+                    .orElse(!ExtensionResolvers
+                        .getMatchExtensionResolver()
+                        .getExtension(storedMatch)
+                        .flatMap(storedExt -> Optional.ofNullable(storedExt.getExtensionList()))
+                        .isPresent());
+            }
+        };
+    }
+
+    private static SimpleComparator<Match> createNull() {
+        return new SimpleComparator<Match>() {
+            /**
+             * Compares by whole object
              */
             @Override
             public boolean areObjectsEqual(short version, Match statsMatch, Match storedMatch) {
@@ -53,10 +89,10 @@ public final class MatchComparatorFactory {
         };
     }
 
-    public static SimpleComparator<Match> createVlan() {
+    private static SimpleComparator<Match> createVlan() {
         return new SimpleComparator<Match>() {
             /**
-             * Comparation by VLAN
+             * Compares by VLAN
              */
             @Override
             public boolean areObjectsEqual(short version, Match statsMatch, Match storedMatch) {
@@ -75,10 +111,10 @@ public final class MatchComparatorFactory {
         };
     }
 
-    public static SimpleComparator<Match> createTunnel() {
+    private static SimpleComparator<Match> createTunnel() {
         return new SimpleComparator<Match>() {
             /**
-             * Comparation by tunnel
+             * Compares by tunnel
              */
             @Override
             public boolean areObjectsEqual(short version, Match statsMatch, Match storedMatch) {
@@ -97,10 +133,10 @@ public final class MatchComparatorFactory {
         };
     }
 
-    public static SimpleComparator<Match> createProtocolMatchFields() {
+    private static SimpleComparator<Match> createProtocolMatchFields() {
         return new SimpleComparator<Match>() {
             /**
-             * Comparation by protocol fields
+             * Compares by protocol fields
              */
             @Override
             public boolean areObjectsEqual(short version, Match statsMatch, Match storedMatch) {
@@ -119,10 +155,10 @@ public final class MatchComparatorFactory {
         };
     }
 
-    public static SimpleComparator<Match> createMetadata() {
+    private static SimpleComparator<Match> createMetadata() {
         return new SimpleComparator<Match>() {
             /**
-             * Comparation by metadata
+             * Compares by metadata
              */
             @Override
             public boolean areObjectsEqual(short version, Match statsMatch, Match storedMatch) {
@@ -141,10 +177,10 @@ public final class MatchComparatorFactory {
         };
     }
 
-    public static SimpleComparator<Match> createL4() {
+    private static SimpleComparator<Match> createL4() {
         return new SimpleComparator<Match>() {
             /**
-             * Comparation by layer4
+             * Compares by layer4
              */
             @Override
             public boolean areObjectsEqual(short version, Match statsMatch, Match storedMatch) {
@@ -163,10 +199,10 @@ public final class MatchComparatorFactory {
         };
     }
 
-    public static SimpleComparator<Match> createL3() {
+    private static SimpleComparator<Match> createL3() {
         return new SimpleComparator<Match>() {
             /**
-             * Comparation by layer3
+             * Compares by layer3
              */
             @Override
             public boolean areObjectsEqual(short version, Match statsMatch, Match storedMatch) {
@@ -185,10 +221,10 @@ public final class MatchComparatorFactory {
         };
     }
 
-    public static SimpleComparator<Match> createIp() {
+    private static SimpleComparator<Match> createIp() {
         return new SimpleComparator<Match>() {
             /**
-             * Comparation by Ip
+             * Compares by Ip
              */
             @Override
             public boolean areObjectsEqual(short version, Match statsMatch, Match storedMatch) {
@@ -233,10 +269,10 @@ public final class MatchComparatorFactory {
         return true;
     }
 
-    public static SimpleComparator<Match> createInPort() {
+    private static SimpleComparator<Match> createInPort() {
         return new SimpleComparator<Match>() {
             /**
-             * Comparation by InPort
+             * Compares by InPort
              */
             @Override
             public boolean areObjectsEqual(short version, Match statsMatch, Match storedMatch) {
@@ -255,10 +291,10 @@ public final class MatchComparatorFactory {
         };
     }
 
-    public static SimpleComparator<Match> createInPhyPort() {
+    private static SimpleComparator<Match> createInPhyPort() {
         return new SimpleComparator<Match>() {
             /**
-             * Comparation by InPhyPort
+             * Compares by InPhyPort
              */
             @Override
             public boolean areObjectsEqual(short version, Match statsMatch, Match storedMatch) {
@@ -277,10 +313,10 @@ public final class MatchComparatorFactory {
         };
     }
 
-    public static SimpleComparator<Match> createEthernet() {
+    private static SimpleComparator<Match> createEthernet() {
         return new SimpleComparator<Match>() {
             /**
-             * Comparation by Ethernet
+             * Compares by Ethernet
              */
             @Override
             public boolean areObjectsEqual(short version, Match statsMatch, Match storedMatch) {
@@ -299,10 +335,10 @@ public final class MatchComparatorFactory {
         };
     }
 
-    public static SimpleComparator<Match> createIcmpv4() {
+    private static SimpleComparator<Match> createIcmpv4() {
         return new SimpleComparator<Match>() {
             /**
-             * Comparation by Icmpv4
+             * Compares by Icmpv4
              */
             @Override
             public boolean areObjectsEqual(short version, Match statsMatch, Match storedMatch) {
@@ -359,11 +395,6 @@ public final class MatchComparatorFactory {
      * request to the switch. So when statistics manager gets flow statistics, it gets the default value.
      * But the flow stored in config data store don't have those defaults value. I included those checks
      * in the customer flow/match equal function.
-     *
-     *
-     * @param statsMatch
-     * @param storedMatch
-     * @return
      */
     private static boolean compareMatches(final short version, final Match statsMatch, final Match storedMatch) {
         if (statsMatch == storedMatch) {

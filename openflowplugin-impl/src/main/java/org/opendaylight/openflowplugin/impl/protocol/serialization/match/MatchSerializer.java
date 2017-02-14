@@ -85,24 +85,24 @@ public class MatchSerializer implements OFSerializer<Match>, HeaderSerializer<Ma
                 .forEach(entry -> entry.serialize(match, outBuffer));
 
         // Serialize match extensions
-        ExtensionResolvers.getMatchExtensionResolver().getExtension(match).transform(extensions -> {
+        ExtensionResolvers.getMatchExtensionResolver().getExtension(match).map(extensions -> {
             if (Objects.nonNull(extensions)) {
-                extensions.getExtensionList().forEach(extension-> {
+                extensions.getExtensionList().forEach(extension -> {
                     // TODO: Remove also extension converters
                     final MatchEntry entry = OFSessionUtil
-                            .getExtensionConvertorProvider()
-                            .<MatchEntry>getConverter(new ConverterExtensionKey<>(
-                                    extension.getExtensionKey(),
-                                    OFConstants.OFP_VERSION_1_3))
-                            .convert(extension.getExtension());
+                        .getExtensionConvertorProvider()
+                        .<MatchEntry>getConverter(new ConverterExtensionKey<>(
+                            extension.getExtensionKey(),
+                            OFConstants.OFP_VERSION_1_3))
+                        .convert(extension.getExtension());
 
                     final MatchEntrySerializerKey<?, ?> key = new MatchEntrySerializerKey<>(
-                            EncodeConstants.OF13_VERSION_ID, entry.getOxmClass(), entry.getOxmMatchField());
+                        EncodeConstants.OF13_VERSION_ID, entry.getOxmClass(), entry.getOxmMatchField());
 
                     // If entry is experimenter, set experimenter ID to key
                     if (entry.getOxmClass().equals(ExperimenterClass.class)) {
                         key.setExperimenterId(ExperimenterIdCase.class.cast(entry.getMatchEntryValue())
-                                .getExperimenter().getExperimenter().getValue());
+                            .getExperimenter().getExperimenter().getValue());
                     }
 
                     final OFSerializer<MatchEntry> entrySerializer = registry.getSerializer(key);
