@@ -13,7 +13,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-public interface FlowCapableNodeConnectorCommitter <D extends DataObject> extends AutoCloseable, DataTreeChangeListener<D> {
+public interface FlowCapableNodeConnectorCommitter<D extends DataObject> extends AutoCloseable,
+        DataTreeChangeListener<D> {
     /**
      * Method removes DataObject which is identified by InstanceIdentifier
      * from device.
