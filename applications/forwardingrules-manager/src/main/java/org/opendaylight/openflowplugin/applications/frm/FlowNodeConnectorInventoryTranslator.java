@@ -12,5 +12,5 @@ import java.math.BigInteger;
 
 public interface FlowNodeConnectorInventoryTranslator {
 
-    public boolean isNodeConnectorUpdated(BigInteger dpId, String portName);
+    boolean isNodeConnectorUpdated(BigInteger dpId, String portName);
 }

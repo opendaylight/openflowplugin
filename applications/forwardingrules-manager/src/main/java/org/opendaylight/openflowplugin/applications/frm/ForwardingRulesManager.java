@@ -27,7 +27,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * org.opendaylight.openflowplugin.applications.frm
  *
  * ForwardingRulesManager
- * It represent a central point for whole modul. Implementation
+ * It represents a central point for whole module. Implementation
  * Flow Provider registers the link FlowChangeListener} and it holds all needed
  * services for link FlowChangeListener}.
  *
@@ -37,7 +37,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  */
 public interface ForwardingRulesManager extends AutoCloseable {
 
-    public void start();
+    void start();
 
     /**
      * Method returns information :
@@ -46,7 +46,7 @@ public interface ForwardingRulesManager extends AutoCloseable {
      * @param ident - the key of the node
      * @return boolean - true if device is connected
      */
-    public boolean isNodeActive(InstanceIdentifier<FlowCapableNode> ident);
+    boolean isNodeActive(InstanceIdentifier<FlowCapableNode> ident);
 
     /**
      * Method returns information :
@@ -55,7 +55,7 @@ public interface ForwardingRulesManager extends AutoCloseable {
      * @param ident - the key of the node
      * @return boolean - true if device is present in operational data store
      */
-    public boolean checkNodeInOperationalDataStore(InstanceIdentifier<FlowCapableNode> ident);
+    boolean checkNodeInOperationalDataStore(InstanceIdentifier<FlowCapableNode> ident);
 
     /**
      * Method add new {@link FlowCapableNode} to active Node Holder.
@@ -64,7 +64,7 @@ public interface ForwardingRulesManager extends AutoCloseable {
      *
      * @param ident - the key of the node
      */
-    public void registrateNewNode(InstanceIdentifier<FlowCapableNode> ident);
+    void registrateNewNode(InstanceIdentifier<FlowCapableNode> ident);
 
     /**
      * Method remove disconnected {@link FlowCapableNode} from active Node
@@ -73,7 +73,7 @@ public interface ForwardingRulesManager extends AutoCloseable {
      *
      * @param ident - the key of the node
      */
-    public void unregistrateNode(InstanceIdentifier<FlowCapableNode> ident);
+    void unregistrateNode(InstanceIdentifier<FlowCapableNode> ident);
 
     /**
      * Method returns generated transaction ID, which is unique for
@@ -81,21 +81,21 @@ public interface ForwardingRulesManager extends AutoCloseable {
      *
      * @return String transactionID for RPC transaction identification
      */
-    public String getNewTransactionId();
+    String getNewTransactionId();
 
     /**
      * Method returns Read Transacion. It is need for Node reconciliation only.
      *
      * @return ReadOnlyTransaction
      */
-    public ReadOnlyTransaction getReadTranaction();
+    ReadOnlyTransaction getReadTranaction();
 
     /**
      * Flow RPC service
      *
      * @return
      */
-    public SalFlowService getSalFlowService();
+    SalFlowService getSalFlowService();
 
     /**
      * Group RPC service
@@ -109,63 +109,63 @@ public interface ForwardingRulesManager extends AutoCloseable {
      *
      * @return
      */
-    public SalMeterService getSalMeterService();
+    SalMeterService getSalMeterService();
 
     /**
      * Table RPC service
      *
      * @return
      */
-    public SalTableService getSalTableService();
+    SalTableService getSalTableService();
 
     /**
      * Content definition method and prevent code duplicity in Reconcil
      * @return ForwardingRulesCommiter&lt;Flow&gt;
      */
-    public ForwardingRulesCommiter<Flow> getFlowCommiter();
+    ForwardingRulesCommiter<Flow> getFlowCommiter();
 
     /**
      * Content definition method and prevent code duplicity in Reconcil
      * @return ForwardingRulesCommiter&lt;Group&gt;
      */
-    public ForwardingRulesCommiter<Group> getGroupCommiter();
+    ForwardingRulesCommiter<Group> getGroupCommiter();
 
     /**
      * Content definition method and prevent code duplicity
      * @return ForwardingRulesCommiter&lt;Meter&gt;
      */
-    public ForwardingRulesCommiter<Meter> getMeterCommiter();
+    ForwardingRulesCommiter<Meter> getMeterCommiter();
 
     /**
      * Content definition method and prevent code duplicity
      * @return ForwardingRulesCommiter&lt;Table&gt;
      */
-    public ForwardingRulesCommiter<TableFeatures> getTableFeaturesCommiter();
+    ForwardingRulesCommiter<TableFeatures> getTableFeaturesCommiter();
 
     /**
      * Content definition method
      * @return FlowNodeReconciliation
      */
-    public FlowNodeReconciliation getFlowNodeReconciliation();
+    FlowNodeReconciliation getFlowNodeReconciliation();
 
     /**
      * Returns the config-subsystem/fallback configuration of FRM
      * @return ForwardingRulesManagerConfig
      */
-    public ForwardingRulesManagerConfig getConfiguration();
+    ForwardingRulesManagerConfig getConfiguration();
 
     /**
      * Method checks if *this* instance of openflowplugin is owner of
      * the given openflow node.
      * @return True if owner, else false
      */
-    public boolean isNodeOwner(InstanceIdentifier<FlowCapableNode> ident);
+    boolean isNodeOwner(InstanceIdentifier<FlowCapableNode> ident);
 
     /**
      * Content definition method and prevent code duplicity
      * @return FlowNodeConnectorInventoryTranslatorImpl
      */
-    public FlowNodeConnectorInventoryTranslatorImpl getFlowNodeConnectorInventoryTranslatorImpl();
+    FlowNodeConnectorInventoryTranslatorImpl getFlowNodeConnectorInventoryTranslatorImpl();
 
 }
 

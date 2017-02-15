@@ -24,7 +24,8 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
  * SalRpcService for device. Every implementation has to be registered for
  * Configurational/DS tree path.
  */
-public interface ForwardingRulesCommiter <D extends DataObject> extends AutoCloseable, ClusteredDataTreeChangeListener<D> {
+public interface ForwardingRulesCommiter<D extends DataObject> extends AutoCloseable,
+        ClusteredDataTreeChangeListener<D> {
 
     /**
      * Method removes DataObject which is identified by InstanceIdentifier
@@ -59,7 +60,7 @@ public interface ForwardingRulesCommiter <D extends DataObject> extends AutoClos
      * @return A future associated with RPC task. {@code null} is set to the
      *         future if this method does not invoke RPC.
      */
-    Future<? extends RpcResult> add(InstanceIdentifier<D> identifier, D add,
+    Future<? extends RpcResult<?>> add(InstanceIdentifier<D> identifier, D add,
             InstanceIdentifier<FlowCapableNode> nodeIdent);
 
 
@@ -76,7 +77,7 @@ public interface ForwardingRulesCommiter <D extends DataObject> extends AutoClos
 
 
 
-    Future<? extends RpcResult> removeWithResult(InstanceIdentifier<D> identifier, D del,
+    Future<? extends RpcResult<?>> removeWithResult(InstanceIdentifier<D> identifier, D del,
                                                InstanceIdentifier<FlowCapableNode> nodeIdent);
 
 
