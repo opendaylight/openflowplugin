@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fafc7978_a2f0eefe",
+        "filename": "features/odl-openflowplugin-drop-test/pom.xml",
+        "patchSetId": 11
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 4540
+      },
+      "writtenOn": "2017-02-17T13:05:06Z",
+      "side": 1,
+      "message": "I\u0027m pretty sure this needs to have the default scope; the feature dependency isn\u0027t kept in the generated feature file with scope \"runtime\".",
+      "revId": "5f2bc93c88b6ba75176ce716aa394f34c3868e24",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
