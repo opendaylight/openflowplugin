@@ -83,6 +83,23 @@ public class ConntrackCodecTest {
     }
 
     @Test
+    public void serializeTestWithoutCtAction() {
+        action = createActionWithoutCtAction();
+        conntrackCodec.serialize(action, buffer);
+
+        Assert.assertEquals(24, buffer.readableBytes());
+        Assert.assertEquals(EncodeConstants.EXPERIMENTER_VALUE, buffer.readUnsignedShort());
+        Assert.assertEquals(length, buffer.readUnsignedShort());
+        Assert.assertEquals(NiciraConstants.NX_VENDOR_ID.intValue(), buffer.readUnsignedInt());
+        Assert.assertEquals(nxastConntrackSubtype, buffer.readUnsignedShort());
+        Assert.assertEquals(1, buffer.readUnsignedShort());
+        Assert.assertEquals(2, buffer.readUnsignedInt());
+        Assert.assertEquals(3, buffer.readUnsignedShort());
+        Assert.assertEquals(4, buffer.readByte());
+        buffer.skipBytes(5);
+    }
+
+    @Test
     public void deserializeTest() {
         createBufer(buffer);
         action = conntrackCodec.deserialize(buffer);
@@ -103,6 +120,19 @@ public class ConntrackCodecTest {
         Assert.assertEquals(3000, natAction.getPortMin().shortValue());
         Assert.assertEquals(4000, natAction.getPortMax().shortValue());
 
+    }
+
+    @Test
+    public void deserializeTestWithoutCtAction() {
+        createBuferWIthoutCtAction(buffer);
+        action = conntrackCodec.deserialize(buffer);
+
+        ActionConntrack result = (ActionConntrack) action.getActionChoice();
+
+        Assert.assertEquals(1, result.getNxActionConntrack().getFlags().shortValue());
+        Assert.assertEquals(2, result.getNxActionConntrack().getZoneSrc().intValue());
+        Assert.assertEquals(3, result.getNxActionConntrack().getConntrackZone().shortValue());
+        Assert.assertEquals(4, result.getNxActionConntrack().getRecircTable().byteValue());
     }
 
     private Action createAction() {
@@ -127,6 +157,24 @@ public class ConntrackCodecTest {
         List<CtActions> ctActionsList = new  ArrayList<>();
         ctActionsList.add(ctActionsBuilder.build());
         nxActionConntrackBuilder.setCtActions(ctActionsList);
+
+        ExperimenterId experimenterId = new ExperimenterId(NiciraConstants.NX_VENDOR_ID);
+        ActionBuilder actionBuilder = new ActionBuilder();
+        actionBuilder.setExperimenterId(experimenterId);
+        ActionConntrackBuilder actionConntrackBuilder = new ActionConntrackBuilder();
+        actionConntrackBuilder.setNxActionConntrack(nxActionConntrackBuilder.build());
+        actionBuilder.setActionChoice(actionConntrackBuilder.build());
+
+        return actionBuilder.build();
+    }
+
+    private Action createActionWithoutCtAction() {
+
+        NxActionConntrackBuilder nxActionConntrackBuilder = new NxActionConntrackBuilder();
+        nxActionConntrackBuilder.setFlags(1);
+        nxActionConntrackBuilder.setZoneSrc((long) 2);
+        nxActionConntrackBuilder.setConntrackZone(3);
+        nxActionConntrackBuilder.setRecircTable((short) 4);
 
         ExperimenterId experimenterId = new ExperimenterId(NiciraConstants.NX_VENDOR_ID);
         ActionBuilder actionBuilder = new ActionBuilder();
@@ -170,5 +218,22 @@ public class ConntrackCodecTest {
         message.writeShort(3000);
         //PORT MAX
         message.writeShort(4000);
+    }
+
+    private void createBuferWIthoutCtAction(ByteBuf message) {
+        message.writeShort(EncodeConstants.EXPERIMENTER_VALUE);
+        message.writeShort(length);
+        message.writeInt(NiciraConstants.NX_VENDOR_ID.intValue());
+        message.writeShort(nxastConntrackSubtype);
+        //FLAG = 1
+        message.writeShort(1);
+        //ZONE_SRC = 2
+        message.writeInt(2);
+        //CONNTRACK_ZONE = 3
+        message.writeShort(3);
+        //RECIRC_TABLE = 4
+        message.writeByte(4);
+        //ADDS 5 empty bytes
+        message.writeZero(5);
     }
 }

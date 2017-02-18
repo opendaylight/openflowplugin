@@ -139,24 +139,26 @@ public class ConntrackCodec extends AbstractActionCodec {
 
     @Override
     public Action deserialize(final ByteBuf message) {
-        ActionBuilder actionBuilder = deserializeHeader(message);
-        ActionConntrackBuilder actionConntrackBuilder = new ActionConntrackBuilder();
-
+        short length = deserializeCtHeader(message);
         NxActionConntrackBuilder nxActionConntrackBuilder = new NxActionConntrackBuilder();
         nxActionConntrackBuilder.setFlags(message.readUnsignedShort());
         nxActionConntrackBuilder.setZoneSrc(message.readUnsignedInt());
         nxActionConntrackBuilder.setConntrackZone(message.readUnsignedShort());
         nxActionConntrackBuilder.setRecircTable(message.readUnsignedByte());
         message.skipBytes(5);
-        dserializeCtAction(message,nxActionConntrackBuilder);
+        if  (length > CT_LENGTH) {
+            dserializeCtAction(message,nxActionConntrackBuilder);
+        }
+        ActionBuilder actionBuilder = new ActionBuilder();
+        actionBuilder.setExperimenterId(getExperimenterId());
+        ActionConntrackBuilder actionConntrackBuilder = new ActionConntrackBuilder();
         actionConntrackBuilder.setNxActionConntrack(nxActionConntrackBuilder.build());
         actionBuilder.setActionChoice(actionConntrackBuilder.build());
-
         return actionBuilder.build();
     }
 
     private void dserializeCtAction(final ByteBuf message, final NxActionConntrackBuilder nxActionConntrackBuilder) {
-        deserializeHeader(message);
+        deserializeCtHeader(message);
 
         NxActionNatBuilder nxActionNatBuilder = new NxActionNatBuilder();
         message.skipBytes(2);
@@ -186,4 +188,19 @@ public class ConntrackCodec extends AbstractActionCodec {
         ctActionsList.add(ctActionsBuilder.build());
         nxActionConntrackBuilder.setCtActions(ctActionsList);
     }
+
+    private short deserializeCtHeader(final ByteBuf message) {
+        // size of experimenter type
+        message.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        // size of length
+        short length = message.readShort();
+        // vendor id
+        message.skipBytes(EncodeConstants.SIZE_OF_INT_IN_BYTES);
+        // subtype
+        message.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        return length;
+    }
+
+
+
 }
