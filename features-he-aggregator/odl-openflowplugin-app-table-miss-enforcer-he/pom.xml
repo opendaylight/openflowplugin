@@ -28,7 +28,7 @@
 
         <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
-            <artifactId>table-miss-enforcer</artifactId>
+            <artifactId>table-miss-enforcer-he</artifactId>
             <version>${project.version}</version>
         </dependency>
 

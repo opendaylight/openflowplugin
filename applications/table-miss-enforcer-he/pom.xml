@@ -8,19 +8,9 @@
     <version>0.4.0-SNAPSHOT</version>
   </parent>
   <groupId>org.opendaylight.openflowplugin.applications</groupId>
-  <artifactId>table-miss-enforcer</artifactId>
+  <artifactId>table-miss-enforcer-he</artifactId>
   <packaging>bundle</packaging>
   <dependencies>
-      <dependency>
-          <groupId>org.opendaylight.openflowplugin</groupId>
-          <artifactId>openflowplugin-blueprint-config</artifactId>
-          <version>${project.version}</version>
-      </dependency>
-      <dependency>
-          <groupId>org.opendaylight.openflowjava</groupId>
-          <artifactId>openflowjava-blueprint-config</artifactId>
-          <version>${openflowjava.version}</version>
-      </dependency>
       <dependency>
           <groupId>org.opendaylight.openflowplugin</groupId>
           <artifactId>openflowplugin-api</artifactId>
@@ -29,6 +19,7 @@
           <groupId>org.opendaylight.openflowplugin</groupId>
           <artifactId>openflowplugin-common</artifactId>
       </dependency>
+
       <dependency>
           <groupId>org.opendaylight.controller</groupId>
           <artifactId>sal-binding-api</artifactId>
