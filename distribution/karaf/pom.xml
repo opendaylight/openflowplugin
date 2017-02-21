@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.opendaylight.odlparent</groupId>
-    <artifactId>karaf-parent</artifactId>
+    <artifactId>karaf4-parent</artifactId>
     <version>1.8.0-SNAPSHOT</version>
     <relativePath></relativePath>
   </parent>
@@ -37,19 +37,22 @@
             into startup.properties and the feature repo itself is not installed -->
       <groupId>org.apache.karaf.features</groupId>
       <artifactId>framework</artifactId>
+      <version>${karaf4.version}</version>
       <type>kar</type>
     </dependency>
     <!-- openflowplugin feature -->
     <dependency>
-      <artifactId>features-openflowplugin-he</artifactId>
+      <artifactId>features4-openflowplugin-he</artifactId>
       <groupId>org.opendaylight.openflowplugin</groupId>
+      <version>${project.version}</version>
       <classifier>features</classifier>
       <type>xml</type>
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <artifactId>features-openflowplugin</artifactId>
+      <artifactId>features4-openflowplugin</artifactId>
       <groupId>org.opendaylight.openflowplugin</groupId>
+      <version>${project.version}</version>
       <classifier>features</classifier>
       <type>xml</type>
       <scope>runtime</scope>
@@ -57,14 +60,16 @@
     <!-- openflowplugin extension feature -->
     <dependency>
       <groupId>org.opendaylight.openflowplugin</groupId>
-      <artifactId>features-openflowplugin-extension-he</artifactId>
+      <artifactId>features4-openflowplugin-extension-he</artifactId>
+      <version>${project.version}</version>
       <classifier>features</classifier>
       <type>xml</type>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.openflowplugin</groupId>
-      <artifactId>features-openflowplugin-extension</artifactId>
+      <artifactId>features4-openflowplugin-extension</artifactId>
+      <version>${project.version}</version>
       <classifier>features</classifier>
       <type>xml</type>
       <scope>runtime</scope>
