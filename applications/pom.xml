@@ -85,6 +85,7 @@
 
     <modules>
         <module>table-miss-enforcer</module>
+        <module>table-miss-enforcer-he</module>
         <module>of-switch-config-pusher</module>
         <module>lldp-speaker</module>
         <!-- deprecated apps -->
