@@ -3,13 +3,14 @@
            xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
            odl:use-default-for-reference-types="true">
 
-  <reference id="dataBroker" interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"/>
+  <reference id="openflowPluginMastershipService" interface="org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginMastershipChangeServiceProvider"
+             odl:type="openflow-plugin-provider-impl"/>
 
   <odl:rpc-service id="flowService" interface="org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService"/>
 
-  <bean id="LLDPPacketPuntEnforcer" class="org.opendaylight.openflowplugin.applications.tableMissEnforcer.LLDPPacketPuntEnforcer"
-          init-method="start" destroy-method="close">
+  <bean id="LLDPPacketPuntEnforcer" class="org.opendaylight.openflowplugin.applications.table.miss.enforcer.LLDPPacketPuntEnforcer"
+        destroy-method="close">
+    <argument ref="openflowPluginMastershipService"/>
     <argument ref="flowService"/>
-    <argument ref="dataBroker"/>
   </bean>
 </blueprint>
