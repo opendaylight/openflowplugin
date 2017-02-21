@@ -320,18 +320,20 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
             return;
         }
 
+        if (!connectionContext.equals(deviceCtx.getPrimaryConnectionContext())) {
+            LOG.debug("Node {} disconnected, but not primary connection.", connectionContext.getDeviceInfo().getLOGValue());
+            // Connection is not PrimaryConnection so try to remove from Auxiliary Connections
+            deviceCtx.removeAuxiliaryConnectionContext(connectionContext);
+            // If this is not primary connection, we should not continue disabling everything
+            return;
+        }
+
         if (deviceCtx.getState().equals(OFPContext.CONTEXT_STATE.TERMINATION)) {
             LOG.info("Device context for node {} is already is termination state, waiting for close all context", deviceInfo.getLOGValue());
             return;
         }
 
         deviceCtx.close();
-
-        if (!connectionContext.equals(deviceCtx.getPrimaryConnectionContext())) {
-            LOG.debug("Node {} disconnected, but not primary connection.", connectionContext.getDeviceInfo().getLOGValue());
-            // Connection is not PrimaryConnection so try to remove from Auxiliary Connections
-            deviceCtx.removeAuxiliaryConnectionContext(connectionContext);
-        }
 
         // TODO: Auxiliary connections supported ?
         // Device is disconnected and so we need to close TxManager
