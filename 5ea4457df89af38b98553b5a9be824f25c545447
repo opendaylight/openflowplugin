@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fafc7978_2eafbc7e",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/DeviceMastership.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 62
+      },
+      "writtenOn": "2017-02-22T04:11:49Z",
+      "side": 1,
+      "message": "Just wanting to make sure - you want this at info \u0026 not debug?",
+      "revId": "5ea4457df89af38b98553b5a9be824f25c545447",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_0eb478cf",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/DeviceMastership.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 62
+      },
+      "writtenOn": "2017-02-22T04:11:49Z",
+      "side": 1,
+      "message": "Just wanting to make sure - you want this at info \u0026 not debug?",
+      "revId": "5ea4457df89af38b98553b5a9be824f25c545447",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
