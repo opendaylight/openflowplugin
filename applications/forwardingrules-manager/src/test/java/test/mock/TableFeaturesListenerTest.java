@@ -19,6 +19,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.applications.frm.impl.DeviceMastershipManager;
@@ -48,6 +49,8 @@ public class TableFeaturesListenerTest extends FRMTest {
     ClusterSingletonServiceProvider clusterSingletonService;
     @Mock
     DeviceMastershipManager deviceMastershipManager;
+    @Mock
+    private NotificationProviderService notificationService;
 
     @Before
     public void setUp() {
@@ -55,7 +58,8 @@ public class TableFeaturesListenerTest extends FRMTest {
                 getDataBroker(),
                 rpcProviderRegistryMock,
                 getConfig(),
-                clusterSingletonService);
+                clusterSingletonService,
+                notificationService);
         forwardingRulesManager.start();
         // TODO consider tests rewrite (added because of complicated access)
         forwardingRulesManager.setDeviceMastershipManager(deviceMastershipManager);
