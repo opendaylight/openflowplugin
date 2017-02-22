@@ -15,11 +15,11 @@ import java.util.Optional;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.util.ActionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupModCommand;
 
 /**
  * Translates GroupMod messages.
@@ -38,6 +38,7 @@ public class GroupMessageSerializer extends AbstractMessageSerializer<GroupMessa
 
     @Override
     public void serialize(GroupMessage message, ByteBuf outBuffer) {
+        int index = outBuffer.writerIndex();
         super.serialize(message, outBuffer);
         outBuffer.writeShort(message.getCommand().getIntValue());
         outBuffer.writeByte(message.getGroupType().getIntValue());
@@ -45,28 +46,29 @@ public class GroupMessageSerializer extends AbstractMessageSerializer<GroupMessa
         outBuffer.writeInt(message.getGroupId().getValue().intValue());
 
         Optional.ofNullable(message.getBuckets())
-                .flatMap(b -> Optional.ofNullable(b.getBucket()))
-                .ifPresent(b -> b.stream()
-                        .sorted(COMPARATOR)
-                        .forEach(bucket -> {
-                            int index = outBuffer.writerIndex();
-                            outBuffer.writeShort(EncodeConstants.EMPTY_LENGTH);
-                            outBuffer.writeShort(MoreObjects.firstNonNull(bucket.getWeight(), 0));
-                            outBuffer.writeInt(MoreObjects.firstNonNull(bucket.getWatchPort(), OFConstants.OFPG_ANY).intValue());
-                            outBuffer.writeInt(MoreObjects.firstNonNull(bucket.getWatchGroup(), OFConstants.OFPG_ANY).intValue());
-                            outBuffer.writeZero(PADDING_IN_BUCKET);
+            .filter(b -> !GroupModCommand.OFPGCDELETE.equals(message.getCommand()))
+            .flatMap(b -> Optional.ofNullable(b.getBucket()))
+            .ifPresent(b -> b.stream()
+                .sorted(COMPARATOR)
+                .forEach(bucket -> {
+                    int bucketIndex = outBuffer.writerIndex();
+                    outBuffer.writeShort(EncodeConstants.EMPTY_LENGTH);
+                    outBuffer.writeShort(MoreObjects.firstNonNull(bucket.getWeight(), 0));
+                    outBuffer.writeInt(MoreObjects.firstNonNull(bucket.getWatchPort(), OFConstants.OFPG_ANY).intValue());
+                    outBuffer.writeInt(MoreObjects.firstNonNull(bucket.getWatchGroup(), OFConstants.OFPG_ANY).intValue());
+                    outBuffer.writeZero(PADDING_IN_BUCKET);
 
-                            Optional.ofNullable(bucket.getAction()).ifPresent(as -> as.forEach(a ->
-                                    ActionUtil.writeAction(
-                                            a.getAction(),
-                                            OFConstants.OFP_VERSION_1_3,
-                                            registry,
-                                            outBuffer)));
+                    Optional.ofNullable(bucket.getAction()).ifPresent(as -> as.forEach(a ->
+                        ActionUtil.writeAction(
+                            a.getAction(),
+                            OFConstants.OFP_VERSION_1_3,
+                            registry,
+                            outBuffer)));
 
-                            outBuffer.setShort(index, outBuffer.writerIndex() - index);
-                        }));
+                    outBuffer.setShort(bucketIndex, outBuffer.writerIndex() - bucketIndex);
+                }));
 
-        ByteBufUtils.updateOFHeaderLength(outBuffer);
+        outBuffer.setShort(index + 2, outBuffer.writerIndex() - index);
     }
 
     @Override

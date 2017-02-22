@@ -124,6 +124,10 @@ public final class IpConversionUtil {
     }
 
     public static Ipv4Prefix createPrefix(final Ipv4Address ipv4Address, final byte [] bytemask){
+        if (bytemask == null) {
+            return createPrefix(ipv4Address);
+        }
+
         return IetfInetUtil.INSTANCE.ipv4PrefixFor(ipv4Address, countBits(bytemask));
     }
 
@@ -178,6 +182,10 @@ public final class IpConversionUtil {
     }
 
     public static Ipv6Prefix createPrefix(final Ipv6Address ipv6Address, final byte [] bytemask){
+        if (bytemask == null) {
+            return createPrefix(ipv6Address);
+        }
+
         return IetfInetUtil.INSTANCE.ipv6PrefixFor(ipv6Address, countBits(bytemask));
     }
 
@@ -398,7 +406,7 @@ public final class IpConversionUtil {
         List<String> partsV6Prefix = Lists.newArrayList(splittedV6Prefix.iterator());
 
         boolean valid = true;
-        
+
         try {
             mask = Integer.parseInt(partsV6Prefix.get(1));
             if (mask > 128) {

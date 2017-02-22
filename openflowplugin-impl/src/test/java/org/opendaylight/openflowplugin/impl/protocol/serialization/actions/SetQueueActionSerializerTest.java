@@ -29,7 +29,7 @@ public class SetQueueActionSerializerTest extends AbstractActionSerializerTest {
                         .build())
                 .build();
 
-        assertAction(action, out -> assertEquals(out.readUnsignedByte(), queue));
+        assertAction(action, out -> assertEquals(out.readUnsignedInt(), queue));
     }
 
     @Override

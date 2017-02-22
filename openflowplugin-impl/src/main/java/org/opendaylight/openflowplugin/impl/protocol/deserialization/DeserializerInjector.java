@@ -21,5 +21,13 @@ public class DeserializerInjector {
      */
     public static void injectDeserializers(final DeserializerExtensionProvider provider) {
         // Inject new deserializers here
+        MatchDeserializerInjector.injectDeserializers(provider);
+        ActionDeserializerInjector.injectDeserializers(provider);
+        InstructionDeserializerInjector.injectDeserializers(provider);
+        MultipartDeserializerInjector.injectDeserializers(provider);
+
+        // Message deserializers are not used, so disable them here
+        // Uncomment to enable
+        // MessageDeserializerInjector.injectDeserializers(provider);
     }
 }

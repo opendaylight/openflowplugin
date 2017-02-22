@@ -29,6 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
@@ -44,8 +45,8 @@ class StatisticsContextImpMockInitiation {
     protected DeviceContext mockedDeviceContext;
     protected DeviceState mockedDeviceState;
 
-    StatisticsGatheringService mockedStatisticsGatheringService;
-    StatisticsGatheringOnTheFlyService mockedStatisticsOnFlyGatheringService;
+    StatisticsGatheringService<MultipartReply> mockedStatisticsGatheringService;
+    StatisticsGatheringOnTheFlyService<MultipartReply> mockedStatisticsOnFlyGatheringService;
     ConnectionContext mockedConnectionContext;
     DeviceInfo mockedDeviceInfo;
     StatisticsManager mockedStatisticsManager;

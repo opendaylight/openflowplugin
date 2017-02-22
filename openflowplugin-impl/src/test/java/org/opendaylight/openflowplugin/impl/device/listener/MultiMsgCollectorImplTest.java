@@ -45,7 +45,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 @RunWith(MockitoJUnitRunner.class)
 public class MultiMsgCollectorImplTest {
 
-    private MultiMsgCollectorImpl collector;
+    private MultiMsgCollectorImpl<MultipartReply> collector;
     private Runnable cleanUpCheck;
 
     @Mock
@@ -68,7 +68,7 @@ public class MultiMsgCollectorImplTest {
 
     @Before
     public void setUp() {
-        collector = new MultiMsgCollectorImpl(deviceProcessor, requestContext);
+        collector = new MultiMsgCollectorImpl<>(deviceProcessor, requestContext);
         cleanUpCheck = Runnables.doNothing();
         Mockito.when(requestContext.getXid()).thenReturn(new Xid(xid));
     }
@@ -88,7 +88,7 @@ public class MultiMsgCollectorImplTest {
      */
     @Test
     public void testAddMultipartMsgOne() {
-        collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, false).build());
+        collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, false).build(), false, null);
 
         Mockito.verify(deviceProcessor).processReply(xidCaptor.capture(), mmCaptor.capture());
         Assert.assertEquals(xid, xidCaptor.getValue().getValue());
@@ -104,8 +104,8 @@ public class MultiMsgCollectorImplTest {
      */
     @Test
     public void testAddMultipartMsgTwo() {
-        collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, true).build());
-        collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, false).build());
+        collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, true).build(), true, null);
+        collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, false).build(), false, null);
 
         Mockito.verify(deviceProcessor).processReply(xidCaptor.capture(), mmCaptor.capture());
         Assert.assertEquals(xid, xidCaptor.getValue().getValue());
@@ -124,7 +124,7 @@ public class MultiMsgCollectorImplTest {
     public void testAddMultipartMsgNotExpectedXid() {
         final Long dif_xid = 5L;
         final MultipartReplyMessage mrMsg = MsgGeneratorTestUtils.makeMultipartDescReply(dif_xid, hwTestValue, true).build();
-        collector.addMultipartMsg(mrMsg);
+        collector.addMultipartMsg(mrMsg, true, null);
     }
 
     /**
@@ -133,9 +133,9 @@ public class MultiMsgCollectorImplTest {
      */
     @Test
     public void testAddMultipartMsgWrongType1() {
-        collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, true).build());
+        collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, true).build(), true, null);
         collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, false)
-                .setType(MultipartType.OFPMPPORTDESC).build());
+                .setType(MultipartType.OFPMPPORTDESC).build(), false, null);
 
         Mockito.verify(deviceProcessor).processReply(xidCaptor.capture(), mmCaptor.capture());
         Assert.assertEquals(xid, xidCaptor.getValue().getValue());
@@ -158,10 +158,10 @@ public class MultiMsgCollectorImplTest {
      */
     @Test
     public void testAddMultipartMsgWrongType2() {
-        collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, true).build());
+        collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, true).build(), true, null);
         collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, true)
-                .setType(MultipartType.OFPMPPORTDESC).build());
-        collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, false).build());
+                .setType(MultipartType.OFPMPPORTDESC).build(), true, null);
+        collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, false).build(), false, null);
 
         Mockito.verify(deviceProcessor).processReply(xidCaptor.capture(), mmCaptor.capture());
         Mockito.verify(deviceProcessor).processReply(xidCaptor.capture(), mmCaptor.capture());
@@ -185,10 +185,10 @@ public class MultiMsgCollectorImplTest {
      */
     @Test
     public void testAddMultipartMsgWrongType3() {
-        collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, true).build());
+        collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, true).build(), true, null);
         collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, true)
-                .setType(MultipartType.OFPMPPORTDESC).build());
-        collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, false).build());
+                .setType(MultipartType.OFPMPPORTDESC).build(), true, null);
+        collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, false).build(), false, null);
 
         Mockito.verify(deviceProcessor).processReply(xidCaptor.capture(), mmCaptor.capture());
         Assert.assertEquals(xid, xidCaptor.getValue().getValue());
