@@ -8,14 +8,13 @@
 
 package org.opendaylight.openflowplugin.impl.registry.group;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 
-/**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 15.4.2015.
- */
 public class DeviceGroupRegistryImpl implements DeviceGroupRegistry {
 
     private final List<GroupId> groupIdList = new ArrayList<>();
@@ -27,21 +26,36 @@ public class DeviceGroupRegistryImpl implements DeviceGroupRegistry {
     }
 
     @Override
-    public void markToBeremoved(final GroupId groupId) {
+    public void addMark(final GroupId groupId) {
         marks.add(groupId);
     }
 
     @Override
-    public void removeMarked() {
-        synchronized (groupIdList) {
-            groupIdList.removeAll(marks);
+    public boolean hasMark(final GroupId groupId) {
+        synchronized (marks) {
+            return marks.contains(groupId);
         }
-        marks.clear();
     }
 
     @Override
-    public List<GroupId> getAllGroupIds() {
-        return groupIdList;
+    public void processMarks() {
+        synchronized (groupIdList) {
+            groupIdList.removeAll(marks);
+        }
+
+        synchronized (marks) {
+            marks.clear();
+        }
+    }
+
+    @Override
+    public void forEach(final Consumer<GroupId> consumer) {
+        groupIdList.forEach(consumer);
+    }
+
+    @Override
+    public int size() {
+        return groupIdList.size();
     }
 
     @Override
@@ -52,5 +66,10 @@ public class DeviceGroupRegistryImpl implements DeviceGroupRegistry {
         synchronized (marks) {
             marks.clear();
         }
+    }
+
+    @VisibleForTesting
+    List<GroupId> getAllGroupIds() {
+        return groupIdList;
     }
 }
