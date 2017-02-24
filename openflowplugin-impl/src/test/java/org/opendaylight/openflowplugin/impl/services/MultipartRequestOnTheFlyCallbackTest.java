@@ -139,7 +139,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
         when(mockedDeviceContext.getDeviceFlowRegistry()).thenReturn(mockedFlowRegistry);
-        when(mockedFlowRegistry.retrieveIdForFlow(Matchers.any(FlowRegistryKey.class))).thenReturn(mockedFlowDescriptor);
+        when(mockedFlowRegistry.retrieveDescriptor(Matchers.any(FlowRegistryKey.class))).thenReturn(mockedFlowDescriptor);
 
         final InstanceIdentifier<FlowCapableNode> nodePath = mockedDeviceInfo.getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
         final FlowCapableNodeBuilder flowNodeBuilder = new FlowCapableNodeBuilder();
@@ -277,7 +277,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
         // Nothing else than flow is supported by on the fly callback
         assertNotNull(actualResult.getErrors());
         assertFalse(actualResult.getErrors().isEmpty());
-        Mockito.verify(mockedFlowRegistry, Mockito.never()).storeIfNecessary(Matchers.any());
+        Mockito.verify(mockedFlowRegistry, Mockito.never()).store(Matchers.any());
         Mockito.verify(mockedDeviceContext, Mockito.never()).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL),
                 Matchers.<InstanceIdentifier>any(), Matchers.<DataObject>any());
     }

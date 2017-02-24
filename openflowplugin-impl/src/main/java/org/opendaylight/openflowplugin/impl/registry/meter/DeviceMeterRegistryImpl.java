@@ -8,18 +8,18 @@
 
 package org.opendaylight.openflowplugin.impl.registry.meter;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 
-/**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 15.4.2015.
- */
 public class DeviceMeterRegistryImpl implements DeviceMeterRegistry {
 
-    private final List<MeterId> meterIds = new ArrayList<>();
-    private final List<MeterId> marks = new ArrayList<>();
+    private final List<MeterId> meterIds = Collections.synchronizedList(new ArrayList<>());
+    private final List<MeterId> marks = Collections.synchronizedList(new ArrayList<>());
 
     @Override
     public void store(final MeterId meterId) {
@@ -27,32 +27,41 @@ public class DeviceMeterRegistryImpl implements DeviceMeterRegistry {
     }
 
     @Override
-    public void markToBeremoved(final MeterId meterId) {
+    public void addMark(final MeterId meterId) {
         marks.add(meterId);
     }
 
     @Override
-    public void removeMarked() {
+    public boolean hasMark(final MeterId meterId) {
+        return marks.contains(meterId);
+    }
+
+    @Override
+    public void processMarks() {
+        meterIds.removeAll(marks);
+        marks.clear();
+    }
+
+    @Override
+    public void forEach(final Consumer<MeterId> consumer) {
         synchronized (meterIds) {
-            meterIds.removeAll(marks);
-        }
-        synchronized (marks) {
-            marks.clear();
+            meterIds.forEach(consumer);
         }
     }
 
     @Override
-    public List<MeterId> getAllMeterIds() {
-        return meterIds;
+    public int size() {
+        return meterIds.size();
     }
 
     @Override
     public void close() {
-        synchronized (meterIds) {
-            meterIds.clear();
-        }
-        synchronized (marks) {
-            marks.clear();
-        }
+        meterIds.clear();
+        marks.clear();
+    }
+
+    @VisibleForTesting
+    List<MeterId> getAllMeterIds() {
+        return meterIds;
     }
 }
