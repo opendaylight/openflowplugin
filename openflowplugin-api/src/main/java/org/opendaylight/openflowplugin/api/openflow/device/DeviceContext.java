@@ -149,5 +149,7 @@ public interface DeviceContext extends
     void sendNodeAddedNotification();
 
     void sendNodeRemovedNotification();
+
+    void cleanupDeviceData();
 }
 

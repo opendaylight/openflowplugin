@@ -9,6 +9,8 @@
 package org.opendaylight.openflowplugin.api.openflow.device;
 
 import com.google.common.util.concurrent.CheckedFuture;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListener;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
@@ -24,7 +26,8 @@ public interface DeviceManager extends
         OFPManager,
         DeviceConnectedHandler,
         DeviceDisconnectedHandler,
-        TranslatorLibrarian {
+        TranslatorLibrarian,
+        EntityOwnershipListener {
 
     /**
      * invoked after all services injected

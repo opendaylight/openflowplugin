@@ -90,6 +90,7 @@ public class OpenFlowPluginProviderImplTest {
         provider.setNotificationProviderService(notificationService);
         provider.setSwitchConnectionProviders(Lists.newArrayList(switchConnectionProvider));
         provider.setClusteringSingletonServicesProvider(clusterSingletonServiceProvider);
+        provider.setEntityOwnershipServiceProvider(entityOwnershipService);
     }
 
     @After

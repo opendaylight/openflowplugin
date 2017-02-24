@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
+
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
@@ -35,15 +36,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class LifecycleServiceImpl implements LifecycleService {
-
     private static final Logger LOG = LoggerFactory.getLogger(LifecycleServiceImpl.class);
+
+    private final List<DeviceRemovedHandler> deviceRemovedHandlers = new ArrayList<>();
+    private volatile CONTEXT_STATE state = CONTEXT_STATE.INITIALIZATION;
     private DeviceContext deviceContext;
     private RpcContext rpcContext;
     private StatisticsContext statContext;
     private ClusterSingletonServiceRegistration registration;
     private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
-    private final List<DeviceRemovedHandler> deviceRemovedHandlers = new ArrayList<>();
-    private volatile CONTEXT_STATE state = CONTEXT_STATE.INITIALIZATION;
 
 
     @Override
@@ -57,17 +58,12 @@ public class LifecycleServiceImpl implements LifecycleService {
 
     @Override
     public ListenableFuture<Void> closeServiceInstance() {
-        final boolean connectionInterrupted =
-                this.deviceContext
-                        .getPrimaryConnectionContext()
-                        .getConnectionState()
-                        .equals(ConnectionContext.CONNECTION_STATE.RIP);
 
         // Chain all jobs that will stop our services
         final List<ListenableFuture<Void>> futureList = new ArrayList<>();
-        futureList.add(statContext.stopClusterServices(connectionInterrupted));
-        futureList.add(rpcContext.stopClusterServices(connectionInterrupted));
-        futureList.add(deviceContext.stopClusterServices(connectionInterrupted));
+        futureList.add(statContext.stopClusterServices());
+        futureList.add(rpcContext.stopClusterServices());
+        futureList.add(deviceContext.stopClusterServices());
 
         return Futures.transform(Futures.successfulAsList(futureList), new Function<List<Void>, Void>() {
             @Nullable
@@ -114,10 +110,10 @@ public class LifecycleServiceImpl implements LifecycleService {
             // If we are still registered and we are not already closing, then close the registration
             if (Objects.nonNull(registration)) {
                 try {
-                    LOG.debug("Closing clustering MASTER services for node {}", getDeviceInfo().getLOGValue());
+                    LOG.debug("Closing clustering singleton services for node {}", getDeviceInfo().getLOGValue());
                     registration.close();
                 } catch (Exception e) {
-                    LOG.debug("Failed to close clustering MASTER services for node {} with exception: ",
+                    LOG.debug("Failed to close clustering singleton services for node {} with exception: ",
                             getDeviceInfo().getLOGValue(), e);
                 }
             }
@@ -126,7 +122,7 @@ public class LifecycleServiceImpl implements LifecycleService {
 
     @Override
     public void registerService(final ClusterSingletonServiceProvider singletonServiceProvider) {
-        LOG.debug("Registered clustering MASTER services for node {}", getDeviceInfo().getLOGValue());
+        LOG.debug("Registered clustering singleton services for node {}", getDeviceInfo().getLOGValue());
 
         // lifecycle service -> device context -> statistics context -> rpc context -> role context -> lifecycle service
         this.clusterInitializationPhaseHandler = deviceContext;
@@ -139,7 +135,7 @@ public class LifecycleServiceImpl implements LifecycleService {
         // Register cluster singleton service
         try {
             this.registration = Verify.verifyNotNull(singletonServiceProvider.registerClusterSingletonService(this));
-            LOG.info("Registered clustering MASTER services for node {}", getDeviceInfo().getLOGValue());
+            LOG.info("Registered clustering singleton services for node {}", getDeviceInfo().getLOGValue());
         } catch (Exception e) {
             LOG.warn("Failed to register cluster singleton service for node {}, with exception: {}", getDeviceInfo(), e);
             closeConnection();

@@ -31,6 +31,7 @@ import javax.management.ObjectName;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
@@ -86,6 +87,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private ConnectionManager connectionManager;
     private NotificationService notificationProviderService;
     private NotificationPublishService notificationPublishService;
+    private EntityOwnershipService entityOwnershipService;
+    private ClusterSingletonServiceProvider singletonServicesProvider;
     private ExtensionConverterManager extensionConverterManager;
     private DataBroker dataBroker;
     private Collection<SwitchConnectionProvider> switchConnectionProviders;
@@ -98,7 +101,6 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private long maximumTimerDelay;
 
     private final ThreadPoolExecutor threadPool;
-    private ClusterSingletonServiceProvider singletonServicesProvider;
 
     public OpenFlowPluginProviderImpl(final long rpcRequestsQuota,
                                       final long globalNotificationQuota,
@@ -184,6 +186,11 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     }
 
     @Override
+    public void setEntityOwnershipServiceProvider(EntityOwnershipService entityOwnershipService) {
+        this.entityOwnershipService = entityOwnershipService;
+    }
+
+    @Override
     public void setSkipTableFeatures(final boolean skipTableFeatures){
             this.skipTableFeatures = skipTableFeatures;
     }
@@ -246,10 +253,11 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 getMessageIntelligenceAgency(),
                 isFlowRemovedNotificationOn,
                 singletonServicesProvider,
-                notificationPublishService,
+                entityOwnershipService,
                 hashedWheelTimer,
                 convertorManager,
-                skipTableFeatures);
+                skipTableFeatures,
+                notificationPublishService);
 
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
 
