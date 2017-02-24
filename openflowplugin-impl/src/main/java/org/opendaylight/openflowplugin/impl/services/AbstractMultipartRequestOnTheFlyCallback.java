@@ -72,7 +72,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
             final T resultCast = (T) result;
 
             Futures.transform(processStatistics(resultCast), (Function<Optional<? extends MultipartReplyBody>, Void>) input -> {
-                input.ifPresent(reply -> {
+                Optional.ofNullable(input).flatMap(i -> i).ifPresent(reply -> {
                     try {
                         statisticsWriterProvider
                             .lookup(getMultipartType())
@@ -85,6 +85,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
 
                 if (!isReqMore(resultCast)) {
                     endCollecting();
+                    onFinishedCollecting();
                 }
 
                 return null;
@@ -124,6 +125,11 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
      * @return multipart type
      */
     protected abstract MultipartType getMultipartType();
+
+    /**
+     * On finished collection event
+     */
+    protected abstract void onFinishedCollecting();
 
 
 }
