@@ -11,12 +11,10 @@ package org.opendaylight.openflowplugin.api.openflow.registry.flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 
-/**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 9.4.2015.
- */
 public interface FlowDescriptor {
 
     FlowId getFlowId();
 
     TableKey getTableKey();
+
 }
