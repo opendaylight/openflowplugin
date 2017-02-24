@@ -145,7 +145,7 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Meter remove with id={} finished without error", input.getMeterId());
                     }
-                    removeMeter.getDeviceRegistry().getDeviceMeterRegistry().markToBeremoved(input.getMeterId());
+                    removeMeter.getDeviceRegistry().getDeviceMeterRegistry().addMark(input.getMeterId());
                     removeIfNecessaryFromDS(input.getMeterId());
                 } else {
                     LOG.warn("Meter remove with id={} failed, errors={}", input.getMeterId(),
