@@ -18,11 +18,11 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -48,6 +48,8 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     private static final AtomicInteger UNACCOUNTED_FLOWS_COUNTER = new AtomicInteger(0);
 
     private final BiMap<FlowRegistryKey, FlowDescriptor> flowRegistry = Maps.synchronizedBiMap(HashBiMap.create());
+    private final List<FlowRegistryKey> marks = new ArrayList<>();
+
     private final DataBroker dataBroker;
     private final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier;
     private final List<ListenableFuture<List<Optional<FlowCapableNode>>>> lastFillFutures = new ArrayList<>();
@@ -66,7 +68,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
             if (!flowRegistry.containsKey(key)) {
                 LOG.trace("Found flow with table ID : {} and flow ID : {}", flow.getTableId(), flow.getId().getValue());
                 final FlowDescriptor descriptor = FlowDescriptorFactory.create(flow.getTableId(), flow.getId());
-                store(key, descriptor);
+                storeDescriptor(key, descriptor);
             }
         };
     }
@@ -144,11 +146,11 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     }
 
     @Override
-    public FlowDescriptor retrieveIdForFlow(final FlowRegistryKey flowRegistryKey) {
+    public FlowDescriptor retrieveDescriptor(final FlowRegistryKey flowRegistryKey) {
         LOG.trace("Retrieving flow descriptor for flow hash : {}", flowRegistryKey.hashCode());
         FlowDescriptor flowDescriptor = flowRegistry.get(flowRegistryKey);
-        // Get FlowDescriptor from flow registry
-        if(flowDescriptor == null){
+
+        if (Objects.isNull(flowDescriptor)) {
             if (LOG.isTraceEnabled()) {
                 LOG.trace("Failed to retrieve flow descriptor for flow hash : {}, trying with custom equals method", flowRegistryKey.hashCode());
             }
@@ -159,62 +161,90 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
                 }
             }
         }
+
         return flowDescriptor;
     }
 
     @Override
-    public void store(final FlowRegistryKey flowRegistryKey, final FlowDescriptor flowDescriptor) {
+    public void storeDescriptor(final FlowRegistryKey flowRegistryKey, final FlowDescriptor flowDescriptor) {
         try {
           LOG.trace("Storing flowDescriptor with table ID : {} and flow ID : {} for flow hash : {}",
                     flowDescriptor.getTableKey().getId(), flowDescriptor.getFlowId().getValue(), flowRegistryKey.hashCode());
           flowRegistry.put(flowRegistryKey, flowDescriptor);
         } catch (IllegalArgumentException ex) {
-          LOG.warn("Flow with flowId {} already exists in table {}", flowDescriptor.getFlowId().getValue(),
+          LOG.warn("Flow with flow ID {} already exists in table {}, generating alien flow ID", flowDescriptor.getFlowId().getValue(),
                     flowDescriptor.getTableKey().getId());
           final FlowId newFlowId = createAlienFlowId(flowDescriptor.getTableKey().getId());
           final FlowDescriptor newFlowDescriptor = FlowDescriptorFactory.
             create(flowDescriptor.getTableKey().getId(), newFlowId);
           flowRegistry.put(flowRegistryKey, newFlowDescriptor);
         }
-    }
 
-    @Override
-    public void update(final FlowRegistryKey newFlowRegistryKey, final FlowDescriptor flowDescriptor) {
-        LOG.trace("Updating the entry with hash: {}", newFlowRegistryKey.hashCode());
-        flowRegistry.forcePut(newFlowRegistryKey, flowDescriptor);
-    }
-
-    @Override
-    public FlowId storeIfNecessary(final FlowRegistryKey flowRegistryKey) {
-        LOG.trace("Trying to retrieve flow ID for flow hash : {}", flowRegistryKey.hashCode());
-
-        // First, try to get FlowDescriptor from flow registry
-        FlowDescriptor flowDescriptor = retrieveIdForFlow(flowRegistryKey);
-
-        // We was not able to retrieve FlowDescriptor, so we will at least try to generate it
-        if (flowDescriptor == null) {
-            LOG.trace("Flow descriptor for flow hash : {} not found, generating alien flow ID", flowRegistryKey.hashCode());
-            final short tableId = flowRegistryKey.getTableId();
-            final FlowId alienFlowId = createAlienFlowId(tableId);
-            flowDescriptor = FlowDescriptorFactory.create(tableId, alienFlowId);
-
-            // Finally we got flowDescriptor, so now we will store it to registry,
-            // so next time we won't need to generate it again
-            store(flowRegistryKey, flowDescriptor);
+        synchronized (marks) {
+            marks.remove(flowRegistryKey);
         }
-
-        return flowDescriptor.getFlowId();
     }
 
     @Override
     public void removeDescriptor(final FlowRegistryKey flowRegistryKey) {
         LOG.trace("Removing flow descriptor for flow hash : {}", flowRegistryKey.hashCode());
         flowRegistry.remove(flowRegistryKey);
+        addMark(flowRegistryKey);
     }
 
     @Override
-    public Map<FlowRegistryKey, FlowDescriptor> getAllFlowDescriptors() {
-        return Collections.unmodifiableMap(flowRegistry);
+    public void store(final FlowRegistryKey flowRegistryKey) {
+        // If we was not able to retrieve FlowDescriptor, we will at least try to generate it
+        if (Objects.isNull(retrieveDescriptor(flowRegistryKey))) {
+            LOG.trace("Flow descriptor for flow hash : {} not found, generating alien flow ID", flowRegistryKey.hashCode());
+            final short tableId = flowRegistryKey.getTableId();
+            final FlowId alienFlowId = createAlienFlowId(tableId);
+            final FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(tableId, alienFlowId);
+
+            // Finally we got flowDescriptor, so now we will store it to registry,
+            // so next time we won't need to generate it again
+            storeDescriptor(flowRegistryKey, flowDescriptor);
+        }
+    }
+
+    @Override
+    public void addMark(final FlowRegistryKey flowRegistryKey) {
+        synchronized (marks) {
+            marks.add(flowRegistryKey);
+        }
+    }
+
+    @Override
+    public boolean hasMark(final FlowRegistryKey flowRegistryKey) {
+        synchronized (marks) {
+            final AtomicBoolean result = new AtomicBoolean(marks.contains(flowRegistryKey));
+
+            if (!result.get()) {
+                for (final FlowRegistryKey mark : marks) {
+                    if (mark.equals(flowRegistryKey)) {
+                        result.set(Boolean.TRUE);
+                        break;
+                    }
+                }
+            }
+
+            return result.get();
+        }
+    }
+
+    @Override
+    public void processMarks() {
+        // NOOP
+    }
+
+    @Override
+    public void forEach(final Consumer<FlowRegistryKey> consumer) {
+        flowRegistry.keySet().forEach(consumer);
+    }
+
+    @Override
+    public int size() {
+        return flowRegistry.size();
     }
 
     @Override
@@ -229,11 +259,17 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
         }
 
         flowRegistry.clear();
+        marks.clear();
     }
 
     @VisibleForTesting
     static FlowId createAlienFlowId(final short tableId) {
         final String alienId = ALIEN_SYSTEM_FLOW_ID + tableId + '-' + UNACCOUNTED_FLOWS_COUNTER.incrementAndGet();
         return new FlowId(alienId);
+    }
+
+    @VisibleForTesting
+    Map<FlowRegistryKey, FlowDescriptor> getAllFlowDescriptors() {
+        return flowRegistry;
     }
 }
