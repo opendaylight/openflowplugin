@@ -16,6 +16,7 @@ import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.impl.common.MultipartReplyTranslatorUtil;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
@@ -32,6 +33,7 @@ public class MultiLayerFlowMultipartRequestOnTheFlyCallback<T extends OfHeader> 
 
     private final ConvertorExecutor convertorExecutor;
     private final DeviceInfo deviceInfo;
+    private final DeviceFlowRegistry deviceFlowRegistry;
     private boolean virgin = true;
 
     public MultiLayerFlowMultipartRequestOnTheFlyCallback(final RequestContext<List<T>> context,
@@ -43,6 +45,7 @@ public class MultiLayerFlowMultipartRequestOnTheFlyCallback<T extends OfHeader> 
         super(context, requestType, deviceContext, eventIdentifier, statisticsWriterProvider);
         this.convertorExecutor = convertorExecutor;
         deviceInfo = deviceContext.getDeviceInfo();
+        deviceFlowRegistry = deviceContext.getDeviceFlowRegistry();
     }
 
     @Override
@@ -59,6 +62,11 @@ public class MultiLayerFlowMultipartRequestOnTheFlyCallback<T extends OfHeader> 
     @Override
     protected MultipartType getMultipartType() {
         return MultipartType.OFPMPFLOW;
+    }
+
+    @Override
+    protected void onFinishedCollecting() {
+        deviceFlowRegistry.processMarks();
     }
 
     @Override
