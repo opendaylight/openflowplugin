@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.datastore.multipart;
 
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -54,10 +55,13 @@ public class FlowStatsMultipartWriter extends AbstractMultipartWriter<FlowAndSta
                             .setFlowStatistics(new FlowStatisticsBuilder(stat).build())
                             .build());
 
+                final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(version, flow.build());
+                registry.getDeviceFlowRegistry().store(flowRegistryKey);
+
                 final FlowKey key = new FlowKey(registry
                     .getDeviceFlowRegistry()
-                    .storeIfNecessary(FlowRegistryKeyFactory
-                        .create(version, flow.build())));
+                    .retrieveDescriptor(flowRegistryKey)
+                    .getFlowId());
 
                 writeToTransaction(
                     getInstanceIdentifier()
