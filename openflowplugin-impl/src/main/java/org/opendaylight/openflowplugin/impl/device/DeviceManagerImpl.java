@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Verify;
 import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
@@ -31,6 +32,9 @@ import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipChange;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListenerRegistration;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
@@ -54,13 +58,18 @@ import org.opendaylight.openflowplugin.impl.connection.OutboundQueueProviderImpl
 import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
 import org.opendaylight.openflowplugin.impl.lifecycle.LifecycleServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.SalRoleServiceImpl;
+import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,9 +79,11 @@ import org.slf4j.LoggerFactory;
 public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProviderKeeper {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerImpl.class);
+    private static final String SERVICE_ENTITY_TYPE = "org.opendaylight.mdsal.ServiceEntityType";
 
     private final long globalNotificationQuota;
     private final boolean switchFeaturesMandatory;
+    private final EntityOwnershipListenerRegistration eosListenerRegistration;
     private boolean isFlowRemovedNotificationOn;
     private boolean skipTableFeatures;
     private static final int SPY_RATE = 10;
@@ -84,6 +95,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private DeviceTerminationPhaseHandler deviceTerminPhaseHandler;
 
     private final ConcurrentMap<DeviceInfo, DeviceContext> deviceContexts = new ConcurrentHashMap<>();
+    private final ConcurrentMap<DeviceInfo, DeviceContext> removeddeviceContexts = new ConcurrentHashMap<>();
     private final ConcurrentMap<DeviceInfo, LifecycleService> lifecycleServices = new ConcurrentHashMap<>();
 
     private long barrierIntervalNanos;
@@ -92,6 +104,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private ExtensionConverterProvider extensionConverterProvider;
     private ScheduledThreadPoolExecutor spyPool;
     private final ClusterSingletonServiceProvider singletonServiceProvider;
+    private final EntityOwnershipService entityOwnershipService;
     private final NotificationPublishService notificationPublishService;
     private final MessageSpy messageSpy;
     private final HashedWheelTimer hashedWheelTimer;
@@ -104,25 +117,15 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                              final MessageSpy messageSpy,
                              final boolean isFlowRemovedNotificationOn,
                              final ClusterSingletonServiceProvider singletonServiceProvider,
-                             final NotificationPublishService notificationPublishService,
+                             final EntityOwnershipService entityOwnershipService,
                              final HashedWheelTimer hashedWheelTimer,
                              final ConvertorExecutor convertorExecutor,
-                             final boolean skipTableFeatures) {
+                             final boolean skipTableFeatures,
+                             final NotificationPublishService notificationPublishService) {
+
 
         this.dataBroker = dataBroker;
-
-        /* merge empty nodes to oper DS to predict any problems with missing parent for Node */
-        final WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
-        final NodesBuilder nodesBuilder = new NodesBuilder();
-        nodesBuilder.setNode(Collections.<Node>emptyList());
-        tx.merge(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(Nodes.class), nodesBuilder.build());
-        try {
-            tx.submit().get();
-        } catch (ExecutionException | InterruptedException e) {
-            LOG.error("Creation of node failed.", e);
-            throw new IllegalStateException(e);
-        }
-
+        this.entityOwnershipService = entityOwnershipService;
         this.switchFeaturesMandatory = switchFeaturesMandatory;
         this.globalNotificationQuota = globalNotificationQuota;
         this.isFlowRemovedNotificationOn = isFlowRemovedNotificationOn;
@@ -135,6 +138,21 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         this.singletonServiceProvider = singletonServiceProvider;
         this.notificationPublishService = notificationPublishService;
         this.messageSpy = messageSpy;
+
+        this.eosListenerRegistration = Verify.verifyNotNull(entityOwnershipService.registerListener
+                (SERVICE_ENTITY_TYPE, this));
+
+        /* merge empty nodes to oper DS to predict any problems with missing parent for Node */
+        final WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
+        final NodesBuilder nodesBuilder = new NodesBuilder();
+        nodesBuilder.setNode(Collections.<Node>emptyList());
+        tx.merge(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(Nodes.class), nodesBuilder.build());
+        try {
+            tx.submit().get();
+        } catch (ExecutionException | InterruptedException e) {
+            LOG.error("Creation of node failed.", e);
+            throw new IllegalStateException(e);
+        }
     }
 
 
@@ -254,6 +272,15 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         Optional.ofNullable(spyPool).ifPresent(ScheduledThreadPoolExecutor::shutdownNow);
         spyPool = null;
 
+        if (Objects.nonNull(eosListenerRegistration)) {
+            try {
+                LOG.debug("Closing entity ownership listener");
+                eosListenerRegistration.close();
+            } catch (Exception e) {
+                LOG.debug("Failed to close entity ownership listener registration with exception",e);
+            }
+        }
+
     }
 
     @Override
@@ -368,27 +395,33 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     @Override
     public CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(final DeviceInfo deviceInfo) {
+        return removeDeviceFromOperationalDS(deviceInfo.getNodeInstanceIdentifier(), deviceInfo.getLOGValue());
+    }
+
+    private CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(
+            final KeyedInstanceIdentifier<Node, NodeKey> nodeIid, final String nodeName) {
+        Preconditions.checkNotNull(nodeIid, "Node IID must not be null");
+
         final WriteTransaction delWtx = dataBroker.newWriteOnlyTransaction();
-        delWtx.delete(LogicalDatastoreType.OPERATIONAL, deviceInfo.getNodeInstanceIdentifier());
+        delWtx.delete(LogicalDatastoreType.OPERATIONAL, nodeIid);
         final CheckedFuture<Void, TransactionCommitFailedException> delFuture = delWtx.submit();
 
         Futures.addCallback(delFuture, new FutureCallback<Void>() {
             @Override
             public void onSuccess(final Void result) {
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("Delete Node {} was successful", deviceInfo.getLOGValue());
+                    LOG.debug("Delete Node {} was successful", nodeName);
                 }
             }
 
             @Override
             public void onFailure(@Nonnull final Throwable t) {
-                LOG.warn("Delete node {} failed with exception {}", deviceInfo.getLOGValue(), t);
+                LOG.warn("Delete node {} failed with exception {}", nodeName, t);
             }
         });
 
         return delFuture;
     }
-
 
     private void addCallbackToDeviceInitializeToSlave(final DeviceInfo deviceInfo, final DeviceContext deviceContext, final LifecycleService lifecycleService) {
         Futures.addCallback(deviceContext.makeDeviceSlave(), new FutureCallback<RpcResult<SetRoleOutput>>() {
@@ -427,10 +460,38 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     public void onDeviceRemoved(DeviceInfo deviceInfo) {
-        deviceContexts.remove(deviceInfo);
+        DeviceContext deviceContext = deviceContexts.remove(deviceInfo);
+        removeddeviceContexts.putIfAbsent(deviceInfo, deviceContext);
         LOG.debug("Device context removed for node {}", deviceInfo.getLOGValue());
 
         lifecycleServices.remove(deviceInfo);
         LOG.debug("Lifecycle service removed for node {}", deviceInfo.getLOGValue());
+    }
+
+    @Override
+    public void ownershipChanged(EntityOwnershipChange entityOwnershipChange) {
+        if (!entityOwnershipChange.hasOwner()) {
+            final YangInstanceIdentifier yii = entityOwnershipChange.getEntity().getId();
+            final YangInstanceIdentifier.NodeIdentifierWithPredicates niiwp =
+                    (YangInstanceIdentifier.NodeIdentifierWithPredicates) yii.getLastPathArgument();
+            String entityName =  niiwp.getKeyValues().values().iterator().next().toString();
+            LOG.info("Entity ownership changed for device : {} : {}", entityName, entityOwnershipChange);
+
+            if (entityName != null ){
+                if (!removeddeviceContexts.isEmpty()) {
+                    for (DeviceInfo device : removeddeviceContexts.keySet()) {
+                        if (device.getNodeId().getValue().equals(entityName)) {
+                            LOG.info("Cleaning up operational data of the node : {}", entityName);
+                            // No owner present for the entity, clean up the data and remove it from
+                            // removed context.
+                            removeddeviceContexts.remove(device).cleanupDeviceData();
+                            return;
+                        }
+                    }
+                }
+                removeDeviceFromOperationalDS(DeviceStateUtil.createNodeInstanceIdentifier(new NodeId(entityName)),
+                        entityName);
+            }
+        }
     }
 }
