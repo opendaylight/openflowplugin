@@ -112,6 +112,7 @@ final class MultipartRequestOnTheFlyCallback extends AbstractRequestCallback<Lis
             StatisticsGatheringUtils.writeFlowStatistics(allMultipartData, deviceInfo, registry, txFacade);
             if (!multipartReply.getFlags().isOFPMPFREQMORE()) {
                 endCollecting();
+                registry.processMarks();
             }
         }
     }
