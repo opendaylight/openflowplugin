@@ -176,6 +176,7 @@ public final class StatisticsGatheringUtils {
                 txFacade.submitTransaction();
 
                 if (MultipartType.OFPMPFLOW.equals(type)) {
+                    deviceRegistry.getDeviceFlowRegistry().processMarks();
                     EventsTimeCounter.markEnd(eventIdentifier);
                 }
 
@@ -242,23 +243,23 @@ public final class StatisticsGatheringUtils {
     private static void deleteAllKnownMeters(final TxFacade txFacade,
                                              final InstanceIdentifier<FlowCapableNode> instanceIdentifier,
                                              final DeviceMeterRegistry meterRegistry) {
-        meterRegistry.getAllMeterIds().forEach(meterId -> txFacade
+        meterRegistry.forEach(meterId -> txFacade
             .addDeleteToTxChain(
                 LogicalDatastoreType.OPERATIONAL,
                 instanceIdentifier.child(Meter.class, new MeterKey(meterId))));
 
-        meterRegistry.removeMarked();
+        meterRegistry.processMarks();
     }
 
     private static void deleteAllKnownGroups(final TxFacade txFacade,
                                              final InstanceIdentifier<FlowCapableNode> instanceIdentifier,
                                              final DeviceGroupRegistry groupRegistry) {
-        groupRegistry.getAllGroupIds().forEach(groupId -> txFacade
+        groupRegistry.forEach(groupId -> txFacade
             .addDeleteToTxChain(
                 LogicalDatastoreType.OPERATIONAL,
                 instanceIdentifier.child(Group.class, new GroupKey(groupId))));
 
-        groupRegistry.removeMarked();
+        groupRegistry.processMarks();
     }
 
     /**

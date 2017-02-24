@@ -8,14 +8,13 @@
 
 package org.opendaylight.openflowplugin.impl.registry.meter;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 
-/**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 15.4.2015.
- */
 public class DeviceMeterRegistryImpl implements DeviceMeterRegistry {
 
     private final List<MeterId> meterIds = new ArrayList<>();
@@ -27,12 +26,19 @@ public class DeviceMeterRegistryImpl implements DeviceMeterRegistry {
     }
 
     @Override
-    public void markToBeremoved(final MeterId meterId) {
+    public void addMark(final MeterId meterId) {
         marks.add(meterId);
     }
 
     @Override
-    public void removeMarked() {
+    public boolean hasMark(final MeterId meterId) {
+        synchronized (marks) {
+            return marks.contains(meterId);
+        }
+    }
+
+    @Override
+    public void processMarks() {
         synchronized (meterIds) {
             meterIds.removeAll(marks);
         }
@@ -42,8 +48,13 @@ public class DeviceMeterRegistryImpl implements DeviceMeterRegistry {
     }
 
     @Override
-    public List<MeterId> getAllMeterIds() {
-        return meterIds;
+    public void forEach(final Consumer<MeterId> consumer) {
+       meterIds.forEach(consumer);
+    }
+
+    @Override
+    public int size() {
+        return meterIds.size();
     }
 
     @Override
@@ -54,5 +65,10 @@ public class DeviceMeterRegistryImpl implements DeviceMeterRegistry {
         synchronized (marks) {
             marks.clear();
         }
+    }
+
+    @VisibleForTesting
+    List<MeterId> getAllMeterIds() {
+        return meterIds;
     }
 }
