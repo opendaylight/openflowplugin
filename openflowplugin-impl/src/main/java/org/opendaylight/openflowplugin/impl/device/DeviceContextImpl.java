@@ -12,6 +12,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import com.google.common.util.concurrent.AsyncFunction;
+import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
@@ -636,52 +637,25 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public ListenableFuture<Void> stopClusterServices(boolean connectionInterrupted) {
+    public ListenableFuture<Void> stopClusterServices() {
         final ListenableFuture<Void> deactivateTxManagerFuture = initialized
                 ? transactionChainManager.deactivateTransactionManager()
                 : Futures.immediateFuture(null);
 
+        final boolean connectionInterrupted =
+                this.getPrimaryConnectionContext()
+                        .getConnectionState()
+                        .equals(ConnectionContext.CONNECTION_STATE.RIP);
         if (!connectionInterrupted) {
-            final ListenableFuture<Void> makeSlaveFuture = Futures.transform(makeDeviceSlave(), new Function<RpcResult<SetRoleOutput>, Void>() {
-                @Nullable
-                @Override
-                public Void apply(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
-                    return null;
-                }
-            });
-
-            Futures.addCallback(makeSlaveFuture, new FutureCallback<Void>() {
-                @Override
-                public void onSuccess(@Nullable Void aVoid) {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Role SLAVE was successfully propagated on device, node {}", deviceInfo.getLOGValue());
-                    }
-                    sendNodeAddedNotification();
-                }
-
-                @Override
-                public void onFailure(final Throwable throwable) {
-                    LOG.warn("Was not able to set role SLAVE to device on node {} ", deviceInfo.getLOGValue());
-                    LOG.trace("Error occurred on device role setting, probably connection loss: ", throwable);
-                }
-            });
-
-            return Futures.transform(deactivateTxManagerFuture, new AsyncFunction<Void, Void>() {
-                @Override
-                public ListenableFuture<Void> apply(Void aVoid) throws Exception {
-                    // Add fallback to remove device from operational DS if setting slave fails
-                    return Futures.withFallback(makeSlaveFuture, t ->
-                            myManager.removeDeviceFromOperationalDS(deviceInfo));
-                }
-            });
-        } else {
-            return Futures.transform(deactivateTxManagerFuture, new AsyncFunction<Void, Void>() {
-                @Override
-                public ListenableFuture<Void> apply(Void aVoid) throws Exception {
-                    return myManager.removeDeviceFromOperationalDS(deviceInfo);
-                }
-            });
+            LOG.info("This controller instance is now acting as a non-owner for node {}", deviceInfo.getLOGValue());
         }
+
+        return deactivateTxManagerFuture;
+    }
+
+    @Override
+    public void cleanupDeviceData() {
+        myManager.removeDeviceFromOperationalDS(deviceInfo);
     }
 
     @Override

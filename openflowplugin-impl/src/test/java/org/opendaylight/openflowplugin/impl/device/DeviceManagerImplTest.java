@@ -37,6 +37,7 @@ import org.mockito.stubbing.Answer;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
@@ -107,6 +108,8 @@ public class DeviceManagerImplTest {
     @Mock
     private ClusterSingletonServiceProvider clusterSingletonServiceProvider;
     @Mock
+    private EntityOwnershipService entityOwnershipService;
+    @Mock
     private ConvertorExecutor convertorExecutor;
     @Mock
     private KeyedInstanceIdentifier<Node, NodeKey> key;
@@ -153,10 +156,8 @@ public class DeviceManagerImplTest {
                 messageIntelligenceAgency,
                 true,
                 clusterSingletonServiceProvider,
-                null,
-                new HashedWheelTimer(),
-                convertorExecutor,
-                false);
+                entityOwnershipService, new HashedWheelTimer(), convertorExecutor, false, null
+        );
 
         deviceManager.setDeviceInitializationPhaseHandler(deviceInitPhaseHandler);
         deviceManager.setDeviceTerminationPhaseHandler(deviceTerminationPhaseHandler);

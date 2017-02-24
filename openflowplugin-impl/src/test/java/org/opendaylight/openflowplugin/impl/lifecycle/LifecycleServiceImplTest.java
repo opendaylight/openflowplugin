@@ -15,6 +15,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListenerRegistration;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
@@ -47,7 +49,11 @@ public class LifecycleServiceImplTest {
     @Mock
     private ClusterSingletonServiceProvider clusterSingletonServiceProvider;
     @Mock
+    private EntityOwnershipService entityOwnershipService;
+    @Mock
     private ClusterSingletonServiceRegistration clusterSingletonServiceRegistration;
+    @Mock
+    EntityOwnershipListenerRegistration entityOwnershipListenerRegistration;
 
     private LifecycleService lifecycleService;
 
@@ -63,15 +69,18 @@ public class LifecycleServiceImplTest {
         Mockito.when(clusterSingletonServiceProvider.registerClusterSingletonService(Mockito.any()))
                 .thenReturn(clusterSingletonServiceRegistration);
 
-        Mockito.when(deviceContext.stopClusterServices(Mockito.anyBoolean())).thenReturn(Futures.immediateFuture(null));
-        Mockito.when(statContext.stopClusterServices(Mockito.anyBoolean())).thenReturn(Futures.immediateFuture(null));
-        Mockito.when(rpcContext.stopClusterServices(Mockito.anyBoolean())).thenReturn(Futures.immediateFuture(null));
+        Mockito.when(entityOwnershipService.registerListener(Mockito.any(),Mockito.any()))
+                .thenReturn(entityOwnershipListenerRegistration);
+
+        Mockito.when(deviceContext.stopClusterServices()).thenReturn(Futures.immediateFuture(null));
+        Mockito.when(statContext.stopClusterServices()).thenReturn(Futures.immediateFuture(null));
+        Mockito.when(rpcContext.stopClusterServices()).thenReturn(Futures.immediateFuture(null));
 
         lifecycleService = new LifecycleServiceImpl();
         lifecycleService.setDeviceContext(deviceContext);
         lifecycleService.setRpcContext(rpcContext);
         lifecycleService.setStatContext(statContext);
-        lifecycleService.registerService(clusterSingletonServiceProvider);
+        lifecycleService.registerService(clusterSingletonServiceProvider, entityOwnershipService);
     }
 
     @Test
@@ -86,9 +95,9 @@ public class LifecycleServiceImplTest {
     @Test
     public void closeServiceInstance() throws Exception {
         lifecycleService.closeServiceInstance().get();
-        Mockito.verify(statContext).stopClusterServices(false);
-        Mockito.verify(deviceContext).stopClusterServices(false);
-        Mockito.verify(rpcContext).stopClusterServices(false);
+        Mockito.verify(statContext).stopClusterServices();
+        Mockito.verify(deviceContext).stopClusterServices();
+        Mockito.verify(rpcContext).stopClusterServices();
     }
 
     @Test

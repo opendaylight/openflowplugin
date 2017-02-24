@@ -40,9 +40,8 @@ public interface OFPContext extends AutoCloseable, ClusterLifecycleSupervisor, C
     /**
      * About to stop services in cluster not master anymore or going down
      * @return Future most of services need time to be closed
-     * @param connectionInterrupted true if clustering services stopping by device disconnect
      */
-    default ListenableFuture<Void> stopClusterServices(boolean connectionInterrupted) {
+    default ListenableFuture<Void> stopClusterServices() {
         return Futures.immediateFailedFuture(new RejectedExecutionException("Cannot stop abstract services, check implementation of cluster services"));
     }
 

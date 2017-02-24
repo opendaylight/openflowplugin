@@ -234,7 +234,7 @@ class StatisticsContextImpl implements StatisticsContext {
             }
         } else {
             try {
-                stopClusterServices(true).get();
+                stopClusterServices().get();
             } catch (Exception e) {
                 LOG.debug("Failed to close StatisticsContext for node {} with exception: ", getDeviceInfo().getLOGValue(), e);
             }
@@ -440,7 +440,7 @@ class StatisticsContextImpl implements StatisticsContext {
     }
 
     @Override
-    public ListenableFuture<Void> stopClusterServices(boolean connectionInterrupted) {
+    public ListenableFuture<Void> stopClusterServices() {
         if (CONTEXT_STATE.TERMINATION.equals(getState())) {
             return Futures.immediateCancelledFuture();
         }

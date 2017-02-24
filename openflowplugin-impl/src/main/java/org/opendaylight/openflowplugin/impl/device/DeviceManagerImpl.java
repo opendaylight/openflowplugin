@@ -31,6 +31,7 @@ import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
@@ -92,6 +93,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private ExtensionConverterProvider extensionConverterProvider;
     private ScheduledThreadPoolExecutor spyPool;
     private final ClusterSingletonServiceProvider singletonServiceProvider;
+    private final EntityOwnershipService entityOwnershipService;
     private final NotificationPublishService notificationPublishService;
     private final MessageSpy messageSpy;
     private final HashedWheelTimer hashedWheelTimer;
@@ -104,25 +106,15 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                              final MessageSpy messageSpy,
                              final boolean isFlowRemovedNotificationOn,
                              final ClusterSingletonServiceProvider singletonServiceProvider,
-                             final NotificationPublishService notificationPublishService,
+                             final EntityOwnershipService entityOwnershipService,
                              final HashedWheelTimer hashedWheelTimer,
                              final ConvertorExecutor convertorExecutor,
-                             final boolean skipTableFeatures) {
+                             final boolean skipTableFeatures,
+                             final NotificationPublishService notificationPublishService) {
+
 
         this.dataBroker = dataBroker;
-
-        /* merge empty nodes to oper DS to predict any problems with missing parent for Node */
-        final WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
-        final NodesBuilder nodesBuilder = new NodesBuilder();
-        nodesBuilder.setNode(Collections.<Node>emptyList());
-        tx.merge(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(Nodes.class), nodesBuilder.build());
-        try {
-            tx.submit().get();
-        } catch (ExecutionException | InterruptedException e) {
-            LOG.error("Creation of node failed.", e);
-            throw new IllegalStateException(e);
-        }
-
+        this.entityOwnershipService = entityOwnershipService;
         this.switchFeaturesMandatory = switchFeaturesMandatory;
         this.globalNotificationQuota = globalNotificationQuota;
         this.isFlowRemovedNotificationOn = isFlowRemovedNotificationOn;
@@ -135,6 +127,18 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         this.singletonServiceProvider = singletonServiceProvider;
         this.notificationPublishService = notificationPublishService;
         this.messageSpy = messageSpy;
+
+        /* merge empty nodes to oper DS to predict any problems with missing parent for Node */
+        final WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
+        final NodesBuilder nodesBuilder = new NodesBuilder();
+        nodesBuilder.setNode(Collections.<Node>emptyList());
+        tx.merge(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(Nodes.class), nodesBuilder.build());
+        try {
+            tx.submit().get();
+        } catch (ExecutionException | InterruptedException e) {
+            LOG.error("Creation of node failed.", e);
+            throw new IllegalStateException(e);
+        }
     }
 
 
@@ -150,7 +154,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         DeviceContext deviceContext = Preconditions.checkNotNull(deviceContexts.get(deviceInfo));
         deviceContext.onPublished();
         lifecycleService.registerDeviceRemovedHandler(this);
-        lifecycleService.registerService(this.singletonServiceProvider);
+        lifecycleService.registerService(this.singletonServiceProvider, this.entityOwnershipService);
     }
 
     @Override

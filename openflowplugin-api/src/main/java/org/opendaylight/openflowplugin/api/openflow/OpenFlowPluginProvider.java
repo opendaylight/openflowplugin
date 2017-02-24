@@ -14,6 +14,7 @@ import org.opendaylight.controller.md.sal.binding.api.BindingService;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
@@ -41,6 +42,9 @@ public interface OpenFlowPluginProvider extends AutoCloseable, BindingService {
 
     void setNotificationPublishService(NotificationPublishService notificationPublishService);
 
+    void setClusteringSingletonServicesProvider(ClusterSingletonServiceProvider singletonServicesProvider);
+
+    void setEntityOwnershipServiceProvider(EntityOwnershipService entityOwnershipService);
     /**
      * Method initializes all DeviceManager, RpcManager and related contexts.
      */
@@ -75,8 +79,6 @@ public interface OpenFlowPluginProvider extends AutoCloseable, BindingService {
     void setFlowRemovedNotification(boolean isFlowRemovedNotificationOn);
 
     void update(Map<String,Object> props);
-
-    void setClusteringSingletonServicesProvider(ClusterSingletonServiceProvider singletonServicesProvider);
 
     void setSkipTableFeatures(boolean skipTableFeatures);
 

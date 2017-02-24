@@ -9,6 +9,9 @@
 package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
 import javax.annotation.CheckForNull;
+
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListener;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
@@ -20,13 +23,14 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext
 /**
  * Service for starting or stopping all services in plugin in cluster
  */
-public interface LifecycleService extends ClusterSingletonService, OFPContext {
+public interface LifecycleService extends ClusterSingletonService, OFPContext, EntityOwnershipListener {
 
     /**
      * This method registers lifecycle service to the given provider
      * @param singletonServiceProvider from md-sal binding
      */
-    void registerService(final ClusterSingletonServiceProvider singletonServiceProvider);
+    void registerService(final ClusterSingletonServiceProvider singletonServiceProvider,
+                         final EntityOwnershipService entityOwnershipService);
 
     /**
      * This method registers device removed handler what will be executed when device should be removed

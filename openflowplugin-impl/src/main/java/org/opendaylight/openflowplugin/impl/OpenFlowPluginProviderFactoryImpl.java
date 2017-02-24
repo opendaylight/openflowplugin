@@ -48,11 +48,16 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
                 providerConfig.getThreadPoolMaxThreads().getValue(),
                 providerConfig.getThreadPoolTimeout());
 
+        //Set services
         openflowPluginProvider.setSwitchConnectionProviders(switchConnectionProviders);
         openflowPluginProvider.setDataBroker(dataBroker);
         openflowPluginProvider.setRpcProviderRegistry(rpcRegistry);
         openflowPluginProvider.setNotificationProviderService(notificationService);
         openflowPluginProvider.setNotificationPublishService(notificationPublishService);
+        openflowPluginProvider.setEntityOwnershipServiceProvider(entityOwnershipService);
+        openflowPluginProvider.setClusteringSingletonServicesProvider(singletonServiceProvider);
+
+        //Set config parameters
         openflowPluginProvider.setSwitchFeaturesMandatory(providerConfig.isSwitchFeaturesMandatory());
         openflowPluginProvider.setFlowRemovedNotification(providerConfig.isEnableFlowRemovedNotification());
         openflowPluginProvider.setIsStatisticsRpcEnabled(providerConfig.isIsStatisticsRpcEnabled());
@@ -60,7 +65,6 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
         openflowPluginProvider.setBarrierInterval(providerConfig.getBarrierIntervalTimeoutLimit().getValue());
         openflowPluginProvider.setEchoReplyTimeout(providerConfig.getEchoReplyTimeout().getValue());
         openflowPluginProvider.setStatisticsPollingOn(providerConfig.isIsStatisticsPollingOn());
-        openflowPluginProvider.setClusteringSingletonServicesProvider(singletonServiceProvider);
         openflowPluginProvider.setSkipTableFeatures(providerConfig.isSkipTableFeatures());
         openflowPluginProvider.setBasicTimerDelay(providerConfig.getBasicTimerDelay().getValue());
         openflowPluginProvider.setMaximumTimerDelay(providerConfig.getMaximumTimerDelay().getValue());

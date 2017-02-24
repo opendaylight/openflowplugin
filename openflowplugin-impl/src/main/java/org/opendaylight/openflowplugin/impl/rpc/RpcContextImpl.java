@@ -115,7 +115,7 @@ class RpcContextImpl implements RpcContext {
             }
         } else {
             try {
-                stopClusterServices(true).get();
+                stopClusterServices().get();
             } catch (Exception e) {
                 LOG.debug("Failed to close RpcContext for node {} with exception: ", getDeviceInfo().getLOGValue(), e);
             }
@@ -188,7 +188,7 @@ class RpcContextImpl implements RpcContext {
     }
 
     @Override
-    public ListenableFuture<Void> stopClusterServices(boolean connectionInterrupted) {
+    public ListenableFuture<Void> stopClusterServices() {
         if (CONTEXT_STATE.TERMINATION.equals(getState())) {
             return Futures.immediateCancelledFuture();
         }
