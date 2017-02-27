@@ -13,8 +13,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;
 import java.util.concurrent.Future;
-import java.util.function.Function;
-import javax.annotation.Nullable;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -41,37 +39,6 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
  */
 abstract class AbstractDirectStatisticsService<I extends StoreStatsGrouping, O extends DataContainer, T extends OfHeader>
         extends AbstractMultipartService<I, T> {
-
-    private final Function<RpcResult<List<T>>, RpcResult<O>> resultTransformFunction =
-            new Function<RpcResult<List<T>>, RpcResult<O>>() {
-                @Nullable
-                @Override
-                public RpcResult<O> apply(@Nullable RpcResult<List<T>> input) {
-                    return Preconditions.checkNotNull(input).isSuccessful()
-                            ? RpcResultBuilder.success(buildReply(input.getResult(), input.isSuccessful())).build()
-                            : RpcResultBuilder.<O>failed().build();
-                }
-            };
-
-    private final Function<RpcResult<O>, RpcResult<O>> resultStoreFunction =
-            new Function<RpcResult<O>, RpcResult<O>>() {
-                @Nullable
-                @Override
-                public RpcResult<O> apply(@Nullable RpcResult<O> input)  {
-                    Preconditions.checkNotNull(input);
-
-                    if (input.isSuccessful()) {
-                        multipartWriterProvider
-                            .lookup(multipartType)
-                            .ifPresent(writer -> {
-                                writer.write(input.getResult(), true);
-                                getTxFacade().submitTransaction();
-                            });
-                    }
-
-                    return input;
-                }
-            };
 
     private final MultipartType multipartType;
     private final OpenflowVersion ofVersion = OpenflowVersion.get(getVersion());
@@ -105,13 +72,32 @@ abstract class AbstractDirectStatisticsService<I extends StoreStatsGrouping, O e
      */
     Future<RpcResult<O>> handleAndReply(final I input) {
         final ListenableFuture<RpcResult<List<T>>> rpcReply = handleServiceCall(input);
-        ListenableFuture<RpcResult<O>> rpcResult = Futures.transform(rpcReply, resultTransformFunction::apply);
+        ListenableFuture<RpcResult<O>> rpcResult = Futures.transform(rpcReply, this::transformResult);
 
         if (Boolean.TRUE.equals(input.isStoreStats())) {
-            rpcResult = Futures.transform(rpcResult, resultStoreFunction::apply);
+            rpcResult = Futures.transform(rpcResult, this::storeResult);
         }
 
         return rpcResult;
+    }
+
+    private RpcResult<O> transformResult(final RpcResult<List<T>> input) {
+        return Preconditions.checkNotNull(input).isSuccessful()
+                ? RpcResultBuilder.success(buildReply(input.getResult(), input.isSuccessful())).build()
+                : RpcResultBuilder.<O>failed().build();
+    }
+
+    private RpcResult<O> storeResult(final RpcResult<O> input) {
+        Preconditions.checkNotNull(input);
+
+        if (input.isSuccessful()) {
+            multipartWriterProvider.lookup(multipartType).ifPresent(writer -> {
+                writer.write(input.getResult(), true);
+                getTxFacade().submitTransaction();
+            });
+        }
+
+        return input;
     }
 
     @Override
