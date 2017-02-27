@@ -117,7 +117,7 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
     }
 
     @Override
-    public Future<? extends RpcResult> add(
+    public Future<? extends RpcResult<?>> add(
         final InstanceIdentifier<TableFeatures> identifier,
         final TableFeatures addDataObj,
         final InstanceIdentifier<FlowCapableNode> nodeIdent) {
@@ -125,13 +125,15 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
     }
 
     @Override
-    public void createStaleMarkEntity(InstanceIdentifier<TableFeatures> identifier, TableFeatures del, InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public void createStaleMarkEntity(InstanceIdentifier<TableFeatures> identifier, TableFeatures del,
+            InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.debug("NO-OP");
 
     }
 
     @Override
-    public Future<? extends RpcResult> removeWithResult(InstanceIdentifier<TableFeatures> identifier, TableFeatures del, InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public Future<? extends RpcResult<?>> removeWithResult(InstanceIdentifier<TableFeatures> identifier,
+            TableFeatures del, InstanceIdentifier<FlowCapableNode> nodeIdent) {
         return null;
     }
 
