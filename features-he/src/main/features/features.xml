@@ -14,7 +14,7 @@
     <repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.netconf/features-restconf/${restconf.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.openflowjava/features-openflowjava/${openflowjava.version}/xml/features</repository>
-    <repository>mvn:org.opendaylight.dlux/features-dlux/${dlux.version}/xml/features</repository>
+    <repository>mvn:org.opendaylight.dluxapps/features-dluxapps/${dluxapps.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.yangtools/features-yangtools/${yangtools.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.mdsal.model/features-mdsal-model/${mdsal.model.version}/xml/features</repository>
 
@@ -78,7 +78,7 @@
     </feature>
     <feature name='odl-openflowplugin-flow-services-ui-he' description="OpenDaylight :: Openflow Plugin :: Flow Services :: UI" version='${project.version}'>
         <feature version="${project.version}">odl-openflowplugin-flow-services-rest-he</feature>
-        <feature version="${dlux.version}">odl-dlux-core</feature>
+        <feature version="${dluxapps.version}">odl-dluxapps-topology</feature>
         <feature version="${restconf.version}">odl-mdsal-apidocs</feature>
     </feature>
 
