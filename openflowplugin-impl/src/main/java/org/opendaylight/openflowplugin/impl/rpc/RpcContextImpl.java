@@ -228,7 +228,7 @@ class RpcContextImpl implements RpcContext {
 
         MdSalRegistrationUtils.registerServices(this, deviceContext, extensionConverterProvider, convertorExecutor);
 
-        if (isStatisticsRpcEnabled) {
+        if (isStatisticsRpcEnabled && !deviceContext.canUseSingleLayerSerialization()) {
             MdSalRegistrationUtils.registerStatCompatibilityServices(
                     this,
                     deviceContext,

@@ -112,4 +112,16 @@ module opendaylight-queue-statistics {
             uses queue-id-and-statistics-map;
         }
     }
+
+    augment "/multipart:multipart-request/multipart:multipart-request-body" {
+        case multipart-request-queue-stats {
+            leaf queue-id {
+                type queue-types:queue-id;
+            }
+
+            leaf node-connector-id {
+                type inv:node-connector-id;
+            }
+        }
+    }
 }
