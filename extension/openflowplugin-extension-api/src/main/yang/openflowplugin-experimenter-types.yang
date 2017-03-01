@@ -8,7 +8,6 @@ module openflowplugin-experimenter-types {
         description "Initial revision of experimenter basic types";
     }
 
-
     grouping experimenter-core-message {
         choice experimenter-message-of-choice {
             // to be augmented by vendors
@@ -21,4 +20,9 @@ module openflowplugin-experimenter-types {
         }
     }
 
+    augment "/multipart:multipart-request/multipart:multipart-request-body" {
+        case multipart-request-experimenter {
+            uses experimenter-core-message;
+        }
+    }
 }
