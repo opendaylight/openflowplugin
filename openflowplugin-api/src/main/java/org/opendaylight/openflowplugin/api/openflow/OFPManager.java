@@ -17,7 +17,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTermin
 /**
  * This interface is responsible for managing lifecycle of itself and all it's associated contexts.
  * Every manager that implements this interface must handle connection initialization and termination chain
- * by implementing methods from {@link org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceLifecycleSupervisor},
+ * by implementing methods from
+ * {@link org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceLifecycleSupervisor},
  * then it must handle initialization and termination chain of it's associated context by implementing methods from
  * {@link org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler} and
  * {@link org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler} and also removal
