@@ -8,15 +8,26 @@ module opendaylight-multipart-types {
         description "Initial revision";
     }
 
-    container multipart-reply {
+    grouping multipart-header {
         uses ofproto:ofHeader;
 
         leaf request-more {
             type boolean;
             default false;
         }
+    }
+
+    container multipart-reply {
+        uses multipart-header;
 
         choice multipart-reply-body {
+        }
+    }
+
+    container multipart-request {
+        uses multipart-header;
+
+        choice multipart-request-body {
         }
     }
 }
