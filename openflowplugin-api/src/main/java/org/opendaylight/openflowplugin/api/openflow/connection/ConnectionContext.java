@@ -25,94 +25,97 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public interface ConnectionContext {
 
     /**
+     * Setter.
      * @param handshakeContext corresponding handshake context used upon this connection
      */
     void setHandshakeContext(HandshakeContext handshakeContext);
 
     /**
-     * distinguished connection states
+     * Distinguished connection states.
      */
+    @SuppressWarnings({"checkstyle:abbreviationaswordinname","checkstyle:typename"})
     enum CONNECTION_STATE {
         /**
-         * initial phase of talking to switch
+         * initial phase of talking to switch.
          */
         HANDSHAKING,
         /**
-         * standard phase - interacting with switch
+         * standard phase - interacting with switch.
          */
         WORKING,
         /**
-         * connection is idle, waiting for echo reply from switch
+         * connection is idle, waiting for echo reply from switch.
          */
         TIMEOUTING,
         /**
-         * talking to switch is over - resting in pieces
+         * talking to switch is over - resting in pieces.
          */
         RIP
     }
 
     /**
-     * setter for nodeId
-     *
-     * @param nodeId
+     * Setter for nodeId.
+     * @param nodeId node id
      */
     void setNodeId(NodeId nodeId);
 
     /**
      * Method returns identifier of device whic connection represents this context.
-     *
      * @return {@link org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId}
      */
     NodeId getNodeId();
 
     /**
+     * Returns connection adapter.
      * @return the connectionAdapter
      */
     ConnectionAdapter getConnectionAdapter();
 
     /**
      * Returns reference to OFJava outbound queue provider. Outbound queue is used for outbound messages processing.
-     *
-     * @return
+     * @return Ouboundqueue provider
      */
     OutboundQueue getOutboundQueueProvider();
 
     /**
      * Method sets reference to OFJava outbound queue provider.
+     * @param OutboundQueueProvider outbound-queue provider
      */
     void setOutboundQueueProvider(OutboundQueueProvider outboundQueueProvider);
 
     /**
      * Method returns current connection state.
-     *
      * @return {@link ConnectionContext.CONNECTION_STATE}
      */
     CONNECTION_STATE getConnectionState();
 
     /**
+     * Setter.
      * @param featuresReply as received from device during handshake
      */
     void setFeatures(FeaturesReply featuresReply);
 
     /**
+     * Getter.
      * @return featureReply as received from device during handshake
      */
     FeaturesReply getFeatures();
 
     /**
      * Method sets handler for handling closing connections.
-     *
-     * @param deviceDisconnectedHandler
+     * @param deviceDisconnectedHandler handler for disconnect
      */
-    void setDeviceDisconnectedHandler(DeviceDisconnectedHandler deviceDisconnectedHandler);
+    void setDeviceDisconnectedHandler(
+            DeviceDisconnectedHandler deviceDisconnectedHandler);
 
     String getSafeNodeIdForLOG();
 
-    void setOutboundQueueHandleRegistration(OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration);
+    void setOutboundQueueHandleRegistration(
+            OutboundQueueHandlerRegistration<OutboundQueueProvider>
+                    outboundQueueHandlerRegistration);
 
     /**
-     * actively drop associated connection
-     *
+     * actively drop associated connection.
      * @param propagate true if event need to be propagated to higher contexts (device, stats, rpc..)
      *                  or false if invoked from higher context
      * @see ConnectionAdapter#disconnect()
@@ -120,33 +123,34 @@ public interface ConnectionContext {
     void closeConnection(boolean propagate);
 
     /**
-     * cleanup context upon connection closed event (by device)
+     * cleanup context upon connection closed event (by device).
      */
     void onConnectionClosed();
 
     /**
-     * change internal state to {@link ConnectionContext.CONNECTION_STATE#HANDSHAKING}
+     * change internal state to {@link ConnectionContext.CONNECTION_STATE#HANDSHAKING}.
      */
     void changeStateToHandshaking();
 
     /**
-     * change internal state to {@link ConnectionContext.CONNECTION_STATE#TIMEOUTING}
+     * change internal state to {@link ConnectionContext.CONNECTION_STATE#TIMEOUTING}.
      */
     void changeStateToTimeouting();
 
     /**
-     * change internal state to {@link ConnectionContext.CONNECTION_STATE#WORKING}
+     * change internal state to {@link ConnectionContext.CONNECTION_STATE#WORKING}.
      */
     void changeStateToWorking();
 
     /**
-     * Create and return basic device info
+     * Create and return basic device info.
      * @return created device info
      */
     DeviceInfo getDeviceInfo();
 
     /**
-     * This method creates a basic device information. Should be called after nodeId and features are set in connection context
+     * This method creates a basic device information.
+     * Should be called after nodeId and features are set in connection context.
      */
     void handshakeSuccessful();
 }
