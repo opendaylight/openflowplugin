@@ -13,7 +13,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 
 /**
- * OFP related constants
+ * OFP related constants.
  */
 public final class OFConstants {
 
@@ -21,16 +21,16 @@ public final class OFConstants {
         throw new UnsupportedOperationException("OF plugin Constants holder class");
     }
 
-    /** enum ofp_port_no, reserved port: process with normal L2/L3 switching  */
+    /** enum ofp_port_no, reserved port: process with normal L2/L3 switching.  */
     public static final short OFPP_NORMAL = ((short)0xfffa);
-    /** enum ofp_port_no, reserved port: all physical ports except input port  */
+    /** enum ofp_port_no, reserved port: all physical ports except input port.  */
     public static final short OFPP_ALL  = ((short)0xfffc);
-    /** enum ofp_port_no, reserved port: local openflow port  */
+    /** enum ofp_port_no, reserved port: local openflow port.  */
     public static final short OFPP_LOCAL = ((short)0xfffe);
 
-    /** openflow protocol 1.0 - version identifier */
+    /** openflow protocol 1.0 - version identifier. */
     public static final short OFP_VERSION_1_0 = 0x01;
-    /** openflow protocol 1.3 - version identifier */
+    /** openflow protocol 1.3 - version identifier. */
     public static final short OFP_VERSION_1_3 = 0x04;
 
     public static final String OF_URI_PREFIX = "openflow:";
@@ -50,12 +50,12 @@ public final class OFConstants {
     public static final Long OFPQ_ALL = ANY;
     /** Represents all meters for stat requests commands. */
     public static final Long OFPM_ALL = ANY;
-    /** default cookie */
+    /** Default cookie. */
     public static final BigInteger DEFAULT_COOKIE = BigInteger.ZERO;
     public static final BigInteger DEFAULT_COOKIE_MASK = BigInteger.ZERO;
     public static final FlowCookie DEFAULT_FLOW_COOKIE = new FlowCookie(DEFAULT_COOKIE);
     public static final Integer DEFAULT_FLOW_PRIORITY = 0x8000;
-    /** Empty flow match */
+    /** Empty flow match. */
     public static final Match EMPTY_MATCH = new MatchBuilder().build();
 
     /** indicates that no buffering should be applied and the whole packet is to be
@@ -69,8 +69,8 @@ public final class OFConstants {
     public static final int SIZE_OF_LONG_IN_BYTES = 8;
     public static final int SIGNUM_UNSIGNED = 1;
 
-    /** RpcError application tag */
+    /** RpcError application tag. */
     public static final String APPLICATION_TAG = "OPENFLOW_PLUGIN";
-    /** RpcError tag - timeout */
+    /** RpcError tag - timeout. */
     public static final String ERROR_TAG_TIMEOUT = "TIMOUT";
 }
