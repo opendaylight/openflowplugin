@@ -146,4 +146,18 @@ module opendaylight-group-statistics {
             uses group-types:group-features-reply;
         }
     }
+
+    augment "/multipart:multipart-request/multipart:multipart-request-body" {
+        case multipart-request-group-desc {
+            // Empty request case
+        }
+        case multipart-request-group-features {
+            // Empty request case
+        }
+        case multipart-request-group-stats {
+            leaf group-id {
+                type group-types:group-id;
+            }
+        }
+    }
 }

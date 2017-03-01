@@ -12,6 +12,7 @@ import com.google.common.collect.Ordering;
 import io.netty.buffer.ByteBuf;
 import java.util.List;
 import java.util.Optional;
+import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
@@ -83,6 +84,45 @@ public class ActionUtil {
             });
         } catch (final IllegalStateException | ClassCastException e) {
             LOG.warn("Serializer for action {} for version {} not found.", action.getImplementedInterface(), version);
+        }
+    }
+
+    /**
+     * Serialize OpenFlow action header, using extension converter if available
+     * TODO: Remove also extension converters
+     *
+     * @param action    OpenFlowPlugin action
+     * @param version   OpenFlow version
+     * @param registry  serializer registry
+     * @param outBuffer output buffer
+     */
+    @SuppressWarnings("unchecked")
+    public static void writeActionHeader(Action action, short version, SerializerRegistry registry, ByteBuf outBuffer) {
+        try {
+            Optional.ofNullable(OFSessionUtil.getExtensionConvertorProvider())
+                .flatMap(provider ->
+                    (GeneralExtensionGrouping.class.isInstance(action)
+                        ? convertExtensionGrouping(provider, action, version)
+                        : convertGenericAction(provider, action, version))
+                        .map(ofjAction -> {
+                            final HeaderSerializer<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common
+                                .action.rev150203.actions.grouping.Action> serializer = registry
+                                .getSerializer(TypeKeyMakerFactory.createActionKeyMaker(version)
+                                    .make(ofjAction));
+
+                            serializer.serializeHeader(ofjAction, outBuffer);
+                            return action;
+                        })
+                ).orElseGet(() -> {
+                final HeaderSerializer<Action> serializer = registry.getSerializer(
+                    new MessageTypeKey<>(
+                        version, (Class<? extends Action>) action.getImplementedInterface()));
+
+                serializer.serializeHeader(action, outBuffer);
+                return action;
+            });
+        } catch (final IllegalStateException | ClassCastException e) {
+            LOG.warn("Header Serializer for action {} for version {} not found.", action.getImplementedInterface(), version);
         }
     }
 
