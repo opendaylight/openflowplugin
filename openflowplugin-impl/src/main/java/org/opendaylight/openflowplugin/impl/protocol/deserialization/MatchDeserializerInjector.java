@@ -13,15 +13,12 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
-import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.openflowplugin.impl.protocol.deserialization.key.MessageCodeMatchKey;
-import org.opendaylight.openflowplugin.impl.protocol.deserialization.match.MatchDeserializer;
-import org.opendaylight.openflowplugin.impl.protocol.deserialization.match.MatchDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.api.openflow.protocol.deserialization.MatchEntryDeserializer;
 import org.opendaylight.openflowplugin.api.openflow.protocol.deserialization.MatchEntryDeserializerRegistry;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.key.MessageCodeMatchKey;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.match.ArpOpEntryDeserializer;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.match.ArpSourceHardwareAddressEntryDeserializer;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.match.ArpSourceTransportAddressEntryDeserializer;
@@ -75,7 +72,7 @@ public class MatchDeserializerInjector {
      * Injects deserializers into provided {@link org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider}
      * @param provider OpenflowJava deserializer extension provider
      */
-    public static void injectDeserializers(final DeserializerExtensionProvider provider) {
+    static void injectDeserializers(final DeserializerExtensionProvider provider) {
         for (MatchPath path : MatchPath.values()) {
             final MatchDeserializer deserializer = new MatchDeserializer(path);
             provider.registerDeserializer(
