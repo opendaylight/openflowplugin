@@ -12,7 +12,7 @@ import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandler;
 
 /**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 12.5.2015.
+ * Outbound queue provider.
  */
 public interface OutboundQueueProvider extends OutboundQueue, OutboundQueueHandler {
 

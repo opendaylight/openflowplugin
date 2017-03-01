@@ -9,7 +9,7 @@
 package org.opendaylight.openflowplugin.api.openflow.connection;
 
 /**
- * Define all possible states of connection after handshake
+ * Define all possible states of connection after handshake.
  */
 public enum ConnectionStatus {
 
