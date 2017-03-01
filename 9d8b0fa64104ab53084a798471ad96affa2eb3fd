@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fafc7978_41b46a34",
+        "filename": "extension/openflowplugin-extension-onf/src/main/yang/sal-bundle.yang",
+        "patchSetId": 10
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2017-03-01T13:54:13Z",
+      "side": 1,
+      "message": "what is the reason for this?",
+      "range": {
+        "startLine": 84,
+        "startChar": 0,
+        "endLine": 85,
+        "endChar": 30
+      },
+      "revId": "9d8b0fa64104ab53084a798471ad96affa2eb3fd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
