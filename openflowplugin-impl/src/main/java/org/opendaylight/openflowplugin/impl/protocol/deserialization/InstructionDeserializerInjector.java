@@ -29,7 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 
 import com.google.common.annotations.VisibleForTesting;
 
-public class InstructionDeserializerInjector {
+class InstructionDeserializerInjector {
 
     /**
      * Injects instruction deserializers into provided {@link org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider}

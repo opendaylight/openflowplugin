@@ -26,6 +26,7 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.util.ActionUtil;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.util.InstructionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.ActionList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.VlanCfi;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushVlanActionCaseBuilder;
@@ -193,12 +194,7 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
                         .map(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Instruction::getInstruction)
                         .filter(Objects::nonNull)
                         .map(i -> protocol.flatMap(p -> updateInstruction(i, p)).orElse(i))
-                        .forEach(i -> registry.<Instruction, OFSerializer<Instruction>>getSerializer(
-                                new MessageTypeKey<>(
-                                        EncodeConstants.OF13_VERSION_ID,
-                                        (Class<Instruction>) i.getImplementedInterface()))
-                                .serialize(i, outBuffer)
-                        ));
+                        .forEach(i -> InstructionUtil.writeInstruction(i, EncodeConstants.OF13_VERSION_ID, registry, outBuffer)));
     }
 
     /**

@@ -24,6 +24,7 @@ public class SerializerInjector {
         MatchSerializerInjector.injectSerializers(provider);
         ActionSerializerInjector.injectSerializers(provider);
         InstructionSerializerInjector.injectSerializers(provider);
+        MultipartSerializerInjector.injectSerializers(provider);
         MessageSerializerInjector.injectSerializers(provider);
     }
 }
