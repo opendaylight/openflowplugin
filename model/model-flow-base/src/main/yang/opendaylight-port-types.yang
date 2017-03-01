@@ -193,4 +193,11 @@ module opendaylight-port-types {
             }
         }
     }
+
+
+    augment "/multipart:multipart-request/multipart:multipart-request-body" {
+        case multipart-request-port-desc {
+            // Empty case
+        }
+    }
 }
