@@ -324,4 +324,10 @@ module flow-node-inventory {
             uses desc;
         }
     }
+
+    augment "/multipart:multipart-request/multipart:multipart-request-body" {
+        case multipart-request-desc {
+            // Empty request case
+        }
+    }
 }
