@@ -137,4 +137,20 @@ module opendaylight-meter-statistics {
             uses meter-types:meter-features-reply;
         }
     }
+
+    augment "/multipart:multipart-request/multipart:multipart-request-body" {
+        case multipart-request-meter-config {
+            leaf meter-id {
+                type meter-types:meter-id;
+            }
+        }
+        case multipart-request-meter-features {
+            // Empty request case
+        }
+        case multipart-request-meter-stats {
+            leaf meter-id {
+                type meter-types:meter-id;
+            }
+        }
+    }
 }
