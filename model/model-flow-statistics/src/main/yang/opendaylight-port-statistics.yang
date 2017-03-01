@@ -87,4 +87,12 @@ module opendaylight-port-statistics {
             uses node-connector-statistics-and-port-number-map;
         }
     }
+
+    augment "/multipart:multipart-request/multipart:multipart-request-body" {
+        case multipart-request-port-stats {
+            leaf node-connector-id {
+                type inv:node-connector-id;
+            }
+        }
+    }
 }

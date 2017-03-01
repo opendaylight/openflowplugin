@@ -74,4 +74,10 @@ module opendaylight-flow-table-statistics {
             uses flow-table-and-statistics-map;
         }
     }
+
+    augment "/multipart:multipart-request/multipart:multipart-request-body" {
+        case multipart-request-flow-table-stats {
+            // Empty request case
+        }
+    }
 }

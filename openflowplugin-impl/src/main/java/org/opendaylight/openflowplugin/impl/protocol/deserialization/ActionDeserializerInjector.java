@@ -36,7 +36,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 
 import com.google.common.annotations.VisibleForTesting;
 
-public class ActionDeserializerInjector {
+class ActionDeserializerInjector {
 
     /**
      * Injects action deserializers into provided {@link org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider}

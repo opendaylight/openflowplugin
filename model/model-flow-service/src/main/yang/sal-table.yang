@@ -5,14 +5,13 @@ module sal-table {
     import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
     import opendaylight-table-types {prefix table-type;revision-date "2013-10-26";}
     import flow-capable-transaction {prefix tr; revision-date "2015-03-04";}
-    import opendaylight-multipart-types { prefix multipart; revision-date "2017-01-12"; }
 
     description "Openflow table management.";
 
     revision "2013-10-26" {
         description "Initial revision of table service";
     }
-    
+
     grouping table-update {
         description "Openflow table configuration structure suitable for rpc (contains node-context-ref)";
 
@@ -24,10 +23,10 @@ module sal-table {
             uses table-type:table-features;
         }
     }
-    
+
     rpc update-table {
         description "Configuring openflow table.";
-        
+
         input {
             uses tr:transaction-metadata;
             leaf table-ref {
@@ -40,19 +39,12 @@ module sal-table {
             uses tr:transaction-aware;
         }
     }
-    
+
     notification table-updated {
         status deprecated;
 
         uses "inv:node-context-ref";
         uses tr:multipart-transaction-aware;
         uses table-type:table-features;
-    }
-
-
-    augment "/multipart:multipart-reply/multipart:multipart-reply-body" {
-        case multipart-reply-table-features {
-            uses table-type:table-features;
-        }
     }
 }
