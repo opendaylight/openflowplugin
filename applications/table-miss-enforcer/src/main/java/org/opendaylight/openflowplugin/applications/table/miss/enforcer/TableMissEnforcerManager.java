@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.applications.tableMissEnforcer;
+package org.opendaylight.openflowplugin.applications.table.miss.enforcer;
 
 import com.google.common.annotations.VisibleForTesting;
 import java.util.Optional;
@@ -26,7 +26,8 @@ public class TableMissEnforcerManager implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(TableMissEnforcerManager.class);
     private final ClusterSingletonServiceProvider clusterSingletonService;
     private final SalFlowService salFlowService;
-    private final ConcurrentHashMap<InstanceIdentifier<FlowCapableNode>, TableMissEnforcer> tableMissEnforcers = new ConcurrentHashMap();
+    private final ConcurrentHashMap<InstanceIdentifier<FlowCapableNode>,
+            TableMissEnforcer> tableMissEnforcers = new ConcurrentHashMap();
 
     public TableMissEnforcerManager(final ClusterSingletonServiceProvider clusterSingletonService,
                                     final SalFlowService salFlowService) {

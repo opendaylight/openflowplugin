@@ -9,7 +9,7 @@
 
   <odl:rpc-service id="flowService" interface="org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService"/>
 
-  <bean id="LLDPPacketPuntEnforcer" class="org.opendaylight.openflowplugin.applications.tableMissEnforcer.LLDPPacketPuntEnforcer"
+  <bean id="LLDPPacketPuntEnforcer" class="org.opendaylight.openflowplugin.applications.table.miss.enforcer.LLDPPacketPuntEnforcer"
         destroy-method="close">
     <argument ref="bindingAwareBroker"/>
     <argument ref="dataBroker"/>

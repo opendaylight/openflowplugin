@@ -6,10 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.applications.tableMissEnforcer;
-
-import static org.opendaylight.openflowplugin.applications.tableMissEnforcer.TableMissUtils.DEFAULT_FLOW_ID;
-import static org.opendaylight.openflowplugin.applications.tableMissEnforcer.TableMissUtils.TABLE_ID;
+package org.opendaylight.openflowplugin.applications.table.miss.enforcer;
 
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -35,7 +32,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService} clusterSingletonServiceRegistration per connected device.
+ * {@link org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService} clusterSingletonServiceRegistration per
+ * connected device.
  */
 public class TableMissEnforcer implements ClusterSingletonService, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(TableMissEnforcer.class);
@@ -65,8 +63,8 @@ public class TableMissEnforcer implements ClusterSingletonService, AutoCloseable
                 .setNode(new NodeRef(instanceIdentifier.firstIdentifierOf(Node.class)))
                 .setFlowRef(new FlowRef(
                         instanceIdentifier
-                                .child(Table.class, new TableKey(TABLE_ID))
-                                .child(Flow.class, new FlowKey(new FlowId(DEFAULT_FLOW_ID)))))
+                                .child(Table.class, new TableKey(TableMissUtils.TABLE_ID))
+                                .child(Flow.class, new FlowKey(new FlowId(TableMissUtils.DEFAULT_FLOW_ID)))))
                 .build();
 
         Futures.lazyTransform(flowService.addFlow(addFlowInput), result -> {
