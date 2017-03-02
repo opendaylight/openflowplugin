@@ -27,7 +27,7 @@ public interface DeviceManager extends
         TranslatorLibrarian {
 
     /**
-     * invoked after all services injected
+     * invoked after all services injected.
      */
     void initialize();
 
@@ -41,6 +41,7 @@ public interface DeviceManager extends
 
     void setBarrierInterval(long barrierTimeoutLimit);
 
-    CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(DeviceInfo deviceInfo);
+    CheckedFuture<Void, TransactionCommitFailedException>
+        removeDeviceFromOperationalDS(DeviceInfo deviceInfo);
 }
 

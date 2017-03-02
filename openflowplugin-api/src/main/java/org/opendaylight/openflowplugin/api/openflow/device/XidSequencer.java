@@ -15,7 +15,8 @@ public interface XidSequencer {
 
     /**
      * Method reserve unique XID for Device Message.
-     * Attention: OFJava expect the message, otherwise OutboundQueue could stop working.
+     * Attention: OFJava expect the message,
+     * otherwise OutboundQueue could stop working.
      * @return Reserved XID
      */
     Long reserveXidForDeviceMessage();

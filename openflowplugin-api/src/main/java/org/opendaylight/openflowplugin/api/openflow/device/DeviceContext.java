@@ -45,7 +45,7 @@ public interface DeviceContext extends
         DeviceReplyProcessor,
         TxFacade,
         DeviceRegistry,
-        RequestContextStack{
+        RequestContextStack {
 
     /**
      * Method close all auxiliary connections and primary connection.
@@ -72,33 +72,37 @@ public interface DeviceContext extends
     DeviceState getDeviceState();
 
     /**
-     * Method has to close TxManager ASAP we are notified about Closed Connection
+     * Method has to close TxManager ASAP we are notified about Closed Connection.
      * @return sync. future for Slave and MD-SAL completition for Master
      */
     ListenableFuture<Void> shuttingDownDataStoreTransactions();
 
     /**
+     * Getter.
      * @return current devices connection context
      */
     ConnectionContext getPrimaryConnectionContext();
 
     /**
+     * Getter.
      * @return current devices auxiliary connection contexts
      */
     ConnectionContext getAuxiliaryConnectionContexts(BigInteger cookie);
 
 
     /**
+     * Getter.
      * @return translator library
      */
     TranslatorLibrary oook();
 
     /**
-     * store cancellable timeout handler of currently running barrier task
+     * store cancellable timeout handler of currently running barrier task.
      */
     void setCurrentBarrierTimeout(Timeout timeout);
 
     /**
+     * Getter.
      * @return cancellable timeout handle of currently running barrier task
      */
     Timeout getBarrierTaskTimeout();
@@ -110,18 +114,18 @@ public interface DeviceContext extends
     <T extends OfHeader> MultiMsgCollector<T> getMultiMsgCollector(final RequestContext<List<T>> requestContext);
 
     /**
-     * indicates that device context is fully published (e.g.: packetIn messages should be passed)
+     * indicates that device context is fully published (e.g.: packetIn messages should be passed).
      */
     void onPublished();
 
     /**
-     * change packetIn rate limiter borders
-     *
+     * change packetIn rate limiter borders.
      * @param upperBound max amount of outstanding packetIns
      */
     void updatePacketInRateLimit(long upperBound);
 
     /**
+     * Getter.
      * @return registry point for item life cycle sources of device
      */
     ItemLifeCycleRegistry getItemLifeCycleSourceRegistry();
@@ -135,13 +139,13 @@ public interface DeviceContext extends
     boolean isSkipTableFeatures();
 
     /**
-     * Setter for sal role service
-     * @param salRoleService
+     * Setter for sal role service.
+     * @param salRoleService Role Service
      */
     void setSalRoleService(@Nonnull final SalRoleService salRoleService);
 
     /**
-     * Make device slave
+     * Make device slave.
      * @return listenable future from sal role service
      */
     ListenableFuture<RpcResult<SetRoleOutput>> makeDeviceSlave();

@@ -12,13 +12,10 @@ import javax.annotation.Nullable;
 /**
  * Request context handles all requests on device. Number of requests is limited by request quota. When this quota is
  * exceeded all rpc's will end up with exception.
- * <p>
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
 public interface RequestContext<T> extends RequestFutureContext<T>, AutoCloseable {
     /**
      * Returns XID generated for this request.
-     *
      * @return Allocated XID, or null if the device has disconnected.
      */
     @Nullable Xid getXid();
@@ -28,8 +25,7 @@ public interface RequestContext<T> extends RequestFutureContext<T>, AutoCloseabl
 
     /**
      * Returns request timeout value.
-     *
-     * @return
+     * @return timeout
      */
     long getWaitTimeout();
 

@@ -8,7 +8,7 @@
 package org.opendaylight.openflowplugin.api.openflow.device;
 
 /**
- * @author tkubas
+ * Message translator.
  * @param <I> input message
  * @param <O> output message
  *
@@ -16,10 +16,10 @@ package org.opendaylight.openflowplugin.api.openflow.device;
 public interface MessageTranslator<I, O> {
 
     /**
-     * Translates from input to output
-     * @param input
-     * @param deviceInfo
-     * @param connectionDistinguisher
+     * Translates from input to output.
+     * @param input input
+     * @param deviceInfo node information
+     * @param connectionDistinguisher connection distinguisher
      * @return message of output type
      */
     O translate(I input, DeviceInfo deviceInfo, Object connectionDistinguisher);

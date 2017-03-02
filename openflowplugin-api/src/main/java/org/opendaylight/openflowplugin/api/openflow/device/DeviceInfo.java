@@ -16,37 +16,42 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
 /**
- * API defining basic device information
+ * API defining basic device information.
  */
 public interface DeviceInfo extends XidSequencer {
 
     /**
+     * Getter.
      * @return id of encapsulated node
      */
     NodeId getNodeId();
 
     /**
+     * Getter.
      * @return {@link Node} instance identifier
      */
     KeyedInstanceIdentifier<Node, NodeKey> getNodeInstanceIdentifier();
 
     /**
+     * Getter.
      * @return version
      */
     short getVersion();
 
     /**
+     * Getter.
      * @return datapathId
      */
     BigInteger getDatapathId();
 
     /**
+     * Getter.
      * @return clustering service identifier
      */
     ServiceGroupIdentifier getServiceIdentifier();
 
     /**
-     * Many uses in log, this will make code more readable
+     * Many uses in log, this will make code more readable.
      * @return string representation of nodeId
      */
     default String getLOGValue() {
