@@ -18,50 +18,49 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 
 /**
- * Service for starting or stopping all services in plugin in cluster
+ * Service for starting or stopping all services in plugin in cluster.
  */
 public interface LifecycleService extends ClusterSingletonService, OFPContext {
 
     /**
-     * This method registers lifecycle service to the given provider
+     * This method registers lifecycle service to the given provider.
      * @param singletonServiceProvider from md-sal binding
      */
     void registerService(final ClusterSingletonServiceProvider singletonServiceProvider);
 
     /**
-     * This method registers device removed handler what will be executed when device should be removed
-     * from managers,
+     * This method registers device removed handler what will be executed when device should be removed from managers.
      * @param deviceRemovedHandler device removed handler
      */
     void registerDeviceRemovedHandler(final @CheckForNull DeviceRemovedHandler deviceRemovedHandler);
 
     /**
-     * Setter for device context
+     * Setter for device context.
      * @param deviceContext actual device context created per device
      */
     void setDeviceContext(final DeviceContext deviceContext);
 
     /**
-     * Setter for rpc context
+     * Setter for rpc context.
      * @param rpcContext actual rpc context created per device
      */
     void setRpcContext(final RpcContext rpcContext);
 
     /**
-     * Setter for statistics context
+     * Setter for statistics context.
      * @param statContext actual statistics context created per device
      */
     void setStatContext(final StatisticsContext statContext);
 
     /**
      * Some services, contexts etc. still need to have access to device context,
-     * instead to push into them, here is the getter
+     * instead to push into them, here is the getter.
      * @return device context for this device
      */
     DeviceContext getDeviceContext();
 
     /**
-     * if some services not started properly need to close connection
+     * if some services not started properly need to close connection.
      */
     void closeConnection();
 }
