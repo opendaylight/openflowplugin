@@ -124,8 +124,8 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         conductorState = CONDUCTOR_STATE.HANDSHAKING;
         firstHelloProcessed = false;
         handshakeManager = new HandshakeManagerImpl(connectionAdapter,
-                ConnectionConductor.versionOrder.get(0),
-                ConnectionConductor.versionOrder);
+                ConnectionConductor.VERSION_ORDER.get(0),
+                ConnectionConductor.VERSION_ORDER);
         handshakeManager.setUseVersionBitmap(isBitmapNegotiationEnable);
         handshakeManager.setHandshakeListener(this);
         portFeaturesUtils = PortFeaturesUtil.getInstance();

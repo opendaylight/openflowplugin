@@ -267,7 +267,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
             for(Elements element : list) {
                 List<Boolean> bitmap = element.getVersionBitmap();
                 // check for version bitmap
-                for(short bitPos : ConnectionConductor.versionOrder) {
+                for(short bitPos : ConnectionConductor.VERSION_ORDER) {
                     // with all the version it should work.
                     if(bitmap.get(bitPos % Integer.SIZE)) {
                         supportedHighestVersion = bitPos;
