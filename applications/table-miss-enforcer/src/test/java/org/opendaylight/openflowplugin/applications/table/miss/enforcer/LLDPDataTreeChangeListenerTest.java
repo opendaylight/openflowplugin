@@ -1,12 +1,12 @@
-/**
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+/*
+ * Copyright (c) 2017 Pantheon Technologies s.r.o. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.applications.tableMissEnforcer;
+package org.opendaylight.openflowplugin.applications.table.miss.enforcer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -55,10 +55,10 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 public class LLDPDataTreeChangeListenerTest {
     private LLDPPacketPuntEnforcer lldpPacketPuntEnforcer;
 
-    private static final InstanceIdentifier<Node> nodeIID = InstanceIdentifier.create(Nodes.class)
+    private static final InstanceIdentifier<Node> NODE_INSTANCE_IDENTIFIER = InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(new NodeId("testnode:1")));
 
-    private static final InstanceIdentifier<FlowCapableNode> nodeII =
+    private static final InstanceIdentifier<FlowCapableNode> INSTANCE_IDENTIFIER =
             InstanceIdentifier.create(Nodes.class)
             .child(Node.class)
                     .augmentation(FlowCapableNode.class);
@@ -90,13 +90,16 @@ public class LLDPDataTreeChangeListenerTest {
                 dataBroker,
                 clusterSingletonService,
                 flowService);
-        final DataTreeIdentifier<FlowCapableNode> identifier = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, nodeIID);
+        final DataTreeIdentifier<FlowCapableNode> identifier =
+                new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, NODE_INSTANCE_IDENTIFIER);
         Mockito.when(dataTreeModification.getRootPath()).thenReturn(identifier);
         Mockito.when(dataTreeModification.getRootNode()).thenReturn(operationalModification);
 
 
-        final DataTreeIdentifier<FlowCapableNode> nodeIdentifier = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, nodeII);
-        Mockito.when(dataBroker.registerDataTreeChangeListener(nodeIdentifier, lldpPacketPuntEnforcer)).thenReturn(dataTreeChangeRegistration);
+        final DataTreeIdentifier<FlowCapableNode> nodeIdentifier =
+                new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, INSTANCE_IDENTIFIER);
+        Mockito.when(dataBroker.registerDataTreeChangeListener(nodeIdentifier, lldpPacketPuntEnforcer))
+                .thenReturn(dataTreeChangeRegistration);
 
         lldpPacketPuntEnforcer.onSessionInitiated(providerContext);
 
@@ -124,7 +127,8 @@ public class LLDPDataTreeChangeListenerTest {
         lldpPacketPuntEnforcer.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
         Mockito.verify(clusterSingletonService).registerClusterSingletonService(Matchers.any());
-        Assert.assertEquals(1, lldpPacketPuntEnforcer.getTableMissEnforcerManager().getTableMissEnforcers().size());
+        Assert.assertEquals(1, lldpPacketPuntEnforcer.getTableMissEnforcerManager()
+                .getTableMissEnforcers().size());
 
         // delete
         Mockito.when(dataTreeModification.getRootNode().getModificationType()).thenReturn(ModificationType.DELETE);
@@ -133,7 +137,8 @@ public class LLDPDataTreeChangeListenerTest {
 
         lldpPacketPuntEnforcer.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
-        Assert.assertEquals(0, lldpPacketPuntEnforcer.getTableMissEnforcerManager().getTableMissEnforcers().size());
+        Assert.assertEquals(0, lldpPacketPuntEnforcer.getTableMissEnforcerManager()
+                .getTableMissEnforcers().size());
     }
 
     @Test

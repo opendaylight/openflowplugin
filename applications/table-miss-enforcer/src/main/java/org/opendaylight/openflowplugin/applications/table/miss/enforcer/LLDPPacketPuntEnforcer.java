@@ -1,15 +1,12 @@
-/**
- * Copyright (c) 2014 Cisco Systems, Inc. and others. All rights reserved.
+/*
+ * Copyright (c) 2017 Pantheon Technologies s.r.o. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.applications.tableMissEnforcer;
-
-import static org.opendaylight.openflowplugin.applications.tableMissEnforcer.TableMissUtils.isAdd;
-import static org.opendaylight.openflowplugin.applications.tableMissEnforcer.TableMissUtils.isDelete;
+package org.opendaylight.openflowplugin.applications.table.miss.enforcer;
 
 import com.google.common.annotations.VisibleForTesting;
 import java.util.Collection;
@@ -34,7 +31,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeChangeListener<FlowCapableNode>, BindingAwareProvider {
+public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeChangeListener<FlowCapableNode>,
+        BindingAwareProvider {
     private static final Logger LOG = LoggerFactory.getLogger(LLDPPacketPuntEnforcer.class);
     private final SalFlowService flowService;
     private final DataBroker dataBroker;
@@ -81,9 +79,9 @@ public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeC
         for (DataTreeModification modification : modifications) {
             final NodeId nodeId = TableMissUtils.retreiveNodeId(modification.getRootPath().getRootIdentifier());
 
-            if (isAdd(modification)) {
+            if (TableMissUtils.isAdd(modification)) {
                 tableMissEnforcerManager.onDeviceConnected(modification.getRootPath().getRootIdentifier());
-            } else if (isDelete(modification)) {
+            } else if (TableMissUtils.isDelete(modification)) {
                 tableMissEnforcerManager.onDeviceDisconnected(modification.getRootPath().getRootIdentifier());
             }
         }
