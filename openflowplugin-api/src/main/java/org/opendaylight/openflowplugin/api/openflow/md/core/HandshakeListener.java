@@ -10,13 +10,10 @@ package org.opendaylight.openflowplugin.api.openflow.md.core;
 import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 
-/**
- * @author mirehak
- *
- */
 public interface HandshakeListener {
 
     /**
+     * Handshake successfull.
      * @param featureOutput obtained
      * @param version negotiated
      */
@@ -29,7 +26,8 @@ public interface HandshakeListener {
     void onHandshakeFailure();
 
     /**
-     * @param handshakeContext
+     * Setter.
+     * @param handshakeContext context
      */
     void setHandshakeContext(HandshakeContext handshakeContext);
 }
