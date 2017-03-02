@@ -82,8 +82,8 @@ public class ConnectionManagerImpl implements ConnectionManager {
     private HandshakeManager createHandshakeManager(final ConnectionAdapter connectionAdapter,
                                                     final HandshakeListener handshakeListener) {
         HandshakeManagerImpl handshakeManager = new HandshakeManagerImpl(connectionAdapter,
-                ConnectionConductor.versionOrder.get(0),
-                ConnectionConductor.versionOrder);
+                ConnectionConductor.VERSION_ORDER.get(0),
+                ConnectionConductor.VERSION_ORDER);
         handshakeManager.setUseVersionBitmap(BITMAP_NEGOTIATION_ENABLED);
         handshakeManager.setHandshakeListener(handshakeListener);
         handshakeManager.setErrorHandler(new ErrorHandlerSimpleImpl());
