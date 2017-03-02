@@ -42,5 +42,7 @@ public interface DeviceManager extends
     void setBarrierInterval(long barrierTimeoutLimit);
 
     CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(DeviceInfo deviceInfo);
+
+    void setUseSingleLayerSerilization(Boolean useSingleLayerSerilization);
 }
 
