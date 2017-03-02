@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.applications.tableMissEnforcer;
+package org.opendaylight.openflowplugin.applications.table.miss.enforcer;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -72,7 +72,7 @@ public class TableMissUtils {
     }
 
     static InstructionsBuilder createSendToControllerInstructions() {
-        List<Action> actionList = new ArrayList<>();
+        final List<Action> actionList = new ArrayList<>();
         ActionBuilder ab = new ActionBuilder();
 
         OutputActionBuilder output = new OutputActionBuilder();

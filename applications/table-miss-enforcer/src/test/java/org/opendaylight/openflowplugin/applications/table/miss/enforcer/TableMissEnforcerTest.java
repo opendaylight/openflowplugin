@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.applications.tableMissEnforcer;
+package org.opendaylight.openflowplugin.applications.table.miss.enforcer;
 
 import com.google.common.util.concurrent.Futures;
 import org.junit.Assert;
@@ -37,14 +37,11 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 public class TableMissEnforcerTest {
     private TableMissEnforcer tableMissEnforcer;
 
-    private static final InstanceIdentifier<FlowCapableNode> nodeIID = InstanceIdentifier.create(Nodes.class)
+    private static final InstanceIdentifier<FlowCapableNode> NODE_INSTANCE_IDENTIFIER =
+            InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(new NodeId("testnode:1")))
             .augmentation(FlowCapableNode.class);
 
-    private static final InstanceIdentifier<FlowCapableNode> nodeII =
-            InstanceIdentifier.create(Nodes.class)
-                    .child(Node.class)
-                    .augmentation(FlowCapableNode.class);
     @Mock
     private SalFlowService flowService;
     @Mock
@@ -58,15 +55,16 @@ public class TableMissEnforcerTest {
 
     @Before
     public void setUp() throws Exception {
-        final DataTreeIdentifier<FlowCapableNode> identifier = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, nodeIID);
+        final DataTreeIdentifier<FlowCapableNode> identifier = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL,
+                NODE_INSTANCE_IDENTIFIER);
         Mockito.when(dataTreeModification.getRootPath()).thenReturn(identifier);
         Mockito.when(dataTreeModification.getRootNode()).thenReturn(operationalModification);
 
         Mockito.when(flowService.addFlow(Mockito.any())).thenReturn(Futures.immediateFuture(null));
-        final NodeId nodeId = TableMissUtils.retreiveNodeId(dataTreeModification.getRootPath().getRootIdentifier());
 
         Mockito.when(clusterSingletonService.registerClusterSingletonService(Mockito.any())).thenReturn(registration);
-        tableMissEnforcer = new TableMissEnforcer(dataTreeModification.getRootPath().getRootIdentifier(), clusterSingletonService, flowService);
+        tableMissEnforcer = new TableMissEnforcer(dataTreeModification.getRootPath().getRootIdentifier(),
+                clusterSingletonService, flowService);
     }
 
     @Test
@@ -79,5 +77,4 @@ public class TableMissEnforcerTest {
         Mockito.verify(flowService).addFlow(Mockito.any());
         Mockito.verify(registration).close();
     }
-
 }
