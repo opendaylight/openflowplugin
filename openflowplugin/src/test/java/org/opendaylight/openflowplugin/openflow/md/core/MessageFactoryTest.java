@@ -15,15 +15,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.Elements;
 
-/**
- * @author mirehak
- *
- */
 public class MessageFactoryTest {
 
-    /**
-     * Test method for {@link org.opendaylight.openflowplugin.openflow.md.core.MessageFactory#createHelloInputWoElements(java.lang.Short, java.lang.Long)}.
-     */
     @Test
     public void testCreateHelloInputWoElements() {
         short highestVersion = (short) 0x04;
@@ -35,9 +28,6 @@ public class MessageFactoryTest {
         Assert.assertNull(helloMsg.getElements());
     }
 
-    /**
-     * Test method for {@link org.opendaylight.openflowplugin.openflow.md.core.MessageFactory#createHelloInputWithElements(java.lang.Short, java.lang.Long, java.util.List)}.
-     */
     @Test
     public void testCreateHelloInputWithElements() {
         short highestVersion = (short) 0x04;
@@ -46,7 +36,7 @@ public class MessageFactoryTest {
                 false, true, false, false, true};
         
         HelloInput helloMsg = MessageFactory.createHelloInput(highestVersion, xid, 
-                ConnectionConductor.versionOrder);
+                ConnectionConductor.VERSION_ORDER);
         Assert.assertEquals(highestVersion, helloMsg.getVersion().shortValue());
         Assert.assertEquals(xid, helloMsg.getXid().longValue());
         Assert.assertEquals(1, helloMsg.getElements().size());

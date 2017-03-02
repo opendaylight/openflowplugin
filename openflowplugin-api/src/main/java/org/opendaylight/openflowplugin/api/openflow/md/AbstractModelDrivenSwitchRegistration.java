@@ -9,8 +9,9 @@ package org.opendaylight.openflowplugin.api.openflow.md;
 
 import org.opendaylight.yangtools.concepts.AbstractObjectRegistration;
 
-public abstract class AbstractModelDrivenSwitchRegistration extends AbstractObjectRegistration<ModelDrivenSwitch>
-    implements ModelDrivenSwitchRegistration {
+public abstract class AbstractModelDrivenSwitchRegistration
+        extends AbstractObjectRegistration<ModelDrivenSwitch>
+        implements ModelDrivenSwitchRegistration {
 
     protected AbstractModelDrivenSwitchRegistration(final ModelDrivenSwitch instance) {
         super(instance);

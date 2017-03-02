@@ -69,7 +69,7 @@ public class HandshakeManagerImplTest {
     @Before
     public void setUp() {
         handshakeManager = new HandshakeManagerImpl(adapter, OFConstants.OFP_VERSION_1_3,
-                ConnectionConductor.versionOrder);
+                ConnectionConductor.VERSION_ORDER);
         handshakeManager.setErrorHandler(errorHandler);
         handshakeManager.setHandshakeListener(handshakeListener);
         handshakeManager.setUseVersionBitmap(false);
