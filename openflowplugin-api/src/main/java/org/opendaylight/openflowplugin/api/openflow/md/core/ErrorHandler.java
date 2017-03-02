@@ -9,16 +9,13 @@ package org.opendaylight.openflowplugin.api.openflow.md.core;
 
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 
-/**
- * @author mirehak
- *
- */
 public interface ErrorHandler {
 
     /**
-     * @param e cause
+     * Exception handler.
+     * @param throwable cause
      * @param sessionContext of source
      */
-    void handleException(Throwable e, SessionContext sessionContext);
+    void handleException(Throwable throwable, SessionContext sessionContext);
 
 }
