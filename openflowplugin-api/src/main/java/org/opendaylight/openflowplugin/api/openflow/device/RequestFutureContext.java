@@ -12,14 +12,13 @@ import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 /**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.3.2015.
- * @param <T>
+ * Request context.
+ * @param <T> rpc result type
  */
 public interface RequestFutureContext<T> {
     /**
      * Method returns future to be used for handling device requests.
-     *
-     * @return
+     * @return rpc result
      */
     ListenableFuture<RpcResult<T>> getFuture();
 

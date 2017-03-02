@@ -22,7 +22,6 @@ public interface DeviceTerminationPhaseHandler {
     /**
      * Method represents a termination cycle for {@link DeviceContext}.
      * @param deviceInfo {@link org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo}
-     *
      */
     void onDeviceContextLevelDown(final @CheckForNull DeviceInfo deviceInfo);
 }

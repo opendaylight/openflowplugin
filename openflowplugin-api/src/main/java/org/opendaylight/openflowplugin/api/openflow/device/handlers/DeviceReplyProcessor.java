@@ -17,49 +17,43 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 
 /**
- * @author tkubas
+ * Device reply processor.
  */
 public interface DeviceReplyProcessor {
 
     /**
-     * Method that set future to context in Map
-     *
-     * @param ofHeader
+     * Method that set future to context in Map.
+     * @param ofHeader openflow header
      */
     void processReply(OfHeader ofHeader);
 
     /**
-     * Method that set future to context in Map
-     *
+     * Method that set future to context in Map.
      * @param xid xid
      * @param ofHeaderList openflow header list
      */
     void processReply(Xid xid, List<? extends OfHeader> ofHeaderList);
 
     /**
-     * Method process async flow removed from device
-     *
+     * Method process async flow removed from device.
      * @param flowRemoved flow removed
      */
     void processFlowRemovedMessage(FlowRemoved flowRemoved);
 
     /**
-     * Method process async port status from device
-     *
+     * Method process async port status from device.
      * @param portStatus port status
      */
     void processPortStatusMessage(PortStatusMessage portStatus);
 
     /**
-     * Method process async packet in from device
-     *
+     * Method process async packet in from device.
      * @param packetInMessage packet in message
      */
     void processPacketInMessage(PacketInMessage packetInMessage);
 
     /**
-     * Processing of experimenter symmetric message from device
-     *
+     * Processing of experimenter symmetric message from device.
      * @param notification notification
      */
     void processExperimenterMessage(ExperimenterMessage notification);

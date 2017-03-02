@@ -14,19 +14,13 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 
 /**
- * openflowplugin-api
- * org.opendaylight.openflowplugin.api.openflow.device.handlers
- *
  * Interface represent handler for new connected device building cycle. Every implementation
  * have some unnecessary steps which has to be done before add new Device instance.
- *
- * Created: Apr 3, 2015
  */
 public interface DeviceInitializationPhaseHandler {
 
     /**
      * Method represents an initialization cycle for {@link DeviceContext} preparation for use.
-     *
      * @param deviceInfo - device
      * @param lifecycleService - cluster singleton service
      * @throws Exception - needs to be catch in ConnectionHandler implementation

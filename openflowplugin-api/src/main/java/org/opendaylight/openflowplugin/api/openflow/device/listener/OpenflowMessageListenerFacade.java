@@ -11,7 +11,7 @@ package org.opendaylight.openflowplugin.api.openflow.device.listener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
 
 /**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 4.4.2015.
+ * Facade for openflow protocol listener.
  */
 public interface OpenflowMessageListenerFacade extends OpenflowProtocolListener {
 }

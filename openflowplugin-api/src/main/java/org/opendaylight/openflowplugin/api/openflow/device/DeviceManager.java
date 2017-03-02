@@ -27,7 +27,7 @@ public interface DeviceManager extends
         TranslatorLibrarian {
 
     /**
-     * invoked after all services injected
+     * invoked after all services injected.
      */
     void initialize();
 

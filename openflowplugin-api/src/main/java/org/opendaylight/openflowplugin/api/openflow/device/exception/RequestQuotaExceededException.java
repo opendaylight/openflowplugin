@@ -9,7 +9,7 @@
 package org.opendaylight.openflowplugin.api.openflow.device.exception;
 
 /**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
+ * Request quota exception.
  */
 public class RequestQuotaExceededException extends Exception {
     private static final long serialVersionUID = 1L;

@@ -10,9 +10,6 @@ package org.opendaylight.openflowplugin.api.openflow.device;
 
 import com.google.common.base.Preconditions;
 
-/**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 26.2.2015.
- */
 public final class Xid {
     private final Long value;
 

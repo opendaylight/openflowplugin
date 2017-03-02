@@ -9,15 +9,13 @@
 package org.opendaylight.openflowplugin.api.openflow.device;
 
 /**
- * Holder of device's structure
+ * Holder of device's structure.
  */
 public interface DeviceState {
 
     /**
      * Return true if we have relevant meter information
-     * from device
-     *
-     * @return
+     * from device.
      */
     boolean isMetersAvailable();
 
@@ -28,9 +26,7 @@ public interface DeviceState {
 
     /**
      * Return true if we have relevant group information
-     * from device
-     *
-     * @return
+     * from device.
      */
     boolean isGroupAvailable();
 
@@ -41,8 +37,6 @@ public interface DeviceState {
 
     /**
      * Method returns true, if device capabilities provides flow statistics.
-     *
-     * @return
      */
     boolean isFlowStatisticsAvailable();
 
@@ -50,8 +44,6 @@ public interface DeviceState {
 
     /**
      * Method returns true, if device capabilities provides table statistics.
-     *
-     * @return
      */
     boolean isTableStatisticsAvailable();
 
@@ -59,8 +51,6 @@ public interface DeviceState {
 
     /**
      * Method returns true, if device capabilities provides flow statistics.
-     *
-     * @return
      */
     boolean isPortStatisticsAvailable();
 
@@ -68,8 +58,6 @@ public interface DeviceState {
 
     /**
      * Method returns true, if device capabilities provides queue statistics.
-     *
-     * @return
      */
     boolean isQueueStatisticsAvailable();
 

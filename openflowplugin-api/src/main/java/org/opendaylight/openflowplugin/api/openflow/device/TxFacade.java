@@ -10,12 +10,11 @@ package org.opendaylight.openflowplugin.api.openflow.device;
 
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionChainClosedException;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
- * Handles operations with transactions
+ * Handles operations with transactions.
  */
 public interface TxFacade {
 
@@ -27,8 +26,10 @@ public interface TxFacade {
                                                    final T data);
 
     /**
-     * Method creates put operation using provided data in underlying transaction chain and flag to create missing parents
-     * WARNING: This method is slow because of additional reading cost. Use it only if you really need to create parents.
+     * Method creates put operation using provided data in underlying transaction
+     * chain and flag to create missing parents.
+     * WARNING: This method is slow because of additional reading cost.
+     * Use it only if you really need to create parents.
      */
     <T extends DataObject> void writeToTransactionWithParentsSlow(final LogicalDatastoreType store,
                                                                   final InstanceIdentifier<T> path,

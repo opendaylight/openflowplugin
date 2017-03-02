@@ -13,8 +13,9 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 public interface TranslatorLibrary {
 
     /**
-     * @param key
-     * @return
+     * Lookup translator.
+     * @param key a key
+     * @return translator
      */
     <I, O> MessageTranslator<I, O> lookupTranslator(TranslatorKey key);
 }
