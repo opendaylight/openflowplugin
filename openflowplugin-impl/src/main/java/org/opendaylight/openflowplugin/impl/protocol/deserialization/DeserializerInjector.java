@@ -25,9 +25,14 @@ public class DeserializerInjector {
         ActionDeserializerInjector.injectDeserializers(provider);
         InstructionDeserializerInjector.injectDeserializers(provider);
         MultipartDeserializerInjector.injectDeserializers(provider);
+        MessageDeserializerInjector.injectDeserializers(provider);
+    }
 
-        // Message deserializers are not used, so disable them here
-        // Uncomment to enable
-        // MessageDeserializerInjector.injectDeserializers(provider);
+    /**
+     * Reverts original deserializers in provided {@link org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider}
+     * @param provider OpenflowJava deserializer extension provider
+     */
+    public static void revertDeserializers(final DeserializerExtensionProvider provider) {
+        MessageDeserializerInjector.revertDeserializers(provider);
     }
 }

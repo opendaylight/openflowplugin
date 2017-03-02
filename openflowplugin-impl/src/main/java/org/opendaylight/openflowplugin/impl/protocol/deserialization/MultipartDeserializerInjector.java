@@ -14,7 +14,6 @@ import java.util.function.Function;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
-import org.opendaylight.openflowjava.protocol.api.keys.TypeToClassKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart.MultipartReplyDescDeserializer;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart.MultipartReplyExperimenterDeserializer;
@@ -24,7 +23,6 @@ import org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart.M
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart.MultipartReplyGroupDescDeserializer;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart.MultipartReplyGroupFeaturesDeserializer;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart.MultipartReplyGroupStatsDeserializer;
-import org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart.MultipartReplyMessageDeserializer;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart.MultipartReplyMeterConfigDeserializer;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart.MultipartReplyMeterFeaturesDeserializer;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart.MultipartReplyMeterStatsDeserializer;
@@ -32,10 +30,8 @@ import org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart.M
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart.MultipartReplyPortStatsDeserializer;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart.MultipartReplyQueueStatsDeserializer;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart.MultipartReplyTableFeaturesDeserializer;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 
 public class MultipartDeserializerInjector {
 
@@ -45,9 +41,6 @@ public class MultipartDeserializerInjector {
      */
     static void injectDeserializers(final DeserializerExtensionProvider provider) {
         final short version = EncodeConstants.OF13_VERSION_ID;
-
-        // Inject main multipart reply deserializer
-        injectMultipartReplyDeserializer(provider, version);
 
         // Inject new multipart body deserializers here using injector created by createInjector method
         final Function<Integer, Consumer<OFDeserializer<? extends MultipartReplyBody>>> injector =
@@ -67,21 +60,6 @@ public class MultipartDeserializerInjector {
         injector.apply(MultipartType.OFPMPTABLEFEATURES.getIntValue()).accept(new MultipartReplyTableFeaturesDeserializer());
         injector.apply(MultipartType.OFPMPPORTDESC.getIntValue()).accept(new MultipartReplyPortDescDeserializer());
         injector.apply(MultipartType.OFPMPEXPERIMENTER.getIntValue()).accept(new MultipartReplyExperimenterDeserializer());
-    }
-
-    /**
-     * Register main multipart reply deserializer
-     * @param provider OpenflowJava deserializer extension provider
-     * @param version Openflow version
-     */
-    static void injectMultipartReplyDeserializer(final DeserializerExtensionProvider provider, final short version) {
-        final short code = 19;
-        final Class<? extends OfHeader> retType = MultipartReply.class;
-        provider.unregisterDeserializerMapping(new TypeToClassKey(version, code));
-        provider.registerDeserializerMapping(new TypeToClassKey(version, code), retType);
-        provider.registerDeserializer(
-                new MessageCodeKey(version, code, retType),
-                new MultipartReplyMessageDeserializer());
     }
 
     /**

@@ -291,7 +291,30 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     public void update(Map<String,Object> props) {
         LOG.debug("Update managed properties = {}", props.toString());
 
+        final boolean containsUseSingleLayer = props.containsKey("use-single-layer-serialization");
+
+        if (containsUseSingleLayer) {
+            final Boolean useSingleLayer = Boolean.valueOf(props.get("use-single-layer-serialization").toString());
+
+            if (useSingleLayer != useSingleLayerSerialization) {
+                useSingleLayerSerialization = useSingleLayer;
+
+                if (useSingleLayer) {
+                    switchConnectionProviders.forEach(switchConnectionProvider -> {
+                        SerializerInjector.injectSerializers(switchConnectionProvider);
+                        DeserializerInjector.injectDeserializers(switchConnectionProvider);
+                    });
+                } else {
+                    switchConnectionProviders.forEach(DeserializerInjector::revertDeserializers);
+                }
+            }
+        }
+
         if(deviceManager != null) {
+            if (containsUseSingleLayer) {
+                deviceManager.setUseSingleLayerSerialization(Boolean.valueOf(props.get("use-single-layer-serialization").toString()));
+            }
+
             if (props.containsKey("notification-flow-removed-off")) {
                 deviceManager.setFlowRemovedNotificationOn(Boolean.valueOf(props.get("enable-flow-removed-notification").toString()));
             }

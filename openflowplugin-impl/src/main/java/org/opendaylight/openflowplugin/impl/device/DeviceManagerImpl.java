@@ -97,7 +97,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private final NotificationPublishService notificationPublishService;
     private final MessageSpy messageSpy;
     private final HashedWheelTimer hashedWheelTimer;
-    private final boolean useSingleLayerSerialization;
+    private boolean useSingleLayerSerialization;
 
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
                              final long globalNotificationQuota,
@@ -397,6 +397,11 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         });
 
         return delFuture;
+    }
+
+    @Override
+    public void setUseSingleLayerSerialization(final Boolean useSingleLayerSerialization) {
+        this.useSingleLayerSerialization = useSingleLayerSerialization;
     }
 
 
