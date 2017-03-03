@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -26,116 +26,131 @@ import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
-/**
- * @author mirehak
- */
 public interface SessionManager extends AutoCloseable {
 
     /**
-     * @param sessionKey
+     * primary connection.
+     * @param sessionKey session key
      * @return corresponding conductor, holding {@link ConnectionAdapter} to
-     * primary connection
      */
-    public SessionContext getSessionContext(SwitchSessionKeyOF sessionKey);
+    SessionContext getSessionContext(SwitchSessionKeyOF sessionKey);
 
     /**
-     * disconnect all underlying {@link ConnectionAdapter}s and notify listeners
+     * disconnect all underlying {@link ConnectionAdapter}s and notify listeners.
      *
-     * @param sessionKey
+     * @param sessionKey session key
      */
-    public void invalidateSessionContext(SwitchSessionKeyOF sessionKey);
+    void invalidateSessionContext(SwitchSessionKeyOF sessionKey);
 
     /**
-     * register session context
+     * register session context.
      *
-     * @param sessionKey
-     * @param context
+     * @param sessionKey session key
+     * @param context context
      */
-    public void addSessionContext(SwitchSessionKeyOF sessionKey, SessionContext context);
-    public void setRole(SessionContext context);
+    void addSessionContext(SwitchSessionKeyOF sessionKey, SessionContext context);
+
+    void setRole(SessionContext context);
 
     /**
      * disconnect particular auxiliary {@link ConnectionAdapter}, identified by
-     * sessionKey and connectionCookie
+     * sessionKey and connectionCookie.
      *
-     * @param sessionKey
-     * @param connectionCookie
+     * @param sessionKey  session key
+     * @param connectionCookie cookie
      */
-    public void invalidateAuxiliary(SwitchSessionKeyOF sessionKey,
+    void invalidateAuxiliary(SwitchSessionKeyOF sessionKey,
                                     SwitchConnectionDistinguisher connectionCookie);
 
     /**
-     * @param connectionConductor
+     * Invalidate on disconnect.
+     * @param connectionConductor connection conductor.
      */
-    public void invalidateOnDisconnect(ConnectionConductor connectionConductor);
+    void invalidateOnDisconnect(ConnectionConductor connectionConductor);
 
     /**
-     * @param translatorMapping
+     * Setter.
+     * @param translatorMapping translators
      */
-    public void setTranslatorMapping(Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, List<DataObject>>>> translatorMapping);
+    void setTranslatorMapping(
+            Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, List<DataObject>>>> translatorMapping);
 
     /**
+     * Getter.
      * @return translator mapping
      */
-    public Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, List<DataObject>>>> getTranslatorMapping();
+    Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, List<DataObject>>>> getTranslatorMapping();
 
     /**
-     * @param notificationProviderService
+     * Setter.
+     * @param notificationProviderService notofication provider
      */
-    public void setNotificationProviderService(NotificationProviderService notificationProviderService);
+    void setNotificationProviderService(NotificationProviderService notificationProviderService);
 
     /**
+     * Getter.
      * @return notificationServiceProvider
      */
-    public DataBroker getDataBroker();
+    DataBroker getDataBroker();
 
     /**
-     * @param dataBroker
+     * Setter.
+     * @param dataBroker databroker
      */
-    public void setDataBroker(DataBroker dataBroker);
+    void setDataBroker(DataBroker dataBroker);
 
     /**
+     * Gatter.
      * @return notificationServiceProvider
      */
-    public NotificationProviderService getNotificationProviderService();
+    NotificationProviderService getNotificationProviderService();
 
     /**
-     * @param listener
+     * Session listener registration.
+     * @param listener listener
      * @return registration
      */
-    public ListenerRegistration<SessionListener> registerSessionListener(SessionListener listener);
+    ListenerRegistration<SessionListener> registerSessionListener(SessionListener listener);
 
     /**
+     * Getter.
      * @return popListener mapping, key=message type; value=collection of listeners
      */
-    public Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> getPopListenerMapping();
+    Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> getPopListenerMapping();
 
     /**
+     * Setter.
      * @param popListenerMapping the popListenerMapping to set
      */
-    void setPopListenerMapping(Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> popListenerMapping);
+    void setPopListenerMapping(
+            Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> popListenerMapping);
 
     /**
-     * @param rpcPoolDelegator
+     * Setter.
+     * @param rpcPoolDelegator rpc pool delegator
      */
     void setRpcPool(ListeningExecutorService rpcPoolDelegator);
 
     /**
+     * Getter.
      * @return the rpcPool instance
      */
     ListeningExecutorService getRpcPool();
 
     /**
-     * @param messageSpy
+     * Setter.
+     * @param messageSpy message spy
      */
     void setMessageSpy(MessageSpy<DataContainer> messageSpy);
 
     /**
+     * Getter.
      * @return the messageSpy
      */
     MessageSpy<DataContainer> getMessageSpy();
 
     /**
+     * Getter.
      * @return collection of current sessions
      */
     Collection<SessionContext> getAllSessions();
