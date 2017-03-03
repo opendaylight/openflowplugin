@@ -7,17 +7,15 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.md.core;
 
-/**
- * @author mirehak
- */
 public class TranslatorKey {
 
-    private int version;
-    private String messageClass;
+    private final int version;
+    private final String messageClass;
 
     /**
-     * @param version
-     * @param messageClass
+     * Constructor.
+     * @param version version
+     * @param messageClass message class
      */
     public TranslatorKey(int version, String messageClass) {
         this.version = version;
@@ -53,10 +51,7 @@ public class TranslatorKey {
         } else if (!messageClass.equals(other.messageClass)) {
             return false;
         }
-        if (version != other.version) {
-            return false;
-        }
-        return true;
+        return version == other.version;
     }
 
 }
