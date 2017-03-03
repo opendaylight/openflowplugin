@@ -10,7 +10,9 @@
 
     <artifactId>learning-switch</artifactId>
     <packaging>bundle</packaging>
-
+    <!-- <name> formatting is used by autorelease to parse and notify projects on
+         build failure. Please do not modify this unless you have a good reason. -->
+    <name>ODL :: openflowplugin :: ${project.artifactId}</name>
 
     <build>
         <plugins>
@@ -70,4 +72,3 @@
         </dependency>
     </dependencies>
 </project>
-

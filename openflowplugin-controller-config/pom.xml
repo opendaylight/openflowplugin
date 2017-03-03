@@ -16,10 +16,13 @@
       <version>0.4.0-SNAPSHOT</version>
       <relativePath>../parent</relativePath>
     </parent>
-
     <artifactId>openflowplugin-controller-config</artifactId>
     <description>Controller Configuration files for openflowplugin + openflowjava couple</description>
     <packaging>jar</packaging>
+    <!-- <name> formatting is used by autorelease to parse and notify projects on
+         build failure. Please do not modify this unless you have a good reason. -->
+    <name>ODL :: openflowplugin :: ${project.artifactId}</name>
+
     <build>
         <plugins>
             <plugin>
