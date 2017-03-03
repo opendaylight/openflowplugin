@@ -21,22 +21,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 
-/**
- * @author mirehak
- */
 public interface SessionContext {
 
     /**
-     * @return primary connection wrapper
+     * return primary connection wrapper.
      */
     ConnectionConductor getPrimaryConductor();
 
     /**
-     * @return the features of corresponding switch
+     * return the features of corresponding switch.
      */
     GetFeaturesOutput getFeatures();
 
     /**
+     * Auxiliary connections.
      * @param auxiliaryKey key under which the auxiliary conductor is stored
      * @return list of auxiliary connection wrappers
      */
@@ -44,38 +42,40 @@ public interface SessionContext {
             SwitchConnectionDistinguisher auxiliaryKey);
 
     /**
-     * @return entries of all auxiliary connections wrapped in conductors in this session
+     * return entries of all auxiliary connections wrapped in conductors in this session.
      */
     Set<Entry<SwitchConnectionDistinguisher, ConnectionConductor>> getAuxiliaryConductors();
 
     /**
-     * register new auxiliary connection wrapped in {@link ConnectionConductor}
+     * register new auxiliary connection wrapped in {@link ConnectionConductor}.
      *
-     * @param auxiliaryKey
-     * @param conductor
+     * @param auxiliaryKey key
+     * @param conductor connection conductor
      */
     void addAuxiliaryConductor(SwitchConnectionDistinguisher auxiliaryKey,
                                ConnectionConductor conductor);
 
     /**
-     * @param connectionCookie
+     * Remove conductor.
+     * @param connectionCookie cookie
      * @return removed connectionConductor
      */
     ConnectionConductor removeAuxiliaryConductor(
             SwitchConnectionDistinguisher connectionCookie);
 
     /**
-     * @return true if this session is valid
+     * return true if this session is valid.
      */
     boolean isValid();
 
     /**
+     * Setter.
      * @param valid the valid to set
      */
     void setValid(boolean valid);
 
     /**
-     * @return the sessionKey
+     * return the sessionKey.
      */
     SwitchSessionKeyOF getSessionKey();
 
@@ -120,9 +120,9 @@ public interface SessionContext {
     Boolean getPortBandwidth(Long portNumber);
 
     /**
-     * Returns True if the port is enabled,
+     * Returns True if the port is enabled.
      *
-     * @param portNumber
+     * @param portNumber port number
      * @return True if the port is enabled
      */
     boolean isPortEnabled(long portNumber);
@@ -130,7 +130,7 @@ public interface SessionContext {
     /**
      * Returns True if the port is enabled.
      *
-     * @param port
+     * @param port port
      * @return True if the port is enabled
      */
     boolean isPortEnabled(PortGrouping port);
@@ -145,44 +145,51 @@ public interface SessionContext {
     // TODO:: add listeners here, manager will set them and conductor use them
 
     /**
-     * get message dispatch service to send the message to switch
+     * get message dispatch service to send the message to switch.
      *
      * @return the message service
      */
     IMessageDispatchService getMessageDispatchService();
 
     /**
-     * @return the unique xid for this session
+     * return the unique xid for this session.
+     * @return  xid
      */
     Long getNextXid();
 
     /**
+     * Setter.
      * @param registration provider composite registration
      */
     void setProviderRegistration(ModelDrivenSwitchRegistration registration);
 
     /**
-     * @return provider composite registration
+     * return provider composite registration.
+     * @return ModelDrivenSwitchRegistration
      */
     ModelDrivenSwitchRegistration getProviderRegistration();
 
     /**
-     * @return seed value for random operations
+     * return seed value for random operations.
+     * @return int
      */
     int getSeed();
 
     /**
-     * @return (wrapped) notification enqueue service - {@link NotificationQueueWrapper}
+     * return (wrapped) notification enqueue service - {@link NotificationQueueWrapper}.
+     * @return NotificationEnqueuer
      */
     NotificationEnqueuer getNotificationEnqueuer();
 
     /**
-     * @param roleOnDevice
+     * Setter.
+     * @param roleOnDevice role
      */
     void setRoleOnDevice(ControllerRole roleOnDevice);
 
     /**
-     * @return actual role
+     * return actual role.
+     * @return role
      */
     ControllerRole getRoleOnDevice();
 }
