@@ -30,7 +30,7 @@ import org.opendaylight.yangtools.concepts.Identifiable;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
- * interface concatenating all md-sal services provided by OF-switch
+ * interface concatenating all md-sal services provided by OF-switch.
  */
 public interface ModelDrivenSwitch
         extends
@@ -42,32 +42,34 @@ public interface ModelDrivenSwitch
         Identifiable<InstanceIdentifier<Node>> {
 
     /**
-     * @param rpcProviderRegistry
+     * Register.
+     * @param rpcProviderRegistry rpc provider
      * @return wrapped list of {service provider + path} registration couples
      */
     ModelDrivenSwitchRegistration register(RpcProviderRegistry rpcProviderRegistry);
 
     /**
+     * Getter.
      * @return id of encapsulated node (served by this impl)
      */
     NodeId getNodeId();
 
     /**
-     * returnes the session context associated with this model-driven switch
+     * returnes the session context associated with this model-driven switch.
      *
      * @return session context object
      */
     SessionContext getSessionContext();
 
     /**
-     * Returns whether this *instance* is entity owner or not
+     * Returns whether this *instance* is entity owner or not.
      * @return true if it's entity owner, else false.
      */
     boolean isEntityOwner();
 
     /**
-     * Set entity ownership satus of this switch in *this* instance
-     * @param isOwner
+     * Set entity ownership satus of this switch in *this* instance.
+     * @param isOwner is owner
      */
     void setEntityOwnership(boolean isOwner);
 
@@ -80,7 +82,6 @@ public interface ModelDrivenSwitch
     /**
      * Method send port/desc multipart request to the switch to fetch the initial details.
      */
-
-    public abstract void requestSwitchDetails();
+    void requestSwitchDetails();
 
 }
