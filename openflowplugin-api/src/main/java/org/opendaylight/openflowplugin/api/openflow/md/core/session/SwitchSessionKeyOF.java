@@ -10,28 +10,27 @@ package org.opendaylight.openflowplugin.api.openflow.md.core.session;
 
 import java.math.BigInteger;
 
-/**
- * @author mirehak
- */
 public class SwitchSessionKeyOF {
 
     private BigInteger datapathId;
 
     /**
-     * default ctor
+     * default ctor.
      */
     public SwitchSessionKeyOF() {
         // NOOP
     }
-    
+
     /**
+     * Setter.
      * @param datapathId the datapathId to set
      */
     public void setDatapathId(BigInteger datapathId) {
         this.datapathId = datapathId;
     }
-    
+
     /**
+     * Getter.
      * @return the datapathId
      */
     public byte[] getId() {
