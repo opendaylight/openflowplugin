@@ -28,3 +28,4 @@ maven-metadata-local.xml
 *.log
 .tox/
 nbactions.xml
+nb-configuration.xml
