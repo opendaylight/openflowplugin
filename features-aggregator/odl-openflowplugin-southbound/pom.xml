@@ -54,6 +54,14 @@
 
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-blueprint-config</artifactId>
+            <version>${project.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>openflowplugin-common</artifactId>
             <version>${project.version}</version>
         </dependency>
