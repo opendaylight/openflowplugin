@@ -46,6 +46,14 @@
         </dependency>
 
         <dependency>
+            <groupId>org.opendaylight.openflowjava</groupId>
+            <artifactId>odl-openflowjava-protocol</artifactId>
+            <version>${openflowjava.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+
+        <dependency>
             <groupId>org.opendaylight.controller.model</groupId>
             <artifactId>model-inventory</artifactId>
             <version>${mdsal.version}</version>
@@ -55,14 +63,6 @@
             <groupId>org.opendaylight.controller.model</groupId>
             <artifactId>model-topology</artifactId>
             <version>${mdsal.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.opendaylight.openflowjava</groupId>
-            <artifactId>odl-openflowjava-protocol</artifactId>
-            <version>${openflowjava.version}</version>
-            <classifier>features</classifier>
-            <type>xml</type>
         </dependency>
 
         <dependency>
