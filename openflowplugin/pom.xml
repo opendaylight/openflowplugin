@@ -40,12 +40,12 @@
                                 </generator>
                                 <generator>
                                     <codeGeneratorClass>
-                                        org.opendaylight.yangtools.maven.sal.api.gen.plugin.CodeGeneratorImpl
+                                        org.opendaylight.mdsal.binding.maven.api.gen.plugin.CodeGeneratorImpl
                                     </codeGeneratorClass>
                                     <outputBaseDir>${project.build.directory}/generated-sources/sal</outputBaseDir>
                                 </generator>
                                 <generator>
-                                    <codeGeneratorClass>org.opendaylight.yangtools.yang.unified.doc.generator.maven.DocumentationGeneratorImpl</codeGeneratorClass>
+                                    <codeGeneratorClass>org.opendaylight.mdsal.binding.yang.unified.doc.generator.maven.DocumentationGeneratorImpl</codeGeneratorClass>
                                     <outputBaseDir>${project.build.directory}/site/models</outputBaseDir>
                                 </generator>
                             </codeGenerators>
