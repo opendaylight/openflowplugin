@@ -476,7 +476,7 @@ public class DeviceContextImplTest {
                 .thenReturn(flowRemovedMdsalBld.build());
 
         // insert flow+flowId into local registry
-        final FlowRegistryKey flowRegKey = FlowRegistryKeyFactory.create(flowRemovedMdsalBld.build());
+        final FlowRegistryKey flowRegKey = FlowRegistryKeyFactory.create(deviceInfo.getVersion(), flowRemovedMdsalBld.build());
         final FlowDescriptor flowDescriptor = FlowDescriptorFactory.create((short) 0, new FlowId("ut-ofp:f456"));
         deviceContext.getDeviceFlowRegistry().store(flowRegKey, flowDescriptor);
 

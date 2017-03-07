@@ -330,7 +330,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         final ItemLifecycleListener itemLifecycleListener = flowLifeCycleKeeper.getItemLifecycleListener();
         if (itemLifecycleListener != null) {
             //2. create registry key
-            final FlowRegistryKey flowRegKey = FlowRegistryKeyFactory.create(flowRemovedNotification);
+            final FlowRegistryKey flowRegKey = FlowRegistryKeyFactory.create(getDeviceInfo().getVersion(), flowRemovedNotification);
             //3. lookup flowId
             final FlowDescriptor flowDescriptor = deviceFlowRegistry.retrieveIdForFlow(flowRegKey);
             //4. if flowId present:
@@ -743,7 +743,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 LOG.debug("Transaction chain manager for node {} created", deviceInfo.getLOGValue());
             }
             this.transactionChainManager = new TransactionChainManager(dataBroker, deviceInfo);
-            this.deviceFlowRegistry = new DeviceFlowRegistryImpl(dataBroker, deviceInfo.getNodeInstanceIdentifier());
+            this.deviceFlowRegistry = new DeviceFlowRegistryImpl(deviceInfo.getVersion(), dataBroker, deviceInfo.getNodeInstanceIdentifier());
             this.deviceGroupRegistry = new DeviceGroupRegistryImpl();
             this.deviceMeterRegistry = new DeviceMeterRegistryImpl();
             this.initialized = true;

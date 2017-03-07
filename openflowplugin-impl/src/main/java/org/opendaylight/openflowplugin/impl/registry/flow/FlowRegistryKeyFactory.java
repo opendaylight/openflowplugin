@@ -27,8 +27,8 @@ public class FlowRegistryKeyFactory {
         // Hide implicit constructor
     }
 
-    public static FlowRegistryKey create(final Flow flow) {
-        return new FlowRegistryKeyDto(flow);
+    public static FlowRegistryKey create(final short version, final Flow flow) {
+        return new FlowRegistryKeyDto(version, flow);
     }
 
     private static final class FlowRegistryKeyDto implements FlowRegistryKey {
@@ -36,13 +36,15 @@ public class FlowRegistryKeyFactory {
         private final int priority;
         private final BigInteger cookie;
         private final Match match;
+        private final short version;
 
-        private FlowRegistryKeyDto(final Flow flow) {
+        private FlowRegistryKeyDto(final short version, final Flow flow) {
             //TODO: mandatory flow input values (or default values) should be specified via yang model
             tableId = Preconditions.checkNotNull(flow.getTableId(), "flow tableId must not be null");
             priority = MoreObjects.firstNonNull(flow.getPriority(), OFConstants.DEFAULT_FLOW_PRIORITY);
             match = MoreObjects.firstNonNull(flow.getMatch(), OFConstants.EMPTY_MATCH);
             cookie = MoreObjects.firstNonNull(flow.getCookie(), OFConstants.DEFAULT_FLOW_COOKIE).getValue();
+            this.version = version;
         }
 
         @Override
@@ -60,7 +62,7 @@ public class FlowRegistryKeyFactory {
             return getPriority() == that.getPriority() &&
                     getTableId() == that.getTableId() &&
                     getCookie().equals(that.getCookie()) &&
-                    MatchComparatorFactory.createMatch().areObjectsEqual(getMatch(), that.getMatch());
+                    MatchComparatorFactory.createMatch().areObjectsEqual(version, getMatch(), that.getMatch());
         }
 
         @Override

@@ -75,7 +75,7 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
 
     @Override
     public Future<RpcResult<AddFlowOutput>> addFlow(final AddFlowInput input) {
-        final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(input);
+        final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), input);
         final ListenableFuture<RpcResult<AddFlowOutput>> future =
                 flowAdd.processFlowModInputBuilders(flowAdd.toFlowModInputs(input));
         Futures.addCallback(future, new AddFlowCallback(input, flowRegistryKey));
@@ -187,7 +187,7 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Flow remove finished without error for flow={}", input);
                 }
-                FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(input);
+                FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), input);
                 deviceContext.getDeviceFlowRegistry().removeDescriptor(flowRegistryKey);
 
                 if (itemLifecycleListener != null) {
@@ -226,8 +226,8 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
 
             final UpdatedFlow updated = input.getUpdatedFlow();
             final OriginalFlow original = input.getOriginalFlow();
-            final FlowRegistryKey origFlowRegistryKey = FlowRegistryKeyFactory.create(original);
-            final FlowRegistryKey updatedFlowRegistryKey = FlowRegistryKeyFactory.create(updated);
+            final FlowRegistryKey origFlowRegistryKey = FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), original);
+            final FlowRegistryKey updatedFlowRegistryKey = FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), updated);
             final FlowDescriptor origFlowDescriptor = deviceFlowRegistry.retrieveIdForFlow(origFlowRegistryKey);
 
             final boolean isUpdate = Objects.nonNull(origFlowDescriptor);

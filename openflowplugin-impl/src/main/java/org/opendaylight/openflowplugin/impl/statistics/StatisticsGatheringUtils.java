@@ -338,7 +338,7 @@ public final class StatisticsGatheringUtils {
                             refineFlowStatisticsAugmentation(flowStat).build());
 
                     final short tableId = flowStat.getTableId();
-                    final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(flowBuilder.build());
+                    final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(deviceInfo.getVersion(), flowBuilder.build());
                     final FlowId flowId = registry.storeIfNecessary(flowRegistryKey);
 
                     final FlowKey flowKey = new FlowKey(flowId);
