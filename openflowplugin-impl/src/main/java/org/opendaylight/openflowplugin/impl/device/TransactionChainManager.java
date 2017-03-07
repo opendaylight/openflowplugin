@@ -205,14 +205,14 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
 
     <T extends DataObject> void addDeleteOperationTotTxChain(final LogicalDatastoreType store,
                                                              final InstanceIdentifier<T> path){
-        final WriteTransaction writeTx = getTransactionSafely();
-        if (Objects.nonNull(writeTx)) {
-            writeTx.delete(store, path);
-        } else {
-            if (LOG.isDebugEnabled()) {
+        synchronized (txLock) {
+            ensureTransaction();
+            if (wTx == null) {
                 LOG.debug("WriteTx is null for node {}. Delete {} was not realized.", this.nodeId, path);
+                throw new TransactionChainClosedException(CANNOT_WRITE_INTO_TRANSACTION);
             }
-            throw new TransactionChainClosedException(CANNOT_WRITE_INTO_TRANSACTION);
+
+            writeTx.delete(store, path);
         }
     }
 
@@ -220,14 +220,14 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                                                    final InstanceIdentifier<T> path,
                                                    final T data,
                                                    final boolean createParents){
-        final WriteTransaction writeTx = getTransactionSafely();
-        if (Objects.nonNull(writeTx)) {
-            writeTx.put(store, path, data, createParents);
-        } else {
-            if (LOG.isDebugEnabled()) {
+        synchronized (txLock) {
+            ensureTransaction();
+            if (wTx == null) {
                 LOG.debug("WriteTx is null for node {}. Write data for {} was not realized.", this.nodeId, path);
+                throw new TransactionChainClosedException(CANNOT_WRITE_INTO_TRANSACTION);
             }
-            throw new TransactionChainClosedException(CANNOT_WRITE_INTO_TRANSACTION);
+
+            writeTx.put(store, path, data, createParents);
         }
     }
 
@@ -252,14 +252,14 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         }
     }
 
+    @GuardedBy("txLock")
     @Nullable
-    private WriteTransaction getTransactionSafely() {
-            synchronized (txLock) {
-                if (wTx == null && TransactionChainManagerStatus.WORKING.equals(transactionChainManagerStatus)) {
-                    Optional.ofNullable(txChainFactory).ifPresent(bindingTransactionChain -> wTx = txChainFactory.newWriteOnlyTransaction());
-                }
+    private void ensureTransaction() {
+        if (wTx == null && TransactionChainManagerStatus.WORKING.equals(transactionChainManagerStatus)
+            && txChainFactory != null) {
+                wTx = txChainFactory.newWriteOnlyTransaction();
             }
-        return wTx;
+        }
     }
 
     @VisibleForTesting
