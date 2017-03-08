@@ -15,6 +15,7 @@ import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,6 +23,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipChange;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListenerRegistration;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
@@ -37,7 +41,10 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
+import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.ContextChainState;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,13 +60,16 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     private static final long DEFAULT_TTL_BEFORE_DROP = 1000L;
     private static final boolean STOP = true;
     private static final boolean START = false;
+    private static final String SERVICE_ENTITY_TYPE = "org.opendaylight.mdsal.ServiceEntityType";
 
     private DeviceManager deviceManager;
     private RpcManager rpcManager;
     private StatisticsManager statisticsManager;
+    private EntityOwnershipListenerRegistration eosListenerRegistration;
     private volatile ConcurrentHashMap<DeviceInfo, ContextChain> contextChainMap = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<DeviceInfo, ContextChain> sleepingChains = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<DeviceInfo, Long> timeToLive = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<DeviceInfo, ContextChain> sleepingChains = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<DeviceInfo, Long> timeToLive = new ConcurrentHashMap<>();
+    private final List<DeviceInfo> markToBeRemoved = new ArrayList<>();
     private ClusterSingletonServiceProvider singletonServicesProvider;
     private boolean timerIsRunning;
     private final HashedWheelTimer timer;
@@ -149,11 +159,14 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         if (Objects.nonNull(chain)) {
             chain.close();
             contextChainMap.remove(deviceInfo);
-            try {
-                LOG.info("Removing device: {} from DS", deviceInfo.getLOGValue());
-                deviceManager.removeDeviceFromOperationalDS(deviceInfo).checkedGet(5L, TimeUnit.SECONDS);
-            } catch (TimeoutException | TransactionCommitFailedException e) {
-                LOG.warn("Not able to remove device {} from DS", deviceInfo.getLOGValue());
+            if (markToBeRemoved.contains(deviceInfo)) {
+                markToBeRemoved.remove(deviceInfo);
+                try {
+                    LOG.info("Removing device: {} from DS", deviceInfo.getLOGValue());
+                    deviceManager.removeDeviceFromOperationalDS(deviceInfo).checkedGet(5L, TimeUnit.SECONDS);
+                } catch (TimeoutException | TransactionCommitFailedException e) {
+                    LOG.warn("Not able to remove device {} from DS", deviceInfo.getLOGValue());
+                }
             }
         }
     }
@@ -287,6 +300,16 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         this.neverDropChain = neverDropChain;
     }
 
+    @Override
+    public void changeEntityOwnershipService(final EntityOwnershipService entityOwnershipService) {
+        if (Objects.nonNull(this.eosListenerRegistration)) {
+            LOG.warn("EOS Listener already registered.");
+        } else {
+            this.eosListenerRegistration = Verify.verifyNotNull(entityOwnershipService.registerListener
+                    (SERVICE_ENTITY_TYPE, this));
+        }
+    }
+
     private void addToSleepingChainsMap(@Nonnull final DeviceInfo deviceInfo, final ContextChain contextChain) {
         if (contextChain.lastStateWasMaster()) {
             destroyContextChain(deviceInfo);
@@ -372,7 +395,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
                 }
             }
 
-            deviceInfos.forEach(deviceInfo -> timeToLive.remove(deviceInfo));
+            deviceInfos.forEach(timeToLive::remove);
 
             if (!timeToLive.isEmpty()) {
                 timer.newTimeout(new SleepingChainsTimerTask(), this.ttlStep, TimeUnit.MILLISECONDS);
@@ -385,6 +408,50 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     @VisibleForTesting
     boolean checkAllManagers() {
         return Objects.nonNull(deviceManager) && Objects.nonNull(rpcManager) && Objects.nonNull(statisticsManager);
+    }
+
+    @Override
+    public void close() throws Exception {
+        if (Objects.nonNull(eosListenerRegistration)) {
+            LOG.info("Closing entity ownership listener.");
+            eosListenerRegistration.close();
+        }
+    }
+
+    @Override
+    public void ownershipChanged(EntityOwnershipChange entityOwnershipChange) {
+        if (!entityOwnershipChange.hasOwner() && !entityOwnershipChange.isOwner() && entityOwnershipChange.wasOwner()) {
+            final YangInstanceIdentifier yii = entityOwnershipChange.getEntity().getId();
+            final YangInstanceIdentifier.NodeIdentifierWithPredicates niiwp =
+                    (YangInstanceIdentifier.NodeIdentifierWithPredicates) yii.getLastPathArgument();
+            String entityName =  niiwp.getKeyValues().values().iterator().next().toString();
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Last master for entity : {}", entityName);
+            }
+
+            if (entityName != null ){
+                final NodeId nodeId = new NodeId(entityName);
+                DeviceInfo inMap = null;
+                for (Map.Entry<DeviceInfo, ContextChain> entry : contextChainMap.entrySet()) {
+                    if (entry.getKey().getNodeId().equals(nodeId)) {
+                        inMap = entry.getKey();
+                        break;
+                    }                    
+                }
+                if (Objects.nonNull(inMap)) {
+                    markToBeRemoved.add(inMap);
+                } else {
+                    try {
+                        LOG.info("Removing device: {} from DS", nodeId);
+                        deviceManager
+                                .removeDeviceFromOperationalDS(DeviceStateUtil.createNodeInstanceIdentifier(nodeId))
+                                .checkedGet(5L, TimeUnit.SECONDS);
+                    } catch (TimeoutException | TransactionCommitFailedException e) {
+                        LOG.warn("Not able to remove device {} from DS", nodeId);
+                    }
+                }
+            }                
+        }        
     }
 
     private class StartStopChainCallback implements FutureCallback<Void> {
