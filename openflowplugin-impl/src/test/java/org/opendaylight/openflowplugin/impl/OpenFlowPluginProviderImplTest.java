@@ -83,7 +83,8 @@ public class OpenFlowPluginProviderImplTest {
                 GLOBAL_NOTIFICATION_QUOTA,
                 THREAD_POOL_MIN_THREADS,
                 THREAD_POOL_MAX_THREADS,
-                THREAD_POOL_TIMEOUT);
+                THREAD_POOL_TIMEOUT,
+                entityOwnershipService);
 
         provider.setDataBroker(dataBroker);
         provider.setRpcProviderRegistry(rpcProviderRegistry);
