@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListener;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -23,7 +24,9 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager
 public interface ContextChainHolder extends
         DeviceConnectedHandler,
         MastershipChangeListener,
-        DeviceDisconnectedHandler {
+        DeviceDisconnectedHandler,
+        EntityOwnershipListener,
+        AutoCloseable{
 
     /**
      * Managers need to be added before.
@@ -80,5 +83,8 @@ public interface ContextChainHolder extends
      * @param neverDropChain - the chain will never be dropped
      */
     void setNeverDropContextChain(final Boolean neverDropChain);
+
+    @Override
+    public void close() throws Exception;        
 
 }
