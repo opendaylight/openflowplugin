@@ -61,6 +61,7 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
         openflowPluginProvider.setEchoReplyTimeout(providerConfig.getEchoReplyTimeout().getValue());
         openflowPluginProvider.setStatisticsPollingOn(providerConfig.isIsStatisticsPollingOn());
         openflowPluginProvider.setClusteringSingletonServicesProvider(singletonServiceProvider);
+        openflowPluginProvider.setEntityOwnershipServiceProvider(entityOwnershipService);
         openflowPluginProvider.setSkipTableFeatures(providerConfig.isSkipTableFeatures());
         openflowPluginProvider.setBasicTimerDelay(providerConfig.getBasicTimerDelay().getValue());
         openflowPluginProvider.setMaximumTimerDelay(providerConfig.getMaximumTimerDelay().getValue());
