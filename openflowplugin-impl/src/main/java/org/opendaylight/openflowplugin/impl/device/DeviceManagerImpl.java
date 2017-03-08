@@ -55,7 +55,9 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorE
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -286,26 +288,31 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(final DeviceInfo deviceInfo) {
+    public CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(final KeyedInstanceIdentifier<Node, NodeKey> ii) {    
         final WriteTransaction delWtx = dataBroker.newWriteOnlyTransaction();
-        delWtx.delete(LogicalDatastoreType.OPERATIONAL, deviceInfo.getNodeInstanceIdentifier());
+        delWtx.delete(LogicalDatastoreType.OPERATIONAL, ii);
         final CheckedFuture<Void, TransactionCommitFailedException> delFuture = delWtx.submit();
 
         Futures.addCallback(delFuture, new FutureCallback<Void>() {
             @Override
             public void onSuccess(final Void result) {
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("Delete Node {} was successful", deviceInfo.getLOGValue());
+                    LOG.debug("Delete Node {} was successful", ii);
                 }
             }
 
             @Override
             public void onFailure(@Nonnull final Throwable t) {
-                LOG.warn("Delete node {} failed with exception {}", deviceInfo.getLOGValue(), t);
+                LOG.warn("Delete node {} failed with exception {}", ii, t);
             }
         });
 
         return delFuture;
+    }
+    
+    @Override
+    public CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(final DeviceInfo deviceInfo) {
+        return this.removeDeviceFromOperationalDS(deviceInfo.getNodeInstanceIdentifier());
     }
 
     @Override

@@ -46,7 +46,8 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
                 providerConfig.getGlobalNotificationQuota(),
                 providerConfig.getThreadPoolMinThreads(),
                 providerConfig.getThreadPoolMaxThreads().getValue(),
-                providerConfig.getThreadPoolTimeout());
+                providerConfig.getThreadPoolTimeout(),
+                entityOwnershipService);
 
         openflowPluginProvider.setSwitchConnectionProviders(switchConnectionProviders);
         openflowPluginProvider.setDataBroker(dataBroker);

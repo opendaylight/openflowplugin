@@ -30,6 +30,7 @@ import javax.management.ObjectName;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
@@ -113,7 +114,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                                       final long globalNotificationQuota,
                                       final int threadPoolMinThreads,
                                       final int threadPoolMaxThreads,
-                                      final long threadPoolTimeout) {
+                                      final long threadPoolTimeout,
+                                      final EntityOwnershipService entityOwnershipService) {
         Preconditions.checkArgument(rpcRequestsQuota > 0 && rpcRequestsQuota <= Integer.MAX_VALUE, "rpcRequestQuota has to be in range <1,%s>", Integer.MAX_VALUE);
         this.rpcRequestsQuota = (int) rpcRequestsQuota;
         this.globalNotificationQuota = Preconditions.checkNotNull(globalNotificationQuota);
@@ -129,6 +131,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         deviceInitializerProvider = DeviceInitializerProviderFactory.createDefaultProvider();		
         convertorManager = ConvertorManagerFactory.createDefaultManager();
         contextChainHolder = new ContextChainHolderImpl(hashedWheelTimer);
+        contextChainHolder.changeEntityOwnershipService(entityOwnershipService);
     }
 
     @Override
