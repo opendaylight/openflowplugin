@@ -332,7 +332,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
                     vidEntryValue = vlanId.getVlanId().getValue();
                 }
 
-                hasmask = (vidEntryValue == 0);
+                hasmask = vidEntryValue == 0;
                 if (hasmask) {
                     vlanVidBuilder.setMask(VLAN_VID_MASK);
                 }
@@ -608,10 +608,14 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
          */
         Optional<GeneralExtensionListGrouping> extensionListOpt = ExtensionResolvers.getMatchExtensionResolver().getExtension(match);
         if (extensionListOpt.isPresent()) {
-            for (ExtensionList extensionItem : extensionListOpt.get().getExtensionList()) {
+            List<ExtensionList> extensionListList = extensionListOpt.get().getExtensionList();
+            for (ExtensionList extensionItem : extensionListList) {
                 // TODO: get real version
                 ConverterExtensionKey<? extends ExtensionKey> key = new ConverterExtensionKey<>(extensionItem.getExtensionKey(), OFConstants.OFP_VERSION_1_3);
                 ConvertorToOFJava<MatchEntry> convertor = OFSessionUtil.getExtensionConvertorProvider().getConverter(key);
+                if (convertor == null) {
+                    throw new IllegalStateException("No convertor found for key: " + key.toString());
+                }
                 MatchEntry ofMatch = convertor.convert(extensionItem.getExtension());
                 result.add(ofMatch);
             }
