@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -49,6 +50,8 @@ public class ContextChainHolderImplTest {
     private DeviceInfo deviceInfo;
     @Mock
     private ClusterSingletonServiceProvider singletonServicesProvider;
+    @Mock
+    private EntityOwnershipService entityOwnershipService;
 
     private ContextChainHolderImpl contextChainHolder;
 
