@@ -271,43 +271,41 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(final DeviceInfo deviceInfo) {
-        return removeDeviceFromOperationalDS(deviceInfo.getNodeInstanceIdentifier(), deviceInfo.getLOGValue());
-    }
-
-    @Override
-    public void setGlobalNotificationQuota(final long globalNotificationQuota) {
-        this.globalNotificationQuota = globalNotificationQuota;
-    }
-
-    @Override
-    public void setSwitchFeaturesMandatory(final boolean switchFeaturesMandatory) {
-        this.switchFeaturesMandatory = switchFeaturesMandatory;
-    }
-
-    private CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(
-            final KeyedInstanceIdentifier<Node, NodeKey> nodeIid, final String nodeName) {
-        Preconditions.checkNotNull(nodeIid, "Node IID must not be null");
-
+    public CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(final KeyedInstanceIdentifier<Node, NodeKey> ii) {    
         final WriteTransaction delWtx = dataBroker.newWriteOnlyTransaction();
-        delWtx.delete(LogicalDatastoreType.OPERATIONAL, nodeIid);
+        delWtx.delete(LogicalDatastoreType.OPERATIONAL, ii);
         final CheckedFuture<Void, TransactionCommitFailedException> delFuture = delWtx.submit();
 
         Futures.addCallback(delFuture, new FutureCallback<Void>() {
             @Override
             public void onSuccess(final Void result) {
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("Delete Node {} was successful", nodeName);
+                    LOG.debug("Delete Node {} was successful", ii);
                 }
             }
 
             @Override
             public void onFailure(@Nonnull final Throwable t) {
-                LOG.warn("Delete node {} failed with exception {}", nodeName, t);
+                LOG.warn("Delete node {} failed with exception {}", ii, t);
             }
         });
 
         return delFuture;
+    }
+
+    @Override
+    public void setGlobalNotificationQuota(long globalNotificationQuota) {
+        this.globalNotificationQuota = globalNotificationQuota;
+    }
+
+    @Override
+    public void setSwitchFeaturesMandatory(boolean switchFeaturesMandatory) {
+        this.switchFeaturesMandatory = switchFeaturesMandatory;
+    }
+
+    @Override
+    public CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(final DeviceInfo deviceInfo) {
+        return this.removeDeviceFromOperationalDS(deviceInfo.getNodeInstanceIdentifier());
     }
 
     public DeviceContext createContext(@CheckForNull final ConnectionContext connectionContext) {
