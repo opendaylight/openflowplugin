@@ -25,7 +25,6 @@
         <module>odl-openflowplugin-app-lldp-speaker-he</module>
         <module>odl-openflowplugin-app-config-pusher-he</module>
         <module>odl-openflowplugin-app-table-miss-enforcer-he</module>
-        <module>odl-openflowplugin-drop-test-he</module>
         <module>odl-openflowplugin-flow-services-ui-he</module>
         <module>odl-openflowplugin-flow-services-rest-he</module>
     </modules>
