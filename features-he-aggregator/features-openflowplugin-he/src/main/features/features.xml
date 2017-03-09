@@ -75,13 +75,6 @@
         <feature version="${restconf.version}">odl-mdsal-apidocs</feature>
     </feature>
 
-    <!-- CBENCH TESTING -->
-    <feature name='odl-openflowplugin-drop-test-he' description="OpenDaylight :: Openflow Plugin :: Drop Test" version='${project.version}'>
-        <feature version="${project.version}">odl-openflowplugin-flow-services-he</feature>
-        <bundle>mvn:org.opendaylight.openflowplugin/test-common/{{VERSION}}</bundle>
-        <bundle>mvn:org.opendaylight.openflowplugin/drop-test-karaf/{{VERSION}}</bundle>
-    </feature>
-
     <!-- APPLICATIONS -->
     <feature name='odl-openflowplugin-app-table-miss-enforcer-he' description="OpenDaylight :: Openflow Plugin :: Application - table-miss-enforcer" version='${project.version}'>
         <feature version="${project.version}">odl-openflowplugin-southbound-he</feature>
