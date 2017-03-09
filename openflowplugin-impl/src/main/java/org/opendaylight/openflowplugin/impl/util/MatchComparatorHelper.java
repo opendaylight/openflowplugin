@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2015, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -59,6 +59,7 @@ public class MatchComparatorHelper {
     private static final int IPV4_ADDRESS_LENGTH = 32;
     private static final int IPV6_ADDRESS_LENGTH = 128;
     private static final int BYTE_SIZE = 8;
+    private static final String NO_ETH_MASK = "ff:ff:ff:ff:ff:ff";
 
     /*
      * Custom EthernetMatch is required because mac address string provided by user in EthernetMatch can be in any case
@@ -102,7 +103,7 @@ public class MatchComparatorHelper {
         } else {
             verdict = macAddressEquals(statsEthernetMatchFields.getAddress(), storedEthernetMatchFields.getAddress());
             if (verdict) {
-                verdict = macAddressEquals(statsEthernetMatchFields.getMask(), storedEthernetMatchFields.getMask());
+                verdict = macAddressMaskEquals(statsEthernetMatchFields.getMask(), storedEthernetMatchFields.getMask());
             }
         }
         return verdict;
@@ -115,6 +116,22 @@ public class MatchComparatorHelper {
             verdict = checkNullValues;
         } else {
             verdict = statsMacAddress.getValue().equalsIgnoreCase(storedMacAddress.getValue());
+        }
+        return verdict;
+    }
+
+    static boolean macAddressMaskEquals(final MacAddress statsMacAddressMask, final MacAddress storedMacAddressMask) {
+        boolean verdict = true;
+        //User sent the mask with all bit set, which actually means no mask. Switch might just ignore it.
+        if(statsMacAddressMask == null && storedMacAddressMask != null &&
+                storedMacAddressMask.getValue().equalsIgnoreCase(NO_ETH_MASK)) {
+            return verdict;
+        }
+        final Boolean checkNullValues = checkNullValues(statsMacAddressMask, storedMacAddressMask);
+        if (checkNullValues != null) {
+            verdict = checkNullValues;
+        } else {
+            verdict = statsMacAddressMask.getValue().equalsIgnoreCase(storedMacAddressMask.getValue());
         }
         return verdict;
     }

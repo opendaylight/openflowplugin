@@ -153,7 +153,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
                 LOG.trace("Failed to retrieve flow descriptor for flow hash : {}, trying with custom equals method", flowRegistryKey.hashCode());
             }
             for(Map.Entry<FlowRegistryKey, FlowDescriptor> fd : flowRegistry.entrySet()) {
-                if (fd.getKey().equals(flowRegistryKey)) {
+                if (flowRegistryKey.equals(fd.getKey())) {
                     flowDescriptor = fd.getValue();
                     break;
                 }
