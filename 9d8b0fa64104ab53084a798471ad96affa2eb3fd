@@ -22,6 +22,30 @@
       "revId": "9d8b0fa64104ab53084a798471ad96affa2eb3fd",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_b99391a1",
+        "filename": "extension/openflowplugin-extension-onf/src/main/yang/sal-bundle.yang",
+        "patchSetId": 10
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-03-10T10:07:05Z",
+      "side": 1,
+      "message": "First it was just \"list messages\" whitch was not good readable in xml file. One solution is to make it more readable when \u003cmessage\u003e is encapsulated in \u003cmessages\u003e or just rename the list as message.",
+      "parentUuid": "fafc7978_41b46a34",
+      "range": {
+        "startLine": 84,
+        "startChar": 0,
+        "endLine": 85,
+        "endChar": 30
+      },
+      "revId": "9d8b0fa64104ab53084a798471ad96affa2eb3fd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
