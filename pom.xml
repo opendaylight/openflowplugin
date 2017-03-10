@@ -37,7 +37,6 @@
       <module>openflowplugin-it</module>
       -->
       <module>test-provider</module>
-      <module>drop-test</module>
       <module>drop-test-karaf</module>
       <module>test-common</module>
       <module>features-aggregator</module>
