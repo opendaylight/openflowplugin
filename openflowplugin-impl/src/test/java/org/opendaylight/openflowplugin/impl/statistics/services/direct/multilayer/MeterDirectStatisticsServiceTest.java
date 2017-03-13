@@ -21,12 +21,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.AbstractDirectStatisticsServiceTest;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetMeterStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetMeterStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyMeterCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter._case.MultipartReplyMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter._case.multipart.reply.meter.MeterStats;
@@ -50,7 +52,10 @@ public class MeterDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         when(input.getNode()).thenReturn(createNodeRef(NODE_ID));
         when(input.getMeterId()).thenReturn(new MeterId(METER_NO));
 
-        final MultipartRequestMeterCase body = (MultipartRequestMeterCase) service.buildRequestBody(input);
+        final MultipartRequestMeterCase body = (MultipartRequestMeterCase) ((MultipartRequestInput) service
+            .buildRequest(new Xid(42L), input))
+            .getMultipartRequestBody();
+
         final MultipartRequestMeter meter = body.getMultipartRequestMeter();
 
         assertEquals(METER_NO, meter.getMeterId().getValue());

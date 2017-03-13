@@ -35,7 +35,7 @@ public class MultiLayerDirectStatisticsProviderInitializer {
 
         provider.register(AbstractFlowDirectStatisticsService.class, new FlowDirectStatisticsService(
             requestContextStack, deviceContext, convertorExecutor, statisticsWriterProvider));
-        provider.register(AbstractGroupDirectStatisticsService.class, new FlowDirectStatisticsService(
+        provider.register(AbstractGroupDirectStatisticsService.class, new GroupDirectStatisticsService(
             requestContextStack, deviceContext, convertorExecutor, statisticsWriterProvider));
         provider.register(AbstractMeterDirectStatisticsService.class, new MeterDirectStatisticsService(
             requestContextStack, deviceContext, convertorExecutor, statisticsWriterProvider));

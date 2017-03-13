@@ -8,12 +8,20 @@
 
 package org.opendaylight.openflowplugin.impl.common;
 
-import com.google.common.base.Preconditions;
-import java.math.BigInteger;
-import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.impl.util.MatchUtil;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.multipart.request.multipart.request.body.MultipartRequestDescBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.multipart.request.multipart.request.body.MultipartRequestFlowTableStatsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.multipart.request.multipart.request.body.MultipartRequestPortDescBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.multipart.request.multipart.request.body.MultipartRequestFlowAggregateStatsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.multipart.request.multipart.request.body.MultipartRequestFlowStatsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.multipart.request.multipart.request.body.MultipartRequestGroupDescBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.multipart.request.multipart.request.body.MultipartRequestGroupFeaturesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.multipart.request.multipart.request.body.MultipartRequestGroupStatsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.multipart.request.multipart.request.body.MultipartRequestMeterFeaturesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.multipart.request.multipart.request.body.MultipartRequestMeterStatsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartRequestBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
@@ -23,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.MultipartRequestBody;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestAggregateCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestDescCaseBuilder;
@@ -46,6 +55,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.port.stats._case.MultipartRequestPortStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.queue._case.MultipartRequestQueueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table.features._case.MultipartRequestTableFeaturesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.multipart.request.multipart.request.body.MultipartRequestExperimenterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.multipart.request.multipart.request.body.MultipartRequestQueueStatsBuilder;
 
 /**
  * openflowplugin-impl
@@ -67,46 +78,66 @@ public final class MultipartRequestInputFactory {
     }
 
     /**
-     * Method validate input and makes {@link MultipartRequestInput} from input values. Method set
-     * a moreRequest marker to false and it creates default empty {@link MultipartRequestBody}
+     * Method validate input and makes {@link org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader}
+     * from input values. Method set a moreRequest marker to false and it creates default empty multipart request body
      * by {@link MultipartType}
      *
-     * @param xid
-     * @param type
-     * @param ofVersion
-     * @return
+     * @param xid xid
+     * @param version OpenFlow version
+     * @param type multipart type
+     * @param canUseSingleLayer can use single layer serialization
+     * @return multipart request
      */
-    public static MultipartRequestInput makeMultipartRequestInput(final long xid, final short ofVersion,
-                                                                  @Nonnull final MultipartType type) {
-        return maker(xid, type, ofVersion, false, makeDefaultEmptyRequestBody(type, ofVersion));
+    public static OfHeader makeMultipartRequest(final long xid,
+                                                final short version,
+                                                @Nonnull final MultipartType type,
+                                                final boolean canUseSingleLayer) {
+        return canUseSingleLayer ?
+            new MultipartRequestBuilder()
+                .setRequestMore(false)
+                .setVersion(version)
+                .setXid(xid)
+                .setMultipartRequestBody(makeDefaultSingleLayerBody(type))
+                .build() :
+            new MultipartRequestInputBuilder()
+                .setFlags(new MultipartRequestFlags(false))
+                .setMultipartRequestBody(makeDefaultMultiLayerBody(type, version))
+                .setVersion(version)
+                .setType(type)
+                .setXid(xid)
+                .build();
     }
 
-
-
-    /**
-     * Method build {@link MultipartRequestInput} from input values. It is private because we would like
-     * to validate only what is really need to be validate.
-     *
-     * @param xid
-     * @param type
-     * @param ofVersion
-     * @param moreRequests
-     * @param body
-     * @return
-     */
-    private static MultipartRequestInput maker(final long xid, final MultipartType type,
-                                               final short ofVersion, final boolean moreRequests, final MultipartRequestBody body) {
-        final MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();
-        builder.setFlags(new MultipartRequestFlags(moreRequests));
-        builder.setMultipartRequestBody(body);
-        builder.setVersion(ofVersion);
-        builder.setType(type);
-        builder.setXid(xid);
-        return builder.build();
+    private static org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.request
+        .MultipartRequestBody makeDefaultSingleLayerBody(final MultipartType type) {
+        switch (type) {
+            case OFPMPDESC: return new MultipartRequestDescBuilder().build();
+            case OFPMPFLOW: return new MultipartRequestFlowStatsBuilder()
+                .setMatch(new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
+                    .MatchBuilder().build())
+                .build();
+            case OFPMPAGGREGATE: return new MultipartRequestFlowAggregateStatsBuilder().build();
+            case OFPMPTABLE: return new MultipartRequestFlowTableStatsBuilder().build();
+            case OFPMPPORTSTATS: return new org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.multipart.request.multipart.request.body
+                .MultipartRequestPortStatsBuilder().build();
+            case OFPMPQUEUE: return new MultipartRequestQueueStatsBuilder().build();
+            case OFPMPGROUP: return new MultipartRequestGroupStatsBuilder().build();
+            case OFPMPGROUPDESC: return new MultipartRequestGroupDescBuilder().build();
+            case OFPMPGROUPFEATURES: return new MultipartRequestGroupFeaturesBuilder().build();
+            case OFPMPMETER: return new MultipartRequestMeterStatsBuilder().build();
+            case OFPMPMETERCONFIG: return new org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.multipart.request.multipart.request.body
+                .MultipartRequestMeterConfigBuilder().build();
+            case OFPMPMETERFEATURES: return new MultipartRequestMeterFeaturesBuilder().build();
+            case OFPMPTABLEFEATURES: return new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.multipart.request.multipart.request.body
+                .MultipartRequestTableFeaturesBuilder().build();
+            case OFPMPPORTDESC: return new MultipartRequestPortDescBuilder().build();
+            case OFPMPEXPERIMENTER: return new MultipartRequestExperimenterBuilder().build();
+            default:throw new IllegalArgumentException("Unknown MultipartType " + type);
+        }
     }
 
-    private static MultipartRequestBody makeDefaultEmptyRequestBody(@CheckForNull final MultipartType type, @CheckForNull final short version) {
-        Preconditions.checkArgument(type != null, "Multipart Request can not by build without type!");
+    private static MultipartRequestBody makeDefaultMultiLayerBody(@Nonnull final MultipartType type,
+                                                                  final short version) {
         switch (type) {
             case OFPMPDESC:
                 return new MultipartRequestDescCaseBuilder().build();
@@ -116,8 +147,9 @@ public final class MultipartRequestInputFactory {
                 multipartRequestFlowBuilder.setTableId(OFConstants.OFPTT_ALL);
                 multipartRequestFlowBuilder.setOutPort(OFConstants.OFPP_ANY);
                 multipartRequestFlowBuilder.setOutGroup(OFConstants.OFPG_ANY);
-                multipartRequestFlowBuilder.setCookie(BigInteger.ZERO);
-                multipartRequestFlowBuilder.setCookieMask(BigInteger.ZERO);
+                multipartRequestFlowBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
+                multipartRequestFlowBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
+
                 switch (version) {
                     case OFConstants.OFP_VERSION_1_0:
                         MatchV10Builder matchV10Builder = MatchUtil.createEmptyV10Match();
@@ -129,6 +161,7 @@ public final class MultipartRequestInputFactory {
                     default:
                         throw new IllegalArgumentException("Unknown version " + version);
                 }
+
                 multipartRequestFlowCaseBuilder.setMultipartRequestFlow(multipartRequestFlowBuilder.build());
                 return multipartRequestFlowCaseBuilder.build();
             case OFPMPAGGREGATE:
