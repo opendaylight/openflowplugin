@@ -20,11 +20,13 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.AbstractDirectStatisticsServiceTest;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetNodeConnectorStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetNodeConnectorStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyPortStatsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.stats._case.MultipartReplyPortStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.stats._case.multipart.reply.port.stats.PortStats;
@@ -47,7 +49,10 @@ public class NodeConnectorDirectStatisticsServiceTest extends AbstractDirectStat
         when(input.getNode()).thenReturn(createNodeRef(NODE_ID));
         when(input.getNodeConnectorId()).thenReturn(nodeConnectorId);
 
-        final MultipartRequestPortStatsCase body = (MultipartRequestPortStatsCase) service.buildRequestBody(input);
+        final MultipartRequestPortStatsCase body = (MultipartRequestPortStatsCase) ((MultipartRequestInput)service
+            .buildRequest(new Xid(42L), input))
+            .getMultipartRequestBody();
+
         final MultipartRequestPortStats nodeConnector = body.getMultipartRequestPortStats();
 
         assertEquals(PORT_NO, nodeConnector.getPortNo());
