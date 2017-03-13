@@ -53,6 +53,6 @@ public abstract class AbstractMultipartCollectorService<T extends OfHeader> exte
 
     @Override
     protected OfHeader buildRequest(final Xid xid, final MultipartType input) {
-        return MultipartRequestInputFactory.makeMultipartRequestInput(xid.getValue(), getVersion(), input);
+        return MultipartRequestInputFactory.makeMultipartRequest(xid.getValue(), getVersion(), input, canUseSingleLayerSerialization());
     }
 }
