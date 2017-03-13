@@ -20,6 +20,7 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.AbstractDirectStatisticsServiceTest;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetQueueStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetQueueStatisticsOutput;
@@ -27,6 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.queue.rev130925.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyQueueCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.queue._case.MultipartReplyQueue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.queue._case.multipart.reply.queue.QueueStats;
@@ -51,7 +53,10 @@ public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         when(input.getQueueId()).thenReturn(new QueueId(QUEUE_NO));
         when(input.getNodeConnectorId()).thenReturn(new NodeConnectorId(NODE_ID + ":" + PORT_NO));
 
-        final MultipartRequestQueueCase body = (MultipartRequestQueueCase) service.buildRequestBody(input);
+        final MultipartRequestQueueCase body = (MultipartRequestQueueCase) ((MultipartRequestInput) service
+            .buildRequest(new Xid(42L), input))
+            .getMultipartRequestBody();
+
         final MultipartRequestQueue queue = body.getMultipartRequestQueue();
 
         assertEquals(PORT_NO, queue.getPortNo());

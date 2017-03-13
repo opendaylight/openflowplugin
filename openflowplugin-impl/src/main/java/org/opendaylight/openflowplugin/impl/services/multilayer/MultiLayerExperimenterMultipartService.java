@@ -8,30 +8,42 @@
 
 package org.opendaylight.openflowplugin.impl.services.multilayer;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
+import org.opendaylight.openflowplugin.extension.api.ConvertorMessageToOFJava;
+import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
+import org.opendaylight.openflowplugin.extension.api.exception.ConverterNotFoundException;
 import org.opendaylight.openflowplugin.extension.api.path.MessagePath;
 import org.opendaylight.openflowplugin.impl.services.AbstractExperimenterMultipartService;
+import org.opendaylight.openflowplugin.impl.services.util.RequestInputUtils;
+import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.mp.message.service.rev151020.SendExperimenterMpRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.mp.message.service.rev151020.SendExperimenterMpRequestOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.mp.message.service.rev151020.SendExperimenterMpRequestOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.mp.message.service.rev151020.send.experimenter.mp.request.output.ExperimenterCoreMessageItem;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.mp.message.service.rev151020.send.experimenter.mp.request.output.ExperimenterCoreMessageItemBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyExperimenterCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.experimenter._case.MultipartReplyExperimenter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestExperimenterCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.experimenter._case.MultipartRequestExperimenterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.experimenter.core.message.ExperimenterMessageOfChoice;
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -45,6 +57,37 @@ public class MultiLayerExperimenterMultipartService extends AbstractExperimenter
     public MultiLayerExperimenterMultipartService(RequestContextStack requestContextStack, DeviceContext deviceContext,
                                                   ExtensionConverterProvider extensionConverterProvider) {
         super(requestContextStack, deviceContext, extensionConverterProvider);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    protected OfHeader buildRequest(Xid xid, SendExperimenterMpRequestInput input) throws ServiceException {
+        final TypeVersionKey key = new TypeVersionKey<>(
+            input.getExperimenterMessageOfChoice().getImplementedInterface(),
+            getVersion());
+
+        final ConvertorMessageToOFJava<ExperimenterMessageOfChoice, ExperimenterDataOfChoice> messageConverter =
+            getExtensionConverterProvider().getMessageConverter(key);
+
+        if (Objects.isNull(messageConverter)) {
+            throw new ServiceException(new ConverterNotFoundException(key.toString()));
+        }
+
+        try {
+            return RequestInputUtils
+                .createMultipartHeader(MultipartType.OFPMPEXPERIMENTER, xid.getValue(), getVersion())
+                .setMultipartRequestBody(new MultipartRequestExperimenterCaseBuilder()
+                    .setMultipartRequestExperimenter(new MultipartRequestExperimenterBuilder()
+                        .setExperimenter(messageConverter.getExperimenterId())
+                        .setExpType(messageConverter.getType())
+                        .setExperimenterDataOfChoice(messageConverter
+                            .convert(input.getExperimenterMessageOfChoice()))
+                        .build())
+                    .build())
+                .build();
+        } catch (final ConversionException e) {
+            throw new ServiceException(e);
+        }
     }
 
     @Override
@@ -115,4 +158,8 @@ public class MultiLayerExperimenterMultipartService extends AbstractExperimenter
         return finalFuture;
     }
 
+    @VisibleForTesting
+    OfHeader buildRequestTest(Xid xid, SendExperimenterMpRequestInput input) throws ServiceException {
+        return buildRequest(xid, input);
+    }
 }
