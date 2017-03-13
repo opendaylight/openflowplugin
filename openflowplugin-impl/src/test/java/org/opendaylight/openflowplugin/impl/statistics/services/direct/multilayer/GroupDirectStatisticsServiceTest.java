@@ -21,12 +21,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.AbstractDirectStatisticsServiceTest;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetGroupStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetGroupStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyGroupCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.MultipartReplyGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.multipart.reply.group.GroupStats;
@@ -50,7 +52,10 @@ public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         when(input.getNode()).thenReturn(createNodeRef(NODE_ID));
         when(input.getGroupId()).thenReturn(new GroupId(GROUP_NO));
 
-        final MultipartRequestGroupCase body = (MultipartRequestGroupCase) service.buildRequestBody(input);
+        final MultipartRequestGroupCase body = (MultipartRequestGroupCase) ((MultipartRequestInput) service
+            .buildRequest(new Xid(42L), input))
+            .getMultipartRequestBody();
+
         final MultipartRequestGroup group = body.getMultipartRequestGroup();
 
         assertEquals(GROUP_NO, group.getGroupId().getValue());

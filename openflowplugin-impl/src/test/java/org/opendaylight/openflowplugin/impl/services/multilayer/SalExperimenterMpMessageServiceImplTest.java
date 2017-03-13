@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.impl.services;
+package org.opendaylight.openflowplugin.impl.services.multilayer;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
@@ -19,7 +19,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageToOFJava;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
-import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerExperimenterMultipartService;
+import org.opendaylight.openflowplugin.impl.services.ServiceMocking;
 import org.opendaylight.openflowplugin.impl.services.sal.SalExperimenterMpMessageServiceImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.mp.message.service.rev151020.SendExperimenterMpRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.mp.message.service.rev151020.SendExperimenterMpRequestInputBuilder;
@@ -78,7 +78,7 @@ public class SalExperimenterMpMessageServiceImplTest extends ServiceMocking {
                 .build();
 
         final OfHeader ofHeader = new MultiLayerExperimenterMultipartService(mockedDeviceContext, mockedDeviceContext, mockedExtensionConverterProvider)
-            .buildRequest(new Xid(DUMMY_ID), data);
+            .buildRequestTest(new Xid(DUMMY_ID), data);
         verify(mockedExtensionConverter).convert(data.getExperimenterMessageOfChoice());
         assertEquals(DUMMY_ID, (long) ofHeader.getXid());
         assertEquals(mockedDeviceInfo.getVersion(), (short) ofHeader.getVersion());
