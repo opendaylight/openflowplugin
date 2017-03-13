@@ -15,17 +15,13 @@ import java.util.List;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
-import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
-import org.opendaylight.openflowplugin.impl.services.AbstractMultipartService;
-import org.opendaylight.openflowplugin.impl.services.util.RequestInputUtils;
-import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
+import org.opendaylight.openflowplugin.impl.services.AbstractMultipartService;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.StoreStatsGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.MultipartRequestBody;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -100,11 +96,12 @@ abstract class AbstractDirectStatisticsService<I extends StoreStatsGrouping, O e
         return input;
     }
 
-    @Override
-    protected OfHeader buildRequest(Xid xid, I input) throws ServiceException {
-        return RequestInputUtils.createMultipartHeader(multipartType, xid.getValue(), getVersion())
-                .setMultipartRequestBody(buildRequestBody(input))
-                .build();
+    /**
+     * Get multipart type
+     * @return multipart type
+     */
+    protected MultipartType getMultipartType() {
+        return multipartType;
     }
 
     /**
@@ -123,14 +120,6 @@ abstract class AbstractDirectStatisticsService<I extends StoreStatsGrouping, O e
     protected OpenflowVersion getOfVersion() {
         return ofVersion;
     }
-
-    /**
-     * Build multipart request body.
-     *
-     * @param input the input
-     * @return the multipart request body
-     */
-    public abstract MultipartRequestBody buildRequestBody(I input);
 
     /**
      * Build output from multipart reply input.

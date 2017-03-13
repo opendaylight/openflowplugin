@@ -53,7 +53,7 @@ public class StatisticsGatheringOnTheFlyService<T extends OfHeader>
 
     @Override
     protected OfHeader buildRequest(final Xid xid, final MultipartType input) throws ServiceException {
-        return MultipartRequestInputFactory.makeMultipartRequestInput(xid.getValue(), getVersion(), input);
+        return MultipartRequestInputFactory.makeMultipartRequest(xid.getValue(), getVersion(), input, canUseSingleLayerSerialization());
     }
 
 }

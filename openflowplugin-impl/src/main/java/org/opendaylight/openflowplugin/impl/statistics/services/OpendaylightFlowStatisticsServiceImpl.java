@@ -46,8 +46,7 @@ public class OpendaylightFlowStatisticsServiceImpl implements OpendaylightFlowSt
                                                  final DeviceContext deviceContext,
                                                  final TranslatorLibrary translatorLibrary,
                                                  final ConvertorExecutor convertorExecutor) {
-        singleLayerService = new SingleLayerAggregateFlowMultipartService(requestContextStack, deviceContext,
-            convertorExecutor);
+        singleLayerService = new SingleLayerAggregateFlowMultipartService(requestContextStack, deviceContext);
         multiLayerService = new MultiLayerAggregateFlowMultipartService(requestContextStack, deviceContext,
             convertorExecutor, translatorLibrary);
     }

@@ -16,14 +16,19 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.services.AbstractExperimenterMultipartService;
+import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.mp.message.service.rev151020.SendExperimenterMpRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.mp.message.service.rev151020.SendExperimenterMpRequestOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.mp.message.service.rev151020.SendExperimenterMpRequestOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.mp.message.service.rev151020.send.experimenter.mp.request.output.ExperimenterCoreMessageItemBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartRequestBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.multipart.reply.multipart.reply.body.MultipartReplyExperimenter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.multipart.request.multipart.request.body.MultipartRequestExperimenterBuilder;
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -36,6 +41,16 @@ public class SingleLayerExperimenterMultipartService extends AbstractExperimente
     public SingleLayerExperimenterMultipartService(RequestContextStack requestContextStack, DeviceContext deviceContext,
                                                    ExtensionConverterProvider extensionConverterProvider) {
         super(requestContextStack, deviceContext, extensionConverterProvider);
+    }
+
+    @Override
+    protected OfHeader buildRequest(final Xid xid, final SendExperimenterMpRequestInput input) throws ServiceException {
+        return new MultipartRequestBuilder()
+            .setXid(xid.getValue())
+            .setVersion(getVersion())
+            .setRequestMore(false)
+            .setMultipartRequestBody(new MultipartRequestExperimenterBuilder(input).build())
+            .build();
     }
 
     @Override
