@@ -435,7 +435,6 @@ public class DeviceContextImplTest {
         when(connectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
 
         deviceContext.onPublished();
-        verify(mockedAuxConnectionAdapter).setPacketInFiltering(eq(false));
         verify(mockedConnectionAdapter).setPacketInFiltering(eq(false));
     }
 

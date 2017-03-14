@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
@@ -32,7 +31,6 @@ import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -41,7 +39,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
@@ -94,19 +91,18 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private boolean useSingleLayerSerialization;
 
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
+                             @Nonnull final MessageSpy messageSpy,
+                             final NotificationPublishService notificationPublishService,
+                             @Nonnull final HashedWheelTimer hashedWheelTimer,
+                             @Nonnull final ConvertorExecutor convertorExecutor,
+                             @Nonnull final DeviceInitializerProvider deviceInitializerProvider,
                              final long globalNotificationQuota,
                              final boolean switchFeaturesMandatory,
                              final long barrierInterval,
                              final int barrierCountLimit,
-                             final MessageSpy messageSpy,
                              final boolean isFlowRemovedNotificationOn,
-                             final ClusterSingletonServiceProvider singletonServiceProvider,
-                             final NotificationPublishService notificationPublishService,
-                             final HashedWheelTimer hashedWheelTimer,
-                             final ConvertorExecutor convertorExecutor,
                              final boolean skipTableFeatures,
-                             final boolean useSingleLayerSerialization,
-                             final DeviceInitializerProvider deviceInitializerProvider) {
+                             final boolean useSingleLayerSerialization) {
 
         this.dataBroker = dataBroker;
         this.deviceInitializerProvider = deviceInitializerProvider;
@@ -135,20 +131,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         this.notificationPublishService = notificationPublishService;
         this.messageSpy = messageSpy;
         this.useSingleLayerSerialization = useSingleLayerSerialization;
-    }
-
-
-    @Override
-    public void setDeviceInitializationPhaseHandler(final DeviceInitializationPhaseHandler handler) {
-    }
-
-    @Override
-    public void onDeviceContextLevelUp(@CheckForNull DeviceInfo deviceInfo, final LifecycleService lifecycleService) throws Exception {
-        // final phase - we have to add new Device to MD-SAL DataStore
-        LOG.debug("Final phase of DeviceContextLevelUp for Node: {} ", deviceInfo.getNodeId());
-        DeviceContext deviceContext = Preconditions.checkNotNull(deviceContexts.get(deviceInfo));
-        deviceContext.onPublished();
-        lifecycleService.registerDeviceRemovedHandler(this);
     }
 
     @Override
