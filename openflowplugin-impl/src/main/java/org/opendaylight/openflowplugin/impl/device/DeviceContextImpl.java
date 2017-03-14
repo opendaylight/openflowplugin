@@ -207,7 +207,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.deviceState = new DeviceStateImpl();
         this.dataBroker = dataBroker;
         this.auxiliaryConnectionContexts = new HashMap<>();
-        this.messageSpy = Preconditions.checkNotNull(messageSpy);
+        this.messageSpy = messageSpy;
 
         this.packetInLimiter = new PacketInRateLimiter(primaryConnectionContext.getConnectionAdapter(),
                 /*initial*/ LOW_WATERMARK, /*initial*/HIGH_WATERMARK, this.messageSpy, REJECTED_DRAIN_FACTOR);
@@ -572,12 +572,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     public void onPublished() {
         Verify.verify(CONTEXT_STATE.INITIALIZATION.equals(getState()));
         this.state = CONTEXT_STATE.WORKING;
-        synchronized (primaryConnectionContext) {
-            primaryConnectionContext.getConnectionAdapter().setPacketInFiltering(false);
-        }
-        for (final ConnectionContext switchAuxConnectionContext : auxiliaryConnectionContexts.values()) {
-            switchAuxConnectionContext.getConnectionAdapter().setPacketInFiltering(false);
-        }
+        primaryConnectionContext.getConnectionAdapter().setPacketInFiltering(false);
     }
 
     @Override

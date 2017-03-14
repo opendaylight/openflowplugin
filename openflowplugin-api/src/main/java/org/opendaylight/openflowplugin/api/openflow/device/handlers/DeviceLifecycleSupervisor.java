@@ -9,9 +9,6 @@
 package org.opendaylight.openflowplugin.api.openflow.device.handlers;
 
 /**
- * openflowplugin-api
- * org.opendaylight.openflowplugin.api.openflow.device.handlers
- *
  * Interface has to implement all relevant manager to correctly handling
  * device initialization and termination phase. Methods are used for order
  * handlers in initialization/termination phase. Ordering is easily changed
@@ -21,17 +18,8 @@ package org.opendaylight.openflowplugin.api.openflow.device.handlers;
 public interface DeviceLifecycleSupervisor {
 
     /**
-     * Method sets relevant {@link DeviceInitializationPhaseHandler} for building
-     * handler's chain for new Device initial phase.
-     *
-     * @param handler initialization phase handler
-     */
-    void setDeviceInitializationPhaseHandler(DeviceInitializationPhaseHandler handler);
-
-    /**
-     * Method sets relevant {@link DeviceInitializationPhaseHandler} for annihilating
+     * Method sets relevant {@link DeviceTerminationPhaseHandler} for annihilating
      * handler's chain for dead Device termination phase.
-     *
      * @param handler termination phase handler
      */
     void setDeviceTerminationPhaseHandler(DeviceTerminationPhaseHandler handler);

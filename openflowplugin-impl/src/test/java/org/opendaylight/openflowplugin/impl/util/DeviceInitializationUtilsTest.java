@@ -49,7 +49,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.impl.device.DeviceContextImpl;
@@ -120,8 +119,6 @@ public class DeviceInitializationUtilsTest {
     private FeaturesReply mockFeatures;
     @Mock
     private OutboundQueue outboundQueueProvider;
-    @Mock
-    private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
     @Mock
     private TranslatorLibrary translatorLibrary;
     @Mock

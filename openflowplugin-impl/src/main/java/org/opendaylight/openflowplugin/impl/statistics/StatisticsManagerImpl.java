@@ -34,9 +34,7 @@ import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
@@ -58,8 +56,6 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     private static final long DEFAULT_STATS_TIMEOUT_SEC = 50L;
     private final ConvertorExecutor converterExecutor;
-
-    private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
     private DeviceTerminationPhaseHandler deviceTerminationPhaseHandler;
 
     private final ConcurrentMap<DeviceInfo, StatisticsContext> contexts = new ConcurrentHashMap<>();
@@ -75,27 +71,14 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     private final HashedWheelTimer hashedWheelTimer;
 
-    @Override
-    public void setDeviceInitializationPhaseHandler(final DeviceInitializationPhaseHandler handler) {
-        deviceInitPhaseHandler = handler;
-    }
-
-    public StatisticsManagerImpl(final RpcProviderRegistry rpcProviderRegistry,
+    public StatisticsManagerImpl(@Nonnull final RpcProviderRegistry rpcProviderRegistry,
                                  final HashedWheelTimer hashedWheelTimer,
                                  final ConvertorExecutor convertorExecutor) {
-        Preconditions.checkArgument(rpcProviderRegistry != null);
 	    this.converterExecutor = convertorExecutor;
         this.controlServiceRegistration = Preconditions.checkNotNull(
                 rpcProviderRegistry.addRpcImplementation(StatisticsManagerControlService.class, this)
         );
         this.hashedWheelTimer = hashedWheelTimer;
-    }
-
-    @Override
-    public void onDeviceContextLevelUp(final DeviceInfo deviceInfo,
-                                       final LifecycleService lifecycleService) throws Exception {
-
-        deviceInitPhaseHandler.onDeviceContextLevelUp(deviceInfo, lifecycleService);
     }
 
     @VisibleForTesting
@@ -240,9 +223,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                             break;
                         case FULLYDISABLED:
                             final Optional<Timeout> pollTimeout = statisticsContext.getPollTimeout();
-                            if (pollTimeout.isPresent()) {
-                                pollTimeout.get().cancel();
-                            }
+                            pollTimeout.ifPresent(Timeout::cancel);
                             for (final ItemLifeCycleSource lifeCycleSource : deviceContext.getItemLifeCycleSourceRegistry().getLifeCycleSources()) {
                                 lifeCycleSource.setItemLifecycleListener(statisticsContext.getItemLifeCycleListener());
                             }

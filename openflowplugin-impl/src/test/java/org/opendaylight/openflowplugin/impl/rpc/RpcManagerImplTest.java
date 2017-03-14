@@ -12,7 +12,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.google.common.base.VerifyException;
 import java.util.concurrent.ConcurrentMap;
 import org.junit.Before;
 import org.junit.Rule;
@@ -31,9 +30,7 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
@@ -60,15 +57,11 @@ public class RpcManagerImplTest {
     @Mock
     private DeviceContext deviceContext;
     @Mock
-    private DeviceInitializationPhaseHandler deviceINitializationPhaseHandler;
-    @Mock
     private DeviceTerminationPhaseHandler deviceTerminationPhaseHandler;
     @Mock
     private BindingAwareBroker.RoutedRpcRegistration<RpcService> routedRpcRegistration;
     @Mock
     private DeviceState deviceState;
-    @Mock
-    private MessageSpy mockMsgSpy;
     @Mock
     private ConnectionContext connectionContext;
     @Mock
@@ -81,8 +74,6 @@ public class RpcManagerImplTest {
     private ConcurrentMap<DeviceInfo, RpcContext> contexts;
     @Mock
     private DeviceInfo deviceInfo;
-    @Mock
-    private LifecycleService lifecycleService;
     @Mock
     private ExtensionConverterProvider extensionConverterProvider;
     @Mock
@@ -101,8 +92,6 @@ public class RpcManagerImplTest {
     public void setUp() {
         final NodeKey nodeKey = new NodeKey(nodeId);
         rpcManager = new RpcManagerImpl(rpcProviderRegistry, extensionConverterProvider, convertorExecutor, notificationPublishService);
-        rpcManager.setRpcRequestQuota(QUOTA_VALUE);
-        rpcManager.setDeviceInitializationPhaseHandler(deviceINitializationPhaseHandler);
 
         GetFeaturesOutput featuresOutput = new GetFeaturesOutputBuilder()
                 .setVersion(OFConstants.OFP_VERSION_1_3)
@@ -127,25 +116,6 @@ public class RpcManagerImplTest {
                 Matchers.any(), Matchers.any(RpcService.class)))
                 .thenReturn(routedRpcRegistration);
         Mockito.when(contexts.remove(deviceInfo)).thenReturn(removedContexts);
-//        Mockito.when(lifecycleService.getDeviceContext()).thenReturn(deviceContext);
-    }
-
-    @Test
-    public void testOnDeviceContextLevelUpMaster() throws Exception {
-        rpcManager.onDeviceContextLevelUp(deviceInfo, lifecycleService);
-        verify(deviceINitializationPhaseHandler).onDeviceContextLevelUp(deviceInfo, lifecycleService);
-    }
-
-    @Test
-    public void testOnDeviceContextLevelUpSlave() throws Exception {
-        rpcManager.onDeviceContextLevelUp(deviceInfo, lifecycleService);
-        verify(deviceINitializationPhaseHandler).onDeviceContextLevelUp(deviceInfo, lifecycleService);
-    }
-
-    @Test
-    public void testOnDeviceContextLevelUpOther() throws Exception {
-        rpcManager.onDeviceContextLevelUp(deviceInfo, lifecycleService);
-        verify(deviceINitializationPhaseHandler).onDeviceContextLevelUp(deviceInfo, lifecycleService);
     }
 
     @Test
