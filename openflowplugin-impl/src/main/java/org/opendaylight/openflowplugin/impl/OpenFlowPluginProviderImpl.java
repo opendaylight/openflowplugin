@@ -256,19 +256,14 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         contextChainHolder.addSingletonServicesProvider(singletonServicesProvider);
 
         deviceManager = new DeviceManagerImpl(dataBroker,
-                globalNotificationQuota,
+                getMessageIntelligenceAgency(), notificationPublishService, hashedWheelTimer, convertorManager, deviceInitializerProvider, globalNotificationQuota,
                 switchFeaturesMandatory,
                 barrierInterval,
                 barrierCountLimit,
-                getMessageIntelligenceAgency(),
                 isFlowRemovedNotificationOn,
-                singletonServicesProvider,
-                notificationPublishService,
-                hashedWheelTimer,
-                convertorManager,
                 skipTableFeatures,
-                useSingleLayerSerialization,
-                deviceInitializerProvider);
+                useSingleLayerSerialization
+        );
 
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
 
@@ -342,10 +337,6 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                     deviceManager.setBarrierInterval(DEFAULT_BARRIER_TIMEOUT);
                 }
             }
-        }
-
-        if(rpcManager != null && props.containsKey("is-statistics-rpc-enabled")){
-            rpcManager.setStatisticsRpcEnabled(Boolean.valueOf((props.get("is-statistics-rpc-enabled").toString())));
         }
 
         if (connectionManager != null && props.containsKey("echo-reply-timeout") ){
