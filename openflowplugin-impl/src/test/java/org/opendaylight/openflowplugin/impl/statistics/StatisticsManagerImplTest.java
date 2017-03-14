@@ -31,9 +31,7 @@ import org.mockito.Captor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
@@ -43,14 +41,11 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
@@ -84,31 +79,23 @@ public class StatisticsManagerImplTest {
     public static final NodeId NODE_ID = new NodeId("ofp-unit-dummy-node-id");
 
     @Mock
-    RequestContextStack mockedRequestContextStack;
+    private ConnectionContext mockedPrimConnectionContext;
     @Mock
-    ConnectionContext mockedPrimConnectionContext;
+    private FeaturesReply mockedFeatures;
     @Mock
-    FeaturesReply mockedFeatures;
+    private ConnectionAdapter mockedConnectionAdapter;
     @Mock
-    GetFeaturesOutput mockedFeaturesOutput;
+    private MessageSpy mockedMessagSpy;
     @Mock
-    ConnectionAdapter mockedConnectionAdapter;
+    private DeviceContext mockedDeviceContext;
     @Mock
-    MessageSpy mockedMessagSpy;
+    private DeviceState mockedDeviceState;
     @Mock
-    DeviceContext mockedDeviceContext;
+    private DeviceInfo mockedDeviceInfo;
     @Mock
-    DeviceState mockedDeviceState;
-    @Mock
-    DeviceInfo mockedDeviceInfo;
-    @Mock
-    DeviceInitializationPhaseHandler mockedDevicePhaseHandler;
-    @Mock
-    DeviceTerminationPhaseHandler mockedTerminationPhaseHandler;
+    private DeviceTerminationPhaseHandler mockedTerminationPhaseHandler;
     @Mock
     private RpcProviderRegistry rpcProviderRegistry;
-    @Mock
-    private HashedWheelTimer hashedWheelTimer;
     @Mock
     private OutboundQueue outboundQueue;
     @Mock
@@ -120,17 +107,9 @@ public class StatisticsManagerImplTest {
     @Mock
     private BindingAwareBroker.RpcRegistration<StatisticsManagerControlService> serviceControlRegistration;
     @Mock
-    private DeviceManager deviceManager;
-    @Mock
-    private GetFeaturesOutput featuresOutput;
-    @Mock
-    private DeviceInitializationPhaseHandler deviceInitializationPhaseHandler;
-    @Mock
     private DeviceInfo deviceInfo;
     @Mock
     private DataBroker dataBroker;
-    @Mock
-    private LifecycleService lifecycleService;
 
     private RequestContext<List<MultipartReply>> currentRequestContext;
     private StatisticsManagerImpl statisticsManager;
@@ -165,12 +144,9 @@ public class StatisticsManagerImplTest {
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getMultiMsgCollector(
                 Matchers.<RequestContext<List<MultipartReply>>>any())).thenAnswer(
-                new Answer<MultiMsgCollector>() {
-                    @Override
-                    public MultiMsgCollector answer(InvocationOnMock invocation) throws Throwable {
-                        currentRequestContext = (RequestContext<List<MultipartReply>>) invocation.getArguments()[0];
-                        return multiMagCollector;
-                    }
+                invocation -> {
+                    currentRequestContext = (RequestContext<List<MultipartReply>>) invocation.getArguments()[0];
+                    return multiMagCollector;
                 }
         );
         when(mockedDeviceContext.getItemLifeCycleSourceRegistry()).thenReturn(itemLifeCycleRegistry);
@@ -183,9 +159,21 @@ public class StatisticsManagerImplTest {
         final long maximumTimerDelay = 900000L;
         statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, new HashedWheelTimer(),
                 convertorManager);
-        statisticsManager.setBasicTimerDelay(basicTimerDelay);
-        statisticsManager.setMaximumTimerDelay(maximumTimerDelay);
-        statisticsManager.setIsStatisticsPollingOn(false);
+    }
+
+    @Test
+    public void testOnDeviceContextClosed() throws Exception {
+        final StatisticsContext statisticContext = Mockito.mock(StatisticsContext.class);
+        final Map<DeviceInfo, StatisticsContext> contextsMap = getContextsMap(statisticsManager);
+
+        contextsMap.put(deviceInfo, statisticContext);
+        Assert.assertEquals(1, contextsMap.size());
+
+        statisticsManager.setDeviceTerminationPhaseHandler(mockedTerminationPhaseHandler);
+        statisticsManager.onDeviceContextLevelDown(deviceInfo);
+        verify(statisticContext).close();
+        verify(mockedTerminationPhaseHandler).onDeviceContextLevelDown(deviceInfo);
+        Assert.assertEquals(1, contextsMap.size());
     }
 
     private static Map<DeviceInfo, StatisticsContext> getContextsMap(final StatisticsManagerImpl statisticsManager)
@@ -221,7 +209,6 @@ public class StatisticsManagerImplTest {
 
         when(statisticContext.gainDeviceContext()).thenReturn(mockedDeviceContext);
         when(statisticContext.gainDeviceState()).thenReturn(mockedDeviceState);
-//        when(lifecycleService.getDeviceContext()).thenReturn(mockedDeviceContext);
 
         getContextsMap(statisticsManager).put(deviceInfo, statisticContext);
 
@@ -233,8 +220,8 @@ public class StatisticsManagerImplTest {
                 .changeStatisticsWorkMode(changeStatisticsWorkModeInputBld.build());
 
         checkWorkModeChangeOutcome(workMode);
-        Mockito.verify(itemLifeCycleRegistry).getLifeCycleSources();
-        Mockito.verify(statisticContext).getPollTimeout();
+        verify(itemLifeCycleRegistry).getLifeCycleSources();
+        verify(statisticContext).getPollTimeout();
     }
 
     private static void checkWorkModeChangeOutcome(Future<RpcResult<Void>> workMode) throws InterruptedException, ExecutionException {
@@ -271,10 +258,10 @@ public class StatisticsManagerImplTest {
         Future<RpcResult<Void>> workMode = statisticsManager.changeStatisticsWorkMode(changeStatisticsWorkModeInputBld.build());
         checkWorkModeChangeOutcome(workMode);
 
-        Mockito.verify(itemLifeCycleRegistry).getLifeCycleSources();
-        Mockito.verify(statisticContext).getPollTimeout();
-        Mockito.verify(pollTimeout).cancel();
-        Mockito.verify(itemLifecycleSource).setItemLifecycleListener(Matchers.<ItemLifecycleListener>any());
+        verify(itemLifeCycleRegistry).getLifeCycleSources();
+        verify(statisticContext).getPollTimeout();
+        verify(pollTimeout).cancel();
+        verify(itemLifecycleSource).setItemLifecycleListener(Matchers.<ItemLifecycleListener>any());
     }
 
     /**
@@ -318,9 +305,9 @@ public class StatisticsManagerImplTest {
                 changeStatisticsWorkModeInputBld.build());
         checkWorkModeChangeOutcome(workMode);
 
-        Mockito.verify(itemLifeCycleRegistry, Mockito.times(2)).getLifeCycleSources();
-        Mockito.verify(statisticContext).getPollTimeout();
-        Mockito.verify(pollTimeout).cancel();
+        verify(itemLifeCycleRegistry, times(2)).getLifeCycleSources();
+        verify(statisticContext).getPollTimeout();
+        verify(pollTimeout).cancel();
 
         final List<ItemLifecycleListener> itemLifeCycleListenerValues = itemLifeCycleListenerCapt.getAllValues();
         Assert.assertEquals(2, itemLifeCycleListenerValues.size());
@@ -331,7 +318,7 @@ public class StatisticsManagerImplTest {
     @Test
     public void testClose() throws Exception {
         statisticsManager.close();
-        Mockito.verify(serviceControlRegistration).close();
+        verify(serviceControlRegistration).close();
     }
 
     @Test
@@ -360,11 +347,11 @@ public class StatisticsManagerImplTest {
         when(statisticsContext.gatherDynamicData()).thenReturn(Futures.immediateCheckedFuture(Boolean.TRUE));
         when(statisticsContext.isSchedulingEnabled()).thenReturn(Boolean.TRUE);
         statisticsManager.pollStatistics(mockedDeviceContext.getDeviceState(), statisticsContext, mockTimerCounter, mockedDeviceInfo);
-        Mockito.verify(mockTimerCounter).markStart();
-        Mockito.verify(mockTimerCounter).addTimeMark();
+        verify(mockTimerCounter).markStart();
+        verify(mockTimerCounter).addTimeMark();
 
         when(statisticsContext.gatherDynamicData()).thenReturn(Futures.immediateFailedFuture(new Throwable("error msg")));
         statisticsManager.pollStatistics(mockedDeviceContext.getDeviceState(), statisticsContext, mockTimerCounter, mockedDeviceInfo);
-        Mockito.verify(mockTimerCounter,times(2)).addTimeMark();
+        verify(mockTimerCounter,times(2)).addTimeMark();
     }
 }

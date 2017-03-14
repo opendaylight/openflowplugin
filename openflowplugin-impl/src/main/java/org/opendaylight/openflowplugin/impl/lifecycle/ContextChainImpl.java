@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl.lifecycle;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -124,6 +123,12 @@ public class ContextChainImpl implements ContextChain {
     @Override
     public ContextChainState getContextChainState() {
         return contextChainState;
+    }
+
+    @Override
+    public void makeContextChainStateSlave() {
+        this.lastContextChainState = this.contextChainState;
+        this.contextChainState = ContextChainState.WORKINGSLAVE;
     }
 
     @Override

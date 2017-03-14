@@ -182,14 +182,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 singletonServicesProvider,
                 hashedWheelTimer,
                 convertorManager,
-                notificationPublishService);
-
-        deviceManager.setGlobalNotificationQuota(globalNotificationQuota);
-        deviceManager.setSwitchFeaturesMandatory(switchFeaturesMandatory);
-        deviceManager.setBarrierInterval(barrierInterval);
-        deviceManager.setBarrierCountLimit(barrierCountLimit);
-        deviceManager.setFlowRemovedNotificationOn(isFlowRemovedNotificationOn);
-        deviceManager.setSkipTableFeatures(skipTableFeatures);
+                notificationPublishService
+        );
 
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
 
