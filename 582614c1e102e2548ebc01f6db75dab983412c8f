@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "fafc7978_4d9f2ab5",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/TransactionChainManager.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2017-03-14T22:50:40Z",
+      "side": 1,
+      "message": "Yeah, I think there is a separate bug, which may be affected by that. I would like to rule out CDS\u0027s fault in the failure you have observed first...",
+      "parentUuid": "fafc7978_8a691ffb",
+      "revId": "582614c1e102e2548ebc01f6db75dab983412c8f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fafc7978_ca6fa7fa",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/TransactionChainManager.java",
         "patchSetId": 2
