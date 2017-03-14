@@ -8,8 +8,6 @@
 
 package org.opendaylight.openflowplugin.api.openflow;
 
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceLifecycleSupervisor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
@@ -20,7 +18,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTermin
  * by implementing methods from
  * {@link org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceLifecycleSupervisor},
  * then it must handle initialization and termination chain of it's associated context by implementing methods from
- * {@link org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler} and
  * {@link org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler} and also removal
  * of these contexts from it's internal map of contexts by implementing methods from
  * {@link org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler}. And at last, it must
@@ -28,7 +25,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTermin
  */
 public interface OFPManager extends
         DeviceLifecycleSupervisor,
-        DeviceInitializationPhaseHandler,
         DeviceTerminationPhaseHandler,
         DeviceRemovedHandler,
         AutoCloseable {

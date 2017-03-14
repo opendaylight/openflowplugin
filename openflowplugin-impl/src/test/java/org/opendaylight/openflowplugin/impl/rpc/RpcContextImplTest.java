@@ -81,17 +81,16 @@ public class RpcContextImplTest {
         when(deviceContext.getDeviceState()).thenReturn(deviceState);
         when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeInstanceIdentifier);
         when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
+        when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
+        when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeInstanceIdentifier);
 
         rpcContext = new RpcContextImpl(
-                deviceInfo,
                 rpcProviderRegistry,
-                messageSpy,
                 MAX_REQUESTS,
-                nodeInstanceIdentifier,
                 deviceContext,
                 extensionConverterProvider,
                 convertorExecutor,
-                notificationPublishService);
+                notificationPublishService, true);
 
         when(rpcProviderRegistry.addRoutedRpcImplementation(TestRpcService.class, serviceInstance)).thenReturn(routedRpcReg);
 
@@ -100,15 +99,12 @@ public class RpcContextImplTest {
     @Test
     public void testStoreOrFail() throws Exception {
         try (final RpcContext rpcContext = new RpcContextImpl(
-                deviceInfo,
                 rpcProviderRegistry,
-                messageSpy,
                 100,
-                nodeInstanceIdentifier,
                 deviceContext,
                 extensionConverterProvider,
                 convertorExecutor,
-                notificationPublishService)){
+                notificationPublishService, true)){
             final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNotNull(requestContext);
         }
@@ -117,15 +113,12 @@ public class RpcContextImplTest {
     @Test
     public void testStoreOrFailThatFails() throws Exception {
         try (final RpcContext rpcContext = new RpcContextImpl(
-                deviceInfo,
                 rpcProviderRegistry,
-                messageSpy,
                 0,
-                nodeInstanceIdentifier,
                 deviceContext,
                 extensionConverterProvider,
                 convertorExecutor,
-                notificationPublishService)){
+                notificationPublishService, true)){
             final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNull(requestContext);
         }
@@ -134,15 +127,12 @@ public class RpcContextImplTest {
     @Test
     public void testStoreAndCloseOrFail() throws Exception {
         try (final RpcContext rpcContext = new RpcContextImpl(
-                deviceInfo,
                 rpcProviderRegistry,
-                messageSpy,
                 100,
-                nodeInstanceIdentifier,
                 deviceContext,
                 extensionConverterProvider,
                 convertorExecutor,
-                notificationPublishService)){
+                notificationPublishService, true)){
             final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNotNull(requestContext);
             requestContext.close();
