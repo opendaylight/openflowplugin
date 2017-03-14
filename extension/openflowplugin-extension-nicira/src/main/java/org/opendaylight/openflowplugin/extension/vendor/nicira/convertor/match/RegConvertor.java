@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match;
 
 import com.google.common.base.Optional;
+import java.util.Objects;
 import org.opendaylight.openflowjava.nx.NiciraMatchCodecs;
 import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
@@ -54,7 +55,7 @@ public class RegConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFro
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava#convert
      * (org.opendaylight.yangtools.yang.binding.DataContainer,
@@ -77,6 +78,11 @@ public class RegConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFro
                         .getOxmMatchField());
         RegCaseValue regCaseValue = ((RegCaseValue) input.getMatchEntryValue());
         nxRegBuilder.setValue(regCaseValue.getRegValues().getValue());
+
+        if (input.isHasMask()) {
+            nxRegBuilder.setMask(regCaseValue.getRegValues().getMask());
+        }
+
         return resolveAugmentation(nxRegBuilder.build(), path, resolveRegKey(input.getOxmMatchField()));
     }
 
@@ -130,7 +136,7 @@ public class RegConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFro
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava#convert
      * (org
@@ -144,12 +150,17 @@ public class RegConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFro
             throw new CodecPreconditionException(extension);
         }
         NxmNxReg nxmNxReg = matchGrouping.get().getNxmNxReg();
-        RegValuesBuilder regValuesBuilder = new RegValuesBuilder().setValue(nxmNxReg.getValue());
+        RegValuesBuilder regValuesBuilder = new RegValuesBuilder()
+            .setValue(nxmNxReg.getValue())
+            .setMask(nxmNxReg.getMask());
+
         RegCaseValueBuilder regCaseValueBuilder = new RegCaseValueBuilder();
         regCaseValueBuilder.setRegValues(regValuesBuilder.build());
         return MatchUtil.createDefaultMatchEntryBuilder(nxmNxReg.getReg(),
                 Nxm1Class.class,
-                regCaseValueBuilder.build()).build();
+                regCaseValueBuilder.build())
+            .setHasMask(Objects.nonNull(nxmNxReg.getMask()))
+            .build();
     }
 
 }
