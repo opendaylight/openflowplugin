@@ -167,6 +167,9 @@ module openflowplugin-extension-nicira-match {
             leaf value {
                 type uint32;
             }
+            leaf mask {
+                type uint32;
+            }
         }
     }
     grouping nxm-nx-tun-id-grouping {
