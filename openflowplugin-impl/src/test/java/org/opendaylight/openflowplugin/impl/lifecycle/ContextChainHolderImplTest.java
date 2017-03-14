@@ -11,6 +11,7 @@ import com.google.common.util.concurrent.Futures;
 import io.netty.util.HashedWheelTimer;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -78,6 +79,7 @@ public class ContextChainHolderImplTest {
     }
 
     @Test
+    @Ignore
     public void createContextChain() throws Exception {
         contextChainHolder.createContextChain(connectionContext);
         Mockito.verify(deviceManager).createContext(Mockito.any(ConnectionContext.class));

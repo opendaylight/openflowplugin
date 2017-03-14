@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl.lifecycle;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -16,7 +15,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -127,6 +125,12 @@ public class ContextChainImpl implements ContextChain {
     }
 
     @Override
+    public void makeContextChainStateSlave() {
+        this.lastContextChainState = this.contextChainState;
+        this.contextChainState = ContextChainState.WORKINGSLAVE;
+    }
+
+    @Override
     public ListenableFuture<Void> connectionDropped() {
         this.lastContextChainState = this.contextChainState;
         this.contextChainState = ContextChainState.SLEEPING;
@@ -143,8 +147,7 @@ public class ContextChainImpl implements ContextChain {
     }
 
     @Override
-    public void registerServices(@NonNull final ClusterSingletonServiceProvider clusterSingletonServiceProvider) {
-        this.contextChainState = ContextChainState.WORKINGSLAVE;
+    public void registerServices(final ClusterSingletonServiceProvider clusterSingletonServiceProvider) {
         this.lifecycleService.registerService(
                 clusterSingletonServiceProvider,
                 this.deviceContext,

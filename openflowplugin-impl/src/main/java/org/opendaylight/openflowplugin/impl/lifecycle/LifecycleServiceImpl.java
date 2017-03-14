@@ -90,6 +90,7 @@ public class LifecycleServiceImpl implements LifecycleService {
     }
 
     @Override
+    @Nonnull
     public ServiceGroupIdentifier getIdentifier() {
         return this.serviceGroupIdentifier;
     }

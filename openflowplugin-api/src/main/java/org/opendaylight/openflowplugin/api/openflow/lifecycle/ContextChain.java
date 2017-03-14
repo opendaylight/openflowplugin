@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -62,6 +61,11 @@ public interface ContextChain extends AutoCloseable {
     ContextChainState getContextChainState();
 
     /**
+     * Slave was successfully set.
+     */
+    void makeContextChainStateSlave();
+
+    /**
      * Sleep the chain and drop connection.
      */
     void sleepTheChainAndDropConnection();
@@ -70,7 +74,7 @@ public interface ContextChain extends AutoCloseable {
      * Registers context chain into cluster singleton service.
      * @param clusterSingletonServiceProvider provider
      */
-    void registerServices(@NonNull final ClusterSingletonServiceProvider clusterSingletonServiceProvider);
+    void registerServices(final ClusterSingletonServiceProvider clusterSingletonServiceProvider);
 
     /**
      * After connect of device make this device SLAVE.

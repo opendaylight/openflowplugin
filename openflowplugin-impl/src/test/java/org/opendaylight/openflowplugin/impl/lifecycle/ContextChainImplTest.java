@@ -141,7 +141,7 @@ public class ContextChainImplTest {
     @Test
     public void registerServices() throws Exception {
         contextChain.registerServices(clusterSingletonServiceProvider);
-        Assert.assertSame(contextChain.getContextChainState(), ContextChainState.WORKINGSLAVE);
+        Assert.assertSame(contextChain.getContextChainState(), ContextChainState.INITIALIZED);
         Mockito.verify(lifecycleService).registerService(
                 Mockito.any(ClusterSingletonServiceProvider.class),
                 Mockito.any(ClusterInitializationPhaseHandler.class),
