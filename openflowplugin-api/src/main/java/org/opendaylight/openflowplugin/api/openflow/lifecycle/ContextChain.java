@@ -62,6 +62,11 @@ public interface ContextChain extends AutoCloseable {
     ContextChainState getContextChainState();
 
     /**
+     * Slave was successfully set.
+     */
+    void makeContextChainStateSlave();
+
+    /**
      * Sleep the chain and drop connection.
      */
     void sleepTheChainAndDropConnection();

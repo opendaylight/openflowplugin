@@ -127,6 +127,12 @@ public class ContextChainImpl implements ContextChain {
     }
 
     @Override
+    public void makeContextChainStateSlave() {
+        this.lastContextChainState = this.contextChainState;
+        this.contextChainState = ContextChainState.WORKINGSLAVE;
+    }
+
+    @Override
     public ListenableFuture<Void> connectionDropped() {
         this.lastContextChainState = this.contextChainState;
         this.contextChainState = ContextChainState.SLEEPING;
@@ -144,7 +150,6 @@ public class ContextChainImpl implements ContextChain {
 
     @Override
     public void registerServices(@NonNull final ClusterSingletonServiceProvider clusterSingletonServiceProvider) {
-        this.contextChainState = ContextChainState.WORKINGSLAVE;
         this.lifecycleService.registerService(
                 clusterSingletonServiceProvider,
                 this.deviceContext,

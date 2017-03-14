@@ -58,6 +58,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
             = "Singleton service provider was not set yet.";
     private static final long DEFAULT_TTL_STEP = 1000L;
     private static final long DEFAULT_TTL_BEFORE_DROP = 1000L;
+    private static final long DEFAULT_CHECK_ROLE_MASTER = 5000L;
     private static final boolean STOP = true;
     private static final boolean START = false;
     private static final String SERVICE_ENTITY_TYPE = "org.opendaylight.mdsal.ServiceEntityType";
@@ -68,6 +69,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     private EntityOwnershipListenerRegistration eosListenerRegistration;
     private volatile ConcurrentHashMap<DeviceInfo, ContextChain> contextChainMap = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<DeviceInfo, ContextChain> sleepingChains = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<DeviceInfo, ContextChain> withoutRoleChains = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<DeviceInfo, Long> timeToLive = new ConcurrentHashMap<>();
     private final List<DeviceInfo> markToBeRemoved = new ArrayList<>();
     private ClusterSingletonServiceProvider singletonServicesProvider;
@@ -75,13 +77,17 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     private final HashedWheelTimer timer;
     private Long ttlBeforeDrop;
     private Long ttlStep;
+    private Long checkRoleMaster;
     private Boolean neverDropChain;
+    private boolean timerIsRunningRole;
 
     public ContextChainHolderImpl(final HashedWheelTimer timer) {
         this.timerIsRunning = START;
+        this.timerIsRunningRole = START;
         this.timer = timer;
         this.ttlBeforeDrop = DEFAULT_TTL_BEFORE_DROP;
         this.ttlStep = DEFAULT_TTL_STEP;
+        this.checkRoleMaster = DEFAULT_CHECK_ROLE_MASTER;
     }
 
     @Override
@@ -145,8 +151,14 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         contextChain.addContext(deviceContext);
         contextChain.addContext(rpcContext);
         contextChain.addContext(statisticsContext);
-        contextChain.makeDeviceSlave();
+        this.withoutRoleChains.put(deviceInfo, contextChain);
+        if (!this.timerIsRunningRole) {
+            this.startTimerRole();
+        }
+
         deviceContext.onPublished();
+
+        contextChain.registerServices(this.singletonServicesProvider);
 
         return contextChain;
 
@@ -228,6 +240,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
     @Override
     public void onMasterRoleAcquired(final DeviceInfo deviceInfo) {
+        this.withoutRoleChains.remove(deviceInfo);
         ContextChain contextChain = contextChainMap.get(deviceInfo);
         if (Objects.nonNull(contextChain)) {
             if (contextChain.getContextChainState().equals(ContextChainState.WORKINGMASTER)) {
@@ -248,9 +261,12 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
     @Override
     public void onSlaveRoleAcquired(final DeviceInfo deviceInfo) {
+        if (!this.withoutRoleChains.isEmpty()) {
+            this.withoutRoleChains.remove(deviceInfo);
+        }
         ContextChain contextChain = contextChainMap.get(deviceInfo);
         if (Objects.nonNull(contextChain)) {
-            contextChain.registerServices(this.singletonServicesProvider);
+            contextChain.makeContextChainStateSlave();
         }
     }
 
@@ -405,6 +421,34 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         }
     }
 
+    private void startTimerRole() {
+        this.timerIsRunningRole = true;
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("There is {} context chains without role, starting timer.", this.withoutRoleChains.size());
+        }
+        timer.newTimeout(new RoleTimerTask(), this.checkRoleMaster, TimeUnit.MILLISECONDS);
+    }
+
+    private void stopTimerRole() {
+        this.timerIsRunningRole = false;
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("There are no context chains without role, stopping timer.");
+        }
+    }
+
+    private void timerTickRole() {
+        if (withoutRoleChains.isEmpty()) {
+            this.stopTimerRole();
+        } else {
+            this.withoutRoleChains.forEach((deviceInfo, contextChain) -> contextChain.makeDeviceSlave());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("There is still {} context chains without role, re-starting timer.",
+                        this.withoutRoleChains.size());
+            }
+            timer.newTimeout(new RoleTimerTask(), this.checkRoleMaster, TimeUnit.MILLISECONDS);
+        }
+    }
+
     @VisibleForTesting
     boolean checkAllManagers() {
         return Objects.nonNull(deviceManager) && Objects.nonNull(rpcManager) && Objects.nonNull(statisticsManager);
@@ -499,5 +543,13 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
     }
 
+    private class RoleTimerTask implements TimerTask {
+
+        @Override
+        public void run(Timeout timeout) throws Exception {
+            timerTickRole();
+        }
+
+    }
 }
 
