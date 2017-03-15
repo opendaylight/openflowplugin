@@ -55,4 +55,10 @@ public interface TxFacade {
      * @return readOnlyTransaction - Don't forget to close it after finish reading
      */
     ReadOnlyTransaction getReadTransaction();
+
+    /**
+     * Method returns true if transaction chain manager is enabled
+     * @return is transaction chain manager enabled
+     */
+    boolean isTransactionsEnabled();
 }
