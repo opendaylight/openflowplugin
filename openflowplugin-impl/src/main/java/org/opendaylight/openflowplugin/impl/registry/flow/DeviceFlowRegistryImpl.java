@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
@@ -108,32 +107,32 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
         // Bail out early if transaction is null
         if (transaction == null) {
             return Futures.immediateFailedCheckedFuture(
-                new ReadFailedException("Read transaction is null"));
+                    new ReadFailedException("Read transaction is null"));
         }
 
         // Prepare read operation from datastore for path
         final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> future =
-            transaction.read(logicalDatastoreType, path);
+                transaction.read(logicalDatastoreType, path);
 
         // Bail out early if future is null
         if (future == null) {
             return Futures.immediateFailedCheckedFuture(
-                new ReadFailedException("Future from read transaction is null"));
+                    new ReadFailedException("Future from read transaction is null"));
         }
 
         Futures.addCallback(future, new FutureCallback<Optional<FlowCapableNode>>() {
             @Override
             public void onSuccess(Optional<FlowCapableNode> result) {
                 result.asSet().stream()
-                    .filter(Objects::nonNull)
-                    .filter(flowCapableNode -> Objects.nonNull(flowCapableNode.getTable()))
-                    .flatMap(flowCapableNode -> flowCapableNode.getTable().stream())
-                    .filter(Objects::nonNull)
-                    .filter(table -> Objects.nonNull(table.getFlow()))
-                    .flatMap(table -> table.getFlow().stream())
-                    .filter(Objects::nonNull)
-                    .filter(flow -> Objects.nonNull(flow.getId()))
-                    .forEach(flowConsumer);
+                        .filter(Objects::nonNull)
+                        .filter(flowCapableNode -> Objects.nonNull(flowCapableNode.getTable()))
+                        .flatMap(flowCapableNode -> flowCapableNode.getTable().stream())
+                        .filter(Objects::nonNull)
+                        .filter(table -> Objects.nonNull(table.getFlow()))
+                        .flatMap(table -> table.getFlow().stream())
+                        .filter(Objects::nonNull)
+                        .filter(flow -> Objects.nonNull(flow.getId()))
+                        .forEach(flowConsumer);
 
                 // After we are done with reading from datastore, close the transaction
                 transaction.close();
@@ -171,7 +170,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
             }
 
             LOG.trace("Storing flowDescriptor with table ID : {} and flow ID : {} for flow hash : {}",
-                flowDescriptor.getTableKey().getId(), flowDescriptor.getFlowId().getValue(), correctFlowRegistryKey.hashCode());
+                    flowDescriptor.getTableKey().getId(), flowDescriptor.getFlowId().getValue(), correctFlowRegistryKey.hashCode());
 
             flowRegistry.put(correctFlowRegistryKey, flowDescriptor);
         } catch (IllegalArgumentException ex) {
@@ -185,20 +184,14 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
             // We are trying to store new flow to flow registry, but we already have different flow with same flow ID
             // stored in registry, so we need to create alien ID for this new flow here.
             LOG.warn("Flow with flow ID {} already exists in table {}, generating alien flow ID", flowDescriptor.getFlowId().getValue(),
-                flowDescriptor.getTableKey().getId());
+                    flowDescriptor.getTableKey().getId());
 
             flowRegistry.put(
-                correctFlowRegistryKey,
-                FlowDescriptorFactory.create(
-                    flowDescriptor.getTableKey().getId(),
-                    createAlienFlowId(flowDescriptor.getTableKey().getId())));
+                    correctFlowRegistryKey,
+                    FlowDescriptorFactory.create(
+                            flowDescriptor.getTableKey().getId(),
+                            createAlienFlowId(flowDescriptor.getTableKey().getId())));
         }
-    }
-
-    @Override
-    @GuardedBy("this")
-    public synchronized void forEachEntry(final BiConsumer<FlowRegistryKey, FlowDescriptor> consumer) {
-        flowRegistry.forEach(consumer);
     }
 
     @Override
