@@ -170,6 +170,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final DeviceInitializerProvider deviceInitializerProvider;
     private final boolean useSingleLayerSerialization;
     private Boolean isAddNotificationSent = false;
+    private boolean transactionChainEnabled = false;
 
     DeviceContextImpl(
         @Nonnull final ConnectionContext primaryConnectionContext,
@@ -219,7 +220,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public void initialSubmitTransaction() {
         if (initialized) {
-            transactionChainManager.initialSubmitWriteTransaction();
+            transactionChainEnabled = transactionChainManager.initialSubmitWriteTransaction();
         }
     }
 
@@ -249,6 +250,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public ReadOnlyTransaction getReadTransaction() {
         return dataBroker.newReadOnlyTransaction();
+    }
+
+    @Override
+    public boolean isTransactionsEnabled() {
+        return transactionChainEnabled;
     }
 
     @Override
