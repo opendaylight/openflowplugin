@@ -57,7 +57,9 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     private final List<ListenableFuture<List<Optional<FlowCapableNode>>>> lastFillFutures = new ArrayList<>();
     private final Consumer<Flow> flowConsumer;
 
-    public DeviceFlowRegistryImpl(final short version, final DataBroker dataBroker, final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier) {
+    public DeviceFlowRegistryImpl(final short version,
+                                  final DataBroker dataBroker,
+                                  final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier) {
         this.dataBroker = dataBroker;
         this.instanceIdentifier = instanceIdentifier;
 
@@ -159,9 +161,18 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     @Override
     @GuardedBy("this")
     public synchronized void storeDescriptor(final FlowRegistryKey flowRegistryKey, final FlowDescriptor flowDescriptor) {
+        if (Objects.isNull(flowRegistryKey) || Objects.isNull(flowDescriptor)) {
+            return;
+        }
+
         final FlowRegistryKey correctFlowRegistryKey = correctFlowRegistryKey(flowRegistry.keySet(), flowRegistryKey);
 
         try {
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Storing flowDescriptor with table ID : {} and flow ID : {} for flow hash : {}",
+                    flowDescriptor.getTableKey().getId(), flowDescriptor.getFlowId().getValue(), correctFlowRegistryKey.hashCode());
+            }
+
             if (hasMark(correctFlowRegistryKey)) {
                 // We are probably doing update of flow ID or table ID, so remove mark for removal of this flow
                 // and replace it with new value
@@ -169,9 +180,6 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
                 flowRegistry.forcePut(correctFlowRegistryKey, flowDescriptor);
                 return;
             }
-
-            LOG.trace("Storing flowDescriptor with table ID : {} and flow ID : {} for flow hash : {}",
-                flowDescriptor.getTableKey().getId(), flowDescriptor.getFlowId().getValue(), correctFlowRegistryKey.hashCode());
 
             flowRegistry.put(correctFlowRegistryKey, flowDescriptor);
         } catch (IllegalArgumentException ex) {
@@ -197,12 +205,6 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
     @Override
     @GuardedBy("this")
-    public synchronized void forEachEntry(final BiConsumer<FlowRegistryKey, FlowDescriptor> consumer) {
-        flowRegistry.forEach(consumer);
-    }
-
-    @Override
-    @GuardedBy("this")
     public synchronized void store(final FlowRegistryKey flowRegistryKey) {
         if (Objects.isNull(retrieveDescriptor(flowRegistryKey))) {
             // We do not found flow in flow registry, that means it do not have any ID already assigned, so we need
@@ -221,8 +223,12 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     @Override
     @GuardedBy("this")
     public synchronized void addMark(final FlowRegistryKey flowRegistryKey) {
+        if (Objects.isNull(flowRegistryKey)) {
+            return;
+        }
+
         LOG.trace("Removing flow descriptor for flow hash : {}", flowRegistryKey.hashCode());
-        marks.add(flowRegistryKey);
+        marks.add(correctFlowRegistryKey(flowRegistry.keySet(), flowRegistryKey));
     }
 
     @Override

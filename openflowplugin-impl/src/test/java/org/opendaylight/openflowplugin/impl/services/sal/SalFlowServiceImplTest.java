@@ -197,6 +197,7 @@ public class SalFlowServiceImplTest extends TestCase {
 
     private void removeFlowFailCallback(short version) throws InterruptedException, ExecutionException {
         RemoveFlowInput mockedRemoveFlowInput = new RemoveFlowInputBuilder()
+                .setTableId((short)1)
                 .setMatch(match)
                 .build();
 
