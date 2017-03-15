@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.api.openflow.device;
 
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionChainClosedException;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
@@ -54,4 +53,10 @@ public interface TxFacade {
      * @return readOnlyTransaction - Don't forget to close it after finish reading
      */
     ReadOnlyTransaction getReadTransaction();
+
+    /**
+     * Method returns true if transaction chain manager is enabled
+     * @return is transaction chain manager enabled
+     */
+    boolean isTransactionsEnabled();
 }

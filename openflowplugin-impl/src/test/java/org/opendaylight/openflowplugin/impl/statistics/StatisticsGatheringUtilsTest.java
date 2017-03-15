@@ -493,7 +493,6 @@ public class StatisticsGatheringUtilsTest {
             type,
             deviceContext,
             deviceContext,
-            false,
             ConvertorManagerFactory.createDefaultManager(),
             provider);
 
@@ -529,7 +528,7 @@ public class StatisticsGatheringUtilsTest {
                 .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tableId));
 
         StatisticsGatheringUtils.deleteAllKnownFlows(deviceContext, deviceInfo.getNodeInstanceIdentifier()
-            .augmentation(FlowCapableNode.class), false);
+            .augmentation(FlowCapableNode.class), deviceFlowRegistry);
 
         verify(deviceContext).writeToTransaction(
                 LogicalDatastoreType.OPERATIONAL,
