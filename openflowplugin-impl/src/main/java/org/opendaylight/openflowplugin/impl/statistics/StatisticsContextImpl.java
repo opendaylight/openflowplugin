@@ -131,18 +131,8 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         }
     }
 
-
     @Override
-    public ListenableFuture<Boolean> initialGatherDynamicData() {
-        return gatherDynamicData(true);
-    }
-
-    @Override
-    public ListenableFuture<Boolean> gatherDynamicData(){
-        return gatherDynamicData(false);
-    }
-
-    private ListenableFuture<Boolean> gatherDynamicData(final boolean initial) {
+    public ListenableFuture<Boolean> gatherDynamicData() {
         if (!isStatisticsPollingOn) {
             LOG.debug("Statistics for device {} is not enabled.", getDeviceInfo().getNodeId().getValue());
             return Futures.immediateFuture(Boolean.TRUE);
@@ -160,7 +150,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
 
             lastDataGathering = collectingStatType.stream().reduce(
                     lastDataGathering,
-                    (future, multipartType) -> statChainFuture(future, multipartType, initial),
+                    (future, multipartType) -> statChainFuture(future, multipartType),
                     (a, b) -> Futures.transform(a, (AsyncFunction<Boolean, Boolean>) result -> b));
 
             // write end timestamp to state snapshot container
@@ -182,33 +172,33 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         return lastDataGathering;
     }
 
-    private ListenableFuture<Boolean> chooseStat(final MultipartType multipartType, final boolean initial){
+    private ListenableFuture<Boolean> chooseStat(final MultipartType multipartType){
         ListenableFuture<Boolean> result = Futures.immediateCheckedFuture(Boolean.TRUE);
 
         switch (multipartType) {
             case OFPMPFLOW:
-                result = collectStatistics(multipartType, devState.isFlowStatisticsAvailable(), true, initial);
+                result = collectStatistics(multipartType, devState.isFlowStatisticsAvailable(), true);
                 break;
             case OFPMPTABLE:
-                result = collectStatistics(multipartType, devState.isTableStatisticsAvailable(), false, initial);
+                result = collectStatistics(multipartType, devState.isTableStatisticsAvailable(), false);
                 break;
             case OFPMPPORTSTATS:
-                result = collectStatistics(multipartType, devState.isPortStatisticsAvailable(), false, initial);
+                result = collectStatistics(multipartType, devState.isPortStatisticsAvailable(), false);
                 break;
             case OFPMPQUEUE:
-                result = collectStatistics(multipartType, devState.isQueueStatisticsAvailable(), false, initial);
+                result = collectStatistics(multipartType, devState.isQueueStatisticsAvailable(), false);
                 break;
             case OFPMPGROUPDESC:
-                result = collectStatistics(multipartType, devState.isGroupAvailable(), false, initial);
+                result = collectStatistics(multipartType, devState.isGroupAvailable(), false);
                 break;
             case OFPMPGROUP:
-                result = collectStatistics(multipartType, devState.isGroupAvailable(), false, initial);
+                result = collectStatistics(multipartType, devState.isGroupAvailable(), false);
                 break;
             case OFPMPMETERCONFIG:
-                result = collectStatistics(multipartType, devState.isMetersAvailable(), false, initial);
+                result = collectStatistics(multipartType, devState.isMetersAvailable(), false);
                 break;
             case OFPMPMETER:
-                result = collectStatistics(multipartType, devState.isMetersAvailable(), false, initial);
+                result = collectStatistics(multipartType, devState.isMetersAvailable(), false);
                 break;
             default:
                 LOG.warn("Unsupported Statistics type {}", multipartType);
@@ -216,7 +206,6 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
 
         return result;
     }
-
 
     @Override
     public <T> RequestContext<T> createRequestContext() {
@@ -262,7 +251,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         this.pollTimeout = pollTimeout;
     }
 
-    private ListenableFuture<Boolean> statChainFuture(final ListenableFuture<Boolean> prevFuture, final MultipartType multipartType, final boolean initial) {
+    private ListenableFuture<Boolean> statChainFuture(final ListenableFuture<Boolean> prevFuture, final MultipartType multipartType) {
         return Futures.transform(deviceConnectionCheck(), (AsyncFunction<Boolean, Boolean>) connectionResult -> Futures
                 .transform(prevFuture, (AsyncFunction<Boolean, Boolean>) result -> {
                     LOG.debug("Status of previous stat iteration for node {}: {}", deviceInfo.getLOGValue(), result);
@@ -270,7 +259,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
                             deviceInfo.getLOGValue(),
                             multipartType);
 
-                    return chooseStat(multipartType, initial);
+                    return chooseStat(multipartType);
                 }));
     }
 
@@ -290,8 +279,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
 
     private ListenableFuture<Boolean> collectStatistics(final MultipartType multipartType,
                                                         final boolean supported,
-                                                        final boolean onTheFly,
-                                                        final boolean initial) {
+                                                        final boolean onTheFly) {
         // TODO: Refactor twice sending deviceContext into gatheringStatistics
         return supported ? StatisticsGatheringUtils.gatherStatistics(
                 onTheFly ? statisticsGatheringOnTheFlyService : statisticsGatheringService,
@@ -299,7 +287,6 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
                 multipartType,
                 deviceContext,
                 deviceContext,
-                initial,
                 convertorExecutor,
                 statisticsWriterProvider) : Futures.immediateFuture(Boolean.FALSE);
     }
@@ -379,7 +366,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         LOG.info("Starting statistics context cluster services for node {}", deviceInfo.getLOGValue());
         this.statListForCollectingInitialization();
 
-        Futures.addCallback(this.initialGatherDynamicData(), new FutureCallback<Boolean>() {
+        Futures.addCallback(this.gatherDynamicData(), new FutureCallback<Boolean>() {
             @Override
             public void onSuccess(@Nullable Boolean aBoolean) {
                 mastershipChangeListener.onMasterRoleAcquired(

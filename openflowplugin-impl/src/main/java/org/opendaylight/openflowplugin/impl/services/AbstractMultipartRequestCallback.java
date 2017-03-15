@@ -42,12 +42,12 @@ public abstract class AbstractMultipartRequestCallback<T extends OfHeader> exten
         }
 
         if (!isMultipart(result)) {
-            LOG.info("Unexpected response type received {}.", result.getClass());
+            LOG.info("Unexpected response type received: {}.", result.getClass());
 
             setResult(RpcResultBuilder
                     .<List<T>>failed()
                     .withError(RpcError.ErrorType.APPLICATION,
-                            String.format("Unexpected response type received %s.", result.getClass()))
+                            String.format("Unexpected response type received: %s.", result.getClass()))
                     .build());
         } else {
             final T resultCast = (T) result;
