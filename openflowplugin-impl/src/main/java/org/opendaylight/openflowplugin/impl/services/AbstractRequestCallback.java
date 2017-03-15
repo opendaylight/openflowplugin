@@ -30,10 +30,10 @@ public abstract class AbstractRequestCallback<T> implements FutureCallback<OfHea
     private final MessageSpy spy;
     private EventIdentifier eventIdentifier;
 
-    protected AbstractRequestCallback(final RequestContext<T> context,
-                                      final Class<?> requestType,
-                                      final MessageSpy spy,
-                                      final EventIdentifier eventIdentifier) {
+    AbstractRequestCallback(final RequestContext<T> context,
+                            final Class<?> requestType,
+                            final MessageSpy spy,
+                            final EventIdentifier eventIdentifier) {
         this.context = Preconditions.checkNotNull(context);
         this.requestType = Preconditions.checkNotNull(requestType);
         this.spy = Preconditions.checkNotNull(spy);
