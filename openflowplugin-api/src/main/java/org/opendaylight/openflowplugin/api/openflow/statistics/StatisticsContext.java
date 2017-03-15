@@ -29,12 +29,6 @@ public interface StatisticsContext extends RequestContextStack, OFPContext {
     ListenableFuture<Boolean> gatherDynamicData();
 
     /**
-     * Initial data gathering
-     * @return true if gathering was successful
-     */
-    ListenableFuture<Boolean> initialGatherDynamicData();
-
-    /**
      * Method has to be called from DeviceInitialization Method, otherwise
      * we are not able to poll anything. Statistics Context normally initialize
      * this part by initialization process but we don't have this information
