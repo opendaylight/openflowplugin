@@ -7,9 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
-import com.google.common.base.Function;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -33,6 +30,7 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeader> extends AbstractMultipartRequestCallback<T> {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractMultipartRequestOnTheFlyCallback.class);
     private final DeviceInfo deviceInfo;
+    private boolean virgin = true;
     private boolean finished = false;
     private final EventIdentifier doneEventIdentifier;
     private final TxFacade txFacade;
@@ -53,43 +51,43 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
     @SuppressWarnings("unchecked")
     public void onSuccess(final OfHeader result) {
         if (Objects.isNull(result)) {
-            LOG.info("OfHeader was null.");
+            LOG.warn("OfHeader was null.");
+
             if (!finished) {
                 endCollecting();
                 return;
             }
         } else if (finished) {
-            LOG.debug("Unexpected multipart response received: xid={}, {}", result.getXid(), result.getImplementedInterface());
+            LOG.warn("Unexpected multipart response received: xid={}, {}", result.getXid(), result.getImplementedInterface());
             return;
         }
 
         if (!isMultipart(result)) {
-            LOG.info("Unexpected response type received {}.", result.getClass());
+            LOG.warn("Unexpected response type received {}.", result.getClass());
             setResult(RpcResultBuilder.<List<T>>failed().withError(RpcError.ErrorType.APPLICATION,
                 String.format("Unexpected response type received %s.", result.getClass())).build());
             endCollecting();
         } else {
             final T resultCast = (T) result;
 
-            Futures.transform(processStatistics(resultCast), (Function<Optional<? extends MultipartReplyBody>, Void>) input -> {
-                Optional.ofNullable(input).flatMap(i -> i).ifPresent(reply -> {
-                    try {
-                        statisticsWriterProvider
-                            .lookup(getMultipartType())
-                            .ifPresent(writer -> writer.write(reply, false));
-                    } catch (final Exception ex) {
-                        LOG.warn("Stats processing of type {} for node {} failed during write-to-tx step",
-                            getMultipartType(), deviceInfo.getLOGValue(), ex);
-                    }
-                });
+            if (virgin) {
+                startCollecting();
+            }
 
-                if (!isReqMore(resultCast)) {
-                    endCollecting();
-                    onFinishedCollecting();
+            Optional.ofNullable(processStatistics(resultCast)).flatMap(i -> i).ifPresent(reply -> {
+                try {
+                    statisticsWriterProvider
+                        .lookup(getMultipartType())
+                        .ifPresent(writer -> writer.write(reply, false));
+                } catch (final Exception ex) {
+                    LOG.warn("Stats processing of type {} for node {} failed during write-to-tx step",
+                        getMultipartType(), deviceInfo.getLOGValue(), ex);
                 }
-
-                return null;
             });
+
+            if (!isReqMore(resultCast)) {
+                endCollecting();
+            }
         }
     }
 
@@ -102,6 +100,15 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
     }
 
     /**
+     * Starts collecting of multipart data
+     */
+    private void startCollecting() {
+        EventsTimeCounter.markStart(doneEventIdentifier);
+        virgin = false;
+        onStartCollecting();
+    }
+
+    /**
      * Ends collecting of multipart data
      */
     private void endCollecting() {
@@ -111,6 +118,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
         txFacade.submitTransaction();
         setResult(RpcResultBuilder.success(Collections.<T>emptyList()).build());
         finished = true;
+        onFinishedCollecting();
     }
 
     /**
@@ -118,13 +126,18 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
      *
      * @param result result
      */
-    protected abstract ListenableFuture<Optional<? extends MultipartReplyBody>> processStatistics(final T result);
+    protected abstract Optional<? extends MultipartReplyBody> processStatistics(final T result);
 
     /**
      * Get multipart type
      * @return multipart type
      */
     protected abstract MultipartType getMultipartType();
+
+    /**
+     * On start collection event
+     */
+    protected abstract void onStartCollecting();
 
     /**
      * On finished collection event
