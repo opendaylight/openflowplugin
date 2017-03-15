@@ -5,7 +5,6 @@
 
   <reference id="dataBroker" interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"/>
   <reference id="rpcRegistry" interface="org.opendaylight.controller.sal.binding.api.RpcProviderRegistry"/>
-  <reference id="notificationService" interface="org.opendaylight.controller.sal.binding.api.NotificationProviderService"/>
   <reference id="clusterSingletonService" interface="org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider"/>
 
   <odl:clustered-app-config id="frmConfig"
@@ -17,6 +16,5 @@
     <argument ref="rpcRegistry"/>
     <argument ref="frmConfig"/>
     <argument ref="clusterSingletonService"/>
-    <argument ref="notificationService"/>
   </bean>
 </blueprint>
