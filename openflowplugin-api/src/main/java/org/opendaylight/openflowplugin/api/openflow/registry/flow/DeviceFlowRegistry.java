@@ -28,6 +28,4 @@ public interface DeviceFlowRegistry extends CommonDeviceRegistry<FlowRegistryKey
 
     FlowDescriptor retrieveDescriptor(FlowRegistryKey flowRegistryKey);
 
-    void forEachEntry(BiConsumer<FlowRegistryKey, FlowDescriptor> consumer);
-
 }
