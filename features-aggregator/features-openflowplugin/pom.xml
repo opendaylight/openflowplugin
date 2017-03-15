@@ -134,6 +134,10 @@
             <artifactId>model-flow-statistics</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-extension-onf</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.opendaylight.controller.model</groupId>
             <artifactId>model-inventory</artifactId>
         </dependency>

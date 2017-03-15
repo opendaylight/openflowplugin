@@ -19,7 +19,6 @@
         <module>features4-openflowplugin-extension</module>
         <module>features-openflowplugin-extension</module>
         <module>odl-openflowplugin-nxm-extensions</module>
-        <module>odl-openflowplugin-onf-extensions</module>
     </modules>
 
 </project>

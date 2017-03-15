@@ -11,9 +11,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.opendaylight.openflowplugin</groupId>
-        <artifactId>openflowplugin-extension-parent</artifactId>
+        <artifactId>openflowplugin-parent</artifactId>
         <version>0.4.0-SNAPSHOT</version>
-        <relativePath>../</relativePath>
+        <relativePath>../parent</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>

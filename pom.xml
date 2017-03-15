@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.opendaylight.openflowplugin</groupId>
@@ -15,35 +16,33 @@
     <packaging>pom</packaging>
 
     <scm>
-      <connection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</connection>
-      <developerConnection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</developerConnection>
-      <url>https://wiki.opendaylight.org/view/OpenDaylight_OpenFlow_Plugin:Main</url>
-      <tag>HEAD</tag>
+        <connection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</connection>
+        <developerConnection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</developerConnection>
+        <url>https://wiki.opendaylight.org/view/OpenDaylight_OpenFlow_Plugin:Main</url>
+        <tag>HEAD</tag>
     </scm>
 
     <modules>
-      <module>artifacts</module>
-      <module>parent</module>
-      <module>openflowplugin-api</module>
-      <module>openflowplugin</module>
-      <module>openflowplugin-impl</module>
-      <module>openflowplugin-common</module>
-      <module>extension</module>
-      <module>distribution/karaf</module>
-      <module>openflowplugin-controller-config</module>
-      <module>openflowplugin-blueprint-config-he</module>
-      <module>openflowplugin-blueprint-config</module>
-      <!--
-      <module>openflowplugin-it</module>
-      -->
-      <module>test-provider</module>
-      <module>drop-test-karaf</module>
-      <module>test-common</module>
-      <module>features-aggregator</module>
-      <module>features-he-aggregator</module>
-      <module>samples/sample-consumer</module>
-      <module>samples/learning-switch</module>
-      <module>applications</module>
-      <module>model</module>
-  </modules>
+        <module>artifacts</module>
+        <module>parent</module>
+        <module>openflowplugin-api</module>
+        <module>openflowplugin</module>
+        <module>openflowplugin-impl</module>
+        <module>openflowplugin-common</module>
+        <module>openflowplugin-extension-onf</module>
+        <module>extension</module>
+        <module>distribution/karaf</module>
+        <module>openflowplugin-controller-config</module>
+        <module>openflowplugin-blueprint-config-he</module>
+        <module>openflowplugin-blueprint-config</module>
+        <module>test-provider</module>
+        <module>drop-test-karaf</module>
+        <module>test-common</module>
+        <module>features-aggregator</module>
+        <module>features-he-aggregator</module>
+        <module>samples/sample-consumer</module>
+        <module>samples/learning-switch</module>
+        <module>applications</module>
+        <module>model</module>
+    </modules>
 </project>

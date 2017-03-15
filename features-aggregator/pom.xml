@@ -20,6 +20,7 @@
         <module>odl-openflowplugin-flow-services-ui</module>
         <module>odl-openflowplugin-flow-services-rest</module>
         <module>odl-openflowplugin-flow-services</module>
+        <module>odl-openflowplugin-extension-onf</module>
         <module>odl-openflowplugin-southbound</module>
         <module>odl-openflowplugin-nsf-model</module>
         <module>odl-openflowplugin-drop-test</module>

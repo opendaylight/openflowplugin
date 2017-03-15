@@ -65,17 +65,6 @@
       <artifactId>openflowjava-extension-nicira</artifactId>
     </dependency>
 
-    <!-- ONF extensions -->
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin</groupId>
-      <artifactId>openflowplugin-extension-onf-config</artifactId>
-      <type>xml</type>
-      <classifier>config</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin</groupId>
-      <artifactId>openflowplugin-extension-onf</artifactId>
-    </dependency>
   </dependencies>
 
 </project>
