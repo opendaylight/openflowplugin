@@ -196,7 +196,7 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
 
     @VisibleForTesting
     private static KeyedInstanceIdentifier<Flow, FlowKey> createFlowPath(FlowDescriptor flowDescriptor,
-                                                                 KeyedInstanceIdentifier<Node, NodeKey> nodePath) {
+                                                                         KeyedInstanceIdentifier<Node, NodeKey> nodePath) {
         return nodePath.augmentation(FlowCapableNode.class)
                 .child(Table.class, flowDescriptor.getTableKey())
                 .child(Flow.class, new FlowKey(flowDescriptor.getFlowId()));
@@ -310,7 +310,7 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
             final FlowDescriptor updatedFlowDescriptor;
 
             if (Objects.nonNull(input.getFlowRef())) {
-               updatedFlowDescriptor = FlowDescriptorFactory.create(updated.getTableId(), input.getFlowRef().getValue().firstKeyOf(Flow.class).getId());
+                updatedFlowDescriptor = FlowDescriptorFactory.create(updated.getTableId(), input.getFlowRef().getValue().firstKeyOf(Flow.class).getId());
             } else {
                 if (isUpdate) {
                     updatedFlowDescriptor = origFlowDescriptor;
