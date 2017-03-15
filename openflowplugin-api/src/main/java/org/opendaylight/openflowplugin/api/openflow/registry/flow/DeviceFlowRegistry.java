@@ -27,7 +27,6 @@ public interface DeviceFlowRegistry extends CommonDeviceRegistry<FlowRegistryKey
 
     void storeDescriptor(@Nonnull FlowRegistryKey flowRegistryKey, @Nonnull FlowDescriptor flowDescriptor);
 
-    @Nullable
-    FlowDescriptor retrieveDescriptor(@Nonnull FlowRegistryKey flowRegistryKey);
+    FlowDescriptor retrieveDescriptor(FlowRegistryKey flowRegistryKey);
 
 }

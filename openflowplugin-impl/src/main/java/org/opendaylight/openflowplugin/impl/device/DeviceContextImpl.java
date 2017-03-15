@@ -276,6 +276,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
+    public boolean isTransactionsEnabled() {
+        return isInitialTransactionSubmitted;
+    }
+
+    @Override
     public <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
                                                           final InstanceIdentifier<T> path,
                                                           final T data){
