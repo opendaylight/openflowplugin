@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -29,13 +30,13 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.StatisticsGatherer;
 import org.opendaylight.openflowplugin.impl.common.MultipartReplyTranslatorUtil;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
-import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -76,18 +77,8 @@ public final class StatisticsGatheringUtils {
                                                                           final MultipartType type,
                                                                           final TxFacade txFacade,
                                                                           final DeviceRegistry registry,
-                                                                          final Boolean initial,
                                                                           final ConvertorExecutor convertorExecutor,
                                                                           final MultipartWriterProvider statisticsWriterProvider) {
-
-        final EventIdentifier eventIdentifier;
-        if (MultipartType.OFPMPFLOW.equals(type)) {
-            eventIdentifier = new EventIdentifier(type.toString(), deviceInfo.getNodeId().getValue());
-            EventsTimeCounter.markStart(eventIdentifier);
-        } else {
-            eventIdentifier = null;
-        }
-
         return Futures.transform(
                 statisticsGatheringService.getStatisticsOfType(
                         new EventIdentifier(QUEUE2_REQCTX + type.toString(), deviceInfo.getNodeId().toString()),
@@ -122,9 +113,13 @@ public final class StatisticsGatheringUtils {
                                 }
 
                                 try {
-                                    return processStatistics(type, allMultipartData, txFacade, registry, deviceInfo,
-                                            statisticsWriterProvider,
-                                            eventIdentifier, initial);
+                                    return Futures.immediateFuture(processStatistics(
+                                            type,
+                                            allMultipartData,
+                                            txFacade,
+                                            registry,
+                                            deviceInfo,
+                                            statisticsWriterProvider));
                                 } catch (final Exception e) {
                                     LOG.warn("Stats processing of type {} for node {} failed during processing step",
                                             type, deviceInfo.getNodeId(), e);
@@ -144,24 +139,19 @@ public final class StatisticsGatheringUtils {
                 });
     }
 
-    private static ListenableFuture<Boolean> processStatistics(final MultipartType type,
-                                                               final List<? extends DataContainer> statistics,
-                                                               final TxFacade txFacade,
-                                                               final DeviceRegistry deviceRegistry,
-                                                               final DeviceInfo deviceInfo,
-                                                               final MultipartWriterProvider statisticsWriterProvider,
-                                                               final EventIdentifier eventIdentifier,
-                                                               final boolean initial) {
-
-        ListenableFuture<Void> future = Futures.immediateFuture(null);
-
+    private static boolean processStatistics(final MultipartType type,
+                                             final List<? extends DataContainer> statistics,
+                                             final TxFacade txFacade,
+                                             final DeviceRegistry deviceRegistry,
+                                             final DeviceInfo deviceInfo,
+                                             final MultipartWriterProvider statisticsWriterProvider) {
         final InstanceIdentifier<FlowCapableNode> instanceIdentifier = deviceInfo
                 .getNodeInstanceIdentifier()
                 .augmentation(FlowCapableNode.class);
 
         switch (type) {
             case OFPMPFLOW:
-                future = deleteAllKnownFlows(txFacade, instanceIdentifier, initial);
+                deleteAllKnownFlows(txFacade, instanceIdentifier, deviceRegistry.getDeviceFlowRegistry());
                 break;
             case OFPMPMETERCONFIG:
                 deleteAllKnownMeters(txFacade, instanceIdentifier, deviceRegistry.getDeviceMeterRegistry());
@@ -171,22 +161,27 @@ public final class StatisticsGatheringUtils {
                 break;
         }
 
-        return Futures.transform(future, (Function<Void, Boolean>) input -> {
-            if (writeStatistics(type, statistics, deviceInfo, statisticsWriterProvider)) {
-                txFacade.submitTransaction();
+        if (writeStatistics(type, statistics, deviceInfo, statisticsWriterProvider)) {
+            txFacade.submitTransaction();
 
-                if (MultipartType.OFPMPFLOW.equals(type)) {
-                    EventsTimeCounter.markEnd(eventIdentifier);
+            switch (type) {
+                case OFPMPFLOW:
                     deviceRegistry.getDeviceFlowRegistry().processMarks();
-                }
-
-                LOG.debug("Stats reply added to transaction for node {} of type {}", deviceInfo.getNodeId(), type);
-                return Boolean.TRUE;
+                    break;
+                case OFPMPMETERCONFIG:
+                    deviceRegistry.getDeviceMeterRegistry().processMarks();
+                    break;
+                case OFPMPGROUPDESC:
+                    deviceRegistry.getDeviceGroupRegistry().processMarks();
+                    break;
             }
 
-            LOG.warn("Stats processing of type {} for node {} failed during write-to-tx step", type, deviceInfo.getLOGValue());
-            return Boolean.FALSE;
-        });
+            LOG.debug("Stats reply added to transaction for node {} of type {}", deviceInfo.getNodeId(), type);
+            return true;
+        }
+
+        LOG.warn("Stats processing of type {} for node {} failed during write-to-tx step", type, deviceInfo.getLOGValue());
+        return false;
     }
 
     private static boolean writeStatistics(final MultipartType type,
@@ -210,56 +205,57 @@ public final class StatisticsGatheringUtils {
         return result.get();
     }
 
-    public static ListenableFuture<Void> deleteAllKnownFlows(final TxFacade txFacade,
-                                                             final InstanceIdentifier<FlowCapableNode> instanceIdentifier,
-                                                             final boolean initial) {
-        if (initial) {
-            return Futures.immediateFuture(null);
+    public static void deleteAllKnownFlows(final TxFacade txFacade,
+                                           final InstanceIdentifier<FlowCapableNode> instanceIdentifier,
+                                           final DeviceFlowRegistry deviceFlowRegistry) {
+        if (!txFacade.isTransactionsEnabled()) {
+            return;
         }
 
         final ReadOnlyTransaction readTx = txFacade.getReadTransaction();
-        return Futures.transform(Futures
-                .withFallback(readTx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier), t -> {
-                    // we wish to close readTx for fallBack
-                    readTx.close();
-                    return Futures.immediateFailedFuture(t);
-                }), (Function<Optional<FlowCapableNode>, Void>)
-                flowCapNodeOpt -> {
-                    // we have to read actual tables with all information before we set empty Flow list, merge is expensive and
-                    // not applicable for lists
-                    if (flowCapNodeOpt != null && flowCapNodeOpt.isPresent()) {
-                        for (final Table tableData : flowCapNodeOpt.get().getTable()) {
-                            final Table table = new TableBuilder(tableData).setFlow(Collections.emptyList()).build();
-                            final InstanceIdentifier<Table> iiToTable = instanceIdentifier.child(Table.class, tableData.getKey());
-                            txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);
-                        }
-                    }
 
-                    readTx.close();
-                    return null;
-                });
+        try {
+            Futures.transform(Futures
+                    .withFallback(readTx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier), t -> {
+                        // we wish to close readTx for fallBack
+                        readTx.close();
+                        return Futures.immediateFailedFuture(t);
+                    }), (Function<Optional<FlowCapableNode>, Void>)
+                    flowCapNodeOpt -> {
+                        // we have to read actual tables with all information before we set empty Flow list, merge is expensive and
+                        // not applicable for lists
+                        if (flowCapNodeOpt != null && flowCapNodeOpt.isPresent()) {
+                            for (final Table tableData : flowCapNodeOpt.get().getTable()) {
+                                final Table table = new TableBuilder(tableData).setFlow(Collections.emptyList()).build();
+                                final InstanceIdentifier<Table> iiToTable = instanceIdentifier.child(Table.class, tableData.getKey());
+                                txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);
+                            }
+                        }
+
+                        readTx.close();
+                        return null;
+                    }).get();
+        } catch (InterruptedException | ExecutionException ex) {
+            LOG.debug("Failed to delete {} flows, exception: {}", deviceFlowRegistry.size(), ex);
+        }
     }
 
-    private static void deleteAllKnownMeters(final TxFacade txFacade,
-                                             final InstanceIdentifier<FlowCapableNode> instanceIdentifier,
-                                             final DeviceMeterRegistry meterRegistry) {
+    public static void deleteAllKnownMeters(final TxFacade txFacade,
+                                            final InstanceIdentifier<FlowCapableNode> instanceIdentifier,
+                                            final DeviceMeterRegistry meterRegistry) {
         meterRegistry.forEach(meterId -> txFacade
                 .addDeleteToTxChain(
                         LogicalDatastoreType.OPERATIONAL,
                         instanceIdentifier.child(Meter.class, new MeterKey(meterId))));
-
-        meterRegistry.processMarks();
     }
 
-    private static void deleteAllKnownGroups(final TxFacade txFacade,
-                                             final InstanceIdentifier<FlowCapableNode> instanceIdentifier,
-                                             final DeviceGroupRegistry groupRegistry) {
+    public static void deleteAllKnownGroups(final TxFacade txFacade,
+                                            final InstanceIdentifier<FlowCapableNode> instanceIdentifier,
+                                            final DeviceGroupRegistry groupRegistry) {
         groupRegistry.forEach(groupId -> txFacade
                 .addDeleteToTxChain(
                         LogicalDatastoreType.OPERATIONAL,
                         instanceIdentifier.child(Group.class, new GroupKey(groupId))));
-
-        groupRegistry.processMarks();
     }
 
     /**
