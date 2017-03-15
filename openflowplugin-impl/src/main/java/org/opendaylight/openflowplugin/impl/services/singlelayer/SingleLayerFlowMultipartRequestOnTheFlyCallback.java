@@ -8,9 +8,6 @@
 
 package org.opendaylight.openflowplugin.impl.services.singlelayer;
 
-import com.google.common.base.Function;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;
 import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -33,7 +30,6 @@ public class SingleLayerFlowMultipartRequestOnTheFlyCallback<T extends OfHeader>
 
     private final DeviceInfo deviceInfo;
     private final DeviceFlowRegistry deviceFlowRegistry;
-    private boolean virgin = true;
 
     public SingleLayerFlowMultipartRequestOnTheFlyCallback(final RequestContext<List<T>> context, Class<?> requestType,
                                                            final DeviceContext deviceContext,
@@ -61,27 +57,24 @@ public class SingleLayerFlowMultipartRequestOnTheFlyCallback<T extends OfHeader>
     }
 
     @Override
+    protected void onStartCollecting() {
+        StatisticsGatheringUtils.deleteAllKnownFlows(
+            getTxFacade(),
+            deviceInfo
+                .getNodeInstanceIdentifier()
+                .augmentation(FlowCapableNode.class),
+            deviceFlowRegistry);
+    }
+
+    @Override
     protected void onFinishedCollecting() {
         deviceFlowRegistry.processMarks();
     }
 
     @Override
-    protected ListenableFuture<Optional<? extends MultipartReplyBody>> processStatistics(T result) {
-        final ListenableFuture<Optional<? extends MultipartReplyBody>> future = Futures.transform(
-            StatisticsGatheringUtils.deleteAllKnownFlows(
-                getTxFacade(),
-                deviceInfo
-                    .getNodeInstanceIdentifier()
-                    .augmentation(FlowCapableNode.class),
-                !virgin),
-            (Function<Void, Optional<? extends MultipartReplyBody>>) input -> MultipartReplyTranslatorUtil
-                .translate(result, deviceInfo, null, null));
-
-        if (virgin) {
-            virgin = false;
-        }
-
-        return future;
+    protected Optional<? extends MultipartReplyBody> processStatistics(T result) {
+        return MultipartReplyTranslatorUtil
+            .translate(result, deviceInfo, null, null);
     }
 
 }

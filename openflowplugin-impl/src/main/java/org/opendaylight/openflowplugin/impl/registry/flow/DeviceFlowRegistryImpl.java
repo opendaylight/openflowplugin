@@ -162,6 +162,9 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
         final FlowRegistryKey correctFlowRegistryKey = correctFlowRegistryKey(flowRegistry.keySet(), flowRegistryKey);
 
         try {
+            LOG.trace("Storing flowDescriptor with table ID : {} and flow ID : {} for flow hash : {}",
+                flowDescriptor.getTableKey().getId(), flowDescriptor.getFlowId().getValue(), correctFlowRegistryKey.hashCode());
+
             if (hasMark(correctFlowRegistryKey)) {
                 // We are probably doing update of flow ID or table ID, so remove mark for removal of this flow
                 // and replace it with new value
@@ -169,9 +172,6 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
                 flowRegistry.forcePut(correctFlowRegistryKey, flowDescriptor);
                 return;
             }
-
-            LOG.trace("Storing flowDescriptor with table ID : {} and flow ID : {} for flow hash : {}",
-                flowDescriptor.getTableKey().getId(), flowDescriptor.getFlowId().getValue(), correctFlowRegistryKey.hashCode());
 
             flowRegistry.put(correctFlowRegistryKey, flowDescriptor);
         } catch (IllegalArgumentException ex) {
@@ -222,7 +222,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     @GuardedBy("this")
     public synchronized void addMark(final FlowRegistryKey flowRegistryKey) {
         LOG.trace("Removing flow descriptor for flow hash : {}", flowRegistryKey.hashCode());
-        marks.add(flowRegistryKey);
+        marks.add(correctFlowRegistryKey(flowRegistry.keySet(), flowRegistryKey));
     }
 
     @Override
