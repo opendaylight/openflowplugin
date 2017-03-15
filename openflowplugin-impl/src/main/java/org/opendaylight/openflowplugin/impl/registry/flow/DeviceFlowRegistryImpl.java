@@ -52,6 +52,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
     private final BiMap<FlowRegistryKey, FlowDescriptor> flowRegistry = HashBiMap.create();
     private final List<FlowRegistryKey> marks = new ArrayList<>();
+    private final List<FlowRegistryKey> locks = new ArrayList<>();
     private final DataBroker dataBroker;
     private final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier;
     private final List<ListenableFuture<List<Optional<FlowCapableNode>>>> lastFillFutures = new ArrayList<>();
@@ -159,9 +160,18 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     @Override
     @GuardedBy("this")
     public synchronized void storeDescriptor(final FlowRegistryKey flowRegistryKey, final FlowDescriptor flowDescriptor) {
+        if (Objects.isNull(flowRegistryKey) || Objects.isNull(flowDescriptor)) {
+            return;
+        }
+
         final FlowRegistryKey correctFlowRegistryKey = correctFlowRegistryKey(flowRegistry.keySet(), flowRegistryKey);
 
         try {
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Storing flowDescriptor with table ID : {} and flow ID : {} for flow hash : {}",
+                    flowDescriptor.getTableKey().getId(), flowDescriptor.getFlowId().getValue(), correctFlowRegistryKey.hashCode());
+            }
+
             if (hasMark(correctFlowRegistryKey)) {
                 // We are probably doing update of flow ID or table ID, so remove mark for removal of this flow
                 // and replace it with new value
@@ -169,9 +179,6 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
                 flowRegistry.forcePut(correctFlowRegistryKey, flowDescriptor);
                 return;
             }
-
-            LOG.trace("Storing flowDescriptor with table ID : {} and flow ID : {} for flow hash : {}",
-                flowDescriptor.getTableKey().getId(), flowDescriptor.getFlowId().getValue(), correctFlowRegistryKey.hashCode());
 
             flowRegistry.put(correctFlowRegistryKey, flowDescriptor);
         } catch (IllegalArgumentException ex) {
@@ -220,9 +227,39 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
     @Override
     @GuardedBy("this")
+    public synchronized void lock(final FlowRegistryKey flowRegistryKey) {
+        if (Objects.isNull(flowRegistryKey)) {
+            return;
+        }
+
+        locks.add(correctFlowRegistryKey(flowRegistry.keySet(), flowRegistryKey));
+    }
+
+    @Override
+    @GuardedBy("this")
+    public synchronized void unlock(final FlowRegistryKey flowRegistryKey) {
+        if (Objects.isNull(flowRegistryKey)) {
+            return;
+        }
+
+        locks.remove(correctFlowRegistryKey(locks, flowRegistryKey));
+    }
+
+    @Override
+    @GuardedBy("this")
+    public synchronized boolean hasLock(final FlowRegistryKey flowRegistryKey) {
+        return Objects.nonNull(flowRegistryKey) && locks.contains(correctFlowRegistryKey(locks, flowRegistryKey));
+    }
+
+    @Override
+    @GuardedBy("this")
     public synchronized void addMark(final FlowRegistryKey flowRegistryKey) {
+        if (Objects.isNull(flowRegistryKey)) {
+            return;
+        }
+
         LOG.trace("Removing flow descriptor for flow hash : {}", flowRegistryKey.hashCode());
-        marks.add(flowRegistryKey);
+        marks.add(correctFlowRegistryKey(flowRegistry.keySet(), flowRegistryKey));
     }
 
     @Override
@@ -267,6 +304,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
         flowRegistry.clear();
         marks.clear();
+        locks.clear();
     }
 
     @GuardedBy("this")

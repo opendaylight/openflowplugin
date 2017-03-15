@@ -56,6 +56,11 @@ public class FlowStatsMultipartWriter extends AbstractMultipartWriter<FlowAndSta
                             .build());
 
                 final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(version, flow.build());
+
+                if (registry.getDeviceFlowRegistry().hasLock(flowRegistryKey)) {
+                    return;
+                }
+
                 registry.getDeviceFlowRegistry().store(flowRegistryKey);
 
                 final FlowKey key = new FlowKey(registry

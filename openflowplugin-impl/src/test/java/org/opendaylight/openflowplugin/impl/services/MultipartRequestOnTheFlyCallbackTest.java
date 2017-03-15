@@ -53,7 +53,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -244,18 +243,11 @@ public class MultipartRequestOnTheFlyCallbackTest {
         when(mockedDeviceContext.getReadTransaction()).thenReturn(mockedReadOnlyTx);
 
         multipartRequestOnTheFlyCallback.onSuccess(mpReplyMessage.build());
-        final InstanceIdentifier<Table> tableIdent = nodePath.child(Table.class, new TableKey(tableId));
 
-        verify(mockedReadOnlyTx, times(1)).read(LogicalDatastoreType.OPERATIONAL, nodePath);
-        verify(mockedReadOnlyTx, times(1)).close();
+        verify(mockedReadOnlyTx, times(0)).read(LogicalDatastoreType.OPERATIONAL, nodePath);
+        verify(mockedReadOnlyTx, times(0)).close();
         verify(mockedDeviceContext, times(1)).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
-                eq(tableIdent), Matchers.<Table> any());
-        /*
-         * One call for Table one call for Flow
-         * we are not able to create Flow InstanceIdentifier because we are missing FlowId
-         */
-        verify(mockedDeviceContext, times(2)).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
-                Matchers.<InstanceIdentifier> any(), Matchers.<DataObject> any());
+                Matchers.any(), Matchers.any());
     }
 
     /**

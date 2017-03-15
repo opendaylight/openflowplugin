@@ -30,4 +30,10 @@ public interface DeviceFlowRegistry extends CommonDeviceRegistry<FlowRegistryKey
 
     void forEachEntry(BiConsumer<FlowRegistryKey, FlowDescriptor> consumer);
 
+    void lock(FlowRegistryKey flowRegistryKey);
+
+    void unlock(FlowRegistryKey flowRegistryKey);
+
+    boolean hasLock(FlowRegistryKey flowRegistryKey);
+
 }
