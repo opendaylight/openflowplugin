@@ -174,6 +174,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final DeviceInitializerProvider deviceInitializerProvider;
     private final boolean useSingleLayerSerialization;
     private OutboundQueueProvider outboundQueueProvider;
+    private boolean transactionChainEnabled = false;
 
     DeviceContextImpl(
         @Nonnull final ConnectionContext primaryConnectionContext,
@@ -221,7 +222,12 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public boolean initialSubmitTransaction() {
-        return initialized && transactionChainManager.initialSubmitWriteTransaction();
+        if (initialized) {
+            transactionChainEnabled = transactionChainManager.initialSubmitWriteTransaction();
+            return transactionChainEnabled;
+        } else {
+          return false;
+        }
     }
 
     @Override
@@ -250,6 +256,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public ReadOnlyTransaction getReadTransaction() {
         return dataBroker.newReadOnlyTransaction();
+    }
+
+    @Override
+    public boolean isTransactionsEnabled() {
+        return transactionChainEnabled;
     }
 
     @Override
