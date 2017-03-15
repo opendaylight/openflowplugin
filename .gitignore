@@ -1,5 +1,6 @@
 .idea/
 target/
+target-ide/
 *.class
 *.iml
 **/target
@@ -10,7 +11,6 @@ products
 repository
 workspace
 *~
-target
 .classpath
 .project
 .settings

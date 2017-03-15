@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -11,18 +11,14 @@ package org.opendaylight.openflowplugin.extension.api;
 /**
  * lookup and register key for extension converters, basic case expects this to
  * correlate with input model type
- * 
+ *
  * @param <T> type of key
  */
 public class TypeVersionKey<T> {
 
-    private Class<? extends T> type;
-    private short ofVersion;
+    private final Class<? extends T> type;
+    private final short ofVersion;
 
-    /**
-     * @param type
-     * @param ofVersion 
-     */
     public TypeVersionKey(Class<? extends T> type, short ofVersion) {
         this.type = type;
         this.ofVersion = ofVersion;
@@ -40,7 +36,7 @@ public class TypeVersionKey<T> {
         final int prime = 31;
         int result = 1;
         result = prime * result + ofVersion;
-        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        result = prime * result + (type == null ? 0 : type.hashCode());
         return result;
     }
 
@@ -60,11 +56,18 @@ public class TypeVersionKey<T> {
             return false;
         }
         if (type == null) {
-            if (other.type != null)
+            if (other.type != null) {
                 return false;
-        } else if (!type.equals(other.type))
+            }
+        } else if (!type.equals(other.type)) {
             return false;
+        }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + " [type=" + type + ", ofVersion=" + ofVersion + "]";
     }
 
 }
