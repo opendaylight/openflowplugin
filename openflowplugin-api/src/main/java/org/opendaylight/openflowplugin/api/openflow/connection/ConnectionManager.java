@@ -15,17 +15,19 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnec
  * Connection manager manages connections with devices.
  * It instantiates and registers {@link ConnectionContext}
  * used for handling all communication with device when onSwitchConnected notification is processed.
- * <p>
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
 public interface ConnectionManager extends SwitchConnectionHandler {
 
     /**
      * Method registers handler responsible handling operations related to connected device after
      * device is connected.
-     *
      * @param deviceConnectedHandler device connected handler
      */
     void setDeviceConnectedHandler(DeviceConnectedHandler deviceConnectedHandler);
+
+    /**
+     * Setter for echo reply timeout.
+     * @param echoReplyTimeout {@link Long} timeout
+     */
     void setEchoReplyTimeout(long echoReplyTimeout);
 }

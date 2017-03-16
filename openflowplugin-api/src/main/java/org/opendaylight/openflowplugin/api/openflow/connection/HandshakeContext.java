@@ -11,16 +11,18 @@ import java.util.concurrent.ThreadPoolExecutor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeManager;
 
 /**
- * OF handshake context holder
+ * OF handshake context holder.
  */
 public interface HandshakeContext extends AutoCloseable {
 
     /**
+     * Getter.
      * @return handshakeManager
      */
     HandshakeManager getHandshakeManager();
 
     /**
+     * Getter.
      * @return handshake pool
      */
     ThreadPoolExecutor getHandshakePool();
