@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fafc7978_5b0236b5",
+        "filename": "model/model-flow-base/src/main/yang/opendaylight-action-types.yang",
+        "patchSetId": 6
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-03-16T23:05:26Z",
+      "side": 0,
+      "message": "i believe controller actions is defined action as per openflow spec 1.0 right ?",
+      "revId": "f82db7a1c0b8cf795e3976beafd5852a293ae9fe",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_9b2bfe32",
+        "filename": "model/model-flow-base/src/main/yang/opendaylight-action-types.yang",
+        "patchSetId": 6
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-03-16T23:05:26Z",
+      "side": 0,
+      "message": "both of these actions are defined for openflow 1.0 spec",
+      "range": {
+        "startLine": 166,
+        "startChar": 12,
+        "endLine": 177,
+        "endChar": 14
+      },
+      "revId": "f82db7a1c0b8cf795e3976beafd5852a293ae9fe",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
