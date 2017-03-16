@@ -15,7 +15,8 @@
                odl:type="openflow-switch-connection-provider-default-impl"/>
 
     <reference id="ExtensionRegistratorProvider"
-               interface="org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider"/>
+               interface="org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider"
+               odl:type="openflow-plugin-provider-impl"/>
 
     <odl:rpc-service id="ExperimenterService"
                      interface="org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SalExperimenterMessageService"/>
