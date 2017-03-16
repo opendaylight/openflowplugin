@@ -25,19 +25,30 @@ public abstract class AbstractRegCodec extends AbstractMatchCodec {
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntriesBuilder = deserializeHeader(message);
-        RegCaseValueBuilder caseBuilder = new RegCaseValueBuilder();
-        caseBuilder.setRegValues(new RegValuesBuilder().setValue(message.readUnsignedInt()).build());
-        matchEntriesBuilder.setMatchEntryValue(caseBuilder.build());
-        return matchEntriesBuilder.build();
+        final MatchEntryBuilder matchEntriesBuilder = deserializeHeader(message);
+        final RegValuesBuilder regValuesBuilder = new RegValuesBuilder();
+        regValuesBuilder.setValue(message.readUnsignedInt());
+
+        if (matchEntriesBuilder.isHasMask()) {
+            regValuesBuilder.setMask(message.readUnsignedInt());
+        }
+
+        return matchEntriesBuilder
+            .setMatchEntryValue(new RegCaseValueBuilder()
+                .setRegValues(regValuesBuilder.build())
+                .build())
+            .build();
     }
 
     @Override
     public void serialize(MatchEntry input, ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
-        RegCaseValue regCase = ((RegCaseValue) input.getMatchEntryValue());
-        Long value = regCase.getRegValues().getValue();
-        outBuffer.writeInt(value.intValue());
+        final RegCaseValue regCase = ((RegCaseValue) input.getMatchEntryValue());
+        outBuffer.writeInt(regCase.getRegValues().getValue().intValue());
+
+        if (input.isHasMask()) {
+            outBuffer.writeInt(regCase.getRegValues().getMask().intValue());
+        }
     }
 
     @Override
