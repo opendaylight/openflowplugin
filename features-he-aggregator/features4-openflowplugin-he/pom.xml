@@ -45,13 +45,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>odl-openflowplugin-drop-test-he</artifactId>
-            <version>${project.version}</version>
-            <type>xml</type>
-            <classifier>features</classifier>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>odl-openflowplugin-flow-services-he</artifactId>
             <version>${project.version}</version>
             <type>xml</type>
