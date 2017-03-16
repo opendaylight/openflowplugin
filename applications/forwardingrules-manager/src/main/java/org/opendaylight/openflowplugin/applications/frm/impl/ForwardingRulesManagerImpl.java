@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014, 2015 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -104,13 +104,14 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
 
     @Override
     public void start() {
-        this.deviceMastershipManager = new DeviceMastershipManager(clusterSingletonServiceProvider,
-                notificationService);
         this.flowListener = new FlowForwarder(this, dataService);
         this.groupListener = new GroupForwarder(this, dataService);
         this.meterListener = new MeterForwarder(this, dataService);
         this.tableListener = new TableForwarder(this, dataService);
         this.nodeListener = new FlowNodeReconciliationImpl(this, dataService);
+        this.deviceMastershipManager = new DeviceMastershipManager(clusterSingletonServiceProvider,
+                notificationService,
+                this.nodeListener);
         flowNodeConnectorInventoryTranslatorImpl =
                 new FlowNodeConnectorInventoryTranslatorImpl(this,dataService);
         LOG.info("ForwardingRulesManager has started successfully.");

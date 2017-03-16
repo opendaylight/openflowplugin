@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -37,13 +37,13 @@ public abstract class AbstractListeningCommiter <T extends DataObject> implement
     @Override
     public void onDataTreeChanged(Collection<DataTreeModification<T>> changes) {
         Preconditions.checkNotNull(changes, "Changes may not be null!");
+        LOG.trace("Received data changes :{}", changes);
 
         for (DataTreeModification<T> change : changes) {
             final InstanceIdentifier<T> key = change.getRootPath().getRootIdentifier();
             final DataObjectModification<T> mod = change.getRootNode();
             final InstanceIdentifier<FlowCapableNode> nodeIdent =
                     key.firstIdentifierOf(FlowCapableNode.class);
-
             if (preConfigurationCheck(nodeIdent)) {
                 switch (mod.getModificationType()) {
                 case DELETE:
@@ -106,7 +106,11 @@ public abstract class AbstractListeningCommiter <T extends DataObject> implement
 
         if (!provider.isNodeActive(nodeIdent)) {
             if (provider.checkNodeInOperationalDataStore(nodeIdent)) {
-                provider.getFlowNodeReconciliation().flowNodeConnected(nodeIdent);
+
+                //Do no trigger reconciliation when device is added to the data store.
+                //Reconciliation will be triggered once FRM receive node added notification
+                // and this FRM instances get the ownership of the device.
+                provider.getFlowNodeReconciliation().flowNodeConnected(nodeIdent,false);
                 return true;
             } else {
                 return false;

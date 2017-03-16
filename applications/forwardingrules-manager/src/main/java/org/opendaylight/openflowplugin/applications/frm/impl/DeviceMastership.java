@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2016 Pantheon Technologies s.r.o. and others. All rights reserved.
+ * Copyright (c) 2016, 2017 Pantheon Technologies s.r.o. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -14,7 +14,13 @@ import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
+import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,20 +32,29 @@ public class DeviceMastership implements ClusterSingletonService, AutoCloseable 
     private final NodeId nodeId;
     private final ServiceGroupIdentifier identifier;
     private final ClusterSingletonServiceProvider clusterSingletonServiceProvider;
+    private final FlowNodeReconciliation reconcliationAgent;
     private ClusterSingletonServiceRegistration clusterSingletonServiceRegistration;
     private boolean deviceMastered;
 
-    public DeviceMastership(final NodeId nodeId, final ClusterSingletonServiceProvider clusterSingletonService) {
+    public DeviceMastership(final NodeId nodeId,
+                            final ClusterSingletonServiceProvider clusterSingletonService,
+                            final FlowNodeReconciliation reconcliationAgent) {
         this.nodeId = nodeId;
         this.identifier = ServiceGroupIdentifier.create(nodeId.getValue());
         this.deviceMastered = false;
         this.clusterSingletonServiceProvider = clusterSingletonService;
+        this.reconcliationAgent = reconcliationAgent;
     }
 
     @Override
     public void instantiateServiceInstance() {
         LOG.info("FRM started for: {}", nodeId.getValue());
         deviceMastered = true;
+        InstanceIdentifier<FlowCapableNode> fcnIID = InstanceIdentifier.create(Nodes.class).child(Node.class, new
+                NodeKey(nodeId)).augmentation(FlowCapableNode.class);
+
+        //Notify about the connect node and trigger the reconciliation.
+        this.reconcliationAgent.flowNodeConnected(fcnIID, true);
     }
 
     @Override

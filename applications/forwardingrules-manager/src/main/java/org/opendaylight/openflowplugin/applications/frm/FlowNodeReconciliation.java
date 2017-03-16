@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -45,8 +45,9 @@ public interface FlowNodeReconciliation extends ClusteredDataTreeChangeListener<
      * Flows, Meters and Groups.
      *
      * @param connectedNode - {@link org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier} to new Node
+     * @param doReconciliation -- Trigger node reconciliation if true
      */
-    void flowNodeConnected(InstanceIdentifier<FlowCapableNode> connectedNode);
+    void flowNodeConnected(InstanceIdentifier<FlowCapableNode> connectedNode, boolean doReconciliation);
 
     /**
      * Method contains functionality for registered Node {@link FlowCapableNode} removing
