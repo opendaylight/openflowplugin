@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2016 Pantheon Technologies s.r.o. and others. All rights reserved.
+ * Copyright (c) 2016, 2017 Pantheon Technologies s.r.o. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -16,10 +16,12 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
+import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemovedBuilder;
@@ -42,11 +44,15 @@ public class DeviceMastershipManagerTest {
     private ClusterSingletonServiceProvider clusterSingletonService;
     @Mock
     private NotificationProviderService notificationService;
+    @Mock
+    private FlowNodeReconciliation reconciliationAgent;
+    @Mock
+    private DataBroker dataBroker;
 
     @Before
     public void setUp() throws Exception {
         deviceMastershipManager = new DeviceMastershipManager(clusterSingletonService,
-                notificationService);
+                notificationService, reconciliationAgent, dataBroker);
         Mockito.when(clusterSingletonService.registerClusterSingletonService(Matchers.<ClusterSingletonService>any()))
                 .thenReturn(registration);
     }
@@ -61,7 +67,6 @@ public class DeviceMastershipManagerTest {
         DeviceMastership serviceInstance = deviceMastershipManager.getDeviceMasterships().get(NODE_ID);
         Assert.assertNotNull(serviceInstance);
         // destroy context - unregister
-        deviceMastershipManager.onDeviceDisconnected(NODE_ID);
         Assert.assertNotNull(deviceMastershipManager.getDeviceMasterships().get(NODE_ID));
         NodeRemovedBuilder nodeRemovedBuilder = new NodeRemovedBuilder();
         InstanceIdentifier<Node> nodeIId = InstanceIdentifier.create(Nodes.class).
