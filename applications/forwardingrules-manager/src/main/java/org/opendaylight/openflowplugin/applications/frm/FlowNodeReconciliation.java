@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,52 +8,23 @@
 
 package org.opendaylight.openflowplugin.applications.frm;
 
-import org.opendaylight.controller.md.sal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
- * forwardingrules-manager
- * org.opendaylight.openflowplugin.applications.frm
- *
- * FlowNodeReconciliation
- * It represent Reconciliation functionality for every new device.
- * So we have to read all possible pre-configured Flows, Meters and Groups from
- * Config/DS and add all to new device.
- * New device is represented by new {@link org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode}
- * in Operational/DS. So we have to add listener for Wildcarded path in base data change scope.
- *
- * WildCarded InstanceIdentifier:
- * {@code
- *
- * InstanceIdentifier.create(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class)
- *
- * }
+ * Implementation provider of this interface will implement reconciliation functionality for a newly connected node.
+ * Implementation is not enforced to do reconciliation in any specific way, but the higher level intention is to
+ * provide best effort reconciliation of  all the configuration (flow/meter/group) present in configuration data store
+ * for the given node.
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
- *
- * Created: Aug 26, 2014
  */
-public interface FlowNodeReconciliation extends ClusteredDataTreeChangeListener<FlowCapableNode>, AutoCloseable {
+public interface FlowNodeReconciliation extends AutoCloseable {
 
     /**
-     * Method contains Node registration to {@link ForwardingRulesManager} functionality
-     * as a prevention to use a validation check to the Operational/DS for identify
-     * pre-configure transaction and serious device commit in every transaction.
-     *
-     * Second part of functionality is own reconciliation pre-configure
-     * Flows, Meters and Groups.
-     *
-     * @param connectedNode - {@link org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier} to new Node
+     * Reconcile the switch data store configuration on the switch
+     * @param connectedNode Node that need reconciliation
      */
-    void flowNodeConnected(InstanceIdentifier<FlowCapableNode> connectedNode);
-
-    /**
-     * Method contains functionality for registered Node {@link FlowCapableNode} removing
-     * from {@link ForwardingRulesManager}
-     *
-     * @param disconnectedNode - {@link org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier} to removed Node
-     */
-    void flowNodeDisconnected(InstanceIdentifier<FlowCapableNode> disconnectedNode);
+    void reconcileConfiguration(InstanceIdentifier<FlowCapableNode> connectedNode);
 }
 

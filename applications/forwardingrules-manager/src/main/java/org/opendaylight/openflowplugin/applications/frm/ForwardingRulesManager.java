@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -23,17 +23,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
- * forwardingrules-manager
- * org.opendaylight.openflowplugin.applications.frm
- *
- * ForwardingRulesManager
- * It represents a central point for whole module. Implementation
+ * It represent a central point for whole module. Implementation
  * Flow Provider registers the link FlowChangeListener} and it holds all needed
  * services for link FlowChangeListener}.
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
- *
- * Created: Aug 25, 2014
  */
 public interface ForwardingRulesManager extends AutoCloseable {
 
@@ -56,24 +50,6 @@ public interface ForwardingRulesManager extends AutoCloseable {
      * @return boolean - true if device is present in operational data store
      */
     boolean checkNodeInOperationalDataStore(InstanceIdentifier<FlowCapableNode> ident);
-
-    /**
-     * Method add new {@link FlowCapableNode} to active Node Holder.
-     * ActiveNodeHolder prevent unnecessary Operational/DS read for identify
-     * pre-configure and serious Configure/DS transactions.
-     *
-     * @param ident - the key of the node
-     */
-    void registrateNewNode(InstanceIdentifier<FlowCapableNode> ident);
-
-    /**
-     * Method remove disconnected {@link FlowCapableNode} from active Node
-     * Holder. And all next flows or groups or meters will stay in Config/DS
-     * only.
-     *
-     * @param ident - the key of the node
-     */
-    void unregistrateNode(InstanceIdentifier<FlowCapableNode> ident);
 
     /**
      * Method returns generated transaction ID, which is unique for
@@ -102,7 +78,7 @@ public interface ForwardingRulesManager extends AutoCloseable {
      *
      * @return
      */
-    public SalGroupService getSalGroupService();
+    SalGroupService getSalGroupService();
 
     /**
      * Meter RPC service
@@ -141,12 +117,6 @@ public interface ForwardingRulesManager extends AutoCloseable {
      * @return ForwardingRulesCommiter&lt;Table&gt;
      */
     ForwardingRulesCommiter<TableFeatures> getTableFeaturesCommiter();
-
-    /**
-     * Content definition method
-     * @return FlowNodeReconciliation
-     */
-    FlowNodeReconciliation getFlowNodeReconciliation();
 
     /**
      * Returns the config-subsystem/fallback configuration of FRM
