@@ -46,6 +46,30 @@
       "revId": "b94b562bbb4d777a760a48e0e022a29b97fc3d4b",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_3be3f234",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-03-16T22:04:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fafc7978_0f8fcfcd",
+      "range": {
+        "startLine": 69,
+        "startChar": 0,
+        "endLine": 83,
+        "endChar": 45
+      },
+      "revId": "b94b562bbb4d777a760a48e0e022a29b97fc3d4b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
