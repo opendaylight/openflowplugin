@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2016 Pantheon Technologies s.r.o. and others. All rights reserved.
+ * Copyright (c) 2016, 2017 Pantheon Technologies s.r.o. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -31,12 +32,15 @@ public class DeviceMastershipManager implements OpendaylightInventoryListener, A
     private static final Logger LOG = LoggerFactory.getLogger(DeviceMastershipManager.class);
     private final ClusterSingletonServiceProvider clusterSingletonService;
     private final ListenerRegistration<?> notifListenerRegistration;
+    private final FlowNodeReconciliation reconcliationAgent;
     private final ConcurrentHashMap<NodeId, DeviceMastership> deviceMasterships = new ConcurrentHashMap();
 
     public DeviceMastershipManager(final ClusterSingletonServiceProvider clusterSingletonService,
-                                   final NotificationProviderService notificationService) {
+                                   final NotificationProviderService notificationService,
+                                   final FlowNodeReconciliation reconcliationAgent) {
         this.clusterSingletonService = clusterSingletonService;
         this.notifListenerRegistration = notificationService.registerNotificationListener(this);
+        this.reconcliationAgent = reconcliationAgent;
     }
 
     public void onDeviceConnected(final NodeId nodeId) {
@@ -60,7 +64,7 @@ public class DeviceMastershipManager implements OpendaylightInventoryListener, A
     public void onNodeUpdated(NodeUpdated notification) {
         LOG.debug("NodeUpdate notification received : {}", notification);
         DeviceMastership membership = deviceMasterships.computeIfAbsent(notification.getId(), device ->
-                new DeviceMastership(notification.getId(), clusterSingletonService));
+                new DeviceMastership(notification.getId(), clusterSingletonService, reconcliationAgent));
         membership.registerClusterSingletonService();
     }
 

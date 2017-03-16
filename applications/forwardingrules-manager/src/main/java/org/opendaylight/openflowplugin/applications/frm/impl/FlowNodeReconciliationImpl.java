@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -19,23 +19,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.HashMap;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicInteger;
-import javax.annotation.Nonnull;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
@@ -83,6 +66,21 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.Nonnull;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 
 /**
@@ -222,7 +220,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             }
 
             if ( ! nodeIdent.isWildcarded()) {
-                flowNodeConnected(nodeIdent);
+                flowNodeConnected(nodeIdent, false);
             }
         }
     }
@@ -233,16 +231,11 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     }
 
     @Override
-    public void flowNodeConnected(InstanceIdentifier<FlowCapableNode> connectedNode) {
-        flowNodeConnected(connectedNode, false);
-    }
-
-    private void flowNodeConnected(InstanceIdentifier<FlowCapableNode> connectedNode, boolean force) {
-        if (force || !provider.isNodeActive(connectedNode)) {
+    public void flowNodeConnected(InstanceIdentifier<FlowCapableNode> connectedNode, boolean doReconciliation) {
+        if (!provider.isNodeActive(connectedNode)) {
             provider.registrateNewNode(connectedNode);
-
-            if(!provider.isNodeOwner(connectedNode)) { return; }
-
+        }
+        if (doReconciliation && provider.isNodeOwner(connectedNode)) {
             if (provider.getConfiguration().isStaleMarkingEnabled()) {
                 LOG.info("Stale-Marking is ENABLED and proceeding with deletion of stale-marked entities on switch {}",
                         connectedNode.toString());
