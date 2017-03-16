@@ -10,12 +10,11 @@ package org.opendaylight.openflowplugin.api.openflow.device;
 import javax.annotation.Nullable;
 
 /**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 1.4.2015.
+ * Request context stack.
  */
 public interface RequestContextStack {
     /**
      * Method returns new request context for current request.
-     *
      * @return A request context, or null if one cannot be created.
      */
     @Nullable <T> RequestContext<T> createRequestContext();

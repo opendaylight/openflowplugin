@@ -24,8 +24,7 @@ public interface ClusterLifecycleSupervisor {
     void setLifecycleInitializationPhaseHandler(final ClusterInitializationPhaseHandler handler);
 
     default void setInitialSubmitHandler(final ClusterInitializationPhaseHandler initialSubmitHandler) {
-        //Need to be only set in statistics context where after successful initial gather
-        //tx need to be submitted
+        //Need to be only set in statistics context where after successful initial gather tx need to be submitted
     }
 
 }
