@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fafc7978_5724c2c5",
+        "filename": "applications/table-miss-enforcer/src/main/java/org/opendaylight/openflowplugin/applications/tableMissEnforcer/LLDPPacketPuntEnforcer.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-03-17T23:19:13Z",
+      "side": 1,
+      "message": "please change it to 2014, 2017",
+      "range": {
+        "startLine": 2,
+        "startChar": 17,
+        "endLine": 2,
+        "endChar": 21
+      },
+      "revId": "4363ee4ebc4754f843dedde26f8829a3ed83c2b5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_d7171253",
+        "filename": "applications/table-miss-enforcer/src/main/java/org/opendaylight/openflowplugin/applications/tableMissEnforcer/TableMissEnforcer.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-03-17T23:19:13Z",
+      "side": 1,
+      "message": "please do not register clustering service based on the data change notification. It will by default register TableMissEnforcer as a candidate on all the 3 instances of the controller, even though switch is connected to only one controller. Please look at this bug for more details \nhttps://bugs.opendaylight.org/show_bug.cgi?id\u003d7736",
+      "range": {
+        "startLine": 56,
+        "startChar": 8,
+        "endLine": 56,
+        "endChar": 108
+      },
+      "revId": "4363ee4ebc4754f843dedde26f8829a3ed83c2b5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
