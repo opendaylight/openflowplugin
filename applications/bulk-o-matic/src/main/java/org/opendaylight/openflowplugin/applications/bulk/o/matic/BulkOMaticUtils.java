@@ -28,9 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-public class BulkOMaticUtils {
-
-    private BulkOMaticUtils () { }
+public final class BulkOMaticUtils {
 
     public static final int DEFUALT_STATUS = FlowCounter.OperationStatus.INIT.status();
     public static final int DEFAULT_FLOW_COUNT = 0;
@@ -38,11 +36,14 @@ public class BulkOMaticUtils {
     public static final String DEFAULT_UNITS = "ns";
     public static final String DEVICE_TYPE_PREFIX = "openflow:";
 
+    private BulkOMaticUtils() {
+    }
+
     public static String ipIntToStr (int k) {
-        return new StringBuilder().append(((k >> 24) & 0xFF)).append(".")
-                .append(((k >> 16) & 0xFF)).append(".")
-                .append(((k >> 8) & 0xFF)).append(".")
-                .append((k & 0xFF)).append("/32").toString();
+        return new StringBuilder().append(k >> 24 & 0xFF).append(".")
+                .append(k >> 16 & 0xFF).append(".")
+                .append(k >> 8 & 0xFF).append(".")
+                .append(k & 0xFF).append("/32").toString();
     }
 
     public static Match getMatch(final Integer sourceIp){
@@ -87,7 +88,6 @@ public class BulkOMaticUtils {
                 .augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey(tableId))
                 .build();
-
     }
 
     public static InstanceIdentifier<Flow> getFlowId(final InstanceIdentifier<Table> tablePath, final String flowId) {
