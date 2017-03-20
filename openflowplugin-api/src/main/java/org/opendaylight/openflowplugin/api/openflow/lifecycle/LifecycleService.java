@@ -25,14 +25,10 @@ public interface LifecycleService extends ClusterSingletonService, AutoCloseable
     /**
      * This method registers lifecycle service to the given provider.
      * @param singletonServiceProvider      from md-sal binding
-     * @param initializationPhaseHandler    MASTER services initialization handler
-     * @param serviceGroupIdentifier        Cluster services identifier
-     * @param deviceInfo                    device
+     * @param deviceContext                 device
      */
     void registerService(@Nonnull final ClusterSingletonServiceProvider singletonServiceProvider,
-                         @Nonnull final ClusterInitializationPhaseHandler initializationPhaseHandler,
-                         @Nonnull final ServiceGroupIdentifier serviceGroupIdentifier,
-                         @Nonnull final DeviceInfo deviceInfo);
+                         @Nonnull final DeviceContext deviceContext);
 
     /**
      * This method registers device removed handler what will be executed when device should be removed.

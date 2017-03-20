@@ -115,7 +115,7 @@ public class LifecycleServiceImpl implements LifecycleService {
                     }
                     registration.close();
                 } catch (final Exception e) {
-                    LOG.debug("Failed to close clustering services for node {} with exception: ",
+                    LOG.warn("Failed to close clustering services for node {} with exception: ",
                             deviceInfo.getLOGValue(), e);
                 }
             }
@@ -124,13 +124,11 @@ public class LifecycleServiceImpl implements LifecycleService {
 
     @Override
     public void registerService(@Nonnull final ClusterSingletonServiceProvider singletonServiceProvider,
-                                @Nonnull final ClusterInitializationPhaseHandler initializationPhaseHandler,
-                                @Nonnull final ServiceGroupIdentifier serviceGroupIdentifier,
-                                @Nonnull final DeviceInfo deviceInfo) {
+                                @Nonnull final DeviceContext deviceContext) {
 
-        this.clusterInitializationPhaseHandler = initializationPhaseHandler;
-        this.serviceGroupIdentifier = serviceGroupIdentifier;
-        this.deviceInfo = deviceInfo;
+        this.clusterInitializationPhaseHandler = deviceContext;
+        this.serviceGroupIdentifier = deviceContext.getServiceIdentifier();
+        this.deviceInfo = deviceContext.getDeviceInfo();
         this.registration = Verify.verifyNotNull(
                 singletonServiceProvider.registerClusterSingletonService(this));
 

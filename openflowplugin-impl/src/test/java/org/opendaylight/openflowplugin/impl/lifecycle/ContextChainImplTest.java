@@ -144,9 +144,7 @@ public class ContextChainImplTest {
         contextChain.registerServices(clusterSingletonServiceProvider);
         Mockito.verify(lifecycleService).registerService(
                 Mockito.any(ClusterSingletonServiceProvider.class),
-                Mockito.any(ClusterInitializationPhaseHandler.class),
-                Mockito.any(ServiceGroupIdentifier.class),
-                Mockito.any(DeviceInfo.class));
+                Mockito.any(DeviceContext.class));
     }
 
     @Test

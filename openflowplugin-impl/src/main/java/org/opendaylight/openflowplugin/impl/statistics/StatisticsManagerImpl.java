@@ -30,11 +30,9 @@ import javax.annotation.Nonnull;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.ConnectionException;
-import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
@@ -56,7 +54,6 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     private static final long DEFAULT_STATS_TIMEOUT_SEC = 50L;
     private final ConvertorExecutor converterExecutor;
-    private DeviceTerminationPhaseHandler deviceTerminationPhaseHandler;
 
     private final ConcurrentMap<DeviceInfo, StatisticsContext> contexts = new ConcurrentHashMap<>();
 
@@ -189,12 +186,6 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     }
 
     @Override
-    public void onDeviceContextLevelDown(final DeviceInfo deviceInfo) {
-        Optional.ofNullable(contexts.get(deviceInfo)).ifPresent(OFPContext::close);
-        deviceTerminationPhaseHandler.onDeviceContextLevelDown(deviceInfo);
-    }
-
-    @Override
     public Future<RpcResult<GetStatisticsWorkModeOutput>> getStatisticsWorkMode() {
         final GetStatisticsWorkModeOutputBuilder smModeOutputBld = new GetStatisticsWorkModeOutputBuilder();
         smModeOutputBld.setMode(workMode);
@@ -301,11 +292,6 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                 iterator.hasNext();) {
             iterator.next().close();
         }
-    }
-
-    @Override
-    public void setDeviceTerminationPhaseHandler(final DeviceTerminationPhaseHandler handler) {
-        this.deviceTerminationPhaseHandler = handler;
     }
 
     @Override

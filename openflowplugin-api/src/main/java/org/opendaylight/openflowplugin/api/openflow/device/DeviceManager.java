@@ -9,11 +9,10 @@
 package org.opendaylight.openflowplugin.api.openflow.device;
 
 import com.google.common.util.concurrent.CheckedFuture;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListener;
+import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
@@ -26,7 +25,6 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
  */
 public interface DeviceManager extends
         OFPManager,
-        DeviceDisconnectedHandler,
         TranslatorLibrarian {
 
     /**
@@ -57,5 +55,7 @@ public interface DeviceManager extends
     long getBarrierIntervalNanos();
 
     int getBarrierCountLimit();
+
+    void sendNodeAddedNotification(@Nonnull final DeviceInfo deviceInfo);
 }
 

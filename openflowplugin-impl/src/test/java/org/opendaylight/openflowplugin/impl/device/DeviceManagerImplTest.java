@@ -14,8 +14,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.common.util.concurrent.CheckedFuture;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
 import io.netty.util.HashedWheelTimer;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
@@ -24,7 +22,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -36,24 +33,15 @@ import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipS
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
-import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
-import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandler;
-import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
-import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.CapabilitiesV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeviceManagerImplTest {
@@ -68,19 +56,11 @@ public class DeviceManagerImplTest {
     @Mock
     private FeaturesReply mockFeatures;
     @Mock
-    private OutboundQueue outboundQueueProvider;
-    @Mock
-    private DeviceTerminationPhaseHandler deviceTerminationPhaseHandler;
-    @Mock
-    private TranslatorLibrary translatorLibrary;
-    @Mock
     private ConnectionContext mockConnectionContext;
     @Mock
     private ConnectionAdapter mockedConnectionAdapter;
     @Mock
     private DeviceContextImpl mockedDeviceContext;
-    @Mock
-    private NodeId mockedNodeId;
     @Mock
     private MessageIntelligenceAgency messageIntelligenceAgency;
     @Mock
@@ -116,7 +96,7 @@ public class DeviceManagerImplTest {
 
         when(mockedWriteTransaction.submit()).thenReturn(mockedFuture);
 
-        final DeviceManagerImpl deviceManager = new DeviceManagerImpl(
+        return new DeviceManagerImpl(
             mockedDataBroker,
                 messageIntelligenceAgency,
                 null,
@@ -124,58 +104,6 @@ public class DeviceManagerImplTest {
                 convertorExecutor,
                 null
         );
-
-        deviceManager.setDeviceTerminationPhaseHandler(deviceTerminationPhaseHandler);
-
-        return deviceManager;
-    }
-
-    @Test
-    public void deviceDisconnectedTest() throws Exception {
-        final DeviceState deviceState = mock(DeviceState.class);
-
-        final DeviceManagerImpl deviceManager = prepareDeviceManager();
-        injectMockTranslatorLibrary(deviceManager);
-
-        final ConnectionContext connectionContext = buildMockConnectionContext(OFConstants.OFP_VERSION_1_3);
-        when(connectionContext.getNodeId()).thenReturn(mockedNodeId);
-
-        final DeviceContext deviceContext = mock(DeviceContext.class);
-        when(deviceContext.shuttingDownDataStoreTransactions()).thenReturn(Futures.immediateCheckedFuture(null));
-        when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
-        when(deviceContext.getDeviceState()).thenReturn(deviceState);
-        when(deviceContext.getState()).thenReturn(OFPContext.CONTEXT_STATE.WORKING);
-
-        final ConcurrentHashMap<DeviceInfo, DeviceContext> deviceContexts = getContextsCollection(deviceManager);
-        deviceContexts.put(deviceInfo, deviceContext);
-
-        deviceManager.onDeviceDisconnected(connectionContext);
-    }
-
-    private ConnectionContext buildMockConnectionContext(final short ofpVersion) {
-        when(mockFeatures.getVersion()).thenReturn(ofpVersion);
-        when(outboundQueueProvider.reserveEntry()).thenReturn(43L);
-        Mockito.doAnswer(invocation -> {
-            final FutureCallback<OfHeader> callBack = (FutureCallback<OfHeader>) invocation.getArguments()[2];
-            callBack.onSuccess(null);
-            return null;
-        })
-                .when(outboundQueueProvider)
-                .commitEntry(Matchers.anyLong(), Matchers.<MultipartRequestInput>any(), Matchers.<FutureCallback<OfHeader>>any());
-
-        when(mockedConnectionAdapter.registerOutboundQueueHandler(Matchers.<OutboundQueueHandler>any(), Matchers.anyInt(), Matchers.anyLong()))
-                .thenAnswer(invocation -> {
-                    final OutboundQueueHandler handler = (OutboundQueueHandler) invocation.getArguments()[0];
-                    handler.onConnectionQueueChanged(outboundQueueProvider);
-                    return null;
-                });
-
-        when(mockConnectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);
-        return mockConnectionContext;
-    }
-
-    private void injectMockTranslatorLibrary(final DeviceManagerImpl deviceManager) {
-        deviceManager.setTranslatorLibrary(translatorLibrary);
     }
 
     @Test
