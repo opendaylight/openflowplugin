@@ -149,9 +149,5 @@ public interface DeviceContext extends
     ListenableFuture<RpcResult<SetRoleOutput>> makeDeviceSlave();
 
     boolean canUseSingleLayerSerialization();
-
-    void sendNodeAddedNotification();
-
-    void sendNodeRemovedNotification();
 }
 
