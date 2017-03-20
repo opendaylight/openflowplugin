@@ -7,17 +7,13 @@
  */
 package org.opendaylight.openflowplugin.impl.device;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
-import io.netty.util.TimerTask;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -32,15 +28,12 @@ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
-import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderKeeper;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
@@ -49,6 +42,9 @@ import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitiali
 import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.SalRoleServiceImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemovedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -75,10 +71,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private final DeviceInitializerProvider deviceInitializerProvider;
     private final ConvertorExecutor convertorExecutor;
     private TranslatorLibrary translatorLibrary;
-    private DeviceTerminationPhaseHandler deviceTerminPhaseHandler;
 
     private final ConcurrentMap<DeviceInfo, DeviceContext> deviceContexts = new ConcurrentHashMap<>();
-    private final ConcurrentMap<DeviceInfo, LifecycleService> lifecycleServices = new ConcurrentHashMap<>();
 
     private long barrierIntervalNanos;
     private int barrierCountLimit;
@@ -158,12 +152,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public void onDeviceContextLevelDown(final DeviceInfo deviceInfo) {
-        updatePacketInRateLimiters();
-        Optional.ofNullable(lifecycleServices.get(deviceInfo)).ifPresent(LifecycleService::close);
-    }
-
-    @Override
     public void initialize() {
         spyPool.scheduleAtFixedRate(messageSpy, SPY_RATE, SPY_RATE, TimeUnit.SECONDS);
     }
@@ -179,71 +167,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public void setDeviceTerminationPhaseHandler(final DeviceTerminationPhaseHandler handler) {
-        this.deviceTerminPhaseHandler = handler;
-    }
-
-    @Override
-    public void onDeviceDisconnected(final ConnectionContext connectionContext) {
-        LOG.trace("onDeviceDisconnected method call for Node: {}", connectionContext.getNodeId());
-        final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
-        final DeviceContext deviceCtx = this.deviceContexts.get(deviceInfo);
-
-        if (Objects.isNull(deviceCtx)) {
-            LOG.info("DeviceContext for Node {} was not found. Connection is terminated without OFP context suite.", deviceInfo.getLOGValue());
-            return;
-        }
-
-        if (!connectionContext.equals(deviceCtx.getPrimaryConnectionContext())) {
-            LOG.debug("Node {} disconnected, but not primary connection.", connectionContext.getDeviceInfo().getLOGValue());
-            // Connection is not PrimaryConnection so try to remove from Auxiliary Connections
-            deviceCtx.removeAuxiliaryConnectionContext(connectionContext);
-            // If this is not primary connection, we should not continue disabling everything
-            return;
-        }
-
-        if (deviceCtx.getState().equals(OFPContext.CONTEXT_STATE.TERMINATION)) {
-            LOG.info("Device context for node {} is already is termination state, waiting for close all context", deviceInfo.getLOGValue());
-            return;
-        }
-
-        deviceCtx.close();
-
-        // TODO: Auxiliary connections supported ?
-        // Device is disconnected and so we need to close TxManager
-        final ListenableFuture<Void> future = deviceCtx.shuttingDownDataStoreTransactions();
-        Futures.addCallback(future, new FutureCallback<Void>() {
-            @Override
-            public void onSuccess(final Void result) {
-                LOG.debug("TxChainManager for device {} is closed successful.", deviceInfo.getLOGValue());
-                deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceInfo);
-            }
-
-            @Override
-            public void onFailure(final Throwable t) {
-                LOG.warn("TxChainManager for device {} failed by closing.", deviceInfo.getLOGValue());
-                LOG.trace("TxChainManager failed by closing. ", t);
-                deviceTerminPhaseHandler.onDeviceContextLevelDown(deviceInfo);
-            }
-        });
-
-        // Add timer for Close TxManager because it could fail in cluster without notification
-        final TimerTask timerTask = timeout -> {
-            if (!future.isDone()) {
-                LOG.warn("Shutting down TxChain for node {} not completed during 10 sec. Continue anyway.", deviceInfo.getLOGValue());
-                future.cancel(false);
-            }
-        };
-
-        hashedWheelTimer.newTimeout(timerTask, 10, TimeUnit.SECONDS);
-    }
-
-    @VisibleForTesting
-    void addDeviceContextToMap(final DeviceInfo deviceInfo, final DeviceContext deviceContext){
-        deviceContexts.put(deviceInfo, deviceContext);
-    }
-
-    @Override
     public void setFlowRemovedNotificationOn(boolean isNotificationFlowRemovedOff) {
         this.isFlowRemovedNotificationOn = isNotificationFlowRemovedOff;
     }
@@ -252,7 +175,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     public boolean isFlowRemovedNotificationOn() {
         return this.isFlowRemovedNotificationOn;
     }
-
 
     @Override
     public void setSkipTableFeatures(boolean skipTableFeaturesValue) {
@@ -368,6 +290,16 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         }
     }
 
+    private void sendNodeRemovedNotification(final DeviceInfo deviceInfo) {
+        NodeRemovedBuilder builder = new NodeRemovedBuilder();
+        builder.setNodeRef(new NodeRef(deviceInfo.getNodeInstanceIdentifier()));
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Publishing node removed notification for {}", deviceInfo.getLOGValue());
+        }
+        notificationPublishService.offerNotification(builder.build());
+    }
+
+
     @Override
     public void onDeviceRemoved(final DeviceInfo deviceInfo) {
         deviceContexts.remove(deviceInfo);
@@ -375,6 +307,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
             LOG.debug("Device context removed for node {}", deviceInfo.getLOGValue());
         }
         this.updatePacketInRateLimiters();
+        this.sendNodeRemovedNotification(deviceInfo);
     }
 
     @Override
@@ -385,5 +318,16 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     @Override
     public int getBarrierCountLimit() {
         return barrierCountLimit;
+    }
+
+    @Override
+    public void sendNodeAddedNotification(@CheckForNull final DeviceInfo deviceInfo) {
+        NodeUpdatedBuilder builder = new NodeUpdatedBuilder();
+        builder.setId(deviceInfo.getNodeId());
+        builder.setNodeRef(new NodeRef(deviceInfo.getNodeInstanceIdentifier()));
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Publishing node added notification for {}", deviceInfo.getLOGValue());
+        }
+        notificationPublishService.offerNotification(builder.build());
     }
 }

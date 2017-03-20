@@ -520,8 +520,12 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         @Override
         public void onSuccess(@Nullable Void nothing) {
             LOG.info("Context chain for device {} successfully {}", deviceInfoString, stoppedString);
-            if (this.stop && Objects.nonNull(deviceInfo)) {
-                addToSleepingChainsMap(deviceInfo, contextChainMap.get(deviceInfo));
+            if (Objects.nonNull(deviceInfo)) {
+                if (this.stop) {
+                    addToSleepingChainsMap(deviceInfo, contextChainMap.get(deviceInfo));
+                } else {
+                    sendNotificationNodeAdded(deviceInfo);
+                }
             }
         }
 
@@ -532,6 +536,10 @@ public class ContextChainHolderImpl implements ContextChainHolder {
                 addToSleepingChainsMap(deviceInfo, contextChainMap.get(deviceInfo));
             }
         }
+    }
+
+    private void sendNotificationNodeAdded(final DeviceInfo deviceInfo) {
+        this.deviceManager.sendNodeAddedNotification(deviceInfo);
     }
 
     private class SleepingChainsTimerTask implements TimerTask {
