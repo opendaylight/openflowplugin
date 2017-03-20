@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014, 2015 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -11,11 +11,8 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.CheckedFuture;
-import java.util.Collections;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
@@ -51,31 +48,27 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
-
     private static final Logger LOG = LoggerFactory.getLogger(ForwardingRulesManagerImpl.class);
+
     static final int STARTUP_LOOP_TICK = 500;
     static final int STARTUP_LOOP_MAX_RETRIES = 8;
 
     private final AtomicLong txNum = new AtomicLong();
-    private final Object lockObj = new Object();
-    private Set<InstanceIdentifier<FlowCapableNode>> activeNodes = Collections.emptySet();
-
     private final DataBroker dataService;
     private final SalFlowService salFlowService;
     private final SalGroupService salGroupService;
     private final SalMeterService salMeterService;
     private final SalTableService salTableService;
+    private final ForwardingRulesManagerConfig forwardingRulesManagerConfig;
+    private final ClusterSingletonServiceProvider clusterSingletonServiceProvider;
+    private final NotificationProviderService notificationService;
 
     private ForwardingRulesCommiter<Flow> flowListener;
     private ForwardingRulesCommiter<Group> groupListener;
     private ForwardingRulesCommiter<Meter> meterListener;
     private ForwardingRulesCommiter<TableFeatures> tableListener;
     private FlowNodeReconciliation nodeListener;
-
-    private final ForwardingRulesManagerConfig forwardingRulesManagerConfig;
     private FlowNodeConnectorInventoryTranslatorImpl flowNodeConnectorInventoryTranslatorImpl;
-    private final ClusterSingletonServiceProvider clusterSingletonServiceProvider;
-    private final NotificationProviderService notificationService;
     private DeviceMastershipManager deviceMastershipManager;
 
     public ForwardingRulesManagerImpl(final DataBroker dataBroker,
@@ -104,15 +97,17 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
 
     @Override
     public void start() {
+        this.nodeListener = new FlowNodeReconciliationImpl(this, dataService);
         this.deviceMastershipManager = new DeviceMastershipManager(clusterSingletonServiceProvider,
-                notificationService);
+                notificationService,
+                this.nodeListener,
+                dataService);
+        flowNodeConnectorInventoryTranslatorImpl = new FlowNodeConnectorInventoryTranslatorImpl(this,dataService);
+
         this.flowListener = new FlowForwarder(this, dataService);
         this.groupListener = new GroupForwarder(this, dataService);
         this.meterListener = new MeterForwarder(this, dataService);
         this.tableListener = new TableForwarder(this, dataService);
-        this.nodeListener = new FlowNodeReconciliationImpl(this, dataService);
-        flowNodeConnectorInventoryTranslatorImpl =
-                new FlowNodeConnectorInventoryTranslatorImpl(this,dataService);
         LOG.info("ForwardingRulesManager has started successfully.");
     }
 
@@ -155,7 +150,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
 
     @Override
     public boolean isNodeActive(InstanceIdentifier<FlowCapableNode> ident) {
-        return activeNodes.contains(ident);
+        return deviceMastershipManager.isNodeActive(ident.firstKeyOf(Node.class).getId());
     }
 
     @Override
@@ -179,36 +174,6 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         transaction.close();
 
         return result;
-    }
-
-    @Override
-    public void registrateNewNode(InstanceIdentifier<FlowCapableNode> ident) {
-        if (!activeNodes.contains(ident)) {
-            synchronized (lockObj) {
-                if (!activeNodes.contains(ident)) {
-                    Set<InstanceIdentifier<FlowCapableNode>> set =
-                            Sets.newHashSet(activeNodes);
-                    set.add(ident);
-                    activeNodes = Collections.unmodifiableSet(set);
-                    deviceMastershipManager.onDeviceConnected(ident.firstKeyOf(Node.class).getId());
-                }
-            }
-        }
-    }
-
-    @Override
-    public void unregistrateNode(InstanceIdentifier<FlowCapableNode> ident) {
-        if (activeNodes.contains(ident)) {
-            synchronized (lockObj) {
-                if (activeNodes.contains(ident)) {
-                    Set<InstanceIdentifier<FlowCapableNode>> set =
-                            Sets.newHashSet(activeNodes);
-                    set.remove(ident);
-                    activeNodes = Collections.unmodifiableSet(set);
-                    deviceMastershipManager.onDeviceDisconnected(ident.firstKeyOf(Node.class).getId());
-                }
-            }
-        }
     }
 
     @Override
@@ -252,11 +217,6 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     }
 
     @Override
-    public FlowNodeReconciliation getFlowNodeReconciliation() {
-        return nodeListener;
-    }
-
-    @Override
     public ForwardingRulesManagerConfig getConfiguration() {
         return forwardingRulesManagerConfig;
     }
@@ -275,6 +235,5 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     public void setDeviceMastershipManager(final DeviceMastershipManager deviceMastershipManager) {
         this.deviceMastershipManager = deviceMastershipManager;
     }
-
 }
 
