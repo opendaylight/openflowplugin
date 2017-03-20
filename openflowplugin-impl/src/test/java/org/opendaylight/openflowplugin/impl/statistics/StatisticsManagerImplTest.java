@@ -43,8 +43,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
-import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
@@ -59,7 +57,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.ChangeStatisticsWorkModeInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutput;
@@ -92,8 +89,6 @@ public class StatisticsManagerImplTest {
     private DeviceState mockedDeviceState;
     @Mock
     private DeviceInfo mockedDeviceInfo;
-    @Mock
-    private DeviceTerminationPhaseHandler mockedTerminationPhaseHandler;
     @Mock
     private RpcProviderRegistry rpcProviderRegistry;
     @Mock
@@ -159,21 +154,6 @@ public class StatisticsManagerImplTest {
         final long maximumTimerDelay = 900000L;
         statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, new HashedWheelTimer(),
                 convertorManager);
-    }
-
-    @Test
-    public void testOnDeviceContextClosed() throws Exception {
-        final StatisticsContext statisticContext = Mockito.mock(StatisticsContext.class);
-        final Map<DeviceInfo, StatisticsContext> contextsMap = getContextsMap(statisticsManager);
-
-        contextsMap.put(deviceInfo, statisticContext);
-        Assert.assertEquals(1, contextsMap.size());
-
-        statisticsManager.setDeviceTerminationPhaseHandler(mockedTerminationPhaseHandler);
-        statisticsManager.onDeviceContextLevelDown(deviceInfo);
-        verify(statisticContext).close();
-        verify(mockedTerminationPhaseHandler).onDeviceContextLevelDown(deviceInfo);
-        Assert.assertEquals(1, contextsMap.size());
     }
 
     private static Map<DeviceInfo, StatisticsContext> getContextsMap(final StatisticsManagerImpl statisticsManager)

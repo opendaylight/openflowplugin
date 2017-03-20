@@ -110,14 +110,7 @@ class RpcContextImpl implements RpcContext {
      */
     @Override
     public void close() {
-        if (!CONTEXT_STATE.TERMINATION.equals(this.state)){
-            try {
-                stopClusterServices().get();
-            } catch (InterruptedException | ExecutionException e) {
-                LOG.debug("Failed to close RpcContext for node {} with exception: ", getDeviceInfo().getLOGValue(), e);
-            }
-            this.state = CONTEXT_STATE.TERMINATION;
-        }
+        //NOOP
     }
 
     @Override

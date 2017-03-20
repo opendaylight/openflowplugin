@@ -10,16 +10,13 @@ package org.opendaylight.openflowplugin.impl.rpc;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Iterators;
 import java.util.Iterator;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import javax.annotation.CheckForNull;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
@@ -31,7 +28,6 @@ public class RpcManagerImpl implements RpcManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(RpcManagerImpl.class);
     private final RpcProviderRegistry rpcProviderRegistry;
-    private DeviceTerminationPhaseHandler deviceTerminationPhaseHandler;
     private int maxRequestsQuota;
     private final ConcurrentMap<DeviceInfo, RpcContext> contexts = new ConcurrentHashMap<>();
     private boolean isStatisticsRpcEnabled;
@@ -57,17 +53,6 @@ public class RpcManagerImpl implements RpcManager {
                 iterator.hasNext();) {
             iterator.next().close();
         }
-    }
-
-    @Override
-    public void onDeviceContextLevelDown(final DeviceInfo deviceInfo) {
-        Optional.ofNullable(contexts.get(deviceInfo)).ifPresent(OFPContext::close);
-        deviceTerminationPhaseHandler.onDeviceContextLevelDown(deviceInfo);
-    }
-
-    @Override
-    public void setDeviceTerminationPhaseHandler(final DeviceTerminationPhaseHandler handler) {
-        this.deviceTerminationPhaseHandler = handler;
     }
 
     /**

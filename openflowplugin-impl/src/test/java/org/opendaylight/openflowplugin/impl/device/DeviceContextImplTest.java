@@ -58,7 +58,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
@@ -513,16 +512,6 @@ public class DeviceContextImplTest {
         deviceContext.processExperimenterMessage(experimenterMessage);
 
         verify(mockedNotificationPublishService).offerNotification(any(ExperimenterMessageFromDev.class));
-    }
-
-    @Test
-    public void testOnDeviceDisconnected() throws Exception {
-        final DeviceTerminationPhaseHandler deviceContextClosedHandler = mock(DeviceTerminationPhaseHandler.class);
-
-        assertEquals(0, deviceContext.getDeviceFlowRegistry().size());
-        assertEquals(0, deviceContext.getDeviceGroupRegistry().size());
-        assertEquals(0, deviceContext.getDeviceMeterRegistry().size());
-
     }
 
 }

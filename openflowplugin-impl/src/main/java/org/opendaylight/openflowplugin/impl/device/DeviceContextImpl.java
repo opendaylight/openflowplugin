@@ -9,7 +9,6 @@ package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
-import com.google.common.base.Preconditions;
 import com.google.common.base.Optional;
 import com.google.common.base.Verify;
 import com.google.common.util.concurrent.AsyncFunction;
@@ -94,8 +93,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemovedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
@@ -368,26 +365,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                         getDeviceInfo().getNodeId(), flowRegKey.getTableId(), flowRemovedNotification.getPriority());
             }
         }
-    }
-
-    @Override
-    public void sendNodeAddedNotification() {
-        if (!isAddNotificationSent) {
-            isAddNotificationSent = true;
-            NodeUpdatedBuilder builder = new NodeUpdatedBuilder();
-            builder.setId(getDeviceInfo().getNodeId());
-            builder.setNodeRef(new NodeRef(getDeviceInfo().getNodeInstanceIdentifier()));
-            LOG.debug("Publishing node added notification for {}", builder.build());
-            notificationPublishService.offerNotification(builder.build());
-        }
-    }
-
-    @Override
-    public void sendNodeRemovedNotification() {
-        NodeRemovedBuilder builder = new NodeRemovedBuilder();
-        builder.setNodeRef(new NodeRef(getDeviceInfo().getNodeInstanceIdentifier()));
-        LOG.debug("Publishing node removed notification for {}", builder.build());
-        notificationPublishService.offerNotification(builder.build());
     }
 
     @Override
@@ -714,7 +691,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Role SLAVE was successfully propagated on device, node {}", deviceInfo.getLOGValue());
                     }
-                    sendNodeAddedNotification();
                 }
 
                 @Override
@@ -744,14 +720,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public void close() {
-        if (CONTEXT_STATE.TERMINATION.equals(getState())){
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("DeviceContext for node {} is already in TERMINATION state.", getDeviceInfo().getLOGValue());
-            }
-        } else {
-            this.state = CONTEXT_STATE.TERMINATION;
-        }
-        sendNodeRemovedNotification();
+        //NOOP
     }
 
     @Override
@@ -881,7 +850,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Role MASTER was successfully set on device, node {}", deviceInfo.getLOGValue());
             }
-            sendNodeAddedNotification();
         }
 
         @Override

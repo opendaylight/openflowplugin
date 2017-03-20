@@ -54,15 +54,14 @@ public class LifecycleServiceImplTest {
     @Before
     public void setUp() {
         Mockito.when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
+        Mockito.when(deviceContext.getServiceIdentifier()).thenReturn(SERVICE_GROUP_IDENTIFIER);
         Mockito.when(clusterSingletonServiceProvider.registerClusterSingletonService(Mockito.any()))
                 .thenReturn(clusterSingletonServiceRegistration);
 
         lifecycleService = new LifecycleServiceImpl(mastershipChangeListener);
         lifecycleService.registerService(
                 clusterSingletonServiceProvider,
-                clusterInitializationPhaseHandler,
-                SERVICE_GROUP_IDENTIFIER,
-                deviceInfo);
+                deviceContext);
     }
 
     @Test
@@ -88,7 +87,7 @@ public class LifecycleServiceImplTest {
 
     @Test
     public void instantiateServiceInstance() throws Exception {
-        Mockito.when(clusterInitializationPhaseHandler.onContextInstantiateService(Mockito.any()))
+        Mockito.when(deviceContext.onContextInstantiateService(Mockito.any()))
                 .thenReturn(true);
         lifecycleService.instantiateServiceInstance();
         Mockito.verify(mastershipChangeListener).onMasterRoleAcquired(Mockito.any(DeviceInfo.class));
@@ -96,7 +95,7 @@ public class LifecycleServiceImplTest {
 
     @Test
     public void instantiateServiceInstanceFail() throws Exception {
-        Mockito.when(clusterInitializationPhaseHandler.onContextInstantiateService(Mockito.any()))
+        Mockito.when(deviceContext.onContextInstantiateService(Mockito.any()))
                 .thenReturn(false);
         lifecycleService.instantiateServiceInstance();
         Mockito.verify(mastershipChangeListener).onNotAbleToStartMastership(Mockito.any(DeviceInfo.class));
