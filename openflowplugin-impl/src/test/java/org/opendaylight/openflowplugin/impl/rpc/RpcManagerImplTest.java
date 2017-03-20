@@ -8,8 +8,6 @@
 package org.opendaylight.openflowplugin.impl.rpc;
 
 import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.concurrent.ConcurrentMap;
@@ -30,7 +28,6 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
@@ -56,8 +53,6 @@ public class RpcManagerImplTest {
     private ProviderContext rpcProviderRegistry;
     @Mock
     private DeviceContext deviceContext;
-    @Mock
-    private DeviceTerminationPhaseHandler deviceTerminationPhaseHandler;
     @Mock
     private BindingAwareBroker.RoutedRpcRegistration<RpcService> routedRpcRegistration;
     @Mock
@@ -104,7 +99,6 @@ public class RpcManagerImplTest {
         Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
         Mockito.when(deviceContext.getItemLifeCycleSourceRegistry()).thenReturn(itemLifeCycleRegistry);
         Mockito.when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodePath);
-        rpcManager.setDeviceTerminationPhaseHandler(deviceTerminationPhaseHandler);
         Mockito.when(connectionContext.getFeatures()).thenReturn(features);
         Mockito.when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
@@ -116,35 +110,6 @@ public class RpcManagerImplTest {
                 Matchers.any(), Matchers.any(RpcService.class)))
                 .thenReturn(routedRpcRegistration);
         Mockito.when(contexts.remove(deviceInfo)).thenReturn(removedContexts);
-    }
-
-    @Test
-    public void testOnDeviceContextLevelDown() throws Exception {
-        rpcManager.onDeviceContextLevelDown(deviceInfo);
-        verify(deviceTerminationPhaseHandler).onDeviceContextLevelDown(deviceInfo);
-    }
-
-    /**
-     * On non null context close and onDeviceContextLevelDown should be called
-     */
-    @Test
-    public void onDeviceContextLevelDown1() {
-        rpcManager.addRecordToContexts(deviceInfo, removedContexts);
-        rpcManager.onDeviceContextLevelDown(deviceInfo);
-        verify(removedContexts,times(1)).close();
-        verify(deviceTerminationPhaseHandler,times(1)).onDeviceContextLevelDown(deviceInfo);
-    }
-
-
-    /**
-     * On null context only onDeviceContextLevelDown should be called
-     */
-    @Test
-    public void onDeviceContextLevelDown2() {
-        rpcManager.onDeviceContextLevelDown(deviceInfo);
-        verify(removedContexts,never()).close();
-        verify(deviceTerminationPhaseHandler,times(1)).onDeviceContextLevelDown(deviceInfo);
-
     }
 
     @Test
