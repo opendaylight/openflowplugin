@@ -104,10 +104,10 @@ public class ContextChainImpl implements ContextChain {
 
     @Override
     public void close() {
+        lifecycleService.close();
         deviceContext.close();
         rpcContext.close();
         statisticsContext.close();
-        lifecycleService.close();
     }
 
     @Override
@@ -150,9 +150,7 @@ public class ContextChainImpl implements ContextChain {
     public void registerServices(final ClusterSingletonServiceProvider clusterSingletonServiceProvider) {
         this.lifecycleService.registerService(
                 clusterSingletonServiceProvider,
-                this.deviceContext,
-                this.deviceContext.getServiceIdentifier(),
-                this.deviceContext.getDeviceInfo());
+                this.deviceContext);
     }
 
     @Override

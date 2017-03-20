@@ -26,7 +26,6 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
  */
 public interface DeviceManager extends
         OFPManager,
-        DeviceDisconnectedHandler,
         TranslatorLibrarian {
 
     /**
@@ -55,5 +54,7 @@ public interface DeviceManager extends
     long getBarrierIntervalNanos();
 
     int getBarrierCountLimit();
+
+    void sendNodeAddedNotification(@CheckForNull final DeviceInfo deviceInfo);
 }
 
