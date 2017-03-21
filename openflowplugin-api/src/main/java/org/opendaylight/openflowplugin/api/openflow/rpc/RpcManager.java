@@ -20,4 +20,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitia
 public interface RpcManager extends OFPManager {
 
     void setStatisticsRpcEnabled(boolean statisticsRpcEnabled);
+
+    void setRpcRequestQuota(int rpcRequestQuota);
+
 }
