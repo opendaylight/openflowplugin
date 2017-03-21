@@ -36,7 +36,7 @@ public class RpcManagerImpl implements RpcManager {
     private final RpcProviderRegistry rpcProviderRegistry;
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
     private DeviceTerminationPhaseHandler deviceTerminationPhaseHandler;
-    private final int maxRequestsQuota;
+    private int rpcRequestQuota;
     private final ConcurrentMap<DeviceInfo, RpcContext> contexts = new ConcurrentHashMap<>();
     private boolean isStatisticsRpcEnabled;
     private final ExtensionConverterProvider extensionConverterProvider;
@@ -44,14 +44,11 @@ public class RpcManagerImpl implements RpcManager {
     private final NotificationPublishService notificationPublishService;
 
 
-    public RpcManagerImpl(
-            final RpcProviderRegistry rpcProviderRegistry,
-            final int quotaValue,
-            final ExtensionConverterProvider extensionConverterProvider,
-	        final ConvertorExecutor convertorExecutor,
-            final NotificationPublishService notificationPublishService) {
+    public RpcManagerImpl(final RpcProviderRegistry rpcProviderRegistry,
+                          final ExtensionConverterProvider extensionConverterProvider,
+                          final ConvertorExecutor convertorExecutor,
+                          final NotificationPublishService notificationPublishService) {
         this.rpcProviderRegistry = rpcProviderRegistry;
-        maxRequestsQuota = quotaValue;
         this.extensionConverterProvider = extensionConverterProvider;
         this.convertorExecutor = convertorExecutor;
         this.notificationPublishService = notificationPublishService;
@@ -71,7 +68,7 @@ public class RpcManagerImpl implements RpcManager {
                 deviceInfo,
                 rpcProviderRegistry,
                 deviceContext.getMessageSpy(),
-                maxRequestsQuota,
+            rpcRequestQuota,
                 deviceInfo.getNodeInstanceIdentifier(),
                 deviceContext,
                 extensionConverterProvider,
@@ -120,6 +117,11 @@ public class RpcManagerImpl implements RpcManager {
     @Override
     public void setStatisticsRpcEnabled(boolean statisticsRpcEnabled) {
         isStatisticsRpcEnabled = statisticsRpcEnabled;
+    }
+
+    @Override
+    public void setRpcRequestQuota(final int rpcRequestQuota) {
+        this.rpcRequestQuota = rpcRequestQuota;
     }
 
     @Override

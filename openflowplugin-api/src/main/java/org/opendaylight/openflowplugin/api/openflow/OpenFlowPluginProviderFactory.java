@@ -21,8 +21,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
  * Factory for creating OpenFlowPluginProvider instances.
  */
 public interface OpenFlowPluginProviderFactory {
-    OpenFlowPluginProvider newInstance(OpenflowProviderConfig providerConfig, DataBroker dataBroker,
-                                       RpcProviderRegistry rpcRegistry, NotificationService notificationService,
+    OpenFlowPluginProvider newInstance(OpenflowProviderConfig providerConfig,
+                                       DataBroker dataBroker,
+                                       RpcProviderRegistry rpcRegistry,
+                                       NotificationService notificationService,
                                        NotificationPublishService notificationPublishService,
                                        EntityOwnershipService entityOwnershipService,
                                        List<SwitchConnectionProvider> switchConnectionProviders,
