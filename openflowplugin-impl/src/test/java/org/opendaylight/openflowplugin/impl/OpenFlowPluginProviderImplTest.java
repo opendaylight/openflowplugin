@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListenerRegistration;
@@ -30,6 +31,7 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
+import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginConfigurationService.PropertyType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsManagerControlService;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -43,6 +45,9 @@ public class OpenFlowPluginProviderImplTest {
 
     @Mock
     NotificationService notificationService;
+
+    @Mock
+    NotificationPublishService notificationPublishService;
 
     @Mock
     WriteTransaction writeTransaction;
@@ -79,18 +84,19 @@ public class OpenFlowPluginProviderImplTest {
         when(switchConnectionProvider.startup()).thenReturn(Futures.immediateCheckedFuture(null));
 
         provider = new OpenFlowPluginProviderImpl(
-                RPC_REQUESTS_QUOTA,
-                GLOBAL_NOTIFICATION_QUOTA,
-                THREAD_POOL_MIN_THREADS,
-                THREAD_POOL_MAX_THREADS,
-                THREAD_POOL_TIMEOUT);
+                Lists.newArrayList(switchConnectionProvider),
+                dataBroker,
+                rpcProviderRegistry,
+                notificationService,
+                notificationPublishService,
+                clusterSingletonServiceProvider,
+                entityOwnershipService);
 
-        provider.setDataBroker(dataBroker);
-        provider.setRpcProviderRegistry(rpcProviderRegistry);
-        provider.setNotificationProviderService(notificationService);
-        provider.setSwitchConnectionProviders(Lists.newArrayList(switchConnectionProvider));
-        provider.setClusteringSingletonServicesProvider(clusterSingletonServiceProvider);
-        provider.setEntityOwnershipServiceProvider(entityOwnershipService);
+        provider.updateProperty(PropertyType.THREAD_POOL_MIN_THREADS, THREAD_POOL_MIN_THREADS);
+        provider.updateProperty(PropertyType.THREAD_POOL_MAX_THREADS, THREAD_POOL_MAX_THREADS);
+        provider.updateProperty(PropertyType.THREAD_POOL_TIMEOUT, THREAD_POOL_TIMEOUT);
+        provider.updateProperty(PropertyType.RPC_REQUESTS_QUOTA, RPC_REQUESTS_QUOTA);
+        provider.updateProperty(PropertyType.GLOBAL_NOTIFICATION_QUOTA, GLOBAL_NOTIFICATION_QUOTA);
     }
 
     @After

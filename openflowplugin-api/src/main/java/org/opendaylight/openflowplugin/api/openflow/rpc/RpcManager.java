@@ -8,16 +8,18 @@
 
 package org.opendaylight.openflowplugin.api.openflow.rpc;
 
+import javax.annotation.CheckForNull;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 
 /**
- * The RPC Manager will maintain an RPC Context for each online switch. RPC context for device is created when
- * {@link DeviceInitializationPhaseHandler#onDeviceContextLevelUp(DeviceInfo, org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService)}
- * is called.
+ * The RPC Manager will maintain an RPC Context for each online switch.
  */
 public interface RpcManager extends OFPManager {
 
     void setStatisticsRpcEnabled(boolean statisticsRpcEnabled);
+
+    void setRpcRequestQuota(int rpcRequestQuota);
+
 }
