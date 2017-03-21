@@ -24,7 +24,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipChangeWatcher;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
@@ -40,11 +40,11 @@ public class LifecycleServiceImpl implements LifecycleService {
     private ServiceGroupIdentifier serviceGroupIdentifier;
     private DeviceInfo deviceInfo;
     private boolean terminationState = false;
-    private final MastershipChangeListener mastershipChangeListener;
+    private final ContextChainMastershipChangeWatcher contextChainMastershipChangeWatcher;
 
 
-    public LifecycleServiceImpl(@Nonnull final MastershipChangeListener mastershipChangeListener) {
-        this.mastershipChangeListener = mastershipChangeListener;
+    public LifecycleServiceImpl(@Nonnull final ContextChainMastershipChangeWatcher contextChainMastershipChangeWatcher) {
+        this.contextChainMastershipChangeWatcher = contextChainMastershipChangeWatcher;
     }
 
     @Override
@@ -59,14 +59,14 @@ public class LifecycleServiceImpl implements LifecycleService {
                     LOG.debug("Role SLAVE was successfully propagated on device, node {}",
                             deviceContext.getDeviceInfo().getLOGValue());
                 }
-                mastershipChangeListener.onSlaveRoleAcquired(deviceInf);
+                contextChainMastershipChangeWatcher.onSlaveRoleAcquired(deviceInf);
             }
 
             @Override
             public void onFailure(Throwable throwable) {
                 LOG.warn("Was not able to set role SLAVE to device on node {} ",
                         deviceContext.getDeviceInfo().getLOGValue());
-                mastershipChangeListener.onSlaveRoleNotAcquired(deviceInf);
+                contextChainMastershipChangeWatcher.onSlaveRoleNotAcquired(deviceInf);
             }
         });
 
@@ -76,8 +76,8 @@ public class LifecycleServiceImpl implements LifecycleService {
     public void instantiateServiceInstance() {
 
         LOG.info("Starting clustering MASTER services for node {}", deviceInfo.getLOGValue());
-        if (!clusterInitializationPhaseHandler.onContextInstantiateService(mastershipChangeListener)) {
-            mastershipChangeListener.onNotAbleToStartMastershipMandatory(deviceInfo, "Cannot initialize device.");
+        if (!clusterInitializationPhaseHandler.onContextInstantiateService(contextChainMastershipChangeWatcher)) {
+            contextChainMastershipChangeWatcher.onNotAbleToStartMastershipMandatory(deviceInfo, "Cannot initialize device.");
         }
     }
 
