@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.mastership;
 
+import java.util.concurrent.Future;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 
@@ -16,12 +17,12 @@ public interface MastershipChangeService extends AutoCloseable {
      * event when device is ready as a master.
      * @param deviceInfo - device
      */
-    void onBecomeOwner(@Nonnull final DeviceInfo deviceInfo);
+    Future<Void> onBecomeOwner(@Nonnull final DeviceInfo deviceInfo);
 
     /**
      * event when device disconnected or become slave.
      * @param deviceInfo - device
      */
-    void onLoseOwnership(@Nonnull final DeviceInfo deviceInfo);
+    Future<Void> onLoseOwnership(@Nonnull final DeviceInfo deviceInfo);
 
 }

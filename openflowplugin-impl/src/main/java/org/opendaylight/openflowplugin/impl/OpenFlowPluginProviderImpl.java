@@ -41,6 +41,7 @@ import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainHolder;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
@@ -53,6 +54,7 @@ import org.opendaylight.openflowplugin.impl.device.DeviceManagerImpl;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProvider;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProviderFactory;
 import org.opendaylight.openflowplugin.impl.lifecycle.ContextChainHolderImpl;
+import org.opendaylight.openflowplugin.impl.mastership.MastershipServiceProviderImpl;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.DeserializerInjector;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.SerializerInjector;
 import org.opendaylight.openflowplugin.impl.rpc.RpcManagerImpl;
@@ -109,6 +111,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private int threadPoolMaxThreads;
     private long threadPoolTimeout;
     private boolean initialized = false;
+    private final MastershipChangeServiceProvider mastershipChangeServiceProvider;
 
     public static MessageIntelligenceAgency getMessageIntelligenceAgency() {
         return messageIntelligenceAgency;
@@ -128,7 +131,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         this.notificationPublishService = notificationPublishService;
         this.singletonServicesProvider = singletonServiceProvider;
         convertorManager = ConvertorManagerFactory.createDefaultManager();
-        contextChainHolder = new ContextChainHolderImpl(hashedWheelTimer);
+        mastershipChangeServiceProvider = new MastershipServiceProviderImpl();
+        contextChainHolder = new ContextChainHolderImpl(hashedWheelTimer, mastershipChangeServiceProvider);
         contextChainHolder.changeEntityOwnershipService(entityOwnershipService);
         extensionConverterManager = new ExtensionConverterManagerImpl();
         deviceInitializerProvider = DeviceInitializerProviderFactory.createDefaultProvider();
@@ -498,5 +502,10 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 | InstanceAlreadyExistsException e) {
             LOG.warn("Error registering MBean {}", e);
         }
+    }
+
+    @Override
+    public MastershipChangeServiceProvider getMastershipChangeServiceProvider() {
+        return this.mastershipChangeServiceProvider;
     }
 }

@@ -41,6 +41,7 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChain;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainHolder;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
@@ -72,11 +73,15 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     private EntityOwnershipListenerRegistration eosListenerRegistration;
     private ClusterSingletonServiceProvider singletonServicesProvider;
     private boolean timerIsRunningRole;
+    private MastershipChangeListener mastershipChangeListener;
 
-    public ContextChainHolderImpl(final HashedWheelTimer timer) {
-        this.timerIsRunningRole = false;
+    public ContextChainHolderImpl(final HashedWheelTimer timer,
+                                  final MastershipChangeListener mastershipChangeListener) {
         this.timer = timer;
         this.checkRoleMaster = DEFAULT_CHECK_ROLE_MASTER;
+        this.timerIsRunningRole = false;
+        this.mastershipChangeListener = mastershipChangeListener;
+        LOG.info("Context chain holder created.");
     }
 
     @Override
@@ -248,6 +253,8 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
         final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
         if (deviceInfo != null) {
+
+            mastershipChangeListener.becomeSlaveOrDisconnect(deviceInfo);
             ContextChain chain = contextChainMap.get(deviceInfo);
             if (chain != null) {
                 if (chain.auxiliaryConnectionDropped(connectionContext)) {
