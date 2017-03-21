@@ -12,6 +12,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.common.util.concurrent.Futures;
+import io.netty.util.HashedWheelTimer;
+import io.netty.util.Timeout;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.Collections;
@@ -64,8 +66,6 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import io.netty.util.HashedWheelTimer;
-import io.netty.util.Timeout;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -152,8 +152,11 @@ public class StatisticsManagerImplTest {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         final long basicTimerDelay = 3000L;
         final long maximumTimerDelay = 900000L;
-        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, false, new HashedWheelTimer(),
-                convertorManager, basicTimerDelay, maximumTimerDelay);
+        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, new HashedWheelTimer(),
+                convertorManager);
+        statisticsManager.setBasicTimerDelay(basicTimerDelay);
+        statisticsManager.setMaximumTimerDelay(maximumTimerDelay);
+        statisticsManager.setIsStatisticsPollingOn(false);
     }
 
     private static Map<DeviceInfo, StatisticsContext> getContextsMap(final StatisticsManagerImpl statisticsManager)

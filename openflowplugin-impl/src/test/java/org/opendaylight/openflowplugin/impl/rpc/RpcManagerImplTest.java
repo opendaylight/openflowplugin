@@ -86,7 +86,8 @@ public class RpcManagerImplTest {
     @Before
     public void setUp() {
         final NodeKey nodeKey = new NodeKey(nodeId);
-        rpcManager = new RpcManagerImpl(rpcProviderRegistry, QUOTA_VALUE, extensionConverterProvider, convertorExecutor, notificationPublishService);
+        rpcManager = new RpcManagerImpl(rpcProviderRegistry, extensionConverterProvider, convertorExecutor, notificationPublishService);
+        rpcManager.setRpcRequestQuota(QUOTA_VALUE);
 
         GetFeaturesOutput featuresOutput = new GetFeaturesOutputBuilder()
                 .setVersion(OFConstants.OFP_VERSION_1_3)

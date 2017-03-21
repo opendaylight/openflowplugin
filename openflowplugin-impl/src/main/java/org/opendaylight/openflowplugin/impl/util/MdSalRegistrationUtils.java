@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.impl.util;
 import com.google.common.base.Preconditions;
 import com.google.common.reflect.TypeToken;
 import java.util.concurrent.atomic.AtomicLong;
-import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
@@ -84,8 +84,8 @@ public class MdSalRegistrationUtils {
      * @param deviceContext - every service needs {@link org.opendaylight.openflowplugin.api.openflow.device.DeviceContext} as input parameter
      * @param convertorExecutor convertor executor
      */
-    public static void registerServices(@CheckForNull final RpcContext rpcContext,
-                                        @CheckForNull final DeviceContext deviceContext,
+    public static void registerServices(@Nonnull final RpcContext rpcContext,
+                                        @Nonnull final DeviceContext deviceContext,
                                         final ExtensionConverterProvider extensionConverterProvider,
                                         final ConvertorExecutor convertorExecutor) {
         Preconditions.checkArgument(rpcContext != null);
