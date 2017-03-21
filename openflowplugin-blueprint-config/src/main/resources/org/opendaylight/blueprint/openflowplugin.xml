@@ -2,53 +2,53 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
            xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
            xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
-        odl:use-default-for-reference-types="true">
+           odl:use-default-for-reference-types="true">
 
-  <reference id="dataBroker" interface="org.opendaylight.controller.md.sal.binding.api.DataBroker" odl:type="pingpong"/>
-  <reference id="rpcRegistry" interface="org.opendaylight.controller.sal.binding.api.RpcProviderRegistry"/>
-  <reference id="notificationService" interface="org.opendaylight.controller.md.sal.binding.api.NotificationService"/>
-  <reference id="notificationPublishService" interface="org.opendaylight.controller.md.sal.binding.api.NotificationPublishService"/>
-  <reference id="entityOwnershipService" interface="org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService"/>
-  <reference id="clusterSingletonServiceProvider" interface="org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider"/>
+    <reference id="dataBroker" interface="org.opendaylight.controller.md.sal.binding.api.DataBroker" odl:type="pingpong"/>
+    <reference id="rpcRegistry" interface="org.opendaylight.controller.sal.binding.api.RpcProviderRegistry"/>
+    <reference id="notificationService" interface="org.opendaylight.controller.md.sal.binding.api.NotificationService"/>
+    <reference id="notificationPublishService" interface="org.opendaylight.controller.md.sal.binding.api.NotificationPublishService"/>
+    <reference id="entityOwnershipService" interface="org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService"/>
+    <reference id="clusterSingletonServiceProvider" interface="org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider"/>
 
-  <reference id="defaultSwitchConnProvider" interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider"
-   odl:type="openflow-switch-connection-provider-default-impl"/>
+    <reference id="defaultSwitchConnProvider" interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider"
+               odl:type="openflow-switch-connection-provider-default-impl"/>
 
-  <reference id="legacySwitchConnProvider" interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider"
-   odl:type="openflow-switch-connection-provider-legacy-impl"/>
+    <reference id="legacySwitchConnProvider" interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider"
+               odl:type="openflow-switch-connection-provider-legacy-impl"/>
 
-  <!-- Create OpenflowPluginProvider instance -->
+    <odl:clustered-app-config id="openflowProviderConfig"
+                              binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig"/>
 
-  <odl:clustered-app-config id="openflowProviderConfig"
-      binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig"/>
+    <reference id="openflowPluginProviderFactory"
+               interface="org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProviderFactory"/>
 
-  <reference id="openflowPluginProviderFactory"
-          interface="org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProviderFactory"/>
+    <bean id="openflowPluginProvider" factory-ref="openflowPluginProviderFactory" factory-method="newInstance">
+        <argument ref="openflowProviderConfig"/>
+        <argument ref="dataBroker"/>
+        <argument ref="rpcRegistry"/>
+        <argument ref="notificationService"/>
+        <argument ref="notificationPublishService"/>
+        <argument ref="entityOwnershipService"/>
+        <argument>
+            <list>
+                <ref component-id="defaultSwitchConnProvider"/>
+                <ref component-id="legacySwitchConnProvider"/>
+            </list>
+        </argument>
+        <argument ref="clusterSingletonServiceProvider"/>
+        <argument ref="blueprintBundleContext" />
+        <cm:managed-properties persistent-id="org.opendaylight.openflowplugin"
+                               update-strategy="component-managed"
+                               update-method="update"/>
+    </bean>
 
-  <bean id="openflowPluginProvider" factory-ref="openflowPluginProviderFactory" factory-method="newInstance">
-    <argument ref="openflowProviderConfig"/>
-    <argument ref="dataBroker"/>
-    <argument ref="rpcRegistry"/>
-    <argument ref="notificationService"/>
-    <argument ref="notificationPublishService"/>
-    <argument ref="entityOwnershipService"/>
-    <argument>
-      <list>
-        <ref component-id="defaultSwitchConnProvider"/>
-        <ref component-id="legacySwitchConnProvider"/>
-      </list>
-    </argument>
-    <cm:managed-properties persistent-id="org.opendaylight.openflowplugin"
-                           update-strategy="component-managed"
-                           update-method="update"/>
-    <argument ref="clusterSingletonServiceProvider"/>
-  </bean>
-
-  <service ref="openflowPluginProvider" odl:type="openflow-plugin-provider-impl">
-    <interfaces>
-      <value>org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider</value>
-      <value>org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider</value>
-    </interfaces>
-  </service>
+    <service ref="openflowPluginProvider" odl:type="openflow-plugin-provider-impl">
+        <interfaces>
+            <value>org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider</value>
+            <value>org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginConfigurationService</value>
+            <value>org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider</value>
+        </interfaces>
+    </service>
 
 </blueprint>

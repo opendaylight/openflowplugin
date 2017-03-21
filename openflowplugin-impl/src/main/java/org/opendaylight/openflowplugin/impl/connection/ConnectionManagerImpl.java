@@ -41,8 +41,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
     private long echoReplyTimeout;
     private final ThreadPoolExecutor threadPool;
 
-    public ConnectionManagerImpl(long echoReplyTimeout, final ThreadPoolExecutor threadPool) {
-        this.echoReplyTimeout = echoReplyTimeout;
+    public ConnectionManagerImpl(final ThreadPoolExecutor threadPool) {
         this.threadPool = threadPool;
     }
 
@@ -102,6 +101,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
         this.deviceConnectedHandler = deviceConnectedHandler;
     }
 
+    @Override
     public void setEchoReplyTimeout(long echoReplyTimeout){
         this.echoReplyTimeout = echoReplyTimeout;
     }

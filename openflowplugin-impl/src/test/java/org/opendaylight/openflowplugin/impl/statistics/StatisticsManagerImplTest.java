@@ -183,8 +183,11 @@ public class StatisticsManagerImplTest {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         final long basicTimerDelay = 3000L;
         final long maximumTimerDelay = 900000L;
-        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, false, new HashedWheelTimer(),
-                convertorManager, basicTimerDelay, maximumTimerDelay);
+        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, new HashedWheelTimer(),
+                convertorManager);
+        statisticsManager.setIsStatisticsPollingOn(false);
+        statisticsManager.setBasicTimerDelay(basicTimerDelay);
+        statisticsManager.setMaximumTimerDelay(maximumTimerDelay);
         statisticsManager.setDeviceInitializationPhaseHandler(deviceInitializationPhaseHandler);
     }
 
@@ -376,9 +379,9 @@ public class StatisticsManagerImplTest {
         final TimeCounter timeCounter = Mockito.mock(TimeCounter.class);
         when(timeCounter.getAverageTimeBetweenMarks()).thenReturn(2000L, (Long)4000L);
         statisticsManager.calculateTimerDelay(timeCounter);
-        Assert.assertEquals(3000L, StatisticsManagerImpl.getCurrentTimerDelay());
+        Assert.assertEquals(3000L, statisticsManager.getCurrentTimerDelay());
         statisticsManager.calculateTimerDelay(timeCounter);
-        Assert.assertEquals(6000L, StatisticsManagerImpl.getCurrentTimerDelay());
+        Assert.assertEquals(6000L, statisticsManager.getCurrentTimerDelay());
     }
 
     @Test
