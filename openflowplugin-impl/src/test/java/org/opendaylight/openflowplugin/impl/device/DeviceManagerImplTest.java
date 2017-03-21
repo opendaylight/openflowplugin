@@ -147,20 +147,20 @@ public class DeviceManagerImplTest {
 
         final DeviceManagerImpl deviceManager = new DeviceManagerImpl(
             mockedDataBroker,
-            TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA,
-            false,
-            barrierIntervalNanos,
-            barrierCountLimit,
             messageIntelligenceAgency,
-            true,
             clusterSingletonServiceProvider,
             null,
             new HashedWheelTimer(),
             convertorExecutor,
-            false,
-            false,
             DeviceInitializerProviderFactory.createDefaultProvider());
 
+        deviceManager.setGlobalNotificationQuota(TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA);
+        deviceManager.setBarrierInterval(barrierIntervalNanos);
+        deviceManager.setBarrierCountLimit(barrierCountLimit);
+        deviceManager.setSwitchFeaturesMandatory(false);
+        deviceManager.setFlowRemovedNotificationOn(true);
+        deviceManager.setSkipTableFeatures(false);
+        deviceManager.setUseSingleLayerSerialization(false);
         deviceManager.setDeviceInitializationPhaseHandler(deviceInitPhaseHandler);
         deviceManager.setDeviceTerminationPhaseHandler(deviceTerminationPhaseHandler);
 
