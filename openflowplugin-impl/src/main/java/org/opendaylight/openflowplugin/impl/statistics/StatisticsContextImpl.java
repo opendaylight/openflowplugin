@@ -38,7 +38,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipChangeWatcher;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
@@ -497,7 +497,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     }
 
     @Override
-    public boolean onContextInstantiateService(final MastershipChangeListener mastershipChangeListener) {
+    public boolean onContextInstantiateService(final ContextChainMastershipChangeWatcher contextChainMastershipChangeWatcher) {
 
         LOG.info("Starting statistics context cluster services for node {}", deviceInfo.getLOGValue());
 
@@ -506,12 +506,12 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
 
             @Override
             public void onSuccess(@Nullable Boolean aBoolean) {
-                mastershipChangeListener.onMasterRoleAcquired(
+                contextChainMastershipChangeWatcher.onMasterRoleAcquired(
                         deviceInfo,
                         ContextChainMastershipState.INITIAL_GATHERING
                 );
                 if (initialSubmitHandler.initialSubmitTransaction()) {
-                    mastershipChangeListener.onMasterRoleAcquired(
+                    contextChainMastershipChangeWatcher.onMasterRoleAcquired(
                             deviceInfo,
                             ContextChainMastershipState.INITIAL_SUBMIT
                     );
@@ -519,7 +519,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
                         myManager.startScheduling(deviceInfo);
                     }
                 } else {
-                    mastershipChangeListener.onNotAbleToStartMastership(
+                    contextChainMastershipChangeWatcher.onNotAbleToStartMastership(
                             deviceInfo,
                             "Initial transaction cannot be submitted."
                     );
@@ -528,14 +528,15 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
 
             @Override
             public void onFailure(@Nonnull Throwable throwable) {
-                mastershipChangeListener.onNotAbleToStartMastership(
-                        deviceInfo,
-                        "Initial gathering statistics unsuccessful."
-                );
+                contextChainMastershipChangeWatcher.onNotAbleToStartMastership(deviceInfo, "Initial gathering statistics unsuccessful");
             }
         });
 
-        return this.clusterInitializationPhaseHandler.onContextInstantiateService(mastershipChangeListener);
+        if (this.isStatisticsPollingOn) {
+            myManager.startScheduling(deviceInfo);
+        }
+
+        return this.clusterInitializationPhaseHandler.onContextInstantiateService(contextChainMastershipChangeWatcher);
     }
 
     @Override
