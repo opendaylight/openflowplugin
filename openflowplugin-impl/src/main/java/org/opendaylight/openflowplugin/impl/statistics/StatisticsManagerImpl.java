@@ -72,19 +72,13 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     private final HashedWheelTimer hashedWheelTimer;
 
     public StatisticsManagerImpl(@Nonnull final RpcProviderRegistry rpcProviderRegistry,
-                                 final boolean isStatisticsPollingOn,
                                  final HashedWheelTimer hashedWheelTimer,
-                                 final ConvertorExecutor convertorExecutor,
-                                 final long basicTimerDelay,
-                                 final long maximumTimerDelay) {
+                                 final ConvertorExecutor convertorExecutor) {
 	    this.converterExecutor = convertorExecutor;
         this.controlServiceRegistration = Preconditions.checkNotNull(
                 rpcProviderRegistry.addRpcImplementation(StatisticsManagerControlService.class, this)
         );
-        this.isStatisticsPollingOn = isStatisticsPollingOn;
-        this.basicTimerDelay = basicTimerDelay;
-        this.currentTimerDelay = basicTimerDelay;
-        this.maximumTimerDelay = maximumTimerDelay;
+
         this.hashedWheelTimer = hashedWheelTimer;
     }
 
@@ -346,6 +340,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     @Override
     public void setBasicTimerDelay(final long basicTimerDelay) {
         this.basicTimerDelay = basicTimerDelay;
+        this.currentTimerDelay = basicTimerDelay;
     }
 
     @Override

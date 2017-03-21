@@ -8,10 +8,10 @@
 
 package org.opendaylight.openflowplugin.impl;
 
-
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import io.netty.util.HashedWheelTimer;
 import java.lang.management.ManagementFactory;
 import java.util.Collection;
 import java.util.List;
@@ -34,6 +34,7 @@ import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipS
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
+import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
@@ -64,24 +65,19 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorM
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import io.netty.util.HashedWheelTimer;
 
-public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenFlowPluginExtensionRegistratorProvider {
+public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenFlowPluginConfigurationService, OpenFlowPluginExtensionRegistratorProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenFlowPluginProviderImpl.class);
     private static final MessageIntelligenceAgency messageIntelligenceAgency = new MessageIntelligenceAgencyImpl();
-    private static final int TICKS_PER_WHEEL = 500;
-    // 0.5 sec.
+    private static final int TICKS_PER_WHEEL = 500; // 0.5 sec.
     private static final long TICK_DURATION = 10;
-    private static final Integer DEFAULT_BARRIER_COUNT = 25600;
-    private static final Long DEFAULT_ECHO_TIMEOUT = 2000L;
-    private static final Long DEFAULT_BARRIER_TIMEOUT = 500L;
     private static final String POOL_NAME = "ofppool";
 
     private final HashedWheelTimer hashedWheelTimer = new HashedWheelTimer(TICK_DURATION, TimeUnit.MILLISECONDS, TICKS_PER_WHEEL);
 
-    private final int rpcRequestsQuota;
-    private final long globalNotificationQuota;
+    private int rpcRequestsQuota;
+    private long globalNotificationQuota;
     private final ConvertorManager convertorManager;
     private final ContextChainHolder contextChainHolder;
     private long barrierInterval;
@@ -92,57 +88,48 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private RpcProviderRegistry rpcProviderRegistry;
     private StatisticsManager statisticsManager;
     private ConnectionManager connectionManager;
-    private NotificationService notificationProviderService;
-    private NotificationPublishService notificationPublishService;
-    private ExtensionConverterManager extensionConverterManager;
-    private DataBroker dataBroker;
-    private Collection<SwitchConnectionProvider> switchConnectionProviders;
-    private boolean switchFeaturesMandatory = false;
-    private boolean isStatisticsPollingOn = true;
+    private final NotificationService notificationProviderService;
+    private final NotificationPublishService notificationPublishService;
+    private final ExtensionConverterManager extensionConverterManager;
+    private final DataBroker dataBroker;
+    private final Collection<SwitchConnectionProvider> switchConnectionProviders;
+    private boolean switchFeaturesMandatory;
+    private boolean isStatisticsPollingOn;
     private boolean isStatisticsRpcEnabled;
-    private boolean isFlowRemovedNotificationOn = true;
-    private boolean skipTableFeatures = true;
+    private boolean isFlowRemovedNotificationOn;
+    private boolean skipTableFeatures;
     private long basicTimerDelay;
     private long maximumTimerDelay;
-    private boolean useSingleLayerSerialization = false;
+    private boolean useSingleLayerSerialization;
     private final DeviceInitializerProvider deviceInitializerProvider;
 
-    private final ThreadPoolExecutor threadPool;
+    private ThreadPoolExecutor threadPool;
     private ClusterSingletonServiceProvider singletonServicesProvider;
+    private int threadPoolMinThreads;
+    private int threadPoolMaxThreads;
+    private long threadPoolTimeout;
+    private boolean initialized = false;
 
-    public OpenFlowPluginProviderImpl(final long rpcRequestsQuota,
-                                      final long globalNotificationQuota,
-                                      final int threadPoolMinThreads,
-                                      final int threadPoolMaxThreads,
-                                      final long threadPoolTimeout,
+    public OpenFlowPluginProviderImpl(final List<SwitchConnectionProvider> switchConnectionProviders,
+                                      final DataBroker dataBroker,
+                                      final RpcProviderRegistry rpcProviderRegistry,
+                                      final NotificationService notificationProviderService,
+                                      final NotificationPublishService notificationPublishService,
+                                      final ClusterSingletonServiceProvider singletonServiceProvider,
                                       final EntityOwnershipService entityOwnershipService) {
-        Preconditions.checkArgument(rpcRequestsQuota > 0 && rpcRequestsQuota <= Integer.MAX_VALUE, "rpcRequestQuota has to be in range <1,%s>", Integer.MAX_VALUE);
-        this.rpcRequestsQuota = (int) rpcRequestsQuota;
-        this.globalNotificationQuota = Preconditions.checkNotNull(globalNotificationQuota);
-
-        // Creates a thread pool that creates new threads as needed, but will reuse previously
-        // constructed threads when they are available.
-        // Threads that have not been used for x seconds are terminated and removed from the cache.
-        threadPool = new ThreadPoolLoggingExecutor(
-                Preconditions.checkNotNull(threadPoolMinThreads),
-                Preconditions.checkNotNull(threadPoolMaxThreads),
-                Preconditions.checkNotNull(threadPoolTimeout), TimeUnit.SECONDS,
-                new SynchronousQueue<>(), POOL_NAME);
-        deviceInitializerProvider = DeviceInitializerProviderFactory.createDefaultProvider();		
+        this.switchConnectionProviders = switchConnectionProviders;
+        this.dataBroker = dataBroker;
+        this.rpcProviderRegistry = rpcProviderRegistry;
+        this.notificationProviderService = notificationProviderService;
+        this.notificationPublishService = notificationPublishService;
+        this.singletonServicesProvider = singletonServiceProvider;
         convertorManager = ConvertorManagerFactory.createDefaultManager();
         contextChainHolder = new ContextChainHolderImpl(hashedWheelTimer);
         contextChainHolder.changeEntityOwnershipService(entityOwnershipService);
+        extensionConverterManager = new ExtensionConverterManagerImpl();
+        deviceInitializerProvider = DeviceInitializerProviderFactory.createDefaultProvider();
     }
 
-    @Override
-    public boolean isStatisticsPollingOn() {
-        return isStatisticsPollingOn;
-    }
-
-    @Override
-    public void setStatisticsPollingOn(final boolean isStatisticsPollingOn) {
-        this.isStatisticsPollingOn = isStatisticsPollingOn;
-    }
 
     private void startSwitchConnections() {
         Futures.addCallback(Futures.allAsList(switchConnectionProviders.stream().map(switchConnectionProvider -> {
@@ -169,72 +156,242 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     }
 
     @Override
-    public boolean isSwitchFeaturesMandatory() {
-        return switchFeaturesMandatory;
+    public void updateIsStatisticsPollingOn(final boolean isStatisticsPollingOn) {
+        if (initialized && this.isStatisticsPollingOn == isStatisticsPollingOn) {
+            return;
+        }
+
+        LOG.info("is-statistics-polling-on update ({} -> {})", this.isStatisticsPollingOn, isStatisticsPollingOn);
+        this.isStatisticsPollingOn = isStatisticsPollingOn;
+
+        if (initialized) {
+            statisticsManager.setIsStatisticsPollingOn(isStatisticsPollingOn);
+        }
     }
 
     @Override
-    public void setBarrierCountLimit(final int barrierCountLimit) {
+    public void updateBarrierCountLimit(final int barrierCountLimit) {
+        if (initialized && this.barrierCountLimit == barrierCountLimit) {
+            return;
+        }
+
+        LOG.info("barrier-count-limit update ({} -> {})", this.barrierCountLimit, barrierCountLimit);
         this.barrierCountLimit = barrierCountLimit;
+
+        if (initialized) {
+            deviceManager.setBarrierCountLimit(barrierCountLimit);
+        }
     }
 
     @Override
-    public void setBarrierInterval(final long barrierTimeoutLimit) {
-        this.barrierInterval = barrierTimeoutLimit;
+    public void updateBarrierIntervalTimeoutLimit(final long barrierInterval) {
+        if (initialized && this.barrierInterval == barrierInterval) {
+            return;
+        }
+
+        LOG.info("barrier-interval-timeout-limit update ({} -> {})", this.barrierInterval, barrierInterval);
+        this.barrierInterval = barrierInterval;
+
+        if (initialized) {
+            deviceManager.setBarrierInterval(barrierInterval);
+        }
     }
 
     @Override
-    public void setEchoReplyTimeout(final long echoReplyTimeout) {
+    public void updateEchoReplyTimeout(final long echoReplyTimeout) {
+        if (initialized && this.echoReplyTimeout == echoReplyTimeout) {
+            return;
+        }
+
+        LOG.info("echo-reply-timeout update ({} -> {})", this.echoReplyTimeout, echoReplyTimeout);
         this.echoReplyTimeout = echoReplyTimeout;
+
+        if (initialized) {
+            connectionManager.setEchoReplyTimeout(echoReplyTimeout);
+        }
     }
 
     @Override
-    public void setFlowRemovedNotification(boolean isFlowRemovedNotificationOn) {
+    public void updateEnableFlowRemovedNotification(boolean isFlowRemovedNotificationOn) {
+        if (initialized && this.isFlowRemovedNotificationOn == isFlowRemovedNotificationOn) {
+            return;
+        }
+
+        LOG.info("enable-flow-removed-notification update ({} -> {})", this.isFlowRemovedNotificationOn, isFlowRemovedNotificationOn);
         this.isFlowRemovedNotificationOn = isFlowRemovedNotificationOn;
+
+        if (initialized) {
+            deviceManager.setFlowRemovedNotificationOn(isFlowRemovedNotificationOn);
+        }
     }
 
     @Override
-    public void setClusteringSingletonServicesProvider(ClusterSingletonServiceProvider singletonServicesProvider) {
-        this.singletonServicesProvider = singletonServicesProvider;
-    }
+    public void updateSkipTableFeatures(final boolean skipTableFeatures){
+        if (initialized && this.skipTableFeatures == skipTableFeatures) {
+            return;
+        }
 
-    @Override
-    public void setSkipTableFeatures(final boolean skipTableFeatures){
+        LOG.info("skip-table-features update ({} -> {})", this.skipTableFeatures, skipTableFeatures);
         this.skipTableFeatures = skipTableFeatures;
+
+        if (initialized) {
+            deviceManager.setSkipTableFeatures(skipTableFeatures);
+        }
     }
 
     @Override
-    public void setBasicTimerDelay(long basicTimerDelay) {
+    public void updateBasicTimerDelay(long basicTimerDelay) {
+        if (initialized && this.basicTimerDelay == basicTimerDelay) {
+            return;
+        }
+
+        LOG.info("basic-timer-delay update ({} -> {})", this.basicTimerDelay, basicTimerDelay);
         this.basicTimerDelay = basicTimerDelay;
+
+        if (initialized) {
+            statisticsManager.setBasicTimerDelay(basicTimerDelay);
+        }
     }
 
     @Override
-    public void setMaximumTimerDelay(long maximumTimerDelay) {
+    public void updateMaximumTimerDelay(long maximumTimerDelay) {
+        if (initialized && this.maximumTimerDelay == maximumTimerDelay) {
+            return;
+        }
+
+        LOG.info("maximum-timer-delay update ({} -> {})", this.maximumTimerDelay, maximumTimerDelay);
         this.maximumTimerDelay = maximumTimerDelay;
+
+        if (initialized) {
+            statisticsManager.setMaximumTimerDelay(maximumTimerDelay);
+        }
     }
 
     @Override
-    public void setSwitchFeaturesMandatory(final boolean switchFeaturesMandatory) {
+    public void updateSwitchFeaturesMandatory(final boolean switchFeaturesMandatory) {
+        if (initialized && this.switchFeaturesMandatory == switchFeaturesMandatory) {
+            return;
+        }
+
+        LOG.info("switch-features-mandatory update ({} -> {})", this.switchFeaturesMandatory, switchFeaturesMandatory);
         this.switchFeaturesMandatory = switchFeaturesMandatory;
+
+        if (initialized) {
+            deviceManager.setSwitchFeaturesMandatory(switchFeaturesMandatory);
+        }
+    }
+
+    @Override
+    public void updateIsStatisticsRpcEnabled(final boolean isStatisticsRpcEnabled) {
+        if (initialized && this.isStatisticsRpcEnabled == isStatisticsRpcEnabled) {
+            return;
+        }
+
+        LOG.info("is-statistics-rpc-enabled update ({} -> {})", this.isStatisticsRpcEnabled, isStatisticsRpcEnabled);
+        this.isStatisticsRpcEnabled = isStatisticsRpcEnabled;
+
+        if (initialized) {
+            rpcManager.setStatisticsRpcEnabled(isStatisticsRpcEnabled);
+        }
+    }
+
+    @Override
+    public void updateUseSingleLayerSerialization(boolean useSingleLayerSerialization) {
+        if (initialized && this.useSingleLayerSerialization == useSingleLayerSerialization) {
+            return;
+        }
+
+        LOG.info("use-single-layer-serialization update ({} -> {})", this.useSingleLayerSerialization, useSingleLayerSerialization);
+
+        if (this.useSingleLayerSerialization != useSingleLayerSerialization) {
+            this.useSingleLayerSerialization = useSingleLayerSerialization;
+
+            switchConnectionProviders.forEach(switchConnectionProvider -> {
+                if (useSingleLayerSerialization) {
+                    SerializerInjector.injectSerializers(switchConnectionProvider);
+                    DeserializerInjector.injectDeserializers(switchConnectionProvider);
+                } else {
+                    DeserializerInjector.revertDeserializers(switchConnectionProvider);
+                }
+            });
+        }
+    }
+
+    @Override
+    public void updateRpcRequestsQuota(final int rpcRequestsQuota) {
+        if (initialized && this.rpcRequestsQuota == rpcRequestsQuota) {
+            return;
+        }
+
+        LOG.info("rpc-requests-quota update ({} -> {})", this.rpcRequestsQuota, rpcRequestsQuota);
+        this.rpcRequestsQuota = rpcRequestsQuota;
+
+        if (initialized) {
+            rpcManager.setRpcRequestQuota(rpcRequestsQuota);
+        }
+    }
+
+    @Override
+    public void updateGlobalNotificationQuota(final long globalNotificationQuota) {
+        if (initialized && this.globalNotificationQuota == globalNotificationQuota) {
+            return;
+        }
+
+        LOG.info("global-notification-quota update ({} -> {})", this.globalNotificationQuota, globalNotificationQuota);
+        this.globalNotificationQuota = globalNotificationQuota;
+
+        if (initialized) {
+            deviceManager.setGlobalNotificationQuota(globalNotificationQuota);
+        }
+    }
+
+    @Override
+    public void updateThreadPoolMinThreads(final int threadPoolMinThreads) {
+        if (initialized && this.threadPoolMinThreads == threadPoolMinThreads) {
+            return;
+        }
+
+        if (initialized) {
+            LOG.warn("thread-pool-min-threads update ({} -> {}) is not permitted on the fly", this.threadPoolMinThreads, threadPoolMinThreads);
+            return;
+        }
+
+        LOG.info("thread-pool-min-threads update ({} -> {})", this.threadPoolMinThreads, threadPoolMaxThreads);
+        this.threadPoolMinThreads = threadPoolMinThreads;
+    }
+
+    @Override
+    public void updateThreadPoolMaxThreads(final int threadPoolMaxThreads) {
+        if (initialized && this.threadPoolMaxThreads == threadPoolMaxThreads) {
+            return;
+        }
+
+        if (initialized) {
+            LOG.warn("thread-pool-max-threads update ({} -> {}) is not permitted on the fly", this.threadPoolMaxThreads, threadPoolMaxThreads);
+            return;
+        }
+
+        LOG.info("thread-pool-max-threads update ({} -> {})", this.threadPoolMaxThreads, threadPoolMaxThreads);
+        this.threadPoolMaxThreads = threadPoolMaxThreads;
+    }
+
+    @Override
+    public void updateThreadPoolTimeout(final long threadPoolTimeout) {
+        if (initialized && this.threadPoolTimeout == threadPoolTimeout) {
+            return;
+        }
+
+        if (initialized) {
+            LOG.warn("thread-pool-timeout update ({} -> {}) is not permitted on the fly", this.threadPoolTimeout, threadPoolTimeout);
+            return;
+        }
+
+        LOG.info("thread-pool-timeout update ({} -> {})", this.threadPoolTimeout, threadPoolTimeout);
+        this.threadPoolTimeout = threadPoolTimeout;
     }
 
     public static MessageIntelligenceAgency getMessageIntelligenceAgency() {
         return OpenFlowPluginProviderImpl.messageIntelligenceAgency;
-    }
-
-    @Override
-    public void setSwitchConnectionProviders(final Collection<SwitchConnectionProvider> switchConnectionProviders) {
-        this.switchConnectionProviders = switchConnectionProviders;
-    }
-
-    @Override
-    public void setDataBroker(final DataBroker dataBroker) {
-        this.dataBroker = dataBroker;
-    }
-
-    @Override
-    public void setRpcProviderRegistry(final RpcProviderRegistry rpcProviderRegistry) {
-        this.rpcProviderRegistry = rpcProviderRegistry;
     }
 
     @Override
@@ -244,32 +401,51 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         Preconditions.checkNotNull(notificationProviderService, "missing notification provider service");
         Preconditions.checkNotNull(singletonServicesProvider, "missing singleton services provider");
 
-        extensionConverterManager = new ExtensionConverterManagerImpl();
         // TODO: copied from OpenFlowPluginProvider (Helium) misusesing the old way of distributing extension converters
         // TODO: rewrite later!
         OFSessionUtil.getSessionManager().setExtensionConverterProvider(extensionConverterManager);
 
-        connectionManager = new ConnectionManagerImpl(echoReplyTimeout, threadPool);
+        // Creates a thread pool that creates new threads as needed, but will reuse previously
+        // constructed threads when they are available.
+        // Threads that have not been used for x seconds are terminated and removed from the cache.
+        threadPool = new ThreadPoolLoggingExecutor(
+            Preconditions.checkNotNull(threadPoolMinThreads),
+            Preconditions.checkNotNull(threadPoolMaxThreads),
+            Preconditions.checkNotNull(threadPoolTimeout), TimeUnit.SECONDS,
+            new SynchronousQueue<>(), "ofppool");
+
+        connectionManager = new ConnectionManagerImpl(threadPool);
+        connectionManager.setEchoReplyTimeout(echoReplyTimeout);
 
         registerMXBean(messageIntelligenceAgency);
 
         contextChainHolder.addSingletonServicesProvider(singletonServicesProvider);
 
-        deviceManager = new DeviceManagerImpl(dataBroker,
-                getMessageIntelligenceAgency(), notificationPublishService, hashedWheelTimer, convertorManager, deviceInitializerProvider, globalNotificationQuota,
-                switchFeaturesMandatory,
-                barrierInterval,
-                barrierCountLimit,
-                isFlowRemovedNotificationOn,
-                skipTableFeatures,
-                useSingleLayerSerialization
-        );
+        deviceManager = new DeviceManagerImpl(
+            dataBroker,
+            getMessageIntelligenceAgency(),
+            notificationPublishService,
+            hashedWheelTimer,
+            convertorManager,
+            deviceInitializerProvider);
+
+        deviceManager.setGlobalNotificationQuota(globalNotificationQuota);
+        deviceManager.setSwitchFeaturesMandatory(switchFeaturesMandatory);
+        deviceManager.setBarrierInterval(barrierInterval);
+        deviceManager.setBarrierCountLimit(barrierCountLimit);
+        deviceManager.setFlowRemovedNotificationOn(isFlowRemovedNotificationOn);
+        deviceManager.setSkipTableFeatures(skipTableFeatures);
+        deviceManager.setUseSingleLayerSerialization(useSingleLayerSerialization);
 
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
 
-        rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota, extensionConverterManager, convertorManager, notificationPublishService);
-        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, isStatisticsPollingOn, hashedWheelTimer,
-                convertorManager,basicTimerDelay,maximumTimerDelay);
+        rpcManager = new RpcManagerImpl(rpcProviderRegistry, extensionConverterManager, convertorManager, notificationPublishService);
+        rpcManager.setRpcRequestQuota(rpcRequestsQuota);
+
+        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, hashedWheelTimer, convertorManager);
+        statisticsManager.setBasicTimerDelay(basicTimerDelay);
+        statisticsManager.setMaximumTimerDelay(maximumTimerDelay);
+        statisticsManager.setIsStatisticsPollingOn(isStatisticsPollingOn);
 
         // Device connection handler moved from device manager to context holder
         connectionManager.setDeviceConnectedHandler(contextChainHolder);
@@ -287,77 +463,75 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         contextChainHolder.addManager(rpcManager);
 
         startSwitchConnections();
+        initialized = true;
     }
 
     @Override
-    public void update(Map<String,Object> props) {
-        LOG.debug("Update managed properties = {}", props.toString());
+    public void update(final Map<String, Object> properties) {
+        properties.forEach((key, value) -> {
+            final String sValue = value.toString();
 
-        final boolean containsUseSingleLayer = props.containsKey("use-single-layer-serialization");
-
-        if (containsUseSingleLayer) {
-            final Boolean useSingleLayer = Boolean.valueOf(props.get("use-single-layer-serialization").toString());
-
-            if (useSingleLayer != useSingleLayerSerialization) {
-                useSingleLayerSerialization = useSingleLayer;
-
-                if (useSingleLayer) {
-                    switchConnectionProviders.forEach(switchConnectionProvider -> {
-                        SerializerInjector.injectSerializers(switchConnectionProvider);
-                        DeserializerInjector.injectDeserializers(switchConnectionProvider);
-                    });
-                } else {
-                    switchConnectionProviders.forEach(DeserializerInjector::revertDeserializers);
-                }
-            }
-        }
-
-        if(deviceManager != null) {
-            if (containsUseSingleLayer) {
-                deviceManager.setUseSingleLayerSerialization(Boolean.valueOf(props.get("use-single-layer-serialization").toString()));
-            }
-
-            if (props.containsKey("notification-flow-removed-off")) {
-                deviceManager.setFlowRemovedNotificationOn(Boolean.valueOf(props.get("enable-flow-removed-notification").toString()));
-            }
-            if (props.containsKey("skip-table-features")) {
-                deviceManager.setSkipTableFeatures(Boolean.valueOf(props.get("skip-table-features").toString()));
-            }
-            if (props.containsKey("barrier-count-limit")) {
-                try {
-                    deviceManager.setBarrierCountLimit(Integer.valueOf(props.get("barrier-count-limit").toString()));
-                } catch (NumberFormatException ex) {
-                    deviceManager.setBarrierCountLimit(DEFAULT_BARRIER_COUNT);
-                }
-            }
-            if (props.containsKey("barrier-interval-timeout-limit")){
-                try {
-                    deviceManager.setBarrierInterval(Long.valueOf(props.get("barrier-interval-timeout-limit").toString()));
-                } catch (NumberFormatException ex) {
-                    deviceManager.setBarrierInterval(DEFAULT_BARRIER_TIMEOUT);
-                }
-            }
-        }
-
-        if (connectionManager != null && props.containsKey("echo-reply-timeout") ){
             try {
-                connectionManager.setEchoReplyTimeout(Long.valueOf(props.get("echo-reply-timeout").toString()));
-            }catch (NumberFormatException ex){
-                connectionManager.setEchoReplyTimeout(DEFAULT_ECHO_TIMEOUT);
+                switch (key) {
+                    case "rpc-requests-quota":
+                        updateRpcRequestsQuota(Integer.valueOf(sValue));
+                        break;
+                    case "switch-features-mandatory":
+                        updateSwitchFeaturesMandatory(Boolean.valueOf(sValue));
+                        break;
+                    case "global-notification-quota":
+                        updateGlobalNotificationQuota(Long.valueOf(sValue));
+                        break;
+                    case "is-statistics-polling-on":
+                        updateIsStatisticsPollingOn(Boolean.valueOf(sValue));
+                        break;
+                    case "is-statistics-rpc-enabled":
+                        updateIsStatisticsRpcEnabled(Boolean.valueOf(sValue));
+                        break;
+                    case "barrier-interval-timeout-limit":
+                        updateBarrierIntervalTimeoutLimit(Long.valueOf(sValue));
+                        break;
+                    case "barrier-count-limit":
+                        updateBarrierCountLimit(Integer.valueOf(sValue));
+                        break;
+                    case "echo-reply-timeout":
+                        updateEchoReplyTimeout(Long.valueOf(sValue));
+                        break;
+                    case "thread-pool-min-threads":
+                        updateThreadPoolMinThreads(Integer.valueOf(sValue));
+                        break;
+                    case "thread-pool-max-threads":
+                        updateThreadPoolMaxThreads(Integer.valueOf(sValue));
+                        break;
+                    case "thread-pool-timeout":
+                        updateThreadPoolTimeout(Long.valueOf(sValue));
+                        break;
+                    case "enable-flow-removed-notification":
+                        updateEnableFlowRemovedNotification(Boolean.valueOf(sValue));
+                        break;
+                    case "skip-table-features":
+                        updateSkipTableFeatures(Boolean.valueOf(sValue));
+                        break;
+                    case "basic-timer-delay":
+                        updateBasicTimerDelay(Long.valueOf(sValue));
+                        break;
+                    case "maximum-timer-delay":
+                        updateMaximumTimerDelay(Long.valueOf(sValue));
+                        break;
+                    case "use-single-layer-serialization":
+                        updateUseSingleLayerSerialization(Boolean.valueOf(sValue));
+                        break;
+                    case "service.pid":
+                    case "felix.fileinstall.filename":
+                        // Ignore properties inserted by ConfigAdmin
+                        break;
+                    default:
+                        LOG.warn("Unsupported configuration property '{}={}'", key, sValue);
+                }
+            } catch (final Exception ex) {
+                LOG.warn("Failed to read configuration property '{}={}', error: {}", key, sValue, ex);
             }
-        }
-
-        if(statisticsManager != null && props.containsKey("is-statistics-polling-on")){
-            statisticsManager.setIsStatisticsPollingOn(Boolean.valueOf(props.get("is-statistics-polling-on").toString()));
-        }
-
-        if(statisticsManager != null && props.containsKey("basic-timer-delay")){
-            statisticsManager.setBasicTimerDelay(Long.valueOf(props.get("basic-timer-delay").toString()));
-        }
-
-        if(statisticsManager != null && props.containsKey("maximum-timer-delay")){
-            statisticsManager.setMaximumTimerDelay(Long.valueOf(props.get("maximum-timer-delay").toString()));
-        }
+        });
     }
 
     private static void registerMXBean(final MessageIntelligenceAgency messageIntelligenceAgency) {
@@ -377,27 +551,13 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     }
 
     @Override
-    public void setNotificationProviderService(final NotificationService notificationProviderService) {
-        this.notificationProviderService = notificationProviderService;
-    }
-
-    @Override
-    public void setNotificationPublishService(final NotificationPublishService notificationPublishProviderService) {
-        this.notificationPublishService = notificationPublishProviderService;
-    }
-
-    @Override
     public ExtensionConverterRegistrator getExtensionConverterRegistrator() {
         return extensionConverterManager;
     }
 
     @Override
-    public void setIsStatisticsRpcEnabled(final boolean isStatisticsRpcEnabled) {
-        this.isStatisticsRpcEnabled = isStatisticsRpcEnabled;
-    }
-
-    @Override
     public void close() throws Exception {
+        initialized = false;
         //TODO: consider wrapping each manager into try-catch
         deviceManager.close();
         rpcManager.close();
@@ -406,10 +566,4 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         // Manually shutdown all remaining running threads in pool
         threadPool.shutdown();
     }
-
-    @Override
-    public void setIsUseSingleLayerSerialization(Boolean useSingleLayerSerialization) {
-        this.useSingleLayerSerialization = useSingleLayerSerialization;
-    }
-
 }

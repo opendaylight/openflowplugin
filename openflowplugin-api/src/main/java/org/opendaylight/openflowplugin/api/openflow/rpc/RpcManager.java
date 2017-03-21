@@ -20,6 +20,8 @@ public interface RpcManager extends OFPManager {
 
     void setStatisticsRpcEnabled(boolean statisticsRpcEnabled);
 
+    void setRpcRequestQuota(int rpcRequestQuota);
+
     RpcContext createContext(
             final @CheckForNull DeviceInfo deviceInfo,
             final @CheckForNull DeviceContext deviceContext);

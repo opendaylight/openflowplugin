@@ -37,6 +37,10 @@ public interface DeviceManager extends
 
     boolean isFlowRemovedNotificationOn();
 
+    void setGlobalNotificationQuota(long globalNotificationQuota);
+
+    void setSwitchFeaturesMandatory(boolean switchFeaturesMandatory);
+
     void setSkipTableFeatures(boolean skipTableFeatures);
 
     void setBarrierCountLimit(int barrierCountLimit);

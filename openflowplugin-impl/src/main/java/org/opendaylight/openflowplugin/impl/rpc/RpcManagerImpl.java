@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -28,7 +29,7 @@ public class RpcManagerImpl implements RpcManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(RpcManagerImpl.class);
     private final RpcProviderRegistry rpcProviderRegistry;
-    private final int maxRequestsQuota;
+    private int rpcRequestQuota;
     private final ConcurrentMap<DeviceInfo, RpcContext> contexts = new ConcurrentHashMap<>();
     private boolean isStatisticsRpcEnabled;
     private final ExtensionConverterProvider extensionConverterProvider;
@@ -36,14 +37,11 @@ public class RpcManagerImpl implements RpcManager {
     private final NotificationPublishService notificationPublishService;
 
 
-    public RpcManagerImpl(
-            final RpcProviderRegistry rpcProviderRegistry,
-            final int quotaValue,
-            final ExtensionConverterProvider extensionConverterProvider,
-	        final ConvertorExecutor convertorExecutor,
-            final NotificationPublishService notificationPublishService) {
+    public RpcManagerImpl(final RpcProviderRegistry rpcProviderRegistry,
+                          final ExtensionConverterProvider extensionConverterProvider,
+                          final ConvertorExecutor convertorExecutor,
+                          final NotificationPublishService notificationPublishService) {
         this.rpcProviderRegistry = rpcProviderRegistry;
-        this.maxRequestsQuota = quotaValue;
         this.extensionConverterProvider = extensionConverterProvider;
         this.convertorExecutor = convertorExecutor;
         this.notificationPublishService = notificationPublishService;
@@ -74,10 +72,14 @@ public class RpcManagerImpl implements RpcManager {
     }
 
     @Override
-    public RpcContext createContext(final @CheckForNull DeviceInfo deviceInfo, final @CheckForNull DeviceContext deviceContext) {
+    public void setRpcRequestQuota(final int rpcRequestQuota) {
+        this.rpcRequestQuota = rpcRequestQuota;
+    }
+
+    public RpcContext createContext(final @Nonnull DeviceInfo deviceInfo, final @CheckForNull DeviceContext deviceContext) {
         return new RpcContextImpl(
                 rpcProviderRegistry,
-                maxRequestsQuota,
+                rpcRequestQuota,
                 deviceContext,
                 extensionConverterProvider,
                 convertorExecutor,
@@ -85,9 +87,8 @@ public class RpcManagerImpl implements RpcManager {
                 this.isStatisticsRpcEnabled);
     }
 
-
     @Override
-    public void onDeviceRemoved(final DeviceInfo deviceInfo) {
+    public void onDeviceRemoved(DeviceInfo deviceInfo) {
         contexts.remove(deviceInfo);
         if (LOG.isDebugEnabled()) {
             LOG.debug("Rpc context removed for node {}", deviceInfo.getLOGValue());
