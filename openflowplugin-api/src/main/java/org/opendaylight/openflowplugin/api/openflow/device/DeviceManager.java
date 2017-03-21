@@ -9,11 +9,10 @@
 package org.opendaylight.openflowplugin.api.openflow.device;
 
 import com.google.common.util.concurrent.CheckedFuture;
-import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
@@ -37,6 +36,10 @@ public interface DeviceManager extends
 
     boolean isFlowRemovedNotificationOn();
 
+    void setGlobalNotificationQuota(long globalNotificationQuota);
+
+    void setSwitchFeaturesMandatory(boolean switchFeaturesMandatory);
+
     void setSkipTableFeatures(boolean skipTableFeatures);
 
     void setBarrierCountLimit(int barrierCountLimit);
@@ -44,17 +47,17 @@ public interface DeviceManager extends
     void setBarrierInterval(long barrierTimeoutLimit);
 
     CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(DeviceInfo deviceInfo);
-    
+
     CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(final KeyedInstanceIdentifier<Node, NodeKey> ii);
 
     void setUseSingleLayerSerialization(Boolean useSingleLayerSerialization);
 
-    DeviceContext createContext(@CheckForNull final ConnectionContext connectionContext);
+    DeviceContext createContext(@Nonnull final ConnectionContext connectionContext);
 
     long getBarrierIntervalNanos();
 
     int getBarrierCountLimit();
 
-    void sendNodeAddedNotification(@CheckForNull final DeviceInfo deviceInfo);
+    void sendNodeAddedNotification(@Nonnull final DeviceInfo deviceInfo);
 }
 

@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.api.openflow.rpc;
 
-import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -20,8 +20,9 @@ public interface RpcManager extends OFPManager {
 
     void setStatisticsRpcEnabled(boolean statisticsRpcEnabled);
 
-    RpcContext createContext(
-            final @CheckForNull DeviceInfo deviceInfo,
-            final @CheckForNull DeviceContext deviceContext);
+    void setRpcRequestQuota(int rpcRequestQuota);
+
+    RpcContext createContext(final @Nonnull DeviceInfo deviceInfo,
+                             final @Nonnull DeviceContext deviceContext);
 
 }
