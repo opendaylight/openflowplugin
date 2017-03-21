@@ -25,7 +25,7 @@ module openflow-provider-config {
 
     container openflow-provider-config {
         leaf rpc-requests-quota {
-            type uint32;
+            type non-zero-uint16-type;
             default 20000;
         }
 
@@ -116,5 +116,6 @@ module openflow-provider-config {
             type boolean;
             default "true";
         }
+
     }
 }

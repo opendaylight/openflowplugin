@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListenerRegistration;
@@ -45,6 +46,9 @@ public class OpenFlowPluginProviderImplTest {
     NotificationService notificationService;
 
     @Mock
+    NotificationPublishService notificationPublishService;
+
+    @Mock
     WriteTransaction writeTransaction;
 
     @Mock
@@ -62,7 +66,7 @@ public class OpenFlowPluginProviderImplTest {
     @Mock
     ClusterSingletonServiceProvider clusterSingletonServiceProvider;
 
-    private static final long RPC_REQUESTS_QUOTA = 500;
+    private static final int RPC_REQUESTS_QUOTA = 500;
     private static final long GLOBAL_NOTIFICATION_QUOTA = 131072;
     private static final int THREAD_POOL_MIN_THREADS = 1;
     private static final int THREAD_POOL_MAX_THREADS = 32000;
@@ -79,18 +83,19 @@ public class OpenFlowPluginProviderImplTest {
         when(switchConnectionProvider.startup()).thenReturn(Futures.immediateCheckedFuture(null));
 
         provider = new OpenFlowPluginProviderImpl(
-                RPC_REQUESTS_QUOTA,
-                GLOBAL_NOTIFICATION_QUOTA,
-                THREAD_POOL_MIN_THREADS,
-                THREAD_POOL_MAX_THREADS,
-                THREAD_POOL_TIMEOUT,
+                Lists.newArrayList(switchConnectionProvider),
+                dataBroker,
+                rpcProviderRegistry,
+                notificationService,
+                notificationPublishService,
+                clusterSingletonServiceProvider,
                 entityOwnershipService);
 
-        provider.setDataBroker(dataBroker);
-        provider.setRpcProviderRegistry(rpcProviderRegistry);
-        provider.setNotificationProviderService(notificationService);
-        provider.setSwitchConnectionProviders(Lists.newArrayList(switchConnectionProvider));
-        provider.setClusteringSingletonServicesProvider(clusterSingletonServiceProvider);
+        provider.updateThreadPoolMinThreads(THREAD_POOL_MIN_THREADS);
+        provider.updateThreadPoolMaxThreads(THREAD_POOL_MAX_THREADS);
+        provider.updateThreadPoolTimeout(THREAD_POOL_TIMEOUT);
+        provider.updateRpcRequestsQuota(RPC_REQUESTS_QUOTA);
+        provider.updateGlobalNotificationQuota(GLOBAL_NOTIFICATION_QUOTA);
     }
 
     @After
