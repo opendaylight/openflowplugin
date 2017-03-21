@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.device.handlers;
 
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipChangeWatcher;
 
 /**
  * Interface handles MASTER initialization on ownership change.
@@ -16,9 +16,9 @@ public interface ClusterInitializationPhaseHandler {
 
     /**
      * Method for initialization cycle between contexts
-     * @param mastershipChangeListener - listener if something goes wrong with initialization
+     * @param contextChainMastershipChangeWatcher - listener if something goes wrong with initialization
      */
-    boolean onContextInstantiateService(final MastershipChangeListener mastershipChangeListener);
+    boolean onContextInstantiateService(final ContextChainMastershipChangeWatcher contextChainMastershipChangeWatcher);
 
     /**
      * Method for initial submit transaction after successful initial gathering.
