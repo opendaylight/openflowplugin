@@ -95,21 +95,23 @@ public class DeviceManagerImplTest {
 
         when(mockedWriteTransaction.submit()).thenReturn(mockedFuture);
 
-        return new DeviceManagerImpl(
-            mockedDataBroker,
+        final DeviceManagerImpl deviceManager = new DeviceManagerImpl(
+                mockedDataBroker,
                 messageIntelligenceAgency,
                 null,
                 new HashedWheelTimer(),
                 convertorExecutor,
-                DeviceInitializerProviderFactory.createDefaultProvider(),
-                TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA,
-            false,
-            barrierIntervalNanos,
-            barrierCountLimit,
-                true,
-                false,
-            false
-        );
+                DeviceInitializerProviderFactory.createDefaultProvider());
+
+        deviceManager.setBarrierCountLimit(barrierCountLimit);
+        deviceManager.setBarrierInterval(barrierIntervalNanos);
+        deviceManager.setGlobalNotificationQuota(TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA);
+        deviceManager.setSwitchFeaturesMandatory(false);
+        deviceManager.setFlowRemovedNotificationOn(true);
+        deviceManager.setSkipTableFeatures(false);
+        deviceManager.setUseSingleLayerSerialization(false);
+
+        return deviceManager;
     }
 
     @Test
