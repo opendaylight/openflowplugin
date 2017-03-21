@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2015, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -13,10 +13,8 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.internal.ConcurrentSet;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,8 +22,8 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
@@ -65,8 +63,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerImpl.class);
 
-    private final long globalNotificationQuota;
-    private final boolean switchFeaturesMandatory;
+    private long globalNotificationQuota;
+    private boolean switchFeaturesMandatory;
     private boolean isFlowRemovedNotificationOn;
     private boolean skipTableFeatures;
     private static final int SPY_RATE = 10;
@@ -91,17 +89,10 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
                              @Nonnull final MessageSpy messageSpy,
-                             final NotificationPublishService notificationPublishService,
+                             @Nullable final NotificationPublishService notificationPublishService,
                              @Nonnull final HashedWheelTimer hashedWheelTimer,
                              @Nonnull final ConvertorExecutor convertorExecutor,
-                             @Nonnull final DeviceInitializerProvider deviceInitializerProvider,
-                             final long globalNotificationQuota,
-                             final boolean switchFeaturesMandatory,
-                             final long barrierInterval,
-                             final int barrierCountLimit,
-                             final boolean isFlowRemovedNotificationOn,
-                             final boolean skipTableFeatures,
-                             final boolean useSingleLayerSerialization) {
+                             @Nonnull final DeviceInitializerProvider deviceInitializerProvider) {
 
         this.dataBroker = dataBroker;
         this.deviceInitializerProvider = deviceInitializerProvider;
@@ -118,18 +109,11 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
             throw new IllegalStateException(e);
         }
 
-        this.switchFeaturesMandatory = switchFeaturesMandatory;
-        this.globalNotificationQuota = globalNotificationQuota;
-        this.isFlowRemovedNotificationOn = isFlowRemovedNotificationOn;
-        this.skipTableFeatures = skipTableFeatures;
         this.convertorExecutor = convertorExecutor;
         this.hashedWheelTimer = hashedWheelTimer;
-        this.barrierIntervalNanos = TimeUnit.MILLISECONDS.toNanos(barrierInterval);
-        this.barrierCountLimit = barrierCountLimit;
         this.spyPool = new ScheduledThreadPoolExecutor(1);
         this.notificationPublishService = notificationPublishService;
         this.messageSpy = messageSpy;
-        this.useSingleLayerSerialization = useSingleLayerSerialization;
     }
 
     @Override
@@ -182,6 +166,16 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
+    public void setGlobalNotificationQuota(final long globalNotificationQuota) {
+        this.globalNotificationQuota = globalNotificationQuota;
+    }
+
+    @Override
+    public void setSwitchFeaturesMandatory(final boolean switchFeaturesMandatory) {
+        this.switchFeaturesMandatory = switchFeaturesMandatory;
+    }
+
+    @Override
     public void setSkipTableFeatures(boolean skipTableFeaturesValue) {
         skipTableFeatures = skipTableFeaturesValue;
     }
@@ -197,7 +191,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(final KeyedInstanceIdentifier<Node, NodeKey> ii) {    
+    public CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(final KeyedInstanceIdentifier<Node, NodeKey> ii) {
         final WriteTransaction delWtx = dataBroker.newWriteOnlyTransaction();
         delWtx.delete(LogicalDatastoreType.OPERATIONAL, ii);
         final CheckedFuture<Void, TransactionCommitFailedException> delFuture = delWtx.submit();
@@ -218,7 +212,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
         return delFuture;
     }
-    
+
     @Override
     public CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(final DeviceInfo deviceInfo) {
         return this.removeDeviceFromOperationalDS(deviceInfo.getNodeInstanceIdentifier());
@@ -229,7 +223,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         this.useSingleLayerSerialization = useSingleLayerSerialization;
     }
 
-    public DeviceContext createContext(@CheckForNull final ConnectionContext connectionContext) {
+    public DeviceContext createContext(@Nonnull final ConnectionContext connectionContext) {
 
         LOG.info("ConnectionEvent: Device connected to controller, Device:{}, NodeId:{}",
                 connectionContext.getConnectionAdapter().getRemoteAddress(),
@@ -327,7 +321,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public void sendNodeAddedNotification(@CheckForNull final DeviceInfo deviceInfo) {
+    public void sendNodeAddedNotification(@Nonnull final DeviceInfo deviceInfo) {
         if (!notificationCreateNodeSend.contains(deviceInfo)) {
             notificationCreateNodeSend.add(deviceInfo);
             NodeUpdatedBuilder builder = new NodeUpdatedBuilder();
