@@ -72,8 +72,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerImpl.class);
 
-    private final long globalNotificationQuota;
-    private final boolean switchFeaturesMandatory;
+    private long globalNotificationQuota;
+    private boolean switchFeaturesMandatory;
     private boolean isFlowRemovedNotificationOn;
     private boolean skipTableFeatures;
     private static final int SPY_RATE = 10;
@@ -100,18 +100,11 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private boolean useSingleLayerSerialization;
 
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
-                             final long globalNotificationQuota,
-                             final boolean switchFeaturesMandatory,
-                             final long barrierInterval,
-                             final int barrierCountLimit,
                              final MessageSpy messageSpy,
-                             final boolean isFlowRemovedNotificationOn,
                              final ClusterSingletonServiceProvider singletonServiceProvider,
                              final NotificationPublishService notificationPublishService,
                              final HashedWheelTimer hashedWheelTimer,
                              final ConvertorExecutor convertorExecutor,
-                             final boolean skipTableFeatures,
-                             final boolean useSingleLayerSerialization,
                              final DeviceInitializerProvider deviceInitializerProvider) {
 
         this.dataBroker = dataBroker;
@@ -135,7 +128,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         this.skipTableFeatures = skipTableFeatures;
         this.convertorExecutor = convertorExecutor;
         this.hashedWheelTimer = hashedWheelTimer;
-        this.barrierIntervalNanos = TimeUnit.MILLISECONDS.toNanos(barrierInterval);
         this.barrierCountLimit = barrierCountLimit;
         this.spyPool = new ScheduledThreadPoolExecutor(1);
         this.singletonServiceProvider = singletonServiceProvider;
@@ -358,6 +350,16 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     @Override
     public boolean isFlowRemovedNotificationOn() {
         return this.isFlowRemovedNotificationOn;
+    }
+
+    @Override
+    public void setGlobalNotificationQuota(final long globalNotificationQuota) {
+        this.globalNotificationQuota = globalNotificationQuota;
+    }
+
+    @Override
+    public void setSwitchFeaturesMandatory(final boolean switchFeaturesMandatory) {
+        this.switchFeaturesMandatory = switchFeaturesMandatory;
     }
 
 

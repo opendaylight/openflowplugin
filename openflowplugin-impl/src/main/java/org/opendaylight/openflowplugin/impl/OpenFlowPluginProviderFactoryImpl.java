@@ -41,56 +41,31 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
 
         LOG.info("Initializing new OFP southbound.");
 
-        OpenFlowPluginProvider openflowPluginProvider = new OpenFlowPluginProviderImpl(
-                providerConfig.getRpcRequestsQuota(),
-                providerConfig.getGlobalNotificationQuota(),
-                providerConfig.getThreadPoolMinThreads(),
-                providerConfig.getThreadPoolMaxThreads().getValue(),
-                providerConfig.getThreadPoolTimeout());
+        final OpenFlowPluginProviderImpl openflowPluginProvider = new OpenFlowPluginProviderImpl(
+            switchConnectionProviders,
+            dataBroker,
+            rpcRegistry,
+            notificationService,
+            notificationPublishService,
+            singletonServiceProvider);
 
-        openflowPluginProvider.setSwitchConnectionProviders(switchConnectionProviders);
-        openflowPluginProvider.setDataBroker(dataBroker);
-        openflowPluginProvider.setRpcProviderRegistry(rpcRegistry);
-        openflowPluginProvider.setNotificationProviderService(notificationService);
-        openflowPluginProvider.setNotificationPublishService(notificationPublishService);
-        openflowPluginProvider.setSwitchFeaturesMandatory(providerConfig.isSwitchFeaturesMandatory());
-        openflowPluginProvider.setFlowRemovedNotification(providerConfig.isEnableFlowRemovedNotification());
-        openflowPluginProvider.setIsStatisticsRpcEnabled(providerConfig.isIsStatisticsRpcEnabled());
-        openflowPluginProvider.setBarrierCountLimit(providerConfig.getBarrierCountLimit().getValue());
-        openflowPluginProvider.setBarrierInterval(providerConfig.getBarrierIntervalTimeoutLimit().getValue());
-        openflowPluginProvider.setEchoReplyTimeout(providerConfig.getEchoReplyTimeout().getValue());
-        openflowPluginProvider.setStatisticsPollingOn(providerConfig.isIsStatisticsPollingOn());
-        openflowPluginProvider.setClusteringSingletonServicesProvider(singletonServiceProvider);
-        openflowPluginProvider.setSkipTableFeatures(providerConfig.isSkipTableFeatures());
-        openflowPluginProvider.setBasicTimerDelay(providerConfig.getBasicTimerDelay().getValue());
-        openflowPluginProvider.setMaximumTimerDelay(providerConfig.getMaximumTimerDelay().getValue());
-        openflowPluginProvider.setIsUseSingleLayerSerialization(providerConfig.isUseSingleLayerSerialization());
-
+        openflowPluginProvider.updateRpcRequestsQuota(providerConfig.getRpcRequestsQuota().getValue());
+        openflowPluginProvider.updateGlobalNotificationQuota(providerConfig.getGlobalNotificationQuota());
+        openflowPluginProvider.updateSwitchFeaturesMandatory(providerConfig.isSwitchFeaturesMandatory());
+        openflowPluginProvider.updateEnableFlowRemovedNotification(providerConfig.isEnableFlowRemovedNotification());
+        openflowPluginProvider.updateIsStatisticsRpcEnabled(providerConfig.isIsStatisticsRpcEnabled());
+        openflowPluginProvider.updateBarrierCountLimit(providerConfig.getBarrierCountLimit().getValue());
+        openflowPluginProvider.updateBarrierIntervalTimeoutLimit(providerConfig.getBarrierIntervalTimeoutLimit().getValue());
+        openflowPluginProvider.updateEchoReplyTimeout(providerConfig.getEchoReplyTimeout().getValue());
+        openflowPluginProvider.updateIsStatisticsPollingOn(providerConfig.isIsStatisticsPollingOn());
+        openflowPluginProvider.updateSkipTableFeatures(providerConfig.isSkipTableFeatures());
+        openflowPluginProvider.updateBasicTimerDelay(providerConfig.getBasicTimerDelay().getValue());
+        openflowPluginProvider.updateMaximumTimerDelay(providerConfig.getMaximumTimerDelay().getValue());
+        openflowPluginProvider.updateUseSingleLayerSerialization(providerConfig.isUseSingleLayerSerialization());
+        openflowPluginProvider.updateThreadPoolMinThreads(providerConfig.getThreadPoolMinThreads());
+        openflowPluginProvider.updateThreadPoolMaxThreads(providerConfig.getThreadPoolMaxThreads().getValue());
+        openflowPluginProvider.updateThreadPoolTimeout(providerConfig.getThreadPoolTimeout());
         openflowPluginProvider.initialize();
-
-        LOG.info("Configured values, " +
-                "StatisticsPollingOn:{}, " +
-                "SwitchFeaturesMandatory:{}, " +
-                "BarrierCountLimit:{}, " +
-                "BarrierTimeoutLimit:{}, " +
-                "EchoReplyTimeout:{}, " +
-                "ThreadPoolMinThreads:{}, " +
-                "ThreadPoolMaxThreads:{}, " +
-                "ThreadPoolTimeout:{}, " +
-                "NotificationFlowRemovedOff:{}, " +
-                "BasicTimerDelay:{}, "+
-                "MaximumTimerDelay:{} ",
-                providerConfig.isIsStatisticsPollingOn(),
-                providerConfig.isSwitchFeaturesMandatory(),
-                providerConfig.getBarrierCountLimit().getValue(),
-                providerConfig.getBarrierIntervalTimeoutLimit().getValue(),
-                providerConfig.getEchoReplyTimeout().getValue(),
-                providerConfig.getThreadPoolMinThreads(),
-                providerConfig.getThreadPoolMaxThreads().getValue(),
-                providerConfig.getThreadPoolTimeout(),
-                providerConfig.isEnableFlowRemovedNotification(),
-                providerConfig.getBasicTimerDelay().getValue(),
-                providerConfig.getMaximumTimerDelay().getValue());
 
         return openflowPluginProvider;
     }
