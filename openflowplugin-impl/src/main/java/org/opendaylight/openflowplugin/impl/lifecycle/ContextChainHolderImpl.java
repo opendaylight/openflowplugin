@@ -37,6 +37,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChain;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainHolder;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
@@ -75,19 +76,24 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     private ClusterSingletonServiceProvider singletonServicesProvider;
     private boolean timerIsRunning;
     private final HashedWheelTimer timer;
+    private final MastershipChangeListener mastershipChangeListener;
     private Long ttlBeforeDrop;
     private Long ttlStep;
     private Long checkRoleMaster;
     private Boolean neverDropChain;
     private boolean timerIsRunningRole;
 
-    public ContextChainHolderImpl(final HashedWheelTimer timer) {
+    public ContextChainHolderImpl(final HashedWheelTimer timer,
+                                  final MastershipChangeListener mastershipChangeListener) {
+        Objects.requireNonNull(mastershipChangeListener, "Mastership change listener cannot be null");
         this.timerIsRunning = START;
         this.timerIsRunningRole = START;
         this.timer = timer;
         this.ttlBeforeDrop = DEFAULT_TTL_BEFORE_DROP;
         this.ttlStep = DEFAULT_TTL_STEP;
         this.checkRoleMaster = DEFAULT_CHECK_ROLE_MASTER;
+        this.mastershipChangeListener = mastershipChangeListener;
+        LOG.info("Context chain holder created.");
     }
 
     @Override
@@ -189,6 +195,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         ContextChain contextChain = contextChainMap.get(deviceInfo);
         if (Objects.nonNull(contextChain)) {
             contextChain.changePrimaryConnection(connectionContext);
+            mastershipChangeListener.becomeSlaveOrDisconnect(deviceInfo);
             contextChain.makeDeviceSlave();
         }
     }
@@ -288,6 +295,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
             LOG.info("Non existing device info. Cannot close context chain.");
         } else {
             LOG.info("Device {} disconnected.", deviceInfo.getLOGValue());
+            mastershipChangeListener.becomeSlaveOrDisconnect(deviceInfo);
             ContextChain chain = contextChainMap.get(deviceInfo);
             if (Objects.isNull(chain)) {
                 if (LOG.isDebugEnabled()) {
@@ -524,6 +532,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
                 if (this.stop) {
                     addToSleepingChainsMap(deviceInfo, contextChainMap.get(deviceInfo));
                 } else {
+                    mastershipChangeListener.becomeMaster(deviceInfo);
                     sendNotificationNodeAdded(deviceInfo);
                 }
             }

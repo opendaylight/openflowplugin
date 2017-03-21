@@ -38,6 +38,7 @@ import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainHolder;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
@@ -109,13 +110,16 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
     private final ThreadPoolExecutor threadPool;
     private ClusterSingletonServiceProvider singletonServicesProvider;
+    private final MastershipChangeServiceProvider mastershipServiceProvider;
 
     public OpenFlowPluginProviderImpl(final long rpcRequestsQuota,
                                       final long globalNotificationQuota,
                                       final int threadPoolMinThreads,
                                       final int threadPoolMaxThreads,
                                       final long threadPoolTimeout,
-                                      final EntityOwnershipService entityOwnershipService) {
+                                      final EntityOwnershipService entityOwnershipService,
+                                      final MastershipChangeServiceProvider mastershipServiceProvider) {
+        this.mastershipServiceProvider = mastershipServiceProvider;
         Preconditions.checkArgument(rpcRequestsQuota > 0 && rpcRequestsQuota <= Integer.MAX_VALUE, "rpcRequestQuota has to be in range <1,%s>", Integer.MAX_VALUE);
         this.rpcRequestsQuota = (int) rpcRequestsQuota;
         this.globalNotificationQuota = Preconditions.checkNotNull(globalNotificationQuota);
@@ -130,7 +134,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 new SynchronousQueue<>(), POOL_NAME);
         deviceInitializerProvider = DeviceInitializerProviderFactory.createDefaultProvider();		
         convertorManager = ConvertorManagerFactory.createDefaultManager();
-        contextChainHolder = new ContextChainHolderImpl(hashedWheelTimer);
+        contextChainHolder = new ContextChainHolderImpl(hashedWheelTimer, mastershipServiceProvider);
         contextChainHolder.changeEntityOwnershipService(entityOwnershipService);
     }
 

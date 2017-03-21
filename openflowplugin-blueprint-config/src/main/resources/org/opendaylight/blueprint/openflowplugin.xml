@@ -25,6 +25,10 @@
   <reference id="openflowPluginProviderFactory"
           interface="org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProviderFactory"/>
 
+  <bean id="ofPluginMastershipServiceProvider" class="org.opendaylight.openflowplugin.impl.mastership.MastershipServiceProviderImpl" />
+
+  <reference id="ofPluginMastershipChangeProvider" interface="org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceProvider"/>
+
   <bean id="openflowPluginProvider" factory-ref="openflowPluginProviderFactory" factory-method="newInstance">
     <argument ref="openflowProviderConfig"/>
     <argument ref="dataBroker"/>
@@ -42,6 +46,7 @@
                            update-strategy="component-managed"
                            update-method="update"/>
     <argument ref="clusterSingletonServiceProvider"/>
+    <argument ref="ofPluginMastershipChangeProvider"/>
   </bean>
 
   <service ref="openflowPluginProvider" odl:type="openflow-plugin-provider-impl">
@@ -50,5 +55,9 @@
       <value>org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider</value>
     </interfaces>
   </service>
+
+  <service ref="ofPluginMastershipService" interface="org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceProvider"
+           odl:type="default"/>
+
 
 </blueprint>
