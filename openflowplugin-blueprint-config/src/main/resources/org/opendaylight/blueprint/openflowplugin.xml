@@ -48,24 +48,25 @@
   <reference id="openflowPluginProviderFactory"
           interface="org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProviderFactory"/>
 
-  <bean id="openflowPluginProvider" factory-ref="openflowPluginProviderFactory" factory-method="newInstance">
-    <argument ref="openflowProviderConfig"/>
-    <argument ref="dataBroker"/>
-    <argument ref="rpcRegistry"/>
-    <argument ref="notificationService"/>
-    <argument ref="notificationPublishService"/>
-    <argument ref="entityOwnershipService"/>
-    <argument>
-      <list>
-        <ref component-id="defaultSwitchConnProvider"/>
-        <ref component-id="legacySwitchConnProvider"/>
-      </list>
-    </argument>
-    <cm:managed-properties persistent-id="org.opendaylight.openflowplugin"
-                           update-strategy="component-managed"
-                           update-method="update"/>
-    <argument ref="clusterSingletonServiceProvider"/>
-  </bean>
+    <bean id="openflowPluginProvider" factory-ref="openflowPluginProviderFactory" factory-method="newInstance">
+        <argument ref="openflowProviderConfig"/>
+        <argument ref="dataBroker"/>
+        <argument ref="rpcRegistry"/>
+        <argument ref="notificationService"/>
+        <argument ref="notificationPublishService"/>
+        <argument ref="entityOwnershipService"/>
+        <argument>
+            <list>
+                <ref component-id="defaultSwitchConnProvider"/>
+                <ref component-id="legacySwitchConnProvider"/>
+            </list>
+        </argument>
+        <argument ref="clusterSingletonServiceProvider"/>
+        <argument ref="blueprintBundleContext" />
+        <cm:managed-properties persistent-id="org.opendaylight.openflowplugin"
+                               update-strategy="component-managed"
+                               update-method="update"/>
+    </bean>
 
   <service ref="openflowPluginProvider" odl:type="openflow-plugin-provider-impl">
     <interfaces>

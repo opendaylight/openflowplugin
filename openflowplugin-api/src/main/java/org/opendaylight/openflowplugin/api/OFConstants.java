@@ -73,4 +73,7 @@ public final class OFConstants {
     public static final String APPLICATION_TAG = "OPENFLOW_PLUGIN";
     /** RpcError tag - timeout */
     public static final String ERROR_TAG_TIMEOUT = "TIMOUT";
+
+    /** Persistent ID of OpenFlowPlugin configuration file */
+    public static final String CONFIG_FILE_ID = "org.opendaylight.openflowplugin";
 }

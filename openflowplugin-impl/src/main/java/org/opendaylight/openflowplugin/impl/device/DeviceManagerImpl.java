@@ -81,8 +81,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerImpl.class);
     private static final String SERVICE_ENTITY_TYPE = "org.opendaylight.mdsal.ServiceEntityType";
 
-    private final long globalNotificationQuota;
-    private final boolean switchFeaturesMandatory;
+    private long globalNotificationQuota;
+    private boolean switchFeaturesMandatory;
     private final EntityOwnershipListenerRegistration eosListenerRegistration;
     private boolean isFlowRemovedNotificationOn;
     private boolean skipTableFeatures;
@@ -110,30 +110,18 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private final HashedWheelTimer hashedWheelTimer;
 
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
-                             final long globalNotificationQuota,
-                             final boolean switchFeaturesMandatory,
-                             final long barrierInterval,
-                             final int barrierCountLimit,
                              final MessageSpy messageSpy,
-                             final boolean isFlowRemovedNotificationOn,
                              final ClusterSingletonServiceProvider singletonServiceProvider,
                              final EntityOwnershipService entityOwnershipService,
                              final HashedWheelTimer hashedWheelTimer,
                              final ConvertorExecutor convertorExecutor,
-                             final boolean skipTableFeatures,
                              final NotificationPublishService notificationPublishService) {
 
 
         this.dataBroker = dataBroker;
         this.entityOwnershipService = entityOwnershipService;
-        this.switchFeaturesMandatory = switchFeaturesMandatory;
-        this.globalNotificationQuota = globalNotificationQuota;
-        this.isFlowRemovedNotificationOn = isFlowRemovedNotificationOn;
-        this.skipTableFeatures = skipTableFeatures;
         this.convertorExecutor = convertorExecutor;
         this.hashedWheelTimer = hashedWheelTimer;
-        this.barrierIntervalNanos = TimeUnit.MILLISECONDS.toNanos(barrierInterval);
-        this.barrierCountLimit = barrierCountLimit;
         this.spyPool = new ScheduledThreadPoolExecutor(1);
         this.singletonServiceProvider = singletonServiceProvider;
         this.notificationPublishService = notificationPublishService;
@@ -398,6 +386,16 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     @Override
     public CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(final DeviceInfo deviceInfo) {
         return removeDeviceFromOperationalDS(deviceInfo.getNodeInstanceIdentifier(), deviceInfo.getLOGValue());
+    }
+
+    @Override
+    public void setGlobalNotificationQuota(final long globalNotificationQuota) {
+        this.globalNotificationQuota = globalNotificationQuota;
+    }
+
+    @Override
+    public void setSwitchFeaturesMandatory(final boolean switchFeaturesMandatory) {
+        this.switchFeaturesMandatory = switchFeaturesMandatory;
     }
 
     private CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(

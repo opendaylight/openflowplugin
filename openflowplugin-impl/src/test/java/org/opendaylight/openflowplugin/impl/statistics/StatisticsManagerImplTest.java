@@ -11,7 +11,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
@@ -67,15 +66,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.ChangeStatisticsWorkModeInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsManagerControlService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsWorkMode;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -185,46 +181,11 @@ public class StatisticsManagerImplTest {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         final long basicTimerDelay = 3000L;
         final long maximumTimerDelay = 900000L;
-        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, false, new HashedWheelTimer(),
-                convertorManager, basicTimerDelay, maximumTimerDelay);
-        statisticsManager.setDeviceInitializationPhaseHandler(deviceInitializationPhaseHandler);
-    }
-
-    @Test
-    public void testOnDeviceContextLevelUp() throws Exception {
-        Mockito.doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                final FutureCallback<OfHeader> callback = (FutureCallback<OfHeader>) invocation.getArguments()[2];
-                LOG.debug("committing entry: {}", ((MultipartRequestInput) invocation.getArguments()[1]).getType());
-                callback.onSuccess(null);
-                currentRequestContext.setResult(RpcResultBuilder.<List<MultipartReply>>success().build());
-                return null;
-            }
-        }).when(outboundQueue)
-                .commitEntry(Matchers.anyLong(), Matchers.<OfHeader>any(), Matchers.<FutureCallback<OfHeader>>any());
-
-        Mockito.when(lifecycleService.getDeviceContext()).thenReturn(mockedDeviceContext);
-        Mockito.when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
-
-        statisticsManager.setDeviceInitializationPhaseHandler(mockedDevicePhaseHandler);
-        statisticsManager.onDeviceContextLevelUp(deviceInfo, lifecycleService);
-        verify(mockedDevicePhaseHandler).onDeviceContextLevelUp(deviceInfo, lifecycleService);
-    }
-
-    @Test
-    public void testOnDeviceContextClosed() throws Exception {
-        final StatisticsContext statisticContext = Mockito.mock(StatisticsContext.class);
-        final Map<DeviceInfo, StatisticsContext> contextsMap = getContextsMap(statisticsManager);
-
-        contextsMap.put(deviceInfo, statisticContext);
-        Assert.assertEquals(1, contextsMap.size());
-
-        statisticsManager.setDeviceTerminationPhaseHandler(mockedTerminationPhaseHandler);
-        statisticsManager.onDeviceContextLevelDown(deviceInfo);
-        verify(statisticContext).close();
-        verify(mockedTerminationPhaseHandler).onDeviceContextLevelDown(deviceInfo);
-        Assert.assertEquals(1, contextsMap.size());
+        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, new HashedWheelTimer(),
+                convertorManager);
+        statisticsManager.setBasicTimerDelay(basicTimerDelay);
+        statisticsManager.setMaximumTimerDelay(maximumTimerDelay);
+        statisticsManager.setIsStatisticsPollingOn(false);
     }
 
     private static Map<DeviceInfo, StatisticsContext> getContextsMap(final StatisticsManagerImpl statisticsManager)
@@ -379,9 +340,9 @@ public class StatisticsManagerImplTest {
         when(timeCounter.getAverageTimeBetweenMarks()).thenReturn(2000L, (Long)4000L);
 
         statisticsManager.calculateTimerDelay(timeCounter);
-        Assert.assertEquals(3000L, StatisticsManagerImpl.getCurrentTimerDelay());
+        Assert.assertEquals(3000L, statisticsManager.getCurrentTimerDelay());
         statisticsManager.calculateTimerDelay(timeCounter);
-        Assert.assertEquals(6000L, StatisticsManagerImpl.getCurrentTimerDelay());
+        Assert.assertEquals(6000L, statisticsManager.getCurrentTimerDelay());
     }
 
     @Test

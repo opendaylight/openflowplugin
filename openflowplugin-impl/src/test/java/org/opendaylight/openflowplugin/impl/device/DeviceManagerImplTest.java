@@ -153,14 +153,9 @@ public class DeviceManagerImplTest {
 
         final DeviceManagerImpl deviceManager = new DeviceManagerImpl(
                 mockedDataBroker,
-                TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA,
-                false,
-                barrierIntervalNanos,
-                barrierCountLimit,
                 messageIntelligenceAgency,
-                true,
                 clusterSingletonServiceProvider,
-                entityOwnershipService, new HashedWheelTimer(), convertorExecutor, false, null
+                entityOwnershipService, new HashedWheelTimer(), convertorExecutor, null
         );
 
         deviceManager.setDeviceInitializationPhaseHandler(deviceInitPhaseHandler);

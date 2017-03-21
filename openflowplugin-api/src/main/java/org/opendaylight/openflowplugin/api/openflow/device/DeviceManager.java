@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.api.openflow.device;
 
 import com.google.common.util.concurrent.CheckedFuture;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListener;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
@@ -45,5 +44,9 @@ public interface DeviceManager extends
     void setBarrierInterval(long barrierTimeoutLimit);
 
     CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(DeviceInfo deviceInfo);
+
+    void setGlobalNotificationQuota(long globalNotificationQuota);
+
+    void setSwitchFeaturesMandatory(boolean switchFeaturesMandatory);
 }
 
