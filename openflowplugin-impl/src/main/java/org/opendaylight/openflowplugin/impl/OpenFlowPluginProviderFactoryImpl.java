@@ -7,7 +7,12 @@
  */
 package org.opendaylight.openflowplugin.impl;
 
+import java.io.IOException;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
@@ -15,9 +20,13 @@ import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipS
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProviderFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
+import org.osgi.framework.BundleContext;
+import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,68 +39,69 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
     private static final Logger LOG = LoggerFactory.getLogger(OpenFlowPluginProviderFactoryImpl.class);
 
     @Override
-    public OpenFlowPluginProvider newInstance(OpenflowProviderConfig providerConfig,
-                                              DataBroker dataBroker,
-                                              RpcProviderRegistry rpcRegistry,
-                                              NotificationService notificationService,
-                                              NotificationPublishService notificationPublishService,
-                                              EntityOwnershipService entityOwnershipService,
-                                              List<SwitchConnectionProvider> switchConnectionProviders,
-                                              ClusterSingletonServiceProvider singletonServiceProvider) {
+    public OpenFlowPluginProvider newInstance(final OpenflowProviderConfig providerConfig,
+                                              final DataBroker dataBroker,
+                                              final RpcProviderRegistry rpcRegistry,
+                                              final NotificationService notificationService,
+                                              final NotificationPublishService notificationPublishService,
+                                              final EntityOwnershipService entityOwnershipService,
+                                              final List<SwitchConnectionProvider> switchConnectionProviders,
+                                              final ClusterSingletonServiceProvider singletonServiceProvider,
+                                              final BundleContext bundleContext) {
 
         LOG.info("Initializing new OFP southbound.");
 
-        OpenFlowPluginProvider openflowPluginProvider = new OpenFlowPluginProviderImpl(
-                providerConfig.getRpcRequestsQuota(),
-                providerConfig.getGlobalNotificationQuota(),
-                providerConfig.getThreadPoolMinThreads(),
-                providerConfig.getThreadPoolMaxThreads().getValue(),
-                providerConfig.getThreadPoolTimeout());
+        final OpenFlowPluginProviderImpl openflowPluginProvider = new OpenFlowPluginProviderImpl(
+            switchConnectionProviders,
+            dataBroker,
+            rpcRegistry,
+            notificationService,
+            notificationPublishService,
+            singletonServiceProvider);
 
-        openflowPluginProvider.setSwitchConnectionProviders(switchConnectionProviders);
-        openflowPluginProvider.setDataBroker(dataBroker);
-        openflowPluginProvider.setRpcProviderRegistry(rpcRegistry);
-        openflowPluginProvider.setNotificationProviderService(notificationService);
-        openflowPluginProvider.setNotificationPublishService(notificationPublishService);
-        openflowPluginProvider.setSwitchFeaturesMandatory(providerConfig.isSwitchFeaturesMandatory());
-        openflowPluginProvider.setFlowRemovedNotification(providerConfig.isEnableFlowRemovedNotification());
-        openflowPluginProvider.setIsStatisticsRpcEnabled(providerConfig.isIsStatisticsRpcEnabled());
-        openflowPluginProvider.setBarrierCountLimit(providerConfig.getBarrierCountLimit().getValue());
-        openflowPluginProvider.setBarrierInterval(providerConfig.getBarrierIntervalTimeoutLimit().getValue());
-        openflowPluginProvider.setEchoReplyTimeout(providerConfig.getEchoReplyTimeout().getValue());
-        openflowPluginProvider.setStatisticsPollingOn(providerConfig.isIsStatisticsPollingOn());
-        openflowPluginProvider.setClusteringSingletonServicesProvider(singletonServiceProvider);
-        openflowPluginProvider.setSkipTableFeatures(providerConfig.isSkipTableFeatures());
-        openflowPluginProvider.setBasicTimerDelay(providerConfig.getBasicTimerDelay().getValue());
-        openflowPluginProvider.setMaximumTimerDelay(providerConfig.getMaximumTimerDelay().getValue());
-        openflowPluginProvider.setIsUseSingleLayerSerialization(providerConfig.isUseSingleLayerSerialization());
+        LOG.info("Loading configuration from YANG file");
+        openflowPluginProvider.updateRpcRequestsQuota(providerConfig.getRpcRequestsQuota().getValue());
+        openflowPluginProvider.updateGlobalNotificationQuota(providerConfig.getGlobalNotificationQuota());
+        openflowPluginProvider.updateSwitchFeaturesMandatory(providerConfig.isSwitchFeaturesMandatory());
+        openflowPluginProvider.updateEnableFlowRemovedNotification(providerConfig.isEnableFlowRemovedNotification());
+        openflowPluginProvider.updateIsStatisticsRpcEnabled(providerConfig.isIsStatisticsRpcEnabled());
+        openflowPluginProvider.updateBarrierCountLimit(providerConfig.getBarrierCountLimit().getValue());
+        openflowPluginProvider.updateBarrierIntervalTimeoutLimit(providerConfig.getBarrierIntervalTimeoutLimit().getValue());
+        openflowPluginProvider.updateEchoReplyTimeout(providerConfig.getEchoReplyTimeout().getValue());
+        openflowPluginProvider.updateIsStatisticsPollingOn(providerConfig.isIsStatisticsPollingOn());
+        openflowPluginProvider.updateSkipTableFeatures(providerConfig.isSkipTableFeatures());
+        openflowPluginProvider.updateBasicTimerDelay(providerConfig.getBasicTimerDelay().getValue());
+        openflowPluginProvider.updateMaximumTimerDelay(providerConfig.getMaximumTimerDelay().getValue());
+        openflowPluginProvider.updateUseSingleLayerSerialization(providerConfig.isUseSingleLayerSerialization());
+        openflowPluginProvider.updateThreadPoolMinThreads(providerConfig.getThreadPoolMinThreads());
+        openflowPluginProvider.updateThreadPoolMaxThreads(providerConfig.getThreadPoolMaxThreads().getValue());
+        openflowPluginProvider.updateThreadPoolTimeout(providerConfig.getThreadPoolTimeout());
+
+        LOG.info("Loading configuration from properties file");
+        Optional.ofNullable(bundleContext.getServiceReference(ConfigurationAdmin.class.getName())).ifPresent(serviceReference -> {
+            final ConfigurationAdmin configurationAdmin = (ConfigurationAdmin) bundleContext.getService(serviceReference);
+
+            try {
+                final Configuration configuration = configurationAdmin.getConfiguration(OFConstants.CONFIG_FILE_NAME);
+
+                Optional.ofNullable(configuration.getProperties()).ifPresent(properties -> {
+                    final Enumeration<String> keys = properties.keys();
+                    final Map<String, Object> mapProperties = new HashMap<>(properties.size());
+
+                    while (keys.hasMoreElements()) {
+                        final String key = keys.nextElement();
+                        final Object value = properties.get(key);
+                        mapProperties.put(key, value);
+                    }
+
+                    openflowPluginProvider.update(mapProperties);
+                });
+            } catch (IOException e) {
+                LOG.debug("Failed to load " + OFConstants.CONFIG_FILE_NAME + " configuration file", e);
+            }
+        });
 
         openflowPluginProvider.initialize();
-
-        LOG.info("Configured values, " +
-                "StatisticsPollingOn:{}, " +
-                "SwitchFeaturesMandatory:{}, " +
-                "BarrierCountLimit:{}, " +
-                "BarrierTimeoutLimit:{}, " +
-                "EchoReplyTimeout:{}, " +
-                "ThreadPoolMinThreads:{}, " +
-                "ThreadPoolMaxThreads:{}, " +
-                "ThreadPoolTimeout:{}, " +
-                "NotificationFlowRemovedOff:{}, " +
-                "BasicTimerDelay:{}, "+
-                "MaximumTimerDelay:{} ",
-                providerConfig.isIsStatisticsPollingOn(),
-                providerConfig.isSwitchFeaturesMandatory(),
-                providerConfig.getBarrierCountLimit().getValue(),
-                providerConfig.getBarrierIntervalTimeoutLimit().getValue(),
-                providerConfig.getEchoReplyTimeout().getValue(),
-                providerConfig.getThreadPoolMinThreads(),
-                providerConfig.getThreadPoolMaxThreads().getValue(),
-                providerConfig.getThreadPoolTimeout(),
-                providerConfig.isEnableFlowRemovedNotification(),
-                providerConfig.getBasicTimerDelay().getValue(),
-                providerConfig.getMaximumTimerDelay().getValue());
-
         return openflowPluginProvider;
     }
 }
