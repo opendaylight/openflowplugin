@@ -51,7 +51,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterIniti
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainState;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipChangeWatcher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
@@ -637,7 +637,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public boolean onContextInstantiateService(final MastershipChangeListener mastershipChangeListener) {
+    public boolean onContextInstantiateService(final ContextChainMastershipChangeWatcher contextChainMastershipChangeWatcher) {
 
         LOG.info("Starting device context cluster services for node {}", deviceInfo.getLOGValue());
         lazyTransactionManagerInitialization();
@@ -671,13 +671,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         }
 
         Futures.addCallback(sendRoleChangeToDevice(OfpRole.BECOMEMASTER),
-                new RpcResultFutureCallback(mastershipChangeListener));
+                new RpcResultFutureCallback(contextChainMastershipChangeWatcher));
 
         final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill = getDeviceFlowRegistry().fill();
         Futures.addCallback(deviceFlowRegistryFill,
-                new DeviceFlowRegistryCallback(deviceFlowRegistryFill, mastershipChangeListener));
+                new DeviceFlowRegistryCallback(deviceFlowRegistryFill, contextChainMastershipChangeWatcher));
 
-        return this.clusterInitializationPhaseHandler.onContextInstantiateService(mastershipChangeListener);
+        return this.clusterInitializationPhaseHandler.onContextInstantiateService(contextChainMastershipChangeWatcher);
     }
 
     @VisibleForTesting
@@ -747,15 +747,15 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     private class RpcResultFutureCallback implements FutureCallback<RpcResult<SetRoleOutput>> {
 
-        private final MastershipChangeListener mastershipChangeListener;
+        private final ContextChainMastershipChangeWatcher contextChainMastershipChangeWatcher;
 
-        RpcResultFutureCallback(final MastershipChangeListener mastershipChangeListener) {
-            this.mastershipChangeListener = mastershipChangeListener;
+        RpcResultFutureCallback(final ContextChainMastershipChangeWatcher contextChainMastershipChangeWatcher) {
+            this.contextChainMastershipChangeWatcher = contextChainMastershipChangeWatcher;
         }
 
         @Override
         public void onSuccess(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
-            this.mastershipChangeListener.onMasterRoleAcquired(
+            this.contextChainMastershipChangeWatcher.onMasterRoleAcquired(
                     deviceInfo,
                     ContextChainMastershipState.MASTER_ON_DEVICE
             );
@@ -766,7 +766,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
         @Override
         public void onFailure(final Throwable throwable) {
-            mastershipChangeListener.onNotAbleToStartMastershipMandatory(
+            contextChainMastershipChangeWatcher.onNotAbleToStartMastershipMandatory(
                     deviceInfo,
                     "Was not able to set MASTER role on device");
         }
@@ -774,11 +774,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     private class DeviceFlowRegistryCallback implements FutureCallback<List<Optional<FlowCapableNode>>> {
         private final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill;
-        private final MastershipChangeListener mastershipChangeListener;
+        private final ContextChainMastershipChangeWatcher mastershipChangeListener;
 
         DeviceFlowRegistryCallback(
                 ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill,
-                MastershipChangeListener mastershipChangeListener) {
+                ContextChainMastershipChangeWatcher mastershipChangeListener) {
             this.deviceFlowRegistryFill = deviceFlowRegistryFill;
             this.mastershipChangeListener = mastershipChangeListener;
         }
