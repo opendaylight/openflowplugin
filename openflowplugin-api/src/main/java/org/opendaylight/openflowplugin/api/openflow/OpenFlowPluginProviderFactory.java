@@ -16,15 +16,19 @@ import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
+import org.osgi.framework.BundleContext;
 
 /**
  * Factory for creating OpenFlowPluginProvider instances.
  */
 public interface OpenFlowPluginProviderFactory {
-    OpenFlowPluginProvider newInstance(OpenflowProviderConfig providerConfig, DataBroker dataBroker,
-                                       RpcProviderRegistry rpcRegistry, NotificationService notificationService,
+    OpenFlowPluginProvider newInstance(OpenflowProviderConfig providerConfig,
+                                       DataBroker dataBroker,
+                                       RpcProviderRegistry rpcRegistry,
+                                       NotificationService notificationService,
                                        NotificationPublishService notificationPublishService,
                                        EntityOwnershipService entityOwnershipService,
                                        List<SwitchConnectionProvider> switchConnectionProviders,
-                                       ClusterSingletonServiceProvider singletonServiceProvider);
+                                       ClusterSingletonServiceProvider singletonServiceProvider,
+                                       BundleContext bundleContext);
 }
