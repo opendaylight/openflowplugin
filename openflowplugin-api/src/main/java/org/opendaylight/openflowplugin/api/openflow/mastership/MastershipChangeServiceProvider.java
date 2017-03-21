@@ -8,11 +8,12 @@
 package org.opendaylight.openflowplugin.api.openflow.mastership;
 
 import javax.annotation.Nonnull;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
 
 /**
  * Provider to register mastership change listener.
  */
-public interface MastershipChangeServiceProvider {
+public interface MastershipChangeServiceProvider extends MastershipChangeListener {
 
     @Nonnull
     MastershipChangeRegistration register(@Nonnull final MastershipChangeService service);

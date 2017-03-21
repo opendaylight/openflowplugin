@@ -23,6 +23,7 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
@@ -53,12 +54,14 @@ public class ContextChainHolderImplTest {
     private ClusterSingletonServiceProvider singletonServicesProvider;
     @Mock
     private EntityOwnershipService entityOwnershipService;
+    @Mock
+    private MastershipChangeServiceProvider mastershipChangeServiceProvider;
 
     private ContextChainHolderImpl contextChainHolder;
 
     @Before
     public void setUp() throws Exception {
-        contextChainHolder = new ContextChainHolderImpl(timer);
+        contextChainHolder = new ContextChainHolderImpl(timer, mastershipChangeServiceProvider);
         contextChainHolder.addManager(statisticsManager);
         contextChainHolder.addManager(rpcManager);
         contextChainHolder.addManager(deviceManager);
