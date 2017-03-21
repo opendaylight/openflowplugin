@@ -12,7 +12,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 /**
  * Listener if able to start mastership for device.
  */
-public interface MastershipChangeListener {
+public interface ContextChainMastershipChangeWatcher {
 
     /**
      * Event occurs if there was a try to acquire MASTER role.

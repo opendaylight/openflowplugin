@@ -52,7 +52,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipChangeWatcher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
@@ -688,7 +688,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public boolean onContextInstantiateService(final MastershipChangeListener mastershipChangeListener) {
+    public boolean onContextInstantiateService(final ContextChainMastershipChangeWatcher contextChainMastershipChangeWatcher) {
 
         LOG.info("Starting device context cluster services for node {}", deviceInfo.getLOGValue());
 
@@ -712,12 +712,12 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         }
 
         Futures.addCallback(sendRoleChangeToDevice(OfpRole.BECOMEMASTER),
-                new RpcResultFutureCallback(mastershipChangeListener));
+                new RpcResultFutureCallback(contextChainMastershipChangeWatcher));
 
         final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill = getDeviceFlowRegistry().fill();
         Futures.addCallback(deviceFlowRegistryFill, new DeviceFlowRegistryCallback(deviceFlowRegistryFill));
 
-        return this.clusterInitializationPhaseHandler.onContextInstantiateService(mastershipChangeListener);
+        return this.clusterInitializationPhaseHandler.onContextInstantiateService(contextChainMastershipChangeWatcher);
     }
 
     @VisibleForTesting
@@ -781,10 +781,10 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     private class RpcResultFutureCallback implements FutureCallback<RpcResult<SetRoleOutput>> {
 
-        private final MastershipChangeListener mastershipChangeListener;
+        private final ContextChainMastershipChangeWatcher contextChainMastershipChangeWatcher;
 
-        RpcResultFutureCallback(final MastershipChangeListener mastershipChangeListener) {
-            this.mastershipChangeListener = mastershipChangeListener;
+        RpcResultFutureCallback(final ContextChainMastershipChangeWatcher contextChainMastershipChangeWatcher) {
+            this.contextChainMastershipChangeWatcher = contextChainMastershipChangeWatcher;
         }
 
         @Override
@@ -797,7 +797,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         @Override
         public void onFailure(final Throwable throwable) {
             LOG.warn("Was not able to set MASTER role on device, node {}", deviceInfo.getLOGValue());
-            mastershipChangeListener.onNotAbleToStartMastership(deviceInfo);
+            contextChainMastershipChangeWatcher.onNotAbleToStartMastership(deviceInfo);
         }
     }
 
