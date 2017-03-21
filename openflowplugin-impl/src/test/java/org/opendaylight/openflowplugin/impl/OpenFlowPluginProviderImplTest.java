@@ -30,6 +30,7 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsManagerControlService;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -37,30 +38,24 @@ public class OpenFlowPluginProviderImplTest {
 
     @Mock
     DataBroker dataBroker;
-
     @Mock
     RpcProviderRegistry rpcProviderRegistry;
-
     @Mock
     NotificationService notificationService;
-
     @Mock
     WriteTransaction writeTransaction;
-
     @Mock
     EntityOwnershipService entityOwnershipService;
-
     @Mock
     EntityOwnershipListenerRegistration entityOwnershipListenerRegistration;
-
     @Mock
     BindingAwareBroker.RpcRegistration<StatisticsManagerControlService> controlServiceRegistration;
-
     @Mock
     SwitchConnectionProvider switchConnectionProvider;
-
     @Mock
     ClusterSingletonServiceProvider clusterSingletonServiceProvider;
+    @Mock
+    MastershipChangeServiceProvider mastershipChangeServiceProvider;
 
     private static final long RPC_REQUESTS_QUOTA = 500;
     private static final long GLOBAL_NOTIFICATION_QUOTA = 131072;
