@@ -34,11 +34,12 @@ import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipS
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
+import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginMastershipChangeServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainHolder;
-import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceProvider;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
@@ -50,7 +51,7 @@ import org.opendaylight.openflowplugin.impl.connection.ConnectionManagerImpl;
 import org.opendaylight.openflowplugin.impl.device.DeviceManagerImpl;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProvider;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProviderFactory;
-import org.opendaylight.openflowplugin.impl.mastership.MastershipServiceProviderImpl;
+import org.opendaylight.openflowplugin.impl.mastership.MastershipServiceManagerImpl;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.DeserializerInjector;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.SerializerInjector;
 import org.opendaylight.openflowplugin.impl.lifecycle.ContextChainHolderImpl;
@@ -68,7 +69,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import io.netty.util.HashedWheelTimer;
 
-public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenFlowPluginExtensionRegistratorProvider {
+public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenFlowPluginMastershipChangeServiceProvider, OpenFlowPluginExtensionRegistratorProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenFlowPluginProviderImpl.class);
     private static final MessageIntelligenceAgency messageIntelligenceAgency = new MessageIntelligenceAgencyImpl();
@@ -111,7 +112,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
     private final ThreadPoolExecutor threadPool;
     private ClusterSingletonServiceProvider singletonServicesProvider;
-    private final MastershipChangeServiceProvider mastershipChangeServiceProvider;
+    private final MastershipChangeServiceManager mastershipChangeServiceManager;
 
     public OpenFlowPluginProviderImpl(final long rpcRequestsQuota,
                                       final long globalNotificationQuota,
@@ -131,10 +132,10 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 Preconditions.checkNotNull(threadPoolMaxThreads),
                 Preconditions.checkNotNull(threadPoolTimeout), TimeUnit.SECONDS,
                 new SynchronousQueue<>(), POOL_NAME);
-        deviceInitializerProvider = DeviceInitializerProviderFactory.createDefaultProvider();		
+        deviceInitializerProvider = DeviceInitializerProviderFactory.createDefaultProvider();
         convertorManager = ConvertorManagerFactory.createDefaultManager();
-        mastershipChangeServiceProvider = new MastershipServiceProviderImpl();
-        contextChainHolder = new ContextChainHolderImpl(hashedWheelTimer, mastershipChangeServiceProvider);
+        mastershipChangeServiceManager = new MastershipServiceManagerImpl();
+        contextChainHolder = new ContextChainHolderImpl(hashedWheelTimer, mastershipChangeServiceManager);
         contextChainHolder.changeEntityOwnershipService(entityOwnershipService);
     }
 
@@ -417,7 +418,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     }
 
     @Override
-    public MastershipChangeServiceProvider getMastershipChangeServiceProvider() {
-        return this.mastershipChangeServiceProvider;
+    public MastershipChangeServiceManager getMastershipChangeServiceManager() {
+        return this.mastershipChangeServiceManager;
     }
 }
