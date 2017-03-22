@@ -34,6 +34,7 @@ import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipS
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
+import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginMastershipChangeServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
@@ -68,7 +69,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import io.netty.util.HashedWheelTimer;
 
-public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenFlowPluginExtensionRegistratorProvider {
+public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenFlowPluginMastershipChangeServiceProvider, OpenFlowPluginExtensionRegistratorProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenFlowPluginProviderImpl.class);
     private static final MessageIntelligenceAgency messageIntelligenceAgency = new MessageIntelligenceAgencyImpl();
@@ -131,7 +132,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 Preconditions.checkNotNull(threadPoolMaxThreads),
                 Preconditions.checkNotNull(threadPoolTimeout), TimeUnit.SECONDS,
                 new SynchronousQueue<>(), POOL_NAME);
-        deviceInitializerProvider = DeviceInitializerProviderFactory.createDefaultProvider();		
+        deviceInitializerProvider = DeviceInitializerProviderFactory.createDefaultProvider();
         convertorManager = ConvertorManagerFactory.createDefaultManager();
         mastershipChangeServiceProvider = new MastershipServiceProviderImpl();
         contextChainHolder = new ContextChainHolderImpl(hashedWheelTimer, mastershipChangeServiceProvider);

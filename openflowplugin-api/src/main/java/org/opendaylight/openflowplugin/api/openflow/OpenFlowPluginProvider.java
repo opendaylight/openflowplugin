@@ -17,7 +17,6 @@ import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
-import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceProvider;
 
 /**
  * Plugin services provider
@@ -78,7 +77,7 @@ public interface OpenFlowPluginProvider extends AutoCloseable, BindingService {
     void update(Map<String,Object> props);
 
     void setClusteringSingletonServicesProvider(ClusterSingletonServiceProvider singletonServicesProvider);
-    
+
     void setSkipTableFeatures(boolean skipTableFeatures);
 
     void setBasicTimerDelay(long basicTimerDelay);
@@ -93,5 +92,4 @@ public interface OpenFlowPluginProvider extends AutoCloseable, BindingService {
 
     void updateNeverDropContextChains(Boolean neverDropChain);
 
-    MastershipChangeServiceProvider getMastershipChangeServiceProvider();
 }
