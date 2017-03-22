@@ -13,7 +13,7 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeLi
 /**
  * Provider to register mastership change listener.
  */
-public interface MastershipChangeServiceProvider extends MastershipChangeListener {
+public interface MastershipChangeServiceManager extends MastershipChangeListener {
 
     @Nonnull
     MastershipChangeRegistration register(@Nonnull final MastershipChangeService service);
