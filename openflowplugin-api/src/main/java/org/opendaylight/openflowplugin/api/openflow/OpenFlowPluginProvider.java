@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.api.openflow;
 
 import org.opendaylight.controller.md.sal.binding.api.BindingService;
-import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceProvider;
 
 /**
  * Plugin services provider
@@ -21,5 +20,4 @@ public interface OpenFlowPluginProvider extends AutoCloseable, BindingService {
      */
     void initialize();
 
-    MastershipChangeServiceProvider getMastershipChangeServiceProvider();
 }

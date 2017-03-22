@@ -32,7 +32,7 @@ import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginConfigurationService.PropertyType;
-import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceProvider;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsManagerControlService;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -60,7 +60,7 @@ public class OpenFlowPluginProviderImplTest {
     @Mock
     ClusterSingletonServiceProvider clusterSingletonServiceProvider;
     @Mock
-    MastershipChangeServiceProvider mastershipChangeServiceProvider;
+    MastershipChangeServiceManager mastershipChangeServiceProvider;
 
     private static final int RPC_REQUESTS_QUOTA = 500;
     private static final long GLOBAL_NOTIFICATION_QUOTA = 131072;
