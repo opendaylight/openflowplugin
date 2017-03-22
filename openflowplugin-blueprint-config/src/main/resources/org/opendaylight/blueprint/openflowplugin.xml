@@ -46,6 +46,7 @@
     <service ref="openflowPluginProvider" odl:type="openflow-plugin-provider-impl">
         <interfaces>
             <value>org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider</value>
+            <value>org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginMastershipChangeServiceProvider</value>
             <value>org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider</value>
         </interfaces>
     </service>
