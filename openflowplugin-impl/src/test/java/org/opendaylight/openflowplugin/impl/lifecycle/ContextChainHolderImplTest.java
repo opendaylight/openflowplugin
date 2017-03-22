@@ -23,7 +23,7 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
-import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceProvider;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
@@ -55,7 +55,7 @@ public class ContextChainHolderImplTest {
     @Mock
     private EntityOwnershipService entityOwnershipService;
     @Mock
-    private MastershipChangeServiceProvider mastershipChangeServiceProvider;
+    private MastershipChangeServiceManager mastershipChangeServiceProvider;
 
     private ContextChainHolderImpl contextChainHolder;
 

@@ -24,8 +24,6 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginConfigurationService.PropertyType;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProviderFactory;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
-import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.cm.Configuration;
