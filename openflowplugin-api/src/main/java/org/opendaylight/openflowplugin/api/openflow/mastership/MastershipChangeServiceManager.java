@@ -18,4 +18,6 @@ public interface MastershipChangeServiceManager extends MastershipChangeListener
     @Nonnull
     MastershipChangeRegistration register(@Nonnull final MastershipChangeService service);
 
+    void unregister(@Nonnull final MastershipChangeService service);
+
 }

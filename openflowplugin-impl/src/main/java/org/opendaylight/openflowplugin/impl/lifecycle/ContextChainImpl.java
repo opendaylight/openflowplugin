@@ -12,7 +12,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.internal.ConcurrentSet;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nonnull;
@@ -197,5 +196,10 @@ public class ContextChainImpl implements ContextChain {
         }
         this.auxiliaryConnections.remove(connectionContext);
         return true;
+    }
+
+    @Override
+    public ContextChainState getContextChainState() {
+        return this.contextChainState;
     }
 }
