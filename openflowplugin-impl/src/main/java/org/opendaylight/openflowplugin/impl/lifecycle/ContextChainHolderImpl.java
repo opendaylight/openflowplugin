@@ -17,6 +17,7 @@ import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import io.netty.util.internal.ConcurrentSet;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -40,7 +41,9 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChain;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainHolder;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.MasterChecker;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
@@ -52,7 +55,7 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ContextChainHolderImpl implements ContextChainHolder {
+public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker {
 
     private static final Logger LOG = LoggerFactory.getLogger(ContextChainHolderImpl.class);
 
@@ -81,6 +84,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         this.checkRoleMaster = DEFAULT_CHECK_ROLE_MASTER;
         this.timerIsRunningRole = false;
         this.mastershipChangeListener = mastershipChangeListener;
+        this.mastershipChangeListener.setMasterChecker(this);
         LOG.info("Context chain holder created.");
     }
 
@@ -365,6 +369,17 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
     private void sendNotificationNodeAdded(final DeviceInfo deviceInfo) {
         this.deviceManager.sendNodeAddedNotification(deviceInfo);
+    }
+
+    @Override
+    public List<DeviceInfo> checkForMaster() {
+        List<DeviceInfo> masteringDevices = new LinkedList<>();
+        contextChainMap.forEach((deviceInfo, contextChain) -> {
+            if (contextChain.getContextChainState().equals(ContextChainState.WORKING_MASTER)) {
+                masteringDevices.add(deviceInfo);
+            }
+        });
+        return masteringDevices;
     }
 
     private class RoleTimerTask implements TimerTask {

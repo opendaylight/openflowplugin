@@ -224,4 +224,9 @@ public class ContextChainImpl implements ContextChain {
                     .forEach(listener -> listener.onStateAcquired(contextChainState));
         }
     }
+
+    @Override
+    public ContextChainState getContextChainState() {
+        return this.contextChainState;
+    }
 }
