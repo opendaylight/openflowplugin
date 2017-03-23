@@ -82,16 +82,11 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
 
         if (isDelete(nodeModification) || isDeleteLogical(nodeModification)) {
             operationalSnapshot.updateCache(nodeId, Optional.absent());
-            deviceMastershipManager.onDeviceDisconnected(nodeId);
             result = skipModification(modification);
         } else {
             operationalSnapshot.updateCache(nodeId, Optional.fromNullable(ModificationUtil.flowCapableNodeAfter(modification)));
 
             final boolean isAdd = isAdd(nodeModification) || isAddLogical(nodeModification);
-
-            if (isAdd) {
-                deviceMastershipManager.onDeviceConnected(nodeId);
-            }
 
             // if node is registered for reconcile we need consistent data from operational DS (skip partial collections)
             // but we can accept first modification since all statistics are intentionally collected in one step on startup
