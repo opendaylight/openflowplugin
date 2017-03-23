@@ -15,6 +15,7 @@ import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -37,6 +38,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChain;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainHolder;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.MasterChecker;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
@@ -49,7 +51,7 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ContextChainHolderImpl implements ContextChainHolder {
+public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker {
 
     private static final Logger LOG = LoggerFactory.getLogger(ContextChainHolderImpl.class);
     private static final String NOT_ALL_MANAGER_WERE_SET = "Not all manager were set.";
@@ -92,6 +94,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         this.ttlStep = DEFAULT_TTL_STEP;
         this.checkRoleMaster = DEFAULT_CHECK_ROLE_MASTER;
         this.mastershipChangeListener = mastershipChangeListener;
+        this.mastershipChangeListener.setMasterChecker(this);
         LOG.info("Context chain holder created.");
     }
 
@@ -331,6 +334,17 @@ public class ContextChainHolderImpl implements ContextChainHolder {
             this.eosListenerRegistration = Verify.verifyNotNull(entityOwnershipService.registerListener
                     (SERVICE_ENTITY_TYPE, this));
         }
+    }
+
+    @Override
+    public List<DeviceInfo> checkForMaster() {
+        List<DeviceInfo> masteringDevices = new LinkedList<>();
+        contextChainMap.forEach((deviceInfo, contextChain) -> {
+            if (contextChain.getContextChainState().equals(ContextChainState.WORKINGMASTER)) {
+                masteringDevices.add(deviceInfo);
+            }
+        });
+        return masteringDevices;
     }
 
     private void addToSleepingChainsMap(@Nonnull final DeviceInfo deviceInfo, final ContextChain contextChain) {
