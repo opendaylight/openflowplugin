@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.MasterChecker;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeRegistration;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeService;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
@@ -22,6 +23,7 @@ public class MastershipServiceManagerImpl implements MastershipChangeServiceMana
     private static final Logger LOG = LoggerFactory.getLogger(MastershipServiceManagerImpl.class);
 
     private final List<MastershipChangeService> serviceGroup = new LinkedList<>();
+    private MasterChecker masterChecker;
 
     @Nonnull
     @Override
@@ -29,22 +31,33 @@ public class MastershipServiceManagerImpl implements MastershipChangeServiceMana
         if (LOG.isDebugEnabled()) {
             LOG.debug("Mastership change service registered: {}", service);
         }
-        MastershipServiceDelegate registration = new MastershipServiceDelegate(service);
+        MastershipServiceDelegate registration = new MastershipServiceDelegate(service, this);
         serviceGroup.add(registration);
+        fireBecomeOwnerAfterRegistration(registration);
         return registration;
     }
 
     @Override
+    public void unregister(@Nonnull MastershipChangeService service) {
+        serviceGroup.remove(service);
+    }
+
+    @Override
     public void becomeMaster(@Nonnull final DeviceInfo deviceInfo) {
-        for (MastershipChangeService service : serviceGroup) {
-            service.onBecomeOwner(deviceInfo);
-        }
+        serviceGroup.forEach(mastershipChangeService -> mastershipChangeService.onBecomeOwner(deviceInfo));
     }
 
     @Override
     public void becomeSlaveOrDisconnect(@Nonnull final DeviceInfo deviceInfo) {
-        for (MastershipChangeService service : serviceGroup) {
-            service.onLoseOwnership(deviceInfo);
-        }
+        serviceGroup.forEach(mastershipChangeService -> mastershipChangeService.onLoseOwnership(deviceInfo));
+    }
+
+    @Override
+    public void setMasterChecker(@Nonnull final MasterChecker masterChecker) {
+        this.masterChecker = masterChecker;
+    }
+
+    private void fireBecomeOwnerAfterRegistration(@Nonnull final  MastershipChangeService service) {
+        masterChecker.checkForMaster().forEach(service::onBecomeOwner);
     }
 }
