@@ -22,7 +22,9 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginMastershipChangeServiceProvider;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceProvider;
 import org.opendaylight.openflowplugin.applications.frsync.NodeListener;
 import org.opendaylight.openflowplugin.applications.frsync.SyncPlanPushStrategy;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
@@ -53,7 +55,7 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
     private static final String FRS_EXECUTOR_PREFIX = "FRS-executor-";
 
     private final DataBroker dataService;
-    private final ClusterSingletonServiceProvider clusterSingletonService;
+    private final MastershipChangeServiceManager mastershipChangeServiceManager;
     private final SalTableService salTableService;
     private final SalFlatBatchService flatBatchService;
 
@@ -75,11 +77,13 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
     public ForwardingRulesSyncProvider(final BindingAwareBroker broker,
                                        final DataBroker dataBroker,
                                        final RpcConsumerRegistry rpcRegistry,
-                                       final ClusterSingletonServiceProvider clusterSingletonService) {
+                                       final OpenFlowPluginMastershipChangeServiceProvider openFlowPluginMastershipChangeServiceProvider) {
         Preconditions.checkNotNull(rpcRegistry, "RpcConsumerRegistry can not be null!");
         this.dataService = Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
-        this.clusterSingletonService = Preconditions.checkNotNull(clusterSingletonService,
-                "ClusterSingletonServiceProvider can not be null!");
+        this.mastershipChangeServiceManager = Preconditions
+            .checkNotNull(openFlowPluginMastershipChangeServiceProvider,
+                "OpenFlowPluginMastershipChangeServiceProvider can not be null!")
+            .getMastershipChangeServiceManager();
         this.salTableService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalTableService.class),
                 "RPC SalTableService not found.");
         this.flatBatchService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalFlatBatchService.class),
@@ -107,7 +111,7 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
 
         final ReconciliationRegistry reconciliationRegistry = new ReconciliationRegistry();
         final DeviceMastershipManager deviceMastershipManager =
-                new DeviceMastershipManager(clusterSingletonService, reconciliationRegistry);
+                new DeviceMastershipManager(mastershipChangeServiceManager, reconciliationRegistry);
 
         final SyncReactor syncReactorImpl = new SyncReactorImpl(syncPlanPushStrategy);
         final SyncReactor syncReactorRetry = new SyncReactorRetryDecorator(syncReactorImpl, reconciliationRegistry);
