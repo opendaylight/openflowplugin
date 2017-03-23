@@ -12,13 +12,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.applications.frsync.util.ReconciliationRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 
@@ -30,42 +27,39 @@ public class DeviceMastershipManagerTest {
     private static final NodeId NODE_ID = new NodeId("testNode");
     private DeviceMastershipManager deviceMastershipManager;
     @Mock
-    private ClusterSingletonServiceRegistration registration;
+    private ReconciliationRegistry reconciliationRegistry;
     @Mock
-    private ClusterSingletonServiceProvider clusterSingletonService;
+    private DeviceInfo deviceInfo;
 
     @Before
     public void setUp() throws Exception {
-        deviceMastershipManager = new DeviceMastershipManager(clusterSingletonService, new ReconciliationRegistry());
-        Mockito.when(clusterSingletonService.registerClusterSingletonService(Matchers.<ClusterSingletonService>any()))
-                .thenReturn(registration);
+        deviceMastershipManager = new DeviceMastershipManager(reconciliationRegistry);
+        Mockito.when(deviceInfo.getNodeId()).thenReturn(NODE_ID);
     }
 
     @Test
     public void testOnDeviceConnectedAndDisconnected() throws Exception {
         // no context
-        Assert.assertNull(deviceMastershipManager.getDeviceMasterships().get(NODE_ID));
+        Assert.assertFalse(deviceMastershipManager.getDeviceMasterships().contains(NODE_ID));
         // create context - register
-        deviceMastershipManager.onDeviceConnected(NODE_ID);
-        DeviceMastership serviceInstance = deviceMastershipManager.getDeviceMasterships().get(NODE_ID);
-        Assert.assertNotNull(serviceInstance);
-        Mockito.verify(clusterSingletonService).registerClusterSingletonService(serviceInstance);
+        deviceMastershipManager.onBecomeOwner(deviceInfo);
+        Assert.assertTrue(deviceMastershipManager.getDeviceMasterships().contains(NODE_ID));
+        Mockito.verify(reconciliationRegistry).register(NODE_ID);
         // destroy context - unregister
-        deviceMastershipManager.onDeviceDisconnected(NODE_ID);
-        Assert.assertNull(deviceMastershipManager.getDeviceMasterships().get(NODE_ID));
-        Mockito.verify(registration).close();
+        deviceMastershipManager.onLoseOwnership(deviceInfo);
+        Assert.assertFalse(deviceMastershipManager.getDeviceMasterships().contains(NODE_ID));
+        Mockito.verify(reconciliationRegistry).unregisterIfRegistered(NODE_ID);
     }
 
     @Test
     public void testIsDeviceMasteredOrSlaved() {
         // no context
         Assert.assertFalse(deviceMastershipManager.isDeviceMastered(NODE_ID));
-        deviceMastershipManager.onDeviceConnected(NODE_ID);
+        deviceMastershipManager.onBecomeOwner(deviceInfo);
         // is master
-        deviceMastershipManager.getDeviceMasterships().get(NODE_ID).instantiateServiceInstance();
         Assert.assertTrue(deviceMastershipManager.isDeviceMastered(NODE_ID));
         // is not master
-        deviceMastershipManager.getDeviceMasterships().get(NODE_ID).closeServiceInstance();
+        deviceMastershipManager.onLoseOwnership(deviceInfo);
         Assert.assertFalse(deviceMastershipManager.isDeviceMastered(NODE_ID));
     }
 
