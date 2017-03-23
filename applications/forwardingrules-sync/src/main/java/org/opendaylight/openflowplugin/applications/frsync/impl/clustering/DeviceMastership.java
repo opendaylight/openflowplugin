@@ -9,46 +9,47 @@
 package org.opendaylight.openflowplugin.applications.frsync.impl.clustering;
 
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
+import java.util.concurrent.Future;
+import javax.annotation.Nonnull;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
-import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeRegistration;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeService;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.applications.frsync.util.ReconciliationRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link ClusterSingletonService} clusterSingletonServiceRegistration per connected device.
+ * {@link ClusterSingletonService} mastershipChangeRegistration per connected device.
  */
-public class DeviceMastership implements ClusterSingletonService, AutoCloseable {
+public class DeviceMastership implements MastershipChangeService, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(DeviceMastership.class);
     private final NodeId nodeId;
-    private final ServiceGroupIdentifier identifier;
     private final ReconciliationRegistry reconciliationRegistry;
-    private final ClusterSingletonServiceRegistration clusterSingletonServiceRegistration;
+    private MastershipChangeRegistration mastershipChangeRegistration;
     private boolean deviceMastered;
 
     public DeviceMastership(final NodeId nodeId,
                             final ReconciliationRegistry reconciliationRegistry,
-                            final ClusterSingletonServiceProvider clusterSingletonService) {
+                            final MastershipChangeServiceManager mastershipChangeServiceManager) {
         this.nodeId = nodeId;
-        this.identifier = ServiceGroupIdentifier.create(nodeId.getValue());
         this.reconciliationRegistry = reconciliationRegistry;
         this.deviceMastered = false;
-        clusterSingletonServiceRegistration = clusterSingletonService.registerClusterSingletonService(this);
+        mastershipChangeRegistration = mastershipChangeServiceManager.register(this);
     }
 
     @Override
-    public void instantiateServiceInstance() {
+    public Future<Void> onBecomeOwner(@Nonnull final DeviceInfo deviceInfo) {
         LOG.debug("FRS started for: {}", nodeId.getValue());
         deviceMastered = true;
         reconciliationRegistry.register(nodeId);
+        return Futures.immediateFuture(null);
     }
 
     @Override
-    public ListenableFuture<Void> closeServiceInstance() {
+    public Future<Void> onLoseOwnership(@Nonnull final DeviceInfo deviceInfo) {
         LOG.debug("FRS stopped for: {}", nodeId.getValue());
         deviceMastered = false;
         reconciliationRegistry.unregisterIfRegistered(nodeId);
@@ -56,15 +57,11 @@ public class DeviceMastership implements ClusterSingletonService, AutoCloseable 
     }
 
     @Override
-    public ServiceGroupIdentifier getIdentifier() {
-        return identifier;
-    }
-
-    @Override
     public void close() {
-        if (clusterSingletonServiceRegistration != null) {
+        if (mastershipChangeRegistration != null) {
             try {
-                clusterSingletonServiceRegistration.close();
+                mastershipChangeRegistration.close();
+                mastershipChangeRegistration = null;
             } catch (Exception e) {
                 LOG.error("FRS cluster service close fail: {} {}", nodeId.getValue(), e);
             }

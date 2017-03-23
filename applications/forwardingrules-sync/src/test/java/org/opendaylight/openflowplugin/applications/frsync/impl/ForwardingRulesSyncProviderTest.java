@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +22,8 @@ import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginMastershipChangeServiceProvider;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.SalFlatBatchService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
@@ -45,7 +45,9 @@ public class ForwardingRulesSyncProviderTest {
     @Mock
     private ProviderContext providerContext;
     @Mock
-    private ClusterSingletonServiceProvider clusterSingletonService;
+    private OpenFlowPluginMastershipChangeServiceProvider openFlowPluginMastershipChangeServiceProvider;
+    @Mock
+    private MastershipChangeServiceManager mastershipChangeServiceManager;
 
     @Before
     public void setUp() throws Exception {
@@ -58,7 +60,9 @@ public class ForwardingRulesSyncProviderTest {
                     }
                 });
 
-        provider = new ForwardingRulesSyncProvider(broker, dataBroker, rpcRegistry, clusterSingletonService);
+        Mockito.when(openFlowPluginMastershipChangeServiceProvider.getMastershipChangeServiceManager()).thenReturn(mastershipChangeServiceManager);
+
+        provider = new ForwardingRulesSyncProvider(broker, dataBroker, rpcRegistry, openFlowPluginMastershipChangeServiceProvider);
         Mockito.verify(rpcRegistry).getRpcService(SalTableService.class);
         Mockito.verify(rpcRegistry).getRpcService(SalFlatBatchService.class);
         Mockito.verify(broker).registerProvider(provider);
@@ -71,11 +75,6 @@ public class ForwardingRulesSyncProviderTest {
         Mockito.verify(dataBroker, Mockito.times(2)).registerDataTreeChangeListener(
                 Matchers.<DataTreeIdentifier<FlowCapableNode>>any(),
                 Matchers.<DataTreeChangeListener<FlowCapableNode>>any());
-    }
-
-    @After
-    public void tearDown() {
-        provider.close();
     }
 
 }
