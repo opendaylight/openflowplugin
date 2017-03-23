@@ -117,7 +117,7 @@ public class SimplifiedOperationalListenerTest {
     public void testOnDataTreeChangedAddPhysical() {
         operationalAdd();
         nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
-        Mockito.verify(deviceMastershipManager).onDeviceConnected(NODE_ID);
+        Mockito.verify(dataTreeModification, Mockito.times(6)).getRootNode();
         Mockito.verifyZeroInteractions(reactor);
     }
 
@@ -128,7 +128,7 @@ public class SimplifiedOperationalListenerTest {
 
         nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
-        Mockito.verify(deviceMastershipManager).onDeviceDisconnected(NODE_ID);
+        Mockito.verify(dataTreeModification, Mockito.times(5)).getRootNode();
         Mockito.verifyZeroInteractions(reactor);
     }
 
@@ -142,7 +142,7 @@ public class SimplifiedOperationalListenerTest {
 
         nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
-        Mockito.verify(deviceMastershipManager).onDeviceDisconnected(NODE_ID);
+        Mockito.verify(dataTreeModification, Mockito.times(5)).getRootNode();
         Mockito.verifyZeroInteractions(reactor);
     }
 

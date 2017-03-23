@@ -22,7 +22,9 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginMastershipChangeServiceProvider;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeRegistration;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.applications.frsync.NodeListener;
 import org.opendaylight.openflowplugin.applications.frsync.SyncPlanPushStrategy;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
@@ -53,7 +55,7 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
     private static final String FRS_EXECUTOR_PREFIX = "FRS-executor-";
 
     private final DataBroker dataService;
-    private final ClusterSingletonServiceProvider clusterSingletonService;
+    private final MastershipChangeServiceManager mastershipChangeServiceManager;
     private final SalTableService salTableService;
     private final SalFlatBatchService flatBatchService;
 
@@ -71,15 +73,18 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
     private ListenerRegistration<NodeListener> dataTreeOperationalChangeListener;
 
     private final ListeningExecutorService syncThreadPool;
+    private MastershipChangeRegistration mastershipChangeServiceRegistration;
 
     public ForwardingRulesSyncProvider(final BindingAwareBroker broker,
                                        final DataBroker dataBroker,
                                        final RpcConsumerRegistry rpcRegistry,
-                                       final ClusterSingletonServiceProvider clusterSingletonService) {
+                                       final OpenFlowPluginMastershipChangeServiceProvider openFlowPluginMastershipChangeServiceProvider) {
         Preconditions.checkNotNull(rpcRegistry, "RpcConsumerRegistry can not be null!");
         this.dataService = Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
-        this.clusterSingletonService = Preconditions.checkNotNull(clusterSingletonService,
-                "ClusterSingletonServiceProvider can not be null!");
+        this.mastershipChangeServiceManager = Preconditions
+            .checkNotNull(openFlowPluginMastershipChangeServiceProvider,
+                "OpenFlowPluginMastershipChangeServiceProvider can not be null!")
+            .getMastershipChangeServiceManager();
         this.salTableService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalTableService.class),
                 "RPC SalTableService not found.");
         this.flatBatchService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalFlatBatchService.class),
@@ -106,16 +111,16 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
                 .setTableForwarder(tableForwarder);
 
         final ReconciliationRegistry reconciliationRegistry = new ReconciliationRegistry();
-        final DeviceMastershipManager deviceMastershipManager =
-                new DeviceMastershipManager(clusterSingletonService, reconciliationRegistry);
-
         final SyncReactor syncReactorImpl = new SyncReactorImpl(syncPlanPushStrategy);
         final SyncReactor syncReactorRetry = new SyncReactorRetryDecorator(syncReactorImpl, reconciliationRegistry);
         final SyncReactor syncReactorGuard = new SyncReactorGuardDecorator(syncReactorRetry);
         final SyncReactor syncReactorFutureZip = new SyncReactorFutureZipDecorator(syncReactorGuard, syncThreadPool);
 
-        final SyncReactor reactor = new SyncReactorClusterDecorator(syncReactorFutureZip, deviceMastershipManager);
+        final DeviceMastershipManager deviceMastershipManager =
+            new DeviceMastershipManager(reconciliationRegistry);
+        mastershipChangeServiceRegistration = mastershipChangeServiceManager.register(deviceMastershipManager);
 
+        final SyncReactor reactor = new SyncReactorClusterDecorator(syncReactorFutureZip, deviceMastershipManager);
         final FlowCapableNodeSnapshotDao configSnapshot = new FlowCapableNodeSnapshotDao();
         final FlowCapableNodeSnapshotDao operationalSnapshot = new FlowCapableNodeSnapshotDao();
         final FlowCapableNodeDao configDao = new FlowCapableNodeCachedDao(configSnapshot,
@@ -136,7 +141,7 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
         LOG.info("ForwardingRulesSync has started.");
     }
 
-    public void close() {
+    public void close() throws Exception{
         if (Objects.nonNull(dataTreeConfigChangeListener)) {
             dataTreeConfigChangeListener.close();
             dataTreeConfigChangeListener = null;
@@ -145,6 +150,10 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
         if (Objects.nonNull(dataTreeOperationalChangeListener)) {
             dataTreeOperationalChangeListener.close();
             dataTreeOperationalChangeListener = null;
+        }
+
+        if (Objects.nonNull(mastershipChangeServiceRegistration)) {
+            mastershipChangeServiceRegistration.close();
         }
 
         syncThreadPool.shutdown();
