@@ -10,7 +10,8 @@ package org.opendaylight.openflowplugin.applications.frsync.impl.clustering;
 
 import com.google.common.annotations.VisibleForTesting;
 import java.util.concurrent.ConcurrentHashMap;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceProvider;
 import org.opendaylight.openflowplugin.applications.frsync.util.ReconciliationRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.slf4j.Logger;
@@ -21,19 +22,19 @@ import org.slf4j.LoggerFactory;
  */
 public class DeviceMastershipManager {
     private static final Logger LOG = LoggerFactory.getLogger(DeviceMastershipManager.class);
-    private final ClusterSingletonServiceProvider clusterSingletonService;
+    private final MastershipChangeServiceManager mastershipChangeServiceManager;
     private final ConcurrentHashMap<NodeId, DeviceMastership> deviceMasterships = new ConcurrentHashMap();
     private final ReconciliationRegistry reconciliationRegistry;
 
-    public DeviceMastershipManager(final ClusterSingletonServiceProvider clusterSingletonService,
+    public DeviceMastershipManager(final MastershipChangeServiceManager mastershipChangeServiceManager,
                                    final ReconciliationRegistry reconciliationRegistry) {
-        this.clusterSingletonService = clusterSingletonService;
+        this.mastershipChangeServiceManager = mastershipChangeServiceManager;
         this.reconciliationRegistry = reconciliationRegistry;
     }
 
     public void onDeviceConnected(final NodeId nodeId) {
         LOG.debug("FRS service registered for: {}", nodeId.getValue());
-        final DeviceMastership mastership = new DeviceMastership(nodeId, reconciliationRegistry, clusterSingletonService);
+        final DeviceMastership mastership = new DeviceMastership(nodeId, reconciliationRegistry, mastershipChangeServiceManager);
         deviceMasterships.put(nodeId, mastership);
     }
 
