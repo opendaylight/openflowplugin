@@ -12,8 +12,10 @@ import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import io.netty.util.HashedWheelTimer;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -73,6 +75,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private TranslatorLibrary translatorLibrary;
 
     private final ConcurrentMap<DeviceInfo, DeviceContext> deviceContexts = new ConcurrentHashMap<>();
+    private final List<DeviceInfo> notificationCreateNodeSend = new ArrayList<>();
 
     private long barrierIntervalNanos;
     private int barrierCountLimit;
@@ -322,12 +325,15 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     @Override
     public void sendNodeAddedNotification(@CheckForNull final DeviceInfo deviceInfo) {
-        NodeUpdatedBuilder builder = new NodeUpdatedBuilder();
-        builder.setId(deviceInfo.getNodeId());
-        builder.setNodeRef(new NodeRef(deviceInfo.getNodeInstanceIdentifier()));
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Publishing node added notification for {}", deviceInfo.getLOGValue());
+        if (!notificationCreateNodeSend.contains(deviceInfo)) {
+            notificationCreateNodeSend.add(deviceInfo);
+            NodeUpdatedBuilder builder = new NodeUpdatedBuilder();
+            builder.setId(deviceInfo.getNodeId());
+            builder.setNodeRef(new NodeRef(deviceInfo.getNodeInstanceIdentifier()));
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Publishing node added notification for {}", deviceInfo.getLOGValue());
+            }
+            notificationPublishService.offerNotification(builder.build());
         }
-        notificationPublishService.offerNotification(builder.build());
     }
 }
