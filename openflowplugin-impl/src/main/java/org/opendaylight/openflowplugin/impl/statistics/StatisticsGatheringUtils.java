@@ -99,7 +99,9 @@ public final class StatisticsGatheringUtils {
                     boolean isMultipartProcessed = Boolean.TRUE;
 
                     if (rpcResult.isSuccessful()) {
-                        LOG.debug("Stats reply successfully received for node {} of type {}", deviceInfo.getNodeId(), type);
+                        if (LOG.isTraceEnabled()) {
+                            LOG.trace("Stats reply successfully received for node {} of type {}", deviceInfo.getNodeId(), type);
+                        }
 
                         // TODO: in case the result value is null then multipart data probably got processed on the fly -
                         // TODO: this contract should by clearly stated and enforced - now simple true value is returned
@@ -180,7 +182,9 @@ public final class StatisticsGatheringUtils {
                     deviceRegistry.getDeviceFlowRegistry().processMarks();
                 }
 
-                LOG.debug("Stats reply added to transaction for node {} of type {}", deviceInfo.getNodeId(), type);
+                if (LOG.isTraceEnabled()) {
+                    LOG.trace("Stats reply added to transaction for node {} of type {}", deviceInfo.getNodeId(), type);
+                }
                 return Boolean.TRUE;
             }
 

@@ -138,7 +138,7 @@ module openflow-provider-config {
         leaf ttl-before-drop {
             description "TTL in milliseconds without connection before the context chain shall be dropped";
             type uint32;
-            default 1000;
+            default 30000;
         }
 
         leaf ttl-step {
@@ -151,12 +151,6 @@ module openflow-provider-config {
             description "if true then context chain will not be dropped, otherwise use ttl-before-drop";
             type boolean;
             default false;
-        }
-
-        leaf context-chain-startup-state {
-            description "this will set the default state of context chain after creation";
-            type context-chain-state;
-            default WORKING_SLAVE;
         }
     }
 }

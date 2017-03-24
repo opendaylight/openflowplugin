@@ -62,12 +62,14 @@ public abstract class AbstractMultipartWriter<T extends DataContainer> {
      */
     public boolean write(final DataContainer dataContainer, final boolean withParents) {
         if (getType().isInstance(dataContainer)) {
-            LOG.debug("Writing multipart data of type {} for node {}", getType(), getInstanceIdentifier());
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Writing multipart data of type {} for node {}", getType(), getInstanceIdentifier());
+            }
             storeStatistics(getType().cast(dataContainer), withParents);
             return true;
         }
 
-        LOG.debug("Failed to write multipart data of type {} for node {}", getType(), getInstanceIdentifier());
+        LOG.warn("Failed to write multipart data of type {} for node {}", getType(), getInstanceIdentifier());
         return false;
     }
 

@@ -45,7 +45,9 @@ public class StatisticsGatheringOnTheFlyService<T extends OfHeader>
 
     @Override
     public ListenableFuture<RpcResult<List<T>>> getStatisticsOfType(final EventIdentifier eventIdentifier, final MultipartType type) {
-        LOG.debug("Getting statistics (onTheFly) for node {} of type {}", getDeviceInfo().getNodeId(), type);
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("Getting statistics (onTheFly) for node {} of type {}", getDeviceInfo().getNodeId(), type);
+        }
         EventsTimeCounter.markStart(eventIdentifier);
         setEventIdentifier(eventIdentifier);
         return handleServiceCall(type);

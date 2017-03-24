@@ -97,9 +97,9 @@ public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency,
     @Override
     public void run() {
         // log current counters and cleans it
-        if (LOG.isDebugEnabled()) {
+        if (LOG.isTraceEnabled()) {
             for (String counterItem : provideIntelligence()) {
-                LOG.debug(counterItem);
+                LOG.trace(counterItem);
             }
         }
     }

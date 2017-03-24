@@ -57,8 +57,8 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     private static final String SINGLETON_SERVICE_PROVIDER_WAS_NOT_SET_YET
             = "Singleton service provider was not set yet.";
     private static final long DEFAULT_TTL_STEP = 1000L;
-    private static final long DEFAULT_TTL_BEFORE_DROP = 1000L;
-    private static final long DEFAULT_CHECK_ROLE_MASTER = 5000L;
+    private static final long DEFAULT_TTL_BEFORE_DROP = 30000L;
+    private static final long DEFAULT_CHECK_ROLE_MASTER = 10000L;
     private static final boolean STOP = true;
     private static final boolean START = false;
     private static final String SERVICE_ENTITY_TYPE = "org.opendaylight.mdsal.ServiceEntityType";
@@ -121,7 +121,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         lifecycleService.registerDeviceRemovedHandler(statisticsManager);
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Lifecycle services" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfoLOGValue);
+            LOG.debug("Lifecycle" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfoLOGValue);
         }
 
         final DeviceContext deviceContext = deviceManager.createContext(connectionContext);
@@ -154,6 +154,10 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         this.withoutRoleChains.put(deviceInfo, contextChain);
         if (!this.timerIsRunningRole) {
             this.startTimerRole();
+        } else {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("There is {} context chains without role timer is running.", this.withoutRoleChains.size());
+            }
         }
 
         deviceContext.onPublished();
@@ -226,6 +230,9 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
     @Override
     public void onNotAbleToStartMastership(final DeviceInfo deviceInfo) {
+        if (!this.withoutRoleChains.isEmpty()) {
+            this.withoutRoleChains.remove(deviceInfo);
+        }
         ContextChain contextChain = contextChainMap.get(deviceInfo);
         if (Objects.nonNull(contextChain)) {
             LOG.warn("Not able to set MASTER role on device {}", deviceInfo.getLOGValue());
@@ -240,7 +247,9 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
     @Override
     public void onMasterRoleAcquired(final DeviceInfo deviceInfo) {
-        this.withoutRoleChains.remove(deviceInfo);
+        if (!this.withoutRoleChains.isEmpty()) {
+            this.withoutRoleChains.remove(deviceInfo);
+        }
         ContextChain contextChain = contextChainMap.get(deviceInfo);
         if (Objects.nonNull(contextChain)) {
             if (contextChain.getContextChainState().equals(ContextChainState.WORKINGMASTER)) {
@@ -272,6 +281,9 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
     @Override
     public void onSlaveRoleNotAcquired(final DeviceInfo deviceInfo) {
+        if (!this.withoutRoleChains.isEmpty()) {
+            this.withoutRoleChains.remove(deviceInfo);
+        }
         ContextChain contextChain = contextChainMap.get(deviceInfo);
         if (Objects.nonNull(contextChain)) {
             contextChain.sleepTheChainAndDropConnection();
@@ -424,7 +436,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     private void startTimerRole() {
         this.timerIsRunningRole = true;
         if (LOG.isDebugEnabled()) {
-            LOG.debug("There is {} context chains without role, starting timer.", this.withoutRoleChains.size());
+            LOG.debug("There is context chain without role, starting timer.");
         }
         timer.newTimeout(new RoleTimerTask(), this.checkRoleMaster, TimeUnit.MILLISECONDS);
     }
@@ -438,14 +450,19 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
     private void timerTickRole() {
         if (withoutRoleChains.isEmpty()) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("No context chain without role. Stopping timer.");
+            }
             this.stopTimerRole();
         } else {
-            this.withoutRoleChains.forEach((deviceInfo, contextChain) -> contextChain.makeDeviceSlave());
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("There is still {} context chains without role, re-starting timer.",
-                        this.withoutRoleChains.size());
-            }
-            timer.newTimeout(new RoleTimerTask(), this.checkRoleMaster, TimeUnit.MILLISECONDS);
+            this.withoutRoleChains.forEach((deviceInfo, contextChain) -> {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("No MASTER role propagated in {} ms, making device {} as SLAVE.",
+                            this.checkRoleMaster,
+                            deviceInfo);
+                }
+                contextChain.makeDeviceSlave();
+            });
         }
     }
 
@@ -479,6 +496,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
                 for (Map.Entry<DeviceInfo, ContextChain> entry : contextChainMap.entrySet()) {
                     if (entry.getKey().getNodeId().equals(nodeId)) {
                         inMap = entry.getKey();
+                        this.removeFromSleepingChainsMap(inMap);
                         break;
                     }                    
                 }
