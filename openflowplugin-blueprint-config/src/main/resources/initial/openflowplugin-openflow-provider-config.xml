@@ -1,0 +1,24 @@
+<openflow-provider-config xmlns="urn:opendaylight:params:xml:ns:yang:openflow:provider:config">
+    <rpc-requests-quota>20000</rpc-requests-quota>
+    <switch-features-mandatory>false</switch-features-mandatory>
+    <global-notification-quota>64000</global-notification-quota>
+    <is-statistics-polling-on>true</is-statistics-polling-on>
+    <is-statistics-rpc-enabled>false</is-statistics-rpc-enabled>
+    <barrier-interval-timeout-limit>500</barrier-interval-timeout-limit>
+    <barrier-count-limit>25600</barrier-count-limit>
+    <echo-reply-timeout>2000</echo-reply-timeout>
+    <thread-pool-min-threads>1</thread-pool-min-threads>
+    <thread-pool-max-threads>32000</thread-pool-max-threads>
+    <thread-pool-timeout>60</thread-pool-timeout>
+    <enable-flow-removed-notification>true</enable-flow-removed-notification>
+    <skip-table-features>true</skip-table-features>
+    <basic-timer-delay>3000</basic-timer-delay>
+    <maximum-timer-delay>900000</maximum-timer-delay>
+    <use-single-layer-serialization>true</use-single-layer-serialization>
+    <context-chain-config>
+        <ttl-before-drop>5000</ttl-before-drop>
+        <never-drop-contexts-on>true</never-drop-contexts-on>
+        <context-chain-startup-state>WORKING_SLAVE</context-chain-startup-state>
+        <number-of-needed-managers>3</number-of-needed-managers>
+    </context-chain-config>
+</openflow-provider-config>

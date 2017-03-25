@@ -69,28 +69,38 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
         openflowPluginProvider.initialize();
 
         LOG.info("Configured values, " +
-                "StatisticsPollingOn:{}, " +
+                "RPC Requests Quota:{}, " +
                 "SwitchFeaturesMandatory:{}, " +
+                "Global Notification Quota:{}, " +
+                "StatisticsPollingOn:{}, " +
+                "StatisticsRPCEnabled:{}, " +
+                "BarrierIntervalTimeOutLimit:{}, " +
                 "BarrierCountLimit:{}, " +
-                "BarrierTimeoutLimit:{}, " +
                 "EchoReplyTimeout:{}, " +
                 "ThreadPoolMinThreads:{}, " +
                 "ThreadPoolMaxThreads:{}, " +
                 "ThreadPoolTimeout:{}, " +
                 "NotificationFlowRemovedOff:{}, " +
+                "SkipTableFeatures:{}, " +
                 "BasicTimerDelay:{}, "+
-                "MaximumTimerDelay:{} ",
-                providerConfig.isIsStatisticsPollingOn(),
+                "MaximumTimerDelay:{} " +
+                "UseSingleLayerSerialization:{}, ",
+                providerConfig.getRpcRequestsQuota(),
                 providerConfig.isSwitchFeaturesMandatory(),
-                providerConfig.getBarrierCountLimit().getValue(),
+                providerConfig.getGlobalNotificationQuota(),
+                providerConfig.isIsStatisticsPollingOn(),
+                providerConfig.isIsStatisticsRpcEnabled(),
                 providerConfig.getBarrierIntervalTimeoutLimit().getValue(),
+                providerConfig.getBarrierCountLimit().getValue(),
                 providerConfig.getEchoReplyTimeout().getValue(),
                 providerConfig.getThreadPoolMinThreads(),
                 providerConfig.getThreadPoolMaxThreads().getValue(),
                 providerConfig.getThreadPoolTimeout(),
                 providerConfig.isEnableFlowRemovedNotification(),
+                providerConfig.isSkipTableFeatures(),
                 providerConfig.getBasicTimerDelay().getValue(),
-                providerConfig.getMaximumTimerDelay().getValue());
+                providerConfig.getMaximumTimerDelay().getValue(),
+                providerConfig.isUseSingleLayerSerialization());
 
         return openflowPluginProvider;
     }

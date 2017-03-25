@@ -20,7 +20,9 @@
   <!-- Create OpenflowPluginProvider instance -->
 
   <odl:clustered-app-config id="openflowProviderConfig"
-      binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig"/>
+      binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig"
+                            default-config-file-name="openflowplugin-openflow-provider-config.xml"
+                            update-strategy="none"/>
 
   <reference id="openflowPluginProviderFactory"
           interface="org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProviderFactory"/>
@@ -38,9 +40,6 @@
         <ref component-id="legacySwitchConnProvider"/>
       </list>
     </argument>
-    <cm:managed-properties persistent-id="org.opendaylight.openflowplugin"
-                           update-strategy="component-managed"
-                           update-method="update"/>
     <argument ref="clusterSingletonServiceProvider"/>
   </bean>
 
