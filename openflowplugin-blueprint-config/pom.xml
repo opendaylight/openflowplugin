@@ -39,8 +39,8 @@
                    <configuration>
                        <artifacts>
                            <artifact>
-                               <file>${project.build.directory}/classes/initial/openflowplugin.cfg</file>
-                               <type>cfg</type>
+                               <file>${project.build.directory}/classes/initial/openflowplugin-openflow-provider-config.xml</file>
+                               <type>xml</type>
                                <classifier>config</classifier>
                            </artifact>
                        </artifacts>
@@ -48,6 +48,14 @@
                </execution>
            </executions>
        </plugin>
+        <plugin>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>blueprint-maven-plugin</artifactId>
+        </plugin>
+        <plugin>
+            <groupId>org.eclipse.xtend</groupId>
+            <artifactId>xtend-maven-plugin</artifactId>
+        </plugin>
      </plugins>
    </build>
 </project>
