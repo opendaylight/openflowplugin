@@ -20,8 +20,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 
 public abstract class AbstractMatchCodec implements OFSerializer<MatchEntry>, OFDeserializer<MatchEntry> {
 
-    private NxmHeader headerWithMask;
-    private NxmHeader headerWithoutMask;
+    protected NxmHeader headerWithMask;
+    protected NxmHeader headerWithoutMask;
 
     protected MatchEntryBuilder deserializeHeader(ByteBuf message) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
