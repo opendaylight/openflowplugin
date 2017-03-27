@@ -33,9 +33,11 @@ import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRe
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.StatisticsGatherer;
-import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
-import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
 import org.opendaylight.openflowplugin.impl.common.MultipartReplyTranslatorUtil;
+import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
+import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerMultipartCollectorService;
+import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerMultipartCollectorService;
+import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -50,6 +52,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
@@ -71,6 +74,68 @@ public final class StatisticsGatheringUtils {
         throw new IllegalStateException("This class should not be instantiated.");
     }
 
+    public static ListenableFuture<Boolean> collectAndWriteStatistics(@Nonnull final MultipartType multipartType,
+                                                                      @Nonnull final DeviceContext deviceContext,
+                                                                      @Nonnull final MultipartWriterProvider writerProvider,
+                                                                      @Nullable final ConvertorExecutor convertorExecutor) {
+        if (deviceContext.canUseSingleLayerSerialization()) {
+            final SingleLayerMultipartCollectorService collectorService =
+                    new SingleLayerMultipartCollectorService(deviceContext, deviceContext);
+
+            return Futures.transform(collectorService.handleServiceCall(multipartType),
+                    (Function<RpcResult<List<MultipartReply>>, Boolean>) listRpcResult -> {
+                        if (Objects.nonNull(listRpcResult) && listRpcResult.isSuccessful()) {
+                            listRpcResult .getResult() .forEach(multipartReply ->
+                                    processMultipart(multipartType,
+                                            multipartReply,
+                                            deviceContext,
+                                            writerProvider,
+                                            convertorExecutor));
+
+                            return true;
+                        }
+
+                        return false;
+                    });
+        }
+
+        final MultiLayerMultipartCollectorService collectorService =
+                new MultiLayerMultipartCollectorService(deviceContext, deviceContext);
+
+        return Futures.transform(collectorService.handleServiceCall(multipartType),
+                (Function<RpcResult<List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply>>, Boolean>) listRpcResult -> {
+                    if (Objects.nonNull(listRpcResult) && listRpcResult.isSuccessful()) {
+                        listRpcResult .getResult() .forEach(multipartReply ->
+                                processMultipart(multipartType,
+                                        multipartReply,
+                                        deviceContext,
+                                        writerProvider,
+                                        convertorExecutor));
+
+                        return true;
+                    }
+
+                    return false;
+                });
+    }
+
+    private static void processMultipart(@Nonnull final MultipartType multipartType,
+                                         @Nonnull final OfHeader multipartReply,
+                                         @Nonnull final DeviceContext deviceContext,
+                                         @Nonnull final MultipartWriterProvider writerProvider,
+                                         @Nullable final ConvertorExecutor convertorExecutor) {
+        writerProvider.lookup(multipartType).ifPresent(writer -> {
+            MultipartReplyTranslatorUtil
+                    .translate(multipartReply,
+                            deviceContext.getDeviceInfo(),
+                            convertorExecutor,
+                            deviceContext.oook())
+                    .ifPresent(result -> {
+                        writer.write(result, false);
+                    });
+        });
+    }
+
     static <T extends OfHeader>ListenableFuture<Boolean> gatherStatistics(final StatisticsGatherer<T> statisticsGatheringService,
                                                                           final DeviceInfo deviceInfo,
                                                                           final MultipartType type,
@@ -89,59 +154,59 @@ public final class StatisticsGatheringUtils {
         }
 
         return Futures.transform(
-            statisticsGatheringService.getStatisticsOfType(
-                new EventIdentifier(QUEUE2_REQCTX + type.toString(), deviceInfo.getNodeId().toString()),
-                type),
-            new AsyncFunction<RpcResult<List<T>>, Boolean>() {
-                @Nullable
-                @Override
-                public ListenableFuture<Boolean> apply(@Nonnull final RpcResult<List<T>> rpcResult) {
-                    boolean isMultipartProcessed = Boolean.TRUE;
+                statisticsGatheringService.getStatisticsOfType(
+                        new EventIdentifier(QUEUE2_REQCTX + type.toString(), deviceInfo.getNodeId().toString()),
+                        type),
+                new AsyncFunction<RpcResult<List<T>>, Boolean>() {
+                    @Nullable
+                    @Override
+                    public ListenableFuture<Boolean> apply(@Nonnull final RpcResult<List<T>> rpcResult) {
+                        boolean isMultipartProcessed = Boolean.TRUE;
 
-                    if (rpcResult.isSuccessful()) {
-                        LOG.debug("Stats reply successfully received for node {} of type {}", deviceInfo.getNodeId(), type);
+                        if (rpcResult.isSuccessful()) {
+                            LOG.debug("Stats reply successfully received for node {} of type {}", deviceInfo.getNodeId(), type);
 
-                        // TODO: in case the result value is null then multipart data probably got processed on the fly -
-                        // TODO: this contract should by clearly stated and enforced - now simple true value is returned
-                        if (Objects.nonNull(rpcResult.getResult()) && !rpcResult.getResult().isEmpty()) {
-                            final List<DataContainer> allMultipartData;
+                            // TODO: in case the result value is null then multipart data probably got processed on the fly -
+                            // TODO: this contract should by clearly stated and enforced - now simple true value is returned
+                            if (Objects.nonNull(rpcResult.getResult()) && !rpcResult.getResult().isEmpty()) {
+                                final List<DataContainer> allMultipartData;
 
-                            try {
-                                allMultipartData = rpcResult
-                                    .getResult()
-                                    .stream()
-                                    .map(reply ->  MultipartReplyTranslatorUtil
-                                        .translate(reply, deviceInfo, convertorExecutor, null))
-                                    .filter(java.util.Optional::isPresent)
-                                    .map(java.util.Optional::get)
-                                    .collect(Collectors.toList());
-                            } catch (final Exception e) {
-                                LOG.warn("Stats processing of type {} for node {} failed during transformation step",
-                                    type, deviceInfo.getLOGValue(), e);
-                                return Futures.immediateFailedFuture(e);
-                            }
+                                try {
+                                    allMultipartData = rpcResult
+                                            .getResult()
+                                            .stream()
+                                            .map(reply ->  MultipartReplyTranslatorUtil
+                                                    .translate(reply, deviceInfo, convertorExecutor, null))
+                                            .filter(java.util.Optional::isPresent)
+                                            .map(java.util.Optional::get)
+                                            .collect(Collectors.toList());
+                                } catch (final Exception e) {
+                                    LOG.warn("Stats processing of type {} for node {} failed during transformation step",
+                                            type, deviceInfo.getLOGValue(), e);
+                                    return Futures.immediateFailedFuture(e);
+                                }
 
-                            try {
-                                return processStatistics(type, allMultipartData, txFacade, registry, deviceInfo,
-                                    statisticsWriterProvider,
-                                    eventIdentifier, initial);
-                            } catch (final Exception e) {
-                                LOG.warn("Stats processing of type {} for node {} failed during processing step",
-                                    type, deviceInfo.getNodeId(), e);
-                                return Futures.immediateFailedFuture(e);
+                                try {
+                                    return processStatistics(type, allMultipartData, txFacade, registry, deviceInfo,
+                                            statisticsWriterProvider,
+                                            eventIdentifier, initial);
+                                } catch (final Exception e) {
+                                    LOG.warn("Stats processing of type {} for node {} failed during processing step",
+                                            type, deviceInfo.getNodeId(), e);
+                                    return Futures.immediateFailedFuture(e);
+                                }
+                            } else {
+                                LOG.debug("Stats reply was empty for node {} of type {}", deviceInfo.getNodeId(), type);
                             }
                         } else {
-                            LOG.debug("Stats reply was empty for node {} of type {}", deviceInfo.getNodeId(), type);
+                            LOG.warn("Stats reply FAILED for node {} of type {}: {}", deviceInfo.getNodeId(), type,
+                                    rpcResult.getErrors());
+                            isMultipartProcessed = Boolean.FALSE;
                         }
-                    } else {
-                        LOG.warn("Stats reply FAILED for node {} of type {}: {}", deviceInfo.getNodeId(), type,
-                            rpcResult.getErrors());
-                        isMultipartProcessed = Boolean.FALSE;
-                    }
 
-                    return Futures.immediateFuture(isMultipartProcessed);
-                }
-            });
+                        return Futures.immediateFuture(isMultipartProcessed);
+                    }
+                });
     }
 
     private static ListenableFuture<Boolean> processStatistics(final MultipartType type,
@@ -156,8 +221,8 @@ public final class StatisticsGatheringUtils {
         ListenableFuture<Void> future = Futures.immediateFuture(null);
 
         final InstanceIdentifier<FlowCapableNode> instanceIdentifier = deviceInfo
-            .getNodeInstanceIdentifier()
-            .augmentation(FlowCapableNode.class);
+                .getNodeInstanceIdentifier()
+                .augmentation(FlowCapableNode.class);
 
         switch (type) {
             case OFPMPFLOW:
@@ -190,9 +255,9 @@ public final class StatisticsGatheringUtils {
     }
 
     private static boolean writeStatistics(final MultipartType type,
-                                          final List<? extends DataContainer> statistics,
-                                          final DeviceInfo deviceInfo,
-                                          final MultipartWriterProvider statisticsWriterProvider) {
+                                           final List<? extends DataContainer> statistics,
+                                           final DeviceInfo deviceInfo,
+                                           final MultipartWriterProvider statisticsWriterProvider) {
         final AtomicBoolean result = new AtomicBoolean(false);
 
         try {
@@ -219,34 +284,34 @@ public final class StatisticsGatheringUtils {
 
         final ReadOnlyTransaction readTx = txFacade.getReadTransaction();
         return Futures.transform(Futures
-            .withFallback(readTx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier), t -> {
-                // we wish to close readTx for fallBack
-                readTx.close();
-                return Futures.immediateFailedFuture(t);
-            }), (Function<Optional<FlowCapableNode>, Void>)
-            flowCapNodeOpt -> {
-                // we have to read actual tables with all information before we set empty Flow list, merge is expensive and
-                // not applicable for lists
-                if (flowCapNodeOpt != null && flowCapNodeOpt.isPresent()) {
-                    for (final Table tableData : flowCapNodeOpt.get().getTable()) {
-                        final Table table = new TableBuilder(tableData).setFlow(Collections.emptyList()).build();
-                        final InstanceIdentifier<Table> iiToTable = instanceIdentifier.child(Table.class, tableData.getKey());
-                        txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);
+                .withFallback(readTx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier), t -> {
+                    // we wish to close readTx for fallBack
+                    readTx.close();
+                    return Futures.immediateFailedFuture(t);
+                }), (Function<Optional<FlowCapableNode>, Void>)
+                flowCapNodeOpt -> {
+                    // we have to read actual tables with all information before we set empty Flow list, merge is expensive and
+                    // not applicable for lists
+                    if (flowCapNodeOpt != null && flowCapNodeOpt.isPresent()) {
+                        for (final Table tableData : flowCapNodeOpt.get().getTable()) {
+                            final Table table = new TableBuilder(tableData).setFlow(Collections.emptyList()).build();
+                            final InstanceIdentifier<Table> iiToTable = instanceIdentifier.child(Table.class, tableData.getKey());
+                            txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);
+                        }
                     }
-                }
 
-                readTx.close();
-                return null;
-            });
+                    readTx.close();
+                    return null;
+                });
     }
 
     private static void deleteAllKnownMeters(final TxFacade txFacade,
                                              final InstanceIdentifier<FlowCapableNode> instanceIdentifier,
                                              final DeviceMeterRegistry meterRegistry) {
         meterRegistry.forEach(meterId -> txFacade
-            .addDeleteToTxChain(
-                LogicalDatastoreType.OPERATIONAL,
-                instanceIdentifier.child(Meter.class, new MeterKey(meterId))));
+                .addDeleteToTxChain(
+                        LogicalDatastoreType.OPERATIONAL,
+                        instanceIdentifier.child(Meter.class, new MeterKey(meterId))));
 
         meterRegistry.processMarks();
     }
@@ -255,9 +320,9 @@ public final class StatisticsGatheringUtils {
                                              final InstanceIdentifier<FlowCapableNode> instanceIdentifier,
                                              final DeviceGroupRegistry groupRegistry) {
         groupRegistry.forEach(groupId -> txFacade
-            .addDeleteToTxChain(
-                LogicalDatastoreType.OPERATIONAL,
-                instanceIdentifier.child(Group.class, new GroupKey(groupId))));
+                .addDeleteToTxChain(
+                        LogicalDatastoreType.OPERATIONAL,
+                        instanceIdentifier.child(Group.class, new GroupKey(groupId))));
 
         groupRegistry.processMarks();
     }
@@ -269,15 +334,15 @@ public final class StatisticsGatheringUtils {
      */
     static void markDeviceStateSnapshotStart(final DeviceContext deviceContext) {
         final InstanceIdentifier<FlowCapableStatisticsGatheringStatus> statusPath = deviceContext.getDeviceInfo()
-            .getNodeInstanceIdentifier().augmentation(FlowCapableStatisticsGatheringStatus.class);
+                .getNodeInstanceIdentifier().augmentation(FlowCapableStatisticsGatheringStatus.class);
 
         final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AND_TIME_FORMAT);
         final FlowCapableStatisticsGatheringStatus gatheringStatus = new FlowCapableStatisticsGatheringStatusBuilder()
-            .setSnapshotGatheringStatusStart(new SnapshotGatheringStatusStartBuilder()
-                .setBegin(new DateAndTime(simpleDateFormat.format(new Date())))
-                .build())
-            .setSnapshotGatheringStatusEnd(null) // TODO: reconsider if really need to clean end mark here
-            .build();
+                .setSnapshotGatheringStatusStart(new SnapshotGatheringStatusStartBuilder()
+                        .setBegin(new DateAndTime(simpleDateFormat.format(new Date())))
+                        .build())
+                .setSnapshotGatheringStatusEnd(null) // TODO: reconsider if really need to clean end mark here
+                .build();
         try {
             deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, statusPath, gatheringStatus);
         } catch (final TransactionChainClosedException e) {
@@ -296,14 +361,14 @@ public final class StatisticsGatheringUtils {
      */
     static void markDeviceStateSnapshotEnd(final DeviceContext deviceContext, final boolean succeeded) {
         final InstanceIdentifier<SnapshotGatheringStatusEnd> statusEndPath = deviceContext.getDeviceInfo()
-            .getNodeInstanceIdentifier().augmentation(FlowCapableStatisticsGatheringStatus.class)
-            .child(SnapshotGatheringStatusEnd.class);
+                .getNodeInstanceIdentifier().augmentation(FlowCapableStatisticsGatheringStatus.class)
+                .child(SnapshotGatheringStatusEnd.class);
 
         final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AND_TIME_FORMAT);
         final SnapshotGatheringStatusEnd gatheringStatus = new SnapshotGatheringStatusEndBuilder()
-            .setEnd(new DateAndTime(simpleDateFormat.format(new Date())))
-            .setSucceeded(succeeded)
-            .build();
+                .setEnd(new DateAndTime(simpleDateFormat.format(new Date())))
+                .setSucceeded(succeeded)
+                .build();
         try {
             deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, statusEndPath, gatheringStatus);
         } catch (TransactionChainClosedException e) {
