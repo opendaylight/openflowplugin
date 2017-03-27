@@ -56,7 +56,7 @@ public abstract class AbstractMatchCodec implements OFSerializer<MatchEntry>, OF
 
     public NxmHeader getHeaderWithHasMask() {
         if (headerWithMask == null) {
-            headerWithMask = new NxmHeader(getOxmClassCode(), getNxmFieldCode(), true, getValueLength());
+            headerWithMask = new NxmHeader(getOxmClassCode(), getNxmFieldCode(), true, getValueLength() * 2);
         }
         return headerWithMask;
     }
