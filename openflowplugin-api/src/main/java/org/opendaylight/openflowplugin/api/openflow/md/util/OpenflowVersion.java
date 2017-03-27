@@ -9,12 +9,10 @@
 package org.opendaylight.openflowplugin.api.openflow.md.util;
 
 /**
- * @deprecated enum in api is not something what we would like to see in case it is evolving
- * TODO: remove class for lithium release
- *
- * List of Openflow versions supported by the plugin
- * Note: If you add a version here, make sure to update org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil as well.
- * Created by kramesha on 5/2/14.
+ * List of Openflow versions supported by the plugin.
+ * Note: If you add a version here,
+ * make sure to update org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil as well.
+ * @deprecated enum in api is not something what we would like to see in case it is evolving.
  */
 public enum OpenflowVersion {
 
@@ -39,6 +37,7 @@ public enum OpenflowVersion {
     }
 
     /**
+     * Getter.
      * @return the version
      */
     public short getVersion() {
