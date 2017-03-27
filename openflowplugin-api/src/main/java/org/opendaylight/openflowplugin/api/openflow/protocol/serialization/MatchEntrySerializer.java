@@ -14,7 +14,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 public interface MatchEntrySerializer extends OFSerializer<Match> {
 
     /**
-     * Checks if current match is this match type
+     * Checks if current match is this match type.
      * @param match Openflow match
      * @return true if matched
      */

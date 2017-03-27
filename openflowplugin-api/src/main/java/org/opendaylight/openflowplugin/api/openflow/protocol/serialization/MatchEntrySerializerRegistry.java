@@ -19,7 +19,7 @@ public interface MatchEntrySerializerRegistry {
     void registerEntrySerializer(MatchEntrySerializerKey key, MatchEntrySerializer serializer);
 
     /**
-     * Unregisters match entry serializer
+     * Unregisters match entry serializer.
      * @param key used for serializer lookup
      * @return true if serializer was removed, false if no serializer was found under specified key
      */

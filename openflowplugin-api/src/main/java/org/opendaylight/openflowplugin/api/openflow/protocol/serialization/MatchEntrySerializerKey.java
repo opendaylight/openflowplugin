@@ -9,7 +9,7 @@
 package org.opendaylight.openflowplugin.api.openflow.protocol.serialization;
 
 /**
- * Marker interface - marks keys appropriate for match entry serializer registration
+ * Marker interface - marks keys appropriate for match entry serializer registration.
  */
 public interface MatchEntrySerializerKey {
 }
