@@ -274,12 +274,36 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     private void statChainFuture(final Iterator<MultipartType> iterator, final SettableFuture<Boolean> resultFuture, final boolean initial) {
         if (ConnectionContext.CONNECTION_STATE.RIP.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
             final String errMsg = String.format("Device connection is closed for Node : %s.",
-                getDeviceInfo().getNodeId());
+                    getDeviceInfo().getNodeId());
             LOG.debug(errMsg);
             resultFuture.setException(new ConnectionException(errMsg));
             return;
         }
-        if ( ! iterator.hasNext()) {
+
+        if (!iterator.hasNext()) {
+            if (initial) {
+                Futures.addCallback(StatisticsGatheringUtils.gatherStatistics(
+                        statisticsGatheringService,
+                        getDeviceInfo(),
+                        MultipartType.OFPMPPORTDESC,
+                        deviceContext,
+                        deviceContext,
+                        false,
+                        convertorExecutor,
+                        statisticsWriterProvider), new FutureCallback<Boolean>() {
+                    @Override
+                    public void onSuccess(final Boolean result) {
+                        statChainFuture(iterator, resultFuture, false);
+                    }
+                    @Override
+                    public void onFailure(@Nonnull final Throwable t) {
+                        resultFuture.setException(t);
+                    }
+                });
+
+                return;
+            }
+
             resultFuture.set(Boolean.TRUE);
             LOG.debug("Stats collection successfully finished for node {}", getDeviceInfo().getLOGValue());
             return;

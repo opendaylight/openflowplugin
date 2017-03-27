@@ -92,12 +92,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Error;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
@@ -106,6 +104,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.experimenter.core.message.ExperimenterMessageOfChoice;
@@ -140,6 +139,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     private static final int LOW_WATERMARK = 1000;
     private static final int HIGH_WATERMARK = 2000;
+    private final MultipartWriterProvider writerProvider;
 
     private boolean initialized;
 
@@ -174,18 +174,19 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final DeviceInitializerProvider deviceInitializerProvider;
     private final boolean useSingleLayerSerialization;
     private OutboundQueueProvider outboundQueueProvider;
+    private boolean isInitialTransactionSubmitted;
 
     DeviceContextImpl(
-        @Nonnull final ConnectionContext primaryConnectionContext,
-        @Nonnull final DataBroker dataBroker,
-        @Nonnull final MessageSpy messageSpy,
-        @Nonnull final TranslatorLibrary translatorLibrary,
-        @Nonnull final DeviceManager contextManager,
-        final ConvertorExecutor convertorExecutor,
-        final boolean skipTableFeatures,
-        final HashedWheelTimer hashedWheelTimer,
-        final boolean useSingleLayerSerialization,
-        final DeviceInitializerProvider deviceInitializerProvider) {
+            @Nonnull final ConnectionContext primaryConnectionContext,
+            @Nonnull final DataBroker dataBroker,
+            @Nonnull final MessageSpy messageSpy,
+            @Nonnull final TranslatorLibrary translatorLibrary,
+            @Nonnull final DeviceManager contextManager,
+            final ConvertorExecutor convertorExecutor,
+            final boolean skipTableFeatures,
+            final HashedWheelTimer hashedWheelTimer,
+            final boolean useSingleLayerSerialization,
+            final DeviceInitializerProvider deviceInitializerProvider) {
 
         this.primaryConnectionContext = primaryConnectionContext;
         this.outboundQueueProvider = (OutboundQueueProvider) primaryConnectionContext.getOutboundQueueProvider();
@@ -217,11 +218,17 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.skipTableFeatures = skipTableFeatures;
         this.useSingleLayerSerialization = useSingleLayerSerialization;
         this.initialized = false;
+        writerProvider = MultipartWriterProviderFactory.createDefaultProvider(this);
     }
 
     @Override
     public boolean initialSubmitTransaction() {
-        return initialized && transactionChainManager.initialSubmitWriteTransaction();
+        if (initialized) {
+            isInitialTransactionSubmitted = true;
+            return transactionChainManager.initialSubmitWriteTransaction();
+        }
+
+        return false;
     }
 
     @Override
@@ -310,19 +317,19 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public void processReply(final OfHeader ofHeader) {
         messageSpy.spyMessage(
-            ofHeader.getImplementedInterface(),
-            (ofHeader instanceof Error)
-                ? MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE
-                : MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
+                ofHeader.getImplementedInterface(),
+                (ofHeader instanceof Error)
+                        ? MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE
+                        : MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
     }
 
     @Override
     public void processReply(final Xid xid, final List<? extends OfHeader> ofHeaderList) {
         ofHeaderList.forEach(header -> messageSpy.spyMessage(
-            header.getImplementedInterface(),
-            (header instanceof Error)
-                ? MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE
-                : MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS));
+                header.getImplementedInterface(),
+                (header instanceof Error)
+                        ? MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE
+                        : MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS));
     }
 
     @Override
@@ -363,31 +370,40 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public void processPortStatusMessage(final PortStatusMessage portStatus) {
         messageSpy.spyMessage(portStatus.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
-        final FlowCapableNodeConnector flowCapableNodeConnector = portStatusTranslator.translate(portStatus, getDeviceInfo(), null);
 
-        final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector = provideIIToNodeConnector(portStatus.getPortNo(), portStatus.getVersion());
-        try {
-            if (portStatus.getReason().equals(PortReason.OFPPRADD) || portStatus.getReason().equals(PortReason.OFPPRMODIFY)) {
-                // because of ADD status node connector has to be created
-                final NodeConnectorBuilder nConnectorBuilder = new NodeConnectorBuilder().setKey(iiToNodeConnector.getKey());
-                nConnectorBuilder.addAugmentation(FlowCapableNodeConnectorStatisticsData.class, new FlowCapableNodeConnectorStatisticsDataBuilder().build());
-                nConnectorBuilder.addAugmentation(FlowCapableNodeConnector.class, flowCapableNodeConnector);
-                writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector, nConnectorBuilder.build());
-            } else if (portStatus.getReason().equals(PortReason.OFPPRDELETE)) {
-                addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector);
+        if (isInitialTransactionSubmitted) {
+            try {
+                writePortStatusMessage(portStatus);
+                submitTransaction();
+            } catch (final Exception e) {
+                LOG.warn("Error processing port status message for port {} on device {}",
+                        portStatus.getPortNo(), getDeviceInfo().getLOGValue(), e);
             }
-            submitTransaction();
-        } catch (final Exception e) {
-            LOG.warn("Error processing port status message for port {} on device {} : {}", portStatus.getPortNo(),
-                    getDeviceInfo().getNodeId().toString(), e);
         }
     }
 
-    private KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> provideIIToNodeConnector(final long portNo, final short version) {
-        final InstanceIdentifier<Node> iiToNodes = getDeviceInfo().getNodeInstanceIdentifier();
-        final BigInteger dataPathId = getDeviceInfo().getDatapathId();
-        final NodeConnectorId nodeConnectorId = InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(dataPathId, portNo, OpenflowVersion.get(version));
-        return iiToNodes.child(NodeConnector.class, new NodeConnectorKey(nodeConnectorId));
+    private void writePortStatusMessage(final PortStatus portStatusMessage) {
+        final FlowCapableNodeConnector flowCapableNodeConnector = portStatusTranslator
+                .translate(portStatusMessage, getDeviceInfo(), null);
+
+        final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector = getDeviceInfo()
+                .getNodeInstanceIdentifier()
+                .child(NodeConnector.class, new NodeConnectorKey(InventoryDataServiceUtil
+                        .nodeConnectorIdfromDatapathPortNo(
+                                deviceInfo.getDatapathId(),
+                                portStatusMessage.getPortNo(),
+                                OpenflowVersion.get(deviceInfo.getVersion()))));
+
+        if (PortReason.OFPPRADD.equals(portStatusMessage.getReason()) || PortReason.OFPPRMODIFY.equals(portStatusMessage.getReason())) {
+            // because of ADD status node connector has to be created
+            writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector, new NodeConnectorBuilder()
+                    .setKey(iiToNodeConnector.getKey())
+                    .addAugmentation(FlowCapableNodeConnectorStatisticsData.class, new FlowCapableNodeConnectorStatisticsDataBuilder().build())
+                    .addAugmentation(FlowCapableNodeConnector.class, flowCapableNodeConnector)
+                    .build());
+        } else if (PortReason.OFPPRDELETE.equals(portStatusMessage.getReason())) {
+            addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector);
+        }
     }
 
     @Override
@@ -456,7 +472,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         try {
             messageOfChoice = messageConverter.convert(vendorData, MessagePath.MESSAGE_NOTIFICATION);
             final ExperimenterMessageFromDevBuilder experimenterMessageFromDevBld = new ExperimenterMessageFromDevBuilder()
-                .setNode(new NodeRef(getDeviceInfo().getNodeInstanceIdentifier()))
+                    .setNode(new NodeRef(getDeviceInfo().getNodeInstanceIdentifier()))
                     .setExperimenterMessageOfChoice(messageOfChoice);
             // publish
             notificationPublishService.offerNotification(experimenterMessageFromDevBld.build());
@@ -690,17 +706,14 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     public boolean onContextInstantiateService(final MastershipChangeListener mastershipChangeListener) {
 
         LOG.info("Starting device context cluster services for node {}", deviceInfo.getLOGValue());
-
         lazyTransactionManagerInitialization();
-
         this.transactionChainManager.activateTransactionManager();
 
         try {
             final java.util.Optional<AbstractDeviceInitializer> initializer = deviceInitializerProvider
-                .lookup(deviceInfo.getVersion());
+                    .lookup(deviceInfo.getVersion());
 
             if (initializer.isPresent()) {
-                final MultipartWriterProvider writerProvider = MultipartWriterProviderFactory.createDefaultProvider(this);
                 initializer.get().initialize(this, switchFeaturesMandatory, writerProvider, convertorExecutor);
             } else {
                 throw new ExecutionException(new ConnectionException("Unsupported version " + deviceInfo.getVersion()));
@@ -745,7 +758,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     }
 
-    ListenableFuture<RpcResult<SetRoleOutput>> sendRoleChangeToDevice(final OfpRole newRole) {
+    private ListenableFuture<RpcResult<SetRoleOutput>> sendRoleChangeToDevice(final OfpRole newRole) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Sending new role {} to device {}", newRole, deviceInfo.getNodeId());
         }
