@@ -233,13 +233,13 @@ public class DeviceContextImplTest {
                 convertorExecutor,
                 false, timer, deviceManager, false,
             DeviceInitializerProviderFactory.createDefaultProvider());
+        ((DeviceContextImpl) deviceContext).lazyTransactionManagerInitialization();
         deviceContextSpy = Mockito.spy(deviceContext);
 
         xid = new Xid(atomicLong.incrementAndGet());
         xidMulti = new Xid(atomicLong.incrementAndGet());
-        ((DeviceContextImpl) deviceContext).lazyTransactionManagerInitialization();
 
-        Mockito.doNothing().when(deviceContextSpy).writeToTransaction(Mockito.<LogicalDatastoreType>any(), Mockito.<InstanceIdentifier>any(), any());
+        Mockito.doNothing().when(deviceContextSpy).writeToTransaction(any(), any(), any());
 
     }
 
@@ -455,8 +455,7 @@ public class DeviceContextImplTest {
         when(mockedPortStatusMessage.getPortNo()).thenReturn(42L);
 
         deviceContextSpy.processPortStatusMessage(mockedPortStatusMessage);
-        verify(deviceContextSpy).writeToTransaction(Mockito.<LogicalDatastoreType>any(), Mockito.<InstanceIdentifier>any(), any());
-        verify(deviceContextSpy).submitTransaction();
+        verify(messageSpy).spyMessage(any(), any());
     }
 
     @Test
