@@ -57,6 +57,7 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeLi
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.api.openflow.registry.CommonDeviceRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
@@ -82,6 +83,7 @@ import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.impl.registry.group.DeviceGroupRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.meter.DeviceMeterRegistryImpl;
+import org.opendaylight.openflowplugin.impl.registry.portstatus.DevicePortStatusRegistry;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
@@ -92,12 +94,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Error;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
@@ -106,6 +106,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.experimenter.core.message.ExperimenterMessageOfChoice;
@@ -174,6 +175,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final DeviceInitializerProvider deviceInitializerProvider;
     private final boolean useSingleLayerSerialization;
     private OutboundQueueProvider outboundQueueProvider;
+    private final CommonDeviceRegistry<PortStatus> devicePortStatusRegistry;
+    private boolean isInitialTransactionSubmitted;
 
     DeviceContextImpl(
         @Nonnull final ConnectionContext primaryConnectionContext,
@@ -216,12 +219,35 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.convertorExecutor = convertorExecutor;
         this.skipTableFeatures = skipTableFeatures;
         this.useSingleLayerSerialization = useSingleLayerSerialization;
+        devicePortStatusRegistry = new DevicePortStatusRegistry();
         this.initialized = false;
     }
 
     @Override
     public boolean initialSubmitTransaction() {
-        return initialized && transactionChainManager.initialSubmitWriteTransaction();
+        if (initialized) {
+            isInitialTransactionSubmitted = transactionChainManager.initialSubmitWriteTransaction();
+
+            if (isInitialTransactionSubmitted) {
+                synchronized (devicePortStatusRegistry) {
+                    // Write all port status messages that we collected before we activated transaction chain manager
+                    try {
+                        devicePortStatusRegistry.forEach(this::writePortStatusMessage);
+
+                        submitTransaction();
+                    } catch (final Exception e) {
+                        LOG.warn("Error processing {} port status messages on device {}",
+                                devicePortStatusRegistry.size(), getDeviceInfo().getLOGValue(), e);
+                    }
+
+                    devicePortStatusRegistry.close();
+                }
+
+                return isInitialTransactionSubmitted;
+            }
+        }
+
+        return false;
     }
 
     @Override
@@ -363,31 +389,44 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public void processPortStatusMessage(final PortStatusMessage portStatus) {
         messageSpy.spyMessage(portStatus.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
-        final FlowCapableNodeConnector flowCapableNodeConnector = portStatusTranslator.translate(portStatus, getDeviceInfo(), null);
 
-        final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector = provideIIToNodeConnector(portStatus.getPortNo(), portStatus.getVersion());
-        try {
-            if (portStatus.getReason().equals(PortReason.OFPPRADD) || portStatus.getReason().equals(PortReason.OFPPRMODIFY)) {
-                // because of ADD status node connector has to be created
-                final NodeConnectorBuilder nConnectorBuilder = new NodeConnectorBuilder().setKey(iiToNodeConnector.getKey());
-                nConnectorBuilder.addAugmentation(FlowCapableNodeConnectorStatisticsData.class, new FlowCapableNodeConnectorStatisticsDataBuilder().build());
-                nConnectorBuilder.addAugmentation(FlowCapableNodeConnector.class, flowCapableNodeConnector);
-                writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector, nConnectorBuilder.build());
-            } else if (portStatus.getReason().equals(PortReason.OFPPRDELETE)) {
-                addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector);
+        if (isInitialTransactionSubmitted) {
+            synchronized (devicePortStatusRegistry) {
+                try {
+                    writePortStatusMessage(portStatus);
+                    submitTransaction();
+                } catch (final Exception e) {
+                    LOG.warn("Error processing port status message for port {} on device {}",
+                            portStatus.getPortNo(), getDeviceInfo().getLOGValue(), e);
+                }
             }
-            submitTransaction();
-        } catch (final Exception e) {
-            LOG.warn("Error processing port status message for port {} on device {} : {}", portStatus.getPortNo(),
-                    getDeviceInfo().getNodeId().toString(), e);
+        } else {
+            devicePortStatusRegistry.store(portStatus);
         }
     }
 
-    private KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> provideIIToNodeConnector(final long portNo, final short version) {
-        final InstanceIdentifier<Node> iiToNodes = getDeviceInfo().getNodeInstanceIdentifier();
-        final BigInteger dataPathId = getDeviceInfo().getDatapathId();
-        final NodeConnectorId nodeConnectorId = InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(dataPathId, portNo, OpenflowVersion.get(version));
-        return iiToNodes.child(NodeConnector.class, new NodeConnectorKey(nodeConnectorId));
+    private void writePortStatusMessage(final PortStatus portStatusMessage) {
+        final FlowCapableNodeConnector flowCapableNodeConnector = portStatusTranslator
+                .translate(portStatusMessage, getDeviceInfo(), null);
+
+        final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector = getDeviceInfo()
+                .getNodeInstanceIdentifier()
+                .child(NodeConnector.class, new NodeConnectorKey(InventoryDataServiceUtil
+                        .nodeConnectorIdfromDatapathPortNo(
+                                deviceInfo.getDatapathId(),
+                                portStatusMessage.getPortNo(),
+                                OpenflowVersion.get(deviceInfo.getVersion()))));
+
+        if (PortReason.OFPPRADD.equals(portStatusMessage.getReason()) || PortReason.OFPPRMODIFY.equals(portStatusMessage.getReason())) {
+            // because of ADD status node connector has to be created
+            writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector, new NodeConnectorBuilder()
+                    .setKey(iiToNodeConnector.getKey())
+                    .addAugmentation(FlowCapableNodeConnectorStatisticsData.class, new FlowCapableNodeConnectorStatisticsDataBuilder().build())
+                    .addAugmentation(FlowCapableNodeConnector.class, flowCapableNodeConnector)
+                    .build());
+        } else if (PortReason.OFPPRDELETE.equals(portStatusMessage.getReason())) {
+            addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector);
+        }
     }
 
     @Override
@@ -546,6 +585,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         // Terminate Primary Connection
         getPrimaryConnectionContext().closeConnection(true);
 
+        devicePortStatusRegistry.close();
+
         // Close all datastore registries
         if (initialized) {
             deviceGroupRegistry.close();
@@ -690,9 +731,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     public boolean onContextInstantiateService(final MastershipChangeListener mastershipChangeListener) {
 
         LOG.info("Starting device context cluster services for node {}", deviceInfo.getLOGValue());
-
         lazyTransactionManagerInitialization();
-
         this.transactionChainManager.activateTransactionManager();
 
         try {
@@ -745,7 +784,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     }
 
-    ListenableFuture<RpcResult<SetRoleOutput>> sendRoleChangeToDevice(final OfpRole newRole) {
+    private ListenableFuture<RpcResult<SetRoleOutput>> sendRoleChangeToDevice(final OfpRole newRole) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Sending new role {} to device {}", newRole, deviceInfo.getNodeId());
         }
