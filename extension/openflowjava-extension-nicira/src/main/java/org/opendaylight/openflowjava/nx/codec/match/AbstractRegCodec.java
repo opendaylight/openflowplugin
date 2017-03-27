@@ -52,6 +52,14 @@ public abstract class AbstractRegCodec extends AbstractMatchCodec {
     }
 
     @Override
+    public NxmHeader getHeaderWithHasMask() {
+        if (headerWithMask == null) {
+            headerWithMask = new NxmHeader(getOxmClassCode(), getNxmFieldCode(), true, getValueLength() * 2);
+        }
+        return headerWithMask;
+    }
+
+    @Override
     public int getOxmClassCode() {
         return OxmMatchConstants.NXM_1_CLASS;
     }
