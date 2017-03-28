@@ -39,6 +39,14 @@ public class GroupingLooseResolver<G> {
     }
 
     /**
+     * Get augmentation classes
+     * @return list of augmentation classes
+     */
+    public Set<Class<? extends Augmentation<?>>> getClasses() {
+        return classes;
+    }
+
+    /**
      * @param cls equivalent augmentation class
      * @return this for chaining
      */
@@ -67,4 +75,5 @@ public class GroupingLooseResolver<G> {
 
         return Optional.empty();
     }
+
 }

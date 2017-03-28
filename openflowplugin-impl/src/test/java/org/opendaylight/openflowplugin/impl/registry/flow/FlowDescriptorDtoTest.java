@@ -26,7 +26,7 @@ public class FlowDescriptorDtoTest {
         Assert.assertNotNull(flowDescriptor.getTableKey());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testCreateNegative1() throws Exception {
         FlowDescriptorFactory.create((short) 1, null);
     }
