@@ -25,13 +25,6 @@ public interface CommonDeviceRegistry<KEY> extends AutoCloseable {
     void addMark(KEY key);
 
     /**
-     * Checks if registry has mark for KEY.
-     * @param key device registry key
-     * @return true if device registry has mark for KEY
-     */
-    boolean hasMark(KEY key);
-
-    /**
      * Process marked keys.
      */
     void processMarks();
