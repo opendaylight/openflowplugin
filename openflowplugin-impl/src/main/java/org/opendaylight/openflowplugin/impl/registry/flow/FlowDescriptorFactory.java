@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.registry.flow;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
+import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
@@ -19,13 +20,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 9.4.2015.
  */
 public class FlowDescriptorFactory {
+
     private FlowDescriptorFactory() {
         // Hide implicit constructor
     }
 
-    public static FlowDescriptor create(final short tableId, final FlowId fLowId) {
-        final TableKey tableKey = new TableKey(tableId);
-        return new FlowDescriptorDto(tableKey, fLowId);
+    @Nonnull
+    public static FlowDescriptor create(final short tableId, @Nonnull final FlowId flowId) {
+        return new FlowDescriptorDto(
+                new TableKey(tableId),
+                Preconditions.checkNotNull(flowId));
     }
 
     private static final class FlowDescriptorDto implements FlowDescriptor {
@@ -33,9 +37,7 @@ public class FlowDescriptorFactory {
         private final FlowId flowId;
         private final TableKey tableKey;
 
-        private FlowDescriptorDto(final TableKey tableKey, final FlowId flowId) {
-            Preconditions.checkNotNull(tableKey);
-            Preconditions.checkNotNull(flowId);
+        private FlowDescriptorDto(@Nonnull final TableKey tableKey, @Nonnull final FlowId flowId) {
             this.flowId = flowId;
             this.tableKey = tableKey;
         }
@@ -64,4 +66,5 @@ public class FlowDescriptorFactory {
             return tableKey;
         }
     }
+
 }
