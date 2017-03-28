@@ -211,7 +211,7 @@ public class DeviceFlowRegistryImplTest {
     @Test
     public void testRemoveDescriptor() throws Exception {
         deviceFlowRegistry.addMark(key);
-        Assert.assertEquals(1, deviceFlowRegistry.getAllFlowDescriptors().size());
+        Assert.assertEquals(0, deviceFlowRegistry.getAllFlowDescriptors().size());
     }
 
     @Test
