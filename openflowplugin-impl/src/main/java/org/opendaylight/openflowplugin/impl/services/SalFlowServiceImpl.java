@@ -144,10 +144,10 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
                 if (Objects.nonNull(input.getFlowRef())) {
                     final FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
                     flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
-                    deviceContext.getDeviceFlowRegistry().storeDescriptor(flowRegistryKey, flowDescriptor);
+                    deviceContext.getDeviceFlowRegistry().store(flowRegistryKey, flowDescriptor);
                 } else {
-                    deviceContext.getDeviceFlowRegistry().store(flowRegistryKey);
-                    flowDescriptor = deviceContext.getDeviceFlowRegistry().retrieveDescriptor(flowRegistryKey);
+                    final FlowId flowId = deviceContext.getDeviceFlowRegistry().storeIfNecessary(flowRegistryKey);
+                    flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
                 }
 
                 if (LOG.isDebugEnabled()) {
@@ -188,11 +188,11 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
                     LOG.debug("Flow remove finished without error for flow={}", input);
                 }
                 FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), input);
-                deviceContext.getDeviceFlowRegistry().addMark(flowRegistryKey);
+                deviceContext.getDeviceFlowRegistry().removeDescriptor(flowRegistryKey);
 
                 if (itemLifecycleListener != null) {
-                    final FlowDescriptor flowDescriptor = deviceContext.getDeviceFlowRegistry().retrieveDescriptor(flowRegistryKey);
-
+                    final FlowDescriptor flowDescriptor =
+                            deviceContext.getDeviceFlowRegistry().retrieveIdForFlow(flowRegistryKey);
                     if (flowDescriptor != null) {
                         KeyedInstanceIdentifier<Flow, FlowKey> flowPath = createFlowPath(flowDescriptor,
                                 deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
@@ -228,25 +228,16 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
             final OriginalFlow original = input.getOriginalFlow();
             final FlowRegistryKey origFlowRegistryKey = FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), original);
             final FlowRegistryKey updatedFlowRegistryKey = FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), updated);
-            final FlowDescriptor origFlowDescriptor = deviceFlowRegistry.retrieveDescriptor(origFlowRegistryKey);
+            final FlowDescriptor origFlowDescriptor = deviceFlowRegistry.retrieveIdForFlow(origFlowRegistryKey);
 
             final boolean isUpdate = Objects.nonNull(origFlowDescriptor);
-            final FlowDescriptor updatedFlowDescriptor;
-
-            if (Objects.nonNull(input.getFlowRef())) {
-               updatedFlowDescriptor = FlowDescriptorFactory.create(updated.getTableId(), input.getFlowRef().getValue().firstKeyOf(Flow.class).getId());
-            } else {
-                if (isUpdate) {
-                    updatedFlowDescriptor = origFlowDescriptor;
-                } else {
-                    deviceFlowRegistry.store(updatedFlowRegistryKey);
-                    updatedFlowDescriptor = deviceFlowRegistry.retrieveDescriptor(updatedFlowRegistryKey);
-                }
-            }
-
+            final FlowId fLowId = Objects.nonNull(input.getFlowRef())
+                    ? input.getFlowRef().getValue().firstKeyOf(Flow.class).getId()
+                    : isUpdate ? origFlowDescriptor.getFlowId() : deviceFlowRegistry.storeIfNecessary(updatedFlowRegistryKey);
+            final FlowDescriptor updatedFlowDescriptor = FlowDescriptorFactory.create(updated.getTableId(), fLowId);
             if (isUpdate) {
-                deviceFlowRegistry.addMark(origFlowRegistryKey);
-                deviceFlowRegistry.storeDescriptor(updatedFlowRegistryKey, updatedFlowDescriptor);
+                deviceFlowRegistry.removeDescriptor(origFlowRegistryKey);
+                deviceFlowRegistry.store(updatedFlowRegistryKey, updatedFlowDescriptor);
             }
 
             if (itemLifecycleListener != null) {

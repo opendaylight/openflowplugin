@@ -321,7 +321,6 @@ public final class StatisticsGatheringUtils {
             writeFlowStatistics(data, deviceInfo, flowRegistry, txFacade);
             txFacade.submitTransaction();
             EventsTimeCounter.markEnd(eventIdentifier);
-            flowRegistry.processMarks();
             return Boolean.TRUE;
         });
     }
@@ -340,8 +339,7 @@ public final class StatisticsGatheringUtils {
 
                     final short tableId = flowStat.getTableId();
                     final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(deviceInfo.getVersion(), flowBuilder.build());
-                    registry.store(flowRegistryKey);
-                    final FlowId flowId = registry.retrieveDescriptor(flowRegistryKey).getFlowId();
+                    final FlowId flowId = registry.storeIfNecessary(flowRegistryKey);
 
                     final FlowKey flowKey = new FlowKey(flowId);
                     flowBuilder.setKey(flowKey);
@@ -524,11 +522,11 @@ public final class StatisticsGatheringUtils {
             final DeviceMeterRegistry meterRegistry,
             final InstanceIdentifier<FlowCapableNode> flowNodeIdent,
             final TxFacade txFacade) throws TransactionChainClosedException {
-        meterRegistry.forEach(meterId -> {
+        for (final MeterId meterId : meterRegistry.getAllMeterIds()) {
             final InstanceIdentifier<Meter> meterIdent = flowNodeIdent.child(Meter.class, new MeterKey(meterId));
             txFacade.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, meterIdent);
-        });
-        meterRegistry.processMarks();
+        }
+        meterRegistry.removeMarked();
     }
 
     private static void processGroupDescStats(
@@ -560,11 +558,11 @@ public final class StatisticsGatheringUtils {
             final TxFacade txFacade,
             final InstanceIdentifier<FlowCapableNode> flowNodeIdent,
             final DeviceGroupRegistry groupRegistry) throws TransactionChainClosedException {
-        groupRegistry.forEach(groupId -> {
+        for (final GroupId groupId : groupRegistry.getAllGroupIds()) {
             final InstanceIdentifier<Group> groupIdent = flowNodeIdent.child(Group.class, new GroupKey(groupId));
             txFacade.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, groupIdent);
-        });
-        groupRegistry.processMarks();
+        }
+        groupRegistry.removeMarked();
     }
 
     private static void processGroupStatistics(

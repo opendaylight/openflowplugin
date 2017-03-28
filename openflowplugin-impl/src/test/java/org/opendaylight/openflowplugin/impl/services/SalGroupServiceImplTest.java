@@ -129,7 +129,7 @@ public class SalGroupServiceImplTest extends ServiceMocking {
 
         salGroupService.removeGroup(removeGroupInput);
         verify(mockedRequestContextStack).createRequestContext();
-        verify(mockedDeviceGroupRegistry).addMark(eq(dummyGroupId));
+        verify(mockedDeviceGroupRegistry).markToBeremoved(eq(dummyGroupId));
 
         if (itemLifecycleListener != null) {
             verify(itemLifecycleListener).onRemoved(Matchers.<KeyedInstanceIdentifier<Group, GroupKey>>any());

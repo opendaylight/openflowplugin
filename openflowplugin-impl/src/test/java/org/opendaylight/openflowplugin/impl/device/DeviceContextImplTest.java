@@ -478,7 +478,7 @@ public class DeviceContextImplTest {
         // insert flow+flowId into local registry
         final FlowRegistryKey flowRegKey = FlowRegistryKeyFactory.create(deviceInfo.getVersion(), flowRemovedMdsalBld.build());
         final FlowDescriptor flowDescriptor = FlowDescriptorFactory.create((short) 0, new FlowId("ut-ofp:f456"));
-        deviceContext.getDeviceFlowRegistry().storeDescriptor(flowRegKey, flowDescriptor);
+        deviceContext.getDeviceFlowRegistry().store(flowRegKey, flowDescriptor);
 
         // plug in lifecycleListener
         final ItemLifecycleListener itemLifecycleListener = Mockito.mock(ItemLifecycleListener.class);
@@ -531,9 +531,9 @@ public class DeviceContextImplTest {
     public void testOnDeviceDisconnected() throws Exception {
         final DeviceTerminationPhaseHandler deviceContextClosedHandler = mock(DeviceTerminationPhaseHandler.class);
 
-        assertEquals(0, deviceContext.getDeviceFlowRegistry().size());
-        assertEquals(0, deviceContext.getDeviceGroupRegistry().size());
-        assertEquals(0, deviceContext.getDeviceMeterRegistry().size());
+        assertEquals(0, deviceContext.getDeviceFlowRegistry().getAllFlowDescriptors().size());
+        assertEquals(0, deviceContext.getDeviceGroupRegistry().getAllGroupIds().size());
+        assertEquals(0, deviceContext.getDeviceMeterRegistry().getAllMeterIds().size());
 
     }
 

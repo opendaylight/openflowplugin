@@ -8,60 +8,49 @@
 
 package org.opendaylight.openflowplugin.impl.registry.group;
 
-import com.google.common.annotations.VisibleForTesting;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 
+/**
+ * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 15.4.2015.
+ */
 public class DeviceGroupRegistryImpl implements DeviceGroupRegistry {
 
-    private final List<GroupId> groupIds = Collections.synchronizedList(new ArrayList<>());
-    private final List<GroupId> marks = Collections.synchronizedList(new ArrayList<>());
+    private final List<GroupId> groupIdList = new ArrayList<>();
+    private final List<GroupId> marks = new ArrayList<>();
 
     @Override
     public void store(final GroupId groupId) {
-        groupIds.add(groupId);
+        groupIdList.add(groupId);
     }
 
     @Override
-    public void addMark(final GroupId groupId) {
+    public void markToBeremoved(final GroupId groupId) {
         marks.add(groupId);
     }
 
     @Override
-    public boolean hasMark(final GroupId groupId) {
-        return marks.contains(groupId);
-    }
-
-    @Override
-    public void processMarks() {
-        groupIds.removeAll(marks);
+    public void removeMarked() {
+        synchronized (groupIdList) {
+            groupIdList.removeAll(marks);
+        }
         marks.clear();
     }
 
     @Override
-    public void forEach(final Consumer<GroupId> consumer) {
-        synchronized (groupIds) {
-            groupIds.forEach(consumer);
-        }
-    }
-
-    @Override
-    public int size() {
-        return groupIds.size();
+    public List<GroupId> getAllGroupIds() {
+        return groupIdList;
     }
 
     @Override
     public void close() {
-        groupIds.clear();
-        marks.clear();
-    }
-
-    @VisibleForTesting
-    List<GroupId> getAllGroupIds() {
-        return groupIds;
+        synchronized (groupIdList) {
+            groupIdList.clear();
+        }
+        synchronized (marks) {
+            marks.clear();
+        }
     }
 }

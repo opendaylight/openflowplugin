@@ -12,22 +12,30 @@ package org.opendaylight.openflowplugin.api.openflow.registry.flow;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;
-import java.util.function.BiConsumer;
-import org.opendaylight.openflowplugin.api.openflow.registry.CommonDeviceRegistry;
+import java.util.Map;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 
 /**
  * Registry for mapping composite-key of flow ({@link FlowRegistryKey}) from device view
  * to flow descriptor ({@link FlowDescriptor}) as the identifier of the same flow in data store.
  */
-public interface DeviceFlowRegistry extends CommonDeviceRegistry<FlowRegistryKey> {
+public interface DeviceFlowRegistry extends AutoCloseable {
 
     ListenableFuture<List<Optional<FlowCapableNode>>> fill();
 
-    void storeDescriptor(FlowRegistryKey flowRegistryKey, FlowDescriptor flowDescriptor);
+    FlowDescriptor retrieveIdForFlow(FlowRegistryKey flowRegistryKey);
 
-    FlowDescriptor retrieveDescriptor(FlowRegistryKey flowRegistryKey);
+    void store(FlowRegistryKey flowRegistryKey, FlowDescriptor flowDescriptor);
 
-    void forEachEntry(BiConsumer<FlowRegistryKey, FlowDescriptor> consumer);
+    FlowId storeIfNecessary(FlowRegistryKey flowRegistryKey);
 
+    void removeDescriptor(FlowRegistryKey flowRegistryKey);
+
+    void update(FlowRegistryKey newFlowRegistryKey,FlowDescriptor flowDescriptor);
+
+    Map<FlowRegistryKey, FlowDescriptor> getAllFlowDescriptors();
+
+    @Override
+    void close();
 }

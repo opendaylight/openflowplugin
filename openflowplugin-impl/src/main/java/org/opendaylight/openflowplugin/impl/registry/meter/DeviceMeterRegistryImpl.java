@@ -8,18 +8,18 @@
 
 package org.opendaylight.openflowplugin.impl.registry.meter;
 
-import com.google.common.annotations.VisibleForTesting;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 
+/**
+ * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 15.4.2015.
+ */
 public class DeviceMeterRegistryImpl implements DeviceMeterRegistry {
 
-    private final List<MeterId> meterIds = Collections.synchronizedList(new ArrayList<>());
-    private final List<MeterId> marks = Collections.synchronizedList(new ArrayList<>());
+    private final List<MeterId> meterIds = new ArrayList<>();
+    private final List<MeterId> marks = new ArrayList<>();
 
     @Override
     public void store(final MeterId meterId) {
@@ -27,41 +27,32 @@ public class DeviceMeterRegistryImpl implements DeviceMeterRegistry {
     }
 
     @Override
-    public void addMark(final MeterId meterId) {
+    public void markToBeremoved(final MeterId meterId) {
         marks.add(meterId);
     }
 
     @Override
-    public boolean hasMark(final MeterId meterId) {
-        return marks.contains(meterId);
-    }
-
-    @Override
-    public void processMarks() {
-        meterIds.removeAll(marks);
-        marks.clear();
-    }
-
-    @Override
-    public void forEach(final Consumer<MeterId> consumer) {
+    public void removeMarked() {
         synchronized (meterIds) {
-            meterIds.forEach(consumer);
+            meterIds.removeAll(marks);
+        }
+        synchronized (marks) {
+            marks.clear();
         }
     }
 
     @Override
-    public int size() {
-        return meterIds.size();
+    public List<MeterId> getAllMeterIds() {
+        return meterIds;
     }
 
     @Override
     public void close() {
-        meterIds.clear();
-        marks.clear();
-    }
-
-    @VisibleForTesting
-    List<MeterId> getAllMeterIds() {
-        return meterIds;
+        synchronized (meterIds) {
+            meterIds.clear();
+        }
+        synchronized (marks) {
+            marks.clear();
+        }
     }
 }

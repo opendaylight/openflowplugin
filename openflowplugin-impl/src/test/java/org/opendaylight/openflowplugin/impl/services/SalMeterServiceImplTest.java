@@ -130,7 +130,7 @@ public class SalMeterServiceImplTest extends ServiceMocking {
 
         salMeterService.removeMeter(removeMeterInput);
         verify(mockedRequestContextStack).createRequestContext();
-        verify(mockedDeviceMeterRegistry).addMark(eq(dummyMeterId));
+        verify(mockedDeviceMeterRegistry).markToBeremoved(eq(dummyMeterId));
 
         if (itemLifecycleListener != null) {
             verify(itemLifecycleListener).onRemoved(Matchers.<KeyedInstanceIdentifier<Meter, MeterKey>>any());

@@ -22,8 +22,6 @@ import java.util.Collections;
 import java.util.List;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
-import org.opendaylight.openflowplugin.impl.registry.flow.FlowDescriptorFactory;
-import org.opendaylight.openflowplugin.impl.statistics.services.direct.AbstractDirectStatisticsServiceTest;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
@@ -47,7 +45,7 @@ public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsSer
     public void setUp() throws Exception {
         service = new FlowDirectStatisticsService(requestContextStack, deviceContext, convertorManager);
         final DeviceFlowRegistry registry = mock(DeviceFlowRegistry.class);
-        when(registry.retrieveDescriptor(any())).thenReturn(FlowDescriptorFactory.create(TABLE_NO, new FlowId("1")));
+        when(registry.storeIfNecessary(any())).thenReturn(new FlowId("1"));
         when(deviceContext.getDeviceFlowRegistry()).thenReturn(registry);
     }
 

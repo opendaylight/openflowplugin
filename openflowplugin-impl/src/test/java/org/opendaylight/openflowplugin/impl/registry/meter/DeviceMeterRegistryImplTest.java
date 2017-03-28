@@ -40,28 +40,28 @@ public class DeviceMeterRegistryImplTest {
 
     @Test
     public void testRemoveMarked() throws Exception {
-        deviceMeterRegistry.addMark(meterId);
-        deviceMeterRegistry.processMarks();
+        deviceMeterRegistry.markToBeremoved(meterId);
+        deviceMeterRegistry.removeMarked();
         Assert.assertEquals(0, deviceMeterRegistry.getAllMeterIds().size());
     }
 
     @Test
     public void testRemoveMarkedNegative() throws Exception {
-        deviceMeterRegistry.addMark(meterId2);
-        deviceMeterRegistry.processMarks();
+        deviceMeterRegistry.markToBeremoved(meterId2);
+        deviceMeterRegistry.removeMarked();
         Assert.assertEquals(1, deviceMeterRegistry.getAllMeterIds().size());
     }
 
 
     @Test
     public void testClose() throws Exception {
-        deviceMeterRegistry.addMark(meterId);
+        deviceMeterRegistry.markToBeremoved(meterId);
         deviceMeterRegistry.close();
 
         Assert.assertEquals(0, deviceMeterRegistry.getAllMeterIds().size());
         deviceMeterRegistry.store(meterId);
         Assert.assertEquals(1, deviceMeterRegistry.getAllMeterIds().size());
-        deviceMeterRegistry.processMarks();
+        deviceMeterRegistry.removeMarked();
         Assert.assertEquals(1, deviceMeterRegistry.getAllMeterIds().size());
 
     }

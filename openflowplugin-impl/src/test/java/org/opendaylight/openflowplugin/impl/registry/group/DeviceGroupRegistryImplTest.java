@@ -40,28 +40,28 @@ public class DeviceGroupRegistryImplTest {
 
     @Test
     public void testRemoveMarked() throws Exception {
-        deviceGroupRegistry.addMark(groupId);
-        deviceGroupRegistry.processMarks();
+        deviceGroupRegistry.markToBeremoved(groupId);
+        deviceGroupRegistry.removeMarked();
         Assert.assertEquals(0, deviceGroupRegistry.getAllGroupIds().size());
     }
 
     @Test
     public void testRemoveMarkedNegative() throws Exception {
-        deviceGroupRegistry.addMark(groupId2);
-        deviceGroupRegistry.processMarks();
+        deviceGroupRegistry.markToBeremoved(groupId2);
+        deviceGroupRegistry.removeMarked();
         Assert.assertEquals(1, deviceGroupRegistry.getAllGroupIds().size());
     }
 
 
     @Test
     public void testClose() throws Exception {
-        deviceGroupRegistry.addMark(groupId);
+        deviceGroupRegistry.markToBeremoved(groupId);
         deviceGroupRegistry.close();
 
         Assert.assertEquals(0, deviceGroupRegistry.getAllGroupIds().size());
         deviceGroupRegistry.store(groupId);
         Assert.assertEquals(1, deviceGroupRegistry.getAllGroupIds().size());
-        deviceGroupRegistry.processMarks();
+        deviceGroupRegistry.removeMarked();
         Assert.assertEquals(1, deviceGroupRegistry.getAllGroupIds().size());
 
     }
