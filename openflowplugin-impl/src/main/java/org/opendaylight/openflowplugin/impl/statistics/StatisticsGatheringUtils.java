@@ -16,6 +16,7 @@ import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import java.util.Objects;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
@@ -25,6 +26,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
@@ -341,14 +343,18 @@ public final class StatisticsGatheringUtils {
                     final short tableId = flowStat.getTableId();
                     final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(deviceInfo.getVersion(), flowBuilder.build());
                     registry.store(flowRegistryKey);
-                    final FlowId flowId = registry.retrieveDescriptor(flowRegistryKey).getFlowId();
+                    final FlowDescriptor flowDescriptor = registry.retrieveDescriptor(flowRegistryKey);
 
-                    final FlowKey flowKey = new FlowKey(flowId);
-                    flowBuilder.setKey(flowKey);
-                    final TableKey tableKey = new TableKey(tableId);
-                    final InstanceIdentifier<Flow> flowIdent
-                            = fNodeIdent.child(Table.class, tableKey).child(Flow.class, flowKey);
-                    txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, flowIdent, flowBuilder.build());
+                    if (Objects.nonNull(flowDescriptor)) {
+                        final FlowId flowId = flowDescriptor.getFlowId();
+
+                        final FlowKey flowKey = new FlowKey(flowId);
+                        flowBuilder.setKey(flowKey);
+                        final TableKey tableKey = new TableKey(tableId);
+                        final InstanceIdentifier<Flow> flowIdent
+                                = fNodeIdent.child(Table.class, tableKey).child(Flow.class, flowKey);
+                        txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, flowIdent, flowBuilder.build());
+                    }
                 }
             }
         } catch (TransactionChainClosedException e) {
