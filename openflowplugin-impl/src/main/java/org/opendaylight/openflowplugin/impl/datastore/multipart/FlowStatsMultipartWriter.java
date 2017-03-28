@@ -8,8 +8,10 @@
 
 package org.opendaylight.openflowplugin.impl.datastore.multipart;
 
+import java.util.Objects;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -58,21 +60,25 @@ public class FlowStatsMultipartWriter extends AbstractMultipartWriter<FlowAndSta
                 final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(version, flow.build());
                 registry.getDeviceFlowRegistry().store(flowRegistryKey);
 
-                final FlowKey key = new FlowKey(registry
-                    .getDeviceFlowRegistry()
-                    .retrieveDescriptor(flowRegistryKey)
-                    .getFlowId());
+                final FlowDescriptor flowDescriptor = registry
+                        .getDeviceFlowRegistry()
+                        .retrieveDescriptor(flowRegistryKey);
 
-                writeToTransaction(
-                    getInstanceIdentifier()
-                        .augmentation(FlowCapableNode.class)
-                        .child(Table.class, new TableKey(stat.getTableId()))
-                        .child(Flow.class, key),
-                    flow
-                        .setId(key.getId())
-                        .setKey(key)
-                        .build(),
-                    withParents);
+                if (Objects.nonNull(flowDescriptor)) {
+                    final FlowKey key = new FlowKey(flowDescriptor
+                            .getFlowId());
+
+                    writeToTransaction(
+                            getInstanceIdentifier()
+                                    .augmentation(FlowCapableNode.class)
+                                    .child(Table.class, new TableKey(stat.getTableId()))
+                                    .child(Flow.class, key),
+                            flow
+                                    .setId(key.getId())
+                                    .setKey(key)
+                                    .build(),
+                            withParents);
+                }
             });
     }
 
