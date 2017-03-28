@@ -721,7 +721,7 @@ public final class IpConversionUtil {
 
     public static final byte[] convertIpv6ArbitraryMaskToByteArray(final Ipv6ArbitraryMask mask) {
         String maskValue;
-        if (mask.getValue() != null) {
+        if (mask != null && mask.getValue() != null) {
             maskValue  = mask.getValue();
         } else {
             maskValue = DEFAULT_IPV6_ARBITRARY_BITMASK;
