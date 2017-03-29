@@ -59,9 +59,9 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     private static final String CONTEXT_CREATED_FOR_CONNECTION = " context created for connection: {}";
     private static final String SINGLETON_SERVICE_PROVIDER_WAS_NOT_SET_YET
             = "Singleton service provider was not set yet.";
-    private static final long DEFAULT_TTL_STEP = 1000L;
-    private static final long DEFAULT_TTL_BEFORE_DROP = 1000L;
-    private static final long DEFAULT_CHECK_ROLE_MASTER = 5000L;
+    private static final long DEFAULT_TTL_STEP = 500L;
+    private static final long DEFAULT_TTL_BEFORE_DROP = 500L;
+    private static final long DEFAULT_CHECK_ROLE_MASTER = 10000L;
     private static final boolean STOP = true;
     private static final boolean START = false;
     private static final String SERVICE_ENTITY_TYPE = "org.opendaylight.mdsal.ServiceEntityType";
@@ -546,7 +546,6 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                     addToSleepingChainsMap(deviceInfo, contextChainMap.get(deviceInfo));
                 } else {
                     mastershipChangeListener.becomeMaster(deviceInfo);
-                    sendNotificationNodeAdded(deviceInfo);
                 }
             }
         }
@@ -558,10 +557,6 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                 addToSleepingChainsMap(deviceInfo, contextChainMap.get(deviceInfo));
             }
         }
-    }
-
-    private void sendNotificationNodeAdded(final DeviceInfo deviceInfo) {
-        this.deviceManager.sendNodeAddedNotification(deviceInfo);
     }
 
     private class SleepingChainsTimerTask implements TimerTask {

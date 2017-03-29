@@ -76,7 +76,7 @@ public class LifecycleServiceImpl implements LifecycleService {
     public void instantiateServiceInstance() {
 
         LOG.info("Starting clustering MASTER services for node {}", deviceInfo.getLOGValue());
-        if (!clusterInitializationPhaseHandler.onContextInstantiateService(null)) {
+        if (!clusterInitializationPhaseHandler.onContextInstantiateService(this.contextChainMastershipChangeWatcher)) {
             contextChainMastershipChangeWatcher.onNotAbleToStartMastership(deviceInfo);
         } else {
             contextChainMastershipChangeWatcher.onMasterRoleAcquired(deviceInfo);

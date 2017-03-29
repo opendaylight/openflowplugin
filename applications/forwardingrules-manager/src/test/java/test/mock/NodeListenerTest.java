@@ -19,6 +19,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginMastershipChangeServiceProvider;
 import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -35,9 +36,7 @@ public class NodeListenerTest extends FRMTest {
     private final static NodeKey s1Key = new NodeKey(new NodeId("testnode:1"));
     RpcProviderRegistry rpcProviderRegistryMock = new RpcProviderRegistryMock();
     @Mock
-    ClusterSingletonServiceProvider clusterSingletonService;
-    @Mock
-    private NotificationProviderService notificationService;
+    OpenFlowPluginMastershipChangeServiceProvider provider;
 
     @Before
     public void setUp() {
@@ -45,8 +44,7 @@ public class NodeListenerTest extends FRMTest {
                 getDataBroker(),
                 rpcProviderRegistryMock,
                 getConfig(),
-                clusterSingletonService,
-                notificationService);
+                provider);
         forwardingRulesManager.start();
     }
 

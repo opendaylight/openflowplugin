@@ -12,10 +12,12 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.Futures;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -23,18 +25,13 @@ import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeService;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRemoved;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemoved;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.OpendaylightInventoryListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
@@ -46,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * Manager for clustering service registrations of {@link DeviceMastership}.
  */
 public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<FlowCapableNode>,
-        OpendaylightInventoryListener, AutoCloseable{
+        AutoCloseable, MastershipChangeService {
     private static final Logger LOG = LoggerFactory.getLogger(DeviceMastershipManager.class);
     private static final InstanceIdentifier<FlowCapableNode> II_TO_FLOW_CAPABLE_NODE
             = InstanceIdentifier.builder(Nodes.class)
@@ -54,21 +51,15 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
             .augmentation(FlowCapableNode.class)
             .build();
 
-    private final ClusterSingletonServiceProvider clusterSingletonService;
-    private final ListenerRegistration<?> notifListenerRegistration;
     private final FlowNodeReconciliation reconcliationAgent;
     private final DataBroker dataBroker;
-    private final ConcurrentHashMap<NodeId, DeviceMastership> deviceMasterships = new ConcurrentHashMap();
+    private final ConcurrentHashMap<NodeId, DeviceMastership> deviceMasterships = new ConcurrentHashMap<>();
     private final Object lockObj = new Object();
     private ListenerRegistration<DeviceMastershipManager> listenerRegistration;
     private Set<InstanceIdentifier<FlowCapableNode>> activeNodes = Collections.emptySet();
 
-    public DeviceMastershipManager(final ClusterSingletonServiceProvider clusterSingletonService,
-                                   final NotificationProviderService notificationService,
-                                   final FlowNodeReconciliation reconcliationAgent,
+    DeviceMastershipManager(final FlowNodeReconciliation reconcliationAgent,
                                    final DataBroker dataBroker) {
-        this.clusterSingletonService = clusterSingletonService;
-        this.notifListenerRegistration = notificationService.registerNotificationListener(this);
         this.reconcliationAgent = reconcliationAgent;
         this.dataBroker = dataBroker;
         registerNodeListener();
@@ -78,7 +69,7 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
         return deviceMasterships.get(nodeId) != null && deviceMasterships.get(nodeId).isDeviceMastered();
     }
 
-    public boolean isNodeActive(final NodeId nodeId) {
+    boolean isNodeActive(final NodeId nodeId) {
         final InstanceIdentifier<FlowCapableNode> flowNodeIdentifier = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(nodeId)).augmentation(FlowCapableNode.class);
         return activeNodes.contains(flowNodeIdentifier);
@@ -88,35 +79,6 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
     @VisibleForTesting
     ConcurrentHashMap<NodeId, DeviceMastership> getDeviceMasterships() {
         return deviceMasterships;
-    }
-
-    @Override
-    public void onNodeUpdated(NodeUpdated notification) {
-        LOG.debug("NodeUpdate notification received : {}", notification);
-        DeviceMastership membership = deviceMasterships.computeIfAbsent(notification.getId(), device ->
-                new DeviceMastership(notification.getId(), clusterSingletonService, reconcliationAgent));
-        membership.registerClusterSingletonService();
-    }
-
-    @Override
-    public void onNodeConnectorUpdated(NodeConnectorUpdated notification) {
-        //Not published by plugin
-    }
-
-    @Override
-    public void onNodeRemoved(NodeRemoved notification) {
-        LOG.debug("NodeRemoved notification received : {}", notification);
-        NodeId nodeId = notification.getNodeRef().getValue().firstKeyOf(Node.class).getId();
-        final DeviceMastership mastership = deviceMasterships.remove(nodeId);
-        if (mastership != null) {
-            mastership.close();
-            LOG.info("Unregistered FRM cluster singleton service for service id : {}", nodeId.getValue());
-        }
-    }
-
-    @Override
-    public void onNodeConnectorRemoved(NodeConnectorRemoved notification) {
-        //Not published by plugin
     }
 
     @Override
@@ -206,9 +168,6 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
             }
             listenerRegistration = null;
         }
-        if (notifListenerRegistration != null) {
-            notifListenerRegistration.close();
-        }
     }
 
 
@@ -245,5 +204,28 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
             LOG.debug("Data listener registration failed ", e);
             throw new IllegalStateException("Node listener registration failed!", e);
         }
+    }
+
+    @Override
+    public Future<Void> onBecomeOwner(@Nonnull DeviceInfo deviceInfo) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("FRM: Node {} become master. Starting reconciliation if possible.", deviceInfo.getLOGValue());
+        }
+        DeviceMastership deviceMastership = deviceMasterships.computeIfAbsent(deviceInfo.getNodeId(), device ->
+                new DeviceMastership(deviceInfo.getNodeId(), reconcliationAgent));
+        deviceMastership.changeDeviceMastered(true);
+        return Futures.immediateFuture(null);
+    }
+
+    @Override
+    public Future<Void> onLoseOwnership(@Nonnull DeviceInfo deviceInfo) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("FRM: Node {} become slave or was disconnected.", deviceInfo.getLOGValue());
+        }
+        final DeviceMastership mastership = deviceMasterships.remove(deviceInfo.getNodeId());
+        if (mastership != null) {
+            mastership.close();
+        }
+        return Futures.immediateFuture(null);
     }
 }
