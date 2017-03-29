@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.CheckedFuture;
@@ -18,9 +19,10 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginMastershipChangeServiceProvider;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeRegistration;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
@@ -60,8 +62,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private final SalMeterService salMeterService;
     private final SalTableService salTableService;
     private final ForwardingRulesManagerConfig forwardingRulesManagerConfig;
-    private final ClusterSingletonServiceProvider clusterSingletonServiceProvider;
-    private final NotificationProviderService notificationService;
+    private MastershipChangeServiceManager mastershipChangeServiceManager;
 
     private ForwardingRulesCommiter<Flow> flowListener;
     private ForwardingRulesCommiter<Group> groupListener;
@@ -70,18 +71,14 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private FlowNodeReconciliation nodeListener;
     private FlowNodeConnectorInventoryTranslatorImpl flowNodeConnectorInventoryTranslatorImpl;
     private DeviceMastershipManager deviceMastershipManager;
+    private MastershipChangeRegistration mastershipChangeRegistration;
 
     public ForwardingRulesManagerImpl(final DataBroker dataBroker,
                                       final RpcConsumerRegistry rpcRegistry,
                                       final ForwardingRulesManagerConfig config,
-                                      final ClusterSingletonServiceProvider clusterSingletonService,
-                                      final NotificationProviderService notificationService) {
+                                      final OpenFlowPluginMastershipChangeServiceProvider provider) {
         this.dataService = Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
         this.forwardingRulesManagerConfig = Preconditions.checkNotNull(config, "Configuration for FRM cannot be null");
-        this.clusterSingletonServiceProvider = Preconditions.checkNotNull(clusterSingletonService,
-                "ClusterSingletonService provider can not be null");
-        this.notificationService = Preconditions.checkNotNull(notificationService, "Notification publisher service is" +
-                " not available");
 
         Preconditions.checkArgument(rpcRegistry != null, "RpcConsumerRegistry can not be null !");
 
@@ -93,16 +90,18 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                 "RPC SalMeterService not found.");
         this.salTableService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalTableService.class),
                 "RPC SalTableService not found.");
+
+        this.mastershipChangeServiceManager = Preconditions.checkNotNull(provider,
+                "Mastership change service provider cannot be null.").getMastershipChangeServiceManager();
     }
 
     @Override
     public void start() {
         this.nodeListener = new FlowNodeReconciliationImpl(this, dataService);
-        this.deviceMastershipManager = new DeviceMastershipManager(clusterSingletonServiceProvider,
-                notificationService,
-                this.nodeListener,
-                dataService);
-        flowNodeConnectorInventoryTranslatorImpl = new FlowNodeConnectorInventoryTranslatorImpl(this,dataService);
+        this.deviceMastershipManager = MoreObjects.firstNonNull(this.deviceMastershipManager, new DeviceMastershipManager(this.nodeListener));
+        this.mastershipChangeRegistration = this.mastershipChangeServiceManager.register(deviceMastershipManager);
+        this.flowNodeConnectorInventoryTranslatorImpl =
+                new FlowNodeConnectorInventoryTranslatorImpl(this,dataService);
 
         this.flowListener = new FlowForwarder(this, dataService);
         this.groupListener = new GroupForwarder(this, dataService);
@@ -132,6 +131,10 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         if (this.nodeListener != null) {
             this.nodeListener.close();
             this.nodeListener = null;
+        }
+        if (this.mastershipChangeRegistration != null) {
+            this.mastershipChangeRegistration.close();
+            this.mastershipChangeRegistration = null;
         }
         if (deviceMastershipManager != null) {
             deviceMastershipManager.close();
@@ -235,5 +238,11 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     public void setDeviceMastershipManager(final DeviceMastershipManager deviceMastershipManager) {
         this.deviceMastershipManager = deviceMastershipManager;
     }
+
+    @VisibleForTesting
+    public void setMastershipChangeManager(final MastershipChangeServiceManager mastershipChangeManager) {
+        this.mastershipChangeServiceManager = mastershipChangeManager;
+    }
+
 }
 

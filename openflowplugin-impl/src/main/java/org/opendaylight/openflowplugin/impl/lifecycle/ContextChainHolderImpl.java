@@ -229,7 +229,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         if (contextChain != null) {
             if (contextChain.isMastered(mastershipState)) {
                 LOG.info("Role MASTER was granted to device {}", deviceInfo.getLOGValue());
-                this.sendNotificationNodeAdded(deviceInfo);
+                mastershipChangeListener.becomeMaster(deviceInfo);
             }
         }
     }
@@ -365,10 +365,6 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                 }
             }
         }
-    }
-
-    private void sendNotificationNodeAdded(final DeviceInfo deviceInfo) {
-        this.deviceManager.sendNodeAddedNotification(deviceInfo);
     }
 
     @Override
