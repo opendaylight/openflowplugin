@@ -28,25 +28,22 @@ public class DeviceMastershipTest {
     private DeviceMastership deviceMastership;
 
     @Mock
-    private DeviceMastershipManager deviceMastershipManager;
-
-    @Mock
     private FlowNodeReconciliation reconcliationAgent;
 
     @Before
     public void setUp() throws Exception {
-        deviceMastership = new DeviceMastership(NODE_ID, Mockito.mock(ClusterSingletonServiceProvider.class), reconcliationAgent);
+        deviceMastership = new DeviceMastership(NODE_ID, reconcliationAgent);
     }
 
     @Test
-    public void testInstantiateServiceInstance() {
-        deviceMastership.instantiateServiceInstance();
+    public void testMasteredDevice() {
+        deviceMastership.changeDeviceMastered(true);
         Assert.assertTrue(deviceMastership.isDeviceMastered());
     }
 
     @Test
-    public void testCloseServiceInstance() {
-        deviceMastership.closeServiceInstance();
+    public void testDisconnectedDevice() {
+        deviceMastership.changeDeviceMastered(false);
         Assert.assertFalse(deviceMastership.isDeviceMastered());
     }
 

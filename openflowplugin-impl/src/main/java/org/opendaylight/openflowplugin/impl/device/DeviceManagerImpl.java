@@ -42,9 +42,6 @@ import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitiali
 import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.SalRoleServiceImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemovedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -290,16 +287,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         }
     }
 
-    private void sendNodeRemovedNotification(final DeviceInfo deviceInfo) {
-        NodeRemovedBuilder builder = new NodeRemovedBuilder();
-        builder.setNodeRef(new NodeRef(deviceInfo.getNodeInstanceIdentifier()));
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Publishing node removed notification for {}", deviceInfo.getLOGValue());
-        }
-        notificationPublishService.offerNotification(builder.build());
-    }
-
-
     @Override
     public void onDeviceRemoved(final DeviceInfo deviceInfo) {
         deviceContexts.remove(deviceInfo);
@@ -307,7 +294,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
             LOG.debug("Device context removed for node {}", deviceInfo.getLOGValue());
         }
         this.updatePacketInRateLimiters();
-        this.sendNodeRemovedNotification(deviceInfo);
     }
 
     @Override
@@ -320,14 +306,4 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         return barrierCountLimit;
     }
 
-    @Override
-    public void sendNodeAddedNotification(@CheckForNull final DeviceInfo deviceInfo) {
-        NodeUpdatedBuilder builder = new NodeUpdatedBuilder();
-        builder.setId(deviceInfo.getNodeId());
-        builder.setNodeRef(new NodeRef(deviceInfo.getNodeInstanceIdentifier()));
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Publishing node added notification for {}", deviceInfo.getLOGValue());
-        }
-        notificationPublishService.offerNotification(builder.build());
-    }
 }
