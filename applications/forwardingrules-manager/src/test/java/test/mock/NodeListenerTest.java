@@ -15,10 +15,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginMastershipChangeServiceProvider;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeRegistration;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
+import org.opendaylight.openflowplugin.applications.frm.impl.DeviceMastershipManager;
 import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -32,12 +37,19 @@ import test.mock.util.RpcProviderRegistryMock;
 @RunWith(MockitoJUnitRunner.class)
 public class NodeListenerTest extends FRMTest {
     private ForwardingRulesManagerImpl forwardingRulesManager;
-    private final static NodeKey s1Key = new NodeKey(new NodeId("testnode:1"));
+    private final static NodeId NODE_ID = new NodeId("testnode:1");
+    private final static NodeKey s1Key = new NodeKey(new NodeId(NODE_ID));
     RpcProviderRegistry rpcProviderRegistryMock = new RpcProviderRegistryMock();
     @Mock
-    ClusterSingletonServiceProvider clusterSingletonService;
+    OpenFlowPluginMastershipChangeServiceProvider provider;
     @Mock
-    private NotificationProviderService notificationService;
+    MastershipChangeServiceManager mastershipChangeServiceManager;
+    @Mock
+    MastershipChangeRegistration mastershipChangeRegistration;
+    @Mock
+    DeviceMastershipManager deviceMastershipManager;
+
+
 
     @Before
     public void setUp() {
@@ -45,8 +57,12 @@ public class NodeListenerTest extends FRMTest {
                 getDataBroker(),
                 rpcProviderRegistryMock,
                 getConfig(),
-                clusterSingletonService,
-                notificationService);
+                provider);
+        forwardingRulesManager.setDeviceMastershipManager(deviceMastershipManager);
+        forwardingRulesManager.setMastershipChangeManager(mastershipChangeServiceManager);
+        Mockito.when(deviceMastershipManager.isDeviceMastered(NODE_ID)).thenReturn(true);
+        Mockito.when(provider.getMastershipChangeServiceManager()).thenReturn(mastershipChangeServiceManager);
+        Mockito.when(mastershipChangeServiceManager.register(Mockito.any())).thenReturn(mastershipChangeRegistration);
         forwardingRulesManager.start();
     }
 

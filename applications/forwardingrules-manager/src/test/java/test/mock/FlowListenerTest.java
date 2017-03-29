@@ -23,6 +23,9 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginMastershipChangeServiceProvider;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeRegistration;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.applications.frm.impl.DeviceMastershipManager;
 import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Dscp;
@@ -61,11 +64,14 @@ public class FlowListenerTest extends FRMTest {
     RpcProviderRegistry rpcProviderRegistryMock = new RpcProviderRegistryMock();
     TableKey tableKey = new TableKey((short) 2);
     @Mock
-    ClusterSingletonServiceProvider clusterSingletonService;
+    OpenFlowPluginMastershipChangeServiceProvider provider;
     @Mock
     DeviceMastershipManager deviceMastershipManager;
     @Mock
-    private NotificationProviderService notificationService;
+    MastershipChangeServiceManager mastershipChangeServiceManager;
+    @Mock
+    MastershipChangeRegistration mastershipChangeRegistration;
+
 
     @Before
     public void setUp() {
@@ -73,12 +79,14 @@ public class FlowListenerTest extends FRMTest {
                 getDataBroker(),
                 rpcProviderRegistryMock,
                 getConfig(),
-                clusterSingletonService,
-                notificationService);
+                provider);
+        forwardingRulesManager.setDeviceMastershipManager(deviceMastershipManager);
+        forwardingRulesManager.setMastershipChangeManager(mastershipChangeServiceManager);
+        Mockito.when(deviceMastershipManager.isDeviceMastered(NODE_ID)).thenReturn(true);
+        Mockito.when(provider.getMastershipChangeServiceManager()).thenReturn(mastershipChangeServiceManager);
+        Mockito.when(mastershipChangeServiceManager.register(Mockito.any())).thenReturn(mastershipChangeRegistration);
         forwardingRulesManager.start();
         // TODO consider tests rewrite (added because of complicated access)
-        forwardingRulesManager.setDeviceMastershipManager(deviceMastershipManager);
-        Mockito.when(deviceMastershipManager.isDeviceMastered(NODE_ID)).thenReturn(true);
     }
 
     @Test
