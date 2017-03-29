@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -12,13 +12,9 @@ import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import io.netty.util.HashedWheelTimer;
-import io.netty.util.internal.ConcurrentSet;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
@@ -46,9 +42,6 @@ import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitiali
 import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.SalRoleServiceImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemovedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -77,7 +70,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private TranslatorLibrary translatorLibrary;
 
     private final ConcurrentMap<DeviceInfo, DeviceContext> deviceContexts = new ConcurrentHashMap<>();
-    private final Set<DeviceInfo> notificationCreateNodeSend = new ConcurrentSet<>();
 
     private long barrierIntervalNanos;
     private int barrierCountLimit;
@@ -295,20 +287,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         }
     }
 
-    private void sendNodeRemovedNotification(final DeviceInfo deviceInfo) {
-        notificationCreateNodeSend.remove(deviceInfo);
-        NodeRemovedBuilder builder = new NodeRemovedBuilder();
-        builder.setNodeRef(new NodeRef(deviceInfo.getNodeInstanceIdentifier()));
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Publishing node removed notification for {}", deviceInfo.getLOGValue());
-        }
-        notificationPublishService.offerNotification(builder.build());
-    }
-
-
     @Override
     public void onDeviceRemoved(final DeviceInfo deviceInfo) {
-        this.sendNodeRemovedNotification(deviceInfo);
         deviceContexts.remove(deviceInfo);
         if (LOG.isDebugEnabled()) {
             LOG.debug("Device context removed for node {}", deviceInfo.getLOGValue());
@@ -326,17 +306,4 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         return barrierCountLimit;
     }
 
-    @Override
-    public void sendNodeAddedNotification(@CheckForNull final DeviceInfo deviceInfo) {
-        if (!notificationCreateNodeSend.contains(deviceInfo)) {
-            notificationCreateNodeSend.add(deviceInfo);
-            NodeUpdatedBuilder builder = new NodeUpdatedBuilder();
-            builder.setId(deviceInfo.getNodeId());
-            builder.setNodeRef(new NodeRef(deviceInfo.getNodeInstanceIdentifier()));
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Publishing node added notification for {}", deviceInfo.getLOGValue());
-            }
-            notificationPublishService.offerNotification(builder.build());
-        }
-    }
 }
