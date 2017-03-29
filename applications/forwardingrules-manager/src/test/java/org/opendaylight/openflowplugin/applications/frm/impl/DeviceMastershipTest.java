@@ -34,14 +34,14 @@ public class DeviceMastershipTest {
     }
 
     @Test
-    public void testInstantiateServiceInstance() {
-        deviceMastership.instantiateServiceInstance();
+    public void testMasteredDevice() {
+        deviceMastership.changeDeviceMastered(true);
         Assert.assertTrue(deviceMastership.isDeviceMastered());
     }
 
     @Test
-    public void testCloseServiceInstance() {
-        deviceMastership.closeServiceInstance();
+    public void testDisconnectedDevice() {
+        deviceMastership.changeDeviceMastered(false);
         Assert.assertFalse(deviceMastership.isDeviceMastered());
     }
 

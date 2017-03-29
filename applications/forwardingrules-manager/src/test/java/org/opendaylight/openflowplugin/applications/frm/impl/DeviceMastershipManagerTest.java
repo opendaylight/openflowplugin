@@ -21,6 +21,7 @@ import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
@@ -39,56 +40,28 @@ public class DeviceMastershipManagerTest {
     private static final NodeId NODE_ID = new NodeId("testNode");
     private DeviceMastershipManager deviceMastershipManager;
     @Mock
-    private ClusterSingletonServiceRegistration registration;
-    @Mock
-    private ClusterSingletonServiceProvider clusterSingletonService;
-    @Mock
-    private NotificationProviderService notificationService;
-    @Mock
     private FlowNodeReconciliation reconciliationAgent;
     @Mock
     private DataBroker dataBroker;
+    @Mock
+    private DeviceInfo deviceInfo;
 
     @Before
     public void setUp() throws Exception {
-        deviceMastershipManager = new DeviceMastershipManager(clusterSingletonService,
-                notificationService, reconciliationAgent, dataBroker);
-        Mockito.when(clusterSingletonService.registerClusterSingletonService(Matchers.<ClusterSingletonService>any()))
-                .thenReturn(registration);
+        deviceMastershipManager = new DeviceMastershipManager(reconciliationAgent);
+        Mockito.when(deviceInfo.getNodeId()).thenReturn(NODE_ID);
     }
 
     @Test
-    public void testOnDeviceConnectedAndDisconnected() throws Exception {
+    public void testIsDeviceMasteredOrSlaved() throws Exception {
         // no context
         Assert.assertNull(deviceMastershipManager.getDeviceMasterships().get(NODE_ID));
-        NodeUpdatedBuilder nodeUpdatedBuilder = new NodeUpdatedBuilder();
-        nodeUpdatedBuilder.setId(NODE_ID);
-        deviceMastershipManager.onNodeUpdated(nodeUpdatedBuilder.build());
+        deviceMastershipManager.onBecomeOwner(deviceInfo);
         DeviceMastership serviceInstance = deviceMastershipManager.getDeviceMasterships().get(NODE_ID);
         Assert.assertNotNull(serviceInstance);
         // destroy context - unregister
         Assert.assertNotNull(deviceMastershipManager.getDeviceMasterships().get(NODE_ID));
-        NodeRemovedBuilder nodeRemovedBuilder = new NodeRemovedBuilder();
-        InstanceIdentifier<Node> nodeIId = InstanceIdentifier.create(Nodes.class).
-                child(Node.class, new NodeKey(NODE_ID));
-        nodeRemovedBuilder.setNodeRef(new NodeRef(nodeIId));
-        deviceMastershipManager.onNodeRemoved(nodeRemovedBuilder.build());
+        deviceMastershipManager.onLoseOwnership(deviceInfo);
         Assert.assertNull(deviceMastershipManager.getDeviceMasterships().get(NODE_ID));
     }
-
-    @Test
-    public void testIsDeviceMasteredOrSlaved() {
-        // no context
-        Assert.assertFalse(deviceMastershipManager.isDeviceMastered(NODE_ID));
-        NodeUpdatedBuilder nodeUpdatedBuilder = new NodeUpdatedBuilder();
-        nodeUpdatedBuilder.setId(NODE_ID);
-        deviceMastershipManager.onNodeUpdated(nodeUpdatedBuilder.build());
-        // is master
-        deviceMastershipManager.getDeviceMasterships().get(NODE_ID).instantiateServiceInstance();
-        Assert.assertTrue(deviceMastershipManager.isDeviceMastered(NODE_ID));
-        // is not master
-        deviceMastershipManager.getDeviceMasterships().get(NODE_ID).closeServiceInstance();
-        Assert.assertFalse(deviceMastershipManager.isDeviceMastered(NODE_ID));
-    }
-
 }
