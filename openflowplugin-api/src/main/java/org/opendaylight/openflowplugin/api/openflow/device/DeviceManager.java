@@ -55,6 +55,5 @@ public interface DeviceManager extends
 
     int getBarrierCountLimit();
 
-    void sendNodeAddedNotification(@CheckForNull final DeviceInfo deviceInfo);
 }
 
