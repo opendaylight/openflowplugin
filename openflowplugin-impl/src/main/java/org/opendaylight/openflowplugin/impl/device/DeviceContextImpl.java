@@ -698,7 +698,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
         try {
             final java.util.Optional<AbstractDeviceInitializer> initializer = deviceInitializerProvider
-                .lookup(deviceInfo.getVersion());
+                    .lookup(deviceInfo.getVersion());
 
             if (initializer.isPresent()) {
                 final MultipartWriterProvider writerProvider = MultipartWriterProviderFactory.createDefaultProvider(this);
@@ -717,7 +717,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill = getDeviceFlowRegistry().fill();
         Futures.addCallback(deviceFlowRegistryFill, new DeviceFlowRegistryCallback(deviceFlowRegistryFill));
 
-        return this.clusterInitializationPhaseHandler.onContextInstantiateService(contextChainMastershipChangeWatcher);
+        return !contextChainMastershipChangeWatcher.isConnectionInterrupted(deviceInfo) &&
+               this.clusterInitializationPhaseHandler.onContextInstantiateService(contextChainMastershipChangeWatcher);
     }
 
     @VisibleForTesting

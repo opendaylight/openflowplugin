@@ -210,6 +210,6 @@ class RpcContextImpl implements RpcContext {
                     convertorExecutor);
         }
 
-        return true;
+        return !contextChainMastershipChangeWatcher.isConnectionInterrupted(deviceInfo);
     }
 }

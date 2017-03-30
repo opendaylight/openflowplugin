@@ -93,4 +93,6 @@ public interface ContextChain extends AutoCloseable {
     ConnectionContext getPrimaryConnectionContext();
 
     boolean lastStateWasMaster();
+
+    LifecycleService getLifecycleService();
 }

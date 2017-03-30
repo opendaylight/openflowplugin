@@ -348,7 +348,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     }
 
     private void addToSleepingChainsMap(@Nonnull final DeviceInfo deviceInfo, final ContextChain contextChain) {
-        if (contextChain.lastStateWasMaster()) {
+        if (contextChain.lastStateWasMaster() || contextChain.getLifecycleService().tryToBeMaster()) {
             destroyContextChain(deviceInfo);
         } else {
             sleepingChains.put(deviceInfo, contextChain);
@@ -517,6 +517,12 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                 }
             }                
         }        
+    }
+
+    @Override
+    public boolean isConnectionInterrupted(final DeviceInfo deviceInfo) {
+        ContextChain contextChain = this.contextChainMap.get(deviceInfo);
+        return Objects.isNull(contextChain) || contextChain.getPrimaryConnectionContext().getConnectionState().equals(ConnectionContext.CONNECTION_STATE.RIP);
     }
 
     private class StartStopChainCallback implements FutureCallback<Void> {

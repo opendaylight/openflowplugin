@@ -40,6 +40,7 @@ public class LifecycleServiceImpl implements LifecycleService {
     private ServiceGroupIdentifier serviceGroupIdentifier;
     private DeviceInfo deviceInfo;
     private boolean terminationState = false;
+    private boolean tryToBeMaster = false;
     private final ContextChainMastershipChangeWatcher contextChainMastershipChangeWatcher;
 
 
@@ -74,11 +75,12 @@ public class LifecycleServiceImpl implements LifecycleService {
 
     @Override
     public void instantiateServiceInstance() {
-
+        this.tryToBeMaster = true;
         LOG.info("Starting clustering MASTER services for node {}", deviceInfo.getLOGValue());
         if (!clusterInitializationPhaseHandler.onContextInstantiateService(this.contextChainMastershipChangeWatcher)) {
             contextChainMastershipChangeWatcher.onNotAbleToStartMastership(deviceInfo);
         } else {
+            this.tryToBeMaster = false;
             contextChainMastershipChangeWatcher.onMasterRoleAcquired(deviceInfo);
         }
 
@@ -143,4 +145,8 @@ public class LifecycleServiceImpl implements LifecycleService {
         }
     }
 
+    @Override
+    public boolean tryToBeMaster() {
+        return this.tryToBeMaster;
+    }
 }
