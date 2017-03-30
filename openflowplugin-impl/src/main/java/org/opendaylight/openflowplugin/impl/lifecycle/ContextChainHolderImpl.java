@@ -220,9 +220,24 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
             contextChainMap.put(deviceInfo, createContextChain(connectionContext));
         } else {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Found context chain for device: {}, pairing.", deviceInfo.getLOGValue());
+                LOG.debug("Found context chain for device: {}", deviceInfo.getLOGValue());
             }
-            this.pairConnection(connectionContext);
+            if (!chain.getLifecycleService().tryToBeMaster()) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Pairing connection on {}", deviceInfo.getLOGValue());
+                }
+                this.pairConnection(connectionContext);
+            } else {
+                LOG.warn("Device {} already try to be master. " +
+                         "Something went wrong. Closing all connections to the device.", deviceInfo.getLOGValue());
+                connectionContext.closeConnection(true);
+                if (!chain
+                        .getPrimaryConnectionContext()
+                        .getConnectionState()
+                        .equals(ConnectionContext.CONNECTION_STATE.RIP)) {
+                    chain.getPrimaryConnectionContext().closeConnection(true);
+                }
+            }
         }
 
         return ConnectionStatus.MAY_CONTINUE;
@@ -348,20 +363,21 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     }
 
     private void addToSleepingChainsMap(@Nonnull final DeviceInfo deviceInfo, final ContextChain contextChain) {
-        if (contextChain.lastStateWasMaster()) {
-            destroyContextChain(deviceInfo);
-        } else {
-            sleepingChains.put(deviceInfo, contextChain);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Put context chain on mattress to sleep for device {}", deviceInfo.getLOGValue());
-            }
-            if (!this.neverDropChain) {
-                timeToLive.put(deviceInfo, this.ttlBeforeDrop);
-                if (!this.timerIsRunning) {
-                    startTimer();
-                }
-            }
-        }
+        destroyContextChain(deviceInfo);
+//        if (contextChain.lastStateWasMaster() || contextChain.getLifecycleService().tryToBeMaster()) {
+//            destroyContextChain(deviceInfo);
+//        } else {
+//            sleepingChains.put(deviceInfo, contextChain);
+//            if (LOG.isDebugEnabled()) {
+//                LOG.debug("Put context chain on mattress to sleep for device {}", deviceInfo.getLOGValue());
+//            }
+//            if (!this.neverDropChain) {
+//                timeToLive.put(deviceInfo, this.ttlBeforeDrop);
+//                if (!this.timerIsRunning) {
+//                    startTimer();
+//                }
+//            }
+//        }
     }
 
     private void removeFromSleepingChainsMap(@Nonnull final DeviceInfo deviceInfo) {
@@ -422,6 +438,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                                 chain.getContextChainState().getName());
                     }
                     deviceInfos.add(deviceInfo);
+                    continue;
                 }
                 if (newValue <= 0) {
                     if (LOG.isDebugEnabled()) {
@@ -485,6 +502,10 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
 
     @Override
     public void ownershipChanged(EntityOwnershipChange entityOwnershipChange) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Entity ownership change received {}", entityOwnershipChange);
+        }
+
         if (!entityOwnershipChange.hasOwner() && !entityOwnershipChange.isOwner() && entityOwnershipChange.wasOwner()) {
             final YangInstanceIdentifier yii = entityOwnershipChange.getEntity().getId();
             final YangInstanceIdentifier.NodeIdentifierWithPredicates niiwp =
@@ -501,7 +522,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                     if (entry.getKey().getNodeId().equals(nodeId)) {
                         inMap = entry.getKey();
                         break;
-                    }                    
+                    }
                 }
                 if (Objects.nonNull(inMap)) {
                     markToBeRemoved.add(inMap);
@@ -515,8 +536,14 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                         LOG.warn("Not able to remove device {} from DS", nodeId);
                     }
                 }
-            }                
-        }        
+            }
+        }
+    }
+
+    @Override
+    public boolean isConnectionInterrupted(final DeviceInfo deviceInfo) {
+        ContextChain contextChain = this.contextChainMap.get(deviceInfo);
+        return Objects.isNull(contextChain) || contextChain.getPrimaryConnectionContext().getConnectionState().equals(ConnectionContext.CONNECTION_STATE.RIP);
     }
 
     private class StartStopChainCallback implements FutureCallback<Void> {

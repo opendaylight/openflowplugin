@@ -38,4 +38,11 @@ public interface ContextChainMastershipChangeWatcher {
      * @param deviceInfo device
      */
     void onSlaveRoleNotAcquired(final DeviceInfo deviceInfo);
+
+    /**
+     * Check for connection. This should be used when building up the mastership.
+     * @param deviceInfo device
+     * @return true if connection was interrupted
+     */
+    boolean isConnectionInterrupted(final DeviceInfo deviceInfo);
 }
