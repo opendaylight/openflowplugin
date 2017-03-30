@@ -71,9 +71,9 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     private StatisticsManager statisticsManager;
     private EntityOwnershipListenerRegistration eosListenerRegistration;
     private volatile ConcurrentHashMap<DeviceInfo, ContextChain> contextChainMap = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<DeviceInfo, ContextChain> sleepingChains = new ConcurrentHashMap<>();
+//    private final ConcurrentHashMap<DeviceInfo, ContextChain> sleepingChains = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<DeviceInfo, ContextChain> withoutRoleChains = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<DeviceInfo, Long> timeToLive = new ConcurrentHashMap<>();
+//    private final ConcurrentHashMap<DeviceInfo, Long> timeToLive = new ConcurrentHashMap<>();
     private final List<DeviceInfo> markToBeRemoved = new ArrayList<>();
     private ClusterSingletonServiceProvider singletonServicesProvider;
     private boolean timerIsRunning;
@@ -174,7 +174,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
 
     @Override
     public void destroyContextChain(final DeviceInfo deviceInfo) {
-        removeFromSleepingChainsMap(deviceInfo);
+//        removeFromSleepingChainsMap(deviceInfo);
         ContextChain chain = contextChainMap.get(deviceInfo);
         if (Objects.nonNull(chain)) {
             chain.close();
@@ -205,8 +205,8 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     @Override
     public ConnectionStatus deviceConnected(final ConnectionContext connectionContext) throws Exception {
 
-        Verify.verify(this.checkAllManagers(), NOT_ALL_MANAGER_WERE_SET);
-        Verify.verifyNotNull(this.singletonServicesProvider, SINGLETON_SERVICE_PROVIDER_WAS_NOT_SET_YET);
+//        Verify.verify(this.checkAllManagers(), NOT_ALL_MANAGER_WERE_SET);
+//        Verify.verifyNotNull(this.singletonServicesProvider, SINGLETON_SERVICE_PROVIDER_WAS_NOT_SET_YET);
 
         DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
 
@@ -219,11 +219,27 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
             }
             contextChainMap.put(deviceInfo, createContextChain(connectionContext));
         } else {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Found context chain for device: {}, pairing.", deviceInfo.getLOGValue());
+//            if (LOG.isDebugEnabled()) {
+//                LOG.debug("Found context chain for device: {}", deviceInfo.getLOGValue());
+//            }
+//            if (!chain.getLifecycleService().tryToBeMaster()) {
+//                if (LOG.isDebugEnabled()) {
+//                    LOG.debug("Pairing connection on {}", deviceInfo.getLOGValue());
+//                }
+//                this.pairConnection(connectionContext);
+//            } else {
+                LOG.warn("Device {} already connected. " +
+                         "Something went wrong. Closing all connections to the device.", deviceInfo.getLOGValue());
+//                connectionContext.closeConnection(true);
+                if (!chain
+                        .getPrimaryConnectionContext()
+                        .getConnectionState()
+                        .equals(ConnectionContext.CONNECTION_STATE.RIP)) {
+                    chain.getPrimaryConnectionContext().closeConnection(true);
+                }
+                return ConnectionStatus.ALREADY_CONNECTED;
             }
-            this.pairConnection(connectionContext);
-        }
+//        }
 
         return ConnectionStatus.MAY_CONTINUE;
     }
@@ -235,16 +251,19 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
 
     @Override
     public void onNotAbleToStartMastership(final DeviceInfo deviceInfo) {
-        ContextChain contextChain = contextChainMap.get(deviceInfo);
-        if (Objects.nonNull(contextChain)) {
-            LOG.warn("Not able to set MASTER role on device {}", deviceInfo.getLOGValue());
-            if (contextChain.getContextChainState().equals(ContextChainState.INITIALIZED)) {
-                contextChain.closePrimaryConnection();
-            } else {
-                contextChain.sleepTheChainAndDropConnection();
-                addToSleepingChainsMap(deviceInfo, contextChain);
-            }
-        }
+        this.withoutRoleChains.remove(deviceInfo);
+        destroyContextChain(deviceInfo);
+
+//        ContextChain contextChain = contextChainMap.get(deviceInfo);
+//        if (Objects.nonNull(contextChain)) {
+//            LOG.warn("Not able to set MASTER role on device {}", deviceInfo.getLOGValue());
+//            if (contextChain.getContextChainState().equals(ContextChainState.INITIALIZED)) {
+//                contextChain.closePrimaryConnection();
+//            } else {
+//                contextChain.sleepTheChainAndDropConnection();
+//                addToSleepingChainsMap(deviceInfo, contextChain);
+//            }
+//        }
     }
 
     @Override
@@ -262,17 +281,25 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                     LOG.info("Device {} has not finish initial gathering yet.",
                             deviceInfo.getLOGValue());
                 }
-                Futures.addCallback(contextChain.startChain(),
-                        new StartStopChainCallback(deviceInfo, START));
+                Futures.addCallback(contextChain.startChain(), new FutureCallback<Void>() {
+
+                    @Override
+                    public void onSuccess(@Nullable Void aVoid) {
+                        mastershipChangeListener.becomeMaster(deviceInfo);
+                    }
+
+                    @Override
+                    public void onFailure(Throwable throwable) {
+                        destroyContextChain(deviceInfo);
+                    }
+                });
             }
         }
     }
 
     @Override
     public void onSlaveRoleAcquired(final DeviceInfo deviceInfo) {
-        if (!this.withoutRoleChains.isEmpty()) {
-            this.withoutRoleChains.remove(deviceInfo);
-        }
+        this.withoutRoleChains.remove(deviceInfo);
         ContextChain contextChain = contextChainMap.get(deviceInfo);
         if (Objects.nonNull(contextChain)) {
             contextChain.makeContextChainStateSlave();
@@ -281,11 +308,13 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
 
     @Override
     public void onSlaveRoleNotAcquired(final DeviceInfo deviceInfo) {
-        ContextChain contextChain = contextChainMap.get(deviceInfo);
-        if (Objects.nonNull(contextChain)) {
-            contextChain.sleepTheChainAndDropConnection();
-            addToSleepingChainsMap(deviceInfo, contextChain);
-        }
+        this.withoutRoleChains.remove(deviceInfo);
+        destroyContextChain(deviceInfo);
+//        ContextChain contextChain = contextChainMap.get(deviceInfo);
+//        if (Objects.nonNull(contextChain)) {
+//            contextChain.sleepTheChainAndDropConnection();
+//            addToSleepingChainsMap(deviceInfo, contextChain);
+//        }
     }
 
     @Override
@@ -298,6 +327,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         } else {
             LOG.info("Device {} disconnected.", deviceInfo.getLOGValue());
             mastershipChangeListener.becomeSlaveOrDisconnect(deviceInfo);
+            withoutRoleChains.remove(deviceInfo);
             ContextChain chain = contextChainMap.get(deviceInfo);
             if (Objects.isNull(chain)) {
                 if (LOG.isDebugEnabled()) {
@@ -305,8 +335,17 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                             deviceInfo.getLOGValue());
                 }
             } else {
-                Futures.addCallback(chain.connectionDropped(),
-                        new StartStopChainCallback(deviceInfo, STOP));
+                Futures.addCallback(chain.connectionDropped(), new FutureCallback<Void>() {
+                    @Override
+                    public void onSuccess(@Nullable Void aVoid) {
+                        destroyContextChain(deviceInfo);
+                    }
+
+                    @Override
+                    public void onFailure(Throwable throwable) {
+                        destroyContextChain(deviceInfo);
+                    }
+                });
             }
         }
     }
@@ -348,99 +387,101 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     }
 
     private void addToSleepingChainsMap(@Nonnull final DeviceInfo deviceInfo, final ContextChain contextChain) {
-        if (contextChain.lastStateWasMaster()) {
-            destroyContextChain(deviceInfo);
-        } else {
-            sleepingChains.put(deviceInfo, contextChain);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Put context chain on mattress to sleep for device {}", deviceInfo.getLOGValue());
-            }
-            if (!this.neverDropChain) {
-                timeToLive.put(deviceInfo, this.ttlBeforeDrop);
-                if (!this.timerIsRunning) {
-                    startTimer();
-                }
-            }
-        }
+        destroyContextChain(deviceInfo);
+//        if (contextChain.lastStateWasMaster() || contextChain.getLifecycleService().tryToBeMaster()) {
+//            destroyContextChain(deviceInfo);
+//        } else {
+//            sleepingChains.put(deviceInfo, contextChain);
+//            if (LOG.isDebugEnabled()) {
+//                LOG.debug("Put context chain on mattress to sleep for device {}", deviceInfo.getLOGValue());
+//            }
+//            if (!this.neverDropChain) {
+//                timeToLive.put(deviceInfo, this.ttlBeforeDrop);
+//                if (!this.timerIsRunning) {
+//                    startTimer();
+//                }
+//            }
+//        }
     }
 
-    private void removeFromSleepingChainsMap(@Nonnull final DeviceInfo deviceInfo) {
-        sleepingChains.remove(deviceInfo);
-        if (!this.neverDropChain) {
-            timeToLive.remove(deviceInfo);
-            if (sleepingChains.isEmpty() && this.timerIsRunning) {
-                stopTimer();
-            }
-        }
-    }
+//    private void removeFromSleepingChainsMap(@Nonnull final DeviceInfo deviceInfo) {
+//        sleepingChains.remove(deviceInfo);
+//        if (!this.neverDropChain) {
+//            timeToLive.remove(deviceInfo);
+//            if (sleepingChains.isEmpty() && this.timerIsRunning) {
+//                stopTimer();
+//            }
+//        }
+//    }
 
-    private void startTimer() {
-        this.timerIsRunning = true;
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("There is at least one context chains sleeping, starting timer.");
-        }
-        timer.newTimeout(new SleepingChainsTimerTask(), this.ttlStep, TimeUnit.MILLISECONDS);
-    }
+//    private void startTimer() {
+//        this.timerIsRunning = true;
+//        if (LOG.isDebugEnabled()) {
+//            LOG.debug("There is at least one context chains sleeping, starting timer.");
+//        }
+//        timer.newTimeout(new SleepingChainsTimerTask(), this.ttlStep, TimeUnit.MILLISECONDS);
+//    }
 
-    private void stopTimer() {
-        this.timerIsRunning = false;
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("There are no context chains sleeping, stopping timer.");
-        }
-    }
+//    private void stopTimer() {
+//        this.timerIsRunning = false;
+//        if (LOG.isDebugEnabled()) {
+//            LOG.debug("There are no context chains sleeping, stopping timer.");
+//        }
+//    }
 
-    private void timerTick() {
-        if (sleepingChains.isEmpty()) {
-            this.stopTimer();
-        } else {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Context chain holder timer tick. There are {} context chains sleeping.",
-                        sleepingChains.size());
-            }
-            if (timeToLive.isEmpty()) {
-                LOG.warn("TTL map is empty but not sleeping chains map. Providing clean up.");
-                sleepingChains.clear();
-            }
-            final ArrayList<DeviceInfo> deviceInfos = new ArrayList<>();
-            for (Map.Entry<DeviceInfo, Long> deviceInfoLongEntry : timeToLive.entrySet()) {
-                Long newValue = deviceInfoLongEntry.getValue() - this.ttlStep;
-                deviceInfoLongEntry.setValue(newValue);
-                DeviceInfo deviceInfo = deviceInfoLongEntry.getKey();
-                ContextChain chain = sleepingChains.get(deviceInfo);
-                if (Objects.isNull(chain)) {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("There is no sleeping context chain for device {}", deviceInfo.getLOGValue());
-                    }
-                    deviceInfos.add(deviceInfo);
-                    continue;
-                }
-                if (!ContextChainState.SLEEPING.equals(chain.getContextChainState())) {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("There is timer registered for device: {} "
-                                         + "but device is in state: {} Removing from timer.",
-                                deviceInfo.getLOGValue(),
-                                chain.getContextChainState().getName());
-                    }
-                    deviceInfos.add(deviceInfo);
-                }
-                if (newValue <= 0) {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Dear device: {} your time to wake up is up. Its time to destroy you.",
-                                deviceInfo.getLOGValue());
-                    }
-                    destroyContextChain(deviceInfo);
-                }
-            }
-
-            deviceInfos.forEach(timeToLive::remove);
-
-            if (!timeToLive.isEmpty()) {
-                timer.newTimeout(new SleepingChainsTimerTask(), this.ttlStep, TimeUnit.MILLISECONDS);
-            } else {
-                this.stopTimer();
-            }
-        }
-    }
+//    private void timerTick() {
+//        if (sleepingChains.isEmpty()) {
+//            this.stopTimer();
+//        } else {
+//            if (LOG.isDebugEnabled()) {
+//                LOG.debug("Context chain holder timer tick. There are {} context chains sleeping.",
+//                        sleepingChains.size());
+//            }
+//            if (timeToLive.isEmpty()) {
+//                LOG.warn("TTL map is empty but not sleeping chains map. Providing clean up.");
+//                sleepingChains.clear();
+//            }
+//            final ArrayList<DeviceInfo> deviceInfos = new ArrayList<>();
+//            for (Map.Entry<DeviceInfo, Long> deviceInfoLongEntry : timeToLive.entrySet()) {
+//                Long newValue = deviceInfoLongEntry.getValue() - this.ttlStep;
+//                deviceInfoLongEntry.setValue(newValue);
+//                DeviceInfo deviceInfo = deviceInfoLongEntry.getKey();
+//                ContextChain chain = sleepingChains.get(deviceInfo);
+//                if (Objects.isNull(chain)) {
+//                    if (LOG.isDebugEnabled()) {
+//                        LOG.debug("There is no sleeping context chain for device {}", deviceInfo.getLOGValue());
+//                    }
+//                    deviceInfos.add(deviceInfo);
+//                    continue;
+//                }
+//                if (!ContextChainState.SLEEPING.equals(chain.getContextChainState())) {
+//                    if (LOG.isDebugEnabled()) {
+//                        LOG.debug("There is timer registered for device: {} "
+//                                         + "but device is in state: {} Removing from timer.",
+//                                deviceInfo.getLOGValue(),
+//                                chain.getContextChainState().getName());
+//                    }
+//                    deviceInfos.add(deviceInfo);
+//                    continue;
+//                }
+//                if (newValue <= 0) {
+//                    if (LOG.isDebugEnabled()) {
+//                        LOG.debug("Dear device: {} your time to wake up is up. Its time to destroy you.",
+//                                deviceInfo.getLOGValue());
+//                    }
+//                    destroyContextChain(deviceInfo);
+//                }
+//            }
+//
+//            deviceInfos.forEach(timeToLive::remove);
+//
+//            if (!timeToLive.isEmpty()) {
+//                timer.newTimeout(new SleepingChainsTimerTask(), this.ttlStep, TimeUnit.MILLISECONDS);
+//            } else {
+//                this.stopTimer();
+//            }
+//        }
+//    }
 
     private void startTimerRole() {
         this.timerIsRunningRole = true;
@@ -458,16 +499,18 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     }
 
     private void timerTickRole() {
-        if (withoutRoleChains.isEmpty()) {
-            this.stopTimerRole();
-        } else {
+        if (!withoutRoleChains.isEmpty()) {
             this.withoutRoleChains.forEach((deviceInfo, contextChain) -> contextChain.makeDeviceSlave());
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("There is still {} context chains without role, re-starting timer.",
-                        this.withoutRoleChains.size());
-            }
-            timer.newTimeout(new RoleTimerTask(), this.checkRoleMaster, TimeUnit.MILLISECONDS);
+            this.withoutRoleChains.clear();
         }
+        this.stopTimerRole();
+//        } else {
+//            if (LOG.isDebugEnabled()) {
+//                LOG.debug("There is still {} context chains without role, re-starting timer.",
+//                        this.withoutRoleChains.size());
+//            }
+//            timer.newTimeout(new RoleTimerTask(), this.checkRoleMaster, TimeUnit.MILLISECONDS);
+//        }
     }
 
     @VisibleForTesting
@@ -477,6 +520,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
 
     @Override
     public void close() throws Exception {
+        contextChainMap.forEach((deviceInfo, contextChain) -> contextChain.close());
         if (Objects.nonNull(eosListenerRegistration)) {
             LOG.info("Closing entity ownership listener.");
             eosListenerRegistration.close();
@@ -485,6 +529,10 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
 
     @Override
     public void ownershipChanged(EntityOwnershipChange entityOwnershipChange) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Entity ownership change received {}", entityOwnershipChange);
+        }
+
         if (!entityOwnershipChange.hasOwner() && !entityOwnershipChange.isOwner() && entityOwnershipChange.wasOwner()) {
             final YangInstanceIdentifier yii = entityOwnershipChange.getEntity().getId();
             final YangInstanceIdentifier.NodeIdentifierWithPredicates niiwp =
@@ -501,7 +549,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                     if (entry.getKey().getNodeId().equals(nodeId)) {
                         inMap = entry.getKey();
                         break;
-                    }                    
+                    }
                 }
                 if (Objects.nonNull(inMap)) {
                     markToBeRemoved.add(inMap);
@@ -515,58 +563,65 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                         LOG.warn("Not able to remove device {} from DS", nodeId);
                     }
                 }
-            }                
-        }        
-    }
-
-    private class StartStopChainCallback implements FutureCallback<Void> {
-
-        private final String deviceInfoString;
-        private final String stopString;
-        private final String stoppedString;
-        private final boolean stop;
-        private final DeviceInfo deviceInfo;
-
-        StartStopChainCallback(
-                final DeviceInfo deviceInfo,
-                final boolean stop) {
-
-            this.deviceInfoString = Objects.nonNull(deviceInfo) ? deviceInfo.getLOGValue() : "null";
-            this.stopString = stop ? "stop" : "start";
-            this.stoppedString = stop ? "stopped" : "started";
-            this.stop = stop;
-            this.deviceInfo = deviceInfo;
-        }
-
-        @Override
-        public void onSuccess(@Nullable Void nothing) {
-            LOG.info("Context chain for device {} successfully {}", deviceInfoString, stoppedString);
-            if (Objects.nonNull(deviceInfo)) {
-                if (this.stop) {
-                    addToSleepingChainsMap(deviceInfo, contextChainMap.get(deviceInfo));
-                } else {
-                    mastershipChangeListener.becomeMaster(deviceInfo);
-                }
-            }
-        }
-
-        @Override
-        public void onFailure(@Nonnull final Throwable throwable) {
-            LOG.warn("Not able to {} the context chain for device {}", stopString, deviceInfoString);
-            if (this.stop && Objects.nonNull(deviceInfo)) {
-                addToSleepingChainsMap(deviceInfo, contextChainMap.get(deviceInfo));
             }
         }
     }
 
-    private class SleepingChainsTimerTask implements TimerTask {
-
-        @Override
-        public void run(Timeout timeout) throws Exception {
-            timerTick();
-        }
-
+    @Override
+    public boolean isConnectionInterrupted(final DeviceInfo deviceInfo) {
+        ContextChain contextChain = this.contextChainMap.get(deviceInfo);
+        return Objects.isNull(contextChain) || contextChain.getPrimaryConnectionContext().getConnectionState().equals(ConnectionContext.CONNECTION_STATE.RIP);
     }
+
+//    private class StartStopChainCallback implements FutureCallback<Void> {
+//
+//        private final String deviceInfoString;
+//        private final String stopString;
+//        private final String stoppedString;
+//        private final boolean stop;
+//        private final DeviceInfo deviceInfo;
+//
+//        StartStopChainCallback(
+//                final DeviceInfo deviceInfo,
+//                final boolean stop) {
+//
+//            this.deviceInfoString = Objects.nonNull(deviceInfo) ? deviceInfo.getLOGValue() : "null";
+//            this.stopString = stop ? "stop" : "start";
+//            this.stoppedString = stop ? "stopped" : "started";
+//            this.stop = stop;
+//            this.deviceInfo = deviceInfo;
+//        }
+//
+//        @Override
+//        public void onSuccess(@Nullable Void nothing) {
+//            LOG.info("Context chain for device {} successfully {}", deviceInfoString, stoppedString);
+//            if (Objects.nonNull(deviceInfo)) {
+//                if (this.stop) {
+//                    addToSleepingChainsMap(deviceInfo, contextChainMap.get(deviceInfo));
+//                } else {
+//                    mastershipChangeListener.becomeMaster(deviceInfo);
+//                }
+//            }
+//        }
+//
+//        @Override
+//        public void onFailure(@Nonnull final Throwable throwable) {
+//            LOG.warn("Not able to {} the context chain for device {}", stopString, deviceInfoString);
+//
+////            if (this.stop && Objects.nonNull(deviceInfo)) {
+////                addToSleepingChainsMap(deviceInfo, contextChainMap.get(deviceInfo));
+////            }
+//        }
+//    }
+//
+////    private class SleepingChainsTimerTask implements TimerTask {
+////
+////        @Override
+////        public void run(Timeout timeout) throws Exception {
+////            timerTick();
+////        }
+////
+////    }
 
     private class RoleTimerTask implements TimerTask {
 

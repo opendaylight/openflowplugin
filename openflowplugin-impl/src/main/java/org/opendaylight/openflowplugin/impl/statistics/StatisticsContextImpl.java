@@ -515,6 +515,10 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
             }
         });
 
+        if (contextChainMastershipChangeWatcher.isConnectionInterrupted(deviceInfo)) {
+            return false;
+        }
+
         if (this.isStatisticsPollingOn) {
             myManager.startScheduling(deviceInfo);
         }

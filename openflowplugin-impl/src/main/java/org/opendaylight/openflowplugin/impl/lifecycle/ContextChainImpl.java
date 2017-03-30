@@ -134,7 +134,7 @@ public class ContextChainImpl implements ContextChain {
     public ListenableFuture<Void> connectionDropped() {
         this.lastContextChainState = this.contextChainState;
         this.contextChainState = ContextChainState.SLEEPING;
-        if (this.lastContextChainState.equals(ContextChainState.WORKINGMASTER)) {
+        if (this.lastContextChainState.equals(ContextChainState.WORKINGMASTER) || (this.lifecycleService.tryToBeMaster())) {
             return this.stopChain(true);
         }
         return Futures.immediateFuture(null);
@@ -173,4 +173,8 @@ public class ContextChainImpl implements ContextChain {
         return this.lastContextChainState.equals(ContextChainState.WORKINGMASTER);
     }
 
+    @Override
+    public LifecycleService getLifecycleService() {
+        return this.lifecycleService;
+    }
 }
