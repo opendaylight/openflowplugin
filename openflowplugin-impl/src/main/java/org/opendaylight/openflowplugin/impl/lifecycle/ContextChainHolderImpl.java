@@ -220,9 +220,24 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
             contextChainMap.put(deviceInfo, createContextChain(connectionContext));
         } else {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Found context chain for device: {}, pairing.", deviceInfo.getLOGValue());
+                LOG.debug("Found context chain for device: {}", deviceInfo.getLOGValue());
             }
-            this.pairConnection(connectionContext);
+            if (!chain.getLifecycleService().tryToBeMaster()) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Pairing connection on {}", deviceInfo.getLOGValue());
+                }
+                this.pairConnection(connectionContext);
+            } else {
+                LOG.warn("Device {} already try to be master. " +
+                         "Something went wrong. Closing all connections to the device.", deviceInfo.getLOGValue());
+                connectionContext.closeConnection(true);
+                if (!chain
+                        .getPrimaryConnectionContext()
+                        .getConnectionState()
+                        .equals(ConnectionContext.CONNECTION_STATE.RIP)) {
+                    chain.getPrimaryConnectionContext().closeConnection(true);
+                }
+            }
         }
 
         return ConnectionStatus.MAY_CONTINUE;
@@ -348,7 +363,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     }
 
     private void addToSleepingChainsMap(@Nonnull final DeviceInfo deviceInfo, final ContextChain contextChain) {
-        if (contextChain.lastStateWasMaster()) {
+        if (contextChain.lastStateWasMaster() || contextChain.getLifecycleService().tryToBeMaster()) {
             destroyContextChain(deviceInfo);
         } else {
             sleepingChains.put(deviceInfo, contextChain);
@@ -485,38 +500,48 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
 
     @Override
     public void ownershipChanged(EntityOwnershipChange entityOwnershipChange) {
-        if (!entityOwnershipChange.hasOwner() && !entityOwnershipChange.isOwner() && entityOwnershipChange.wasOwner()) {
-            final YangInstanceIdentifier yii = entityOwnershipChange.getEntity().getId();
-            final YangInstanceIdentifier.NodeIdentifierWithPredicates niiwp =
-                    (YangInstanceIdentifier.NodeIdentifierWithPredicates) yii.getLastPathArgument();
-            String entityName =  niiwp.getKeyValues().values().iterator().next().toString();
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Last master for entity : {}", entityName);
-            }
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Entity ownership change received {}", entityOwnershipChange);
+        }
+//
+//        if (!entityOwnershipChange.hasOwner() && !entityOwnershipChange.isOwner() && entityOwnershipChange.wasOwner()) {
+//            final YangInstanceIdentifier yii = entityOwnershipChange.getEntity().getId();
+//            final YangInstanceIdentifier.NodeIdentifierWithPredicates niiwp =
+//                    (YangInstanceIdentifier.NodeIdentifierWithPredicates) yii.getLastPathArgument();
+//            String entityName =  niiwp.getKeyValues().values().iterator().next().toString();
+//            if (LOG.isDebugEnabled()) {
+//                LOG.debug("Last master for entity : {}", entityName);
+//            }
+//
+//            if (entityName != null ){
+//                final NodeId nodeId = new NodeId(entityName);
+//                DeviceInfo inMap = null;
+//                for (Map.Entry<DeviceInfo, ContextChain> entry : contextChainMap.entrySet()) {
+//                    if (entry.getKey().getNodeId().equals(nodeId)) {
+//                        inMap = entry.getKey();
+//                        break;
+//                    }
+//                }
+//                if (Objects.nonNull(inMap)) {
+//                    markToBeRemoved.add(inMap);
+//                } else {
+//                    try {
+//                        LOG.info("Removing device: {} from DS", nodeId);
+//                        deviceManager
+//                                .removeDeviceFromOperationalDS(DeviceStateUtil.createNodeInstanceIdentifier(nodeId))
+//                                .checkedGet(5L, TimeUnit.SECONDS);
+//                    } catch (TimeoutException | TransactionCommitFailedException e) {
+//                        LOG.warn("Not able to remove device {} from DS", nodeId);
+//                    }
+//                }
+//            }
+//        }
+    }
 
-            if (entityName != null ){
-                final NodeId nodeId = new NodeId(entityName);
-                DeviceInfo inMap = null;
-                for (Map.Entry<DeviceInfo, ContextChain> entry : contextChainMap.entrySet()) {
-                    if (entry.getKey().getNodeId().equals(nodeId)) {
-                        inMap = entry.getKey();
-                        break;
-                    }                    
-                }
-                if (Objects.nonNull(inMap)) {
-                    markToBeRemoved.add(inMap);
-                } else {
-                    try {
-                        LOG.info("Removing device: {} from DS", nodeId);
-                        deviceManager
-                                .removeDeviceFromOperationalDS(DeviceStateUtil.createNodeInstanceIdentifier(nodeId))
-                                .checkedGet(5L, TimeUnit.SECONDS);
-                    } catch (TimeoutException | TransactionCommitFailedException e) {
-                        LOG.warn("Not able to remove device {} from DS", nodeId);
-                    }
-                }
-            }                
-        }        
+    @Override
+    public boolean isConnectionInterrupted(final DeviceInfo deviceInfo) {
+        ContextChain contextChain = this.contextChainMap.get(deviceInfo);
+        return Objects.isNull(contextChain) || contextChain.getPrimaryConnectionContext().getConnectionState().equals(ConnectionContext.CONNECTION_STATE.RIP);
     }
 
     private class StartStopChainCallback implements FutureCallback<Void> {

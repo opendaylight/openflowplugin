@@ -39,6 +39,12 @@ public interface LifecycleService extends ClusterSingletonService, AutoCloseable
      */
     void makeDeviceSlave(final DeviceContext deviceContext);
 
+    /**
+     * Mastering process running.
+     * @return true if service was run the process to being MASTER
+     */
+    boolean tryToBeMaster();
+
     @Override
     void close();
 }
