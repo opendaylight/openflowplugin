@@ -21,7 +21,7 @@ public interface MatchEntryDeserializerRegistry {
     void registerEntryDeserializer(MatchEntryDeserializerKey key, MatchEntryDeserializer deserializer);
 
     /**
-     * Unregisters match entry deserializer
+     * Unregisters match entry deserializer.
      *
      * @param key used for deserializer lookup
      * @return true if deserializer was removed, false if no deserializer was found under specified key
