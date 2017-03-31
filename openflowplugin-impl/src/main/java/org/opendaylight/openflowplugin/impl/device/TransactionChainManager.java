@@ -17,6 +17,9 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
@@ -173,10 +176,21 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
             lastSubmittedFuture = submitFuture;
             wTx = null;
 
+            if (initCommit) {
+                try {
+                    submitFuture.get(5L, TimeUnit.SECONDS);
+                } catch (InterruptedException | ExecutionException | TimeoutException ex) {
+                    LOG.error("Exception during INITIAL transaction submitting. ", ex);
+                    return false;
+                }
+                initCommit = false;
+                return true;
+            }
+
             Futures.addCallback(submitFuture, new FutureCallback<Void>() {
                 @Override
                 public void onSuccess(final Void result) {
-                    initCommit = false;
+                    //NOOP
                 }
 
                 @Override

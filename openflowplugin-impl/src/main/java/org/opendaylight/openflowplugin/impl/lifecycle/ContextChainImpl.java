@@ -20,10 +20,10 @@ import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChain;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.ContextChainState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,12 +92,12 @@ public class ContextChainImpl implements ContextChain {
                 @Nullable
                 @Override
                 public Void apply(@Nullable Boolean gatheringSuccessful) {
-                    contextChainState = ContextChainState.WORKINGMASTER;
+                    contextChainState = ContextChainState.WORKING_MASTER;
                     return null;
                 }
             });
         } else {
-            this.contextChainState = ContextChainState.WORKINGMASTER;
+            this.contextChainState = ContextChainState.WORKING_MASTER;
         }
         return Futures.immediateFuture(null);
     }
@@ -127,14 +127,14 @@ public class ContextChainImpl implements ContextChain {
     @Override
     public void makeContextChainStateSlave() {
         this.lastContextChainState = this.contextChainState;
-        this.contextChainState = ContextChainState.WORKINGSLAVE;
+        this.contextChainState = ContextChainState.WORKING_SLAVE;
     }
 
     @Override
     public ListenableFuture<Void> connectionDropped() {
         this.lastContextChainState = this.contextChainState;
         this.contextChainState = ContextChainState.SLEEPING;
-        if (this.lastContextChainState.equals(ContextChainState.WORKINGMASTER)) {
+        if (this.lastContextChainState.equals(ContextChainState.WORKING_MASTER)) {
             return this.stopChain(true);
         }
         return Futures.immediateFuture(null);
@@ -170,7 +170,7 @@ public class ContextChainImpl implements ContextChain {
 
     @Override
     public boolean lastStateWasMaster() {
-        return this.lastContextChainState.equals(ContextChainState.WORKINGMASTER);
+        return this.lastContextChainState.equals(ContextChainState.WORKING_MASTER);
     }
 
 }
