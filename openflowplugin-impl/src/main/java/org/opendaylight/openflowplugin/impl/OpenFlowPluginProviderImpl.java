@@ -358,17 +358,6 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         if(statisticsManager != null && props.containsKey("maximum-timer-delay")){
             statisticsManager.setMaximumTimerDelay(Long.valueOf(props.get("maximum-timer-delay").toString()));
         }
-        if (props.containsKey("ttl-before-drop")) {
-            contextChainHolder.setTtlBeforeDrop(Long.valueOf(props.get("ttl-before-drop").toString()));
-        }
-
-        if (props.containsKey("ttl-step")) {
-            contextChainHolder.setTtlStep(Long.valueOf(props.get("ttl-step").toString()));
-        }
-
-        if (props.containsKey("never-drop-contexts-on")) {
-            contextChainHolder.setNeverDropContextChain(Boolean.valueOf(props.get("never-drop-contexts-on").toString()));
-        }
     }
 
     private static void registerMXBean(final MessageIntelligenceAgency messageIntelligenceAgency) {
@@ -423,18 +412,4 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         this.useSingleLayerSerialization = useSingleLayerSerialization;
     }
 
-    @Override
-    public void updateTtlBeforeDropInContextChainHolder(final Long ttlBeforeDrop) {
-        this.contextChainHolder.setTtlBeforeDrop(ttlBeforeDrop);
-    }
-
-    @Override
-    public void updateTtlStepInContextChainHolder(final Long ttlStep) {
-        this.contextChainHolder.setTtlStep(ttlStep);
-    }
-
-    @Override
-    public void updateNeverDropContextChains(final Boolean neverDropChain) {
-        this.contextChainHolder.setNeverDropContextChain(neverDropChain);
-    }
 }
