@@ -36,6 +36,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChain;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainHolder;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
@@ -43,7 +44,6 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.ContextChainState;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,10 +75,10 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     private ClusterSingletonServiceProvider singletonServicesProvider;
     private boolean timerIsRunning;
     private final HashedWheelTimer timer;
-    private Long ttlBeforeDrop;
-    private Long ttlStep;
-    private Long checkRoleMaster;
-    private Boolean neverDropChain;
+    private final Long ttlBeforeDrop;
+    private final Long ttlStep;
+    private final Long checkRoleMaster;
+    private final Boolean neverDropChain = false;
     private boolean timerIsRunningRole;
 
     public ContextChainHolderImpl(final HashedWheelTimer timer) {
@@ -243,7 +243,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         this.withoutRoleChains.remove(deviceInfo);
         ContextChain contextChain = contextChainMap.get(deviceInfo);
         if (Objects.nonNull(contextChain)) {
-            if (contextChain.getContextChainState().equals(ContextChainState.WORKINGMASTER)) {
+            if (contextChain.getContextChainState().equals(ContextChainState.WORKING_MASTER)) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Device {} already working as MASTER no changes need to be done.",
                             deviceInfo.getLOGValue());
@@ -299,21 +299,6 @@ public class ContextChainHolderImpl implements ContextChainHolder {
                         new StartStopChainCallback(deviceInfo, STOP));
             }
         }
-    }
-
-    @Override
-    public void setTtlBeforeDrop(final Long ttlBeforeDrop) {
-        this.ttlBeforeDrop = ttlBeforeDrop;
-    }
-
-    @Override
-    public void setTtlStep(final Long ttlStep) {
-        this.ttlStep = ttlStep;
-    }
-
-    @Override
-    public void setNeverDropContextChain(final Boolean neverDropChain) {
-        this.neverDropChain = neverDropChain;
     }
 
     @Override
@@ -398,7 +383,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
                         LOG.debug("There is timer registered for device: {} "
                                          + "but device is in state: {} Removing from timer.",
                                 deviceInfo.getLOGValue(),
-                                chain.getContextChainState().getName());
+                                chain.getContextChainState());
                     }
                     deviceInfos.add(deviceInfo);
                 }
