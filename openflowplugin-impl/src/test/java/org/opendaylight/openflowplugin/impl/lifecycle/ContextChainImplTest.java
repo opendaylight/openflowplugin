@@ -16,16 +16,14 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChain;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.ContextChainState;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ContextChainImplTest {
@@ -80,7 +78,7 @@ public class ContextChainImplTest {
         Assert.assertSame(contextChain.getContextChainState(), ContextChainState.INITIALIZED);
         contextChain.startChain();
         Mockito.verify(statisticsContext).initialGatherDynamicData();
-        Assert.assertSame(contextChain.getContextChainState(), ContextChainState.WORKINGMASTER);
+        Assert.assertSame(contextChain.getContextChainState(), ContextChainState.WORKING_MASTER);
     }
 
     @Test
@@ -88,7 +86,7 @@ public class ContextChainImplTest {
         Assert.assertSame(contextChain.getContextChainState(), ContextChainState.INITIALIZED);
         contextChain.startChain();
         contextChain.startChain();
-        Assert.assertSame(contextChain.getContextChainState(), ContextChainState.WORKINGMASTER);
+        Assert.assertSame(contextChain.getContextChainState(), ContextChainState.WORKING_MASTER);
         Mockito.verify(statisticsContext, Mockito.times(1)).initialGatherDynamicData();
     }
 
@@ -97,7 +95,7 @@ public class ContextChainImplTest {
         Assert.assertSame(contextChain.getContextChainState(), ContextChainState.INITIALIZED);
         contextChain.startChain();
         contextChain.startChain();
-        Assert.assertSame(contextChain.getContextChainState(), ContextChainState.WORKINGMASTER);
+        Assert.assertSame(contextChain.getContextChainState(), ContextChainState.WORKING_MASTER);
         Mockito.verify(statisticsContext, Mockito.times(1)).initialGatherDynamicData();
     }
 
@@ -124,7 +122,7 @@ public class ContextChainImplTest {
     public void connectionDropped() throws Exception {
         contextChain.startChain();
         Mockito.verify(statisticsContext).initialGatherDynamicData();
-        Assert.assertSame(contextChain.getContextChainState(), ContextChainState.WORKINGMASTER);
+        Assert.assertSame(contextChain.getContextChainState(), ContextChainState.WORKING_MASTER);
         contextChain.connectionDropped();
         Mockito.verify(deviceContext).stopClusterServices(Mockito.anyBoolean());
         Mockito.verify(rpcContext).stopClusterServices();
