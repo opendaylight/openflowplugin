@@ -23,7 +23,8 @@ public interface ClusterInitializationPhaseHandler {
     /**
      * Method for initial submit transaction after successful initial gathering.
      */
-    default void initialSubmitTransaction(){
+    default boolean initialSubmitTransaction(){
         //This method need to be override only in device context to submit initial data.
+        return false;
     }
 }
