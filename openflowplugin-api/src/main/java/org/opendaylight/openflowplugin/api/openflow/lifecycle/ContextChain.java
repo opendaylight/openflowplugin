@@ -11,7 +11,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import javax.annotation.Nonnull;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
-import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 
 /**
  * Chain of contexts, hold references to the contexts.
@@ -33,20 +32,8 @@ public interface ContextChain extends AutoCloseable {
      */
     ListenableFuture<Void> stopChain(boolean connectionDropped);
 
-    /**
-     * Start the contexts, if some context is missing or cant be started returns failed future.
-     * @return Future
-     */
-    ListenableFuture<Void> startChain();
-
     @Override
     void close();
-
-    /**
-     * Change connection if connection were drop and rebuild.
-     * @param connectionContext new connection
-     */
-    void changePrimaryConnection(final ConnectionContext connectionContext);
 
     /**
      * Method need to be called if connection is dropped to stop the chain.
@@ -55,20 +42,9 @@ public interface ContextChain extends AutoCloseable {
     ListenableFuture<Void> connectionDropped();
 
     /**
-     * Returns context chain state.
-     * @return state
-     */
-    ContextChainState getContextChainState();
-
-    /**
      * Slave was successfully set.
      */
     void makeContextChainStateSlave();
-
-    /**
-     * Sleep the chain and drop connection.
-     */
-    void sleepTheChainAndDropConnection();
 
     /**
      * Registers context chain into cluster singleton service.
@@ -81,16 +57,5 @@ public interface ContextChain extends AutoCloseable {
      */
     void makeDeviceSlave();
 
-    /**
-     * if something goes wrong close the connection.
-     */
-    void closePrimaryConnection();
-
-    /**
-     * Getter.
-     * @return actual primary connection
-     */
-    ConnectionContext getPrimaryConnectionContext();
-
-    boolean lastStateWasMaster();
+    boolean isMastered(@Nonnull final ContextChainMastershipState mastershipState);
 }

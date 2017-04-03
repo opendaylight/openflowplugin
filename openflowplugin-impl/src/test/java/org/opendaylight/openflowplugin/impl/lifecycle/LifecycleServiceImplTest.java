@@ -86,19 +86,11 @@ public class LifecycleServiceImplTest {
     }
 
     @Test
-    public void instantiateServiceInstance() throws Exception {
-        Mockito.when(deviceContext.onContextInstantiateService(Mockito.any()))
-                .thenReturn(true);
-        lifecycleService.instantiateServiceInstance();
-        Mockito.verify(mastershipChangeListener).onMasterRoleAcquired(Mockito.any(DeviceInfo.class));
-    }
-
-    @Test
     public void instantiateServiceInstanceFail() throws Exception {
         Mockito.when(deviceContext.onContextInstantiateService(Mockito.any()))
                 .thenReturn(false);
         lifecycleService.instantiateServiceInstance();
-        Mockito.verify(mastershipChangeListener).onNotAbleToStartMastership(Mockito.any(DeviceInfo.class));
+        Mockito.verify(mastershipChangeListener).onNotAbleToStartMastership(Mockito.any(DeviceInfo.class), Mockito.anyString());
     }
 
     @Test
