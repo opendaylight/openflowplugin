@@ -14,12 +14,15 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChain;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
@@ -35,15 +38,23 @@ public class ContextChainImpl implements ContextChain {
     private StatisticsContext statisticsContext;
     private DeviceContext deviceContext;
     private RpcContext rpcContext;
-    private volatile ContextChainState contextChainState;
-    private volatile ContextChainState lastContextChainState;
     private LifecycleService lifecycleService;
-    private ConnectionContext primaryConnectionContext;
+    private DeviceInfo deviceInfo;
 
-    public ContextChainImpl(final ConnectionContext connectionContext) {
+    private volatile ContextChainState contextChainState;
+
+    private boolean masterStateOnDevice;
+    private boolean initialGathering;
+    private boolean initialSubmitting;
+    private boolean registryFilling;
+
+    public ContextChainImpl(final DeviceInfo deviceInfo) {
         this.contextChainState = ContextChainState.INITIALIZED;
-        this.lastContextChainState = ContextChainState.INITIALIZED;
-        this.primaryConnectionContext = connectionContext;
+        this.masterStateOnDevice = false;
+        this.initialGathering = false;
+        this.initialSubmitting = false;
+        this.registryFilling = false;
+        this.deviceInfo = deviceInfo;
     }
 
     @Override
@@ -86,23 +97,6 @@ public class ContextChainImpl implements ContextChain {
     }
 
     @Override
-    public ListenableFuture<Void> startChain() {
-        if (ContextChainState.INITIALIZED.equals(this.contextChainState)) {
-            return Futures.transform(this.statisticsContext.initialGatherDynamicData(), new Function<Boolean, Void>() {
-                @Nullable
-                @Override
-                public Void apply(@Nullable Boolean gatheringSuccessful) {
-                    contextChainState = ContextChainState.WORKING_MASTER;
-                    return null;
-                }
-            });
-        } else {
-            this.contextChainState = ContextChainState.WORKING_MASTER;
-        }
-        return Futures.immediateFuture(null);
-    }
-
-    @Override
     public void close() {
         lifecycleService.close();
         deviceContext.close();
@@ -111,39 +105,16 @@ public class ContextChainImpl implements ContextChain {
     }
 
     @Override
-    public void changePrimaryConnection(final ConnectionContext connectionContext) {
-        this.primaryConnectionContext = connectionContext;
-        this.contextChainState = ContextChainState.INITIALIZED;
-        for (OFPContext context : contexts) {
-            context.replaceConnection(connectionContext);
-        }
-    }
-
-    @Override
-    public ContextChainState getContextChainState() {
-        return contextChainState;
-    }
-
-    @Override
     public void makeContextChainStateSlave() {
-        this.lastContextChainState = this.contextChainState;
         this.contextChainState = ContextChainState.WORKING_SLAVE;
     }
 
     @Override
     public ListenableFuture<Void> connectionDropped() {
-        this.lastContextChainState = this.contextChainState;
-        this.contextChainState = ContextChainState.SLEEPING;
-        if (this.lastContextChainState.equals(ContextChainState.WORKING_MASTER)) {
+        if (this.contextChainState == ContextChainState.WORKING_MASTER) {
             return this.stopChain(true);
         }
         return Futures.immediateFuture(null);
-    }
-
-    @Override
-    public void sleepTheChainAndDropConnection() {
-        this.contextChainState = ContextChainState.SLEEPING;
-        this.primaryConnectionContext.closeConnection(true);
     }
 
     @Override
@@ -159,18 +130,36 @@ public class ContextChainImpl implements ContextChain {
     }
 
     @Override
-    public void closePrimaryConnection() {
-        this.primaryConnectionContext.closeConnection(true);
-    }
+    public boolean isMastered(@Nonnull ContextChainMastershipState mastershipState) {
+        switch (mastershipState) {
+            case INITIAL_SUBMIT:
+                LOG.debug("Device {}, initial submit OK.", deviceInfo.getLOGValue());
+                this.initialSubmitting = true;
+                break;
+            case MASTER_ON_DEVICE:
+                LOG.debug("Device {}, master state OK.", deviceInfo.getLOGValue());
+                this.masterStateOnDevice = true;
+                break;
+            case INITIAL_GATHERING:
+                LOG.debug("Device {}, initial gathering OK.", deviceInfo.getLOGValue());
+                this.initialGathering = true;
+                break;
+            case INITIAL_FLOW_REGISTRY_FILL:
+                LOG.debug("Device {}, initial registry filling OK.", deviceInfo.getLOGValue());
+                this.registryFilling = true;
+            case CHECK:
+            default:
+        }
+        final boolean result =
+                this.initialGathering &&
+                this.masterStateOnDevice &&
+                this.initialSubmitting &&
+                this.registryFilling;
 
-    @Override
-    public ConnectionContext getPrimaryConnectionContext() {
-        return this.primaryConnectionContext;
+        if (result && mastershipState != ContextChainMastershipState.CHECK) {
+            LOG.info("Device {} is able to work as master.", deviceInfo.getLOGValue());
+            contextChainState = ContextChainState.WORKING_MASTER;
+        }
+        return result;
     }
-
-    @Override
-    public boolean lastStateWasMaster() {
-        return this.lastContextChainState.equals(ContextChainState.WORKING_MASTER);
-    }
-
 }

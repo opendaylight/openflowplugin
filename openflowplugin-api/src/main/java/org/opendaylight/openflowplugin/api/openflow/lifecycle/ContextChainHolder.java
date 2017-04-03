@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListener;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
@@ -50,16 +51,7 @@ public interface ContextChainHolder extends
      * Called if connection needs to be destroyed.
      * @param deviceInfo {@link DeviceInfo}
      */
-    void destroyContextChain(final DeviceInfo deviceInfo);
-
-    /**
-     * This method will pair up connection with existing context chain.
-     * If context chain doesn't exist will create context chain a
-     * set this connection as primary to the new created context chain.
-     * If context chain cannot be created close connection and destroy context chain.
-     * @param connectionContext new connection
-     */
-    void pairConnection(final ConnectionContext connectionContext);
+    ListenableFuture<Void> destroyContextChain(final DeviceInfo deviceInfo);
 
     /**
      * Provider is needed to register cluster singleton service.

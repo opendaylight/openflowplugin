@@ -8,19 +8,17 @@
 package org.opendaylight.openflowplugin.impl.lifecycle;
 
 import com.google.common.util.concurrent.Futures;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChain;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainState;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
@@ -40,10 +38,6 @@ public class ContextChainImplTest {
     private DeviceInfo deviceInfo;
     @Mock
     private ConnectionContext connectionContext;
-    @Mock
-    private ConnectionContext secondaryConnectionContext;
-    @Mock
-    private ClusterSingletonServiceProvider clusterSingletonServiceProvider;
 
     private ContextChain contextChain;
 
@@ -57,7 +51,7 @@ public class ContextChainImplTest {
         Mockito.when(statisticsContext.stopClusterServices()).thenReturn(Futures.immediateFuture(null));
         Mockito.when(statisticsContext.initialGatherDynamicData()).thenReturn(Futures.immediateFuture(null));
 
-        contextChain = new ContextChainImpl(connectionContext);
+        contextChain = new ContextChainImpl(deviceInfo);
         contextChain.addContext(statisticsContext);
         contextChain.addContext(rpcContext);
         contextChain.addContext(deviceContext);
@@ -74,32 +68,6 @@ public class ContextChainImplTest {
     }
 
     @Test
-    public void startChain() throws Exception {
-        Assert.assertSame(contextChain.getContextChainState(), ContextChainState.INITIALIZED);
-        contextChain.startChain();
-        Mockito.verify(statisticsContext).initialGatherDynamicData();
-        Assert.assertSame(contextChain.getContextChainState(), ContextChainState.WORKING_MASTER);
-    }
-
-    @Test
-    public void startChainTwoTimes() throws Exception {
-        Assert.assertSame(contextChain.getContextChainState(), ContextChainState.INITIALIZED);
-        contextChain.startChain();
-        contextChain.startChain();
-        Assert.assertSame(contextChain.getContextChainState(), ContextChainState.WORKING_MASTER);
-        Mockito.verify(statisticsContext, Mockito.times(1)).initialGatherDynamicData();
-    }
-
-    @Test
-    public void startChainThreeTimes() throws Exception {
-        Assert.assertSame(contextChain.getContextChainState(), ContextChainState.INITIALIZED);
-        contextChain.startChain();
-        contextChain.startChain();
-        Assert.assertSame(contextChain.getContextChainState(), ContextChainState.WORKING_MASTER);
-        Mockito.verify(statisticsContext, Mockito.times(1)).initialGatherDynamicData();
-    }
-
-    @Test
     public void close() throws Exception {
         contextChain.close();
         Mockito.verify(statisticsContext).close();
@@ -109,20 +77,11 @@ public class ContextChainImplTest {
     }
 
     @Test
-    public void changePrimaryConnection() throws Exception {
-        Assert.assertSame(contextChain.getPrimaryConnectionContext(), connectionContext);
-        contextChain.changePrimaryConnection(secondaryConnectionContext);
-        Assert.assertSame(contextChain.getPrimaryConnectionContext(), secondaryConnectionContext);
-        Mockito.verify(deviceContext).replaceConnection(Mockito.any(ConnectionContext.class));
-        Mockito.verify(rpcContext).replaceConnection(Mockito.any(ConnectionContext.class));
-        Mockito.verify(statisticsContext).replaceConnection(Mockito.any(ConnectionContext.class));
-    }
-
-    @Test
     public void connectionDropped() throws Exception {
-        contextChain.startChain();
-        Mockito.verify(statisticsContext).initialGatherDynamicData();
-        Assert.assertSame(contextChain.getContextChainState(), ContextChainState.WORKING_MASTER);
+        contextChain.isMastered(ContextChainMastershipState.INITIAL_GATHERING);
+        contextChain.isMastered(ContextChainMastershipState.INITIAL_SUBMIT);
+        contextChain.isMastered(ContextChainMastershipState.MASTER_ON_DEVICE);
+        contextChain.isMastered(ContextChainMastershipState.INITIAL_FLOW_REGISTRY_FILL);
         contextChain.connectionDropped();
         Mockito.verify(deviceContext).stopClusterServices(Mockito.anyBoolean());
         Mockito.verify(rpcContext).stopClusterServices();
@@ -130,31 +89,9 @@ public class ContextChainImplTest {
     }
 
     @Test
-    public void sleepTheChainAndDropConnection() throws Exception {
-        contextChain.sleepTheChainAndDropConnection();
-        Assert.assertSame(contextChain.getContextChainState(), ContextChainState.SLEEPING);
-        Mockito.verify(connectionContext).closeConnection(Mockito.anyBoolean());
-    }
-
-    @Test
-    public void registerServices() throws Exception {
-        contextChain.registerServices(clusterSingletonServiceProvider);
-        Assert.assertSame(contextChain.getContextChainState(), ContextChainState.INITIALIZED);
-        Mockito.verify(lifecycleService).registerService(
-                Mockito.any(ClusterSingletonServiceProvider.class),
-                Mockito.any(DeviceContext.class));
-    }
-
-    @Test
     public void makeDeviceSlave() throws Exception {
         contextChain.makeDeviceSlave();
         Mockito.verify(lifecycleService).makeDeviceSlave(Mockito.any(DeviceContext.class));
-    }
-
-    @Test
-    public void closePrimaryConnection() throws Exception {
-        contextChain.closePrimaryConnection();
-        Mockito.verify(connectionContext).closeConnection(Mockito.anyBoolean());
     }
 
 }
