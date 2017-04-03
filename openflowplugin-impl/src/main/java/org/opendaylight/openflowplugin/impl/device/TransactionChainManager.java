@@ -90,9 +90,9 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         this.lifecycleService = lifecycleService;
     }
 
-    void initialSubmitWriteTransaction() {
+    boolean initialSubmitWriteTransaction() {
         enableSubmit();
-        submitWriteTransaction();
+        return submitWriteTransaction();
     }
 
     /**

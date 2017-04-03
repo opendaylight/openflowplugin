@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
+import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 
 /**
@@ -18,14 +19,16 @@ public interface MastershipChangeListener {
      * Event occurs if there was a try to acquire MASTER role.
      * But it was not possible to start this MASTER role on device.
      * @param deviceInfo for this device
+     * @param reason
      */
-    void onNotAbleToStartMastership(final DeviceInfo deviceInfo);
+    void onNotAbleToStartMastership(final DeviceInfo deviceInfo, @Nonnull final String reason);
 
     /**
      * Changed to MASTER role on device.
      * @param deviceInfo device
+     * @param mastershipState
      */
-    void onMasterRoleAcquired(final DeviceInfo deviceInfo);
+    void onMasterRoleAcquired(final DeviceInfo deviceInfo, @Nonnull final ContextChainMastershipState mastershipState);
 
     /**
      * Change to SLAVE role on device was successful.

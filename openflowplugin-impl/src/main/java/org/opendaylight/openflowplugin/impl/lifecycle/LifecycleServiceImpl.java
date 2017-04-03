@@ -76,12 +76,9 @@ public class LifecycleServiceImpl implements LifecycleService {
     public void instantiateServiceInstance() {
 
         LOG.info("Starting clustering MASTER services for node {}", deviceInfo.getLOGValue());
-        if (!clusterInitializationPhaseHandler.onContextInstantiateService(null)) {
-            mastershipChangeListener.onNotAbleToStartMastership(deviceInfo);
-        } else {
-            mastershipChangeListener.onMasterRoleAcquired(deviceInfo);
+        if (!clusterInitializationPhaseHandler.onContextInstantiateService(mastershipChangeListener)) {
+            mastershipChangeListener.onNotAbleToStartMastership(deviceInfo, "Cannot initialize device.");
         }
-
     }
 
     @Override

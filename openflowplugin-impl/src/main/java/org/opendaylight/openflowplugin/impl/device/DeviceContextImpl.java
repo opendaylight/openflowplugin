@@ -53,6 +53,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
@@ -227,10 +228,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void initialSubmitTransaction() {
-        if (initialized) {
-            transactionChainManager.initialSubmitWriteTransaction();
-        }
+    public boolean initialSubmitTransaction() {
+        return initialized && transactionChainManager.initialSubmitWriteTransaction();
     }
 
     @Override
@@ -773,7 +772,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 new RpcResultFutureCallback(mastershipChangeListener));
 
         final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill = getDeviceFlowRegistry().fill();
-        Futures.addCallback(deviceFlowRegistryFill, new DeviceFlowRegistryCallback(deviceFlowRegistryFill));
+        Futures.addCallback(deviceFlowRegistryFill,
+                new DeviceFlowRegistryCallback(deviceFlowRegistryFill, mastershipChangeListener));
 
         return this.clusterInitializationPhaseHandler.onContextInstantiateService(mastershipChangeListener);
     }
@@ -847,6 +847,10 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
         @Override
         public void onSuccess(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
+            this.mastershipChangeListener.onMasterRoleAcquired(
+                    deviceInfo,
+                    ContextChainMastershipState.MASTER_ON_DEVICE
+            );
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Role MASTER was successfully set on device, node {}", deviceInfo.getLOGValue());
             }
@@ -854,16 +858,21 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
         @Override
         public void onFailure(final Throwable throwable) {
-            LOG.warn("Was not able to set MASTER role on device, node {}", deviceInfo.getLOGValue());
-            mastershipChangeListener.onNotAbleToStartMastership(deviceInfo);
+            mastershipChangeListener.onNotAbleToStartMastership(
+                    deviceInfo,
+                    "Was not able to set MASTER role on device");
         }
     }
 
     private class DeviceFlowRegistryCallback implements FutureCallback<List<Optional<FlowCapableNode>>> {
         private final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill;
+        private final MastershipChangeListener mastershipChangeListener;
 
-        DeviceFlowRegistryCallback(ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill) {
+        DeviceFlowRegistryCallback(
+                ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill,
+                MastershipChangeListener mastershipChangeListener) {
             this.deviceFlowRegistryFill = deviceFlowRegistryFill;
+            this.mastershipChangeListener = mastershipChangeListener;
         }
 
         @Override
@@ -887,6 +896,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
                 LOG.debug("Finished filling flow registry with {} flows for node: {}", flowCount, deviceInfo.getLOGValue());
             }
+            this.mastershipChangeListener.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_FLOW_REGISTRY_FILL);
         }
 
         @Override
@@ -898,6 +908,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             } else {
                 LOG.warn("Failed filling flow registry with flows for node: {} with exception: {}", deviceInfo.getLOGValue(), t);
             }
+            mastershipChangeListener.onNotAbleToStartMastership(
+                    deviceInfo,
+                    "Was not able to fill flow registry on device");
         }
     }
 

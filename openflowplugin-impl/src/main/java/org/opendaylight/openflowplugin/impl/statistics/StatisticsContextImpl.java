@@ -37,6 +37,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
@@ -484,19 +485,34 @@ class StatisticsContextImpl implements StatisticsContext {
 
             @Override
             public void onSuccess(@Nullable Boolean aBoolean) {
-                initialSubmitHandler.initialSubmitTransaction();
+                mastershipChangeListener.onMasterRoleAcquired(
+                        deviceInfo,
+                        ContextChainMastershipState.INITIAL_GATHERING
+                );
+                if (initialSubmitHandler.initialSubmitTransaction()) {
+                    mastershipChangeListener.onMasterRoleAcquired(
+                            deviceInfo,
+                            ContextChainMastershipState.INITIAL_SUBMIT
+                    );
+                    if (isStatisticsPollingOn) {
+                        myManager.startScheduling(deviceInfo);
+                    }
+                } else {
+                    mastershipChangeListener.onNotAbleToStartMastership(
+                            deviceInfo,
+                            "Initial transaction cannot be submitted."
+                    );
+                }
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
-                LOG.warn("Initial gathering statistics unsuccessful for node {}", deviceInfo.getLOGValue());
-                mastershipChangeListener.onNotAbleToStartMastership(deviceInfo);
+            public void onFailure(@Nonnull Throwable throwable) {
+                mastershipChangeListener.onNotAbleToStartMastership(
+                        deviceInfo,
+                        "Initial gathering statistics unsuccessful."
+                );
             }
         });
-
-        if (this.isStatisticsPollingOn) {
-            myManager.startScheduling(deviceInfo);
-        }
 
         return this.clusterInitializationPhaseHandler.onContextInstantiateService(mastershipChangeListener);
     }
