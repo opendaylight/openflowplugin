@@ -80,7 +80,7 @@ public class DeviceFlowRegistryImplTest {
         descriptor = FlowDescriptorFactory.create(key.getTableId(), new FlowId("ut:1"));
 
         Assert.assertEquals(0, deviceFlowRegistry.getAllFlowDescriptors().size());
-        deviceFlowRegistry.store(key, descriptor);
+        deviceFlowRegistry.storeDescriptor(key, descriptor);
         Assert.assertEquals(1, deviceFlowRegistry.getAllFlowDescriptors().size());
     }
 
@@ -113,7 +113,7 @@ public class DeviceFlowRegistryImplTest {
         order.verify(readOnlyTransaction).read(LogicalDatastoreType.OPERATIONAL, path);
         assertTrue(allFlowDescriptors.containsKey(key));
 
-        deviceFlowRegistry.removeDescriptor(key);
+        deviceFlowRegistry.addMark(key);
     }
 
     @Test
@@ -166,23 +166,23 @@ public class DeviceFlowRegistryImplTest {
 
     @Test
     public void testRetrieveIdForFlow() throws Exception {
-        Assert.assertEquals(descriptor, deviceFlowRegistry.retrieveIdForFlow(key));
+        Assert.assertEquals(descriptor, deviceFlowRegistry.retrieveDescriptor(key));
     }
 
     @Test
     public void testStore() throws Exception {
         //store the same key with different value
         final FlowDescriptor descriptor2 = FlowDescriptorFactory.create(key.getTableId(), new FlowId("ut:2"));
-        deviceFlowRegistry.store(key, descriptor2);
+        deviceFlowRegistry.storeDescriptor(key, descriptor2);
         Assert.assertEquals(1, deviceFlowRegistry.getAllFlowDescriptors().size());
-        Assert.assertEquals("ut:2", deviceFlowRegistry.retrieveIdForFlow(key).getFlowId().getValue());
+        Assert.assertEquals("ut:2", deviceFlowRegistry.retrieveDescriptor(key).getFlowId().getValue());
 
         // store new key with old value
         final FlowAndStatisticsMapList flowStats = TestFlowHelper.createFlowAndStatisticsMapListBuilder(2).build();
         final FlowRegistryKey key2 = FlowRegistryKeyFactory.create(OFConstants.OFP_VERSION_1_3, flowStats);
-        deviceFlowRegistry.store(key2, descriptor);
+        deviceFlowRegistry.storeDescriptor(key2, descriptor);
         Assert.assertEquals(2, deviceFlowRegistry.getAllFlowDescriptors().size());
-        Assert.assertEquals("ut:1", deviceFlowRegistry.retrieveIdForFlow(key2).getFlowId().getValue());
+        Assert.assertEquals("ut:1", deviceFlowRegistry.retrieveDescriptor(key2).getFlowId().getValue());
     }
 
     @Test
@@ -190,26 +190,28 @@ public class DeviceFlowRegistryImplTest {
         FlowId newFlowId;
 
         //store existing key
-        newFlowId = deviceFlowRegistry.storeIfNecessary(key);
+        deviceFlowRegistry.store(key);
+        newFlowId = deviceFlowRegistry.retrieveDescriptor(key).getFlowId();
 
         Assert.assertEquals(1, deviceFlowRegistry.getAllFlowDescriptors().size());
-        Assert.assertEquals(descriptor, deviceFlowRegistry.retrieveIdForFlow(key));
+        Assert.assertEquals(descriptor, deviceFlowRegistry.retrieveDescriptor(key));
         Assert.assertEquals(descriptor.getFlowId(), newFlowId);
 
         //store new key
         final String alienPrefix = "#UF$TABLE*2-";
         final FlowRegistryKey key2 = FlowRegistryKeyFactory.create(OFConstants.OFP_VERSION_1_3, TestFlowHelper.createFlowAndStatisticsMapListBuilder(2).build());
-        newFlowId = deviceFlowRegistry.storeIfNecessary(key2);
+        deviceFlowRegistry.store(key2);
+        newFlowId = deviceFlowRegistry.retrieveDescriptor(key2).getFlowId();
 
         Assert.assertTrue(newFlowId.getValue().startsWith(alienPrefix));
-        Assert.assertTrue(deviceFlowRegistry.retrieveIdForFlow(key2).getFlowId().getValue().startsWith(alienPrefix));
+        Assert.assertTrue(deviceFlowRegistry.retrieveDescriptor(key2).getFlowId().getValue().startsWith(alienPrefix));
         Assert.assertEquals(2, deviceFlowRegistry.getAllFlowDescriptors().size());
     }
 
     @Test
     public void testRemoveDescriptor() throws Exception {
-        deviceFlowRegistry.removeDescriptor(key);
-        Assert.assertEquals(0, deviceFlowRegistry.getAllFlowDescriptors().size());
+        deviceFlowRegistry.addMark(key);
+        Assert.assertEquals(1, deviceFlowRegistry.getAllFlowDescriptors().size());
     }
 
     @Test

@@ -180,7 +180,7 @@ public class StatisticsGatheringUtilsTest {
         when(deviceContext.getDeviceFlowRegistry()).thenReturn(deviceFlowRegistry);
         when(deviceContext.getDeviceGroupRegistry()).thenReturn(deviceGroupRegistry);
         when(deviceContext.getDeviceMeterRegistry()).thenReturn(deviceMeterRegistry);
-        when(deviceFlowRegistry.retrieveIdForFlow(Matchers.any(FlowRegistryKey.class))).thenReturn(flowDescriptor);
+        when(deviceFlowRegistry.retrieveDescriptor(Matchers.any(FlowRegistryKey.class))).thenReturn(flowDescriptor);
         when(deviceContext.getReadTransaction()).thenReturn(readTx);
         when(txFacade.getReadTransaction()).thenReturn(readTx);
         when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionAdapter);
@@ -284,7 +284,7 @@ public class StatisticsGatheringUtilsTest {
 
         verify(deviceContext, Mockito.never()).addDeleteToTxChain(
                 Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.<InstanceIdentifier<?>>any());
-        verify(deviceGroupRegistry).removeMarked();
+        verify(deviceGroupRegistry).processMarks();
         verify(deviceGroupRegistry).store(storedGroupId);
         verify(txFacade).writeToTransaction(
                 Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.eq(groupPath), Matchers.any(Group.class));
