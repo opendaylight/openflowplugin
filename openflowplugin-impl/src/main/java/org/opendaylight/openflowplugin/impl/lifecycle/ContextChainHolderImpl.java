@@ -15,10 +15,12 @@ import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
+import io.netty.util.internal.ConcurrentSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -56,6 +58,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     private static final String CONTEXT_CREATED_FOR_CONNECTION = " context created for connection: {}";
     private static final long DEFAULT_CHECK_ROLE_MASTER = 10000L;
     private static final String SERVICE_ENTITY_TYPE = "org.opendaylight.mdsal.ServiceEntityType";
+    private static final String ASYNC_SERVICE_ENTITY_TYPE = "org.opendaylight.mdsal.AsyncServiceCloseEntityType";
 
     private final ConcurrentHashMap<DeviceInfo, ContextChain> contextChainMap = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<DeviceInfo, ContextChain> withoutRoleChains = new ConcurrentHashMap<>();
@@ -100,7 +103,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
             LOG.debug("Creating a new chain" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfoLOGValue);
         }
 
-        final ContextChain contextChain = new ContextChainImpl(deviceInfo);
+        final ContextChain contextChain = new ContextChainImpl(connectionContext);
         final LifecycleService lifecycleService = new LifecycleServiceImpl(this);
         lifecycleService.registerDeviceRemovedHandler(deviceManager);
         lifecycleService.registerDeviceRemovedHandler(rpcManager);
@@ -167,16 +170,22 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
         DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
         LOG.info("Device {} connected.", deviceInfo.getLOGValue());
-
-        if (contextChainMap.containsKey(deviceInfo)) {
-            LOG.warn("Device {} already connected. Closing all connection to the device.", deviceInfo.getLOGValue());
-            destroyContextChain(deviceInfo);
-            return ConnectionStatus.ALREADY_CONNECTED;
+        ContextChain contextChain = contextChainMap.get(deviceInfo);
+        if (contextChain != null) {
+            if (contextChain.addAuxiliaryConnection(connectionContext)) {
+                LOG.info("An auxiliary connection was added to device: {}", deviceInfo.getLOGValue());
+                return ConnectionStatus.MAY_CONTINUE;
+            } else {
+                LOG.warn("Device {} already connected. Closing all connection to the device.", deviceInfo.getLOGValue());
+                destroyContextChain(deviceInfo);
+                return ConnectionStatus.ALREADY_CONNECTED;
+            }
         } else {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("No context chain found for device: {}, creating new.", deviceInfo.getLOGValue());
             }
             contextChainMap.put(deviceInfo, createContextChain(connectionContext));
+            this.sendNotificationNodeAdded(deviceInfo);
         }
 
         return ConnectionStatus.MAY_CONTINUE;
@@ -204,7 +213,6 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         if (contextChain != null) {
             if (contextChain.isMastered(mastershipState)) {
                 LOG.info("Role MASTER was granted to device {}", deviceInfo.getLOGValue());
-                this.sendNotificationNodeAdded(deviceInfo);
             }
         }
     }
@@ -232,17 +240,21 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
         final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
         if (deviceInfo != null) {
-            LOG.info("Device {} disconnected.", deviceInfo.getLOGValue());
             ContextChain chain = contextChainMap.get(deviceInfo);
             if (chain != null) {
-                Futures.transform(chain.connectionDropped(), new Function<Void, Object>() {
-                    @Nullable
-                    @Override
-                    public Object apply(@Nullable Void aVoid) {
-                        destroyContextChain(deviceInfo);
-                        return null;
-                    }
-                });
+                if (chain.auxiliaryConnectionDropped(connectionContext)) {
+                    LOG.info("Auxiliary connection from device {} disconnected.", deviceInfo.getLOGValue());
+                } else {
+                    LOG.info("Device {} disconnected.", deviceInfo.getLOGValue());
+                    Futures.transform(chain.connectionDropped(), new Function<Void, Object>() {
+                        @Nullable
+                        @Override
+                        public Object apply(@Nullable Void aVoid) {
+                            destroyContextChain(deviceInfo);
+                            return null;
+                        }
+                    });
+                }
             }
         }
     }
@@ -253,7 +265,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
             LOG.warn("EOS Listener already registered.");
         } else {
             this.eosListenerRegistration = Verify.verifyNotNull(entityOwnershipService.registerListener
-                    (SERVICE_ENTITY_TYPE, this));
+                    (ASYNC_SERVICE_ENTITY_TYPE, this));
         }
     }
 
@@ -268,16 +280,32 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     private void stopTimerRole() {
         this.timerIsRunningRole = false;
         if (LOG.isDebugEnabled()) {
-            LOG.debug("There are no context chains without role, stopping timer.");
+            LOG.debug("There are no context chains, stopping timer.");
         }
     }
 
     private void timerTickRole() {
         if (!withoutRoleChains.isEmpty()) {
             this.withoutRoleChains.forEach((deviceInfo, contextChain) -> contextChain.makeDeviceSlave());
-            this.withoutRoleChains.clear();
+            timer.newTimeout(new RoleTimerTask(), this.checkRoleMaster, TimeUnit.MILLISECONDS);
+        } else {
+            final Set<DeviceInfo> setOfClosedChains = new ConcurrentSet<>();
+            if (!this.contextChainMap.isEmpty()) {
+                this.contextChainMap.forEach((deviceInfo, contextChain) -> {
+                    if (!contextChain.hasState()) {
+                        LOG.warn("Context chain {} is long time without state. Closing.", deviceInfo);
+                        setOfClosedChains.add(deviceInfo);
+                        contextChain.close();
+                    }
+                });
+                setOfClosedChains.forEach(this.contextChainMap::remove);
+            }
+            if (this.contextChainMap.isEmpty()) {
+                this.stopTimerRole();
+            } else {
+                timer.newTimeout(new RoleTimerTask(), this.checkRoleMaster, TimeUnit.MILLISECONDS);
+            }
         }
-        this.stopTimerRole();
     }
 
     @VisibleForTesting
