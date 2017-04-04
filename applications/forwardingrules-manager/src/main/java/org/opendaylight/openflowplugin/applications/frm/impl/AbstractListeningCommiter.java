@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -37,13 +37,13 @@ public abstract class AbstractListeningCommiter <T extends DataObject> implement
     @Override
     public void onDataTreeChanged(Collection<DataTreeModification<T>> changes) {
         Preconditions.checkNotNull(changes, "Changes may not be null!");
-        LOG.trace("Received data changes :{}", changes);
 
         for (DataTreeModification<T> change : changes) {
             final InstanceIdentifier<T> key = change.getRootPath().getRootIdentifier();
             final DataObjectModification<T> mod = change.getRootNode();
             final InstanceIdentifier<FlowCapableNode> nodeIdent =
                     key.firstIdentifierOf(FlowCapableNode.class);
+
             if (preConfigurationCheck(nodeIdent)) {
                 switch (mod.getModificationType()) {
                 case DELETE:
@@ -91,7 +91,7 @@ public abstract class AbstractListeningCommiter <T extends DataObject> implement
     protected abstract InstanceIdentifier<T> getWildCardPath();
 
     private boolean preConfigurationCheck(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        Preconditions.checkNotNull(nodeIdent, "FlowCapableNode identifier can not be null!");
+        Preconditions.checkNotNull(nodeIdent, "FlowCapableNode ident can not be null!");
         // In single node cluster, node should be in local cache before we get any flow/group/meter
         // data change event from data store. So first check should pass.
         // In case of 3-node cluster, when shard leader changes, clustering will send blob of data
@@ -99,13 +99,14 @@ public abstract class AbstractListeningCommiter <T extends DataObject> implement
         // should get populated. But to handle a scenario where flow request comes before the blob
         // of config/operational data gets processes, it won't find node in local cache and it will
         // skip the flow/group/meter operational. This requires an addition check, where it reads
-        // node from operational data store and if it's present it calls flowNodeConnected to explicitly
+        // node from operational data store and if it's present it calls flowNodeConnected to explictly
         // trigger the event of new node connected.
 
         if(!provider.isNodeOwner(nodeIdent)) { return false; }
 
         if (!provider.isNodeActive(nodeIdent)) {
             if (provider.checkNodeInOperationalDataStore(nodeIdent)) {
+                provider.getFlowNodeReconciliation().flowNodeConnected(nodeIdent);
                 return true;
             } else {
                 return false;

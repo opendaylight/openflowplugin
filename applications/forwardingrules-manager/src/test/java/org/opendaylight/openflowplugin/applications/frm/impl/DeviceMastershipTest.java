@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2016, 2017 Pantheon Technologies s.r.o. and others. All rights reserved.
+ * Copyright (c) 2016 Pantheon Technologies s.r.o. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -16,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 
 /**
@@ -30,12 +29,9 @@ public class DeviceMastershipTest {
     @Mock
     private DeviceMastershipManager deviceMastershipManager;
 
-    @Mock
-    private FlowNodeReconciliation reconcliationAgent;
-
     @Before
     public void setUp() throws Exception {
-        deviceMastership = new DeviceMastership(NODE_ID, Mockito.mock(ClusterSingletonServiceProvider.class), reconcliationAgent);
+        deviceMastership = new DeviceMastership(NODE_ID, Mockito.mock(ClusterSingletonServiceProvider.class));
     }
 
     @Test

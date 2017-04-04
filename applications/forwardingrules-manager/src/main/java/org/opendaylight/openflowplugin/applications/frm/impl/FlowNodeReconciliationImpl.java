@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -12,6 +12,7 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
@@ -22,21 +23,30 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.HashMap;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.Nonnull;
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
+import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
@@ -62,51 +72,177 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.StaleGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.StaleGroupKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesKey;
+import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 /**
- * Default implementation of {@link ForwardingRulesManager}
+ * forwardingrules-manager
+ * org.opendaylight.openflowplugin.applications.frm
+ *
+ * FlowNode Reconciliation Listener
+ * Reconciliation for a new FlowNode
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
+ *
+ * Created: Jun 13, 2014
  */
 public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
-     private static final Logger LOG = LoggerFactory.getLogger(FlowNodeReconciliationImpl.class);
 
-    //The number of nanoseconds to wait for a single group to be added.
+    private static final Logger LOG = LoggerFactory.getLogger(FlowNodeReconciliationImpl.class);
+
+    /**
+     * The number of nanoseconds to wait for a single group to be added.
+     */
     private static final long  ADD_GROUP_TIMEOUT = TimeUnit.SECONDS.toNanos(3);
 
-     //The maximum number of nanoseconds to wait for completion of add-group RPCs.
-    private static final long  MAX_ADD_GROUP_TIMEOUT = TimeUnit.SECONDS.toNanos(20);
-    private static final String SEPARATOR = ":";
-    private static final int THREAD_POOL_SIZE = 4;
+    /**
+     * The maximum number of nanoseconds to wait for completion of add-group
+     * RPCs.
+     */
+    private static final long  MAX_ADD_GROUP_TIMEOUT =
+        TimeUnit.SECONDS.toNanos(20);
 
     private final DataBroker dataBroker;
+
     private final ForwardingRulesManager provider;
-    private final ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+    private static final String SEPARATOR = ":";
+
+    private ListenerRegistration<FlowNodeReconciliationImpl> listenerRegistration;
+
+    private static final int THREAD_POOL_SIZE = 4;
+    ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+
+    private static final InstanceIdentifier<FlowCapableNode> II_TO_FLOW_CAPABLE_NODE
+            = InstanceIdentifier.builder(Nodes.class)
+            .child(Node.class)
+            .augmentation(FlowCapableNode.class)
+            .build();
 
     public FlowNodeReconciliationImpl (final ForwardingRulesManager manager, final DataBroker db) {
         this.provider = Preconditions.checkNotNull(manager, "ForwardingRulesManager can not be null!");
         dataBroker = Preconditions.checkNotNull(db, "DataBroker can not be null!");
-    }
+        /* Build Path */
+        final InstanceIdentifier<FlowCapableNode> flowNodeWildCardIdentifier = InstanceIdentifier.create(Nodes.class)
+                .child(Node.class).augmentation(FlowCapableNode.class);
 
-    @Override
-    public void close() {
-        if (executor != null) {
-            executor.shutdownNow();
+        final DataTreeIdentifier<FlowCapableNode> treeId =
+                new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL, flowNodeWildCardIdentifier);
+
+        try {
+        SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(ForwardingRulesManagerImpl.STARTUP_LOOP_TICK,
+                ForwardingRulesManagerImpl.STARTUP_LOOP_MAX_RETRIES);
+
+            listenerRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<FlowNodeReconciliationImpl>>() {
+                @Override
+                public ListenerRegistration<FlowNodeReconciliationImpl> call() throws Exception {
+                    return dataBroker.registerDataTreeChangeListener(treeId, FlowNodeReconciliationImpl.this);
+                }
+            });
+        } catch (Exception e) {
+            LOG.warn("data listener registration failed: {}", e.getMessage());
+            LOG.debug("data listener registration failed.. ", e);
+            throw new IllegalStateException("FlowNodeReconciliation startup fail! System needs restart.", e);
         }
     }
 
     @Override
-    public void reconcileConfiguration(InstanceIdentifier<FlowCapableNode> connectedNode) {
-        if (provider.isNodeOwner(connectedNode)) {
+    public void close() {
+        if (listenerRegistration != null) {
+            try {
+                listenerRegistration.close();
+            } catch (Exception e) {
+                LOG.warn("Error by stop FRM FlowNodeReconilListener: {}", e.getMessage());
+                LOG.debug("Error by stop FRM FlowNodeReconilListener..", e);
+            }
+            listenerRegistration = null;
+        }
+    }
+
+    @Override
+    public void onDataTreeChanged(@Nonnull Collection<DataTreeModification<FlowCapableNode>> changes) {
+        Preconditions.checkNotNull(changes, "Changes may not be null!");
+
+        for (DataTreeModification<FlowCapableNode> change : changes) {
+            final InstanceIdentifier<FlowCapableNode> key = change.getRootPath().getRootIdentifier();
+            final DataObjectModification<FlowCapableNode> mod = change.getRootNode();
+            final InstanceIdentifier<FlowCapableNode> nodeIdent =
+                    key.firstIdentifierOf(FlowCapableNode.class);
+
+            switch (mod.getModificationType()) {
+                case DELETE:
+                    if (mod.getDataAfter() == null) {
+                        remove(key, mod.getDataBefore(), nodeIdent);
+                    }
+                    break;
+                case SUBTREE_MODIFIED:
+                    //NO-OP since we donot need to reconciliate on Node-updated
+                    break;
+                case WRITE:
+                    if (mod.getDataBefore() == null) {
+                        add(key, mod.getDataAfter(), nodeIdent);
+                    }
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unhandled modification type " + mod.getModificationType());
+            }
+        }
+    }
+
+
+
+    public void remove(InstanceIdentifier<FlowCapableNode> identifier, FlowCapableNode del,
+                       InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        if(compareInstanceIdentifierTail(identifier,II_TO_FLOW_CAPABLE_NODE)){
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Node removed: {}",nodeIdent.firstKeyOf(Node.class).getId().getValue());
+            }
+
+            if ( ! nodeIdent.isWildcarded()) {
+                flowNodeDisconnected(nodeIdent);
+            }
+
+        }
+    }
+
+    public void add(InstanceIdentifier<FlowCapableNode> identifier, FlowCapableNode add,
+                    InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        if(compareInstanceIdentifierTail(identifier,II_TO_FLOW_CAPABLE_NODE)){
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Node added: {}",nodeIdent.firstKeyOf(Node.class).getId().getValue());
+            }
+
+            if ( ! nodeIdent.isWildcarded()) {
+                flowNodeConnected(nodeIdent);
+            }
+        }
+    }
+
+    @Override
+    public void flowNodeDisconnected(InstanceIdentifier<FlowCapableNode> disconnectedNode) {
+        provider.unregistrateNode(disconnectedNode);
+    }
+
+    @Override
+    public void flowNodeConnected(InstanceIdentifier<FlowCapableNode> connectedNode) {
+        flowNodeConnected(connectedNode, false);
+    }
+
+    private void flowNodeConnected(InstanceIdentifier<FlowCapableNode> connectedNode, boolean force) {
+        if (force || !provider.isNodeActive(connectedNode)) {
+            provider.registrateNewNode(connectedNode);
+
+            if(!provider.isNodeOwner(connectedNode)) { return; }
+
             if (provider.getConfiguration().isStaleMarkingEnabled()) {
                 LOG.info("Stale-Marking is ENABLED and proceeding with deletion of stale-marked entities on switch {}",
                         connectedNode.toString());
@@ -540,6 +676,13 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 LOG.error("Stale entity removal failed {}", t);
             }
         });
+
+    }
+
+
+    private boolean compareInstanceIdentifierTail(InstanceIdentifier<?> identifier1,
+                                                  InstanceIdentifier<?> identifier2) {
+        return Iterables.getLast(identifier1.getPathArguments()).equals(Iterables.getLast(identifier2.getPathArguments()));
     }
 }
 
