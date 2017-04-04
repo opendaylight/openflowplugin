@@ -9,10 +9,6 @@ package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
 public enum ContextChainState {
     /**
-     * Context chain is sleeping without a connection.
-     */
-    SLEEPING,
-    /**
      * Context chain is working as MASTER.
      */
     WORKING_MASTER,
@@ -21,8 +17,8 @@ public enum ContextChainState {
      */
     WORKING_SLAVE,
     /**
-     * Context chain is created is working as SLAVE initial gathering need to be done.
+     * Context chain is undefined.
      */
-    INITIALIZED
+    UNDEFINED
 
 }

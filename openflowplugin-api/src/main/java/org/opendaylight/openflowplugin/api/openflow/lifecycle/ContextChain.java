@@ -11,6 +11,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import javax.annotation.Nonnull;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
+import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 
 /**
  * Chain of contexts, hold references to the contexts.
@@ -57,5 +58,30 @@ public interface ContextChain extends AutoCloseable {
      */
     void makeDeviceSlave();
 
+    /**
+     * Check all needed to be master.
+     * @param mastershipState - state master on device, initial gather, initial submit, initial registry fill
+     * @return true if everything done fine
+     */
     boolean isMastered(@Nonnull final ContextChainMastershipState mastershipState);
+
+    /**
+     * Device need to be in state SLAVE or MASTER.
+     * @return false if in undefined state
+     */
+    boolean hasState();
+
+    /**
+     * Add new auxiliary connection if primary is ok.
+     * @param connectionContext new connection to the device.
+     * @return false if primary connection is broken
+     */
+    boolean addAuxiliaryConnection(@Nonnull final ConnectionContext connectionContext);
+
+    /**
+     * Check if connection is auxiliary and if yes then continue working.
+     * @param connectionContext connection to the device
+     * @return false if this is primary connection
+     */
+    boolean auxiliaryConnectionDropped(@Nonnull final ConnectionContext connectionContext);
 }
