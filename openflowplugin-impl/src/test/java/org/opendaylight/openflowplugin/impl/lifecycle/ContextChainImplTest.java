@@ -50,8 +50,9 @@ public class ContextChainImplTest {
         Mockito.when(rpcContext.stopClusterServices()).thenReturn(Futures.immediateFuture(null));
         Mockito.when(statisticsContext.stopClusterServices()).thenReturn(Futures.immediateFuture(null));
         Mockito.when(statisticsContext.initialGatherDynamicData()).thenReturn(Futures.immediateFuture(null));
+        Mockito.when(connectionContext.getDeviceInfo()).thenReturn(deviceInfo);
 
-        contextChain = new ContextChainImpl(deviceInfo);
+        contextChain = new ContextChainImpl(connectionContext);
         contextChain.addContext(statisticsContext);
         contextChain.addContext(rpcContext);
         contextChain.addContext(deviceContext);
