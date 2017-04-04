@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.lifecycle;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import io.netty.util.internal.ConcurrentSet;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -35,12 +36,14 @@ public class ContextChainImpl implements ContextChain {
 
     private static final Logger LOG = LoggerFactory.getLogger(ContextChainImpl.class);
 
-    private Set<OFPContext> contexts = new HashSet<>();
+    private Set<OFPContext> contexts = new ConcurrentSet<>();
     private StatisticsContext statisticsContext;
     private DeviceContext deviceContext;
     private RpcContext rpcContext;
     private LifecycleService lifecycleService;
     private DeviceInfo deviceInfo;
+    private ConnectionContext primaryConnection;
+    private Set<ConnectionContext> auxiliaryConnections = new ConcurrentSet<>();
 
     private volatile ContextChainState contextChainState;
 
@@ -49,13 +52,14 @@ public class ContextChainImpl implements ContextChain {
     private boolean initialSubmitting;
     private boolean registryFilling;
 
-    public ContextChainImpl(final DeviceInfo deviceInfo) {
-        this.contextChainState = ContextChainState.INITIALIZED;
+    ContextChainImpl(final ConnectionContext connectionContext) {
+        this.primaryConnection = connectionContext;
+        this.contextChainState = ContextChainState.UNDEFINED;
         this.masterStateOnDevice = false;
         this.initialGathering = false;
         this.initialSubmitting = false;
         this.registryFilling = false;
-        this.deviceInfo = deviceInfo;
+        this.deviceInfo = connectionContext.getDeviceInfo();
     }
 
     @Override
@@ -99,6 +103,10 @@ public class ContextChainImpl implements ContextChain {
 
     @Override
     public void close() {
+        this.auxiliaryConnections.forEach(connectionContext -> connectionContext.closeConnection(false));
+        if (this.primaryConnection.getConnectionState() != ConnectionContext.CONNECTION_STATE.RIP) {
+            this.primaryConnection.closeConnection(true);
+        }
         lifecycleService.close();
         deviceContext.close();
         rpcContext.close();
@@ -162,5 +170,33 @@ public class ContextChainImpl implements ContextChain {
             contextChainState = ContextChainState.WORKING_MASTER;
         }
         return result;
+    }
+
+    @Override
+    public boolean hasState() {
+        return contextChainState == ContextChainState.WORKING_MASTER
+                || contextChainState == ContextChainState.WORKING_SLAVE;
+    }
+
+    @Override
+    public boolean addAuxiliaryConnection(@Nonnull ConnectionContext connectionContext) {
+        if (this.primaryConnection.getConnectionState() != ConnectionContext.CONNECTION_STATE.RIP) {
+            this.auxiliaryConnections.add(connectionContext);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean auxiliaryConnectionDropped(@Nonnull ConnectionContext connectionContext) {
+        if (this.auxiliaryConnections.isEmpty()) {
+            return false;
+        }
+        if (!this.auxiliaryConnections.contains(connectionContext)) {
+            return false;
+        }
+        this.auxiliaryConnections.remove(connectionContext);
+        return true;
     }
 }
