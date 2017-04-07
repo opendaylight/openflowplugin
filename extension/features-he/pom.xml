@@ -4,17 +4,17 @@
   <parent>
     <groupId>org.opendaylight.odlparent</groupId>
     <artifactId>features-parent</artifactId>
-    <version>1.7.3-SNAPSHOT</version>
+    <version>1.7.4-SNAPSHOT</version>
     <relativePath/>
   </parent>
   <groupId>org.opendaylight.openflowplugin</groupId>
-  <version>0.3.3-SNAPSHOT</version>
+  <version>0.3.4-SNAPSHOT</version>
   <artifactId>features-openflowplugin-extension-he</artifactId>
 
   <packaging>jar</packaging>
 
   <properties>
-    <openflowplugin.version>0.3.3-SNAPSHOT</openflowplugin.version>
+    <openflowplugin.version>0.3.4-SNAPSHOT</openflowplugin.version>
   </properties>
 
   <dependencyManagement>
