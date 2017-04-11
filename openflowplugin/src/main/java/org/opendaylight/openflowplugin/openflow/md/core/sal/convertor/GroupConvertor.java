@@ -21,6 +21,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.dat
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddUpdateGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.UpdatedGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group;
@@ -53,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * </pre>
  */
 public class GroupConvertor extends Convertor<Group, GroupModInputBuilder, VersionDatapathIdConvertorData> {
-    private static final List<Class<? extends DataContainer>> TYPES = Arrays.asList(Group.class, AddGroupInput.class, RemoveGroupInput.class, UpdatedGroup.class);
+    private static final List<Class<? extends DataContainer>> TYPES = Arrays.asList(Group.class, AddGroupInput.class, RemoveGroupInput.class, UpdatedGroup.class, AddUpdateGroupInput.class);
     /**
      * Create default empty group mod input builder
      * Use this method, if result from convertor is empty.
@@ -149,6 +150,8 @@ public class GroupConvertor extends Convertor<Group, GroupModInputBuilder, Versi
             groupModInputBuilder.setCommand(GroupModCommand.OFPGCDELETE);
         } else if (source instanceof UpdatedGroup) {
             groupModInputBuilder.setCommand(GroupModCommand.OFPGCMODIFY);
+        }else if (source instanceof AddUpdateGroupInput) {
+            groupModInputBuilder.setCommand(GroupModCommand.OFPGCADDORMOD);
         }
 
         if (GroupTypes.GroupAll.equals(source.getGroupType())) {
