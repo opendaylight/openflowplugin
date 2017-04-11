@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>odlparent-lite</artifactId>
-        <version>1.8.0-SNAPSHOT</version>
+        <version>1.9.0-SNAPSHOT</version>
         <relativePath/>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -13,7 +13,7 @@
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>features-extension-aggregator</artifactId>
     <packaging>pom</packaging>
-    <version>0.4.0-SNAPSHOT</version>
+    <version>0.5.0-SNAPSHOT</version>
 
     <modules>
         <module>features4-openflowplugin-extension</module>
