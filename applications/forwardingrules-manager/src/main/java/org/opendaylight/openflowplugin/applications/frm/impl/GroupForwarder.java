@@ -22,11 +22,7 @@ import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.OriginalGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.UpdatedGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
@@ -124,7 +120,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         return this.provider.getSalGroupService().removeGroup(builder.build());
     }
 
-    @Override
+   /* @Override
     public void update(final InstanceIdentifier<Group> identifier,
                        final Group original, final Group update,
                        final InstanceIdentifier<FlowCapableNode> nodeIdent) {
@@ -140,7 +136,28 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         builder.setOriginalGroup((new OriginalGroupBuilder(originalGroup)).build());
 
         this.provider.getSalGroupService().updateGroup(builder.build());
+    }*/
+
+    @Override
+    public void update(final InstanceIdentifier<Group> identifier,
+                       final Group original, final Group update,
+                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+
+        final Group originalGroup = (original);
+        final Group updatedGroup = (update);
+
+        final AddUpdateGroupInputBuilder builder = new AddUpdateGroupInputBuilder();
+
+        builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
+        builder.setGroupRef(new GroupRef(identifier));
+        builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
+        builder.setUpdatedGroup((new UpdatedGroupBuilder(updatedGroup)).build());
+        builder.setOriginalGroup((new OriginalGroupBuilder(originalGroup)).build());
+
+        this.provider.getSalGroupService().addUpdateGroup(builder.build());
     }
+
+
 
     @Override
     public Future<RpcResult<AddGroupOutput>> add(

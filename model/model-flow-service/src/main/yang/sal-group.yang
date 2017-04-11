@@ -70,7 +70,22 @@ module sal-group {
         output {
             uses tr:transaction-aware;
         }
-    } 
+    }
+
+    rpc add-update-group {
+        description "adding/Updating group on openflow device";
+        input {
+            uses tr:transaction-metadata;
+            leaf group-ref {
+                type group-type:group-ref;
+            }
+            uses group-update;
+            }
+         output {
+            uses tr:transaction-aware;
+        }
+    }
+
 
     notification group-added {
         status deprecated;

@@ -84,6 +84,45 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
         });
         return resultFuture;
     }
+    @Override
+    public Future<RpcResult<AddUpdateGroupOutput>> addUpdateGroup(AddUpdateGroupInput input) {
+        LOG.debug("addUpdateGroup() :: Group update");
+        final ListenableFuture<RpcResult<AddUpdateGroupOutput>> resultFuture = addUpdateGroup.handleServiceCall(input.getUpdatedGroup());
+        Futures.addCallback(resultFuture, new FutureCallback<RpcResult<AddUpdateGroupOutput>>() {
+            @Override
+            public void onSuccess(@Nullable RpcResult<AddUpdateGroupOutput> result) {
+                if (result.isSuccessful()) {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("SUCCESS :: Group update with original id={} finished without error",
+                                input.getOriginalGroup().getGroupId().getValue());
+                    }
+                    removeIfNecessaryFromDS(input.getOriginalGroup().getGroupId());
+                    addIfNecessaryToDS(input.getUpdatedGroup().getGroupId(), input.getUpdatedGroup());
+                } else {
+                    LOG.debug("addUpdateGroup() :: Group update with ELSE");
+                    final UpdateGroupInputBuilder builder = new UpdateGroupInputBuilder();
+                    builder.setNode(input.getNode());
+                    builder.setGroupRef(input.getGroupRef());
+                    builder.setTransactionUri(input.getTransactionUri());
+                    builder.setUpdatedGroup((new UpdatedGroupBuilder(input.getUpdatedGroup())).build());
+                    builder.setOriginalGroup((new OriginalGroupBuilder(input.getOriginalGroup())).build());
+                    updateGroup(builder.build());
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("addUpdateGroup() :: Group update with original id={} failed, errors={}",
+                                input.getOriginalGroup().getGroupId(), ErrorUtil.errorsToString(result.getErrors()));
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                LOG.warn("addUpdateGroup() :: Service call for updating group={} failed, reason: {}",
+                        input.getOriginalGroup().getGroupId(), t);
+            }
+        });
+
+        return resultFuture;
+    }
 
 
     @Override
