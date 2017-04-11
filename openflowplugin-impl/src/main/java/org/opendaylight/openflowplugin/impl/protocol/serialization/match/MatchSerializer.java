@@ -42,11 +42,6 @@ public class MatchSerializer implements OFSerializer<Match>, HeaderSerializer<Ma
 
     @Override
     public void serialize(Match match, ByteBuf outBuffer) {
-        if (match == null) {
-            LOG.debug("Match is null");
-            return;
-        }
-
         // Save start index in buffer
         int matchStartIndex = outBuffer.writerIndex();
 
@@ -75,42 +70,40 @@ public class MatchSerializer implements OFSerializer<Match>, HeaderSerializer<Ma
     @Override
     public void serializeHeader(Match match, ByteBuf outBuffer) {
         if (match == null) {
-            LOG.debug("Match is null");
+            LOG.debug("Match is null, skipping serialization of match entries");
             return;
         }
 
         // Serialize match entries
-        entryRegistry.entrySet().forEach(entry -> {
-            if (entry.getValue().matchTypeCheck(match)) {
-                entry.getValue().serialize(match, outBuffer);
+        entryRegistry.forEach((key, value) -> {
+            if (value.matchTypeCheck(match)) {
+                value.serialize(match, outBuffer);
             }
         });
 
         // Serialize match extensions
         ExtensionResolvers.getMatchExtensionResolver().getExtension(match).map(extensions -> {
-            if (Objects.nonNull(extensions)) {
-                extensions.getExtensionList().forEach(extension -> {
-                    // TODO: Remove also extension converters
-                    final MatchEntry entry = OFSessionUtil
-                        .getExtensionConvertorProvider()
-                        .<MatchEntry>getConverter(new ConverterExtensionKey<>(
-                            extension.getExtensionKey(),
-                            OFConstants.OFP_VERSION_1_3))
-                        .convert(extension.getExtension());
+            extensions.getExtensionList().forEach(extension -> {
+                // TODO: Remove also extension converters
+                final MatchEntry entry = OFSessionUtil
+                    .getExtensionConvertorProvider()
+                    .<MatchEntry>getConverter(new ConverterExtensionKey<>(
+                        extension.getExtensionKey(),
+                        OFConstants.OFP_VERSION_1_3))
+                    .convert(extension.getExtension());
 
-                    final MatchEntrySerializerKey<?, ?> key = new MatchEntrySerializerKey<>(
-                        EncodeConstants.OF13_VERSION_ID, entry.getOxmClass(), entry.getOxmMatchField());
+                final MatchEntrySerializerKey<?, ?> key = new MatchEntrySerializerKey<>(
+                    EncodeConstants.OF13_VERSION_ID, entry.getOxmClass(), entry.getOxmMatchField());
 
-                    // If entry is experimenter, set experimenter ID to key
-                    if (entry.getOxmClass().equals(ExperimenterClass.class)) {
-                        key.setExperimenterId(ExperimenterIdCase.class.cast(entry.getMatchEntryValue())
-                            .getExperimenter().getExperimenter().getValue());
-                    }
+                // If entry is experimenter, set experimenter ID to key
+                if (entry.getOxmClass().equals(ExperimenterClass.class)) {
+                    key.setExperimenterId(ExperimenterIdCase.class.cast(entry.getMatchEntryValue())
+                        .getExperimenter().getExperimenter().getValue());
+                }
 
-                    final OFSerializer<MatchEntry> entrySerializer = registry.getSerializer(key);
-                    entrySerializer.serialize(entry, outBuffer);
-                });
-            }
+                final OFSerializer<MatchEntry> entrySerializer = registry.getSerializer(key);
+                entrySerializer.serialize(entry, outBuffer);
+            });
 
             return extensions;
         });
