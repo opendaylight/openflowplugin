@@ -12,6 +12,7 @@ import com.google.common.collect.ImmutableBiMap;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortNumberUni;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumberValues;
@@ -148,5 +149,15 @@ public class OpenflowPortsUtil {
             result = portNumber.getString();
         }
         return result;
+    }
+
+    /**
+     * Converts port number to Uri
+     * @param version openflow version
+     * @param portNumber port number
+     * @return port number uri
+     */
+    public static Uri getProtocolAgnosticPortUri(final short version, final long portNumber) {
+        return new Uri(portNumberToString(getProtocolAgnosticPort(OpenflowVersion.get(version), portNumber)));
     }
 }
