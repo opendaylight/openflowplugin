@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.impl.statistics.services.direct;
 
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.Futures;
@@ -40,17 +39,6 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
  * @param <O> the output type parameter
  */
 public abstract class AbstractDirectStatisticsService<I extends StoreStatsGrouping, O> extends AbstractMultipartService<I> {
-
-    private final Function<RpcResult<List<MultipartReply>>, RpcResult<O>> resultTransformFunction =
-            new Function<RpcResult<List<MultipartReply>>, RpcResult<O>>() {
-                @Nullable
-                @Override
-                public RpcResult<O> apply(@Nullable RpcResult<List<MultipartReply>> input) {
-                    Preconditions.checkNotNull(input);
-                    final O reply = buildReply(input.getResult(), input.isSuccessful());
-                    return RpcResultBuilder.success(reply).build();
-                }
-            };
 
     private final AsyncFunction<RpcResult<O>, RpcResult<O>> resultStoreFunction =
             new AsyncFunction<RpcResult<O>, RpcResult<O>>() {
@@ -98,13 +86,19 @@ public abstract class AbstractDirectStatisticsService<I extends StoreStatsGroupi
      */
     public Future<RpcResult<O>> handleAndReply(final I input) {
         final ListenableFuture<RpcResult<List<MultipartReply>>> rpcReply = handleServiceCall(input);
-        ListenableFuture<RpcResult<O>> rpcResult = Futures.transform(rpcReply, resultTransformFunction);
+        ListenableFuture<RpcResult<O>> rpcResult = Futures.transform(rpcReply, this::transformResult);
 
         if (Boolean.TRUE.equals(input.isStoreStats())) {
             rpcResult = Futures.transform(rpcResult, resultStoreFunction);
         }
 
         return rpcResult;
+    }
+
+    private RpcResult<O> transformResult(final RpcResult<List<MultipartReply>> input) {
+        return Preconditions.checkNotNull(input).isSuccessful()
+            ? RpcResultBuilder.success(buildReply(input.getResult(), input.isSuccessful())).build()
+            : RpcResultBuilder.<O>failed().withRpcErrors(input.getErrors()).build();
     }
 
     @Override
