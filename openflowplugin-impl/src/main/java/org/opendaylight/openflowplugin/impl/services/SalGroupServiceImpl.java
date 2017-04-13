@@ -126,7 +126,7 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Group remove with id={} finished without error", input.getGroupId().getValue());
                     }
-                    removeGroup.getDeviceRegistry().getDeviceGroupRegistry().markToBeremoved(input.getGroupId());
+                    removeGroup.getDeviceRegistry().getDeviceGroupRegistry().addMark(input.getGroupId());
                     removeIfNecessaryFromDS(input.getGroupId());
                 } else {
                     if (LOG.isDebugEnabled()) {

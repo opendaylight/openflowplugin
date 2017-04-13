@@ -119,7 +119,6 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
 
     @Override
     public Future<RpcResult<RemoveMeterOutput>> removeMeter(final RemoveMeterInput input) {
-        removeMeter.getDeviceRegistry().getDeviceMeterRegistry().markToBeremoved(input.getMeterId());
         final ListenableFuture<RpcResult<RemoveMeterOutput>> resultFuture = removeMeter.handleServiceCall(input);
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<RemoveMeterOutput>>() {
             @Override
@@ -128,6 +127,7 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Meter remove with id={} finished without error", input.getMeterId());
                     }
+                    removeMeter.getDeviceRegistry().getDeviceMeterRegistry().addMark(input.getMeterId());
                     removeIfNecessaryFromDS(input.getMeterId());
                 } else {
                     if (LOG.isDebugEnabled()) {

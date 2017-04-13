@@ -8,23 +8,9 @@
 
 package org.opendaylight.openflowplugin.api.openflow.registry.meter;
 
-import java.util.List;
+import org.opendaylight.openflowplugin.api.openflow.registry.CommonDeviceRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 
-/**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 15.4.2015.
- */
-public interface DeviceMeterRegistry extends AutoCloseable {
-
-    void store(MeterId meterId);
-
-    void markToBeremoved(MeterId meterId);
-
-    void removeMarked();
-
-    List<MeterId> getAllMeterIds();
-
-    @Override
-    void close();
+public interface DeviceMeterRegistry extends CommonDeviceRegistry<MeterId> {
 
 }

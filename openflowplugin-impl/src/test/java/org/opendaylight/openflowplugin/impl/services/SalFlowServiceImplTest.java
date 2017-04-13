@@ -285,8 +285,7 @@ public class SalFlowServiceImplTest extends TestCase {
         when(mockedFlowDescriptor.getFlowId()).thenReturn(flowId);
         when(mockedFlowDescriptor.getTableKey()).thenReturn(new TableKey(DUMMY_TABLE_ID));
 
-        when(deviceFlowRegistry.storeIfNecessary(Matchers.any(FlowRegistryKey.class))).thenReturn(flowId);
-        when(deviceFlowRegistry.retrieveIdForFlow(Matchers.any(FlowRegistryKey.class))).thenReturn(mockedFlowDescriptor);
+        when(deviceFlowRegistry.retrieveDescriptor(Matchers.any(FlowRegistryKey.class))).thenReturn(mockedFlowDescriptor);
     }
 
     private <T extends DataObject> void verifyOutput(Future<RpcResult<T>> rpcResultFuture) throws ExecutionException, InterruptedException {

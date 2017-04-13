@@ -8,22 +8,9 @@
 
 package org.opendaylight.openflowplugin.api.openflow.registry.group;
 
-import java.util.List;
+import org.opendaylight.openflowplugin.api.openflow.registry.CommonDeviceRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 
-/**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 15.4.2015.
- */
-public interface DeviceGroupRegistry extends AutoCloseable {
+public interface DeviceGroupRegistry extends CommonDeviceRegistry<GroupId> {
 
-    void store(GroupId groupId);
-
-    void markToBeremoved(GroupId groupId);
-
-    void removeMarked();
-
-    List<GroupId> getAllGroupIds();
-
-    @Override
-    void close();
 }
