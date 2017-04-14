@@ -40,17 +40,14 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 
 /**
  * Message Dispatch Service to send the message to switch.
- *
- * @author AnilGujele
- *
  */
 public interface IMessageDispatchService {
 
-    public static final String CONNECTION_ERROR_MESSAGE = "Session for the cookie is invalid. Reason: "
-    + "the switch has been recently disconnected OR inventory provides outdated information.";
+    String CONNECTION_ERROR_MESSAGE = "Session for the cookie is invalid. Reason: "
+            + "the switch has been recently disconnected OR inventory provides outdated information.";
 
     /**
-     * send barrier message to switch
+     * send barrier message to switch.
      *
      * @param input
      *            - message
@@ -62,7 +59,7 @@ public interface IMessageDispatchService {
     Future<RpcResult<BarrierOutput>> barrier(BarrierInput input, SwitchConnectionDistinguisher cookie);
 
     /**
-     * send experimenter message to switch
+     * send experimenter message to switch.
      *
      * @param input
      *            - message
@@ -74,7 +71,7 @@ public interface IMessageDispatchService {
     Future<RpcResult<java.lang.Void>> experimenter(ExperimenterInput input, SwitchConnectionDistinguisher cookie);
 
     /**
-     * send flow modification message to switch
+     * send flow modification message to switch.
      *
      * @param input
      *            - message
@@ -86,7 +83,7 @@ public interface IMessageDispatchService {
     Future<RpcResult<UpdateFlowOutput>> flowMod(FlowModInput input, SwitchConnectionDistinguisher cookie);
 
     /**
-     * send get async message to switch
+     * send get async message to switch.
      *
      * @param input
      *            - message
@@ -98,7 +95,7 @@ public interface IMessageDispatchService {
     Future<RpcResult<GetAsyncOutput>> getAsync(GetAsyncInput input, SwitchConnectionDistinguisher cookie);
 
     /**
-     * send get config message to switch
+     * send get config message to switch.
      *
      * @param input
      *            - message
@@ -110,7 +107,7 @@ public interface IMessageDispatchService {
     Future<RpcResult<GetConfigOutput>> getConfig(GetConfigInput input, SwitchConnectionDistinguisher cookie);
 
     /**
-     * send get features message to switch
+     * send get features message to switch.
      *
      * @param input
      *            - message
@@ -122,7 +119,7 @@ public interface IMessageDispatchService {
     Future<RpcResult<GetFeaturesOutput>> getFeatures(GetFeaturesInput input, SwitchConnectionDistinguisher cookie);
 
     /**
-     * send get queue config message to switch
+     * send get queue config message to switch.
      *
      * @param input
      *            - message
@@ -135,7 +132,7 @@ public interface IMessageDispatchService {
             SwitchConnectionDistinguisher cookie);
 
     /**
-     * send group modification message to switch
+     * send group modification message to switch.
      *
      * @param input
      *            - message
@@ -147,7 +144,7 @@ public interface IMessageDispatchService {
     Future<RpcResult<UpdateGroupOutput>> groupMod(GroupModInput input, SwitchConnectionDistinguisher cookie);
 
     /**
-     * send meter modification message to switch
+     * send meter modification message to switch.
      *
      * @param input
      *            - message
@@ -159,7 +156,7 @@ public interface IMessageDispatchService {
     Future<RpcResult<UpdateMeterOutput>> meterMod(MeterModInput input, SwitchConnectionDistinguisher cookie);
 
     /**
-     * send multipart request message to switch
+     * send multipart request message to switch.
      *
      * @param input
      *            - multipart request message
@@ -168,10 +165,12 @@ public interface IMessageDispatchService {
      *            any connection
      * @return - the future
      */
-    Future<RpcResult<java.lang.Void>> multipartRequest(MultipartRequestInput input, SwitchConnectionDistinguisher cookie);
+    Future<RpcResult<java.lang.Void>> multipartRequest(
+            MultipartRequestInput input,
+            SwitchConnectionDistinguisher cookie);
 
     /**
-     * send packet out message to switch
+     * send packet out message to switch.
      *
      * @param input
      *            - message
@@ -183,7 +182,7 @@ public interface IMessageDispatchService {
     Future<RpcResult<java.lang.Void>> packetOut(PacketOutInput input, SwitchConnectionDistinguisher cookie);
 
     /**
-     * send port modification message to switch
+     * send port modification message to switch.
      *
      * @param input
      *            - message
@@ -195,7 +194,7 @@ public interface IMessageDispatchService {
     Future<RpcResult<UpdatePortOutput>> portMod(PortModInput input, SwitchConnectionDistinguisher cookie);
 
     /**
-     * send role request message to switch
+     * send role request message to switch.
      *
      * @param input
      *            - message
@@ -207,7 +206,7 @@ public interface IMessageDispatchService {
     Future<RpcResult<RoleRequestOutput>> roleRequest(RoleRequestInput input, SwitchConnectionDistinguisher cookie);
 
     /**
-     * send set async message to switch
+     * send set async message to switch.
      *
      * @param input
      *            - message
@@ -219,7 +218,7 @@ public interface IMessageDispatchService {
     Future<RpcResult<java.lang.Void>> setAsync(SetAsyncInput input, SwitchConnectionDistinguisher cookie);
 
     /**
-     * send set config message to switch
+     * send set config message to switch.
      *
      * @param input
      *            - message
@@ -231,7 +230,7 @@ public interface IMessageDispatchService {
     Future<RpcResult<java.lang.Void>> setConfig(SetConfigInput input, SwitchConnectionDistinguisher cookie);
 
     /**
-     * send table modification message to switch
+     * send table modification message to switch.
      *
      * @param input
      *            - message
