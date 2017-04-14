@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -9,15 +9,10 @@ package org.opendaylight.openflowplugin.api.openflow.md.queue;
 
 
 /**
- * @author mirehak
+ * PopListener.
  * @param <T> result type
  *
  */
 public interface PopListener<T> {
-    
-    /**
-     * @param processedMessage
-     */
     void onPop(T processedMessage);
-
 }
