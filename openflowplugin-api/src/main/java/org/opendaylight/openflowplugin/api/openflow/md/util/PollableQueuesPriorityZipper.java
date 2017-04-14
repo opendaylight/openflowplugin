@@ -1,6 +1,6 @@
-/**
+/*
  * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -16,7 +16,7 @@ import java.util.Queue;
  * still null result, poll will return null. <br>
  * Iterating keeps last position so this polling is supposed to be fairly
  * distributed.
- * 
+ *
  * @param <T> common item type of zipped queues
  */
 public class PollableQueuesPriorityZipper<T> {
@@ -24,25 +24,20 @@ public class PollableQueuesPriorityZipper<T> {
     private Queue<T> prioritizedSource;
     private PollableQueuesZipper<T> zipper;
 
-    /**
-     * default ctor
-     */
     public PollableQueuesPriorityZipper() {
         zipper = new PollableQueuesZipper<>();
     }
 
     /**
-     * Add all member queues before first invocation of
-     * {@link PollableQueuesPriorityZipper#poll()}
-     * 
-     * @param queue
-     *            to be added to group
+     * Add all member queues before first invocation of {@link PollableQueuesPriorityZipper#poll()}.
+     * @param queue to be added to group
      */
     public void addSource(Queue<T> queue) {
         zipper.addSource(queue);
     }
 
     /**
+     * Next common product.
      * @return next common product of polling member groups
      */
     public T poll() {
