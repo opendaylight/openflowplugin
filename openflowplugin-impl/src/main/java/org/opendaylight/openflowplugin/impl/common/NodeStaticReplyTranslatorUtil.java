@@ -38,6 +38,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.SelectLiveness;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.SelectWeight;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.NodeMeterFeatures;
@@ -52,6 +53,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterPktps;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.desc._case.MultipartReplyDesc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.MultipartReplyGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group.features._case.MultipartReplyGroupFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter.features._case.MultipartReplyMeterFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.MultipartReplyTableFeatures;
@@ -208,6 +210,25 @@ public class NodeStaticReplyTranslatorUtil {
         final Optional<List<TableFeatures>> tableFeaturesList = convertorExecutor.convert(reply, new VersionConvertorData(version));
         return tableFeaturesList.orElse(Collections.emptyList());
     }
+
+    /**
+     * Method transform {@link MultipartReplyGroup} to list of {@link GroupStats}.
+     *
+     * @param reply reply
+     * @param version Openflow version
+     * @param convertorExecutor convertor executor
+     * @return list of group statistics
+     */
+    public static List<GroupStats> nodeGroupsTranslator(@CheckForNull final MultipartReplyGroup reply,
+                                                        final short version,
+                                                        @CheckForNull final ConvertorExecutor convertorExecutor) {
+        Preconditions.checkArgument(reply != null);
+        Preconditions.checkArgument(convertorExecutor != null);
+        final Optional<List<GroupStats>> groupStatsList = convertorExecutor.convert(reply, new VersionConvertorData
+                (version));
+        return groupStatsList.orElse(Collections.emptyList());
+    }
+
 
     /**
      * Method build a ID Node Connector from version and port number.

@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.applications.frm;
 import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -46,8 +47,8 @@ public interface ForwardingRulesCommiter <D extends DataObject> extends AutoClos
      * @param update - changed DataObject (contain updates)
      * @param nodeIdent Node InstanceIdentifier
      */
-    void update(InstanceIdentifier<D> identifier, D original, D update,
-            InstanceIdentifier<FlowCapableNode> nodeIdent);
+    Future<? extends RpcResult> update(InstanceIdentifier<D> identifier, D original, D update,
+                                                InstanceIdentifier<FlowCapableNode> nodeIdent);
 
     /**
      * Method adds the DataObject which is identified by InstanceIdentifier

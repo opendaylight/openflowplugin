@@ -51,6 +51,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.FlowTableStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.FlowTableStatisticsDataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.NodeGroupFeatures;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.NodeGroupStatistics;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.group.statistics.GroupStatistics;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.group.statistics.GroupStatisticsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorBuilder;
@@ -66,11 +72,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.MultipartReplyBody;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyDescCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyGroupCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyGroupFeaturesCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyMeterFeaturesCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyPortDescCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyTableFeaturesCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.desc._case.MultipartReplyDesc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.MultipartReplyGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group.features._case.MultipartReplyGroupFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter.features._case.MultipartReplyMeterFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.desc._case.MultipartReplyPortDesc;
@@ -196,6 +204,12 @@ public class DeviceInitializationUtils {
                         translateAndWriteReply(MultipartType.OFPMPDESC, deviceContext,
                                 deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), rpcResult.getResult(), convertorExecutor);
 
+                        final ListenableFuture<RpcResult<List<MultipartReply>>> replyPortDescription = getNodeStaticInfo(
+                                MultipartType.OFPMPPORTDESC, deviceContext, deviceContext.getDeviceInfo().getNodeInstanceIdentifier(),
+                                deviceContext.getDeviceInfo().getVersion());
+                        createSuccessProcessingCallback(MultipartType.OFPMPPORTDESC, deviceContext,
+                                deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), replyPortDescription, convertorExecutor);
+
                         final ListenableFuture<RpcResult<List<MultipartReply>>> replyMeterFeature = getNodeStaticInfo(
                                 MultipartType.OFPMPMETERFEATURES, deviceContext,
                                 deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), deviceContext.getDeviceInfo().getVersion());
@@ -209,6 +223,12 @@ public class DeviceInitializationUtils {
                         createSuccessProcessingCallback(MultipartType.OFPMPGROUPFEATURES, deviceContext,
                                 deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), replyGroupFeatures, convertorExecutor);
 
+                        final ListenableFuture<RpcResult<List<MultipartReply>>> replyGroups = getNodeStaticInfo(
+                                MultipartType.OFPMPGROUP, deviceContext, deviceContext.getDeviceInfo()
+                                        .getNodeInstanceIdentifier(), deviceContext.getDeviceInfo().getVersion());
+                        createSuccessProcessingCallback(MultipartType.OFPMPGROUP, deviceContext,
+                                deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), replyGroups, convertorExecutor);
+
                         final ListenableFuture<RpcResult<List<MultipartReply>>> replyTableFeatures;
 
                         if (deviceContext.isSkipTableFeatures()) {
@@ -221,11 +241,6 @@ public class DeviceInitializationUtils {
                         createSuccessProcessingCallback(MultipartType.OFPMPTABLEFEATURES, deviceContext,
                                 deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), replyTableFeatures, convertorExecutor);
 
-                        final ListenableFuture<RpcResult<List<MultipartReply>>> replyPortDescription = getNodeStaticInfo(
-                                MultipartType.OFPMPPORTDESC, deviceContext, deviceContext.getDeviceInfo().getNodeInstanceIdentifier(),
-                                deviceContext.getDeviceInfo().getVersion());
-                        createSuccessProcessingCallback(MultipartType.OFPMPPORTDESC, deviceContext,
-                                deviceContext.getDeviceInfo().getNodeInstanceIdentifier(), replyPortDescription, convertorExecutor);
                         if (switchFeaturesMandatory) {
                             return Futures.allAsList(Arrays.asList(replyMeterFeature, replyGroupFeatures,
                                     replyTableFeatures, replyPortDescription));
@@ -250,6 +265,7 @@ public class DeviceInitializationUtils {
                                     || writeTableFeatures(type, multipartReplyBody, dContext, nodeII, convertorExecutor)
                                     || writeMeterFeatures(type, multipartReplyBody, dContext, nodeII)
                                     || writeGroupFeatures(type, multipartReplyBody, dContext, nodeII)
+                                    || writeGroups(type, multipartReplyBody, dContext, nodeII, convertorExecutor)
                                     || writePortDesc(type, multipartReplyBody, dContext, nodeII))) {
                                 throw new IllegalArgumentException("Unexpected MultipartType " + type);
                             }
@@ -360,6 +376,37 @@ public class DeviceInitializationUtils {
                 .augmentation(NodeGroupFeatures.class);
         dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, gFeatureII, gFeature);
 
+        return true;
+    }
+
+    private static boolean writeGroups(final MultipartType type,
+                                       final MultipartReplyBody body,
+                                       final DeviceContext dContext,
+                                       final InstanceIdentifier<Node> nodeII,
+                                       final ConvertorExecutor convertorExecutor) {
+        if (!MultipartType.OFPMPGROUP.equals(type)) {
+            return false;
+        }
+
+        Preconditions.checkArgument(body instanceof MultipartReplyGroupCase);
+        final MultipartReplyGroup groupStatisticsMP = ((MultipartReplyGroupCase) body).getMultipartReplyGroup();
+
+        final InstanceIdentifier<FlowCapableNode> fNodeIdent = nodeII.augmentation(FlowCapableNode.class);
+
+        final List<GroupStats> groupStatistics = NodeStaticReplyTranslatorUtil
+                .nodeGroupsTranslator(groupStatisticsMP, dContext.getDeviceInfo().getVersion(), convertorExecutor);
+
+        for (final GroupStats groupStats : groupStatistics) {
+
+            final InstanceIdentifier<NodeGroupStatistics> groupIdent = fNodeIdent.child(Group.class, new GroupKey
+                    (groupStats.getGroupId())).augmentation(NodeGroupStatistics.class);
+
+            final InstanceIdentifier<GroupStatistics> gsIdent = groupIdent.child(GroupStatistics.class);
+            final GroupStatistics stats = new GroupStatisticsBuilder(groupStats).build();
+            LOG.debug("Device Initialization : writing group {} to operational data store for device {}",groupStats
+                    .getGroupId(), dContext.getDeviceInfo().getDatapathId());
+            dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, gsIdent, stats);
+        }
         return true;
     }
 

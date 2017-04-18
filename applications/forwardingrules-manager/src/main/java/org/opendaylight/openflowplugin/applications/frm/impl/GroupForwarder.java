@@ -27,6 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.Add
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.OriginalGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.UpdatedGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
@@ -125,9 +126,9 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
     }
 
     @Override
-    public void update(final InstanceIdentifier<Group> identifier,
-                       final Group original, final Group update,
-                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public Future<RpcResult<UpdateGroupOutput>> update(final InstanceIdentifier<Group> identifier,
+                                                       final Group original, final Group update,
+                                                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
         final Group originalGroup = (original);
         final Group updatedGroup = (update);
@@ -139,7 +140,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         builder.setUpdatedGroup((new UpdatedGroupBuilder(updatedGroup)).build());
         builder.setOriginalGroup((new OriginalGroupBuilder(originalGroup)).build());
 
-        this.provider.getSalGroupService().updateGroup(builder.build());
+        return this.provider.getSalGroupService().updateGroup(builder.build());
     }
 
     @Override

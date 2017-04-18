@@ -19,10 +19,12 @@ import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.table.update.OriginalTableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.table.update.UpdatedTableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableRef;
@@ -80,9 +82,9 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
     }
 
     @Override
-    public void update(final InstanceIdentifier<TableFeatures> identifier,
-                       final TableFeatures original, final TableFeatures update,
-                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public Future<RpcResult<UpdateTableOutput>> update(final InstanceIdentifier<TableFeatures> identifier,
+                                                       final TableFeatures original, final TableFeatures update,
+                                                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.debug("Received the Table Update request [Tbl id, node Id, original, upd" +
                 " " + identifier + " " + nodeIdent + " " + original + " " + update);
 
@@ -112,7 +114,8 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
 
         if (this.provider.getSalTableService() != null)
             LOG.debug(" Handle to SalTableServices" + this.provider.getSalTableService());
-        this.provider.getSalTableService().updateTable(builder.build());
+
+        return this.provider.getSalTableService().updateTable(builder.build());
 
     }
 

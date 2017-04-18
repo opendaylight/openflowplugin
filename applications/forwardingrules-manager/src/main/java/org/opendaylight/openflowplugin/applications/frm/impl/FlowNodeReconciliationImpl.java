@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -133,13 +134,26 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
             ReadOnlyTransaction trans = provider.getReadTranaction();
             Optional<FlowCapableNode> flowNode = Optional.absent();
+            final HashSet<GroupId> operationalGroups = new HashSet<>();
 
             //initialize the counter
             int counter = 0;
             try {
                 flowNode = trans.read(LogicalDatastoreType.CONFIGURATION, nodeIdentity).get();
             } catch (Exception e) {
-                LOG.error("Fail with read Config/DS for Node {} !", nodeIdentity, e);
+                LOG.error("Error occurred while reading Config/DS for Node {} !", nodeIdentity, e);
+            }
+
+            try {
+                Optional<FlowCapableNode> fcOperNode = trans.read(LogicalDatastoreType.OPERATIONAL, nodeIdentity).get();
+                if (fcOperNode.isPresent() && fcOperNode.get().getGroup() != null) {
+                    fcOperNode.get().getGroup().forEach(group -> {
+                        operationalGroups.add(group.getGroupId());
+                    });
+                    LOG.debug("Number of groups present in the operational data store : {}",operationalGroups.size());
+                }
+            } catch (Exception e) {
+                LOG.error("Error occurred while reading groups from operational/DS for Node {} !", nodeIdentity, e);
             }
 
             if (flowNode.isPresent()) {
@@ -237,7 +251,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         }
 
                         if (okToInstall) {
-                            addGroup(groupFutures, group);
+                            reconcileGroup(groupFutures, group, operationalGroups);
                             iterator.remove();
                             // resetting the counter to zero
                             counter = 0;
@@ -250,7 +264,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                     for (Group group : toBeInstalledGroups) {
                         LOG.error("Installing the group {} finally although the port is not up after checking for {} times "
                                 , group.getGroupId().toString(), provider.getConfiguration().getReconciliationRetryCount());
-                        addGroup(groupFutures, group);
+                        reconcileGroup(groupFutures, group, operationalGroups);
                     }
                 }
             /* Meters */
@@ -292,13 +306,20 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
          *                   add-group RPC.
          * @param group      The group to add.
          */
-        private void addGroup(Map<Long, ListenableFuture<?>> map, Group group) {
+        private void reconcileGroup(Map<Long, ListenableFuture<?>> map, Group group, HashSet<GroupId> operGroups) {
             KeyedInstanceIdentifier<Group, GroupKey> groupIdent =
                 nodeIdentity.child(Group.class, group.getKey());
             final Long groupId = group.getGroupId().getValue();
-            ListenableFuture<?> future = JdkFutureAdapters.listenInPoolThread(
-                provider.getGroupCommiter().add(
-                    groupIdent, group, nodeIdentity));
+            ListenableFuture<?> future;
+            if (operGroups.contains(group.getGroupId())) {
+                future = JdkFutureAdapters.listenInPoolThread(provider.getGroupCommiter()
+                        .update(groupIdent, group, group, nodeIdentity));
+
+            } else {
+                future = JdkFutureAdapters.listenInPoolThread(provider.getGroupCommiter()
+                        .add(groupIdent, group, nodeIdentity));
+
+            }
 
             Futures.addCallback(future, new FutureCallback<Object>() {
                 @Override
