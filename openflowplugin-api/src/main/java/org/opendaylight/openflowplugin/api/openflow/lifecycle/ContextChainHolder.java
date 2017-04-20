@@ -51,7 +51,7 @@ public interface ContextChainHolder extends
      * Called if connection needs to be destroyed.
      * @param deviceInfo {@link DeviceInfo}
      */
-    ListenableFuture<Void> destroyContextChain(final DeviceInfo deviceInfo);
+    void destroyContextChain(final DeviceInfo deviceInfo);
 
     /**
      * Provider is needed to register cluster singleton service.

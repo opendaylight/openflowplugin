@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.lifecycle;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
 import com.google.common.base.Verify;
+import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
@@ -17,6 +18,7 @@ import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import io.netty.util.internal.ConcurrentSet;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -62,9 +64,10 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
     private final ConcurrentHashMap<DeviceInfo, ContextChain> contextChainMap = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<DeviceInfo, ContextChain> withoutRoleChains = new ConcurrentHashMap<>();
-    private final List<DeviceInfo> markToBeRemoved = new ArrayList<>();
+    private final Set<DeviceInfo> markToBeRemoved = new ConcurrentSet<>();
     private final HashedWheelTimer timer;
     private final Long checkRoleMaster;
+    private final Object removeLock = new Object();
 
     private DeviceManager deviceManager;
     private RpcManager rpcManager;
@@ -151,17 +154,23 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     }
 
     @Override
-    public ListenableFuture<Void> destroyContextChain(final DeviceInfo deviceInfo) {
-        ContextChain chain = contextChainMap.remove(deviceInfo);
-        if (chain != null) {
-            chain.close();
-        }
-        if (markToBeRemoved.contains(deviceInfo)) {
-            markToBeRemoved.remove(deviceInfo);
-            LOG.info("Removing device: {} from DS", deviceInfo.getLOGValue());
-            return deviceManager.removeDeviceFromOperationalDS(deviceInfo);
-        } else {
-            return Futures.immediateFuture(null);
+    public void destroyContextChain(final DeviceInfo deviceInfo) {
+        synchronized (removeLock) {
+            ContextChain chain = contextChainMap.remove(deviceInfo);
+            if (chain != null) {
+                chain.close();
+            }
+            if (markToBeRemoved.contains(deviceInfo)) {
+                markToBeRemoved.remove(deviceInfo);
+                try {
+                    LOG.info("Removing device [CONTEXT]: {} from DS", deviceInfo.getLOGValue());
+                    deviceManager
+                            .removeDeviceFromOperationalDS(deviceInfo.getNodeInstanceIdentifier())
+                            .checkedGet(5L, TimeUnit.SECONDS);
+                } catch (TimeoutException | TransactionCommitFailedException e) {
+                    LOG.warn("Not able to remove device {} from DS", deviceInfo.getLOGValue());
+                }
+            }
         }
     }
 
@@ -239,11 +248,13 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     public void onDeviceDisconnected(final ConnectionContext connectionContext) {
 
         final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
+
         if (deviceInfo != null) {
             ContextChain chain = contextChainMap.get(deviceInfo);
             if (chain != null) {
                 if (chain.auxiliaryConnectionDropped(connectionContext)) {
                     LOG.info("Auxiliary connection from device {} disconnected.", deviceInfo.getLOGValue());
+                    return;
                 } else {
                     LOG.info("Device {} disconnected.", deviceInfo.getLOGValue());
                     Futures.transform(chain.connectionDropped(), new Function<Void, Object>() {
@@ -256,6 +267,40 @@ public class ContextChainHolderImpl implements ContextChainHolder {
                     });
                 }
             }
+        } else {
+
+            /*
+             * Following part of code:
+             * In some cases if controller is reconnected without switches being restarted
+             * plugin get disconnect event after controller rejoining with new connection adapter
+             * and only thing can work as identifier were remote address.
+             * Purge all devices from the same IP address
+             */
+
+            Map<DeviceInfo, ContextChain> chains = new ConcurrentHashMap<>();
+            for (Map.Entry<DeviceInfo, ContextChain> chainEntry : contextChainMap.entrySet()) {
+                if (chainEntry.getKey().getRemoteAddress().getHostName().equals(
+                        connectionContext.getConnectionAdapter().getRemoteAddress().getHostName())) {
+                    chains.put(chainEntry.getKey(), chainEntry.getValue());
+                }
+            }
+            if (!chains.isEmpty()) {
+                for (Map.Entry<DeviceInfo, ContextChain> entry : contextChainMap.entrySet()) {
+                    if (entry.getValue().auxiliaryConnectionDropped(connectionContext)) {
+                        LOG.info("Auxiliary connection from device {} disconnected.", entry.getKey().getLOGValue());
+                    } else {
+                        LOG.info("Device {} disconnected.", entry.getKey().getLOGValue());
+                        Futures.transform(entry.getValue().connectionDropped(), new Function<Void, Object>() {
+                            @Nullable
+                            @Override
+                            public Object apply(@Nullable Void aVoid) {
+                                destroyContextChain(entry.getKey());
+                                return null;
+                            }
+                        });
+                    }
+                }
+            }
         }
     }
 
@@ -265,7 +310,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
             LOG.warn("EOS Listener already registered.");
         } else {
             this.eosListenerRegistration = Verify.verifyNotNull(entityOwnershipService.registerListener
-                    (ASYNC_SERVICE_ENTITY_TYPE, this));
+                    (SERVICE_ENTITY_TYPE, this));
         }
     }
 
@@ -333,33 +378,33 @@ public class ContextChainHolderImpl implements ContextChainHolder {
             final YangInstanceIdentifier.NodeIdentifierWithPredicates niiwp =
                     (YangInstanceIdentifier.NodeIdentifierWithPredicates) yii.getLastPathArgument();
             String entityName =  niiwp.getKeyValues().values().iterator().next().toString();
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Last master for entity : {}", entityName);
-            }
+            LOG.info("Last master for entity : {}", entityName);
 
             if (entityName != null ){
                 final NodeId nodeId = new NodeId(entityName);
                 DeviceInfo inMap = null;
-                for (Map.Entry<DeviceInfo, ContextChain> entry : contextChainMap.entrySet()) {
-                    if (entry.getKey().getNodeId().equals(nodeId)) {
-                        inMap = entry.getKey();
-                        break;
-                    }                    
-                }
-                if (Objects.nonNull(inMap)) {
-                    markToBeRemoved.add(inMap);
-                } else {
-                    try {
-                        LOG.info("Removing device: {} from DS", nodeId);
-                        deviceManager
-                                .removeDeviceFromOperationalDS(DeviceStateUtil.createNodeInstanceIdentifier(nodeId))
-                                .checkedGet(5L, TimeUnit.SECONDS);
-                    } catch (TimeoutException | TransactionCommitFailedException e) {
-                        LOG.warn("Not able to remove device {} from DS", nodeId);
+                synchronized (removeLock) {
+                    for (Map.Entry<DeviceInfo, ContextChain> entry : contextChainMap.entrySet()) {
+                        if (entry.getKey().getNodeId().equals(nodeId)) {
+                            inMap = entry.getKey();
+                            break;
+                        }
+                    }
+                    if (Objects.nonNull(inMap)) {
+                        markToBeRemoved.add(inMap);
+                    } else {
+                        try {
+                            LOG.info("Removing device [EOS]: {} from DS", nodeId);
+                            deviceManager
+                                    .removeDeviceFromOperationalDS(DeviceStateUtil.createNodeInstanceIdentifier(nodeId))
+                                    .checkedGet(5L, TimeUnit.SECONDS);
+                        } catch (TimeoutException | TransactionCommitFailedException e) {
+                            LOG.warn("Not able to remove device {} from DS", nodeId);
+                        }
                     }
                 }
-            }                
-        }        
+            }
+        }
     }
 
     private void sendNotificationNodeAdded(final DeviceInfo deviceInfo) {
