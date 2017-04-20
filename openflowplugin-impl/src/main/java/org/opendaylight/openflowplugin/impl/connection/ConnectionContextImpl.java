@@ -232,7 +232,8 @@ public class ConnectionContextImpl implements ConnectionContext {
                 DeviceStateUtil.createNodeInstanceIdentifier(nodeId),
                 featuresReply.getVersion(),
                 featuresReply.getDatapathId(),
-                outboundQueueProvider);
+                outboundQueueProvider,
+                this.connectionAdapter.getRemoteAddress());
     }
 
     @Override
@@ -279,6 +280,7 @@ public class ConnectionContextImpl implements ConnectionContext {
         private final Short version;
         private final BigInteger datapathId;
         private final ServiceGroupIdentifier serviceGroupIdentifier;
+        private final InetSocketAddress address;
         private OutboundQueue outboundQueueProvider;
 
         DeviceInfoImpl(
@@ -286,13 +288,15 @@ public class ConnectionContextImpl implements ConnectionContext {
                 final KeyedInstanceIdentifier<Node, NodeKey> nodeII,
                 final Short version,
                 final BigInteger datapathId,
-                final OutboundQueue outboundQueueProvider) {
+                final OutboundQueue outboundQueueProvider,
+                final InetSocketAddress inetSocketAddress) {
             this.nodeId = nodeId;
             this.nodeII = nodeII;
             this.version = version;
             this.datapathId = datapathId;
             this.outboundQueueProvider = outboundQueueProvider;
             this.serviceGroupIdentifier = ServiceGroupIdentifier.create(this.nodeId.getValue());
+            this.address = inetSocketAddress;
         }
 
         @Override
@@ -318,6 +322,11 @@ public class ConnectionContextImpl implements ConnectionContext {
         @Override
         public ServiceGroupIdentifier getServiceIdentifier() {
             return this.serviceGroupIdentifier;
+        }
+
+        @Override
+        public InetSocketAddress getRemoteAddress() {
+            return address;
         }
 
         @Override
