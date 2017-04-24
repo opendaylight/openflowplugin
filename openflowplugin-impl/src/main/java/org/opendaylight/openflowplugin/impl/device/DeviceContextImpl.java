@@ -52,6 +52,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainStateHolder;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
@@ -174,7 +175,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final DeviceInitializerProvider deviceInitializerProvider;
     private final boolean useSingleLayerSerialization;
     private OutboundQueueProvider outboundQueueProvider;
-    private boolean isInitialTransactionSubmitted;
+    private volatile boolean isInitialTransactionSubmitted;
+    private ContextChainStateHolder contextChainStateHolder;
 
     DeviceContextImpl(
             @Nonnull final ConnectionContext primaryConnectionContext,
@@ -223,9 +225,17 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public boolean initialSubmitTransaction() {
-        if (initialized) {
-            isInitialTransactionSubmitted = true;
-            return transactionChainManager.initialSubmitWriteTransaction();
+        if (initialized && transactionChainManager.initialSubmitWriteTransaction()) {
+            try {
+                final List<PortStatusMessage> portStatusMessages = primaryConnectionContext.getPortStatusMessages();
+                portStatusMessages.forEach(this::writePortStatusMessage);
+                submitTransaction();
+            } catch (final Exception e) {
+                LOG.warn("Error processing port status messages from device {}", getDeviceInfo().getLOGValue(), e);
+                return false;
+            }
+
+            return isInitialTransactionSubmitted = true;
         }
 
         return false;
@@ -379,6 +389,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 LOG.warn("Error processing port status message for port {} on device {}",
                         portStatus.getPortNo(), getDeviceInfo().getLOGValue(), e);
             }
+        } else if (Objects.isNull(contextChainStateHolder) || !contextChainStateHolder.hasState() || initialized) {
+            primaryConnectionContext.handlePortStatusMessage(portStatus);
         }
     }
 
@@ -685,6 +697,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public boolean canUseSingleLayerSerialization() {
         return useSingleLayerSerialization && getDeviceInfo().getVersion() >= OFConstants.OFP_VERSION_1_3;
+    }
+
+    @Override
+    public void setContextChainStateHolder(@Nonnull final ContextChainStateHolder contextChainStateHolder) {
+        this.contextChainStateHolder = contextChainStateHolder;
     }
 
     @Override
