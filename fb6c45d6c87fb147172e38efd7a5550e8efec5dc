@@ -1,0 +1,52 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da01753e_5fc0042a",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/util/DeviceInitializationUtils.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 407,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-24T22:51:50Z",
+      "side": 1,
+      "message": "Yeah, probably trace seems to be better.",
+      "parentUuid": "da01753e_f935abf7",
+      "range": {
+        "startLine": 406,
+        "startChar": 12,
+        "endLine": 407,
+        "endChar": 77
+      },
+      "revId": "fb6c45d6c87fb147172e38efd7a5550e8efec5dc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_bfde500f",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/util/DeviceInitializationUtils.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 408,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-24T22:51:50Z",
+      "side": 1,
+      "message": "I will look into it.",
+      "parentUuid": "da01753e_19eb4f14",
+      "range": {
+        "startLine": 408,
+        "startChar": 12,
+        "endLine": 408,
+        "endChar": 90
+      },
+      "revId": "fb6c45d6c87fb147172e38efd7a5550e8efec5dc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
