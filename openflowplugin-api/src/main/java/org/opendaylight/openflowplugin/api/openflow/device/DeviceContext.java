@@ -18,6 +18,7 @@ import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainStateHolder;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
@@ -149,5 +150,11 @@ public interface DeviceContext extends
     ListenableFuture<RpcResult<SetRoleOutput>> makeDeviceSlave();
 
     boolean canUseSingleLayerSerialization();
+
+    /**
+     * Sets context chain state holder
+     * @param contextChainStateHolder context chain state holder
+     */
+    void setContextChainStateHolder(@Nonnull final ContextChainStateHolder contextChainStateHolder);
 }
 

@@ -16,7 +16,7 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 /**
  * Chain of contexts, hold references to the contexts.
  */
-public interface ContextChain extends AutoCloseable {
+public interface ContextChain extends ContextChainStateHolder, AutoCloseable {
 
     /**
      * Add context to the chain, if reference already exist ignore it.
@@ -64,12 +64,6 @@ public interface ContextChain extends AutoCloseable {
      * @return true if everything done fine
      */
     boolean isMastered(@Nonnull final ContextChainMastershipState mastershipState);
-
-    /**
-     * Device need to be in state SLAVE or MASTER.
-     * @return false if in undefined state
-     */
-    boolean hasState();
 
     /**
      * Add new auxiliary connection if primary is ok.
