@@ -85,17 +85,19 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private final NotificationPublishService notificationPublishService;
     private final MessageSpy messageSpy;
     private final HashedWheelTimer hashedWheelTimer;
-    private boolean useSingleLayerSerialization;
+    private final boolean useSingleLayerSerialization;
 
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
                              @Nonnull final MessageSpy messageSpy,
                              @Nullable final NotificationPublishService notificationPublishService,
                              @Nonnull final HashedWheelTimer hashedWheelTimer,
                              @Nonnull final ConvertorExecutor convertorExecutor,
-                             @Nonnull final DeviceInitializerProvider deviceInitializerProvider) {
+                             @Nonnull final DeviceInitializerProvider deviceInitializerProvider,
+                             final boolean useSingleLayerSerialization) {
 
         this.dataBroker = dataBroker;
         this.deviceInitializerProvider = deviceInitializerProvider;
+        this.useSingleLayerSerialization = useSingleLayerSerialization;
 
         /* merge empty nodes to oper DS to predict any problems with missing parent for Node */
         final WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
@@ -216,11 +218,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     @Override
     public CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(final DeviceInfo deviceInfo) {
         return this.removeDeviceFromOperationalDS(deviceInfo.getNodeInstanceIdentifier());
-    }
-
-    @Override
-    public void setUseSingleLayerSerialization(final Boolean useSingleLayerSerialization) {
-        this.useSingleLayerSerialization = useSingleLayerSerialization;
     }
 
     public DeviceContext createContext(@Nonnull final ConnectionContext connectionContext) {
