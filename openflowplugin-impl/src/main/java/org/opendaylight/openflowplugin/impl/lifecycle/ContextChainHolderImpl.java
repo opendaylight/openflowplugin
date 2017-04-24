@@ -114,6 +114,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         }
 
         final DeviceContext deviceContext = deviceManager.createContext(connectionContext);
+        deviceContext.setContextChainStateHolder(contextChain);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Device" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfoLOGValue);
