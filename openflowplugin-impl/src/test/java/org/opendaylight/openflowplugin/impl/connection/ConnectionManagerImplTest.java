@@ -9,11 +9,9 @@ package org.opendaylight.openflowplugin.impl.connection;
 
 import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -71,7 +69,8 @@ public class ConnectionManagerImplTest {
                 60L, TimeUnit.SECONDS,
                 new SynchronousQueue<>(), "ofppool");
 
-        connectionManagerImpl = new ConnectionManagerImpl(ECHO_REPLY_TIMEOUT, threadPool);
+        connectionManagerImpl = new ConnectionManagerImpl(threadPool);
+        connectionManagerImpl.setEchoReplyTimeout(ECHO_REPLY_TIMEOUT);
         connectionManagerImpl.setDeviceConnectedHandler(deviceConnectedHandler);
         final InetSocketAddress deviceAddress = InetSocketAddress.createUnresolved("yahoo", 42);
         Mockito.when(connection.getRemoteAddress()).thenReturn(deviceAddress);
