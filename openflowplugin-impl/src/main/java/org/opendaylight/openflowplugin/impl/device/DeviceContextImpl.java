@@ -19,7 +19,9 @@ import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -175,6 +177,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final boolean useSingleLayerSerialization;
     private OutboundQueueProvider outboundQueueProvider;
     private boolean isInitialTransactionSubmitted;
+    private final List<PortStatusMessage> portStatusRegistry = Collections.synchronizedList(new ArrayList<>());
 
     DeviceContextImpl(
             @Nonnull final ConnectionContext primaryConnectionContext,
@@ -224,8 +227,21 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public boolean initialSubmitTransaction() {
         if (initialized) {
-            isInitialTransactionSubmitted = true;
-            return transactionChainManager.initialSubmitWriteTransaction();
+            if (transactionChainManager.initialSubmitWriteTransaction()) {
+                synchronized (portStatusRegistry) {
+                    try {
+                        portStatusRegistry.forEach(this::writePortStatusMessage);
+                        submitTransaction();
+                    } catch (final Exception e) {
+                        LOG.warn("Error processing port status messages from device {}", getDeviceInfo().getLOGValue(), e);
+                        return false;
+                    } finally {
+                        portStatusRegistry.clear();
+                    }
+                }
+
+                return isInitialTransactionSubmitted = true;
+            }
         }
 
         return false;
@@ -371,13 +387,17 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     public void processPortStatusMessage(final PortStatusMessage portStatus) {
         messageSpy.spyMessage(portStatus.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
 
-        if (isInitialTransactionSubmitted) {
-            try {
-                writePortStatusMessage(portStatus);
-                submitTransaction();
-            } catch (final Exception e) {
-                LOG.warn("Error processing port status message for port {} on device {}",
-                        portStatus.getPortNo(), getDeviceInfo().getLOGValue(), e);
+        synchronized (portStatusRegistry) {
+            if (isInitialTransactionSubmitted) {
+                try {
+                    writePortStatusMessage(portStatus);
+                    submitTransaction();
+                } catch (final Exception e) {
+                    LOG.warn("Error processing port status message for port {} on device {}",
+                            portStatus.getPortNo(), getDeviceInfo().getLOGValue(), e);
+                }
+            } else if (initialized) {
+                portStatusRegistry.add(portStatus);
             }
         }
     }
@@ -567,6 +587,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             deviceGroupRegistry.close();
             deviceFlowRegistry.close();
             deviceMeterRegistry.close();
+            portStatusRegistry.clear();
         }
     }
 
