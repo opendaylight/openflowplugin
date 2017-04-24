@@ -115,7 +115,7 @@ public class OpenflowProtocolListenerInitialImpl implements OpenflowProtocolList
 
     @Override
     public void onPortStatusMessage(final PortStatusMessage notification) {
-        LOG.debug("NOOP: Port-status message during handshake phase not supported: {}", notification);
+        connectionContext.handlePortStatusMessage(notification);
     }
 
     /**
