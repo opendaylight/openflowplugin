@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.datastore.multipart;
 
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
@@ -59,7 +60,7 @@ public class PortStatsMultipartWriter extends AbstractMultipartWriter<NodeConnec
                         .child(FlowCapableNodeConnectorStatistics.class),
                     new FlowCapableNodeConnectorStatisticsBuilder(stat)
                         .build(),
-                    withParents);
+                        OFConstants.OFP_VERSION_1_0 == features.getVersion() || withParents);
             });
     }
 
