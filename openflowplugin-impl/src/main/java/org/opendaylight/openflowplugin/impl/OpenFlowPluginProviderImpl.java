@@ -84,7 +84,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private final Collection<SwitchConnectionProvider> switchConnectionProviders;
     private final DeviceInitializerProvider deviceInitializerProvider;
     private final ConvertorManager convertorManager;
-    private final ContextChainHolder contextChainHolder;private int rpcRequestsQuota;
+    private final ContextChainHolder contextChainHolder;
+    private int rpcRequestsQuota;
     private long globalNotificationQuota;
     private long barrierInterval;
     private int barrierCountLimit;
@@ -140,6 +141,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
             if (useSingleLayerSerialization) {
                 SerializerInjector.injectSerializers(switchConnectionProvider);
                 DeserializerInjector.injectDeserializers(switchConnectionProvider);
+            } else {
+                DeserializerInjector.revertDeserializers(switchConnectionProvider);
             }
 
             // Set handler of incoming connections and start switch connection provider
@@ -191,7 +194,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 notificationPublishService,
                 hashedWheelTimer,
                 convertorManager,
-                deviceInitializerProvider);
+                deviceInitializerProvider,
+                useSingleLayerSerialization);
 
         deviceManager.setGlobalNotificationQuota(globalNotificationQuota);
         deviceManager.setSwitchFeaturesMandatory(switchFeaturesMandatory);
@@ -199,7 +203,6 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         deviceManager.setBarrierCountLimit(barrierCountLimit);
         deviceManager.setFlowRemovedNotificationOn(isFlowRemovedNotificationOn);
         deviceManager.setSkipTableFeatures(skipTableFeatures);
-        deviceManager.setUseSingleLayerSerialization(useSingleLayerSerialization);
 
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
 
@@ -448,22 +451,10 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                     modifiable = true;
                     break;
                 case USE_SINGLE_LAYER_SERIALIZATION:
-                    successCallback = (result) -> {
-                        useSingleLayerSerialization = (boolean) result;
-
-                        switchConnectionProviders.forEach(switchConnectionProvider -> {
-                            if (useSingleLayerSerialization) {
-                                SerializerInjector.injectSerializers(switchConnectionProvider);
-                                DeserializerInjector.injectDeserializers(switchConnectionProvider);
-                            } else {
-                                DeserializerInjector.revertDeserializers(switchConnectionProvider);
-                            }
-                        });
-                    };
-
+                    successCallback = (result) -> useSingleLayerSerialization = (boolean) result;
                     oldValue = useSingleLayerSerialization;
                     newValue = Boolean.valueOf(sValue);
-                    modifiable = true;
+                    modifiable = false;
                     break;
                 default:
                     LOG.warn("Unsupported configuration property '{}={}'", key, sValue);

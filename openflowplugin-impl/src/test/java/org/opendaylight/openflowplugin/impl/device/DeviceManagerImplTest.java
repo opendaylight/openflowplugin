@@ -101,7 +101,8 @@ public class DeviceManagerImplTest {
                 null,
                 new HashedWheelTimer(),
                 convertorExecutor,
-                DeviceInitializerProviderFactory.createDefaultProvider());
+                DeviceInitializerProviderFactory.createDefaultProvider(),
+                false);
 
         deviceManager.setBarrierCountLimit(barrierCountLimit);
         deviceManager.setBarrierInterval(barrierIntervalNanos);
@@ -109,7 +110,6 @@ public class DeviceManagerImplTest {
         deviceManager.setSwitchFeaturesMandatory(false);
         deviceManager.setFlowRemovedNotificationOn(true);
         deviceManager.setSkipTableFeatures(false);
-        deviceManager.setUseSingleLayerSerialization(false);
 
         return deviceManager;
     }

@@ -50,8 +50,6 @@ public interface DeviceManager extends
 
     CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(final KeyedInstanceIdentifier<Node, NodeKey> ii);
 
-    void setUseSingleLayerSerialization(Boolean useSingleLayerSerialization);
-
     DeviceContext createContext(@Nonnull final ConnectionContext connectionContext);
 
     long getBarrierIntervalNanos();
