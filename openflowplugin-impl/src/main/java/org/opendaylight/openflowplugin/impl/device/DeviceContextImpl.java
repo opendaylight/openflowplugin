@@ -53,6 +53,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainStateHolder;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
@@ -178,7 +179,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final DeviceInitializerProvider deviceInitializerProvider;
     private final boolean useSingleLayerSerialization;
     private OutboundQueueProvider outboundQueueProvider;
-    private boolean isInitialTransactionSubmitted;
+    private ContextChainStateHolder contextChainStateHolder;
 
     DeviceContextImpl(
             @Nonnull final ConnectionContext primaryConnectionContext,
@@ -227,12 +228,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public boolean initialSubmitTransaction() {
-        if (initialized) {
-            isInitialTransactionSubmitted = true;
-            return transactionChainManager.initialSubmitWriteTransaction();
-        }
-
-        return false;
+        return (initialized && transactionChainManager.initialSubmitWriteTransaction());
     }
 
     @Override
@@ -375,7 +371,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     public void processPortStatusMessage(final PortStatusMessage portStatus) {
         messageSpy.spyMessage(portStatus.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
 
-        if (isInitialTransactionSubmitted) {
+        if (initialized) {
             try {
                 writePortStatusMessage(portStatus);
                 submitTransaction();
@@ -383,6 +379,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 LOG.warn("Error processing port status message for port {} on device {}",
                         portStatus.getPortNo(), getDeviceInfo().getLOGValue(), e);
             }
+        } else if (Objects.isNull(contextChainStateHolder) || !contextChainStateHolder.hasState()) {
+            primaryConnectionContext.handlePortStatusMessage(portStatus);
         }
     }
 
@@ -631,6 +629,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
+    public void setContextChainStateHolder(@Nonnull final ContextChainStateHolder contextChainStateHolder) {
+        this.contextChainStateHolder = contextChainStateHolder;
+    }
+
+    @Override
     public boolean isSkipTableFeatures() {
         return this.skipTableFeatures;
     }
@@ -650,7 +653,17 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
         LOG.info("Starting device context cluster services for node {}", deviceInfo.getLOGValue());
         lazyTransactionManagerInitialization();
-        this.transactionChainManager.activateTransactionManager();
+
+        try {
+            final List<PortStatusMessage> portStatusMessages = primaryConnectionContext
+                    .retrieveAndClearPortStatusMessages();
+
+            portStatusMessages.forEach(this::writePortStatusMessage);
+            submitTransaction();
+        } catch (final Exception ex) {
+            LOG.warn("Error processing port status messages from device {}", getDeviceInfo().getLOGValue(), ex);
+            return false;
+        }
 
         try {
             final java.util.Optional<AbstractDeviceInitializer> initializer = deviceInitializerProvider
@@ -689,6 +702,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             this.deviceFlowRegistry = new DeviceFlowRegistryImpl(deviceInfo.getVersion(), dataBroker, deviceInfo.getNodeInstanceIdentifier());
             this.deviceGroupRegistry = new DeviceGroupRegistryImpl();
             this.deviceMeterRegistry = new DeviceMeterRegistryImpl();
+            this.transactionChainManager.activateTransactionManager();
             this.initialized = true;
         }
     }
