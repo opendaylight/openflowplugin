@@ -80,7 +80,7 @@ abstract class AbstractDirectStatisticsService<I extends StoreStatsGrouping, O e
     private RpcResult<O> transformResult(final RpcResult<List<T>> input) {
         return Preconditions.checkNotNull(input).isSuccessful()
                 ? RpcResultBuilder.success(buildReply(input.getResult(), input.isSuccessful())).build()
-                : RpcResultBuilder.<O>failed().build();
+                : RpcResultBuilder.<O>failed().withRpcErrors(input.getErrors()).build();
     }
 
     private RpcResult<O> storeResult(final RpcResult<O> input) {
