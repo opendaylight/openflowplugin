@@ -196,7 +196,6 @@ public class ConnectionConductorImplTest {
             libSimulation.join();
         }
         queueProcessor.shutdown();
-        connectionConductor.getHsPool().shutdown();
 
         for (Exception problem : adapter.getOccuredExceptions()) {
             LOG.error("during simulation on adapter side: "
@@ -484,7 +483,6 @@ public class ConnectionConductorImplTest {
      */
     private void executeNow() throws InterruptedException {
         execute(true);
-        connectionConductor.getHsPool().shutdown();
     }
 
     /**
