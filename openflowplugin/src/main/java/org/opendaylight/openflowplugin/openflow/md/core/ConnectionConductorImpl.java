@@ -8,11 +8,8 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.Futures;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
@@ -94,7 +91,6 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     private QueueProcessor<OfHeader, DataObject> queueProcessor;
     private QueueKeeper<OfHeader> queue;
-    private ThreadPoolExecutor hsPool;
     private HandshakeManager handshakeManager;
 
     private boolean firstHelloProcessed;
@@ -133,12 +129,6 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     @Override
     public void init() {
-        int handshakeThreadLimit = 1;
-        hsPool = new ThreadPoolLoggingExecutor(handshakeThreadLimit,
-                handshakeThreadLimit, 0L, TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<Runnable>(), "OFHandshake-"
-                + conductorId);
-
         connectionAdapter.setMessageListener(this);
         connectionAdapter.setSystemListener(this);
         connectionAdapter.setConnectionReadyListener(this);
@@ -232,7 +222,9 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         checkState(CONDUCTOR_STATE.HANDSHAKING);
         HandshakeStepWrapper handshakeStepWrapper = new HandshakeStepWrapper(
                 hello, handshakeManager, connectionAdapter);
-        hsPool.submit(handshakeStepWrapper);
+        Thread t = new Thread(handshakeStepWrapper, "OFHandshake-" + conductorId);
+        t.setDaemon(true);
+        t.start();
     }
 
     /**
@@ -448,7 +440,9 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
             checkState(CONDUCTOR_STATE.HANDSHAKING);
             HandshakeStepWrapper handshakeStepWrapper = new HandshakeStepWrapper(
                     null, handshakeManager, connectionAdapter);
-            hsPool.execute(handshakeStepWrapper);
+            Thread t = new Thread(handshakeStepWrapper, "OFHandshake-" + conductorId);
+            t.setDaemon(true);
+            t.start();
             firstHelloProcessed = true;
         } else {
             LOG.debug("already touched by hello message");
@@ -488,8 +482,6 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         }
 
         SessionContext sessionContext =  OFSessionUtil.registerSession(this, featureOutput, negotiatedVersion);
-        hsPool.shutdown();
-        hsPool.purge();
         conductorState = CONDUCTOR_STATE.WORKING;
         QueueKeeperFactory.plugQueue(queueProcessor, queue);
     }
@@ -516,36 +508,11 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
                 LOG.warn("Closing handshake context failed: {}", e.getMessage());
                 LOG.debug("Detail in hanshake context close:", e);
             }
-        } else {
-            //This condition will occure when Old Helium openflowplugin implementation will be used.
-            shutdownPoolPolitely();
-        }
-    }
-
-    private void shutdownPoolPolitely() {
-        LOG.debug("Terminating handshake pool for node {}", connectionAdapter.getRemoteAddress());
-        hsPool.shutdown();
-        try {
-            hsPool.awaitTermination(1, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            LOG.debug("Error while awaiting termination of pool. Will force shutdown now.");
-        } finally {
-            hsPool.purge();
-            if (!hsPool.isTerminated()) {
-                hsPool.shutdownNow();
-            }
-            LOG.debug("is handshake pool for node {} is terminated : {}",
-                    connectionAdapter.getRemoteAddress(), hsPool.isTerminated());
         }
     }
 
     @Override
     public void setHandshakeContext(HandshakeContext handshakeContext) {
         this.handshakeContext = handshakeContext;
-    }
-
-    @VisibleForTesting
-    ThreadPoolExecutor getHsPool() {
-        return hsPool;
     }
 }
