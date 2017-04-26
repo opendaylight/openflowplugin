@@ -102,10 +102,10 @@ public class ContextChainImpl implements ContextChain {
 
     @Override
     public void close() {
-        this.auxiliaryConnections.forEach(connectionContext -> connectionContext.closeConnection(false));
-        if (this.primaryConnection.getConnectionState() != ConnectionContext.CONNECTION_STATE.RIP) {
-            this.primaryConnection.closeConnection(true);
-        }
+//        this.auxiliaryConnections.forEach(connectionContext -> connectionContext.closeConnection(false));
+//        if (this.primaryConnection.getConnectionState() != ConnectionContext.CONNECTION_STATE.RIP) {
+//            this.primaryConnection.closeConnection(true);
+//        }
         lifecycleService.close();
         deviceContext.close();
         rpcContext.close();
@@ -139,21 +139,34 @@ public class ContextChainImpl implements ContextChain {
 
     @Override
     public boolean isMastered(@Nonnull ContextChainMastershipState mastershipState) {
+
+        if (mastershipState == ContextChainMastershipState.CHECK) {
+            return contextChainState == ContextChainState.WORKING_MASTER;
+        }
+
         switch (mastershipState) {
             case INITIAL_SUBMIT:
-                LOG.debug("Device {}, initial submit OK.", deviceInfo.getLOGValue());
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Device {}, initial submit OK.", deviceInfo.getLOGValue());
+                }
                 this.initialSubmitting = true;
                 break;
             case MASTER_ON_DEVICE:
-                LOG.debug("Device {}, master state OK.", deviceInfo.getLOGValue());
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Device {}, master state OK.", deviceInfo.getLOGValue());
+                }
                 this.masterStateOnDevice = true;
                 break;
             case INITIAL_GATHERING:
-                LOG.debug("Device {}, initial gathering OK.", deviceInfo.getLOGValue());
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Device {}, initial gathering OK.", deviceInfo.getLOGValue());
+                }
                 this.initialGathering = true;
                 break;
             case INITIAL_FLOW_REGISTRY_FILL:
-                LOG.debug("Device {}, initial registry filling OK.", deviceInfo.getLOGValue());
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Device {}, initial registry filling OK.", deviceInfo.getLOGValue());
+                }
                 this.registryFilling = true;
             case CHECK:
             default:
@@ -164,7 +177,7 @@ public class ContextChainImpl implements ContextChain {
                 this.initialSubmitting &&
                 this.registryFilling;
 
-        if (result && mastershipState != ContextChainMastershipState.CHECK) {
+        if (result) {
             LOG.info("Device {} is able to work as master.", deviceInfo.getLOGValue());
             contextChainState = ContextChainState.WORKING_MASTER;
         }
