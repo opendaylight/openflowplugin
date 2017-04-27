@@ -27,6 +27,7 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.config.openflow.plugin.impl.rev150327.modules.module.configuration.openflow.plugin.provider.impl.DataBroker;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ContextChainHolderImplTest {
@@ -53,12 +54,14 @@ public class ContextChainHolderImplTest {
     private ClusterSingletonServiceProvider singletonServicesProvider;
     @Mock
     private EntityOwnershipService entityOwnershipService;
+    @Mock
+    private org.opendaylight.controller.md.sal.binding.api.DataBroker dataBroker;
 
     private ContextChainHolderImpl contextChainHolder;
 
     @Before
     public void setUp() throws Exception {
-        contextChainHolder = new ContextChainHolderImpl(timer);
+        contextChainHolder = new ContextChainHolderImpl(timer, dataBroker);
         contextChainHolder.addManager(statisticsManager);
         contextChainHolder.addManager(rpcManager);
         contextChainHolder.addManager(deviceManager);

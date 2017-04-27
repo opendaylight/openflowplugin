@@ -17,18 +17,26 @@ import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import io.netty.util.internal.ConcurrentSet;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.opendaylight.controller.md.sal.binding.api.ClusteredDataTreeChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipChange;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListenerRegistration;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
@@ -37,6 +45,7 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionStatus;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ClusterDevice;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChain;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainHolder;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
@@ -46,12 +55,16 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ContextChainHolderImpl implements ContextChainHolder {
+public class ContextChainHolderImpl implements ContextChainHolder, ClusteredDataTreeChangeListener<FlowCapableNode> {
 
     private static final Logger LOG = LoggerFactory.getLogger(ContextChainHolderImpl.class);
 
@@ -62,6 +75,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
     private final ConcurrentHashMap<DeviceInfo, ContextChain> contextChainMap = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<DeviceInfo, ContextChain> withoutRoleChains = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<NodeId, ClusterDevice> clusterDevices = new ConcurrentHashMap<>();
     private final List<DeviceInfo> markToBeRemoved = new ArrayList<>();
     private final HashedWheelTimer timer;
     private final Long checkRoleMaster;
@@ -72,11 +86,19 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     private EntityOwnershipListenerRegistration eosListenerRegistration;
     private ClusterSingletonServiceProvider singletonServicesProvider;
     private boolean timerIsRunningRole;
+    private final Object lockClusterDevices = new Object();
 
-    public ContextChainHolderImpl(final HashedWheelTimer timer) {
+    public ContextChainHolderImpl(final HashedWheelTimer timer, final DataBroker dataBroker) {
+
         this.timerIsRunningRole = false;
         this.timer = timer;
         this.checkRoleMaster = DEFAULT_CHECK_ROLE_MASTER;
+        final InstanceIdentifier<FlowCapableNode> flowNodeWildCardIdentifier = InstanceIdentifier.create(Nodes.class)
+                .child(Node.class).augmentation(FlowCapableNode.class);
+        final DataTreeIdentifier<FlowCapableNode> treeId =
+                new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL, flowNodeWildCardIdentifier);
+         dataBroker.registerDataTreeChangeListener(treeId, ContextChainHolderImpl.this);
+
     }
 
     @Override
@@ -172,14 +194,14 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         LOG.info("Device {} connected.", deviceInfo.getLOGValue());
         ContextChain contextChain = contextChainMap.get(deviceInfo);
         if (contextChain != null) {
-            if (contextChain.addAuxiliaryConnection(connectionContext)) {
-                LOG.info("An auxiliary connection was added to device: {}", deviceInfo.getLOGValue());
-                return ConnectionStatus.MAY_CONTINUE;
-            } else {
+//            if (contextChain.addAuxiliaryConnection(connectionContext)) {
+//                LOG.info("An auxiliary connection was added to device: {}", deviceInfo.getLOGValue());
+//                return ConnectionStatus.MAY_CONTINUE;
+//            } else {
                 LOG.warn("Device {} already connected. Closing all connection to the device.", deviceInfo.getLOGValue());
                 destroyContextChain(deviceInfo);
                 return ConnectionStatus.ALREADY_CONNECTED;
-            }
+//            }
         } else {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("No context chain found for device: {}, creating new.", deviceInfo.getLOGValue());
@@ -240,11 +262,15 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
         final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
         if (deviceInfo != null) {
+            final ClusterDevice clusterDevice = clusterDevices.get(deviceInfo.getNodeId());
+            if (clusterDevice != null) {
+                clusterDevice.disconnect();
+            }
             ContextChain chain = contextChainMap.get(deviceInfo);
             if (chain != null) {
-                if (chain.auxiliaryConnectionDropped(connectionContext)) {
-                    LOG.info("Auxiliary connection from device {} disconnected.", deviceInfo.getLOGValue());
-                } else {
+//                if (chain.auxiliaryConnectionDropped(connectionContext)) {
+//                    LOG.info("Auxiliary connection from device {} disconnected.", deviceInfo.getLOGValue());
+//                } else {
                     LOG.info("Device {} disconnected.", deviceInfo.getLOGValue());
                     Futures.transform(chain.connectionDropped(), new Function<Void, Object>() {
                         @Nullable
@@ -254,7 +280,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
                             return null;
                         }
                     });
-                }
+//                }
             }
         }
     }
@@ -328,42 +354,112 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
     @Override
     public void ownershipChanged(EntityOwnershipChange entityOwnershipChange) {
-        if (!entityOwnershipChange.hasOwner() && !entityOwnershipChange.isOwner() && entityOwnershipChange.wasOwner()) {
-            final YangInstanceIdentifier yii = entityOwnershipChange.getEntity().getId();
-            final YangInstanceIdentifier.NodeIdentifierWithPredicates niiwp =
-                    (YangInstanceIdentifier.NodeIdentifierWithPredicates) yii.getLastPathArgument();
-            String entityName =  niiwp.getKeyValues().values().iterator().next().toString();
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Last master for entity : {}", entityName);
-            }
-
-            if (entityName != null ){
-                final NodeId nodeId = new NodeId(entityName);
-                DeviceInfo inMap = null;
-                for (Map.Entry<DeviceInfo, ContextChain> entry : contextChainMap.entrySet()) {
-                    if (entry.getKey().getNodeId().equals(nodeId)) {
-                        inMap = entry.getKey();
-                        break;
-                    }                    
+        if (!entityOwnershipChange.hasOwner()) {
+            if (!entityOwnershipChange.isOwner() && entityOwnershipChange.wasOwner()) {
+                final YangInstanceIdentifier yii = entityOwnershipChange.getEntity().getId();
+                final YangInstanceIdentifier.NodeIdentifierWithPredicates niiwp =
+                        (YangInstanceIdentifier.NodeIdentifierWithPredicates) yii.getLastPathArgument();
+                String entityName = niiwp.getKeyValues().values().iterator().next().toString();
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Last master for entity : {}", entityName);
                 }
-                if (Objects.nonNull(inMap)) {
-                    markToBeRemoved.add(inMap);
-                } else {
-                    try {
-                        LOG.info("Removing device: {} from DS", nodeId);
-                        deviceManager
-                                .removeDeviceFromOperationalDS(DeviceStateUtil.createNodeInstanceIdentifier(nodeId))
-                                .checkedGet(5L, TimeUnit.SECONDS);
-                    } catch (TimeoutException | TransactionCommitFailedException e) {
-                        LOG.warn("Not able to remove device {} from DS", nodeId);
+
+                if (entityName != null) {
+                    final NodeId nodeId = new NodeId(entityName);
+                    DeviceInfo inMap = null;
+                    for (Map.Entry<DeviceInfo, ContextChain> entry : contextChainMap.entrySet()) {
+                        if (entry.getKey().getNodeId().equals(nodeId)) {
+                            inMap = entry.getKey();
+                            break;
+                        }
+                    }
+                    if (Objects.nonNull(inMap)) {
+                        markToBeRemoved.add(inMap);
+                    } else {
+                        try {
+                            LOG.info("Removing device: {} from DS", nodeId);
+                            deviceManager
+                                    .removeDeviceFromOperationalDS(DeviceStateUtil.createNodeInstanceIdentifier(nodeId))
+                                    .checkedGet(5L, TimeUnit.SECONDS);
+                        } catch (TimeoutException | TransactionCommitFailedException e) {
+                            LOG.warn("Not able to remove device {} from DS", nodeId);
+                        }
                     }
                 }
-            }                
-        }        
+            } else {
+                final YangInstanceIdentifier.NodeIdentifierWithPredicates niiwp =
+                        (YangInstanceIdentifier.NodeIdentifierWithPredicates) entityOwnershipChange
+                                .getEntity()
+                                .getId()
+                                .getLastPathArgument();
+                String entityName = niiwp.getKeyValues().values().iterator().next().toString();
+                if (entityName != null) {
+                    final NodeId nodeId = new NodeId(entityName);
+                    final ClusterDevice clusterDevice = clusterDevices.get(nodeId);
+                    if (clusterDevice != null && !clusterDevice.isConnected()) {
+                        LOG.warn("There is device {} in cluster without master and connection to this node." +
+                                "Tyring to remove it from operational DS",
+                                nodeId.getValue());
+                        try {
+                            deviceManager
+                                    .removeDeviceFromOperationalDS(DeviceStateUtil.createNodeInstanceIdentifier(nodeId))
+                                    .checkedGet(5L, TimeUnit.SECONDS);
+                        } catch (TimeoutException | TransactionCommitFailedException e) {
+                            LOG.warn("Not able to remove device {} from DS", nodeId.getValue());
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void sendNotificationNodeAdded(final DeviceInfo deviceInfo) {
         this.deviceManager.sendNodeAddedNotification(deviceInfo);
+    }
+
+    @Override
+    public void onDataTreeChanged(@Nonnull Collection<DataTreeModification<FlowCapableNode>> modifications) {
+        modifications.forEach(mod -> {
+            if (mod.getRootNode().getModificationType() == DataObjectModification.ModificationType.WRITE) {
+                addedDeviceToDS(mod);
+            } else {
+                if (mod.getRootNode().getModificationType() == DataObjectModification.ModificationType.DELETE) {
+                    deletedDeviceFromDS(mod);
+                }
+            }
+        });
+    }
+
+    private void deletedDeviceFromDS(DataTreeModification<FlowCapableNode> modification) {
+        synchronized (lockClusterDevices) {
+            clusterDevices.remove(modification.getRootPath().getRootIdentifier().firstKeyOf(Node.class).getId());
+        }
+    }
+
+    private void addedDeviceToDS(DataTreeModification<FlowCapableNode> modification) {
+        NodeId nodeId = modification.getRootPath().getRootIdentifier().firstKeyOf(Node.class).getId();
+        if (!clusterDevices.containsKey(nodeId)) {
+            synchronized (lockClusterDevices) {
+                if (!clusterDevices.containsKey(nodeId)) {
+                    Optional<Map.Entry<DeviceInfo, ContextChain>> entryContextChainMap =
+                            contextChainMap
+                                    .entrySet()
+                                    .stream()
+                                    .filter(entry -> entry.getKey().getNodeId().equals(nodeId))
+                                    .findFirst();
+                    if (entryContextChainMap.isPresent()) {
+                        clusterDevices.put(nodeId,
+                                new ClusterDeviceBuilder(nodeId)
+                                        .setDeviceInfo(entryContextChainMap.get().getKey())
+                                        .setConnected(true)
+                                        .build()
+                        );
+                    } else {
+                        clusterDevices.put(nodeId, new ClusterDeviceBuilder(nodeId).setConnected(false).build());
+                    }
+                }
+            }
+        }
     }
 
     private class RoleTimerTask implements TimerTask {

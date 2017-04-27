@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import org.opendaylight.controller.md.sal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListener;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
@@ -19,6 +20,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnec
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 
 /**
  * Generic interface for context chain holder, hold all created context chains.
