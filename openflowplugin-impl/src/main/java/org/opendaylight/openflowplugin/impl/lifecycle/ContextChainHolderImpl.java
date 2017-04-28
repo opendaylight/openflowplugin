@@ -328,13 +328,13 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
     @Override
     public void ownershipChanged(EntityOwnershipChange entityOwnershipChange) {
-        if (!entityOwnershipChange.hasOwner() && !entityOwnershipChange.isOwner() && entityOwnershipChange.wasOwner()) {
+        if (!entityOwnershipChange.hasOwner()) {
             final YangInstanceIdentifier yii = entityOwnershipChange.getEntity().getId();
             final YangInstanceIdentifier.NodeIdentifierWithPredicates niiwp =
                     (YangInstanceIdentifier.NodeIdentifierWithPredicates) yii.getLastPathArgument();
             String entityName =  niiwp.getKeyValues().values().iterator().next().toString();
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Last master for entity : {}", entityName);
+                LOG.debug("Entity without master: {}", entityName);
             }
 
             if (entityName != null ){
@@ -355,7 +355,8 @@ public class ContextChainHolderImpl implements ContextChainHolder {
                                 .removeDeviceFromOperationalDS(DeviceStateUtil.createNodeInstanceIdentifier(nodeId))
                                 .checkedGet(5L, TimeUnit.SECONDS);
                     } catch (TimeoutException | TransactionCommitFailedException e) {
-                        LOG.warn("Not able to remove device {} from DS", nodeId);
+                        LOG.info("Not able to remove device {} from DS. Probably removed by another cluster node.",
+                                nodeId);
                     }
                 }
             }                
