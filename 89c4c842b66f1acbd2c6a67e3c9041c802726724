@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba068154_6112f9b5",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/lifecycle/ContextChainHolderImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 337,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-05-04T05:57:04Z",
+      "side": 1,
+      "message": "minor: i think \"Entity {} has no owner\" would be better.",
+      "range": {
+        "startLine": 337,
+        "startChar": 27,
+        "endLine": 337,
+        "endChar": 48
+      },
+      "revId": "89c4c842b66f1acbd2c6a67e3c9041c802726724",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba068154_c13be536",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/lifecycle/ContextChainHolderImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 347,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-05-04T05:57:04Z",
+      "side": 1,
+      "message": "please clear all the tab.",
+      "range": {
+        "startLine": 347,
+        "startChar": 21,
+        "endLine": 347,
+        "endChar": 41
+      },
+      "revId": "89c4c842b66f1acbd2c6a67e3c9041c802726724",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
