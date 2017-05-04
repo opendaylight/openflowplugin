@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba068154_8140bd57",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/ConnectionConductorImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 225,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-05-04T06:55:41Z",
+      "side": 1,
+      "message": "please set this thread to be daemon.",
+      "range": {
+        "startLine": 225,
+        "startChar": 8,
+        "endLine": 225,
+        "endChar": 19
+      },
+      "revId": "2000041a54c688b666ce29c88e2e065cc40f125f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba068154_e12429c8",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/ConnectionConductorImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 441,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-05-04T06:55:41Z",
+      "side": 1,
+      "message": "please set this thread to be daemon.",
+      "range": {
+        "startLine": 441,
+        "startChar": 12,
+        "endLine": 441,
+        "endChar": 22
+      },
+      "revId": "2000041a54c688b666ce29c88e2e065cc40f125f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
