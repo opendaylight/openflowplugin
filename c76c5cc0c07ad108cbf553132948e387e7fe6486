@@ -46,6 +46,30 @@
       "revId": "c76c5cc0c07ad108cbf553132948e387e7fe6486",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba068154_012ccdaa",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/lifecycle/ContextChainHolderImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 278,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-05-04T06:57:29Z",
+      "side": 1,
+      "message": "okay, so this patch is not yet ready for review?",
+      "parentUuid": "da01753e_c17b72f3",
+      "range": {
+        "startLine": 272,
+        "startChar": 12,
+        "endLine": 278,
+        "endChar": 15
+      },
+      "revId": "c76c5cc0c07ad108cbf553132948e387e7fe6486",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
