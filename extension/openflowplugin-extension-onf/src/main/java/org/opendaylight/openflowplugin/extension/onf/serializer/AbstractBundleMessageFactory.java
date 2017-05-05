@@ -34,11 +34,6 @@ public abstract class AbstractBundleMessageFactory<T extends DataContainer> impl
     protected SerializerRegistry serializerRegistry;
 
     @Override
-    public void serialize(T input, ByteBuf outBuffer) {
-        // to be extended
-    }
-
-    @Override
     public void injectSerializerRegistry(SerializerRegistry serializerRegistry) {
         this.serializerRegistry = serializerRegistry;
     }
