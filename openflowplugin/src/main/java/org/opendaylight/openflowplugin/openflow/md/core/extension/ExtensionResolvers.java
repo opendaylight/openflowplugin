@@ -15,6 +15,26 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchRpcUpdateFlowUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralExtensionListGrouping;
 
+
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchRpcAddFlowWriteActionsSetField;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchRpcAddFlowApplyActionsSetField;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchRpcRemoveFlowWriteActionsSetField;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchRpcRemoveFlowApplyActionsSetField;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchRpcUpdateFlowOriginalWriteActionsSetField;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchRpcUpdateFlowOriginalApplyActionsSetField;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchRpcUpdateFlowUpdatedWriteActionsSetField;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchRpcUpdateFlowUpdatedApplyActionsSetField;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchRpcAddGroupSetField;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchRpcRemoveGroupSetField;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchRpcUpdateGroupOriginalSetField;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchRpcUpdateGroupUpdatedSetField;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchRpcTransmitPacketSetField;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeTableFlowWriteActionsSetField;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeTableFlowApplyActionsSetField;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeGroupBucketsBucketActionsSetField;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifFlowsStatisticsUpdateWriteActionsSetField;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifFlowsStatisticsUpdateApplyActionsSetField;
+
 /**
  * 
  */
@@ -26,7 +46,26 @@ public class ExtensionResolvers {
             .add(GeneralAugMatchRpcRemoveFlow.class)
             .add(GeneralAugMatchRpcUpdateFlowOriginal.class)
             .add(GeneralAugMatchRpcUpdateFlowUpdated.class)
-            .add(GeneralAugMatchNodesNodeTableFlow.class);
+            .add(GeneralAugMatchNodesNodeTableFlow.class)
+            // SetField extensions
+            .add(GeneralAugMatchRpcAddFlowWriteActionsSetField.class)
+            .add(GeneralAugMatchRpcAddFlowApplyActionsSetField.class)
+            .add(GeneralAugMatchRpcRemoveFlowWriteActionsSetField.class)
+            .add(GeneralAugMatchRpcRemoveFlowApplyActionsSetField.class)
+            .add(GeneralAugMatchRpcUpdateFlowOriginalWriteActionsSetField.class)
+            .add(GeneralAugMatchRpcUpdateFlowOriginalApplyActionsSetField.class)
+            .add(GeneralAugMatchRpcUpdateFlowUpdatedWriteActionsSetField.class)
+            .add(GeneralAugMatchRpcUpdateFlowUpdatedApplyActionsSetField.class)
+            .add(GeneralAugMatchRpcAddGroupSetField.class)
+            .add(GeneralAugMatchRpcRemoveGroupSetField.class)
+            .add(GeneralAugMatchRpcUpdateGroupOriginalSetField.class)
+            .add(GeneralAugMatchRpcUpdateGroupUpdatedSetField.class)
+            .add(GeneralAugMatchRpcTransmitPacketSetField.class)
+            .add(GeneralAugMatchNodesNodeTableFlowWriteActionsSetField.class)
+            .add(GeneralAugMatchNodesNodeTableFlowApplyActionsSetField.class)
+            .add(GeneralAugMatchNodesNodeGroupBucketsBucketActionsSetField.class)
+            .add(GeneralAugMatchNotifFlowsStatisticsUpdateWriteActionsSetField.class)
+            .add(GeneralAugMatchNotifFlowsStatisticsUpdateApplyActionsSetField.class);
     
     /**
      * @return the matchExtensionResolver (covers match rpcs and inventory augmentations)
