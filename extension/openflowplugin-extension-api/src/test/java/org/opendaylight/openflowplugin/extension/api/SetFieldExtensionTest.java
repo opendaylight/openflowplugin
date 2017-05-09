@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.extension.api;
 
 import java.util.Collections;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetField;
