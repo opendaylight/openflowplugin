@@ -67,7 +67,7 @@ public class ConntrackCodec extends AbstractActionCodec {
         outBuffer.writeShort(action.getNxActionConntrack().getConntrackZone().shortValue());
         outBuffer.writeByte(action.getNxActionConntrack().getRecircTable().byteValue());
         outBuffer.writeZero(5);
-        serializeCtAction(outBuffer,action, length);
+        serializeCtAction(outBuffer,action);
     }
 
     private int getActionLength(final ActionConntrack action) {
@@ -78,37 +78,46 @@ public class ConntrackCodec extends AbstractActionCodec {
         }
         for (CtActions ctActions : ctActionsList) {
             if (ctActions.getOfpactActions() instanceof NxActionNatCase) {
-                length += NX_NAT_LENGTH;
                 NxActionNatCase nxActionNatCase = (NxActionNatCase)ctActions.getOfpactActions();
                 NxActionNat natAction = nxActionNatCase.getNxActionNat();
-                short rangePresent = natAction.getRangePresent().shortValue();
-                if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEIPV4MIN.getIntValue())) {
-                    length += INT_LENGTH;
+                int natLength = getNatActionLength(natAction);
+                int pad = 8 - (natLength % 8);
+                length += natLength + pad;
                 }
-                if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEIPV4MAX.getIntValue())) {
-                    length += INT_LENGTH;
-                }
-                if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEPROTOMIN.getIntValue())) {
-                    length += SHORT_LENGTH;
-                }
-                if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEPROTOMAX.getIntValue())) {
-                    length += SHORT_LENGTH;
-                }
-            }
         }
         LOG.trace("ActionLength :conntrack: length {}",length);
         return length;
     }
 
-    private void serializeCtAction(final ByteBuf outBuffer, final ActionConntrack action, final int length) {
+    private int getNatActionLength(final NxActionNat natAction) {
+        int natLength = NX_NAT_LENGTH;
+        short rangePresent = natAction.getRangePresent().shortValue();
+        if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEIPV4MIN.getIntValue())) {
+            natLength += INT_LENGTH;
+        }
+        if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEIPV4MAX.getIntValue())) {
+            natLength += INT_LENGTH;
+        }
+        if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEPROTOMIN.getIntValue())) {
+            natLength += SHORT_LENGTH;
+        }
+        if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEPROTOMAX.getIntValue())) {
+            natLength += SHORT_LENGTH;
+        }
+        return natLength;
+
+    }
+
+    private void serializeCtAction(final ByteBuf outBuffer, final ActionConntrack action) {
         List<CtActions> ctActionsList = action.getNxActionConntrack().getCtActions();
         if (ctActionsList != null) {
             for (CtActions ctActions : ctActionsList) {
                 if (ctActions.getOfpactActions() instanceof NxActionNatCase){
                     NxActionNatCase nxActionNatCase = (NxActionNatCase)ctActions.getOfpactActions();
                     NxActionNat natAction = nxActionNatCase.getNxActionNat();
-                    int pad = length % 8;
-                    serializeHeader(length + pad, NXAST_NAT_SUBTYPE, outBuffer);
+                    int natLength = getNatActionLength(natAction);
+                    int pad = 8 - (natLength % 8);
+                    serializeHeader(natLength + pad, NXAST_NAT_SUBTYPE, outBuffer);
                     outBuffer.writeZero(2);
                     outBuffer.writeShort(natAction.getFlags().shortValue());
                     short rangePresent = natAction.getRangePresent().shortValue();
@@ -147,7 +156,7 @@ public class ConntrackCodec extends AbstractActionCodec {
         nxActionConntrackBuilder.setRecircTable(message.readUnsignedByte());
         message.skipBytes(5);
         if  (length > CT_LENGTH) {
-            dserializeCtAction(message,nxActionConntrackBuilder);
+            dserializeCtAction(message,nxActionConntrackBuilder, length - CT_LENGTH);
         }
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setExperimenterId(getExperimenterId());
@@ -157,35 +166,41 @@ public class ConntrackCodec extends AbstractActionCodec {
         return actionBuilder.build();
     }
 
-    private void dserializeCtAction(final ByteBuf message, final NxActionConntrackBuilder nxActionConntrackBuilder) {
-        deserializeCtHeader(message);
-
-        NxActionNatBuilder nxActionNatBuilder = new NxActionNatBuilder();
-        message.skipBytes(2);
-        nxActionNatBuilder.setFlags(message.readUnsignedShort());
-
-        int rangePresent = message.readUnsignedShort();
-        nxActionNatBuilder.setRangePresent(rangePresent);
-        if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEIPV4MIN.getIntValue())) {
-            InetAddress address = InetAddresses.fromInteger((int)message.readUnsignedInt());
-            nxActionNatBuilder.setIpAddressMin(new IpAddress(address.getHostAddress().toCharArray()));
-        }
-        if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEIPV4MAX.getIntValue())) {
-            InetAddress address = InetAddresses.fromInteger((int)message.readUnsignedInt());
-            nxActionNatBuilder.setIpAddressMax(new IpAddress(address.getHostAddress().toCharArray()));
-        }
-        if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEPROTOMIN.getIntValue())) {
-            nxActionNatBuilder.setPortMin(message.readUnsignedShort());
-        }
-        if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEPROTOMAX.getIntValue())) {
-            nxActionNatBuilder.setPortMax(message.readUnsignedShort());
-        }
-        NxActionNatCaseBuilder caseBuilder = new NxActionNatCaseBuilder();
-        caseBuilder.setNxActionNat(nxActionNatBuilder.build());
-        CtActionsBuilder ctActionsBuilder = new CtActionsBuilder();
-        ctActionsBuilder.setOfpactActions(caseBuilder.build());
+    private void dserializeCtAction(final ByteBuf message, final NxActionConntrackBuilder nxActionConntrackBuilder,
+            int ctActionsLength) {
         List<CtActions> ctActionsList = new ArrayList<>();
-        ctActionsList.add(ctActionsBuilder.build());
+        while (ctActionsLength > 0){
+        	int startIndex = message.readerIndex();
+            int length = deserializeCtHeader(message);
+            ctActionsLength = ctActionsLength - length;
+            NxActionNatBuilder nxActionNatBuilder = new NxActionNatBuilder();
+            message.skipBytes(2);
+            nxActionNatBuilder.setFlags(message.readUnsignedShort());
+
+            int rangePresent = message.readUnsignedShort();
+            nxActionNatBuilder.setRangePresent(rangePresent);
+            if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEIPV4MIN.getIntValue())) {
+                InetAddress address = InetAddresses.fromInteger((int)message.readUnsignedInt());
+                nxActionNatBuilder.setIpAddressMin(new IpAddress(address.getHostAddress().toCharArray()));
+            }
+            if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEIPV4MAX.getIntValue())) {
+                InetAddress address = InetAddresses.fromInteger((int)message.readUnsignedInt());
+                nxActionNatBuilder.setIpAddressMax(new IpAddress(address.getHostAddress().toCharArray()));
+            }
+            if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEPROTOMIN.getIntValue())) {
+                nxActionNatBuilder.setPortMin(message.readUnsignedShort());
+            }
+            if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEPROTOMAX.getIntValue())) {
+                nxActionNatBuilder.setPortMax(message.readUnsignedShort());
+            }
+            NxActionNatCaseBuilder caseBuilder = new NxActionNatCaseBuilder();
+            caseBuilder.setNxActionNat(nxActionNatBuilder.build());
+            CtActionsBuilder ctActionsBuilder = new CtActionsBuilder();
+            ctActionsBuilder.setOfpactActions(caseBuilder.build());
+            ctActionsList.add(ctActionsBuilder.build());
+            int pad = length - (message.readerIndex() - startIndex);
+            message.skipBytes(pad);
+        }
         nxActionConntrackBuilder.setCtActions(ctActionsList);
     }
 
