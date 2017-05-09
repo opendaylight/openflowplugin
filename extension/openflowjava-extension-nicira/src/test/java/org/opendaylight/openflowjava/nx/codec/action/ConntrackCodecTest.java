@@ -44,7 +44,8 @@ public class ConntrackCodecTest {
 
     private final int length = 24;
     private final byte nxastConntrackSubtype = 35;
-    private final int nxNatLength = 32;
+    private final int nxNatLengthAction1 = 32;
+    private final int nxNatLengthAction2 = 24;
     private final byte nxastNatSubtype = 36;
 
     @Before
@@ -58,9 +59,9 @@ public class ConntrackCodecTest {
         action = createAction();
         conntrackCodec.serialize(action, buffer);
 
-        Assert.assertEquals(56, buffer.readableBytes());
+        Assert.assertEquals(length + nxNatLengthAction1 + nxNatLengthAction2, buffer.readableBytes());
         Assert.assertEquals(EncodeConstants.EXPERIMENTER_VALUE, buffer.readUnsignedShort());
-        Assert.assertEquals(length + nxNatLength, buffer.readUnsignedShort());
+        Assert.assertEquals(length + nxNatLengthAction1 + nxNatLengthAction2, buffer.readUnsignedShort());
         Assert.assertEquals(NiciraConstants.NX_VENDOR_ID.intValue(), buffer.readUnsignedInt());
         Assert.assertEquals(nxastConntrackSubtype, buffer.readUnsignedShort());
         Assert.assertEquals(1, buffer.readUnsignedShort());
@@ -69,7 +70,7 @@ public class ConntrackCodecTest {
         Assert.assertEquals(4, buffer.readByte());
         buffer.skipBytes(5);
         Assert.assertEquals(EncodeConstants.EXPERIMENTER_VALUE, buffer.readUnsignedShort());
-        Assert.assertEquals(nxNatLength, buffer.readUnsignedShort());
+        Assert.assertEquals(nxNatLengthAction1, buffer.readUnsignedShort());
         Assert.assertEquals(NiciraConstants.NX_VENDOR_ID.intValue(), buffer.readUnsignedInt());
         Assert.assertEquals(nxastNatSubtype, buffer.readUnsignedShort());
         buffer.skipBytes(2);
@@ -80,6 +81,16 @@ public class ConntrackCodecTest {
         Assert.assertEquals(3000, buffer.readUnsignedShort());
         Assert.assertEquals(4000, buffer.readUnsignedShort());
         buffer.skipBytes(4);
+        Assert.assertEquals(EncodeConstants.EXPERIMENTER_VALUE, buffer.readUnsignedShort());
+        Assert.assertEquals(nxNatLengthAction2, buffer.readUnsignedShort());
+        Assert.assertEquals(NiciraConstants.NX_VENDOR_ID.intValue(), buffer.readUnsignedInt());
+        Assert.assertEquals(nxastNatSubtype, buffer.readUnsignedShort());
+        buffer.skipBytes(2);
+        Assert.assertEquals(5, buffer.readUnsignedShort());
+        Assert.assertEquals(0x21, buffer.readUnsignedShort());
+        Assert.assertEquals(3232235520L, buffer.readUnsignedInt());
+        Assert.assertEquals(4000, buffer.readUnsignedShort());
+        buffer.skipBytes(2);
     }
 
     @Test
@@ -119,7 +130,12 @@ public class ConntrackCodecTest {
         Assert.assertEquals("192.168.10.0", natAction.getIpAddressMax().getIpv4Address().getValue());
         Assert.assertEquals(3000, natAction.getPortMin().shortValue());
         Assert.assertEquals(4000, natAction.getPortMax().shortValue());
-
+        nxActionNatCase = (NxActionNatCase) ctActions.get(1).getOfpactActions();
+        natAction = nxActionNatCase.getNxActionNat();
+        Assert.assertEquals(5, natAction.getFlags().shortValue());
+        Assert.assertEquals(0x21, natAction.getRangePresent().intValue());
+        Assert.assertEquals("192.168.0.0", natAction.getIpAddressMin().getIpv4Address().getValue());
+        Assert.assertEquals(4000, natAction.getPortMax().shortValue());
     }
 
     @Test
@@ -156,6 +172,16 @@ public class ConntrackCodecTest {
         ctActionsBuilder.setOfpactActions(nxActionNatCaseBuilder.build());
         List<CtActions> ctActionsList = new  ArrayList<>();
         ctActionsList.add(ctActionsBuilder.build());
+        nxActionNatBuilder = new NxActionNatBuilder();
+        nxActionNatBuilder.setFlags(5);
+        nxActionNatBuilder.setRangePresent(0x21);
+        nxActionNatBuilder.setIpAddressMin(new IpAddress("192.168.0.0".toCharArray()));
+        nxActionNatBuilder.setPortMax(4000);
+        nxActionNatCaseBuilder = new NxActionNatCaseBuilder();
+        nxActionNatCaseBuilder.setNxActionNat(nxActionNatBuilder.build());
+        ctActionsBuilder = new CtActionsBuilder();
+        ctActionsBuilder.setOfpactActions(nxActionNatCaseBuilder.build());
+        ctActionsList.add(ctActionsBuilder.build());
         nxActionConntrackBuilder.setCtActions(ctActionsList);
 
         ExperimenterId experimenterId = new ExperimenterId(NiciraConstants.NX_VENDOR_ID);
@@ -188,7 +214,7 @@ public class ConntrackCodecTest {
 
     private void createBufer(ByteBuf message) {
         message.writeShort(EncodeConstants.EXPERIMENTER_VALUE);
-        message.writeShort(length + nxastNatSubtype);
+        message.writeShort(length + nxNatLengthAction1 + nxNatLengthAction2);
         message.writeInt(NiciraConstants.NX_VENDOR_ID.intValue());
         message.writeShort(nxastConntrackSubtype);
         //FLAG = 1
@@ -202,7 +228,7 @@ public class ConntrackCodecTest {
         //ADDS 5 empty bytes
         message.writeZero(5);
         message.writeShort(EncodeConstants.EXPERIMENTER_VALUE);
-        message.writeShort(nxNatLength);
+        message.writeShort(nxNatLengthAction1);
         message.writeInt(NiciraConstants.NX_VENDOR_ID.intValue());
         message.writeShort(nxastNatSubtype);
         message.writeZero(2);
@@ -218,6 +244,22 @@ public class ConntrackCodecTest {
         message.writeShort(3000);
         //PORT MAX
         message.writeShort(4000);
+        message.writeZero(4);
+
+        message.writeShort(EncodeConstants.EXPERIMENTER_VALUE);
+        message.writeShort(nxNatLengthAction2);
+        message.writeInt(NiciraConstants.NX_VENDOR_ID.intValue());
+        message.writeShort(nxastNatSubtype);
+        message.writeZero(2);
+        //NAT FLAG
+        message.writeShort(5);
+        //RANGE PRESENT
+        message.writeShort(0x21);
+        //IP ADDRESS MIN
+        message.writeBytes(IetfInetUtil.INSTANCE.ipv4AddressBytes(new Ipv4Address("192.168.0.0")));
+        //PORT MAX
+        message.writeShort(4000);
+        message.writeZero(2);
     }
 
     private void createBuferWIthoutCtAction(ByteBuf message) {
