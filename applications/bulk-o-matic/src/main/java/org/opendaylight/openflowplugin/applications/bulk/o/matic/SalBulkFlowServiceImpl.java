@@ -43,6 +43,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.RemoveFlowsDsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.RemoveFlowsRpcInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.SalBulkFlowService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.TableTestInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.TableTestInput.Operation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.bulk.flow.ds.list.grouping.BulkFlowDsItem;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
@@ -244,7 +246,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
                 flowTester.addFlows(input.getDpnCount().intValue(), input.getFlowsPerDpn().intValue(),
                         input.getBatchSize().intValue(), input.getSleepFor().intValue(),
                         input.getSleepAfter().intValue(), input.getStartTableId().shortValue(),
-                        input.getEndTableId().shortValue());
+                        input.getEndTableId().shortValue(), input.isCreateParents());
             } else {
                 flowTester.deleteFlows(input.getDpnCount().intValue(), input.getFlowsPerDpn().intValue(),
                         input.getBatchSize().intValue(), input.getStartTableId().shortValue(),
@@ -259,7 +261,8 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
             if (input.isIsAdd()){
                 flowTester.addFlows(input.getDpnCount().intValue(), input.getFlowsPerDpn().intValue(),
                         input.getBatchSize().intValue(), input.getSleepFor().intValue(),
-                        input.getStartTableId().shortValue(), input.getEndTableId().shortValue());
+                        input.getStartTableId().shortValue(), input.getEndTableId().shortValue(),
+                        input.isCreateParents());
             } else {
                 flowTester.deleteFlows(input.getDpnCount().intValue(), input.getFlowsPerDpn().intValue(),
                         input.getBatchSize().intValue(), input.getStartTableId().shortValue(),
@@ -272,12 +275,33 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
                 flowTester.addFlows(input.getDpnCount().intValue(), input.getFlowsPerDpn().intValue(),
                         input.getBatchSize().intValue(), input.getSleepFor().intValue(),
                         input.getSleepAfter().intValue(), input.getStartTableId().shortValue(),
-                        input.getEndTableId().shortValue());
+                        input.getEndTableId().shortValue(), input.isCreateParents());
             } else {
                 flowTester.deleteFlows(input.getDpnCount().intValue(), input.getFlowsPerDpn().intValue(),
                         input.getBatchSize().intValue(), input.getStartTableId().shortValue(),
                         input.getEndTableId().shortValue());
             }
+        }
+        RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.success();
+        return Futures.immediateFuture(rpcResultBuilder.build());
+    }
+
+    @Override
+    public Future<RpcResult<Void>> tableTest(final TableTestInput input) {
+        final TableWriter writer = new TableWriter(dataBroker, fjService);
+        flowCounterBeanImpl.setWriter(writer);
+        switch (input.getOperation()) {
+            case Add:
+                writer.addTables(input.getDpnCount().intValue(),
+                    input.getStartTableId().shortValue(), input.getEndTableId().shortValue());
+                break;
+            case Delete:
+                writer.deleteTables(input.getDpnCount().intValue(),
+                    input.getStartTableId().shortValue(), input.getEndTableId().shortValue());
+                break;
+            default:
+                RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.failed();
+                return Futures.immediateFuture(rpcResultBuilder.build());
         }
         RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.success();
         return Futures.immediateFuture(rpcResultBuilder.build());

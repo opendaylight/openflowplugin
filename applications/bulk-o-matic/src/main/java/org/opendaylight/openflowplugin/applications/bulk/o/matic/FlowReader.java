@@ -8,6 +8,8 @@
 package org.opendaylight.openflowplugin.applications.bulk.o.matic;
 
 import com.google.common.base.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -26,9 +28,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-
 public class FlowReader implements Runnable, FlowCounterMBean {
     private static final Logger LOG = LoggerFactory.getLogger(FlowReader.class);
     private final DataBroker dataBroker;
@@ -38,9 +37,8 @@ public class FlowReader implements Runnable, FlowCounterMBean {
     private final short startTableId;
     private final short endTableId;
     private final boolean isConfigDs;
-    private AtomicLong flowCount = new AtomicLong(0);
+    private AtomicLong flowCount = new AtomicLong();
     private AtomicInteger readOpStatus = new AtomicInteger(FlowCounter.OperationStatus.INIT.status());
-    private static final String UNITS = "ns";
 
     private FlowReader(final DataBroker dataBroker,
                       final Integer dpnCount,
@@ -134,20 +132,5 @@ public class FlowReader implements Runnable, FlowCounterMBean {
     @Override
     public int getReadOpStatus() {
         return readOpStatus.get();
-    }
-
-    @Override
-    public int getWriteOpStatus() {
-        return BulkOMaticUtils.DEFUALT_STATUS;
-    }
-
-    @Override
-    public long getTaskCompletionTime() {
-        return BulkOMaticUtils.DEFAULT_COMPLETION_TIME;
-    }
-
-    @Override
-    public String getUnits() {
-        return UNITS;
     }
 }
