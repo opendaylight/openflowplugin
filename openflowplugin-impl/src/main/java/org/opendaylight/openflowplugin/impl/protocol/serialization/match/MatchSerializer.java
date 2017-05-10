@@ -10,8 +10,10 @@ package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
@@ -28,6 +30,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ExperimenterClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,30 +86,43 @@ public class MatchSerializer implements OFSerializer<Match>, HeaderSerializer<Ma
         });
 
         // Serialize match extensions
-        ExtensionResolvers.getMatchExtensionResolver().getExtension(match).map(extensions -> {
-            extensions.getExtensionList().forEach(extension -> {
-                // TODO: Remove also extension converters
-                final MatchEntry entry = OFSessionUtil
-                    .getExtensionConvertorProvider()
-                    .<MatchEntry>getConverter(new ConverterExtensionKey<>(
-                        extension.getExtensionKey(),
-                        OFConstants.OFP_VERSION_1_3))
-                    .convert(extension.getExtension());
+        ExtensionResolvers
+                .getMatchExtensionResolver()
+                .getExtension(match)
+                .flatMap(extensions -> Optional.ofNullable(extensions.getExtensionList()))
+                .ifPresent(extensionList -> serializeExtensionList(extensionList, outBuffer));
+    }
 
-                final MatchEntrySerializerKey<?, ?> key = new MatchEntrySerializerKey<>(
-                    EncodeConstants.OF13_VERSION_ID, entry.getOxmClass(), entry.getOxmMatchField());
+    private void serializeExtensionList(final List<ExtensionList> extensionList, final ByteBuf outBuffer) {
+        // TODO: Remove also extension converters
+        extensionList.forEach(extension -> {
+            final ConverterExtensionKey<? extends ExtensionKey> converterExtensionKey =
+                    new ConverterExtensionKey<>(extension.getExtensionKey(), OFConstants.OFP_VERSION_1_3);
 
-                // If entry is experimenter, set experimenter ID to key
-                if (entry.getOxmClass().equals(ExperimenterClass.class)) {
-                    key.setExperimenterId(ExperimenterIdCase.class.cast(entry.getMatchEntryValue())
-                        .getExperimenter().getExperimenter().getValue());
-                }
+            Optional.ofNullable(OFSessionUtil.getExtensionConvertorProvider())
+                    .flatMap(provider -> Optional.ofNullable(provider.<MatchEntry>getConverter(converterExtensionKey)))
+                    .map(matchEntryConvertorToOFJava -> {
+                        final MatchEntry entry = matchEntryConvertorToOFJava.convert(extension.getExtension());
 
-                final OFSerializer<MatchEntry> entrySerializer = registry.getSerializer(key);
-                entrySerializer.serialize(entry, outBuffer);
-            });
+                        final MatchEntrySerializerKey<?, ?> key = new MatchEntrySerializerKey<>(
+                                EncodeConstants.OF13_VERSION_ID, entry.getOxmClass(), entry.getOxmMatchField());
 
-            return extensions;
+                        // If entry is experimenter, set experimenter ID to key
+                        if (entry.getOxmClass().equals(ExperimenterClass.class)) {
+                            key.setExperimenterId(ExperimenterIdCase.class.cast(entry.getMatchEntryValue())
+                                    .getExperimenter().getExperimenter().getValue());
+                        }
+
+                        final OFSerializer<MatchEntry> entrySerializer = registry.getSerializer(key);
+                        entrySerializer.serialize(entry, outBuffer);
+                        return entry;
+                    })
+                    .orElseGet(() -> {
+                        LOG.warn("Serializer for match entry {} for version {} not found.",
+                                extension.getExtension().getImplementedInterface(),
+                                OFConstants.OFP_VERSION_1_3);
+                        return null;
+                    });
         });
     }
 
