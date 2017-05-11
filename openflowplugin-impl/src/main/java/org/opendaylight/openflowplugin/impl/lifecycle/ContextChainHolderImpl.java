@@ -289,22 +289,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
             this.withoutRoleChains.forEach((deviceInfo, contextChain) -> contextChain.makeDeviceSlave());
             timer.newTimeout(new RoleTimerTask(), this.checkRoleMaster, TimeUnit.MILLISECONDS);
         } else {
-            final Set<DeviceInfo> setOfClosedChains = new ConcurrentSet<>();
-            if (!this.contextChainMap.isEmpty()) {
-                this.contextChainMap.forEach((deviceInfo, contextChain) -> {
-                    if (!contextChain.hasState()) {
-                        LOG.warn("Context chain {} is long time without state. Closing.", deviceInfo);
-                        setOfClosedChains.add(deviceInfo);
-                        contextChain.close();
-                    }
-                });
-                setOfClosedChains.forEach(this.contextChainMap::remove);
-            }
-            if (this.contextChainMap.isEmpty()) {
-                this.stopTimerRole();
-            } else {
-                timer.newTimeout(new RoleTimerTask(), this.checkRoleMaster, TimeUnit.MILLISECONDS);
-            }
+            this.stopTimerRole();
         }
     }
 
