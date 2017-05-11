@@ -27,6 +27,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -136,6 +137,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     // Timeout in seconds after what we will give up on propagating role
     private static final int SET_ROLE_TIMEOUT = 10;
+
+    // Timeout in seconds after what we will give up on initializing device
+    private static final int DEVICE_INIT_TIMEOUT = SET_ROLE_TIMEOUT - 1;
 
     private static final int LOW_WATERMARK = 1000;
     private static final int HIGH_WATERMARK = 2000;
@@ -714,12 +718,15 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     .lookup(deviceInfo.getVersion());
 
             if (initializer.isPresent()) {
-                initializer.get().initialize(this, switchFeaturesMandatory, writerProvider, convertorExecutor);
+                initializer
+                        .get()
+                        .initialize(this, switchFeaturesMandatory, writerProvider, convertorExecutor)
+                        .get(DEVICE_INIT_TIMEOUT, TimeUnit.SECONDS);
             } else {
                 throw new ExecutionException(new ConnectionException("Unsupported version " + deviceInfo.getVersion()));
             }
-        } catch (ExecutionException | InterruptedException e) {
-            LOG.warn("Device {} cannot be initialized: ", deviceInfo.getLOGValue(), e);
+        } catch (ExecutionException | InterruptedException | TimeoutException ex) {
+            LOG.warn("Device {} cannot be initialized: ", deviceInfo.getLOGValue(), ex);
             return false;
         }
 
