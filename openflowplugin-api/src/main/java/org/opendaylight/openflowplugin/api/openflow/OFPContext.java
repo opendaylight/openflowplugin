@@ -25,14 +25,6 @@ public interface OFPContext extends AutoCloseable, ClusterLifecycleSupervisor, C
     String MESSAGE = "Cannot stop abstract services, check implementation of cluster services";
 
     /**
-     * Replace actual connection.
-     * @param connectionContext new connection
-     */
-    default void replaceConnection(final ConnectionContext connectionContext) {
-        //Nothing to do
-    }
-
-    /**
      * Context state.
      */
     enum CONTEXT_STATE {
