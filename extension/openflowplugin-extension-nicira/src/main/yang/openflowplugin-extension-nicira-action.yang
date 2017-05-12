@@ -145,6 +145,16 @@ module openflowplugin-extension-nicira-action {
             type empty;
         }
     }
+    grouping nxm-nx-ipv6-src-grouping {
+        leaf nx-ipv6-src {
+            type empty;
+        }
+    }
+    grouping nxm-nx-ipv6-dst-grouping {
+        leaf nx-ipv6-dst {
+            type empty;
+        }
+    }
     grouping nxm-of-icmp-type-grouping {
         leaf of-icmp-type {
             type empty;
@@ -241,6 +251,12 @@ module openflowplugin-extension-nicira-action {
             case dst-of-ip-dst-case {
                 uses nxm-of-ip-dst-grouping;
             }
+            case dst-nx-ipv6-src-case {
+                uses nxm-nx-ipv6-src-grouping;
+            }
+            case dst-nx-ipv6-dst-case {
+                uses nxm-nx-ipv6-dst-grouping;
+            }
             case dst-of-icmp-type-case {
                 uses nxm-of-icmp-type-grouping;
             }
@@ -329,6 +345,12 @@ module openflowplugin-extension-nicira-action {
             }
             case src-of-ip-dst-case {
                 uses nxm-of-ip-dst-grouping;
+            }
+            case src-nx-ipv6-src-case {
+                uses nxm-nx-ipv6-src-grouping;
+            }
+            case src-nx-ipv6-dst-case {
+                uses nxm-nx-ipv6-dst-grouping;
             }
             case src-nx-encap-eth-src-case {
                 uses nxm-nx-encap-eth-src-grouping;
