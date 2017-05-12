@@ -88,7 +88,7 @@ public class LifecycleServiceImplTest {
         Mockito.when(deviceContext.onContextInstantiateService(Mockito.any()))
                 .thenReturn(false);
         lifecycleService.instantiateServiceInstance();
-        Mockito.verify(mastershipChangeListener).onNotAbleToStartMastership(Mockito.any(DeviceInfo.class), Mockito.anyString());
+        Mockito.verify(mastershipChangeListener).onNotAbleToStartMastershipMandatory(Mockito.any(DeviceInfo.class), Mockito.anyString());
     }
 
     @Test

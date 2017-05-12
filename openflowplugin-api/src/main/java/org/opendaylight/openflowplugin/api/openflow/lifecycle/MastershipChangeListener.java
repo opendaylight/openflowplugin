@@ -19,9 +19,20 @@ public interface MastershipChangeListener {
      * Event occurs if there was a try to acquire MASTER role.
      * But it was not possible to start this MASTER role on device.
      * @param deviceInfo for this device
-     * @param reason
+     * @param reason reason
+     * @param mandatory if it is mandatory connection will be dropped
      */
-    void onNotAbleToStartMastership(final DeviceInfo deviceInfo, @Nonnull final String reason);
+    void onNotAbleToStartMastership(final DeviceInfo deviceInfo, @Nonnull final String reason, final boolean mandatory);
+
+    /**
+     * Event occurs if there was a try to acquire MASTER role.
+     * But it was not possible to start this MASTER role on device.
+     * @param deviceInfo for this device
+     * @param reason reason
+     */
+    default void onNotAbleToStartMastershipMandatory(final DeviceInfo deviceInfo, @Nonnull final String reason) {
+        onNotAbleToStartMastership(deviceInfo, reason, true);
+    }
 
     /**
      * Changed to MASTER role on device.

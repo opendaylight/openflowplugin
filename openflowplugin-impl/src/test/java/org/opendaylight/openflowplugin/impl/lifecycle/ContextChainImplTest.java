@@ -45,7 +45,7 @@ public class ContextChainImplTest {
     public void setUp() throws Exception {
 
         Mockito.when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
-        Mockito.when(deviceContext.stopClusterServices(Mockito.anyBoolean()))
+        Mockito.when(deviceContext.stopClusterServices())
                 .thenReturn(Futures.immediateFuture(null));
         Mockito.when(rpcContext.stopClusterServices()).thenReturn(Futures.immediateFuture(null));
         Mockito.when(statisticsContext.stopClusterServices()).thenReturn(Futures.immediateFuture(null));
@@ -62,8 +62,8 @@ public class ContextChainImplTest {
 
     @Test
     public void stopChain() throws Exception {
-        contextChain.stopChain(true);
-        Mockito.verify(deviceContext).stopClusterServices(Mockito.anyBoolean());
+        contextChain.stopChain();
+        Mockito.verify(deviceContext).stopClusterServices();
         Mockito.verify(rpcContext).stopClusterServices();
         Mockito.verify(statisticsContext).stopClusterServices();
     }
@@ -84,7 +84,7 @@ public class ContextChainImplTest {
         contextChain.isMastered(ContextChainMastershipState.MASTER_ON_DEVICE);
         contextChain.isMastered(ContextChainMastershipState.INITIAL_FLOW_REGISTRY_FILL);
         contextChain.connectionDropped();
-        Mockito.verify(deviceContext).stopClusterServices(Mockito.anyBoolean());
+        Mockito.verify(deviceContext).stopClusterServices();
         Mockito.verify(rpcContext).stopClusterServices();
         Mockito.verify(statisticsContext).stopClusterServices();
     }
