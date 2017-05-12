@@ -28,10 +28,9 @@ public interface ContextChain extends AutoCloseable {
 
     /**
      * Stop the working contexts, but not release them.
-     * @param connectionDropped true if stop the chain due to connection drop
      * @return Future
      */
-    ListenableFuture<Void> stopChain(boolean connectionDropped);
+    ListenableFuture<Void> stopChain();
 
     @Override
     void close();

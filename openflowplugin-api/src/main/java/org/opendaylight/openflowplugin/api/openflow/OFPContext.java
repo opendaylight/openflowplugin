@@ -53,20 +53,8 @@ public interface OFPContext extends AutoCloseable, ClusterLifecycleSupervisor, C
     /**
      * About to stop services in cluster not master anymore or going down.
      * @return Future most of services need time to be closed.
-     * @param connectionInterrupted true if clustering services stopping by device disconnect.
      */
-    default ListenableFuture<Void> stopClusterServices(boolean connectionInterrupted) {
-        return Futures.immediateFailedFuture(
-                new RejectedExecutionException(MESSAGE));
-    }
-
-    /**
-     * About to stop services in cluster not master anymore or going down.
-     * @return Future most of services need time to be closed.
-     */
-    default ListenableFuture<Void> stopClusterServices() {
-        return stopClusterServices(false);
-    }
+    ListenableFuture<Void> stopClusterServices();
 
     /**
      * Get cluster singleton service identifier.

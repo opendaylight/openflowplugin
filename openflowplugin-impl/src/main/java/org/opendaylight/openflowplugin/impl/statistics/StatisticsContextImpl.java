@@ -543,7 +543,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
                         myManager.startScheduling(deviceInfo);
                     }
                 } else {
-                    mastershipChangeListener.onNotAbleToStartMastership(
+                    mastershipChangeListener.onNotAbleToStartMastershipMandatory(
                             deviceInfo,
                             "Initial transaction cannot be submitted."
                     );
@@ -552,7 +552,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
 
             @Override
             public void onFailure(@Nonnull Throwable throwable) {
-                mastershipChangeListener.onNotAbleToStartMastership(
+                mastershipChangeListener.onNotAbleToStartMastershipMandatory(
                         deviceInfo,
                         "Initial gathering statistics unsuccessful."
                 );

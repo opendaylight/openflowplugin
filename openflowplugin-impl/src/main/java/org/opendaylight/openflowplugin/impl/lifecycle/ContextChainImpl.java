@@ -12,9 +12,9 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.internal.ConcurrentSet;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
@@ -46,18 +46,18 @@ public class ContextChainImpl implements ContextChain {
 
     private volatile ContextChainState contextChainState;
 
-    private boolean masterStateOnDevice;
-    private boolean initialGathering;
-    private boolean initialSubmitting;
-    private boolean registryFilling;
+    private AtomicBoolean masterStateOnDevice;
+    private AtomicBoolean initialGathering;
+    private AtomicBoolean initialSubmitting;
+    private AtomicBoolean registryFilling;
 
     ContextChainImpl(final ConnectionContext connectionContext) {
         this.primaryConnection = connectionContext;
         this.contextChainState = ContextChainState.UNDEFINED;
-        this.masterStateOnDevice = false;
-        this.initialGathering = false;
-        this.initialSubmitting = false;
-        this.registryFilling = false;
+        this.masterStateOnDevice = new AtomicBoolean(false);
+        this.initialGathering = new AtomicBoolean(false);
+        this.initialSubmitting = new AtomicBoolean(false);
+        this.registryFilling = new AtomicBoolean(false);
         this.deviceInfo = connectionContext.getDeviceInfo();
     }
 
@@ -83,13 +83,13 @@ public class ContextChainImpl implements ContextChain {
     }
 
     @Override
-    public ListenableFuture<Void> stopChain(boolean connectionDropped) {
+    public ListenableFuture<Void> stopChain() {
         //TODO: stopClusterServices change parameter
         final List<ListenableFuture<Void>> futureList = new ArrayList<>();
         futureList.add(statisticsContext.stopClusterServices());
         futureList.add(rpcContext.stopClusterServices());
-        futureList.add(deviceContext.stopClusterServices(connectionDropped));
-
+        futureList.add(deviceContext.stopClusterServices());
+        this.unMasterMe();
         return Futures.transform(Futures.successfulAsList(futureList), new Function<List<Void>, Void>() {
             @Nullable
             @Override
@@ -98,6 +98,13 @@ public class ContextChainImpl implements ContextChain {
                 return null;
             }
         });
+    }
+
+    private void unMasterMe() {
+        this.registryFilling.set(false);
+        this.initialSubmitting.set(false);
+        this.initialGathering.set(false);
+        this.masterStateOnDevice.set(false);
     }
 
     @Override
@@ -114,14 +121,16 @@ public class ContextChainImpl implements ContextChain {
 
     @Override
     public void makeContextChainStateSlave() {
+        this.unMasterMe();
         this.contextChainState = ContextChainState.WORKING_SLAVE;
     }
 
     @Override
     public ListenableFuture<Void> connectionDropped() {
         if (this.contextChainState == ContextChainState.WORKING_MASTER) {
-            return this.stopChain(true);
+            return this.stopChain();
         }
+        this.unMasterMe();
         return Futures.immediateFuture(null);
     }
 
@@ -134,6 +143,7 @@ public class ContextChainImpl implements ContextChain {
 
     @Override
     public void makeDeviceSlave() {
+        this.unMasterMe();
         this.lifecycleService.makeDeviceSlave(this.deviceContext);
     }
 
@@ -142,30 +152,32 @@ public class ContextChainImpl implements ContextChain {
         switch (mastershipState) {
             case INITIAL_SUBMIT:
                 LOG.debug("Device {}, initial submit OK.", deviceInfo.getLOGValue());
-                this.initialSubmitting = true;
+                this.initialSubmitting.set(true);
                 break;
             case MASTER_ON_DEVICE:
                 LOG.debug("Device {}, master state OK.", deviceInfo.getLOGValue());
-                this.masterStateOnDevice = true;
+                this.masterStateOnDevice.set(true);
                 break;
             case INITIAL_GATHERING:
                 LOG.debug("Device {}, initial gathering OK.", deviceInfo.getLOGValue());
-                this.initialGathering = true;
+                this.initialGathering.set(true);
                 break;
+            //Flow registry fill is not mandatory to work as a master
             case INITIAL_FLOW_REGISTRY_FILL:
                 LOG.debug("Device {}, initial registry filling OK.", deviceInfo.getLOGValue());
-                this.registryFilling = true;
+                this.registryFilling.set(true);
             case CHECK:
             default:
         }
         final boolean result =
-                this.initialGathering &&
-                this.masterStateOnDevice &&
-                this.initialSubmitting &&
-                this.registryFilling;
+                this.initialGathering.get() &&
+                this.masterStateOnDevice.get() &&
+                this.initialSubmitting.get();
 
         if (result && mastershipState != ContextChainMastershipState.CHECK) {
-            LOG.info("Device {} is able to work as master.", deviceInfo.getLOGValue());
+            LOG.info("Device {} is able to work as master{}",
+                    deviceInfo.getLOGValue(),
+                    this.registryFilling.get() ? " WITHOUT flow registry !!!" : ".");
             contextChainState = ContextChainState.WORKING_MASTER;
         }
         return result;

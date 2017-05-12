@@ -82,13 +82,13 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     @Override
     public <T extends OFPManager> void addManager(final T manager) {
         if (Objects.isNull(deviceManager) && manager instanceof DeviceManager) {
-            LOG.debug("Device manager was set.");
+            LOG.trace("Context chain holder: Device manager OK.");
             deviceManager = (DeviceManager) manager;
         } else if (Objects.isNull(rpcManager) && manager instanceof RpcManager) {
-            LOG.debug("RPC manager was set.");
+            LOG.trace("Context chain holder: RPC manager OK.");
             rpcManager = (RpcManager) manager;
         } else if (Objects.isNull(statisticsManager) && manager instanceof StatisticsManager) {
-            LOG.debug("Statistics manager was set.");
+            LOG.trace("Context chain holder: Statistics manager OK.");
             statisticsManager = (StatisticsManager) manager;
         }
     }
@@ -196,11 +196,19 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     }
 
     @Override
-    public void onNotAbleToStartMastership(final DeviceInfo deviceInfo, @Nonnull final String reason) {
+    public void onNotAbleToStartMastership(final DeviceInfo deviceInfo, @Nonnull final String reason, final boolean mandatory) {
         this.withoutRoleChains.remove(deviceInfo);
         LOG.warn("Not able to set MASTER role on device {}, reason: {}", deviceInfo.getLOGValue(), reason);
-        if (contextChainMap.containsKey(deviceInfo)) {
-            destroyContextChain(deviceInfo);
+        if (mandatory && contextChainMap.containsKey(deviceInfo)) {
+            LOG.warn("This mastering is mandatory, destroying context chain and closing connection.");
+            Futures.transform(contextChainMap.get(deviceInfo).stopChain(), new Function<Void, Object>() {
+                        @Nullable
+                        @Override
+                        public Object apply(@Nullable Void aVoid) {
+                            destroyContextChain(deviceInfo);
+                            return null;
+                        }
+                    });
         }
     }
 
@@ -317,7 +325,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     public void close() throws Exception {
         this.contextChainMap.forEach((deviceInfo, contextChain) -> {
             if (contextChain.isMastered(ContextChainMastershipState.CHECK)) {
-                contextChain.stopChain(true);
+                contextChain.stopChain();
             }
             contextChain.close();
         });

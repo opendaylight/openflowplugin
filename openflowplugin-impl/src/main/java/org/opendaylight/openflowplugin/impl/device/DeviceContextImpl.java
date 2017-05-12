@@ -627,37 +627,10 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public ListenableFuture<Void> stopClusterServices(boolean connectionInterrupted) {
-        final ListenableFuture<Void> deactivateTxManagerFuture = initialized
+    public ListenableFuture<Void> stopClusterServices() {
+        return initialized
                 ? transactionChainManager.deactivateTransactionManager()
                 : Futures.immediateFuture(null);
-
-        if (!connectionInterrupted) {
-            final ListenableFuture<Void> makeSlaveFuture
-                    = Futures.transform(makeDeviceSlave(), new Function<RpcResult<SetRoleOutput>, Void>() {
-                @Nullable
-                @Override
-                public Void apply(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
-                    return null;
-                }
-            });
-
-            Futures.addCallback(makeSlaveFuture, new FutureCallback<Void>() {
-                @Override
-                public void onSuccess(@Nullable Void aVoid) {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Role SLAVE was successfully propagated on device, node {}", deviceInfo.getLOGValue());
-                    }
-                }
-
-                @Override
-                public void onFailure(final Throwable throwable) {
-                    LOG.warn("Was not able to set role SLAVE to device on node {} ", deviceInfo.getLOGValue());
-                    LOG.trace("Error occurred on device role setting, probably connection loss: ", throwable);
-                }
-            });
-        }
-        return deactivateTxManagerFuture;
     }
 
     @Override
@@ -813,7 +786,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
         @Override
         public void onFailure(final Throwable throwable) {
-            mastershipChangeListener.onNotAbleToStartMastership(
+            mastershipChangeListener.onNotAbleToStartMastershipMandatory(
                     deviceInfo,
                     "Was not able to set MASTER role on device");
         }
@@ -865,7 +838,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             }
             mastershipChangeListener.onNotAbleToStartMastership(
                     deviceInfo,
-                    "Was not able to fill flow registry on device");
+                    "Was not able to fill flow registry on device",
+                    false);
         }
     }
 
