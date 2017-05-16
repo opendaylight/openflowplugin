@@ -19,7 +19,6 @@ import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -153,6 +152,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         if (LOG.isDebugEnabled()) {
             LOG.debug("SCHEDULING NEXT STATISTICS POLLING for device: {}", deviceInfo.getNodeId());
         }
+
         if (isStatisticsPollingOn) {
             final Timeout pollTimeout = hashedWheelTimer.newTimeout(
                     timeout -> pollStatistics(
@@ -162,6 +162,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                             deviceInfo),
                     currentTimerDelay,
                     TimeUnit.MILLISECONDS);
+
             statisticsContext.setPollTimeout(pollTimeout);
         }
     }
@@ -216,8 +217,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                             }
                             break;
                         case FULLYDISABLED:
-                            final Optional<Timeout> pollTimeout = statisticsContext.getPollTimeout();
-                            pollTimeout.ifPresent(Timeout::cancel);
+                            statisticsContext.stopGatheringData();
                             for (final ItemLifeCycleSource lifeCycleSource : deviceContext.getItemLifeCycleSourceRegistry().getLifeCycleSources()) {
                                 lifeCycleSource.setItemLifecycleListener(statisticsContext.getItemLifeCycleListener());
                             }
