@@ -136,7 +136,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
     @Test
     public void testDeviceConnectionCheck_WORKING() throws Exception {
         final ListenableFuture<Boolean> deviceConnectionCheckResult = statisticsContext.deviceConnectionCheck();
-        Assert.assertNull(deviceConnectionCheckResult);
+        Assert.assertTrue(deviceConnectionCheckResult.get());
     }
 
     @Test
@@ -144,8 +144,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
         Mockito.reset(mockedConnectionContext);
         when(mockedConnectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.RIP);
         final ListenableFuture<Boolean> deviceConnectionCheckResult = statisticsContext.deviceConnectionCheck();
-        Assert.assertNotNull(deviceConnectionCheckResult);
-        Assert.assertTrue(deviceConnectionCheckResult.isDone());
+
         try {
             deviceConnectionCheckResult.get();
             Assert.fail("connection in state RIP should have caused exception here");
@@ -160,8 +159,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
         Mockito.reset(mockedConnectionContext);
         when(mockedConnectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.HANDSHAKING);
         final ListenableFuture<Boolean> deviceConnectionCheckResult = statisticsContext.deviceConnectionCheck();
-        Assert.assertNotNull(deviceConnectionCheckResult);
-        Assert.assertTrue(deviceConnectionCheckResult.isDone());
+
         try {
             final Boolean checkPositive = deviceConnectionCheckResult.get();
             Assert.assertTrue(checkPositive);
