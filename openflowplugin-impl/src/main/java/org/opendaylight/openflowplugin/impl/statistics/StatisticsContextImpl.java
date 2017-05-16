@@ -82,7 +82,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
     private ClusterInitializationPhaseHandler initialSubmitHandler;
 
-    private ListenableFuture<Boolean> lastDataGathering;
+    private volatile ListenableFuture<Boolean> lastDataGathering;
 
     StatisticsContextImpl(final boolean isStatisticsPollingOn,
                           @Nonnull final DeviceContext deviceContext,
@@ -152,7 +152,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
             // write start timestamp to state snapshot container
             StatisticsGatheringUtils.markDeviceStateSnapshotStart(deviceContext);
 
-            statChainFuture(statIterator, settableStatResultFuture);
+            lastDataGathering = statChainFuture(statIterator, settableStatResultFuture);
 
             // write end timestamp to state snapshot container
             Futures.addCallback(settableStatResultFuture, new FutureCallback<Boolean>() {
@@ -167,7 +167,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
                     }
                 }
             });
-            this.lastDataGathering = settableStatResultFuture;
+
             return settableStatResultFuture;
         }
     }
@@ -261,19 +261,19 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         return Optional.ofNullable(pollTimeout);
     }
 
-    private void statChainFuture(final Iterator<MultipartType> iterator, final SettableFuture<Boolean> resultFuture) {
+    private ListenableFuture<Boolean> statChainFuture(final Iterator<MultipartType> iterator, final SettableFuture<Boolean> resultFuture) {
         if (ConnectionContext.CONNECTION_STATE.RIP.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
             final String errMsg = String.format("Device connection is closed for Node : %s.",
                     getDeviceInfo().getNodeId());
             LOG.debug(errMsg);
             resultFuture.setException(new ConnectionException(errMsg));
-            return;
+            return resultFuture;
         }
 
         if (!iterator.hasNext()) {
             resultFuture.set(Boolean.TRUE);
             LOG.debug("Stats collection successfully finished for node {}", getDeviceInfo().getLOGValue());
-            return;
+            return resultFuture;
         }
 
         final MultipartType nextType = iterator.next();
@@ -283,13 +283,16 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback<Boolean>() {
             @Override
             public void onSuccess(final Boolean result) {
-                statChainFuture(iterator, resultFuture);
+                lastDataGathering = statChainFuture(iterator, resultFuture);
             }
             @Override
             public void onFailure(@Nonnull final Throwable t) {
                 resultFuture.setException(t);
+                lastDataGathering = resultFuture;
             }
         });
+
+        return deviceStatisticsCollectionFuture;
     }
 
     /**
