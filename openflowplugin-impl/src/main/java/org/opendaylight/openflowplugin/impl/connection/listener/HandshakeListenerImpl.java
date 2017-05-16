@@ -69,18 +69,18 @@ public class HandshakeListenerImpl implements HandshakeListener {
             @Override
             public void onSuccess(@Nullable final RpcResult<BarrierOutput> result) {
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("succeeded by getting sweep barrier after post-handshake for device {}", connectionContext.getNodeId().getValue());
+                    LOG.debug("succeeded by getting sweep barrier after post-handshake for device {}", connectionContext.getDeviceInfo().getLOGValue());
                 }
                 try {
                     ConnectionStatus connectionStatusResult = deviceConnectedHandler.deviceConnected(connectionContext);
                     if (!ConnectionStatus.MAY_CONTINUE.equals(connectionStatusResult)) {
                         connectionContext.closeConnection(true);
                     }
-                    SessionStatistics.countEvent(connectionContext.getNodeId().toString(),
+                    SessionStatistics.countEvent(connectionContext.getDeviceInfo().getLOGValue(),
                             SessionStatistics.ConnectionStatus.CONNECTION_CREATED);
                 } catch (final Exception e) {
-                    LOG.error("ConnectionContext initial processing failed: ", e);
-                    SessionStatistics.countEvent(connectionContext.getNodeId().toString(),
+                    LOG.error("ConnectionContext initial processing failed for device {}", connectionContext.getDeviceInfo().getLOGValue(), e);
+                    SessionStatistics.countEvent(connectionContext.getDeviceInfo().getLOGValue(),
                             SessionStatistics.ConnectionStatus.CONNECTION_DISCONNECTED_BY_OFP);
                     connectionContext.closeConnection(true);
                 }
@@ -88,7 +88,7 @@ public class HandshakeListenerImpl implements HandshakeListener {
 
             @Override
             public void onFailure(final Throwable t) {
-                LOG.error("failed to get sweep barrier after post-handshake for device {}", connectionContext.getNodeId());
+                LOG.error("failed to get sweep barrier after post-handshake for device {}", connectionContext.getDeviceInfo().getLOGValue(), t);
                 connectionContext.closeConnection(false);
             }
         };
