@@ -19,7 +19,6 @@ import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.junit.Assert;
@@ -185,8 +184,6 @@ public class StatisticsManagerImplTest {
     @Test
     public void testChangeStatisticsWorkMode1() throws Exception {
         final StatisticsContext statisticContext = Mockito.mock(StatisticsContext.class);
-        when(statisticContext.getPollTimeout()).thenReturn(
-                Optional.<Timeout>empty());
         when(itemLifeCycleRegistry.getLifeCycleSources()).thenReturn(
                 Collections.<ItemLifeCycleSource>emptyList());
 
@@ -204,7 +201,7 @@ public class StatisticsManagerImplTest {
 
         checkWorkModeChangeOutcome(workMode);
         verify(itemLifeCycleRegistry).getLifeCycleSources();
-        verify(statisticContext).getPollTimeout();
+        verify(statisticContext).stopGatheringData();
     }
 
     private static void checkWorkModeChangeOutcome(Future<RpcResult<Void>> workMode) throws InterruptedException, ExecutionException {
@@ -223,8 +220,6 @@ public class StatisticsManagerImplTest {
         final Timeout pollTimeout = Mockito.mock(Timeout.class);
         final ItemLifeCycleSource itemLifecycleSource = Mockito.mock(ItemLifeCycleSource.class);
         final StatisticsContext statisticContext = Mockito.mock(StatisticsContext.class);
-        when(statisticContext.getPollTimeout()).thenReturn(
-                Optional.of(pollTimeout));
         when(itemLifeCycleRegistry.getLifeCycleSources()).thenReturn(
                 Collections.singletonList(itemLifecycleSource));
 
@@ -242,8 +237,7 @@ public class StatisticsManagerImplTest {
         checkWorkModeChangeOutcome(workMode);
 
         verify(itemLifeCycleRegistry).getLifeCycleSources();
-        verify(statisticContext).getPollTimeout();
-        verify(pollTimeout).cancel();
+        verify(statisticContext).stopGatheringData();
         verify(itemLifecycleSource).setItemLifecycleListener(Matchers.<ItemLifecycleListener>any());
     }
 
@@ -261,8 +255,6 @@ public class StatisticsManagerImplTest {
                 .setItemLifecycleListener(itemLifeCycleListenerCapt.capture());
 
         final StatisticsContext statisticContext = Mockito.mock(StatisticsContext.class);
-        when(statisticContext.getPollTimeout()).thenReturn(
-                Optional.of(pollTimeout));
         when(statisticContext.getItemLifeCycleListener()).thenReturn(
                 Mockito.mock(ItemLifecycleListener.class));
         when(itemLifeCycleRegistry.getLifeCycleSources()).thenReturn(
@@ -289,8 +281,7 @@ public class StatisticsManagerImplTest {
         checkWorkModeChangeOutcome(workMode);
 
         verify(itemLifeCycleRegistry, times(2)).getLifeCycleSources();
-        verify(statisticContext).getPollTimeout();
-        verify(pollTimeout).cancel();
+        verify(statisticContext).stopGatheringData();
 
         final List<ItemLifecycleListener> itemLifeCycleListenerValues = itemLifeCycleListenerCapt.getAllValues();
         Assert.assertEquals(2, itemLifeCycleListenerValues.size());
