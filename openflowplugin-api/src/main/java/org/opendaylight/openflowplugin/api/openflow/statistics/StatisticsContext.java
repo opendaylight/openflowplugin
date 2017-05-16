@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.api.openflow.statistics;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.Timeout;
-import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
@@ -48,11 +47,6 @@ public interface StatisticsContext extends RequestContextStack, OFPContext {
      * @param pollTimeout handle to nearest scheduled statistics poll
      */
     void setPollTimeout(Timeout pollTimeout);
-
-    /**
-     * @return handle to currently scheduled statistics polling
-     */
-    Optional<Timeout> getPollTimeout();
 
     /**
      * @return dedicated item life cycle change listener (per device)
