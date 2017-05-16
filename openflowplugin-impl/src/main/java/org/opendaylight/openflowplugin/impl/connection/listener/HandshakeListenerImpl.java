@@ -79,7 +79,7 @@ public class HandshakeListenerImpl implements HandshakeListener {
                     SessionStatistics.countEvent(connectionContext.getNodeId().toString(),
                             SessionStatistics.ConnectionStatus.CONNECTION_CREATED);
                 } catch (final Exception e) {
-                    LOG.error("ConnectionContext initial processing failed: ", e);
+                    LOG.error("ConnectionContext initial processing failed for device {}", connectionContext.getNodeId().getValue(), e);
                     SessionStatistics.countEvent(connectionContext.getNodeId().toString(),
                             SessionStatistics.ConnectionStatus.CONNECTION_DISCONNECTED_BY_OFP);
                     connectionContext.closeConnection(true);
