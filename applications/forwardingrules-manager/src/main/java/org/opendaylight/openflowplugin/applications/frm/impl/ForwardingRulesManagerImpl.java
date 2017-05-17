@@ -14,6 +14,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.CheckedFuture;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
+import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -62,6 +63,9 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private final ForwardingRulesManagerConfig forwardingRulesManagerConfig;
     private final ClusterSingletonServiceProvider clusterSingletonServiceProvider;
     private final NotificationProviderService notificationService;
+    private final boolean disableReconciliation;
+    private final boolean staleMarkingEnabled;
+    private final int reconciliationRetryCount;
 
     private ForwardingRulesCommiter<Flow> flowListener;
     private ForwardingRulesCommiter<Group> groupListener;
@@ -75,7 +79,10 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                                       final RpcConsumerRegistry rpcRegistry,
                                       final ForwardingRulesManagerConfig config,
                                       final ClusterSingletonServiceProvider clusterSingletonService,
-                                      final NotificationProviderService notificationService) {
+                                      final NotificationProviderService notificationService,
+                                      final boolean disableReconciliation,
+                                      final boolean staleMarkingEnabled,
+                                      final int reconciliationRetryCount) {
         this.dataService = Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
         this.forwardingRulesManagerConfig = Preconditions.checkNotNull(config, "Configuration for FRM cannot be null");
         this.clusterSingletonServiceProvider = Preconditions.checkNotNull(clusterSingletonService,
@@ -93,6 +100,10 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                 "RPC SalMeterService not found.");
         this.salTableService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalTableService.class),
                 "RPC SalTableService not found.");
+
+        this.disableReconciliation = disableReconciliation;
+        this.staleMarkingEnabled = staleMarkingEnabled;
+        this.reconciliationRetryCount = reconciliationRetryCount;
     }
 
     @Override
@@ -217,8 +228,18 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     }
 
     @Override
-    public ForwardingRulesManagerConfig getConfiguration() {
-        return forwardingRulesManagerConfig;
+    public boolean isReconciliationDisabled() {
+        return this.disableReconciliation;
+    }
+
+    @Override
+    public boolean isStaleMarkingEnabled() {
+        return this.staleMarkingEnabled;
+    }
+
+    @Override
+    public int getReconciliationRetryCount() {
+        return this.reconciliationRetryCount;
     }
 
     @Override
