@@ -106,8 +106,13 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
     @Override
     public void reconcileConfiguration(InstanceIdentifier<FlowCapableNode> connectedNode) {
+        if (provider.isReconciliationDisabled()) {
+            LOG.debug("Reconciliation is disabled by user. Skipping reconciliation of node : {}", connectedNode
+                    .firstKeyOf(Node.class));
+            return;
+        }
         if (provider.isNodeOwner(connectedNode)) {
-            if (provider.getConfiguration().isStaleMarkingEnabled()) {
+            if (provider.isStaleMarkingEnabled()) {
                 LOG.info("Stale-Marking is ENABLED and proceeding with deletion of stale-marked entities on switch {}",
                         connectedNode.toString());
                 reconciliationPreProcess(connectedNode);
@@ -164,7 +169,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 Map<Long, ListenableFuture<?>> groupFutures = new HashMap<>();
 
                 while ((!(toBeInstalledGroups.isEmpty()) || !(suspectedGroups.isEmpty())) &&
-                        (counter <= provider.getConfiguration().getReconciliationRetryCount())) { //also check if the counter has not crossed the threshold
+                        (counter <= provider.getReconciliationRetryCount())) { //also check if the counter has not crossed the threshold
 
                     if (toBeInstalledGroups.isEmpty() && !suspectedGroups.isEmpty()) {
                         LOG.error("These Groups are pointing to node-connectors that are not up yet {}", suspectedGroups.toString());
@@ -249,7 +254,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 if (!toBeInstalledGroups.isEmpty()) {
                     for (Group group : toBeInstalledGroups) {
                         LOG.error("Installing the group {} finally although the port is not up after checking for {} times "
-                                , group.getGroupId().toString(), provider.getConfiguration().getReconciliationRetryCount());
+                                , group.getGroupId().toString(), provider.getReconciliationRetryCount());
                         addGroup(groupFutures, group);
                     }
                 }

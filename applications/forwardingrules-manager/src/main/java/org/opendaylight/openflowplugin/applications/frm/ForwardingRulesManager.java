@@ -119,10 +119,22 @@ public interface ForwardingRulesManager extends AutoCloseable {
     ForwardingRulesCommiter<TableFeatures> getTableFeaturesCommiter();
 
     /**
-     * Returns the config-subsystem/fallback configuration of FRM
-     * @return ForwardingRulesManagerConfig
+     * Check if reconciliation is disabled by user.
+     * @return true if reconciliation is disabled, else false
      */
-    ForwardingRulesManagerConfig getConfiguration();
+    boolean isReconciliationDisabled();
+
+    /**
+     * Check if stale marking is enabled for switch reconciliation.
+     * @return true if stale marking is enabled, else false
+     */
+    boolean isStaleMarkingEnabled();
+
+    /**
+     * Return number of reconciliation retry are allowed.
+     * @return number of retries.
+     */
+    int getReconciliationRetryCount();
 
     /**
      * Method checks if *this* instance of openflowplugin is owner of

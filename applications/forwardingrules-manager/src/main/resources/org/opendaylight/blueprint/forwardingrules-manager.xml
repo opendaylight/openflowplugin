@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
            xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
         odl:use-default-for-reference-types="true">
 
@@ -11,6 +12,19 @@
   <odl:clustered-app-config id="frmConfig"
       binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfig"/>
 
+  <cm:property-placeholder persistent-id="org.opendaylight.openflowplugin"
+                           placeholder-prefix="${frm-"
+                           update-strategy="none">
+    <cm:default-properties>
+      <!-- Disable switch reconciliation -->
+      <cm:property name="disable-reconciliation" value="false"/>
+      <!-- Enable stale marking for switch reconciliation -->
+      <cm:property name="stale-marking-enabled" value="false"/>
+      <!-- Number of retries for switch reconciliation -->
+      <cm:property name="reconciliation-retry-count" value="5"/>
+    </cm:default-properties>
+  </cm:property-placeholder>
+
   <bean id="frmManager" class="org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl"
           init-method="start" destroy-method="close">
     <argument ref="dataBroker"/>
@@ -18,5 +32,9 @@
     <argument ref="frmConfig"/>
     <argument ref="clusterSingletonService"/>
     <argument ref="notificationService"/>
+    <argument value="${frm-disable-reconciliation}"/>
+    <argument value="${frm-stale-marking-enabled}"/>
+    <argument value="${frm-reconciliation-retry-count}"/>
+
   </bean>
 </blueprint>
