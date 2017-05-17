@@ -21,9 +21,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterLifec
  */
 public interface OFPContext extends AutoCloseable, ClusterLifecycleSupervisor, ClusterInitializationPhaseHandler {
 
-
-    String MESSAGE = "Cannot stop abstract services, check implementation of cluster services";
-
     /**
      * Context state.
      */

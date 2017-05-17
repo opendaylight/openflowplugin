@@ -86,7 +86,6 @@ public class ContextChainImpl implements ContextChain {
 
     @Override
     public ListenableFuture<Void> stopChain() {
-        //TODO: stopClusterServices change parameter
         final List<ListenableFuture<Void>> futureList = new ArrayList<>();
         futureList.add(statisticsContext.stopClusterServices());
         futureList.add(rpcContext.stopClusterServices());
