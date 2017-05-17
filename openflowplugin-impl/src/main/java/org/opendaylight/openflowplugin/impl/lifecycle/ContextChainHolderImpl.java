@@ -48,6 +48,7 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.osgi.service.device.Device;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -254,6 +255,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
                     LOG.info("Auxiliary connection from device {} disconnected.", deviceInfo.getLOGValue());
                 } else {
                     LOG.info("Device {} disconnected.", deviceInfo.getLOGValue());
+                    sendNotificationNodeRemoved(deviceInfo);
                     Futures.transform(chain.connectionDropped(), new Function<Void, Object>() {
                         @Nullable
                         @Override
@@ -310,6 +312,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     public void close() throws Exception {
         this.contextChainMap.forEach((deviceInfo, contextChain) -> {
             if (contextChain.isMastered(ContextChainMastershipState.CHECK)) {
+                this.sendNotificationNodeRemoved(deviceInfo);
                 contextChain.stopChain();
             }
             contextChain.close();
@@ -354,6 +357,10 @@ public class ContextChainHolderImpl implements ContextChainHolder {
                 }
             }
         }
+    }
+
+    private void sendNotificationNodeRemoved(final DeviceInfo deviceInfo) {
+        this.deviceManager.sendNodeRemovedNotification(deviceInfo);
     }
 
     private void sendNotificationNodeAdded(final DeviceInfo deviceInfo) {
