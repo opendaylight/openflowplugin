@@ -32,10 +32,10 @@ public abstract class AbstractDeviceInitializer {
      * @param deviceContext device context
      * @param multipartWriterProvider multipart writer provider
      */
-    public void initialize(@Nonnull final DeviceContext deviceContext,
-                           final boolean switchFeaturesMandatory,
-                           @Nullable final MultipartWriterProvider multipartWriterProvider,
-                           @Nullable final ConvertorExecutor convertorExecutor) throws ExecutionException,InterruptedException {
+    public Future<Void> initialize(@Nonnull final DeviceContext deviceContext,
+                                   final boolean switchFeaturesMandatory,
+                                   @Nullable final MultipartWriterProvider multipartWriterProvider,
+                                   @Nullable final ConvertorExecutor convertorExecutor) throws ExecutionException,InterruptedException {
         Preconditions.checkNotNull(deviceContext);
 
         // Write node to datastore
@@ -53,9 +53,8 @@ public abstract class AbstractDeviceInitializer {
             throw new ExecutionException(new ConnectionException("Failed to write node " + deviceContext.getDeviceInfo().getNodeId() + " to DS ", e));
         }
 
-        // Synchronously get information about device
-        initializeNodeInformation(deviceContext, switchFeaturesMandatory, multipartWriterProvider, convertorExecutor)
-            .get();
+        // Get information about device
+        return initializeNodeInformation(deviceContext, switchFeaturesMandatory, multipartWriterProvider, convertorExecutor);
     }
 
     protected abstract Future<Void> initializeNodeInformation(@Nonnull final DeviceContext deviceContext,
