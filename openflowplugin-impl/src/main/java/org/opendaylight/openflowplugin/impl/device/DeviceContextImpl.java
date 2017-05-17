@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Verify;
 import com.google.common.util.concurrent.FutureCallback;
@@ -35,12 +34,10 @@ import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
-import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowplugin.api.ConnectionException;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
-import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
@@ -52,7 +49,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
@@ -77,7 +73,6 @@ import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFac
 import org.opendaylight.openflowplugin.impl.device.initialization.AbstractDeviceInitializer;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProvider;
 import org.opendaylight.openflowplugin.impl.device.listener.MultiMsgCollectorImpl;
-import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.impl.registry.group.DeviceGroupRegistryImpl;
@@ -173,7 +168,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final DeviceManager myManager;
     private final DeviceInitializerProvider deviceInitializerProvider;
     private final boolean useSingleLayerSerialization;
-    private OutboundQueueProvider outboundQueueProvider;
     private boolean isInitialTransactionSubmitted;
 
     DeviceContextImpl(
@@ -189,7 +183,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             final DeviceInitializerProvider deviceInitializerProvider) {
 
         this.primaryConnectionContext = primaryConnectionContext;
-        this.outboundQueueProvider = (OutboundQueueProvider) primaryConnectionContext.getOutboundQueueProvider();
         this.deviceInfo = primaryConnectionContext.getDeviceInfo();
         this.hashedWheelTimer = hashedWheelTimer;
         this.deviceInitializerProvider = deviceInitializerProvider;
@@ -646,13 +639,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public void close() {
         //NOOP
-    }
-
-    @Override
-    public void putLifecycleServiceIntoTxChainManager(final LifecycleService lifecycleService){
-        if (initialized) {
-            this.transactionChainManager.setLifecycleService(lifecycleService);
-        }
     }
 
     @Override
