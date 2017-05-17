@@ -64,7 +64,7 @@ public abstract class AbstractListeningCommiter <T extends DataObject> implement
                 }
             }
             else{
-                if (provider.getConfiguration().isStaleMarkingEnabled()) {
+                if (provider.isStaleMarkingEnabled()) {
                     LOG.info("Stale-Marking ENABLED and switch {} is NOT connected, storing stale entities",
                             nodeIdent.toString());
                     // Switch is NOT connected
