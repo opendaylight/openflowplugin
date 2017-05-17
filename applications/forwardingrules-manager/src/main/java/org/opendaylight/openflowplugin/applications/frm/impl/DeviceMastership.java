@@ -77,7 +77,6 @@ public class DeviceMastership implements ClusterSingletonService, AutoCloseable 
     public void setDeviceOperationalStatus(boolean inOperDS) {
         isDeviceInOperDS.set(inOperDS);
         if(canReconcile()) {
-            LOG.info("Triggering reconciliation for device {}", nodeId.getValue());
             reconcliationAgent.reconcileConfiguration(fcnIID);
         }
     }
