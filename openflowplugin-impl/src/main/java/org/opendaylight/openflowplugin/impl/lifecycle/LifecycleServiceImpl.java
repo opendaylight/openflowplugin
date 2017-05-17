@@ -75,7 +75,7 @@ public class LifecycleServiceImpl implements LifecycleService {
     @Override
     public void instantiateServiceInstance() {
 
-        LOG.info("Starting clustering MASTER services for node {}", deviceInfo.getLOGValue());
+        LOG.info("Starting clustering services (singleton) for node {}", deviceInfo.getLOGValue());
         if (!clusterInitializationPhaseHandler.onContextInstantiateService(mastershipChangeListener)) {
             mastershipChangeListener.onNotAbleToStartMastershipMandatory(deviceInfo, "Cannot initialize device.");
         }
@@ -107,9 +107,7 @@ public class LifecycleServiceImpl implements LifecycleService {
             // If we are still registered and we are not already closing, then close the registration
             if (Objects.nonNull(registration)) {
                 try {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Closing clustering services for node {}", deviceInfo.getLOGValue());
-                    }
+                    LOG.info("Closing clustering services (singleton) for node {}", deviceInfo.getLOGValue());
                     registration.close();
                 } catch (final Exception e) {
                     LOG.warn("Failed to close clustering services for node {} with exception: ",
