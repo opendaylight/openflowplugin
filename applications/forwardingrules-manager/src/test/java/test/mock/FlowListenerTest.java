@@ -74,7 +74,7 @@ public class FlowListenerTest extends FRMTest {
                 rpcProviderRegistryMock,
                 getConfig(),
                 clusterSingletonService,
-                notificationService);
+                notificationService, false, false, 5);
         forwardingRulesManager.start();
         // TODO consider tests rewrite (added because of complicated access)
         forwardingRulesManager.setDeviceMastershipManager(deviceMastershipManager);

@@ -46,7 +46,7 @@ public class NodeListenerTest extends FRMTest {
                 rpcProviderRegistryMock,
                 getConfig(),
                 clusterSingletonService,
-                notificationService);
+                notificationService, false ,false ,5);
         forwardingRulesManager.start();
     }
 
