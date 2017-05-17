@@ -55,7 +55,6 @@ public class DeviceMastership implements ClusterSingletonService, AutoCloseable 
         LOG.info("FRM started for: {}", nodeId.getValue());
         deviceMastered.set(true);
         if(canReconcile()) {
-            LOG.info("Triggering reconciliation for device {}", nodeId.getValue());
             reconcliationAgent.reconcileConfiguration(fcnIID);
         }
     }
