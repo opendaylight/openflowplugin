@@ -11,19 +11,16 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
 import com.google.common.base.Verify;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
-import io.netty.util.internal.ConcurrentSet;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipChange;
@@ -60,23 +57,29 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     private static final String SERVICE_ENTITY_TYPE = "org.opendaylight.mdsal.ServiceEntityType";
     private static final String ASYNC_SERVICE_ENTITY_TYPE = "org.opendaylight.mdsal.AsyncServiceCloseEntityType";
 
-    private final ConcurrentHashMap<DeviceInfo, ContextChain> contextChainMap = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<DeviceInfo, ContextChain> withoutRoleChains = new ConcurrentHashMap<>();
-    private final List<DeviceInfo> markToBeRemoved = new ArrayList<>();
+    private final Map<DeviceInfo, ContextChain> contextChainMap =
+            Collections.synchronizedMap(new HashMap<>());
+    private final Map<DeviceInfo, ContextChain> withoutRoleChains =
+            Collections.synchronizedMap(new HashMap<>());
+    private final Map<DeviceInfo, ContextChain> withoutRoleChainsQueue =
+            Collections.synchronizedMap(new HashMap<>());
     private final HashedWheelTimer timer;
-    private final Long checkRoleMaster;
+    private final Long delayCheckRoleMaster;
 
     private DeviceManager deviceManager;
     private RpcManager rpcManager;
     private StatisticsManager statisticsManager;
     private EntityOwnershipListenerRegistration eosListenerRegistration;
     private ClusterSingletonServiceProvider singletonServicesProvider;
-    private boolean timerIsRunningRole;
+    private AtomicBoolean timerIsRunningRole;
+    private Timeout runningSlaveTask = null;
+    private EntityOwnershipService entityOwnershipService;
 
     public ContextChainHolderImpl(final HashedWheelTimer timer) {
-        this.timerIsRunningRole = false;
+        this.timerIsRunningRole = new AtomicBoolean(false);
         this.timer = timer;
-        this.checkRoleMaster = DEFAULT_CHECK_ROLE_MASTER;
+        this.delayCheckRoleMaster = DEFAULT_CHECK_ROLE_MASTER;
+        this.eosListenerRegistration = null;
     }
 
     @Override
@@ -104,6 +107,11 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         }
 
         final ContextChain contextChain = new ContextChainImpl(connectionContext);
+        if (Objects.isNull(eosListenerRegistration)) {
+            eosListenerRegistration = Verify.verifyNotNull(entityOwnershipService.registerListener
+                    (ASYNC_SERVICE_ENTITY_TYPE, this));
+        }
+
         final LifecycleService lifecycleService = new LifecycleServiceImpl(this);
         lifecycleService.registerDeviceRemovedHandler(deviceManager);
         lifecycleService.registerDeviceRemovedHandler(rpcManager);
@@ -140,9 +148,11 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         contextChain.addContext(deviceContext);
         contextChain.addContext(rpcContext);
         contextChain.addContext(statisticsContext);
-        this.withoutRoleChains.put(deviceInfo, contextChain);
-        if (!this.timerIsRunningRole) {
+        if (!this.timerIsRunningRole.get()) {
+            this.addWithoutRoleChain(deviceInfo, contextChain);
             this.startTimerRole();
+        } else {
+            this.withoutRoleChainsQueue.put(deviceInfo, contextChain);
         }
         deviceContext.onPublished();
         contextChain.registerServices(this.singletonServicesProvider);
@@ -151,17 +161,14 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     }
 
     @Override
-    public ListenableFuture<Void> destroyContextChain(final DeviceInfo deviceInfo) {
+    public synchronized void destroyContextChain(final DeviceInfo deviceInfo) {
         ContextChain chain = contextChainMap.remove(deviceInfo);
         if (chain != null) {
             chain.close();
         }
-        if (markToBeRemoved.contains(deviceInfo)) {
-            markToBeRemoved.remove(deviceInfo);
-            LOG.info("Removing device: {} from DS", deviceInfo.getLOGValue());
-            return deviceManager.removeDeviceFromOperationalDS(deviceInfo);
-        } else {
-            return Futures.immediateFuture(null);
+        if (Objects.nonNull(eosListenerRegistration)) {
+            eosListenerRegistration.close();
+            eosListenerRegistration = null;
         }
     }
 
@@ -197,7 +204,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
     @Override
     public void onNotAbleToStartMastership(final DeviceInfo deviceInfo, @Nonnull final String reason, final boolean mandatory) {
-        this.withoutRoleChains.remove(deviceInfo);
+        this.removeWithoutRoleChain(deviceInfo);
         LOG.warn("Not able to set MASTER role on device {}, reason: {}", deviceInfo.getLOGValue(), reason);
         if (mandatory && contextChainMap.containsKey(deviceInfo)) {
             LOG.warn("This mastering is mandatory, destroying context chain and closing connection.");
@@ -215,7 +222,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     @Override
     public void onMasterRoleAcquired(final DeviceInfo deviceInfo,
                                      @Nonnull final ContextChainMastershipState mastershipState) {
-        this.withoutRoleChains.remove(deviceInfo);
+        this.removeWithoutRoleChain(deviceInfo);
         ContextChain contextChain = contextChainMap.get(deviceInfo);
         if (contextChain != null) {
             if (contextChain.isMastered(mastershipState)) {
@@ -227,7 +234,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
     @Override
     public void onSlaveRoleAcquired(final DeviceInfo deviceInfo) {
-        this.withoutRoleChains.remove(deviceInfo);
+        this.removeWithoutRoleChain(deviceInfo);
         ContextChain contextChain = contextChainMap.get(deviceInfo);
         if (contextChain != null) {
             contextChain.makeContextChainStateSlave();
@@ -236,7 +243,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
     @Override
     public void onSlaveRoleNotAcquired(final DeviceInfo deviceInfo) {
-        this.withoutRoleChains.remove(deviceInfo);
+        this.removeWithoutRoleChain(deviceInfo);
         ContextChain contextChain = contextChainMap.get(deviceInfo);
         if (contextChain != null) {
             destroyContextChain(deviceInfo);
@@ -254,6 +261,8 @@ public class ContextChainHolderImpl implements ContextChainHolder {
                     LOG.info("Auxiliary connection from device {} disconnected.", deviceInfo.getLOGValue());
                 } else {
                     LOG.info("Device {} disconnected.", deviceInfo.getLOGValue());
+                    removeWithoutRoleChain(deviceInfo);
+                    sendNotificationNodeRemoved(deviceInfo);
                     Futures.transform(chain.connectionDropped(), new Function<Void, Object>() {
                         @Nullable
                         @Override
@@ -268,36 +277,38 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     }
 
     @Override
-    public void changeEntityOwnershipService(final EntityOwnershipService entityOwnershipService) {
-        if (Objects.nonNull(this.eosListenerRegistration)) {
-            LOG.warn("EOS Listener already registered.");
-        } else {
-            this.eosListenerRegistration = Verify.verifyNotNull(entityOwnershipService.registerListener
-                    (ASYNC_SERVICE_ENTITY_TYPE, this));
-        }
+    public void changeEntityOwnershipService(@Nonnull final EntityOwnershipService entityOwnershipService) {
+        this.entityOwnershipService = entityOwnershipService;
     }
 
     private void startTimerRole() {
-        this.timerIsRunningRole = true;
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("There is a context chain without role, starting timer.");
-        }
-        timer.newTimeout(new RoleTimerTask(), this.checkRoleMaster, TimeUnit.MILLISECONDS);
+        this.timerIsRunningRole.set(true);
+        runningSlaveTask = timer.newTimeout(new RoleTimerTask(), this.delayCheckRoleMaster, TimeUnit.MILLISECONDS);
     }
 
     private void stopTimerRole() {
-        this.timerIsRunningRole = false;
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("There are no context chains, stopping timer.");
+        synchronized (withoutRoleChainsQueue) {
+            this.timerIsRunningRole.set(false);
+            if (!this.withoutRoleChainsQueue.isEmpty()) {
+                this.withoutRoleChainsQueue.forEach(this::addWithoutRoleChain);
+                this.withoutRoleChainsQueue.clear();
+                this.startTimerRole();
+            }
         }
     }
 
     private void timerTickRole() {
-        if (!withoutRoleChains.isEmpty()) {
-            this.withoutRoleChains.forEach((deviceInfo, contextChain) -> contextChain.makeDeviceSlave());
-            timer.newTimeout(new RoleTimerTask(), this.checkRoleMaster, TimeUnit.MILLISECONDS);
-        } else {
-            this.stopTimerRole();
+        synchronized (withoutRoleChains) {
+            if (!withoutRoleChains.isEmpty()) {
+                this.withoutRoleChains.forEach((deviceInfo, contextChain) -> contextChain.makeDeviceSlave());
+                this.startTimerRole();
+            } else {
+                if (this.runningSlaveTask != null) {
+                    this.runningSlaveTask.cancel();
+                }
+                this.runningSlaveTask = null;
+                this.stopTimerRole();
+            }
         }
     }
 
@@ -310,12 +321,14 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     public void close() throws Exception {
         this.contextChainMap.forEach((deviceInfo, contextChain) -> {
             if (contextChain.isMastered(ContextChainMastershipState.CHECK)) {
+                this.sendNotificationNodeRemoved(deviceInfo);
                 contextChain.stopChain();
             }
             contextChain.close();
         });
         if (Objects.nonNull(eosListenerRegistration)) {
             eosListenerRegistration.close();
+            eosListenerRegistration = null;
         }
     }
 
@@ -332,16 +345,14 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
             if (entityName != null ){
                 final NodeId nodeId = new NodeId(entityName);
-                DeviceInfo inMap = null;
+                boolean inMap = false;
                 for (Map.Entry<DeviceInfo, ContextChain> entry : contextChainMap.entrySet()) {
-                    if (entry.getKey().getNodeId().equals(nodeId)) {
-                        inMap = entry.getKey();
+                    inMap = entry.getKey().getNodeId().equals(nodeId);
+                    if (inMap) {
                         break;
                     }
                 }
-                if (Objects.nonNull(inMap)) {
-                    markToBeRemoved.add(inMap);
-                } else {
+                if (inMap) {
                     try {
                         LOG.info("Removing device: {} from DS", nodeId);
                         deviceManager
@@ -356,8 +367,28 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         }
     }
 
+    private void sendNotificationNodeRemoved(final DeviceInfo deviceInfo) {
+        this.deviceManager.sendNodeRemovedNotification(deviceInfo);
+    }
+
     private void sendNotificationNodeAdded(final DeviceInfo deviceInfo) {
         this.deviceManager.sendNodeAddedNotification(deviceInfo);
+    }
+
+    private void removeWithoutRoleChain(final DeviceInfo deviceInfo) {
+        this.withoutRoleChainsQueue.remove(deviceInfo);
+        this.withoutRoleChains.remove(deviceInfo);
+        if (withoutRoleChains.isEmpty()) {
+            if (runningSlaveTask != null) {
+                runningSlaveTask.cancel();
+                runningSlaveTask = null;
+            }
+            this.stopTimerRole();
+        }
+    }
+
+    private void addWithoutRoleChain(final DeviceInfo deviceInfo, ContextChain contextChain) {
+        this.withoutRoleChains.put(deviceInfo, contextChain);
     }
 
     private class RoleTimerTask implements TimerTask {
