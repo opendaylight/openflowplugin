@@ -18,7 +18,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterLifec
  */
 public interface OFPContext extends AutoCloseable, ClusterLifecycleSupervisor, ClusterInitializationPhaseHandler {
 
-
     /**
      * Context state.
      */

@@ -54,10 +54,8 @@ public interface DeviceManager extends
 
     DeviceContext createContext(@Nonnull ConnectionContext connectionContext);
 
-    long getBarrierIntervalNanos();
-
-    int getBarrierCountLimit();
-
     void sendNodeAddedNotification(@Nonnull DeviceInfo deviceInfo);
+
+    void sendNodeRemovedNotification(@Nonnull DeviceInfo deviceInfo);
 }
 
