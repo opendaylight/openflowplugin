@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba068154_b2d515bb",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
+        "patchSetId": 1
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-05-17T22:30:24Z",
+      "side": 1,
+      "message": "Yes, i think it can be commented out, but i didn\u0027t comment it because that way user knows that these are the values that are currently used in the plugin, because user don\u0027t have access to the forwardingrules-manager.xml file.",
+      "parentUuid": "ba068154_522149fa",
+      "range": {
+        "startLine": 108,
+        "startChar": 0,
+        "endLine": 108,
+        "endChar": 29
+      },
+      "revId": "249bc1b41e1abef084d7e2f2660ba56a702ccfce",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
