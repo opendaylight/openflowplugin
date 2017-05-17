@@ -437,7 +437,6 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                     modifiable = true;
                     break;
                 default:
-                    LOG.warn("Unsupported configuration property '{}={}'", key, sValue);
                     return;
             }
 
