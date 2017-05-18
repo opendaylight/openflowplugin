@@ -1,0 +1,52 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba068154_03693525",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/translator/PortUpdateTranslator.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 956
+      },
+      "writtenOn": "2017-05-18T10:26:18Z",
+      "side": 1,
+      "message": "Actually only problem of NPE can be when reason is null (others are fine as instance of check is there). As per spec switch always has reason when it sends Port Status Message hence Null Check was not required but still i have safe guarded with Null Check in Patch 6",
+      "parentUuid": "ba068154_dd726fe2",
+      "range": {
+        "startLine": 49,
+        "startChar": 49,
+        "endLine": 49,
+        "endChar": 106
+      },
+      "revId": "77119ecb4b3eb97d5ae401fb8ae99c768b5e3ecb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba068154_637801f3",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/util/PortTranslatorUtil.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 956
+      },
+      "writtenOn": "2017-05-18T10:26:18Z",
+      "side": 1,
+      "message": "Actually only problem of NPE can be when reason is null (others are fine as instance of check is there). As per spec switch always has reason when it sends Port Status Message hence Null Check was not required but still i have safe guarded with Null Check in Patch 6",
+      "parentUuid": "ba068154_3d829b94",
+      "range": {
+        "startLine": 144,
+        "startChar": 49,
+        "endLine": 144,
+        "endChar": 104
+      },
+      "revId": "77119ecb4b3eb97d5ae401fb8ae99c768b5e3ecb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
