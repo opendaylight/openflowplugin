@@ -39,7 +39,9 @@ public class OutboundQueueProviderImpl implements OutboundQueueProvider {
 
     @Override
     public synchronized void onConnectionQueueChanged(final OutboundQueue queue) {
-        LOG.debug("Replacing queue {} with {}", outboundQueue, queue);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Replacing queue {} with {}", outboundQueue, queue);
+        }
         outboundQueue = queue;
         notifyAll();
     }

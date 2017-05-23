@@ -146,9 +146,7 @@ public interface DeviceContext extends
      */
     ListenableFuture<RpcResult<SetRoleOutput>> makeDeviceSlave();
 
-    void sendNodeAddedNotification();
-
-    void sendNodeRemovedNotification();
+    ListenableFuture<Void> stopClusterServices();
 
     void cleanupDeviceData();
 }

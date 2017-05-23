@@ -71,6 +71,8 @@ public interface StatisticsContext extends RequestContextStack, OFPContext {
      */
     boolean isSchedulingEnabled();
 
+    ListenableFuture<Void> stopClusterServices();
+
     /**
      * Gain device state
      * @return device state from device context from lifecycle service

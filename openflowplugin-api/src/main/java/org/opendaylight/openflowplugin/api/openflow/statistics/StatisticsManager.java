@@ -8,7 +8,9 @@
 
 package org.opendaylight.openflowplugin.api.openflow.statistics;
 
+import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 
 /**
@@ -36,5 +38,7 @@ public interface StatisticsManager extends OFPManager {
     void setBasicTimerDelay(final long basicTimerDelay);
 
     void setMaximumTimerDelay(final long maximumTimerDelay);
+
+    StatisticsContext createContext(@Nonnull final DeviceContext deviceContext);
 
 }
