@@ -28,11 +28,19 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cas
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases.OfToSalPushMplsCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases.OfToSalPushPbbCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases.OfToSalPushVlanCase;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases.OfToSalSetDlDstCase;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases.OfToSalSetDlSrcCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases.OfToSalSetFieldCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases.OfToSalSetMplsTtlCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases.OfToSalSetNwDstCase;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases.OfToSalSetNwSrcCase;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases.OfToSalSetNwTosCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases.OfToSalSetNwTtlCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases.OfToSalSetQueueCase;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases.OfToSalSetTpDstCase;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases.OfToSalSetTpSrcCase;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases.OfToSalSetVlanIdCase;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases.OfToSalSetVlanPcpCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases.OfToSalStripVlanCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionResponseConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
@@ -70,16 +78,26 @@ public final class ActionResponseConvertor extends Convertor<
             .addCase(new OfToSalGroupCase())
             .addCase(new OfToSalOutputActionCase())
             .addCase(new OfToSalPopMplsCase())
-            .addCase(new OfToSalPopPbbCase())
             .addCase(new OfToSalPopVlanCase())
             .addCase(new OfToSalPushMplsCase())
             .addCase(new OfToSalPushPbbCase())
             .addCase(new OfToSalPushVlanCase())
             .addCase(new OfToSalSetFieldCase())
             .addCase(new OfToSalSetMplsTtlCase())
-            .addCase(new OfToSalSetNwDstCase())
             .addCase(new OfToSalSetNwTtlCase())
             .addCase(new OfToSalSetQueueCase())
+            // OpenFlow 1.3 specific actions
+            .addCase(new OfToSalPopPbbCase())
+            // OpenFlow 1.0 specific actions
+            .addCase(new OfToSalSetNwSrcCase())
+            .addCase(new OfToSalSetNwDstCase())
+            .addCase(new OfToSalSetNwTosCase())
+            .addCase(new OfToSalSetDlSrcCase())
+            .addCase(new OfToSalSetDlDstCase())
+            .addCase(new OfToSalSetTpSrcCase())
+            .addCase(new OfToSalSetTpDstCase())
+            .addCase(new OfToSalSetVlanPcpCase())
+            .addCase(new OfToSalSetVlanIdCase())
             .addCase(new OfToSalStripVlanCase());
     private static final Set<Class<? extends DataContainer>> TYPES = Collections.singleton(Action.class);
 
