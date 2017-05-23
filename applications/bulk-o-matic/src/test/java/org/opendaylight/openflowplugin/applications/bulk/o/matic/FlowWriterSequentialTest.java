@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -18,9 +18,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -43,36 +41,35 @@ public class FlowWriterSequentialTest {
     @Mock
     private ExecutorService mockFlowPusher;
     @Mock
-    private WriteTransaction wTx;
+    private WriteTransaction writeTransaction;
 
     private FlowWriterSequential flowWriterSequential;
 
     @Before
     public void setUp() throws Exception {
 
-        doReturn(wTx).when(mockDataBroker).newWriteOnlyTransaction();
-        Mockito.when(wTx.submit()).thenReturn(Futures.immediateCheckedFuture(null));
+        doReturn(writeTransaction).when(mockDataBroker).newWriteOnlyTransaction();
+        Mockito.when(writeTransaction.submit()).thenReturn(Futures.immediateCheckedFuture(null));
 
-        Mockito.doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                ((Runnable)invocation.getArguments()[0]).run();
-                return null;
-            }
+        Mockito.doAnswer(invocation -> {
+            ((Runnable) invocation.getArguments()[0]).run();
+            return null;
         }).when(mockFlowPusher).execute(Matchers.<Runnable>any());
 
         flowWriterSequential = new FlowWriterSequential(mockDataBroker, mockFlowPusher);
     }
+
     @Test
     public void testAddFlows() throws Exception {
-        flowWriterSequential.addFlows(1, FLOWS_PER_DPN, 10, 10, (short)0, (short)1, true);
-        Mockito.verify(wTx, Mockito.times(FLOWS_PER_DPN)).put(Matchers.<LogicalDatastoreType>any(), Matchers.<InstanceIdentifier<DataObject>>any(), Matchers.<DataObject>any(), Matchers.anyBoolean());
+        flowWriterSequential.addFlows(1, FLOWS_PER_DPN, 10, 10, (short) 0, (short) 1, true);
+        Mockito.verify(writeTransaction, Mockito.times(FLOWS_PER_DPN)).put(Matchers.<LogicalDatastoreType>any(),
+                Matchers.<InstanceIdentifier<DataObject>>any(), Matchers.<DataObject>any(), Matchers.anyBoolean());
     }
 
     @Test
     public void testDeleteFlows() throws Exception {
-        flowWriterSequential.deleteFlows(1, FLOWS_PER_DPN, 10, (short)0, (short)1);
-        Mockito.verify(wTx, Mockito.times(FLOWS_PER_DPN)).delete(Matchers.<LogicalDatastoreType>any(), Matchers.<InstanceIdentifier<DataObject>>any());
+        flowWriterSequential.deleteFlows(1, FLOWS_PER_DPN, 10, (short) 0, (short) 1);
+        Mockito.verify(writeTransaction, Mockito.times(FLOWS_PER_DPN)).delete(Matchers.<LogicalDatastoreType>any(),
+                Matchers.<InstanceIdentifier<DataObject>>any());
     }
-
 }

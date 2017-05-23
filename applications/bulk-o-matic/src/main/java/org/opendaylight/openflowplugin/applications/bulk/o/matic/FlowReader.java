@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -37,16 +37,11 @@ public class FlowReader implements Runnable, FlowCounterMBean {
     private final short startTableId;
     private final short endTableId;
     private final boolean isConfigDs;
-    private AtomicLong flowCount = new AtomicLong();
-    private AtomicInteger readOpStatus = new AtomicInteger(FlowCounter.OperationStatus.INIT.status());
+    private final AtomicLong flowCount = new AtomicLong();
+    private final AtomicInteger readOpStatus = new AtomicInteger(FlowCounter.OperationStatus.INIT.status());
 
-    private FlowReader(final DataBroker dataBroker,
-                      final Integer dpnCount,
-                      final int flowsPerDpn,
-                      final boolean verbose,
-                      final boolean isConfigDs,
-                      final short startTableId,
-                      final short endTableId) {
+    private FlowReader(final DataBroker dataBroker, final Integer dpnCount, final int flowsPerDpn,
+            final boolean verbose, final boolean isConfigDs, final short startTableId, final short endTableId) {
         this.dataBroker = dataBroker;
         this.dpnCount = dpnCount;
         this.verbose = verbose;
@@ -56,15 +51,9 @@ public class FlowReader implements Runnable, FlowCounterMBean {
         this.isConfigDs = isConfigDs;
     }
 
-    public static FlowReader getNewInstance(final DataBroker dataBroker,
-                                      final Integer dpnCount,
-                                      final int flowsPerDpn,
-                                      final boolean verbose,
-                                      final boolean isConfigDs,
-                                      final short startTableId,
-                                      final short endTableId) {
-        return new FlowReader(dataBroker, dpnCount, flowsPerDpn, verbose,
-                isConfigDs, startTableId, endTableId);
+    public static FlowReader getNewInstance(final DataBroker dataBroker, final Integer dpnCount, final int flowsPerDpn,
+            final boolean verbose, final boolean isConfigDs, final short startTableId, final short endTableId) {
+        return new FlowReader(dataBroker, dpnCount, flowsPerDpn, verbose, isConfigDs, startTableId, endTableId);
     }
 
     @Override
@@ -77,8 +66,8 @@ public class FlowReader implements Runnable, FlowCounterMBean {
         for (int i = 1; i <= dpnCount; i++) {
             String dpId = BulkOMaticUtils.DEVICE_TYPE_PREFIX + i;
             for (int j = 0; j < flowsPerDPN; j++) {
-                short tableRollover = (short)(endTableId - startTableId + 1);
-                short tableId = (short) (((j) % tableRollover) + startTableId);
+                short tableRollover = (short) (endTableId - startTableId + 1);
+                short tableId = (short) (j % tableRollover + startTableId);
 
                 Integer sourceIp = j + 1;
 
@@ -88,8 +77,9 @@ public class FlowReader implements Runnable, FlowCounterMBean {
                 ReadOnlyTransaction readOnlyTransaction = dataBroker.newReadOnlyTransaction();
                 try {
                     Optional<Flow> flowOptional;
-                    if(isConfigDs) {
-                        flowOptional = readOnlyTransaction.read(LogicalDatastoreType.CONFIGURATION, flowIid).checkedGet();
+                    if (isConfigDs) {
+                        flowOptional = readOnlyTransaction.read(LogicalDatastoreType.CONFIGURATION, flowIid)
+                                .checkedGet();
                     } else {
                         flowOptional = readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, flowIid).checkedGet();
                     }
@@ -110,18 +100,16 @@ public class FlowReader implements Runnable, FlowCounterMBean {
                 }
             }
         }
-        if(readOpStatus.get() != FlowCounter.OperationStatus.FAILURE.status()) {
+        if (readOpStatus.get() != FlowCounter.OperationStatus.FAILURE.status()) {
             readOpStatus.set(FlowCounter.OperationStatus.SUCCESS.status());
         }
         LOG.info("Total Flows read: {}", flowCount);
     }
 
-    private InstanceIdentifier<Flow> getFlowInstanceIdentifier(String dpId, Short tableId, String flowId){
+    private InstanceIdentifier<Flow> getFlowInstanceIdentifier(String dpId, Short tableId, String flowId) {
         return InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(new NodeId(dpId)))
-                .augmentation(FlowCapableNode.class)
-                .child(Table.class, new TableKey(tableId))
-                .child(Flow.class,
-                        new FlowKey(new FlowId(flowId)));
+                .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tableId))
+                .child(Flow.class, new FlowKey(new FlowId(flowId)));
     }
 
     @Override

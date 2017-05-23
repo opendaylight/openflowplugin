@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -34,7 +34,7 @@ public class FlowReaderTest {
     @Mock
     private DataBroker mockDataBroker;
     @Mock
-    private ReadOnlyTransaction rTx;
+    private ReadOnlyTransaction readOnlyTransaction;
     @Mock
     private Node node;
 
@@ -42,10 +42,10 @@ public class FlowReaderTest {
 
     @Before
     public void setUp() throws Exception {
-        when(rTx.read(Mockito.any(LogicalDatastoreType.class), Mockito.<InstanceIdentifier<Node>>any()))
+        when(readOnlyTransaction.read(Mockito.any(LogicalDatastoreType.class), Mockito.<InstanceIdentifier<Node>>any()))
                 .thenReturn(Futures.immediateCheckedFuture(Optional.of(node)));
-        when(mockDataBroker.newReadOnlyTransaction()).thenReturn(rTx);
-        flowReader = FlowReader.getNewInstance(mockDataBroker, 2, 5, true, false, (short)1, (short)2 );
+        when(mockDataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
+        flowReader = FlowReader.getNewInstance(mockDataBroker, 2, 5, true, false, (short) 1, (short) 2);
     }
 
     @Test
