@@ -130,8 +130,6 @@ public interface DeviceContext extends
 
     void putLifecycleServiceIntoTxChainManager(LifecycleService lifecycleService);
 
-    void replaceConnectionContext(ConnectionContext connectionContext);
-
     boolean isSkipTableFeatures();
 
     /**
@@ -145,11 +143,5 @@ public interface DeviceContext extends
      * @return listenable future from sal role service
      */
     ListenableFuture<RpcResult<SetRoleOutput>> makeDeviceSlave();
-
-    void sendNodeAddedNotification();
-
-    void sendNodeRemovedNotification();
-
-    void cleanupDeviceData();
 }
 

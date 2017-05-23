@@ -37,7 +37,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
@@ -72,7 +73,6 @@ class StatisticsContextImpl implements StatisticsContext {
     private Timeout pollTimeout;
     private final DeviceInfo deviceInfo;
     private final StatisticsManager myManager;
-    private final LifecycleService lifecycleService;
 
     private volatile boolean schedulingEnabled;
     private volatile CONTEXT_STATE state;
@@ -81,13 +81,11 @@ class StatisticsContextImpl implements StatisticsContext {
 
     private ListenableFuture<Boolean> lastDataGathering;
 
-    StatisticsContextImpl(@Nonnull final DeviceInfo deviceInfo,
-                          final boolean isStatisticsPollingOn,
-                          @Nonnull final LifecycleService lifecycleService,
+    StatisticsContextImpl(final boolean isStatisticsPollingOn,
+                          @Nonnull final DeviceContext deviceContext,
                           @Nonnull final ConvertorExecutor convertorExecutor,
                           @Nonnull final StatisticsManager myManager) {
-        this.lifecycleService = lifecycleService;
-        this.deviceContext = lifecycleService.getDeviceContext();
+        this.deviceContext = deviceContext;
         this.devState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         this.isStatisticsPollingOn = isStatisticsPollingOn;
         multipartReplyTranslator = new SinglePurposeMultipartReplyTranslator(convertorExecutor);
@@ -97,7 +95,7 @@ class StatisticsContextImpl implements StatisticsContext {
         itemLifeCycleListener = new ItemLifecycleListenerImpl(deviceContext);
         statListForCollectingInitialization();
         this.state = CONTEXT_STATE.INITIALIZATION;
-        this.deviceInfo = deviceInfo;
+        this.deviceInfo = deviceContext.getDeviceInfo();
         this.myManager = myManager;
         this.lastDataGathering = null;
     }
@@ -233,11 +231,6 @@ class StatisticsContextImpl implements StatisticsContext {
                 LOG.debug("StatisticsContext for node {} is already in TERMINATION state.", getDeviceInfo().getLOGValue());
             }
         } else {
-            try {
-                stopClusterServices().get();
-            } catch (Exception e) {
-                LOG.debug("Failed to close StatisticsContext for node {} with exception: ", getDeviceInfo().getLOGValue(), e);
-            }
 
             this.state = CONTEXT_STATE.TERMINATION;
 
@@ -441,7 +434,7 @@ class StatisticsContextImpl implements StatisticsContext {
 
     @Override
     public ListenableFuture<Void> stopClusterServices() {
-        if (CONTEXT_STATE.TERMINATION.equals(getState())) {
+        if (CONTEXT_STATE.TERMINATION.equals(this.state)) {
             return Futures.immediateCancelledFuture();
         }
 
@@ -463,7 +456,7 @@ class StatisticsContextImpl implements StatisticsContext {
 
     @Override
     public DeviceContext gainDeviceContext() {
-        return this.lifecycleService.getDeviceContext();
+        return this.deviceContext;
     }
 
     @Override
@@ -483,11 +476,7 @@ class StatisticsContextImpl implements StatisticsContext {
     }
 
     @Override
-    public boolean onContextInstantiateService(final ConnectionContext connectionContext) {
-        if (connectionContext.getConnectionState().equals(ConnectionContext.CONNECTION_STATE.RIP)) {
-            LOG.warn("Connection on device {} was interrupted, will stop starting master services.", deviceInfo.getLOGValue());
-            return false;
-        }
+    public boolean onContextInstantiateService(final MastershipChangeListener mastershipChangeListener) {
 
         LOG.info("Starting statistics context cluster services for node {}", deviceInfo.getLOGValue());
 
@@ -496,21 +485,36 @@ class StatisticsContextImpl implements StatisticsContext {
 
             @Override
             public void onSuccess(@Nullable Boolean aBoolean) {
-                initialSubmitHandler.initialSubmitTransaction();
+                mastershipChangeListener.onMasterRoleAcquired(
+                        deviceInfo,
+                        ContextChainMastershipState.INITIAL_GATHERING
+                );
+                if (initialSubmitHandler.initialSubmitTransaction()) {
+                    mastershipChangeListener.onMasterRoleAcquired(
+                            deviceInfo,
+                            ContextChainMastershipState.INITIAL_SUBMIT
+                    );
+                    if (isStatisticsPollingOn) {
+                        myManager.startScheduling(deviceInfo);
+                    }
+                } else {
+                    mastershipChangeListener.onNotAbleToStartMastershipMandatory(
+                            deviceInfo,
+                            "Initial transaction cannot be submitted."
+                    );
+                }
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
-                LOG.warn("Initial gathering statistics unsuccessful for node {}", deviceInfo.getLOGValue());
-                lifecycleService.closeConnection();
+            public void onFailure(@Nonnull Throwable throwable) {
+                mastershipChangeListener.onNotAbleToStartMastershipMandatory(
+                        deviceInfo,
+                        "Initial gathering statistics unsuccessful."
+                );
             }
         });
 
-        if (this.isStatisticsPollingOn) {
-            myManager.startScheduling(deviceInfo);
-        }
-
-        return this.clusterInitializationPhaseHandler.onContextInstantiateService(connectionContext);
+        return this.clusterInitializationPhaseHandler.onContextInstantiateService(mastershipChangeListener);
     }
 
     @Override
