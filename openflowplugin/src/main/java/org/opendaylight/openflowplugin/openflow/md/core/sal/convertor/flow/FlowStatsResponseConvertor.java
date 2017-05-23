@@ -12,18 +12,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.extension.api.AugmentTuple;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
-import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.MatchExtensionHelper;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionResponseConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.FlowStatsResponseConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter64;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapList;
@@ -63,11 +62,15 @@ public class FlowStatsResponseConvertor extends Convertor<List<FlowStats>, List<
      * Method wraps openflow 1.0 actions list to Apply Action Instructions
      *
      * @param actionsList list of action
+     * @param ipProtocol ip protocol
      * @return OF10 actions as an instructions
      */
-    private Instructions wrapOF10ActionsToInstruction(List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action> actionsList, final short version) {
+    private Instructions wrapOF10ActionsToInstruction(List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action> actionsList,
+                                                      final short version,
+                                                      final Short ipProtocol) {
         ActionResponseConvertorData actionResponseConvertorData = new ActionResponseConvertorData(version);
         actionResponseConvertorData.setActionPath(ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION);
+        actionResponseConvertorData.setIpProtocol(ipProtocol);
 
         InstructionsBuilder instructionsBuilder = new InstructionsBuilder();
         List<Instruction> salInstructionList = new ArrayList<>();
@@ -120,15 +123,21 @@ public class FlowStatsResponseConvertor extends Convertor<List<FlowStats>, List<
             salFlowStatsBuilder.setPriority(flowStats.getPriority());
             salFlowStatsBuilder.setTableId(flowStats.getTableId());
 
+            Short ipProtocol = null;
+
             if (flowStats.getMatchV10() != null) {
                 final Optional<MatchBuilder> matchBuilderOptional = getConvertorExecutor().convert(flowStats.getMatchV10(), data);
 
                 if (matchBuilderOptional.isPresent()) {
+                    if (Objects.nonNull(matchBuilderOptional.get().getIpMatch())) {
+                        ipProtocol = matchBuilderOptional.get().getIpMatch().getIpProtocol();
+                    }
+
                     salFlowStatsBuilder.setMatch(matchBuilderOptional.get().build());
                 }
 
                 if (flowStats.getAction() != null && flowStats.getAction().size() != 0) {
-                    salFlowStatsBuilder.setInstructions(wrapOF10ActionsToInstruction(flowStats.getAction(), data.getVersion()));
+                    salFlowStatsBuilder.setInstructions(wrapOF10ActionsToInstruction(flowStats.getAction(), data.getVersion(), ipProtocol));
                 }
             }
 
