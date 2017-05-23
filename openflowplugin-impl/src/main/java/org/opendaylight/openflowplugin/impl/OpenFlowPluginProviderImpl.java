@@ -39,6 +39,7 @@ import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginConfigurationS
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainHolder;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
@@ -48,6 +49,7 @@ import org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegi
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterManager;
 import org.opendaylight.openflowplugin.impl.connection.ConnectionManagerImpl;
 import org.opendaylight.openflowplugin.impl.device.DeviceManagerImpl;
+import org.opendaylight.openflowplugin.impl.lifecycle.ContextChainHolderImpl;
 import org.opendaylight.openflowplugin.impl.rpc.RpcManagerImpl;
 import org.opendaylight.openflowplugin.impl.statistics.StatisticsManagerImpl;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.MessageIntelligenceAgencyImpl;
@@ -77,9 +79,9 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private final DataBroker dataBroker;
     private final NotificationPublishService notificationPublishService;
     private final NotificationService notificationProviderService;
-    private final EntityOwnershipService entityOwnershipService;
     private int rpcRequestsQuota;
     private long globalNotificationQuota;
+    private ContextChainHolder contextChainHolder;
     private long barrierInterval;
     private int barrierCountLimit;
     private long echoReplyTimeout;
@@ -120,8 +122,9 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         this.notificationProviderService = notificationProviderService;
         this.notificationPublishService = notificationPublishService;
         this.singletonServicesProvider = singletonServiceProvider;
-        this.entityOwnershipService = entityOwnershipService;
         convertorManager = ConvertorManagerFactory.createDefaultManager();
+        contextChainHolder = new ContextChainHolderImpl(hashedWheelTimer);
+        contextChainHolder.changeEntityOwnershipService(entityOwnershipService);
         extensionConverterManager = new ExtensionConverterManagerImpl();
     }
 
@@ -174,13 +177,15 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
         registerMXBean(messageIntelligenceAgency);
 
+        contextChainHolder.addSingletonServicesProvider(singletonServicesProvider);
+
         deviceManager = new DeviceManagerImpl(dataBroker,
                 getMessageIntelligenceAgency(),
                 singletonServicesProvider,
-                entityOwnershipService,
                 hashedWheelTimer,
                 convertorManager,
-                notificationPublishService);
+                notificationPublishService
+        );
 
         deviceManager.setGlobalNotificationQuota(globalNotificationQuota);
         deviceManager.setSwitchFeaturesMandatory(switchFeaturesMandatory);
@@ -199,22 +204,20 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         statisticsManager.setMaximumTimerDelay(maximumTimerDelay);
         statisticsManager.setIsStatisticsPollingOn(isStatisticsPollingOn);
 
-        /* Initialization Phase ordering - OFP Device Context suite */
-        // CM -> DM -> SM -> RPC -> Role -> DM
-        connectionManager.setDeviceConnectedHandler(deviceManager);
-        deviceManager.setDeviceInitializationPhaseHandler(statisticsManager);
-        statisticsManager.setDeviceInitializationPhaseHandler(rpcManager);
-        rpcManager.setDeviceInitializationPhaseHandler(deviceManager);
+        // Device connection handler moved from device manager to context holder
+        connectionManager.setDeviceConnectedHandler(contextChainHolder);
 
         /* Termination Phase ordering - OFP Device Context suite */
-        deviceManager.setDeviceTerminationPhaseHandler(rpcManager);
-        rpcManager.setDeviceTerminationPhaseHandler(statisticsManager);
-        statisticsManager.setDeviceTerminationPhaseHandler(deviceManager);
+        connectionManager.setDeviceDisconnectedHandler(contextChainHolder);
 
         rpcManager.setStatisticsRpcEnabled(isStatisticsRpcEnabled);
 
         TranslatorLibraryUtil.injectBasicTranslatorLibrary(deviceManager, convertorManager);
         deviceManager.initialize();
+
+        contextChainHolder.addManager(deviceManager);
+        contextChainHolder.addManager(statisticsManager);
+        contextChainHolder.addManager(rpcManager);
 
         startSwitchConnections();
         initialized = true;

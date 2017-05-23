@@ -11,16 +11,18 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.RejectedExecutionException;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
+import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterLifecycleSupervisor;
 
 /**
- * General API for all OFP Context
+ * General API for all OFP Context.
  */
 public interface OFPContext extends AutoCloseable, ClusterLifecycleSupervisor, ClusterInitializationPhaseHandler {
+
     /**
-     * Context state
+     * Context state.
      */
     enum CONTEXT_STATE {
         /* Initialization phase, context not yet fully initialized */
@@ -32,27 +34,25 @@ public interface OFPContext extends AutoCloseable, ClusterLifecycleSupervisor, C
     }
 
     /**
-     * Get actual context state
+     * Get actual context state.
      * @return actual context state
      */
     CONTEXT_STATE getState();
 
     /**
-     * About to stop services in cluster not master anymore or going down
-     * @return Future most of services need time to be closed
+     * About to stop services in cluster not master anymore or going down.
+     * @return Future most of services need time to be closed.
      */
-    default ListenableFuture<Void> stopClusterServices() {
-        return Futures.immediateFailedFuture(new RejectedExecutionException("Cannot stop abstract services, check implementation of cluster services"));
-    }
+    ListenableFuture<Void> stopClusterServices();
 
     /**
-     * Get cluster singleton service identifier
-     * @return cluster singleton service identifier
+     * Get cluster singleton service identifier.
+     * @return cluster singleton service identifier.
      */
     ServiceGroupIdentifier getServiceIdentifier();
 
     /**
-     * Get device info
+     * Get device info.
      * @return device info
      */
     DeviceInfo getDeviceInfo();
