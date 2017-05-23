@@ -18,9 +18,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -46,35 +44,35 @@ public class TableWriterTest {
     @Mock
     private ExecutorService mockTablePusher;
     @Mock
-    private WriteTransaction wTx;
+    private WriteTransaction writeTransaction;
 
     private TableWriter tableWriter;
 
     @Before
     public void setUp() throws Exception {
 
-        doReturn(wTx).when(mockDataBroker).newWriteOnlyTransaction();
-        Mockito.when(wTx.submit()).thenReturn(Futures.immediateCheckedFuture(null));
+        doReturn(writeTransaction).when(mockDataBroker).newWriteOnlyTransaction();
+        Mockito.when(writeTransaction.submit()).thenReturn(Futures.immediateCheckedFuture(null));
 
-        Mockito.doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                ((Runnable)invocation.getArguments()[0]).run();
-                return null;
-            }
+        Mockito.doAnswer(invocation -> {
+            ((Runnable) invocation.getArguments()[0]).run();
+            return null;
         }).when(mockTablePusher).execute(Matchers.<Runnable>any());
 
         tableWriter = new TableWriter(mockDataBroker, mockTablePusher);
     }
+
     @Test
     public void testAddTables() throws Exception {
         tableWriter.addTables(DPN_COUNT, START_TABLE_ID, END_TABLE_ID);
-        Mockito.verify(wTx, Mockito.times(TABLES_PER_DPN)).put(Matchers.<LogicalDatastoreType>any(), Matchers.<InstanceIdentifier<DataObject>>any(), Matchers.<DataObject>any(), Matchers.anyBoolean());
+        Mockito.verify(writeTransaction, Mockito.times(TABLES_PER_DPN)).put(Matchers.<LogicalDatastoreType>any(),
+                Matchers.<InstanceIdentifier<DataObject>>any(), Matchers.<DataObject>any(), Matchers.anyBoolean());
     }
 
     @Test
     public void testDeleteTables() throws Exception {
         tableWriter.deleteTables(DPN_COUNT, START_TABLE_ID, END_TABLE_ID);
-        Mockito.verify(wTx, Mockito.times(TABLES_PER_DPN)).delete(Matchers.<LogicalDatastoreType>any(), Matchers.<InstanceIdentifier<DataObject>>any());
+        Mockito.verify(writeTransaction, Mockito.times(TABLES_PER_DPN)).delete(Matchers.<LogicalDatastoreType>any(),
+                Matchers.<InstanceIdentifier<DataObject>>any());
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -41,29 +41,26 @@ public class FlowWriterDirectOFRpc {
     private final ExecutorService flowPusher;
     private static final long PAUSE_BETWEEN_BATCH_MILLIS = 40;
 
-    public FlowWriterDirectOFRpc(final DataBroker dataBroker,
-                                 final SalFlowService salFlowService,
-                                 final ExecutorService flowPusher) {
+    public FlowWriterDirectOFRpc(final DataBroker dataBroker, final SalFlowService salFlowService,
+            final ExecutorService flowPusher) {
         this.dataBroker = dataBroker;
         this.flowService = salFlowService;
         this.flowPusher = flowPusher;
     }
 
-
-    public void rpcFlowAdd(String dpId, int flowsPerDpn, int batchSize){
+    public void rpcFlowAdd(String dpId, int flowsPerDpn, int batchSize) {
         if (!getAllNodes().isEmpty() && getAllNodes().contains(dpId)) {
             FlowRPCHandlerTask addFlowRpcTask = new FlowRPCHandlerTask(dpId, flowsPerDpn, batchSize);
             flowPusher.execute(addFlowRpcTask);
         }
     }
 
-    public void rpcFlowAddAll(int flowsPerDpn, int batchSize){
+    public void rpcFlowAddAll(int flowsPerDpn, int batchSize) {
         Set<String> nodeIdSet = getAllNodes();
-        if (nodeIdSet.isEmpty()){
+        if (nodeIdSet.isEmpty()) {
             LOG.warn("No nodes seen on OPERATIONAL DS. Aborting !!!!");
-        }
-        else{
-            for (String dpId : nodeIdSet){
+        } else {
+            for (String dpId : nodeIdSet) {
                 LOG.info("Starting FlowRPCTaskHandler for switch id {}", dpId);
                 FlowRPCHandlerTask addFlowRpcTask = new FlowRPCHandlerTask(dpId, flowsPerDpn, batchSize);
                 flowPusher.execute(addFlowRpcTask);
@@ -71,31 +68,29 @@ public class FlowWriterDirectOFRpc {
         }
     }
 
-    private Set<String> getAllNodes(){
+    private Set<String> getAllNodes() {
 
         Set<String> nodeIds = new HashSet<>();
         InstanceIdentifier<Nodes> nodes = InstanceIdentifier.create(Nodes.class);
-        ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
+        ReadOnlyTransaction readOnlyTransaction = dataBroker.newReadOnlyTransaction();
 
         try {
-            Optional<Nodes> nodesDataNode = rTx.read(LogicalDatastoreType.OPERATIONAL, nodes).checkedGet();
-            if (nodesDataNode.isPresent()){
+            Optional<Nodes> nodesDataNode = readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, nodes)
+                    .checkedGet();
+            if (nodesDataNode.isPresent()) {
                 List<Node> nodesCollection = nodesDataNode.get().getNode();
                 if (nodesCollection != null && !nodesCollection.isEmpty()) {
                     for (Node node : nodesCollection) {
                         LOG.info("Switch with ID {} discovered !!", node.getId().getValue());
                         nodeIds.add(node.getId().getValue());
                     }
-                }
-                else{
+                } else {
                     return Collections.emptySet();
                 }
-            }
-            else{
+            } else {
                 return Collections.emptySet();
             }
-        }
-        catch(ReadFailedException rdFailedException){
+        } catch (ReadFailedException rdFailedException) {
             LOG.error("Failed to read connected nodes {}", rdFailedException);
         }
         return nodeIds;
@@ -106,9 +101,7 @@ public class FlowWriterDirectOFRpc {
         private final int flowsPerDpn;
         private final int batchSize;
 
-        public FlowRPCHandlerTask(final String dpId,
-                                  final int flowsPerDpn,
-                                  final int batchSize){
+        public FlowRPCHandlerTask(final String dpId, final int flowsPerDpn, final int batchSize) {
             this.dpId = dpId;
             this.flowsPerDpn = flowsPerDpn;
             this.batchSize = batchSize;
@@ -117,10 +110,10 @@ public class FlowWriterDirectOFRpc {
         @Override
         public void run() {
 
-            short tableId = (short)1;
+            short tableId = (short) 1;
             int initFlowId = 500;
 
-            for (int i=1; i<= flowsPerDpn; i++){
+            for (int i = 1; i <= flowsPerDpn; i++) {
 
                 String flowId = Integer.toString(initFlowId + i);
 
@@ -140,8 +133,7 @@ public class FlowWriterDirectOFRpc {
 
                 AddFlowInput addFlowInput = builder.build();
 
-                LOG.debug("RPC invocation for adding flow-id {} with input {}", flowId,
-                        addFlowInput.toString());
+                LOG.debug("RPC invocation for adding flow-id {} with input {}", flowId, addFlowInput.toString());
                 flowService.addFlow(addFlowInput);
 
                 if (i % batchSize == 0) {
