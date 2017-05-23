@@ -43,6 +43,23 @@ public class Ipv6DestinationEntrySerializerTest extends AbstractMatchEntrySerial
         });
     }
 
+    @Test
+    public void testSerializeWithoutMask() throws Exception {
+        final Ipv6Prefix ipv6Address = new Ipv6Prefix("2001:db8::123/128");
+
+        final Match ipv6abmMatch = new MatchBuilder()
+                .setLayer3Match(new Ipv6MatchBuilder()
+                        .setIpv6Destination(ipv6Address)
+                        .build())
+                .build();
+
+        assertMatch(ipv6abmMatch, false, (out) -> {
+            byte[] address = new byte[16];
+            out.readBytes(address);
+            assertArrayEquals(address, IetfInetUtil.INSTANCE.ipv6AddressBytes(IpConversionUtil.extractIpv6Address(ipv6Address)));
+        });
+    }
+
     @Override
     protected short getLength() {
         return EncodeConstants.SIZE_OF_IPV6_ADDRESS_IN_BYTES;

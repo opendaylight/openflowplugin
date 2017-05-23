@@ -54,8 +54,10 @@ public class Ipv6DestinationEntrySerializer extends AbstractMatchEntrySerializer
     @Override
     protected boolean getHasMask(Match match) {
         if (isPrefix(match)) {
-            return Objects.nonNull(IpConversionUtil
-                    .extractIpv6Prefix(Ipv6Match.class.cast(match.getLayer3Match()).getIpv6Destination()));
+            if (null != IpConversionUtil.hasIpv6Prefix(Ipv6Match.class.cast(match.getLayer3Match()).getIpv6Destination())) {
+                return Objects.nonNull(IpConversionUtil
+                        .extractIpv6Prefix(Ipv6Match.class.cast(match.getLayer3Match()).getIpv6Destination()));
+            }
         } else if (isArbitrary(match)) {
             return Objects.nonNull(Ipv6MatchArbitraryBitMask.class.cast(match.getLayer3Match()).getIpv6DestinationArbitraryBitmask());
         }
