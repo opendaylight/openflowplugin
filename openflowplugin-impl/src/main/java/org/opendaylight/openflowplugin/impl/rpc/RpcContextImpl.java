@@ -9,7 +9,6 @@ package org.opendaylight.openflowplugin.impl.rpc;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -17,17 +16,18 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Semaphore;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
-import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
@@ -57,26 +57,24 @@ class RpcContextImpl implements RpcContext {
     private final ExtensionConverterProvider extensionConverterProvider;
     private final ConvertorExecutor convertorExecutor;
     private final NotificationPublishService notificationPublishService;
-    private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
 
-    RpcContextImpl(final DeviceInfo deviceInfo,
-                   final RpcProviderRegistry rpcProviderRegistry,
-                   final MessageSpy messageSpy,
+    RpcContextImpl(@Nonnull final RpcProviderRegistry rpcProviderRegistry,
                    final int maxRequests,
-                   final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier,
-                   final DeviceContext deviceContext,
-                   final ExtensionConverterProvider extensionConverterProvider,
-                   final ConvertorExecutor convertorExecutor,
-                   final NotificationPublishService notificationPublishService) {
-        this.messageSpy = Preconditions.checkNotNull(messageSpy);
-        this.rpcProviderRegistry = Preconditions.checkNotNull(rpcProviderRegistry);
-        this.nodeInstanceIdentifier = nodeInstanceIdentifier;
-        this.tracker = new Semaphore(maxRequests, true);
+                   @Nonnull final DeviceContext deviceContext,
+                   @Nonnull final ExtensionConverterProvider extensionConverterProvider,
+                   @Nonnull final ConvertorExecutor convertorExecutor,
+                   @Nonnull final NotificationPublishService notificationPublishService,
+                   boolean statisticsRpcEnabled) {
+        this.deviceContext = deviceContext;
+        this.deviceInfo = deviceContext.getDeviceInfo();
+        this.nodeInstanceIdentifier = deviceContext.getDeviceInfo().getNodeInstanceIdentifier();
+        this.messageSpy = deviceContext.getMessageSpy();
+        this.rpcProviderRegistry = rpcProviderRegistry;
         this.extensionConverterProvider = extensionConverterProvider;
         this.notificationPublishService = notificationPublishService;
-        this.deviceInfo = deviceInfo;
-        this.deviceContext = deviceContext;
         this.convertorExecutor = convertorExecutor;
+        this.isStatisticsRpcEnabled = statisticsRpcEnabled;
+        this.tracker = new Semaphore(maxRequests, true);
     }
 
     /**
@@ -86,12 +84,15 @@ class RpcContextImpl implements RpcContext {
     @Override
     public <S extends RpcService> void registerRpcServiceImplementation(final Class<S> serviceClass,
                                                                         final S serviceInstance) {
-        LOG.trace("Try to register service {} for device {}.", serviceClass, nodeInstanceIdentifier);
         if (! rpcRegistrations.containsKey(serviceClass)) {
             final RoutedRpcRegistration<S> routedRpcReg = rpcProviderRegistry.addRoutedRpcImplementation(serviceClass, serviceInstance);
             routedRpcReg.registerPath(NodeContext.class, nodeInstanceIdentifier);
             rpcRegistrations.put(serviceClass, routedRpcReg);
-            LOG.debug("Registration of service {} for device {}.", serviceClass.getSimpleName(), nodeInstanceIdentifier.getKey().getId().getValue());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Registration of service {} for device {}.",
+                        serviceClass.getSimpleName(),
+                        nodeInstanceIdentifier.getKey().getId().getValue());
+            }
         }
     }
 
@@ -109,19 +110,7 @@ class RpcContextImpl implements RpcContext {
      */
     @Override
     public void close() {
-        if (CONTEXT_STATE.TERMINATION.equals(getState())){
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("RpcContext for node {} is already in TERMINATION state.", getDeviceInfo().getLOGValue());
-            }
-        } else {
-            try {
-                stopClusterServices().get();
-            } catch (Exception e) {
-                LOG.debug("Failed to close RpcContext for node {} with exception: ", getDeviceInfo().getLOGValue(), e);
-            }
-
-            this.state = CONTEXT_STATE.TERMINATION;
-        }
+        //NOOP
     }
 
     @Override
@@ -168,11 +157,6 @@ class RpcContextImpl implements RpcContext {
     }
 
     @Override
-    public void setStatisticsRpcEnabled(boolean isStatisticsRpcEnabled) {
-        this.isStatisticsRpcEnabled = isStatisticsRpcEnabled;
-    }
-
-    @Override
     public CONTEXT_STATE getState() {
         return this.state;
     }
@@ -189,7 +173,7 @@ class RpcContextImpl implements RpcContext {
 
     @Override
     public ListenableFuture<Void> stopClusterServices() {
-        if (CONTEXT_STATE.TERMINATION.equals(getState())) {
+        if (CONTEXT_STATE.TERMINATION.equals(this.state)) {
             return Futures.immediateCancelledFuture();
         }
 
@@ -215,16 +199,7 @@ class RpcContextImpl implements RpcContext {
     }
 
     @Override
-    public void setLifecycleInitializationPhaseHandler(final ClusterInitializationPhaseHandler handler) {
-        this.clusterInitializationPhaseHandler = handler;
-    }
-
-    @Override
-    public boolean onContextInstantiateService(final ConnectionContext connectionContext) {
-        if (connectionContext.getConnectionState().equals(ConnectionContext.CONNECTION_STATE.RIP)) {
-            LOG.warn("Connection on device {} was interrupted, will stop starting master services.", deviceInfo.getLOGValue());
-            return false;
-        }
+    public boolean onContextInstantiateService(final MastershipChangeListener mastershipChangeListener) {
 
         MdSalRegistrationUtils.registerServices(this, deviceContext, extensionConverterProvider, convertorExecutor);
 
@@ -236,6 +211,6 @@ class RpcContextImpl implements RpcContext {
                     convertorExecutor);
         }
 
-        return this.clusterInitializationPhaseHandler.onContextInstantiateService(connectionContext);
+        return true;
     }
 }
