@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2015, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -44,7 +44,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.RemoveFlowsRpcInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.SalBulkFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.TableTestInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.TableTestInput.Operation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.bulk.flow.ds.list.grouping.BulkFlowDsItem;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
@@ -78,6 +77,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
     private final DataBroker dataBroker;
     private final FlowCounter flowCounterBeanImpl = new FlowCounter();
     private final ExecutorService fjService = new ForkJoinPool();
+
     public SalBulkFlowServiceImpl(SalFlowService flowService, DataBroker dataBroker) {
         this.flowService = Preconditions.checkNotNull(flowService);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
@@ -103,11 +103,9 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
 
     private InstanceIdentifier<Flow> getFlowInstanceIdentifier(BulkFlowDsItem bulkFlow) {
         final NodeRef nodeRef = bulkFlow.getNode();
-        return ((InstanceIdentifier<Node>) nodeRef.getValue())
-                .augmentation(FlowCapableNode.class)
+        return ((InstanceIdentifier<Node>) nodeRef.getValue()).augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey(bulkFlow.getTableId()))
-                .child(Flow.class,
-                        new FlowKey(new FlowId(bulkFlow.getFlowId())));
+                .child(Flow.class, new FlowKey(new FlowId(bulkFlow.getFlowId())));
     }
 
     @Override
@@ -120,8 +118,8 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         return handleResultFuture(submitFuture);
     }
 
-    private ListenableFuture<RpcResult<Void>> handleResultFuture(CheckedFuture<Void,
-            TransactionCommitFailedException> submitFuture) {
+    private ListenableFuture<RpcResult<Void>> handleResultFuture(
+            CheckedFuture<Void, TransactionCommitFailedException> submitFuture) {
         final SettableFuture<RpcResult<Void>> rpcResult = SettableFuture.create();
         Futures.addCallback(submitFuture, new FutureCallback<Void>() {
             @Override
@@ -130,11 +128,10 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Throwable throwable) {
                 RpcResultBuilder<Void> rpcResultBld = RpcResultBuilder.<Void>failed()
-                        .withRpcErrors(Collections.singleton(
-                                RpcResultBuilder.newError(RpcError.ErrorType.APPLICATION, null, t.getMessage())
-                        ));
+                        .withRpcErrors(Collections.singleton(RpcResultBuilder.newError(RpcError.ErrorType.APPLICATION,
+                                null, throwable.getMessage())));
                 rpcResult.set(rpcResultBld.build());
             }
         });
@@ -150,11 +147,10 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Throwable throwable) {
                 RpcResultBuilder<Void> rpcResultBld = RpcResultBuilder.<Void>failed()
-                        .withRpcErrors(Collections.singleton(
-                                RpcResultBuilder.newError(RpcError.ErrorType.APPLICATION, null, t.getMessage())
-                        ));
+                        .withRpcErrors(Collections.singleton(RpcResultBuilder.newError(RpcError.ErrorType.APPLICATION,
+                                null, throwable.getMessage())));
                 rpcResult.set(rpcResultBld.build());
             }
         });
@@ -166,7 +162,8 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         List<ListenableFuture<RpcResult<AddFlowOutput>>> bulkResults = new ArrayList<>();
 
         for (BulkFlowBaseContentGrouping bulkFlow : input.getBulkFlowItem()) {
-            AddFlowInputBuilder flowInputBuilder = new AddFlowInputBuilder((org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow) bulkFlow);
+            AddFlowInputBuilder flowInputBuilder = new AddFlowInputBuilder(
+                    (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow) bulkFlow);
             final NodeRef nodeRef = bulkFlow.getNode();
             flowInputBuilder.setNode(nodeRef);
             flowInputBuilder.setTableId(bulkFlow.getTableId());
@@ -178,11 +175,9 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
 
     @Override
     public Future<RpcResult<Void>> readFlowTest(ReadFlowTestInput input) {
-        FlowReader flowReader = FlowReader.getNewInstance(dataBroker,
-                input.getDpnCount().intValue(),
-                input.getFlowsPerDpn().intValue(), input.isVerbose(),
-                input.isIsConfigDs(),input.getStartTableId().shortValue(),
-                input.getEndTableId().shortValue());
+        FlowReader flowReader = FlowReader.getNewInstance(dataBroker, input.getDpnCount().intValue(),
+                input.getFlowsPerDpn().intValue(), input.isVerbose(), input.isIsConfigDs(),
+                input.getStartTableId().shortValue(), input.getEndTableId().shortValue());
         flowCounterBeanImpl.setReader(flowReader);
         fjService.execute(flowReader);
         RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.success();
@@ -192,11 +187,8 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
     @Override
     public Future<RpcResult<Void>> flowRpcAddTest(FlowRpcAddTestInput input) {
         FlowWriterDirectOFRpc flowAddRpcTestImpl = new FlowWriterDirectOFRpc(dataBroker, flowService, fjService);
-        flowAddRpcTestImpl.rpcFlowAdd(
-                input.getDpnId(),
-                input.getFlowCount().intValue(),
+        flowAddRpcTestImpl.rpcFlowAdd(input.getDpnId(), input.getFlowCount().intValue(),
                 input.getRpcBatchSize().intValue());
-
 
         RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.success();
         return Futures.immediateFuture(rpcResultBuilder.build());
@@ -206,16 +198,13 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
     public Future<RpcResult<Void>> register() {
         RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.success();
         try {
-        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-        String pathToMBean = String.format("%s:type=%s",
-                FlowCounter.class.getPackage().getName(),
-                FlowCounter.class.getSimpleName());
-        ObjectName name = null;
-
-            name = new ObjectName(pathToMBean);
+            MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+            String pathToMBean = String.format("%s:type=%s", FlowCounter.class.getPackage().getName(),
+                    FlowCounter.class.getSimpleName());
+            ObjectName name = new ObjectName(pathToMBean);
             mbs.registerMBean(flowCounterBeanImpl, name);
-        } catch (MalformedObjectNameException | InstanceAlreadyExistsException
-                | MBeanRegistrationException | NotCompliantMBeanException e) {
+        } catch (MalformedObjectNameException | InstanceAlreadyExistsException | MBeanRegistrationException
+                | NotCompliantMBeanException e) {
             rpcResultBuilder = RpcResultBuilder.failed();
             LOG.warn("Exception occurred: {} ", e.getMessage(), e);
         }
@@ -227,7 +216,8 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         List<ListenableFuture<RpcResult<RemoveFlowOutput>>> bulkResults = new ArrayList<>();
 
         for (BulkFlowBaseContentGrouping bulkFlow : input.getBulkFlowItem()) {
-            RemoveFlowInputBuilder flowInputBuilder = new RemoveFlowInputBuilder((org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow) bulkFlow);
+            RemoveFlowInputBuilder flowInputBuilder = new RemoveFlowInputBuilder(
+                    (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow) bulkFlow);
             final NodeRef nodeRef = bulkFlow.getNode();
             flowInputBuilder.setNode(nodeRef);
             flowInputBuilder.setTableId(bulkFlow.getTableId());
@@ -242,7 +232,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         if (input.isTxChain()) {
             FlowWriterTxChain flowTester = new FlowWriterTxChain(dataBroker, fjService);
             flowCounterBeanImpl.setWriter(flowTester);
-            if (input.isIsAdd()){
+            if (input.isIsAdd()) {
                 flowTester.addFlows(input.getDpnCount().intValue(), input.getFlowsPerDpn().intValue(),
                         input.getBatchSize().intValue(), input.getSleepFor().intValue(),
                         input.getSleepAfter().intValue(), input.getStartTableId().shortValue(),
@@ -258,7 +248,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         if (input.isSeq()) {
             FlowWriterSequential flowTester = new FlowWriterSequential(dataBroker, fjService);
             flowCounterBeanImpl.setWriter(flowTester);
-            if (input.isIsAdd()){
+            if (input.isIsAdd()) {
                 flowTester.addFlows(input.getDpnCount().intValue(), input.getFlowsPerDpn().intValue(),
                         input.getBatchSize().intValue(), input.getSleepFor().intValue(),
                         input.getStartTableId().shortValue(), input.getEndTableId().shortValue(),
@@ -271,7 +261,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         } else {
             FlowWriterConcurrent flowTester = new FlowWriterConcurrent(dataBroker, fjService);
             flowCounterBeanImpl.setWriter(flowTester);
-            if (input.isIsAdd()){
+            if (input.isIsAdd()) {
                 flowTester.addFlows(input.getDpnCount().intValue(), input.getFlowsPerDpn().intValue(),
                         input.getBatchSize().intValue(), input.getSleepFor().intValue(),
                         input.getSleepAfter().intValue(), input.getStartTableId().shortValue(),
@@ -292,12 +282,12 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         flowCounterBeanImpl.setWriter(writer);
         switch (input.getOperation()) {
             case Add:
-                writer.addTables(input.getDpnCount().intValue(),
-                    input.getStartTableId().shortValue(), input.getEndTableId().shortValue());
+                writer.addTables(input.getDpnCount().intValue(), input.getStartTableId().shortValue(),
+                        input.getEndTableId().shortValue());
                 break;
             case Delete:
-                writer.deleteTables(input.getDpnCount().intValue(),
-                    input.getStartTableId().shortValue(), input.getEndTableId().shortValue());
+                writer.deleteTables(input.getDpnCount().intValue(), input.getStartTableId().shortValue(),
+                        input.getEndTableId().shortValue());
                 break;
             default:
                 RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.failed();
