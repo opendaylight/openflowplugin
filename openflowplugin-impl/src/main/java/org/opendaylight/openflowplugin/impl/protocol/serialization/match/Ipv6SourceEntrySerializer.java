@@ -54,8 +54,10 @@ public class Ipv6SourceEntrySerializer extends AbstractMatchEntrySerializer {
     @Override
     protected boolean getHasMask(Match match) {
         if (isPrefix(match)) {
-            return Objects.nonNull(IpConversionUtil
-                    .extractIpv6Prefix(Ipv6Match.class.cast(match.getLayer3Match()).getIpv6Source()));
+            if (null != IpConversionUtil.hasIpv6Prefix(Ipv6Match.class.cast(match.getLayer3Match()).getIpv6Source())) {
+                return Objects.nonNull(IpConversionUtil
+                        .extractIpv6Prefix(Ipv6Match.class.cast(match.getLayer3Match()).getIpv6Source()));
+            }
         } else if (isArbitrary(match)) {
             return Objects.nonNull(Ipv6MatchArbitraryBitMask.class.cast(match.getLayer3Match()).getIpv6SourceArbitraryBitmask());
         }

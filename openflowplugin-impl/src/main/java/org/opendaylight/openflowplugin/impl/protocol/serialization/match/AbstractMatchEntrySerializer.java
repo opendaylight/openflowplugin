@@ -117,7 +117,7 @@ public abstract class AbstractMatchEntrySerializer implements HeaderSerializer<M
         writeIpv6Address(IpConversionUtil.extractIpv6Address(prefix), outBuffer);
 
         // If prefix had mask, also write prefix
-        Optional.ofNullable(IpConversionUtil.extractIpv6Prefix(prefix)).ifPresent(mask ->
+        Optional.ofNullable(IpConversionUtil.hasIpv6Prefix(prefix)).ifPresent(mask ->
                 writeMask(IpConversionUtil.convertIpv6PrefixToByteArray(mask), outBuffer,
                         EncodeConstants.SIZE_OF_IPV6_ADDRESS_IN_BYTES));
     }
