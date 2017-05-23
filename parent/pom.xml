@@ -34,8 +34,8 @@
         <openflowjava.version>0.10.0-SNAPSHOT</openflowjava.version>
         <openflowplugin.version>0.5.0-SNAPSHOT</openflowplugin.version>
         <sal.api.version>0.13.0-SNAPSHOT</sal.api.version>
-        <jmxGeneratorPath>target/generated-sources/config</jmxGeneratorPath>
-        <salGeneratorPath>target/generated-sources/sal</salGeneratorPath>
+        <jmxGeneratorPath>${project.build.directory}/generated-sources/config</jmxGeneratorPath>
+        <salGeneratorPath>${project.build.directory}/generated-sources/sal</salGeneratorPath>
         <exi.nagasena.version>0000.0002.0053.0</exi.nagasena.version>
         <controller.distribution.version>0.6.0-SNAPSHOT</controller.distribution.version>
 
