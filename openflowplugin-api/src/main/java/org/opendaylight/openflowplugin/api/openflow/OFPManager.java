@@ -8,26 +8,13 @@
 
 package org.opendaylight.openflowplugin.api.openflow;
 
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceLifecycleSupervisor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 
 /**
  * This interface is responsible for managing lifecycle of itself and all it's associated contexts.
- * Every manager that implements this interface must handle connection initialization and termination chain
- * by implementing methods from {@link org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceLifecycleSupervisor},
- * then it must handle initialization and termination chain of it's associated context by implementing methods from
- * {@link org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler} and
- * {@link org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler} and also removal
- * of these contexts from it's internal map of contexts by implementing methods from
- * {@link org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler}. And at last, it must
- * handle it's own full termination by implementing {@link AutoCloseable#close()}
+ * And at last, it must handle it's own full termination by implementing {@link AutoCloseable#close()}
  */
 public interface OFPManager extends
-        DeviceLifecycleSupervisor,
-        DeviceInitializationPhaseHandler,
-        DeviceTerminationPhaseHandler,
         DeviceRemovedHandler,
         AutoCloseable {
 

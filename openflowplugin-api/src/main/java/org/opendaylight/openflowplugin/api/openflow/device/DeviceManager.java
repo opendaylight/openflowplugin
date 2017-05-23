@@ -9,12 +9,14 @@
 package org.opendaylight.openflowplugin.api.openflow.device;
 
 import com.google.common.util.concurrent.CheckedFuture;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListener;
+import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
+import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
 /**
  * This interface is responsible for instantiating DeviceContext and
@@ -23,10 +25,7 @@ import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrari
  */
 public interface DeviceManager extends
         OFPManager,
-        DeviceConnectedHandler,
-        DeviceDisconnectedHandler,
-        TranslatorLibrarian,
-        EntityOwnershipListener {
+        TranslatorLibrarian {
 
     /**
      * invoked after all services injected
@@ -44,9 +43,15 @@ public interface DeviceManager extends
     void setBarrierInterval(long barrierTimeoutLimit);
 
     CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(DeviceInfo deviceInfo);
+    
+    CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(final KeyedInstanceIdentifier<Node, NodeKey> ii);
 
     void setGlobalNotificationQuota(long globalNotificationQuota);
 
     void setSwitchFeaturesMandatory(boolean switchFeaturesMandatory);
+
+    DeviceContext createContext(ConnectionContext connectionContext);
+
+    void sendNodeAddedNotification(@Nonnull final DeviceInfo deviceInfo);
 }
 
