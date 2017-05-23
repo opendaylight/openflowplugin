@@ -29,7 +29,6 @@ import io.netty.util.Timeout;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.util.concurrent.atomic.AtomicLong;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,7 +58,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
@@ -230,7 +228,7 @@ public class DeviceContextImplTest {
                 translatorLibrary,
                 deviceManager,
                 convertorExecutor,
-                false, timer, deviceManager);
+                false, timer);
         deviceContextSpy = Mockito.spy(deviceContext);
 
         xid = new Xid(atomicLong.incrementAndGet());
@@ -239,16 +237,6 @@ public class DeviceContextImplTest {
 
         Mockito.doNothing().when(deviceContextSpy).writeToTransaction(Mockito.<LogicalDatastoreType>any(), Mockito.<InstanceIdentifier>any(), any());
 
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void testDeviceContextImplConstructorNullDataBroker() throws Exception {
-        new DeviceContextImpl(connectionContext, null, null, translatorLibrary, deviceManager, convertorExecutor,false, timer, deviceManager).close();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void testDeviceContextImplConstructorNullTimer() throws Exception {
-        new DeviceContextImpl(null, dataBroker, null, translatorLibrary, deviceManager,convertorExecutor,false, timer, deviceManager).close();
     }
 
     @Test
@@ -275,8 +263,8 @@ public class DeviceContextImplTest {
     @Test
     public void testAuxiliaryConnectionContext() {
         final ConnectionContext mockedConnectionContext = addDummyAuxiliaryConnectionContext();
-        final ConnectionContext pickedConnectiobContexts = deviceContext.getAuxiliaryConnectionContexts(DUMMY_COOKIE);
-        assertEquals(mockedConnectionContext, pickedConnectiobContexts);
+        final ConnectionContext pickedConnectionContexts = deviceContext.getAuxiliaryConnectionContexts(DUMMY_COOKIE);
+        assertEquals(mockedConnectionContext, pickedConnectionContexts);
     }
     @Test
     public void testRemoveAuxiliaryConnectionContext() {
@@ -439,7 +427,6 @@ public class DeviceContextImplTest {
         when(connectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
 
         deviceContext.onPublished();
-        verify(mockedAuxConnectionAdapter).setPacketInFiltering(eq(false));
         verify(mockedConnectionAdapter).setPacketInFiltering(eq(false));
     }
 
@@ -525,28 +512,6 @@ public class DeviceContextImplTest {
         deviceContext.processExperimenterMessage(experimenterMessage);
 
         verify(mockedNotificationPublishService).offerNotification(any(ExperimenterMessageFromDev.class));
-    }
-
-    @Test
-    public void testOnDeviceDisconnected() throws Exception {
-        final DeviceTerminationPhaseHandler deviceContextClosedHandler = mock(DeviceTerminationPhaseHandler.class);
-
-        assertEquals(0, deviceContext.getDeviceFlowRegistry().size());
-        assertEquals(0, deviceContext.getDeviceGroupRegistry().size());
-        assertEquals(0, deviceContext.getDeviceMeterRegistry().size());
-
-    }
-
-    @Test
-    public void replaceConnectionContext() throws Exception {
-
-        final ConnectionContext connectionContext1 = mock(ConnectionContext.class);
-        Assert.assertEquals(deviceContext.getPrimaryConnectionContext(), connectionContext);
-        Mockito.when(connectionContext1.getConnectionAdapter()).thenReturn(connectionAdapter);
-        Mockito.doNothing().when(connectionAdapter).setPacketInFiltering(Mockito.anyBoolean());
-        deviceContext.replaceConnectionContext(connectionContext1);
-        Assert.assertEquals(deviceContext.getPrimaryConnectionContext(), connectionContext1);
-
     }
 
 }
