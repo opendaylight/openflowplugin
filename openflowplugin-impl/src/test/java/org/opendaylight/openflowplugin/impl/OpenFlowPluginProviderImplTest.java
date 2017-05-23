@@ -89,8 +89,7 @@ public class OpenFlowPluginProviderImplTest {
                 rpcProviderRegistry,
                 notificationService,
                 notificationPublishService,
-                clusterSingletonServiceProvider,
-                entityOwnershipService);
+                clusterSingletonServiceProvider);
 
         provider.updateProperty(PropertyType.THREAD_POOL_MIN_THREADS, THREAD_POOL_MIN_THREADS);
         provider.updateProperty(PropertyType.THREAD_POOL_MAX_THREADS, THREAD_POOL_MAX_THREADS);
