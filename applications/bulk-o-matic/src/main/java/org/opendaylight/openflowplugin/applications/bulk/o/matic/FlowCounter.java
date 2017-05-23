@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -12,10 +12,7 @@ public class FlowCounter implements FlowCounterMBean {
     private FlowCounterMBean writer;
 
     public enum OperationStatus {
-        INIT (0),
-        SUCCESS (2),
-        FAILURE (-1),
-        IN_PROGRESS (1);
+        INIT(0), SUCCESS(2), FAILURE(-1), IN_PROGRESS(1);
 
         private final int status;
 
@@ -38,7 +35,7 @@ public class FlowCounter implements FlowCounterMBean {
 
     @Override
     public long getFlowCount() {
-        if(reader != null) {
+        if (reader != null) {
             return reader.getFlowCount();
         }
         return BulkOMaticUtils.DEFAULT_FLOW_COUNT;
@@ -46,7 +43,7 @@ public class FlowCounter implements FlowCounterMBean {
 
     @Override
     public int getReadOpStatus() {
-        if(reader != null) {
+        if (reader != null) {
             return reader.getReadOpStatus();
         }
         return OperationStatus.INIT.status();
@@ -54,7 +51,7 @@ public class FlowCounter implements FlowCounterMBean {
 
     @Override
     public int getWriteOpStatus() {
-        if(writer != null) {
+        if (writer != null) {
             return writer.getWriteOpStatus();
         }
         return OperationStatus.INIT.status();
@@ -62,7 +59,7 @@ public class FlowCounter implements FlowCounterMBean {
 
     @Override
     public long getTaskCompletionTime() {
-        if(writer != null) {
+        if (writer != null) {
             return writer.getTaskCompletionTime();
         }
         return BulkOMaticUtils.DEFAULT_COMPLETION_TIME;

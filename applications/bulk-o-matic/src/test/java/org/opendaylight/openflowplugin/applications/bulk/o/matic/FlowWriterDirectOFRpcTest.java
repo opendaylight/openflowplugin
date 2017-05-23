@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -21,9 +21,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -53,7 +51,7 @@ public class FlowWriterDirectOFRpcTest {
     @Mock
     private ExecutorService mockFlowPusher;
     @Mock
-    private ReadOnlyTransaction rTx;
+    private ReadOnlyTransaction readOnlyTransaction;
     @Mock
     private Nodes mockNodes;
 
@@ -61,7 +59,7 @@ public class FlowWriterDirectOFRpcTest {
 
     @Before
     public void setUp() throws Exception {
-        when(mockDataBroker.newReadOnlyTransaction()).thenReturn(rTx);
+        when(mockDataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
         NodeBuilder nodeBuilder = new NodeBuilder()
                 .setId(new NodeId("1"));
 
@@ -71,15 +69,13 @@ public class FlowWriterDirectOFRpcTest {
 
         when(mockNodes.getNode()).thenReturn(nodes);
 
-        when(rTx.read(Mockito.any(LogicalDatastoreType.class), Mockito.<InstanceIdentifier<Nodes>>any()))
-                .thenReturn(Futures.immediateCheckedFuture(Optional.of(mockNodes)));
+        when(readOnlyTransaction.read(Mockito.any(LogicalDatastoreType.class),
+                Mockito.<InstanceIdentifier<Nodes>>any()))
+                        .thenReturn(Futures.immediateCheckedFuture(Optional.of(mockNodes)));
 
-        Mockito.doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                ((Runnable)invocation.getArguments()[0]).run();
-                return null;
-            }
+        Mockito.doAnswer(invocation -> {
+            ((Runnable)invocation.getArguments()[0]).run();
+            return null;
         }).when(mockFlowPusher).execute(Matchers.<Runnable>any());
 
         flowWriterDirectOFRpc = new FlowWriterDirectOFRpc(mockDataBroker, mockSalFlowService, mockFlowPusher);
@@ -96,5 +92,4 @@ public class FlowWriterDirectOFRpcTest {
         flowWriterDirectOFRpc.rpcFlowAddAll(FLOWS_PER_DPN, 10);
         Mockito.verify(mockSalFlowService, Mockito.times(FLOWS_PER_DPN)).addFlow(Mockito.<AddFlowInput>any());
     }
-
 }
