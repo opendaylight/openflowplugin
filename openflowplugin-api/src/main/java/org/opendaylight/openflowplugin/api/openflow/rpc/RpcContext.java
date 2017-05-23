@@ -23,5 +23,4 @@ public interface RpcContext extends RequestContextStack, OFPContext {
     <S extends RpcService> S lookupRpcService(Class<S> serviceClass);
     <S extends RpcService> void unregisterRpcServiceImplementation(Class<S> serviceClass);
 
-    void setStatisticsRpcEnabled(boolean isStatisticsRpcEnabled);
 }

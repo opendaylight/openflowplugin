@@ -90,12 +90,18 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
         return deviceMasterships;
     }
 
+    /**
+     * Temporary solution before Mastership manager from plugin.
+     * Remove notification after update.
+     * Update node notification should be send only when mastership in plugin was granted.
+     * @param notification received notification
+     */
     @Override
     public void onNodeUpdated(NodeUpdated notification) {
         LOG.debug("NodeUpdate notification received : {}", notification);
         DeviceMastership membership = deviceMasterships.computeIfAbsent(notification.getId(), device ->
-                new DeviceMastership(notification.getId(), clusterSingletonService, reconcliationAgent));
-        membership.registerClusterSingletonService();
+                new DeviceMastership(notification.getId(), reconcliationAgent));
+        membership.reconcile();
     }
 
     @Override
