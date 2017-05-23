@@ -27,7 +27,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.device.DeviceContextImpl;
@@ -72,8 +71,6 @@ public abstract class ServiceMocking {
     protected DeviceState mockedDeviceState;
     @Mock
     protected DeviceInfo mockedDeviceInfo;
-    @Mock
-    protected DeviceInitializationPhaseHandler mockedDevicePhaseHandler;
     @Mock
     protected RequestContext mockedRequestContext;
     @Mock

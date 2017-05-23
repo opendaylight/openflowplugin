@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.statistics;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Verify;
 import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -31,13 +30,9 @@ import javax.annotation.Nonnull;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.ConnectionException;
-import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceTerminationPhaseHandler;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
@@ -60,9 +55,6 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     private static final long DEFAULT_STATS_TIMEOUT_SEC = 50L;
     private final ConvertorExecutor converterExecutor;
 
-    private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
-    private DeviceTerminationPhaseHandler deviceTerminationPhaseHandler;
-
     private final ConcurrentMap<DeviceInfo, StatisticsContext> contexts = new ConcurrentHashMap<>();
 
     private long basicTimerDelay;
@@ -76,42 +68,14 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     private final HashedWheelTimer hashedWheelTimer;
 
-    @Override
-    public void setDeviceInitializationPhaseHandler(final DeviceInitializationPhaseHandler handler) {
-        deviceInitPhaseHandler = handler;
-    }
-
-    public StatisticsManagerImpl(final RpcProviderRegistry rpcProviderRegistry,
+    public StatisticsManagerImpl(@Nonnull final RpcProviderRegistry rpcProviderRegistry,
                                  final HashedWheelTimer hashedWheelTimer,
                                  final ConvertorExecutor convertorExecutor) {
-        Preconditions.checkArgument(rpcProviderRegistry != null);
 	    this.converterExecutor = convertorExecutor;
         this.controlServiceRegistration = Preconditions.checkNotNull(
                 rpcProviderRegistry.addRpcImplementation(StatisticsManagerControlService.class, this)
         );
         this.hashedWheelTimer = hashedWheelTimer;
-    }
-
-    @Override
-    public void onDeviceContextLevelUp(final DeviceInfo deviceInfo,
-                                       final LifecycleService lifecycleService) throws Exception {
-
-        final StatisticsContext statisticsContext =
-                new StatisticsContextImpl(
-                        deviceInfo,
-                        isStatisticsPollingOn,
-                        lifecycleService,
-                        converterExecutor,
-                        this);
-
-        Verify.verify(
-                contexts.putIfAbsent(deviceInfo, statisticsContext) == null,
-                "StatisticsCtx still not closed for Node {}", deviceInfo.getLOGValue()
-        );
-
-        lifecycleService.setStatContext(statisticsContext);
-        lifecycleService.registerDeviceRemovedHandler(this);
-        deviceInitPhaseHandler.onDeviceContextLevelUp(deviceInfo, lifecycleService);
     }
 
     @VisibleForTesting
@@ -222,12 +186,6 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     }
 
     @Override
-    public void onDeviceContextLevelDown(final DeviceInfo deviceInfo) {
-        Optional.ofNullable(contexts.get(deviceInfo)).ifPresent(OFPContext::close);
-        deviceTerminationPhaseHandler.onDeviceContextLevelDown(deviceInfo);
-    }
-
-    @Override
     public Future<RpcResult<GetStatisticsWorkModeOutput>> getStatisticsWorkMode() {
         final GetStatisticsWorkModeOutputBuilder smModeOutputBld = new GetStatisticsWorkModeOutputBuilder();
         smModeOutputBld.setMode(workMode);
@@ -256,9 +214,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                             break;
                         case FULLYDISABLED:
                             final Optional<Timeout> pollTimeout = statisticsContext.getPollTimeout();
-                            if (pollTimeout.isPresent()) {
-                                pollTimeout.get().cancel();
-                            }
+                            pollTimeout.ifPresent(Timeout::cancel);
                             for (final ItemLifeCycleSource lifeCycleSource : deviceContext.getItemLifeCycleSourceRegistry().getLifeCycleSources()) {
                                 lifeCycleSource.setItemLifecycleListener(statisticsContext.getItemLifeCycleListener());
                             }
@@ -339,18 +295,30 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     }
 
     @Override
-    public void setDeviceTerminationPhaseHandler(final DeviceTerminationPhaseHandler handler) {
-        this.deviceTerminationPhaseHandler = handler;
-    }
-
-    @Override
     public void setIsStatisticsPollingOn(boolean isStatisticsPollingOn){
         this.isStatisticsPollingOn = isStatisticsPollingOn;
     }
 
-    public void onDeviceRemoved(DeviceInfo deviceInfo) {
+    @Override
+    public StatisticsContext createContext(@Nonnull final DeviceContext deviceContext) {
+
+
+        final StatisticsContext statisticsContext = new StatisticsContextImpl(
+                isStatisticsPollingOn,
+                deviceContext,
+                converterExecutor,
+                    this);
+        contexts.putIfAbsent(deviceContext.getDeviceInfo(), statisticsContext);
+
+        return statisticsContext;
+    }
+
+    @Override
+    public void onDeviceRemoved(final DeviceInfo deviceInfo) {
         contexts.remove(deviceInfo);
-        LOG.debug("Statistics context removed for node {}", deviceInfo.getLOGValue());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Statistics context removed for node {}", deviceInfo.getLOGValue());
+        }
     }
 
     @Override
