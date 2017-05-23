@@ -13,7 +13,6 @@ import com.google.common.util.concurrent.Futures;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -26,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TableWriter implements FlowCounterMBean {
-    private final Logger LOG = LoggerFactory.getLogger(TableWriter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TableWriter.class);
 
     private final AtomicInteger writeOpStatus = new AtomicInteger(FlowCounter.OperationStatus.INIT.status());
     private final AtomicLong taskCompletionTime = new AtomicLong(BulkOMaticUtils.DEFAULT_COMPLETION_TIME);
@@ -69,12 +68,12 @@ public class TableWriter implements FlowCounterMBean {
 
     private class TableHandlerTask implements Runnable {
 
-        private short startTableId;
-        private short endTableId;
-        private int dpnCount;
-        private boolean isAdd;
+        private final short startTableId;
+        private final short endTableId;
+        private final int dpnCount;
+        private final boolean isAdd;
 
-        public TableHandlerTask(int dpnCount, short startTableId, short endTableId, boolean isAdd) {
+        TableHandlerTask(int dpnCount, short startTableId, short endTableId, boolean isAdd) {
             this.dpnCount = dpnCount;
             this.startTableId = startTableId;
             this.endTableId = endTableId;
@@ -90,9 +89,7 @@ public class TableWriter implements FlowCounterMBean {
                 String dpId = BulkOMaticUtils.DEVICE_TYPE_PREFIX + String.valueOf(dpn);
                 for (short tableId = startTableId; tableId <= endTableId; tableId++) {
                     WriteTransaction wtx = dataBroker.newWriteOnlyTransaction();
-                    Table table = new TableBuilder().setKey(new TableKey(tableId))
-                            .setId(tableId)
-                            .build();
+                    Table table = new TableBuilder().setKey(new TableKey(tableId)).setId(tableId).build();
                     InstanceIdentifier<Table> tableIId = BulkOMaticUtils.getTableId(tableId, dpId);
 
                     if (isAdd) {
@@ -105,7 +102,7 @@ public class TableWriter implements FlowCounterMBean {
 
                     Futures.addCallback(future, new FutureCallback<Void>() {
                         @Override
-                        public void onSuccess(@Nullable Void v) {
+                        public void onSuccess(Void voidParameter) {
                             if (successfulWrites.incrementAndGet() == totalTables) {
                                 if (failedWrites.get() > 0) {
                                     writeOpStatus.set(FlowCounter.OperationStatus.FAILURE.status());
