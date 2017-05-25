@@ -31,12 +31,6 @@ public interface OFPContext extends AutoCloseable, ClusterLifecycleSupervisor, C
     }
 
     /**
-     * Get actual context state.
-     * @return actual context state
-     */
-    ContextState getState();
-
-    /**
      * About to stop services in cluster not master anymore or going down.
      * @return Future most of services need time to be closed.
      */
