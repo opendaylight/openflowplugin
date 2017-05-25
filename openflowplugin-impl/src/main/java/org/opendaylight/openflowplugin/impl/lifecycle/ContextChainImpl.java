@@ -45,20 +45,16 @@ public class ContextChainImpl implements ContextChain {
     private ConnectionContext primaryConnection;
     private Set<ConnectionContext> auxiliaryConnections = new ConcurrentSet<>();
 
-    private volatile ContextChainState contextChainState;
+    private volatile ContextChainState contextChainState = ContextChainState.UNDEFINED;
 
-    private AtomicBoolean masterStateOnDevice;
-    private AtomicBoolean initialGathering;
-    private AtomicBoolean initialSubmitting;
-    private AtomicBoolean registryFilling;
+    private final AtomicBoolean masterStateOnDevice = new AtomicBoolean(false);
+    private final AtomicBoolean initialGathering = new AtomicBoolean(false);
+    private final AtomicBoolean initialSubmitting = new AtomicBoolean(false);
+    private final AtomicBoolean registryFilling = new AtomicBoolean(false);
+    private final AtomicBoolean rpcRegistration = new AtomicBoolean(false);
 
     ContextChainImpl(final ConnectionContext connectionContext) {
         this.primaryConnection = connectionContext;
-        this.contextChainState = ContextChainState.UNDEFINED;
-        this.masterStateOnDevice = new AtomicBoolean(false);
-        this.initialGathering = new AtomicBoolean(false);
-        this.initialSubmitting = new AtomicBoolean(false);
-        this.registryFilling = new AtomicBoolean(false);
         this.deviceInfo = connectionContext.getDeviceInfo();
     }
 
@@ -106,18 +102,18 @@ public class ContextChainImpl implements ContextChain {
         this.initialSubmitting.set(false);
         this.initialGathering.set(false);
         this.masterStateOnDevice.set(false);
+        this.rpcRegistration.set(false);
     }
 
     @Override
     public void close() {
         this.auxiliaryConnections.forEach(connectionContext -> connectionContext.closeConnection(false));
-        if (this.primaryConnection.getConnectionState() != ConnectionContext.CONNECTION_STATE.RIP) {
-            this.primaryConnection.closeConnection(true);
-        }
+        this.primaryConnection.closeConnection(true);
         lifecycleService.close();
         deviceContext.close();
         rpcContext.close();
         statisticsContext.close();
+        unMasterMe();
     }
 
     @Override
@@ -163,6 +159,9 @@ public class ContextChainImpl implements ContextChain {
                 LOG.debug("Device {}, initial gathering OK.", deviceInfo.getLOGValue());
                 this.initialGathering.set(true);
                 break;
+            case RPC_REGISTRATION:
+                LOG.debug("Device {}, RPC registration OK.", deviceInfo.getLOGValue());
+                this.rpcRegistration.set(true);
             //Flow registry fill is not mandatory to work as a master
             case INITIAL_FLOW_REGISTRY_FILL:
                 LOG.debug("Device {}, initial registry filling OK.", deviceInfo.getLOGValue());
@@ -170,17 +169,20 @@ public class ContextChainImpl implements ContextChain {
             case CHECK:
             default:
         }
+
         final boolean result =
                 this.initialGathering.get() &&
                 this.masterStateOnDevice.get() &&
-                this.initialSubmitting.get();
+                this.initialSubmitting.get() &&
+                this.rpcRegistration.get();
 
         if (result && mastershipState != ContextChainMastershipState.CHECK) {
             LOG.info("Device {} is able to work as master{}",
                     deviceInfo.getLOGValue(),
-                    this.registryFilling.get() ? " WITHOUT flow registry !!!" : ".");
+                    this.registryFilling.get() ? "." : " WITHOUT flow registry !!!");
             changeState(ContextChainState.WORKING_MASTER);
         }
+
         return result;
     }
 
