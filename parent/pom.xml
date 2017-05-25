@@ -12,14 +12,14 @@
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>odlparent</artifactId>
-        <version>1.8.0-SNAPSHOT</version>
+        <version>1.8.1-SNAPSHOT</version>
         <relativePath/>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>openflowplugin-parent</artifactId>
-    <version>0.4.0-SNAPSHOT</version>
+    <version>0.4.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <scm>
@@ -31,18 +31,18 @@
 
     <properties>
         <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
-        <openflowjava.version>0.9.0-SNAPSHOT</openflowjava.version>
-        <openflowplugin.version>0.4.0-SNAPSHOT</openflowplugin.version>
-        <sal.api.version>0.12.0-SNAPSHOT</sal.api.version>
+        <openflowjava.version>0.9.1-SNAPSHOT</openflowjava.version>
+        <openflowplugin.version>0.4.1-SNAPSHOT</openflowplugin.version>
+        <sal.api.version>0.12.1-SNAPSHOT</sal.api.version>
         <jmxGeneratorPath>target/generated-sources/config</jmxGeneratorPath>
         <salGeneratorPath>target/generated-sources/sal</salGeneratorPath>
         <exi.nagasena.version>0000.0002.0053.0</exi.nagasena.version>
-        <controller.distribution.version>0.5.0-SNAPSHOT</controller.distribution.version>
+        <controller.distribution.version>0.5.1-SNAPSHOT</controller.distribution.version>
 
-        <config.version>0.6.0-SNAPSHOT</config.version>
-        <mdsal.version>1.5.0-SNAPSHOT</mdsal.version>
-        <mdsal.model.version>0.10.0-SNAPSHOT</mdsal.model.version>
-        <yangtools.version>1.1.0-SNAPSHOT</yangtools.version>
+        <config.version>0.6.1-SNAPSHOT</config.version>
+        <mdsal.version>1.5.1-SNAPSHOT</mdsal.version>
+        <mdsal.model.version>0.10.1-SNAPSHOT</mdsal.model.version>
+        <yangtools.version>1.1.1-SNAPSHOT</yangtools.version>
     </properties>
 
     <dependencyManagement>
@@ -65,7 +65,7 @@
             <dependency>
                 <groupId>org.opendaylight.mdsal</groupId>
                 <artifactId>mdsal-artifacts</artifactId>
-                <version>2.2.0-SNAPSHOT</version>
+                <version>2.2.1-SNAPSHOT</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
