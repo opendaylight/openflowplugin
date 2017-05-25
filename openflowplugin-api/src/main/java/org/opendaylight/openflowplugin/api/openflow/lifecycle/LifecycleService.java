@@ -11,10 +11,8 @@ package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 import javax.annotation.Nonnull;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
 
 /**
@@ -27,8 +25,8 @@ public interface LifecycleService extends ClusterSingletonService, AutoCloseable
      * @param singletonServiceProvider      from md-sal binding
      * @param deviceContext                 device
      */
-    void registerService(@Nonnull final ClusterSingletonServiceProvider singletonServiceProvider,
-                         @Nonnull final DeviceContext deviceContext);
+    ClusterSingletonServiceRegistration registerService(@Nonnull final ClusterSingletonServiceProvider singletonServiceProvider,
+                                                        @Nonnull final DeviceContext deviceContext);
 
     /**
      * This method registers device removed handler what will be executed when device should be removed.

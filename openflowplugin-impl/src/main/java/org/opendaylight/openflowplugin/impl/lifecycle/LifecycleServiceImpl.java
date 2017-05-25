@@ -34,7 +34,6 @@ public class LifecycleServiceImpl implements LifecycleService {
 
     private static final Logger LOG = LoggerFactory.getLogger(LifecycleServiceImpl.class);
 
-    private ClusterSingletonServiceRegistration registration;
     private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
     private final List<DeviceRemovedHandler> deviceRemovedHandlers = new ArrayList<>();
     private ServiceGroupIdentifier serviceGroupIdentifier;
@@ -96,39 +95,27 @@ public class LifecycleServiceImpl implements LifecycleService {
     public void close() {
         if (terminationState) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("LifecycleService is already in TERMINATION state.");
+                LOG.debug("LifecycleService for node {} is already in TERMINATION state.", deviceInfo.getLOGValue());
             }
         } else {
             this.terminationState = true;
 
             // We are closing, so cleanup all managers now
             deviceRemovedHandlers.forEach(h -> h.onDeviceRemoved(deviceInfo));
-
-            // If we are still registered and we are not already closing, then close the registration
-            if (Objects.nonNull(registration)) {
-                try {
-                    LOG.info("Closing clustering services (singleton) for node {}", deviceInfo.getLOGValue());
-                    registration.close();
-                } catch (final Exception e) {
-                    LOG.warn("Failed to close clustering services for node {} with exception: ",
-                            deviceInfo.getLOGValue(), e);
-                }
-            }
         }
     }
 
     @Override
-    public void registerService(@Nonnull final ClusterSingletonServiceProvider singletonServiceProvider,
-                                @Nonnull final DeviceContext deviceContext) {
-
+    public ClusterSingletonServiceRegistration registerService(@Nonnull final ClusterSingletonServiceProvider singletonServiceProvider,
+                                                               @Nonnull final DeviceContext deviceContext) {
         this.clusterInitializationPhaseHandler = deviceContext;
         this.serviceGroupIdentifier = deviceContext.getServiceIdentifier();
         this.deviceInfo = deviceContext.getDeviceInfo();
-        this.registration = Verify.verifyNotNull(
+        final ClusterSingletonServiceRegistration registration = Verify.verifyNotNull(
                 singletonServiceProvider.registerClusterSingletonService(this));
 
         LOG.info("Registered clustering services for node {}", deviceInfo.getLOGValue());
-
+        return registration;
     }
 
     @Override
