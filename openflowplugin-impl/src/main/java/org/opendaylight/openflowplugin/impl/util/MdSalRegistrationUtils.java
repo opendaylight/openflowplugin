@@ -90,9 +90,6 @@ public class MdSalRegistrationUtils {
                                         @Nonnull final DeviceContext deviceContext,
                                         final ExtensionConverterProvider extensionConverterProvider,
                                         final ConvertorExecutor convertorExecutor) {
-        Preconditions.checkArgument(rpcContext != null);
-        Preconditions.checkArgument(deviceContext != null);
-
         // TODO: Use multipart writer provider from device context
         final MultipartWriterProvider multipartWriterProvider = MultipartWriterProviderFactory
             .createDefaultProvider(deviceContext);
