@@ -11,18 +11,16 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
 import com.google.common.base.Verify;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
-import io.netty.util.Timeout;
-import io.netty.util.TimerTask;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipChange;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListenerRegistration;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
@@ -43,7 +41,11 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
+import org.opendaylight.openflowplugin.openflow.md.util.ItemScheduler;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,33 +55,24 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     private static final Logger LOG = LoggerFactory.getLogger(ContextChainHolderImpl.class);
 
     private static final String CONTEXT_CREATED_FOR_CONNECTION = " context created for connection: {}";
-    private static final long DEFAULT_CHECK_ROLE_MASTER = 10000L;
-    private static final String SERVICE_ENTITY_TYPE = "org.opendaylight.mdsal.ServiceEntityType";
+    private static final long DEFAULT_CHECK_ROLE_MASTER = 20000L;
+    private static final long DEFAULT_CHECK_ROLE_MASTER_TOLERANCE= DEFAULT_CHECK_ROLE_MASTER / 2;
     private static final String ASYNC_SERVICE_ENTITY_TYPE = "org.opendaylight.mdsal.AsyncServiceCloseEntityType";
 
-    private final Map<DeviceInfo, ContextChain> contextChainMap =
-            Collections.synchronizedMap(new HashMap<>());
-    private final Map<DeviceInfo, ContextChain> withoutRoleChains =
-            Collections.synchronizedMap(new HashMap<>());
-    private final Map<DeviceInfo, ContextChain> withoutRoleChainsQueue =
-            Collections.synchronizedMap(new HashMap<>());
-    private final HashedWheelTimer timer;
-    private final Long delayCheckRoleMaster;
-
+    private final Map<DeviceInfo, ContextChain> contextChainMap = Collections.synchronizedMap(new HashMap<>());
     private DeviceManager deviceManager;
     private RpcManager rpcManager;
     private StatisticsManager statisticsManager;
     private EntityOwnershipListenerRegistration eosListenerRegistration;
     private ClusterSingletonServiceProvider singletonServicesProvider;
-    private AtomicBoolean timerIsRunningRole;
-    private Timeout runningSlaveTask = null;
-    private EntityOwnershipService entityOwnershipService;
+    private final ItemScheduler<DeviceInfo, ContextChain> scheduler;
 
     public ContextChainHolderImpl(final HashedWheelTimer timer) {
-        this.timerIsRunningRole = new AtomicBoolean(false);
-        this.timer = timer;
-        this.delayCheckRoleMaster = DEFAULT_CHECK_ROLE_MASTER;
-        this.eosListenerRegistration = null;
+        this.scheduler = new ItemScheduler<>(
+                timer,
+                DEFAULT_CHECK_ROLE_MASTER,
+                DEFAULT_CHECK_ROLE_MASTER_TOLERANCE,
+                ContextChain::makeDeviceSlave);
     }
 
     @Override
@@ -107,10 +100,6 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         }
 
         final ContextChain contextChain = new ContextChainImpl(connectionContext);
-        if (Objects.isNull(eosListenerRegistration)) {
-            eosListenerRegistration = Verify.verifyNotNull(entityOwnershipService.registerListener
-                    (ASYNC_SERVICE_ENTITY_TYPE, this));
-        }
 
         final LifecycleService lifecycleService = new LifecycleServiceImpl(this);
         lifecycleService.registerDeviceRemovedHandler(deviceManager);
@@ -148,36 +137,25 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         contextChain.addContext(deviceContext);
         contextChain.addContext(rpcContext);
         contextChain.addContext(statisticsContext);
-        if (!this.timerIsRunningRole.get()) {
-            this.addWithoutRoleChain(deviceInfo, contextChain);
-            this.startTimerRole();
-        } else {
-            this.withoutRoleChainsQueue.put(deviceInfo, contextChain);
-        }
         deviceContext.onPublished();
         contextChain.registerServices(this.singletonServicesProvider);
 
+        scheduler.add(deviceInfo, contextChain);
+        scheduler.startIfNotRunning();
         return contextChain;
     }
 
     @Override
     public synchronized void destroyContextChain(final DeviceInfo deviceInfo) {
-        ContextChain chain = contextChainMap.remove(deviceInfo);
-        if (chain != null) {
-            chain.close();
-        }
-        if (Objects.nonNull(eosListenerRegistration)) {
-            eosListenerRegistration.close();
-            eosListenerRegistration = null;
-        }
+        Optional.ofNullable(contextChainMap.remove(deviceInfo)).ifPresent(ContextChain::close);
     }
 
     @Override
     public ConnectionStatus deviceConnected(final ConnectionContext connectionContext) throws Exception {
-
-        DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
+        final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
+        final ContextChain contextChain = contextChainMap.get(deviceInfo);
         LOG.info("Device {} connected.", deviceInfo.getLOGValue());
-        ContextChain contextChain = contextChainMap.get(deviceInfo);
+
         if (contextChain != null) {
             if (contextChain.addAuxiliaryConnection(connectionContext)) {
                 LOG.info("An auxiliary connection was added to device: {}", deviceInfo.getLOGValue());
@@ -204,37 +182,28 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
     @Override
     public void onNotAbleToStartMastership(final DeviceInfo deviceInfo, @Nonnull final String reason, final boolean mandatory) {
-        this.removeWithoutRoleChain(deviceInfo);
         LOG.warn("Not able to set MASTER role on device {}, reason: {}", deviceInfo.getLOGValue(), reason);
+
         if (mandatory && contextChainMap.containsKey(deviceInfo)) {
             LOG.warn("This mastering is mandatory, destroying context chain and closing connection.");
-            Futures.transform(contextChainMap.get(deviceInfo).stopChain(), new Function<Void, Object>() {
-                        @Nullable
-                        @Override
-                        public Object apply(@Nullable Void aVoid) {
-                            destroyContextChain(deviceInfo);
-                            return null;
-                        }
-                    });
+            addDestroyChainCallback(contextChainMap.get(deviceInfo).stopChain(), deviceInfo);
         }
     }
 
     @Override
-    public void onMasterRoleAcquired(final DeviceInfo deviceInfo,
-                                     @Nonnull final ContextChainMastershipState mastershipState) {
-        this.removeWithoutRoleChain(deviceInfo);
+    public void onMasterRoleAcquired(final DeviceInfo deviceInfo, @Nonnull final ContextChainMastershipState mastershipState) {
+        scheduler.remove(deviceInfo);
         ContextChain contextChain = contextChainMap.get(deviceInfo);
         if (contextChain != null) {
             if (contextChain.isMastered(mastershipState)) {
                 LOG.info("Role MASTER was granted to device {}", deviceInfo.getLOGValue());
-                this.sendNotificationNodeAdded(deviceInfo);
+                deviceManager.sendNodeAddedNotification(deviceInfo.getNodeInstanceIdentifier());
             }
         }
     }
 
     @Override
     public void onSlaveRoleAcquired(final DeviceInfo deviceInfo) {
-        this.removeWithoutRoleChain(deviceInfo);
         ContextChain contextChain = contextChainMap.get(deviceInfo);
         if (contextChain != null) {
             contextChain.makeContextChainStateSlave();
@@ -243,7 +212,6 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
     @Override
     public void onSlaveRoleNotAcquired(final DeviceInfo deviceInfo) {
-        this.removeWithoutRoleChain(deviceInfo);
         ContextChain contextChain = contextChainMap.get(deviceInfo);
         if (contextChain != null) {
             destroyContextChain(deviceInfo);
@@ -252,25 +220,18 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
     @Override
     public void onDeviceDisconnected(final ConnectionContext connectionContext) {
-
         final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
+
         if (deviceInfo != null) {
-            ContextChain chain = contextChainMap.get(deviceInfo);
+            final ContextChain chain = contextChainMap.get(deviceInfo);
+
             if (chain != null) {
                 if (chain.auxiliaryConnectionDropped(connectionContext)) {
                     LOG.info("Auxiliary connection from device {} disconnected.", deviceInfo.getLOGValue());
                 } else {
                     LOG.info("Device {} disconnected.", deviceInfo.getLOGValue());
-                    removeWithoutRoleChain(deviceInfo);
-                    sendNotificationNodeRemoved(deviceInfo);
-                    Futures.transform(chain.connectionDropped(), new Function<Void, Object>() {
-                        @Nullable
-                        @Override
-                        public Object apply(@Nullable Void aVoid) {
-                            destroyContextChain(deviceInfo);
-                            return null;
-                        }
-                    });
+                    scheduler.remove(deviceInfo);
+                    addDestroyChainCallback(chain.connectionDropped(), deviceInfo);
                 }
             }
         }
@@ -278,37 +239,11 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
     @Override
     public void changeEntityOwnershipService(@Nonnull final EntityOwnershipService entityOwnershipService) {
-        this.entityOwnershipService = entityOwnershipService;
-    }
-
-    private void startTimerRole() {
-        this.timerIsRunningRole.set(true);
-        runningSlaveTask = timer.newTimeout(new RoleTimerTask(), this.delayCheckRoleMaster, TimeUnit.MILLISECONDS);
-    }
-
-    private void stopTimerRole() {
-        synchronized (withoutRoleChainsQueue) {
-            this.timerIsRunningRole.set(false);
-            if (!this.withoutRoleChainsQueue.isEmpty()) {
-                this.withoutRoleChainsQueue.forEach(this::addWithoutRoleChain);
-                this.withoutRoleChainsQueue.clear();
-                this.startTimerRole();
-            }
-        }
-    }
-
-    private void timerTickRole() {
-        synchronized (withoutRoleChains) {
-            if (!withoutRoleChains.isEmpty()) {
-                this.withoutRoleChains.forEach((deviceInfo, contextChain) -> contextChain.makeDeviceSlave());
-                this.startTimerRole();
-            } else {
-                if (this.runningSlaveTask != null) {
-                    this.runningSlaveTask.cancel();
-                }
-                this.runningSlaveTask = null;
-                this.stopTimerRole();
-            }
+        if (Objects.nonNull(this.eosListenerRegistration)) {
+            LOG.warn("EOS Listener already registered.");
+        } else {
+            this.eosListenerRegistration = Verify.verifyNotNull(entityOwnershipService.registerListener
+                    (ASYNC_SERVICE_ENTITY_TYPE, this));
         }
     }
 
@@ -321,83 +256,61 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     public void close() throws Exception {
         this.contextChainMap.forEach((deviceInfo, contextChain) -> {
             if (contextChain.isMastered(ContextChainMastershipState.CHECK)) {
-                this.sendNotificationNodeRemoved(deviceInfo);
+                deviceManager.sendNodeRemovedNotification(deviceInfo.getNodeInstanceIdentifier());
                 contextChain.stopChain();
             }
+
             contextChain.close();
         });
+
         if (Objects.nonNull(eosListenerRegistration)) {
             eosListenerRegistration.close();
             eosListenerRegistration = null;
         }
+
+        scheduler.close();
     }
 
     @Override
     public void ownershipChanged(EntityOwnershipChange entityOwnershipChange) {
-        if (!entityOwnershipChange.hasOwner()) {
-            final YangInstanceIdentifier yii = entityOwnershipChange.getEntity().getId();
-            final YangInstanceIdentifier.NodeIdentifierWithPredicates niiwp =
-                    (YangInstanceIdentifier.NodeIdentifierWithPredicates) yii.getLastPathArgument();
-            String entityName =  niiwp.getKeyValues().values().iterator().next().toString();
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Entity {} has no owner", entityName);
-            }
+        if (entityOwnershipChange.hasOwner()) {
+            return;
+        }
 
-            if (entityName != null ){
-                final NodeId nodeId = new NodeId(entityName);
-                boolean inMap = false;
-                for (Map.Entry<DeviceInfo, ContextChain> entry : contextChainMap.entrySet()) {
-                    inMap = entry.getKey().getNodeId().equals(nodeId);
-                    if (inMap) {
-                        break;
-                    }
-                }
-                if (inMap) {
-                    try {
-                        LOG.info("Removing device: {} from DS", nodeId);
-                        deviceManager
-                                .removeDeviceFromOperationalDS(DeviceStateUtil.createNodeInstanceIdentifier(nodeId))
-                                .checkedGet(5L, TimeUnit.SECONDS);
-                    } catch (TimeoutException | TransactionCommitFailedException e) {
-                        LOG.info("Not able to remove device {} from DS. Probably removed by another cluster node.",
-                                nodeId);
-                    }
-                }
+        final YangInstanceIdentifier yii = entityOwnershipChange.getEntity().getId();
+        final YangInstanceIdentifier.NodeIdentifierWithPredicates niiwp =
+                (YangInstanceIdentifier.NodeIdentifierWithPredicates) yii.getLastPathArgument();
+        String entityName =  niiwp.getKeyValues().values().iterator().next().toString();
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Entity {} has no owner", entityName);
+        }
+
+        if (entityName != null) {
+            final NodeId nodeId = new NodeId(entityName);
+
+            try {
+                LOG.info("Removing device: {} from DS", nodeId);
+                final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier =
+                        DeviceStateUtil.createNodeInstanceIdentifier(nodeId);
+
+                deviceManager
+                        .removeDeviceFromOperationalDS(nodeInstanceIdentifier)
+                        .checkedGet(5L, TimeUnit.SECONDS);
+
+                // Send node removed notification only after device was actually removed from ds
+                deviceManager.sendNodeRemovedNotification(nodeInstanceIdentifier);
+            } catch (TimeoutException | TransactionCommitFailedException e) {
+                LOG.info("Not able to remove device {} from DS. Probably removed by another cluster node.",
+                        nodeId);
             }
         }
     }
 
-    private void sendNotificationNodeRemoved(final DeviceInfo deviceInfo) {
-        this.deviceManager.sendNodeRemovedNotification(deviceInfo);
-    }
-
-    private void sendNotificationNodeAdded(final DeviceInfo deviceInfo) {
-        this.deviceManager.sendNodeAddedNotification(deviceInfo);
-    }
-
-    private void removeWithoutRoleChain(final DeviceInfo deviceInfo) {
-        this.withoutRoleChainsQueue.remove(deviceInfo);
-        this.withoutRoleChains.remove(deviceInfo);
-        if (withoutRoleChains.isEmpty()) {
-            if (runningSlaveTask != null) {
-                runningSlaveTask.cancel();
-                runningSlaveTask = null;
-            }
-            this.stopTimerRole();
-        }
-    }
-
-    private void addWithoutRoleChain(final DeviceInfo deviceInfo, ContextChain contextChain) {
-        this.withoutRoleChains.put(deviceInfo, contextChain);
-    }
-
-    private class RoleTimerTask implements TimerTask {
-
-        @Override
-        public void run(Timeout timeout) throws Exception {
-            timerTickRole();
-        }
-
+    private void addDestroyChainCallback(final ListenableFuture<Void> future, final DeviceInfo deviceInfo) {
+        Futures.transform(future, (Function<Void, Void>) (result) -> {
+            destroyContextChain(deviceInfo);
+            return null;
+        });
     }
 }
 
