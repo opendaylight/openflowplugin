@@ -25,6 +25,10 @@ public enum ContextChainMastershipState {
      */
     INITIAL_FLOW_REGISTRY_FILL,
     /**
+     * Registration of RPC services
+     */
+    RPC_REGISTRATION,
+    /**
      * Check mastership.
      */
     CHECK
