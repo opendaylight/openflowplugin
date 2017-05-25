@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.impl.lifecycle;
 
 import com.google.common.util.concurrent.Futures;
+import java.util.concurrent.ExecutorService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,7 +21,6 @@ import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegist
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
@@ -43,9 +43,9 @@ public class LifecycleServiceImplTest {
     @Mock
     private MastershipChangeListener mastershipChangeListener;
     @Mock
-    private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
-    @Mock
     private DeviceRemovedHandler deviceRemovedHandler;
+    @Mock
+    private ExecutorService executorService;
 
     private LifecycleService lifecycleService;
 
@@ -56,7 +56,12 @@ public class LifecycleServiceImplTest {
         Mockito.when(clusterSingletonServiceProvider.registerClusterSingletonService(Mockito.any()))
                 .thenReturn(clusterSingletonServiceRegistration);
 
-        lifecycleService = new LifecycleServiceImpl(mastershipChangeListener);
+        Mockito.doAnswer(invocation -> {
+            invocation.getArgumentAt(0, Runnable.class).run();
+            return null;
+        }).when(executorService).submit(Mockito.<Runnable>any());
+
+        lifecycleService = new LifecycleServiceImpl(mastershipChangeListener, executorService);
         lifecycleService.registerService(
                 clusterSingletonServiceProvider,
                 deviceContext);

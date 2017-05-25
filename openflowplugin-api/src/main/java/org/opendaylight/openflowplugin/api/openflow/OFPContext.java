@@ -7,11 +7,8 @@
  */
 package org.opendaylight.openflowplugin.api.openflow;
 
-import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import java.util.concurrent.RejectedExecutionException;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
-import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterLifecycleSupervisor;
@@ -32,12 +29,6 @@ public interface OFPContext extends AutoCloseable, ClusterLifecycleSupervisor, C
         /* Termination phase context is being shutting down */
         TERMINATION
     }
-
-    /**
-     * Get actual context state.
-     * @return actual context state
-     */
-    CONTEXT_STATE getState();
 
     /**
      * About to stop services in cluster not master anymore or going down.

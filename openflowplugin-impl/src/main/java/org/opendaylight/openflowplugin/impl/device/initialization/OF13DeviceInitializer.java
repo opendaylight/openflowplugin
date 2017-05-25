@@ -50,6 +50,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
     @Override
     protected Future<Void> initializeNodeInformation(@Nonnull final DeviceContext deviceContext,
                                                      final boolean switchFeaturesMandatory,
+                                                     final boolean skipTableFeatures,
                                                      @Nullable final MultipartWriterProvider multipartWriterProvider,
                                                      @Nullable final ConvertorExecutor convertorExecutor) {
         final ConnectionContext connectionContext = Preconditions.checkNotNull(deviceContext.getPrimaryConnectionContext());
@@ -71,10 +72,10 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                     convertorExecutor);
 
                 final List<ListenableFuture<RpcResult<List<OfHeader>>>> futures = new ArrayList<>();
-                futures.add(requestAndProcessMultipart(MultipartType.OFPMPMETERFEATURES, deviceContext, multipartWriterProvider, convertorExecutor));
-                futures.add(requestAndProcessMultipart(MultipartType.OFPMPGROUPFEATURES, deviceContext, multipartWriterProvider, convertorExecutor));
-                futures.add(requestAndProcessMultipart(MultipartType.OFPMPTABLEFEATURES, deviceContext, multipartWriterProvider, convertorExecutor));
-                futures.add(requestAndProcessMultipart(MultipartType.OFPMPPORTDESC, deviceContext, multipartWriterProvider, convertorExecutor));
+                futures.add(requestAndProcessMultipart(MultipartType.OFPMPMETERFEATURES, deviceContext, skipTableFeatures, multipartWriterProvider, convertorExecutor));
+                futures.add(requestAndProcessMultipart(MultipartType.OFPMPGROUPFEATURES, deviceContext, skipTableFeatures, multipartWriterProvider, convertorExecutor));
+                futures.add(requestAndProcessMultipart(MultipartType.OFPMPTABLEFEATURES, deviceContext, skipTableFeatures, multipartWriterProvider, convertorExecutor));
+                futures.add(requestAndProcessMultipart(MultipartType.OFPMPPORTDESC, deviceContext, skipTableFeatures, multipartWriterProvider, convertorExecutor));
 
                 return Futures.transform(
                     (switchFeaturesMandatory ? Futures.allAsList(futures) : Futures.successfulAsList(futures)),
@@ -94,16 +95,18 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
      * Request multipart of specified type and then run some processing on it
      * @param type multipart type
      * @param deviceContext device context
+     * @param skipTableFeatures skip collecting of table features
      * @param multipartWriterProvider multipart writer provider
      * @param convertorExecutor convertor executor
      * @return list of multipart messages unified to parent interface
      */
     private static ListenableFuture<RpcResult<List<OfHeader>>> requestAndProcessMultipart(final MultipartType type,
                                                                                           final DeviceContext deviceContext,
+                                                                                          final boolean skipTableFeatures,
                                                                                           final MultipartWriterProvider multipartWriterProvider,
                                                                                           @Nullable final ConvertorExecutor convertorExecutor) {
         final ListenableFuture<RpcResult<List<OfHeader>>> rpcResultListenableFuture =
-            MultipartType.OFPMPTABLEFEATURES.equals(type) && deviceContext.isSkipTableFeatures()
+            MultipartType.OFPMPTABLEFEATURES.equals(type) && skipTableFeatures
                 ? RpcResultBuilder.<List<OfHeader>>success().buildFuture()
                 : requestMultipart(type, deviceContext);
 
@@ -225,7 +228,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                 new SingleLayerMultipartCollectorService(deviceContext, deviceContext);
 
             return Futures.transform(service.handleServiceCall(multipartType), new Function<RpcResult<List<MultipartReply>>, RpcResult<List<OfHeader>>>() {
-                @Nullable
+                @Nonnull
                 @Override
                 public RpcResult<List<OfHeader>> apply(final RpcResult<List<MultipartReply>> input) {
                     if (Objects.isNull(input.getResult()) && input.isSuccessful()) {
@@ -235,9 +238,9 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
 
                     return input.isSuccessful()
                         ? RpcResultBuilder.success(input
-                        .getResult()
+                            .getResult()
                         .stream()
-                        .map(reply -> (OfHeader) reply)
+                        .map(OfHeader.class::cast)
                         .collect(Collectors.toList()))
                         .build()
                         : RpcResultBuilder.<List<OfHeader>>failed()
@@ -251,7 +254,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
             new MultiLayerMultipartCollectorService(deviceContext, deviceContext);
 
         return Futures.transform(service.handleServiceCall(multipartType), new Function<RpcResult<List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply>>, RpcResult<List<OfHeader>>>() {
-            @Nullable
+            @Nonnull
             @Override
             public RpcResult<List<OfHeader>> apply(final RpcResult<List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply>> input) {
                 if (Objects.isNull(input.getResult()) && input.isSuccessful()) {
@@ -263,7 +266,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                     ? RpcResultBuilder.success(input
                     .getResult()
                     .stream()
-                    .map(reply -> (OfHeader) reply)
+                    .map(OfHeader.class::cast)
                     .collect(Collectors.toList()))
                     .build()
                     : RpcResultBuilder.<List<OfHeader>>failed()
