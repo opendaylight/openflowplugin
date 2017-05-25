@@ -65,12 +65,6 @@ public interface ContextChain extends AutoCloseable {
     boolean isMastered(@Nonnull final ContextChainMastershipState mastershipState);
 
     /**
-     * Device need to be in state SLAVE or MASTER.
-     * @return false if in undefined state
-     */
-    boolean hasState();
-
-    /**
      * Add new auxiliary connection if primary is ok.
      * @param connectionContext new connection to the device.
      * @return false if primary connection is broken
