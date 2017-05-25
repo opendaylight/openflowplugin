@@ -8,9 +8,9 @@
 package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Verify;
+import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
@@ -18,11 +18,10 @@ import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
-import java.math.BigInteger;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -36,7 +35,6 @@ import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
-import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowplugin.api.ConnectionException;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -54,9 +52,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterIniti
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainState;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
-import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
@@ -79,14 +75,13 @@ import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFac
 import org.opendaylight.openflowplugin.impl.device.initialization.AbstractDeviceInitializer;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProvider;
 import org.opendaylight.openflowplugin.impl.device.listener.MultiMsgCollectorImpl;
-import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.impl.registry.group.DeviceGroupRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.meter.DeviceMeterRegistryImpl;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
+import org.opendaylight.openflowplugin.impl.services.util.RequestContextUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.ExperimenterMessageFromDevBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -153,7 +148,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private volatile ConnectionContext primaryConnectionContext;
     private final DeviceState deviceState;
     private final DataBroker dataBroker;
-    private final Map<SwitchConnectionDistinguisher, ConnectionContext> auxiliaryConnectionContexts;
+    private final Collection<RequestContext<?>> requestContexts = new HashSet<>();
     private TransactionChainManager transactionChainManager;
     private DeviceFlowRegistry deviceFlowRegistry;
     private DeviceGroupRegistry deviceGroupRegistry;
@@ -201,7 +196,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.myManager = contextManager;
         this.deviceState = new DeviceStateImpl();
         this.dataBroker = dataBroker;
-        this.auxiliaryConnectionContexts = new HashMap<>();
         this.messageSpy = messageSpy;
 
         this.packetInLimiter = new PacketInRateLimiter(primaryConnectionContext.getConnectionAdapter(),
@@ -229,24 +223,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public boolean initialSubmitTransaction() {
         return (initialized && transactionChainManager.initialSubmitWriteTransaction());
-    }
-
-    @Override
-    public void addAuxiliaryConnectionContext(final ConnectionContext connectionContext) {
-        final SwitchConnectionDistinguisher connectionDistinguisher = createConnectionDistinguisher(connectionContext);
-        auxiliaryConnectionContexts.put(connectionDistinguisher, connectionContext);
-    }
-
-    private static SwitchConnectionDistinguisher createConnectionDistinguisher(final ConnectionContext connectionContext) {
-        return new SwitchConnectionCookieOFImpl(connectionContext.getFeatures().getAuxiliaryId());
-    }
-
-    @Override
-    public void removeAuxiliaryConnectionContext(final ConnectionContext connectionContext) {
-        final SwitchConnectionDistinguisher connectionDistinguisher = createConnectionDistinguisher(connectionContext);
-        LOG.debug("auxiliary connection dropped: {}, nodeId:{}", connectionContext.getConnectionAdapter()
-                .getRemoteAddress(), getDeviceInfo().getLOGValue());
-        auxiliaryConnectionContexts.remove(connectionDistinguisher);
     }
 
     @Override
@@ -292,11 +268,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public ConnectionContext getPrimaryConnectionContext() {
         return primaryConnectionContext;
-    }
-
-    @Override
-    public ConnectionContext getAuxiliaryConnectionContexts(final BigInteger cookie) {
-        return auxiliaryConnectionContexts.get(new SwitchConnectionCookieOFImpl(cookie.longValue()));
     }
 
     @Override
@@ -510,7 +481,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public void onPublished() {
-        Verify.verify(CONTEXT_STATE.INITIALIZATION.equals(getState()));
+        Verify.verify(CONTEXT_STATE.INITIALIZATION.equals(state));
         this.state = CONTEXT_STATE.WORKING;
         primaryConnectionContext.getConnectionAdapter().setPacketInFiltering(false);
     }
@@ -540,45 +511,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         return extensionConverterProvider;
     }
 
-    @Override
-    public synchronized void shutdownConnection() {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Shutdown method for node {}", getDeviceInfo().getLOGValue());
-        }
-        if (CONTEXT_STATE.TERMINATION.equals(getState())) {
-            LOG.debug("DeviceCtx for Node {} is in termination process.", getDeviceInfo().getLOGValue());
-            return;
-        }
-
-        if (ConnectionContext.CONNECTION_STATE.RIP.equals(getPrimaryConnectionContext().getConnectionState())) {
-            LOG.debug("ConnectionCtx for Node {} is in RIP state.", getDeviceInfo().getLOGValue());
-            return;
-        }
-
-        // Terminate Auxiliary Connection
-        for (final ConnectionContext connectionContext : auxiliaryConnectionContexts.values()) {
-            LOG.debug("Closing auxiliary connection {}", connectionContext.getNodeId());
-            connectionContext.closeConnection(false);
-        }
-
-        // Terminate Primary Connection
-        getPrimaryConnectionContext().closeConnection(true);
-
-        // Close all datastore registries
-        if (initialized) {
-            deviceGroupRegistry.close();
-            deviceFlowRegistry.close();
-            deviceMeterRegistry.close();
-        }
-    }
-
-    @Override
-    public ListenableFuture<Void> shuttingDownDataStoreTransactions() {
-        return initialized
-                ? this.transactionChainManager.shuttingDown()
-                : Futures.immediateFuture(null);
-    }
-
     @VisibleForTesting
     TransactionChainManager getTransactionChainManager() {
         return this.transactionChainManager;
@@ -587,11 +519,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public void setSwitchFeaturesMandatory(boolean switchFeaturesMandatory) {
         this.switchFeaturesMandatory = switchFeaturesMandatory;
-    }
-
-    @Override
-    public CONTEXT_STATE getState() {
-        return this.state;
     }
 
     @Override
@@ -613,24 +540,46 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public void close() {
-        //NOOP
-    }
+        if (CONTEXT_STATE.TERMINATION.equals(state)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("DeviceContext for node {} is already in TERMINATION state.", getDeviceInfo().getLOGValue());
+            }
 
-    @Override
-    public void putLifecycleServiceIntoTxChainManager(final LifecycleService lifecycleService){
+            return;
+        }
+
+        state = CONTEXT_STATE.TERMINATION;
+
+        // Close all datastore registries and transactions
         if (initialized) {
-            this.transactionChainManager.setLifecycleService(lifecycleService);
+            deviceGroupRegistry.close();
+            deviceFlowRegistry.close();
+            deviceMeterRegistry.close();
+
+            Futures.addCallback(transactionChainManager.shuttingDown(), new FutureCallback<Void>() {
+                @Override
+                public void onSuccess(@Nullable final Void result) {
+                    transactionChainManager.close();
+                    transactionChainManager = null;
+                }
+
+                @Override
+                public void onFailure(final Throwable t) {
+                    transactionChainManager.close();
+                    transactionChainManager = null;
+                }
+            });
+        }
+
+        for (final Iterator<RequestContext<?>> iterator = Iterators
+                .consumingIterator(requestContexts.iterator()); iterator.hasNext();) {
+            RequestContextUtil.closeRequestContextWithRpcError(iterator.next(), "Connection closed.");
         }
     }
 
     @Override
     public boolean canUseSingleLayerSerialization() {
         return useSingleLayerSerialization && getDeviceInfo().getVersion() >= OFConstants.OFP_VERSION_1_3;
-    }
-
-    @Override
-    public boolean isSkipTableFeatures() {
-        return this.skipTableFeatures;
     }
 
     @Override
@@ -645,7 +594,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public boolean onContextInstantiateService(final MastershipChangeListener mastershipChangeListener) {
-
         LOG.info("Starting device context cluster services for node {}", deviceInfo.getLOGValue());
         lazyTransactionManagerInitialization();
 
@@ -667,13 +615,14 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             if (initializer.isPresent()) {
                 initializer
                         .get()
-                        .initialize(this, switchFeaturesMandatory, writerProvider, convertorExecutor)
+                        .initialize(this, switchFeaturesMandatory, skipTableFeatures, writerProvider, convertorExecutor)
                         .get(DEVICE_INIT_TIMEOUT, TimeUnit.MILLISECONDS);
             } else {
                 throw new ExecutionException(new ConnectionException("Unsupported version " + deviceInfo.getVersion()));
             }
         } catch (ExecutionException | InterruptedException | TimeoutException ex) {
-            LOG.warn("Device {} cannot be initialized: ", deviceInfo.getLOGValue(), ex);
+            LOG.warn("Device {} cannot be initialized: {}", deviceInfo.getLOGValue(), ex.getMessage());
+            LOG.trace("Device {} cannot be initialized: ", deviceInfo.getLOGValue(), ex);
             return false;
         }
 
@@ -705,12 +654,17 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Nullable
     @Override
     public <T> RequestContext<T> createRequestContext() {
-        return new AbstractRequestContext<T>(deviceInfo.reserveXidForDeviceMessage()) {
+        final Long xid = deviceInfo.reserveXidForDeviceMessage();
+
+        final AbstractRequestContext<T> abstractRequestContext = new AbstractRequestContext<T>(xid) {
             @Override
             public void close() {
+                requestContexts.remove(this);
             }
         };
 
+        requestContexts.add(abstractRequestContext);
+        return abstractRequestContext;
     }
 
     private ListenableFuture<RpcResult<SetRoleOutput>> sendRoleChangeToDevice(final OfpRole newRole) {

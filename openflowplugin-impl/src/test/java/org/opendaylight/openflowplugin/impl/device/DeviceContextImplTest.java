@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.device;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -27,7 +26,6 @@ import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import java.math.BigInteger;
-import java.net.InetSocketAddress;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,7 +51,6 @@ import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProv
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
@@ -128,15 +125,11 @@ public class DeviceContextImplTest {
 
     DeviceContext deviceContext;
     @Mock
-    TransactionChainManager txChainManager;
-    @Mock
     RequestContext<GetAsyncReply> requestContext;
     @Mock
     RequestContext<MultipartReply> requestContextMultiReply;
     @Mock
     ConnectionContext connectionContext;
-    @Mock
-    DeviceState deviceState;
     @Mock
     GetFeaturesOutput featuresOutput;
     @Mock
@@ -262,30 +255,6 @@ public class DeviceContextImplTest {
         verify(wTx).submit();
     }
 
-    @Test
-    public void testAuxiliaryConnectionContext() {
-        final ConnectionContext mockedConnectionContext = addDummyAuxiliaryConnectionContext();
-        final ConnectionContext pickedConnectionContexts = deviceContext.getAuxiliaryConnectionContexts(DUMMY_COOKIE);
-        assertEquals(mockedConnectionContext, pickedConnectionContexts);
-    }
-    @Test
-    public void testRemoveAuxiliaryConnectionContext() {
-        final ConnectionContext mockedConnectionContext = addDummyAuxiliaryConnectionContext();
-
-        final ConnectionAdapter mockedAuxConnectionAdapter = mock(ConnectionAdapter.class);
-        when(mockedConnectionContext.getConnectionAdapter()).thenReturn(mockedAuxConnectionAdapter);
-
-        assertNotNull(deviceContext.getAuxiliaryConnectionContexts(DUMMY_COOKIE));
-        deviceContext.removeAuxiliaryConnectionContext(mockedConnectionContext);
-        assertNull(deviceContext.getAuxiliaryConnectionContexts(DUMMY_COOKIE));
-    }
-
-    private ConnectionContext addDummyAuxiliaryConnectionContext() {
-        final ConnectionContext mockedConnectionContext = prepareConnectionContext();
-        deviceContext.addAuxiliaryConnectionContext(mockedConnectionContext);
-        return mockedConnectionContext;
-    }
-
     private ConnectionContext prepareConnectionContext() {
         final ConnectionContext mockedConnectionContext = mock(ConnectionContext.class);
         final FeaturesReply mockedFeaturesReply = mock(FeaturesReply.class);
@@ -394,22 +363,6 @@ public class DeviceContextImplTest {
     }
 
     @Test
-    public void testShutdownConnection() {
-        final ConnectionAdapter mockedConnectionAdapter = mock(ConnectionAdapter.class);
-        final InetSocketAddress mockRemoteAddress = InetSocketAddress.createUnresolved("odl-unit.example.org",999);
-        when(mockedConnectionAdapter.getRemoteAddress()).thenReturn(mockRemoteAddress);
-        when(connectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
-
-        final NodeId dummyNodeId = new NodeId("dummyNodeId");
-        when(deviceInfo.getNodeId()).thenReturn(dummyNodeId);
-
-        final ConnectionContext mockedAuxiliaryConnectionContext = prepareConnectionContext();
-        deviceContext.addAuxiliaryConnectionContext(mockedAuxiliaryConnectionContext);
-        deviceContext.shutdownConnection();
-        verify(connectionContext).closeConnection(true);
-    }
-
-    @Test
     public void testBarrierFieldSetGet() {
         final Timeout mockedTimeout = mock(Timeout.class);
         deviceContext.setCurrentBarrierTimeout(mockedTimeout);
@@ -425,11 +378,6 @@ public class DeviceContextImplTest {
 
     @Test
     public void testOnPublished() {
-        final ConnectionContext auxiliaryConnectionContext = addDummyAuxiliaryConnectionContext();
-
-        final ConnectionAdapter mockedAuxConnectionAdapter = mock(ConnectionAdapter.class);
-        when(auxiliaryConnectionContext.getConnectionAdapter()).thenReturn(mockedAuxConnectionAdapter);
-
         final ConnectionAdapter mockedConnectionAdapter = mock(ConnectionAdapter.class);
         when(connectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
 
