@@ -372,6 +372,11 @@ public class ConnectionContextImpl implements ConnectionContext {
             return result;
         }
 
+        @Override
+        public String toString() {
+            return getLOGValue();
+        }
+
         public void setOutboundQueueProvider(final OutboundQueue outboundQueueProvider) {
             this.outboundQueueProvider = outboundQueueProvider;
         }
