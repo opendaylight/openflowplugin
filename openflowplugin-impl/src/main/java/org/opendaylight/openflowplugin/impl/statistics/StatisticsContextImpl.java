@@ -232,7 +232,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
 
     @Override
     public void close() {
-        if (CONTEXT_STATE.TERMINATION.equals(getState())) {
+        if (CONTEXT_STATE.TERMINATION.equals(state)) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("StatisticsContext for node {} is already in TERMINATION state.", getDeviceInfo().getLOGValue());
             }
@@ -317,11 +317,6 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     @Override
     public ItemLifecycleListener getItemLifeCycleListener () {
         return itemLifeCycleListener;
-    }
-
-    @Override
-    public CONTEXT_STATE getState() {
-        return this.state;
     }
 
     @Override
