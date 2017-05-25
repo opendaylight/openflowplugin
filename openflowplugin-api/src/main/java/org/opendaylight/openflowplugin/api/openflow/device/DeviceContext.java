@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.api.openflow.device;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.Timeout;
-import java.math.BigInteger;
 import java.util.List;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
@@ -19,7 +18,6 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainStateListener;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -50,23 +48,6 @@ public interface DeviceContext extends
         ContextChainStateListener {
 
     /**
-     * Method close all auxiliary connections and primary connection.
-     */
-    void shutdownConnection();
-
-    /**
-     * Method add auxiliary connection contexts to this context representing single device connection.
-     * @param connectionContext new connection context
-     */
-    void addAuxiliaryConnectionContext(ConnectionContext connectionContext);
-
-    /**
-     * Method removes auxiliary connection context from this context representing single device connection.
-     * @param connectionContext connection which need to be removed
-     */
-    void removeAuxiliaryConnectionContext(ConnectionContext connectionContext);
-
-    /**
      * Method provides state of device represented by this device context.
      *
      * @return {@link DeviceState}
@@ -74,23 +55,10 @@ public interface DeviceContext extends
     DeviceState getDeviceState();
 
     /**
-     * Method has to close TxManager ASAP we are notified about Closed Connection.
-     * @return sync. future for Slave and MD-SAL completition for Master
-     */
-    ListenableFuture<Void> shuttingDownDataStoreTransactions();
-
-    /**
      * Getter.
      * @return current devices connection context
      */
     ConnectionContext getPrimaryConnectionContext();
-
-    /**
-     * Getter.
-     * @return current devices auxiliary connection contexts
-     */
-    ConnectionContext getAuxiliaryConnectionContexts(BigInteger cookie);
-
 
     /**
      * Getter.
@@ -133,10 +101,6 @@ public interface DeviceContext extends
     ItemLifeCycleRegistry getItemLifeCycleSourceRegistry();
 
     void setSwitchFeaturesMandatory(boolean switchFeaturesMandatory);
-
-    void putLifecycleServiceIntoTxChainManager(LifecycleService lifecycleService);
-
-    boolean isSkipTableFeatures();
 
     /**
      * Setter for sal role service.
