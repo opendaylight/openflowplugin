@@ -481,7 +481,6 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
 
     @Override
     public boolean onContextInstantiateService(final MastershipChangeListener mastershipChangeListener) {
-
         LOG.info("Starting statistics context cluster services for node {}", deviceInfo.getLOGValue());
 
         this.statListForCollectingInitialization();
