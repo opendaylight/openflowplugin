@@ -215,11 +215,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         return delFuture;
     }
 
-    @Override
-    public CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(final DeviceInfo deviceInfo) {
-        return this.removeDeviceFromOperationalDS(deviceInfo.getNodeInstanceIdentifier());
-    }
-
     public DeviceContext createContext(@Nonnull final ConnectionContext connectionContext) {
 
         LOG.info("ConnectionEvent: Device connected to controller, Device:{}, NodeId:{}",
