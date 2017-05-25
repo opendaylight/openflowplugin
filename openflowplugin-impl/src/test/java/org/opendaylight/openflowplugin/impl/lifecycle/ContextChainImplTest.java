@@ -83,6 +83,7 @@ public class ContextChainImplTest {
         contextChain.isMastered(ContextChainMastershipState.INITIAL_SUBMIT);
         contextChain.isMastered(ContextChainMastershipState.MASTER_ON_DEVICE);
         contextChain.isMastered(ContextChainMastershipState.INITIAL_FLOW_REGISTRY_FILL);
+        contextChain.isMastered(ContextChainMastershipState.RPC_REGISTRATION);
         contextChain.connectionDropped();
         Mockito.verify(deviceContext).stopClusterServices();
         Mockito.verify(rpcContext).stopClusterServices();

@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.impl.lifecycle;
 
 import com.google.common.util.concurrent.Futures;
 import io.netty.util.HashedWheelTimer;
+import java.util.concurrent.ExecutorService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -17,7 +18,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -52,13 +52,18 @@ public class ContextChainHolderImplTest {
     @Mock
     private ClusterSingletonServiceProvider singletonServicesProvider;
     @Mock
-    private EntityOwnershipService entityOwnershipService;
+    private ExecutorService executorService;
 
     private ContextChainHolderImpl contextChainHolder;
 
     @Before
     public void setUp() throws Exception {
-        contextChainHolder = new ContextChainHolderImpl(timer);
+        Mockito.doAnswer(invocation -> {
+            invocation.getArgumentAt(0, Runnable.class).run();
+            return null;
+        }).when(executorService).submit(Mockito.<Runnable>any());
+
+        contextChainHolder = new ContextChainHolderImpl(timer, executorService);
         contextChainHolder.addManager(statisticsManager);
         contextChainHolder.addManager(rpcManager);
         contextChainHolder.addManager(deviceManager);
