@@ -16,7 +16,6 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Semaphore;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -27,6 +26,7 @@ import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
@@ -110,7 +110,28 @@ class RpcContextImpl implements RpcContext {
      */
     @Override
     public void close() {
-        //NOOP
+        if (CONTEXT_STATE.TERMINATION.equals(state)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("RpcContext for node {} is already in TERMINATION state.", getDeviceInfo().getLOGValue());
+            }
+        } else {
+            this.state = CONTEXT_STATE.TERMINATION;
+            unregisterRPCs();
+        }
+    }
+
+    private void unregisterRPCs() {
+        for (final Iterator<Entry<Class<?>, RoutedRpcRegistration<?>>> iterator = Iterators
+                .consumingIterator(rpcRegistrations.entrySet().iterator()); iterator.hasNext(); ) {
+            final RoutedRpcRegistration<?> rpcRegistration = iterator.next().getValue();
+            rpcRegistration.unregisterPath(NodeContext.class, nodeInstanceIdentifier);
+            rpcRegistration.close();
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Closing RPC Registration of service {} for device {}.", rpcRegistration.getServiceType().getSimpleName(),
+                        nodeInstanceIdentifier.getKey().getId().getValue());
+            }
+        }
     }
 
     @Override
@@ -157,11 +178,6 @@ class RpcContextImpl implements RpcContext {
     }
 
     @Override
-    public CONTEXT_STATE getState() {
-        return this.state;
-    }
-
-    @Override
     public ServiceGroupIdentifier getServiceIdentifier() {
         return this.deviceInfo.getServiceIdentifier();
     }
@@ -181,18 +197,7 @@ class RpcContextImpl implements RpcContext {
             @Nullable
             @Override
             public Void apply(@Nullable Object input) {
-                for (final Iterator<Entry<Class<?>, RoutedRpcRegistration<?>>> iterator = Iterators
-                        .consumingIterator(rpcRegistrations.entrySet().iterator()); iterator.hasNext(); ) {
-                    final RoutedRpcRegistration<?> rpcRegistration = iterator.next().getValue();
-                    rpcRegistration.unregisterPath(NodeContext.class, nodeInstanceIdentifier);
-                    rpcRegistration.close();
-
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Closing RPC Registration of service {} for device {}.", rpcRegistration.getServiceType().getSimpleName(),
-                                nodeInstanceIdentifier.getKey().getId().getValue());
-                    }
-                }
-
+                unregisterRPCs();
                 return null;
             }
         });
@@ -200,7 +205,7 @@ class RpcContextImpl implements RpcContext {
 
     @Override
     public boolean onContextInstantiateService(final MastershipChangeListener mastershipChangeListener) {
-
+        LOG.info("Starting rpc context cluster services for node {}", deviceInfo.getLOGValue());
         MdSalRegistrationUtils.registerServices(this, deviceContext, extensionConverterProvider, convertorExecutor);
 
         if (isStatisticsRpcEnabled && !deviceContext.canUseSingleLayerSerialization()) {
@@ -211,6 +216,7 @@ class RpcContextImpl implements RpcContext {
                     convertorExecutor);
         }
 
+        mastershipChangeListener.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.RPC_REGISTRATION);
         return true;
     }
 }

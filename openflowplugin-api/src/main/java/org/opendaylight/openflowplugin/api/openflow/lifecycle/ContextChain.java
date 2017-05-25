@@ -53,6 +53,11 @@ public interface ContextChain extends AutoCloseable {
     void registerServices(final ClusterSingletonServiceProvider clusterSingletonServiceProvider);
 
     /**
+     * Unregisters context chain from cluster singleton service.
+     */
+    void unregisterServices();
+
+    /**
      * After connect of device make this device SLAVE.
      */
     void makeDeviceSlave();
@@ -63,12 +68,6 @@ public interface ContextChain extends AutoCloseable {
      * @return true if everything done fine
      */
     boolean isMastered(@Nonnull final ContextChainMastershipState mastershipState);
-
-    /**
-     * Device need to be in state SLAVE or MASTER.
-     * @return false if in undefined state
-     */
-    boolean hasState();
 
     /**
      * Add new auxiliary connection if primary is ok.

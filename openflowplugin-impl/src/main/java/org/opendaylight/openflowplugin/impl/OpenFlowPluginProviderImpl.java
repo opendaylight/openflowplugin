@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timer;
 import java.lang.management.ManagementFactory;
@@ -18,9 +19,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -165,8 +168,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         });
     }
 
-    private void shutdownSwitchConnections() {
-        Futures.addCallback(Futures.allAsList(switchConnectionProviders.stream().map(switchConnectionProvider -> {
+    private ListenableFuture<List<Boolean>> shutdownSwitchConnections() {
+        final ListenableFuture<List<Boolean>> listListenableFuture = Futures.allAsList(switchConnectionProviders.stream().map(switchConnectionProvider -> {
             // Revert deserializers to their original state
             if (useSingleLayerSerialization) {
                 DeserializerInjector.revertDeserializers(switchConnectionProvider);
@@ -174,7 +177,9 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
             // Shutdown switch connection provider
             return switchConnectionProvider.shutdown();
-        }).collect(Collectors.toSet())), new FutureCallback<List<Boolean>>() {
+        }).collect(Collectors.toSet()));
+
+        Futures.addCallback(listListenableFuture, new FutureCallback<List<Boolean>>() {
             @Override
             public void onSuccess(final List<Boolean> result) {
                 LOG.info("All switchConnectionProviders were successfully shut down ({}).", result.size());
@@ -185,6 +190,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 LOG.warn("Some switchConnectionProviders failed to shutdown.", throwable);
             }
         });
+
+        return listListenableFuture;
     }
 
     @Override
@@ -491,15 +498,21 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         initialized = false;
+
+        try {
+            shutdownSwitchConnections().get(10, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            LOG.warn("Failed to shut down switch connections in time {}s, error: {}", 10, e);
+        }
+
         gracefulShutdown(contextChainHolder);
         gracefulShutdown(deviceManager);
         gracefulShutdown(rpcManager);
         gracefulShutdown(statisticsManager);
         gracefulShutdown(threadPool);
         gracefulShutdown(hashedWheelTimer);
-        shutdownSwitchConnections();
         unregisterMXBean(MESSAGE_INTELLIGENCE_AGENCY_MX_BEAN_NAME);
     }
 
@@ -533,7 +546,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         }
 
         try {
-            threadPoolExecutor.shutdown();
+            threadPoolExecutor.shutdownNow();
         } catch (Exception e) {
             LOG.warn("Failed to shutdown {} gracefully.", threadPoolExecutor);
         }
