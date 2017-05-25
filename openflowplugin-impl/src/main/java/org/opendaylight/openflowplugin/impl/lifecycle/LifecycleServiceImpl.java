@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.lifecycle;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Verify;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -14,11 +15,13 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
+import org.opendaylight.openflowplugin.api.openflow.OFPContext.CONTEXT_STATE;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
@@ -34,23 +37,24 @@ public class LifecycleServiceImpl implements LifecycleService {
 
     private static final Logger LOG = LoggerFactory.getLogger(LifecycleServiceImpl.class);
 
+    private final List<DeviceRemovedHandler> deviceRemovedHandlers = new ArrayList<>();
+    private final MastershipChangeListener mastershipChangeListener;
+    private final ExecutorService executorService;
     private ClusterSingletonServiceRegistration registration;
     private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
-    private final List<DeviceRemovedHandler> deviceRemovedHandlers = new ArrayList<>();
     private ServiceGroupIdentifier serviceGroupIdentifier;
     private DeviceInfo deviceInfo;
-    private boolean terminationState = false;
-    private final MastershipChangeListener mastershipChangeListener;
+    private volatile CONTEXT_STATE state = CONTEXT_STATE.INITIALIZATION;
 
-
-    public LifecycleServiceImpl(@Nonnull final MastershipChangeListener mastershipChangeListener) {
+    public LifecycleServiceImpl(@Nonnull final MastershipChangeListener mastershipChangeListener,
+                                @Nonnull final ExecutorService executorService) {
         this.mastershipChangeListener = mastershipChangeListener;
+        this.executorService = executorService;
     }
 
     @Override
     public void makeDeviceSlave(final DeviceContext deviceContext) {
-
-        final DeviceInfo deviceInf = Objects.isNull(deviceInfo) ? deviceContext.getDeviceInfo() : deviceInfo;
+        deviceInfo = MoreObjects.firstNonNull(deviceInfo, deviceContext.getDeviceInfo());
 
         Futures.addCallback(deviceContext.makeDeviceSlave(), new FutureCallback<RpcResult<SetRoleOutput>>() {
             @Override
@@ -59,30 +63,32 @@ public class LifecycleServiceImpl implements LifecycleService {
                     LOG.debug("Role SLAVE was successfully propagated on device, node {}",
                             deviceContext.getDeviceInfo().getLOGValue());
                 }
-                mastershipChangeListener.onSlaveRoleAcquired(deviceInf);
+                mastershipChangeListener.onSlaveRoleAcquired(deviceInfo);
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailure(@Nonnull Throwable throwable) {
                 LOG.warn("Was not able to set role SLAVE to device on node {} ",
                         deviceContext.getDeviceInfo().getLOGValue());
-                mastershipChangeListener.onSlaveRoleNotAcquired(deviceInf);
+                mastershipChangeListener.onSlaveRoleNotAcquired(deviceInfo);
             }
         });
-
     }
 
     @Override
     public void instantiateServiceInstance() {
+        executorService.submit(() -> {
+            LOG.info("Starting clustering services for node {}", deviceInfo.getLOGValue());
 
-        LOG.info("Starting clustering services (singleton) for node {}", deviceInfo.getLOGValue());
-        if (!clusterInitializationPhaseHandler.onContextInstantiateService(mastershipChangeListener)) {
-            mastershipChangeListener.onNotAbleToStartMastershipMandatory(deviceInfo, "Cannot initialize device.");
-        }
+            if (!clusterInitializationPhaseHandler.onContextInstantiateService(mastershipChangeListener)) {
+                mastershipChangeListener.onNotAbleToStartMastershipMandatory(deviceInfo, "Cannot initialize device.");
+            }
+        });
     }
 
     @Override
     public ListenableFuture<Void> closeServiceInstance() {
+        LOG.info("Closing clustering services for node {}", deviceInfo.getLOGValue());
         return Futures.immediateFuture(null);
     }
 
@@ -94,12 +100,12 @@ public class LifecycleServiceImpl implements LifecycleService {
 
     @Override
     public void close() {
-        if (terminationState) {
+        if (CONTEXT_STATE.TERMINATION.equals(state)) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("LifecycleService is already in TERMINATION state.");
+                LOG.debug("LifecycleService for node {} is already in TERMINATION state.", deviceInfo.getLOGValue());
             }
         } else {
-            this.terminationState = true;
+            state = CONTEXT_STATE.TERMINATION;
 
             // We are closing, so cleanup all managers now
             deviceRemovedHandlers.forEach(h -> h.onDeviceRemoved(deviceInfo));
@@ -107,10 +113,11 @@ public class LifecycleServiceImpl implements LifecycleService {
             // If we are still registered and we are not already closing, then close the registration
             if (Objects.nonNull(registration)) {
                 try {
-                    LOG.info("Closing clustering services (singleton) for node {}", deviceInfo.getLOGValue());
+                    LOG.info("Closing clustering services registration for node {}", deviceInfo.getLOGValue());
                     registration.close();
+                    registration = null;
                 } catch (final Exception e) {
-                    LOG.warn("Failed to close clustering services for node {} with exception: ",
+                    LOG.warn("Failed to close clustering services registration for node {} with exception: ",
                             deviceInfo.getLOGValue(), e);
                 }
             }
@@ -120,7 +127,7 @@ public class LifecycleServiceImpl implements LifecycleService {
     @Override
     public void registerService(@Nonnull final ClusterSingletonServiceProvider singletonServiceProvider,
                                 @Nonnull final DeviceContext deviceContext) {
-
+        Verify.verify(Objects.isNull(registration));
         this.clusterInitializationPhaseHandler = deviceContext;
         this.serviceGroupIdentifier = deviceContext.getServiceIdentifier();
         this.deviceInfo = deviceContext.getDeviceInfo();
@@ -128,7 +135,6 @@ public class LifecycleServiceImpl implements LifecycleService {
                 singletonServiceProvider.registerClusterSingletonService(this));
 
         LOG.info("Registered clustering services for node {}", deviceInfo.getLOGValue());
-
     }
 
     @Override
