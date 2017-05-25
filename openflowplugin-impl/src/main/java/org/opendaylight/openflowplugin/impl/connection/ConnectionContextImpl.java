@@ -147,6 +147,11 @@ public class ConnectionContextImpl implements ConnectionContext {
 
     @Override
     public void onConnectionClosed() {
+        if (connectionState == CONNECTION_STATE.RIP) {
+            LOG.debug("Connection for device {} is already RIP, so skipping closing.", getSafeNodeIdForLOG());
+            return;
+        }
+
         connectionState = ConnectionContext.CONNECTION_STATE.RIP;
 
         if (null == nodeId){
@@ -370,6 +375,11 @@ public class ConnectionContextImpl implements ConnectionContext {
             result = 31 * result + version.hashCode();
             result = 31 * result + datapathId.hashCode();
             return result;
+        }
+
+        @Override
+        public String toString() {
+            return getLOGValue();
         }
 
         public void setOutboundQueueProvider(final OutboundQueue outboundQueueProvider) {
