@@ -110,24 +110,23 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
             @Override
             public void onFailure(@Nonnull final Throwable throwable) {
                 timeCounter.addTimeMark();
-                LOG.warn("Statistics gathering for single node {} was not successful: {}", deviceInfo.getLOGValue(),
-                        throwable.getMessage());
-                if (LOG.isTraceEnabled()) {
-                    LOG.trace("Gathering for node {} failure: ", deviceInfo.getLOGValue(), throwable);
-                }
                 calculateTimerDelay(timeCounter);
+
                 if (throwable instanceof ConnectionException) {
                     // ConnectionException is raised by StatisticsContextImpl class when the connections
                     // move to RIP state. In this particular case, there is no need to reschedule
                     // because this statistics manager should be closed soon
-                    LOG.warn("Node {} is no more connected, stopping the statistics collection",
+                    LOG.warn("Device {} is no more connected, stopping the statistics collection",
                             deviceInfo.getLOGValue(),throwable);
                     stopScheduling(deviceInfo);
+                } else if (throwable instanceof CancellationException) {
+                    LOG.info("Statistics gathering for device {} was cancelled, stopping the statistics collection",
+                            deviceInfo.getLOGValue());
+                    stopScheduling(deviceInfo);
                 } else {
-                    if (!(throwable instanceof CancellationException)) {
-                        LOG.warn("Unexpected error occurred during statistics collection for node {}, rescheduling " +
-                                "statistics collections", deviceInfo.getLOGValue(),throwable);
-                    }
+                    LOG.warn("Unexpected error occurred during statistics collection for device {}, rescheduling " +
+                            "statistics collections", deviceInfo.getLOGValue(), throwable);
+
                     scheduleNextPolling(deviceState, deviceInfo, statisticsContext, timeCounter);
                 }
             }

@@ -22,7 +22,7 @@ public class DeviceInitializerProvider {
      * @param version     the initializer version
      * @param initializer the initializer instance
      */
-    public void register(final Short version, final AbstractDeviceInitializer initializer) {
+    void register(final Short version, final AbstractDeviceInitializer initializer) {
         initializers.put(version, initializer);
     }
 

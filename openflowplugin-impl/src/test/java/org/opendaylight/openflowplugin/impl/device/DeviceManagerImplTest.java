@@ -23,7 +23,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -124,8 +123,7 @@ public class DeviceManagerImplTest {
 
         deviceManager.close();
 
-        verify(deviceContext).shutdownConnection();
-        verify(deviceContext, Mockito.never()).close();
+        verify(deviceContext).close();
     }
 
     private static ConcurrentHashMap<DeviceInfo, DeviceContext> getContextsCollection(final DeviceManagerImpl deviceManager) throws NoSuchFieldException, IllegalAccessException {
