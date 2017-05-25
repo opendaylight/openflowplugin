@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
-import com.google.common.util.concurrent.ListenableFuture;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListener;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
@@ -29,7 +28,7 @@ public interface ContextChainHolder extends
         MastershipChangeListener,
         DeviceDisconnectedHandler,
         EntityOwnershipListener,
-        AutoCloseable{
+        AutoCloseable {
 
     /**
      * Managers need to be added before.
