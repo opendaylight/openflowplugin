@@ -282,11 +282,18 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
 
     @GuardedBy("txLock")
     private ListenableFuture<Void> txChainShuttingDown() {
+        boolean wasSubmitEnabled = submitIsEnabled;
         submitIsEnabled = false;
         ListenableFuture<Void> future;
-        if (txChainFactory == null) {
+
+        if (!wasSubmitEnabled || txChainFactory == null) {
             // stay with actual thread
             future = Futures.immediateCheckedFuture(null);
+
+            if (wTx != null) {
+                wTx.cancel();
+                wTx = null;
+            }
         } else if (wTx == null) {
             // hijack md-sal thread
             future = lastSubmittedFuture;
@@ -298,6 +305,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
             future = wTx.submit();
             wTx = null;
         }
+
         return future;
     }
 
