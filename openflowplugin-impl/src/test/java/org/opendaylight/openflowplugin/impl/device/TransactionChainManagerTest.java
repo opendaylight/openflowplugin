@@ -220,7 +220,8 @@ public class TransactionChainManagerTest {
 
         Mockito.verify(txChain).newWriteOnlyTransaction();
         Mockito.verify(writeTx).put(LogicalDatastoreType.CONFIGURATION, path, data, false);
-        Mockito.verify(writeTx).submit();
+        Mockito.verify(writeTx, Mockito.never()).submit();
+        Mockito.verify(writeTx).cancel();
         Mockito.verify(txChain).close();
     }
 
@@ -228,7 +229,7 @@ public class TransactionChainManagerTest {
     public void testShuttingDown() throws Exception{
         final Node data = new NodeBuilder().setId(nodeId).build();
         txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data, false);
-
+        txChainManager.enableSubmit();
         txChainManager.shuttingDown();
 
         Mockito.verify(txChain).newWriteOnlyTransaction();

@@ -30,10 +30,14 @@ public abstract class AbstractDeviceInitializer {
     /**
      * Perform initial information gathering and store them to operational datastore
      * @param deviceContext device context
+     * @param switchFeaturesMandatory is switch features mandatory
+     * @param skipTableFeatures skip collecting of table features
      * @param multipartWriterProvider multipart writer provider
+     * @param convertorExecutor convertor executor
      */
     public Future<Void> initialize(@Nonnull final DeviceContext deviceContext,
                                    final boolean switchFeaturesMandatory,
+                                   final boolean skipTableFeatures,
                                    @Nullable final MultipartWriterProvider multipartWriterProvider,
                                    @Nullable final ConvertorExecutor convertorExecutor) throws ExecutionException,InterruptedException {
         Preconditions.checkNotNull(deviceContext);
@@ -54,11 +58,13 @@ public abstract class AbstractDeviceInitializer {
         }
 
         // Get information about device
-        return initializeNodeInformation(deviceContext, switchFeaturesMandatory, multipartWriterProvider, convertorExecutor);
+        return initializeNodeInformation(deviceContext, switchFeaturesMandatory, skipTableFeatures,
+                multipartWriterProvider, convertorExecutor);
     }
 
     protected abstract Future<Void> initializeNodeInformation(@Nonnull final DeviceContext deviceContext,
                                                               final boolean switchFeaturesMandatory,
+                                                              final boolean skipTableFeatures,
                                                               @Nullable final MultipartWriterProvider multipartWriterProvider,
                                                               @Nullable final ConvertorExecutor convertorExecutor);
 }
