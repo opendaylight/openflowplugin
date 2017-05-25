@@ -638,7 +638,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public boolean onContextInstantiateService(final MastershipChangeListener mastershipChangeListener) {
-
         LOG.info("Starting device context cluster services for node {}", deviceInfo.getLOGValue());
         lazyTransactionManagerInitialization();
 
