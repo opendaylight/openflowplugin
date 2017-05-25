@@ -57,6 +57,7 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
     @Override
     protected Future<Void> initializeNodeInformation(@Nonnull final DeviceContext deviceContext,
                                                      final boolean switchFeaturesMandatory,
+                                                     final boolean skipTableFeatures,
                                                      @Nullable final MultipartWriterProvider multipartWriterProvider,
                                                      @Nullable final ConvertorExecutor convertorExecutor) {
         final ConnectionContext connectionContext = Preconditions.checkNotNull(deviceContext.getPrimaryConnectionContext());
@@ -153,7 +154,7 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
                 new SingleLayerMultipartCollectorService(deviceContext, deviceContext);
 
             return Futures.transform(service.handleServiceCall(multipartType), new Function<RpcResult<List<MultipartReply>>, Boolean>() {
-                @Nullable
+                @Nonnull
                 @Override
                 public Boolean apply(final RpcResult<List<MultipartReply>> input) {
                     return input.isSuccessful();
@@ -165,7 +166,7 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
             new MultiLayerMultipartCollectorService(deviceContext, deviceContext);
 
         return Futures.transform(service.handleServiceCall(multipartType), new Function<RpcResult<List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply>>, Boolean>() {
-            @Nullable
+            @Nonnull
             @Override
             public Boolean apply(final RpcResult<List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply>> input) {
                 return input.isSuccessful();

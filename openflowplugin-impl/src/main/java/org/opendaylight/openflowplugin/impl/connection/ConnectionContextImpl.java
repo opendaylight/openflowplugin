@@ -8,13 +8,14 @@
 
 package org.opendaylight.openflowplugin.impl.connection;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import java.math.BigInteger;
-import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
@@ -107,29 +108,7 @@ public class ConnectionContextImpl implements ConnectionContext {
 
     @Override
     public void closeConnection(final boolean propagate) {
-        if (Objects.isNull(nodeId)){
-            SessionStatistics.countEvent(connectionAdapter.getRemoteAddress().toString(), SessionStatistics.ConnectionStatus.CONNECTION_DISCONNECTED_BY_OFP);
-        } else {
-            SessionStatistics.countEvent(nodeId.toString(), SessionStatistics.ConnectionStatus.CONNECTION_DISCONNECTED_BY_OFP);
-        }
-        final BigInteger datapathId = Objects.nonNull(featuresReply) ? featuresReply.getDatapathId() : BigInteger.ZERO;
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Actively closing connection: {}, datapathId: {}",
-                    connectionAdapter.getRemoteAddress(), datapathId);
-        }
-        connectionState = ConnectionContext.CONNECTION_STATE.RIP;
-
-        portStatusMessages.clear();
-        unregisterOutboundQueue();
-        closeHandshakeContext();
-
-        if (getConnectionAdapter().isAlive()) {
-            getConnectionAdapter().disconnect();
-        }
-
-        if (propagate) {
-            propagateDeviceDisconnectedEvent();
-        }
+        disconnectDevice(propagate, true);
     }
 
     private void closeHandshakeContext() {
@@ -147,31 +126,47 @@ public class ConnectionContextImpl implements ConnectionContext {
 
     @Override
     public void onConnectionClosed() {
+        disconnectDevice(true, false);
+    }
+
+    private void disconnectDevice(final boolean propagate,
+                                  final boolean forced) {
+        final String device = Objects.nonNull(nodeId) ? nodeId.getValue() : getConnectionAdapter().getRemoteAddress().toString();
+        final short auxiliaryId = Optional
+                .ofNullable(getFeatures())
+                .flatMap(features -> Optional
+                        .ofNullable(features.getAuxiliaryId()))
+                .orElse((short) 0);
+
+        if (connectionState == CONNECTION_STATE.RIP) {
+            LOG.debug("Connection for device {} with auxiliary ID {} is already {}, so skipping closing.",
+                    device, auxiliaryId, getConnectionState());
+            return;
+        }
+
+        SessionStatistics.countEvent(device, forced
+                ? SessionStatistics.ConnectionStatus.CONNECTION_DISCONNECTED_BY_OFP
+                : SessionStatistics.ConnectionStatus.CONNECTION_DISCONNECTED_BY_DEVICE);
+
         connectionState = ConnectionContext.CONNECTION_STATE.RIP;
 
-        if (null == nodeId){
-            SessionStatistics.countEvent(connectionAdapter.getRemoteAddress().toString(), SessionStatistics.ConnectionStatus.CONNECTION_DISCONNECTED_BY_DEVICE);
-        } else {
-            SessionStatistics.countEvent(nodeId.toString(), SessionStatistics.ConnectionStatus.CONNECTION_DISCONNECTED_BY_DEVICE);
-        }
-
-        final InetSocketAddress remoteAddress = connectionAdapter.getRemoteAddress();
-        final Short auxiliaryId;
-        if (null != getFeatures() && null != getFeatures().getAuxiliaryId()) {
-            auxiliaryId = getFeatures().getAuxiliaryId();
-        } else {
-            auxiliaryId = 0;
-        }
-
-        LOG.debug("disconnecting: node={}|auxId={}|connection state = {}",
-                remoteAddress,
+        LOG.debug("{}: device={} | auxiliaryId={} | connectionState={}",
+                forced ? "Actively closing connection" : "Disconnecting",
+                device,
                 auxiliaryId,
                 getConnectionState());
 
         portStatusMessages.clear();
         unregisterOutboundQueue();
         closeHandshakeContext();
-        propagateDeviceDisconnectedEvent();
+
+        if (forced && getConnectionAdapter().isAlive()) {
+            getConnectionAdapter().disconnect();
+        }
+
+        if (propagate) {
+            propagateDeviceDisconnectedEvent();
+        }
     }
 
     private void propagateDeviceDisconnectedEvent() {
@@ -226,12 +221,12 @@ public class ConnectionContextImpl implements ConnectionContext {
 
     @Override
     public void handlePortStatusMessage(final PortStatusMessage portStatusMessage) {
-        if (Objects.isNull(deviceInfo)) {
-            LOG.debug("NOOP: Port-status message during handshake phase not supported: {}", portStatusMessage);
-            return;
-        }
+        LOG.info("Received early port status message for node {} with reason {} and state {}",
+                nodeId.getValue(),
+                portStatusMessage.getReason(),
+                MoreObjects.firstNonNull(portStatusMessage.getState(), portStatusMessage.getStateV10()));
 
-        LOG.debug("Handling alien port status message {} for node {}", portStatusMessage, nodeId);
+        LOG.debug("Early port status message body is {}", portStatusMessage);
         portStatusMessages.add(portStatusMessage);
     }
 
@@ -370,6 +365,11 @@ public class ConnectionContextImpl implements ConnectionContext {
             result = 31 * result + version.hashCode();
             result = 31 * result + datapathId.hashCode();
             return result;
+        }
+
+        @Override
+        public String toString() {
+            return getLOGValue();
         }
 
         public void setOutboundQueueProvider(final OutboundQueue outboundQueueProvider) {
