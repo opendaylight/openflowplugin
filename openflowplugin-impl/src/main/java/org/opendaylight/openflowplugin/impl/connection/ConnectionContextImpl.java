@@ -11,9 +11,6 @@ package org.opendaylight.openflowplugin.impl.connection;
 import com.google.common.base.Preconditions;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
@@ -30,7 +27,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +46,6 @@ public class ConnectionContextImpl implements ConnectionContext {
     private OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration;
     private HandshakeContext handshakeContext;
     private DeviceInfo deviceInfo;
-    private List<PortStatusMessage> portStatusMessages = new ArrayList<>();
 
     /**
      * @param connectionAdapter
@@ -119,7 +114,6 @@ public class ConnectionContextImpl implements ConnectionContext {
         }
         connectionState = ConnectionContext.CONNECTION_STATE.RIP;
 
-        portStatusMessages.clear();
         unregisterOutboundQueue();
         closeHandshakeContext();
 
@@ -147,6 +141,7 @@ public class ConnectionContextImpl implements ConnectionContext {
 
     @Override
     public void onConnectionClosed() {
+
         connectionState = ConnectionContext.CONNECTION_STATE.RIP;
 
         if (null == nodeId){
@@ -168,7 +163,6 @@ public class ConnectionContextImpl implements ConnectionContext {
                 auxiliaryId,
                 getConnectionState());
 
-        portStatusMessages.clear();
         unregisterOutboundQueue();
         closeHandshakeContext();
         propagateDeviceDisconnectedEvent();
@@ -222,24 +216,6 @@ public class ConnectionContextImpl implements ConnectionContext {
     @Override
     public synchronized void changeStateToWorking() {
         connectionState = CONNECTION_STATE.WORKING;
-    }
-
-    @Override
-    public void handlePortStatusMessage(final PortStatusMessage portStatusMessage) {
-        if (Objects.isNull(deviceInfo)) {
-            LOG.debug("NOOP: Port-status message during handshake phase not supported: {}", portStatusMessage);
-            return;
-        }
-
-        LOG.debug("Handling alien port status message {} for node {}", portStatusMessage, nodeId);
-        portStatusMessages.add(portStatusMessage);
-    }
-
-    @Override
-    public List<PortStatusMessage> retrieveAndClearPortStatusMessages() {
-        final List<PortStatusMessage> immutablePortStatusMessages = Collections.unmodifiableList(portStatusMessages);
-        portStatusMessages.clear();
-        return immutablePortStatusMessages;
     }
 
     @Override

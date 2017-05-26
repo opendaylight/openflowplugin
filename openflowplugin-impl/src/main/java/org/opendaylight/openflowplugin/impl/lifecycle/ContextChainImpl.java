@@ -25,7 +25,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChain;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainState;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainStateListener;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
@@ -75,7 +74,6 @@ public class ContextChainImpl implements ContextChain {
                 }
             }
         }
-
         contexts.add(context);
     }
 
@@ -124,7 +122,7 @@ public class ContextChainImpl implements ContextChain {
     @Override
     public void makeContextChainStateSlave() {
         this.unMasterMe();
-        changeState(ContextChainState.WORKING_SLAVE);
+        this.contextChainState = ContextChainState.WORKING_SLAVE;
     }
 
     @Override
@@ -180,7 +178,7 @@ public class ContextChainImpl implements ContextChain {
             LOG.info("Device {} is able to work as master{}",
                     deviceInfo.getLOGValue(),
                     this.registryFilling.get() ? " WITHOUT flow registry !!!" : ".");
-            changeState(ContextChainState.WORKING_MASTER);
+            contextChainState = ContextChainState.WORKING_MASTER;
         }
         return result;
     }
@@ -211,17 +209,5 @@ public class ContextChainImpl implements ContextChain {
         }
         this.auxiliaryConnections.remove(connectionContext);
         return true;
-    }
-
-    private void changeState(final ContextChainState contextChainState) {
-        boolean propagate = this.contextChainState == ContextChainState.UNDEFINED;
-        this.contextChainState = contextChainState;
-
-        if (propagate) {
-            contexts.stream()
-                    .filter(ContextChainStateListener.class::isInstance)
-                    .map(ContextChainStateListener.class::cast)
-                    .forEach(listener -> listener.onStateAcquired(contextChainState));
-        }
     }
 }

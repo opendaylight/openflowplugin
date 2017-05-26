@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.api.openflow.connection;
 
-import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
@@ -16,7 +15,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 
 /**
  * <p>
@@ -155,13 +153,4 @@ public interface ConnectionContext {
      * Should be called after nodeId and features are set in connection context.
      */
     void handshakeSuccessful();
-
-    /**
-     * Handle received port status message
-     * @param portStatusMessage port status message
-     */
-    void handlePortStatusMessage(PortStatusMessage portStatusMessage);
-
-    List<PortStatusMessage> retrieveAndClearPortStatusMessages();
-
 }
