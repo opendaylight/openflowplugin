@@ -14,7 +14,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;
-import java.util.concurrent.Future;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -55,10 +54,10 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
     private static final Logger LOG = LoggerFactory.getLogger(OF10DeviceInitializer.class);
 
     @Override
-    protected Future<Void> initializeNodeInformation(@Nonnull final DeviceContext deviceContext,
-                                                     final boolean switchFeaturesMandatory,
-                                                     @Nullable final MultipartWriterProvider multipartWriterProvider,
-                                                     @Nullable final ConvertorExecutor convertorExecutor) {
+    protected ListenableFuture<Void> initializeNodeInformation(@Nonnull final DeviceContext deviceContext,
+                                                               final boolean switchFeaturesMandatory,
+                                                               @Nullable final MultipartWriterProvider multipartWriterProvider,
+                                                               @Nullable final ConvertorExecutor convertorExecutor) {
         final ConnectionContext connectionContext = Preconditions.checkNotNull(deviceContext.getPrimaryConnectionContext());
         final DeviceState deviceState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         final DeviceInfo deviceInfo = Preconditions.checkNotNull(deviceContext.getDeviceInfo());

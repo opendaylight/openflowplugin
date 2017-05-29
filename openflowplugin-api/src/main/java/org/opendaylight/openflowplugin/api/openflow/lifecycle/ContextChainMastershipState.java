@@ -9,6 +9,10 @@ package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
 public enum ContextChainMastershipState {
     /**
+     * Device was successfully initialized
+     */
+    DEVICE_INIT,
+    /**
      * Device has role MASTER set.
      */
     MASTER_ON_DEVICE,
@@ -28,5 +32,4 @@ public enum ContextChainMastershipState {
      * Check mastership.
      */
     CHECK
-
 }

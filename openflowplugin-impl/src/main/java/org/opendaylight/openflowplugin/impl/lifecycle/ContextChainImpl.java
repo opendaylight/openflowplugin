@@ -45,20 +45,16 @@ public class ContextChainImpl implements ContextChain {
     private ConnectionContext primaryConnection;
     private Set<ConnectionContext> auxiliaryConnections = new ConcurrentSet<>();
 
-    private volatile ContextChainState contextChainState;
+    private volatile ContextChainState contextChainState = ContextChainState.UNDEFINED;
 
-    private AtomicBoolean masterStateOnDevice;
-    private AtomicBoolean initialGathering;
-    private AtomicBoolean initialSubmitting;
-    private AtomicBoolean registryFilling;
+    private final AtomicBoolean masterStateOnDevice = new AtomicBoolean(false);
+    private final AtomicBoolean initialGathering = new AtomicBoolean(false);
+    private final AtomicBoolean initialSubmitting = new AtomicBoolean(false);
+    private final AtomicBoolean registryFilling = new AtomicBoolean(false);
+    private final AtomicBoolean deviceInitializing = new AtomicBoolean(false);
 
     ContextChainImpl(final ConnectionContext connectionContext) {
         this.primaryConnection = connectionContext;
-        this.contextChainState = ContextChainState.UNDEFINED;
-        this.masterStateOnDevice = new AtomicBoolean(false);
-        this.initialGathering = new AtomicBoolean(false);
-        this.initialSubmitting = new AtomicBoolean(false);
-        this.registryFilling = new AtomicBoolean(false);
         this.deviceInfo = connectionContext.getDeviceInfo();
     }
 
@@ -152,6 +148,10 @@ public class ContextChainImpl implements ContextChain {
     @Override
     public boolean isMastered(@Nonnull ContextChainMastershipState mastershipState) {
         switch (mastershipState) {
+            case DEVICE_INIT:
+                LOG.debug("Device {}, device initialization OK.", deviceInfo.getLOGValue());
+                this.deviceInitializing.set(true);
+                break;
             case INITIAL_SUBMIT:
                 LOG.debug("Device {}, initial submit OK.", deviceInfo.getLOGValue());
                 this.initialSubmitting.set(true);
@@ -172,6 +172,7 @@ public class ContextChainImpl implements ContextChain {
             default:
         }
         final boolean result =
+                this.deviceInitializing.get() &&
                 this.initialGathering.get() &&
                 this.masterStateOnDevice.get() &&
                 this.initialSubmitting.get();

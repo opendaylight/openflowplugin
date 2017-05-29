@@ -8,10 +8,9 @@
 
 package org.opendaylight.openflowplugin.impl.device.initialization;
 
-import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Collections;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -32,33 +31,31 @@ public abstract class AbstractDeviceInitializer {
      * @param deviceContext device context
      * @param multipartWriterProvider multipart writer provider
      */
-    public Future<Void> initialize(@Nonnull final DeviceContext deviceContext,
-                                   final boolean switchFeaturesMandatory,
-                                   @Nullable final MultipartWriterProvider multipartWriterProvider,
-                                   @Nullable final ConvertorExecutor convertorExecutor) throws ExecutionException,InterruptedException {
-        Preconditions.checkNotNull(deviceContext);
-
+    public ListenableFuture<Void> initialize(@Nonnull final DeviceContext deviceContext,
+                                             final boolean switchFeaturesMandatory,
+                                             @Nullable final MultipartWriterProvider multipartWriterProvider,
+                                             @Nullable final ConvertorExecutor convertorExecutor) {
         // Write node to datastore
         LOG.debug("Initializing node information for node {}", deviceContext.getDeviceInfo().getLOGValue());
         try {
             deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, deviceContext
-                    .getDeviceInfo()
-                    .getNodeInstanceIdentifier(),
-                new NodeBuilder()
-                    .setId(deviceContext.getDeviceInfo().getNodeId())
-                    .setNodeConnector(Collections.emptyList())
-                    .build());
+                            .getDeviceInfo()
+                            .getNodeInstanceIdentifier(),
+                    new NodeBuilder()
+                            .setId(deviceContext.getDeviceInfo().getNodeId())
+                            .setNodeConnector(Collections.emptyList())
+                            .build());
         } catch (final Exception e) {
             LOG.warn("Failed to write node {} to DS ", deviceContext.getDeviceInfo().getNodeId(), e);
-            throw new ExecutionException(new ConnectionException("Failed to write node " + deviceContext.getDeviceInfo().getNodeId() + " to DS ", e));
+            return Futures.immediateFailedCheckedFuture(new ConnectionException("Failed to write node " + deviceContext.getDeviceInfo().getNodeId() + " to DS ", e));
         }
 
         // Get information about device
         return initializeNodeInformation(deviceContext, switchFeaturesMandatory, multipartWriterProvider, convertorExecutor);
     }
 
-    protected abstract Future<Void> initializeNodeInformation(@Nonnull final DeviceContext deviceContext,
-                                                              final boolean switchFeaturesMandatory,
-                                                              @Nullable final MultipartWriterProvider multipartWriterProvider,
-                                                              @Nullable final ConvertorExecutor convertorExecutor);
+    protected abstract ListenableFuture<Void> initializeNodeInformation(@Nonnull final DeviceContext deviceContext,
+                                                                        final boolean switchFeaturesMandatory,
+                                                                        @Nullable final MultipartWriterProvider multipartWriterProvider,
+                                                                        @Nullable final ConvertorExecutor convertorExecutor);
 }
