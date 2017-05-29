@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -48,10 +47,10 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
     private static final Logger LOG = LoggerFactory.getLogger(OF13DeviceInitializer.class);
 
     @Override
-    protected Future<Void> initializeNodeInformation(@Nonnull final DeviceContext deviceContext,
-                                                     final boolean switchFeaturesMandatory,
-                                                     @Nullable final MultipartWriterProvider multipartWriterProvider,
-                                                     @Nullable final ConvertorExecutor convertorExecutor) {
+    protected ListenableFuture<Void> initializeNodeInformation(@Nonnull final DeviceContext deviceContext,
+                                                               final boolean switchFeaturesMandatory,
+                                                               @Nullable final MultipartWriterProvider multipartWriterProvider,
+                                                               @Nullable final ConvertorExecutor convertorExecutor) {
         final ConnectionContext connectionContext = Preconditions.checkNotNull(deviceContext.getPrimaryConnectionContext());
         final DeviceState deviceState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         final DeviceInfo deviceInfo = Preconditions.checkNotNull(deviceContext.getDeviceInfo());

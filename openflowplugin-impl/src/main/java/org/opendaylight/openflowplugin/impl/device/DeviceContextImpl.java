@@ -23,10 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -646,30 +644,23 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             return false;
         }
 
-        try {
-            final java.util.Optional<AbstractDeviceInitializer> initializer = deviceInitializerProvider
-                    .lookup(deviceInfo.getVersion());
+        final java.util.Optional<AbstractDeviceInitializer> initializer = deviceInitializerProvider
+                .lookup(deviceInfo.getVersion());
 
-            if (initializer.isPresent()) {
-                initializer
-                        .get()
-                        .initialize(this, switchFeaturesMandatory, writerProvider, convertorExecutor)
-                        .get(DEVICE_INIT_TIMEOUT, TimeUnit.MILLISECONDS);
-            } else {
-                throw new ExecutionException(new ConnectionException("Unsupported version " + deviceInfo.getVersion()));
+        final ListenableFuture<Void> initializationFuture = initializer
+                .map(init -> init.initialize(this, switchFeaturesMandatory, writerProvider, convertorExecutor))
+                .orElse(Futures.immediateFailedFuture(new ConnectionException("Unsupported version " + deviceInfo.getVersion())));
+
+        Futures.addCallback(initializationFuture, new DeviceInitializationCallback(mastershipChangeListener));
+
+        final TimerTask timerTask = timeout -> {
+            if (!initializationFuture.isDone()) {
+                LOG.warn("Device {} was not initialized during {} sec", deviceInfo.getLOGValue(), DEVICE_INIT_TIMEOUT);
+                initializationFuture.cancel(true);
             }
-        } catch (ExecutionException | InterruptedException | TimeoutException ex) {
-            LOG.warn("Device {} cannot be initialized: ", deviceInfo.getLOGValue(), ex);
-            return false;
-        }
+        };
 
-        Futures.addCallback(sendRoleChangeToDevice(OfpRole.BECOMEMASTER),
-                new RpcResultFutureCallback(mastershipChangeListener));
-
-        final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill = getDeviceFlowRegistry().fill();
-        Futures.addCallback(deviceFlowRegistryFill,
-                new DeviceFlowRegistryCallback(deviceFlowRegistryFill, mastershipChangeListener));
-
+        hashedWheelTimer.newTimeout(timerTask, DEVICE_INIT_TIMEOUT, TimeUnit.SECONDS);
         return this.clusterInitializationPhaseHandler.onContextInstantiateService(mastershipChangeListener);
     }
 
@@ -738,11 +729,42 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         hasState = true;
     }
 
-    private class RpcResultFutureCallback implements FutureCallback<RpcResult<SetRoleOutput>> {
+    private class DeviceInitializationCallback implements FutureCallback<Void> {
+        private final MastershipChangeListener mastershipChangeListener;
+
+        DeviceInitializationCallback(final MastershipChangeListener mastershipChangeListener) {
+            this.mastershipChangeListener = mastershipChangeListener;
+        }
+
+        @Override
+        public void onSuccess(@Nullable final Void v) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Device initialization was successfully finished for device {}", deviceInfo.getLOGValue());
+            }
+
+            mastershipChangeListener.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.DEVICE_INIT);
+
+            Futures.addCallback(sendRoleChangeToDevice(OfpRole.BECOMEMASTER),
+                    new SendRoleChangeCallback(mastershipChangeListener));
+
+            final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill = getDeviceFlowRegistry().fill();
+            Futures.addCallback(deviceFlowRegistryFill, new DeviceFlowRegistryCallback(deviceFlowRegistryFill, mastershipChangeListener));
+        }
+
+        @Override
+        public void onFailure(@Nonnull final Throwable throwable) {
+            LOG.warn("Device {} cannot be initialized: ", deviceInfo.getLOGValue(), throwable);
+            mastershipChangeListener.onNotAbleToStartMastershipMandatory(
+                    deviceInfo,
+                    "Was not able to initialize device");
+        }
+    }
+
+    private class SendRoleChangeCallback implements FutureCallback<RpcResult<SetRoleOutput>> {
 
         private final MastershipChangeListener mastershipChangeListener;
 
-        RpcResultFutureCallback(final MastershipChangeListener mastershipChangeListener) {
+        SendRoleChangeCallback(final MastershipChangeListener mastershipChangeListener) {
             this.mastershipChangeListener = mastershipChangeListener;
         }
 

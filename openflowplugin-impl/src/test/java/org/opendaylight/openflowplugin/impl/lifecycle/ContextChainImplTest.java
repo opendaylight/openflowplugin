@@ -79,6 +79,7 @@ public class ContextChainImplTest {
 
     @Test
     public void connectionDropped() throws Exception {
+        contextChain.isMastered(ContextChainMastershipState.DEVICE_INIT);
         contextChain.isMastered(ContextChainMastershipState.INITIAL_GATHERING);
         contextChain.isMastered(ContextChainMastershipState.INITIAL_SUBMIT);
         contextChain.isMastered(ContextChainMastershipState.MASTER_ON_DEVICE);
