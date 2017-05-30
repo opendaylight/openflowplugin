@@ -592,40 +592,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public synchronized void replaceConnection(final ConnectionContext connectionContext) {
-
-        primaryConnectionContext = null;
-        deviceInfo = null;
-        packetInLimiter = null;
-
-        primaryConnectionContext = connectionContext;
-        deviceInfo = primaryConnectionContext.getDeviceInfo();
-
-        packetInLimiter = new PacketInRateLimiter(primaryConnectionContext.getConnectionAdapter(),
-                /*initial*/ LOW_WATERMARK, /*initial*/HIGH_WATERMARK, messageSpy, REJECTED_DRAIN_FACTOR);
-
-        primaryConnectionContext.setOutboundQueueProvider(outboundQueueProvider);
-
-        final OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration =
-                primaryConnectionContext.getConnectionAdapter().registerOutboundQueueHandler(
-                        outboundQueueProvider,
-                        myManager.getBarrierCountLimit(),
-                        myManager.getBarrierIntervalNanos());
-
-        primaryConnectionContext.setOutboundQueueHandleRegistration(outboundQueueHandlerRegistration);
-
-        final OpenflowProtocolListenerFullImpl messageListener = new OpenflowProtocolListenerFullImpl(
-                primaryConnectionContext.getConnectionAdapter(), this);
-
-        primaryConnectionContext.getConnectionAdapter().setMessageListener(messageListener);
-
-        LOG.info("ConnectionEvent: Connection on device:{}, NodeId:{} switched.",
-                primaryConnectionContext.getConnectionAdapter().getRemoteAddress(),
-                primaryConnectionContext.getDeviceInfo().getNodeId());
-
-    }
-
-    @Override
     public CONTEXT_STATE getState() {
         return this.state;
     }
