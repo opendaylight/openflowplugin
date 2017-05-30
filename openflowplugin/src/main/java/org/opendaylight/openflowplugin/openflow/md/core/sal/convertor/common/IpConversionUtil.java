@@ -582,6 +582,17 @@ public final class IpConversionUtil {
         return sb.toString();
     }
 
+    /**
+     * Check if the supplied IPv6Address has any prefix
+     *
+     * @param ipv6Prefix Ipv6 prefix
+     * @return prefix if there is one, else null
+     */
+    public static Integer hasIpv6Prefix(final Ipv6Prefix ipv6Prefix) {
+        final int prefix = IpConversionUtil.extractIpv6Prefix(ipv6Prefix);
+        return prefix < IPV6_ADDRESS_LENGTH ? prefix : null;
+    }
+
     private static int ipv6PrefixByteArrayOffset(final int mask) {
         if (mask < 0) {
             return 0;
