@@ -17,6 +17,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Con
  */
 public class ActionResponseConvertorData extends ConvertorData {
     private ActionPath actionPath;
+    private Short ipProtocol;
 
     /**
      * Instantiates a new Action response convertor data.
@@ -43,5 +44,23 @@ public class ActionResponseConvertorData extends ConvertorData {
      */
     public void setActionPath(ActionPath actionPath) {
         this.actionPath = actionPath;
+    }
+
+    /**
+     * Gets ip protocol.
+     *
+     * @return the ip protocol
+     */
+    public Short getIpProtocol() {
+        return ipProtocol;
+    }
+
+    /**
+     * Sets ip protocol.
+     *
+     * @param ipProtocol the ip protocol
+     */
+    public void setIpProtocol(final Short ipProtocol) {
+        this.ipProtocol = ipProtocol;
     }
 }
