@@ -41,7 +41,7 @@ public class TunGpeNpCodec extends AbstractMatchCodec {
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntriesBuilder = deserializeHeader(message);
+        MatchEntryBuilder matchEntriesBuilder = deserializeHeaderToBuilder(message);
         TunGpeNpCaseValueBuilder tunGpeNpCaseValueBuilder = new TunGpeNpCaseValueBuilder();
         tunGpeNpCaseValueBuilder.setTunGpeNpValues(new TunGpeNpValuesBuilder().setValue(message.readUnsignedByte()).build());
         matchEntriesBuilder.setMatchEntryValue(tunGpeNpCaseValueBuilder.build());

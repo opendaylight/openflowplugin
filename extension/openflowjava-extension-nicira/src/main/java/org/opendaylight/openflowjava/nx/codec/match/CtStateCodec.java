@@ -47,7 +47,7 @@ public class CtStateCodec extends AbstractMatchCodec {
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntryBuilder = deserializeHeader(message);
+        MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
         CtStateCaseValueBuilder caseBuilder = new CtStateCaseValueBuilder();
         CtStateValuesBuilder ctStateValuesBuilder = new CtStateValuesBuilder();
         ctStateValuesBuilder.setCtState(message.readUnsignedInt());

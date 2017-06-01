@@ -42,7 +42,7 @@ public class EthTypeCodec extends AbstractMatchCodec {
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntryBuilder = deserializeHeader(message);
+        MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
         EthTypeCaseValueBuilder caseBuilder = new EthTypeCaseValueBuilder();
         EthTypeValuesBuilder valuesBuilder = new EthTypeValuesBuilder();
         valuesBuilder.setValue(message.readUnsignedShort()).build();

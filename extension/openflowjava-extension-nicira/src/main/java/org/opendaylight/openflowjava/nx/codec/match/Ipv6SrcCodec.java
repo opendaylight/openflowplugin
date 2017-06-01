@@ -37,7 +37,7 @@ public class Ipv6SrcCodec extends AbstractMatchCodec {
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntriesBuilder = deserializeHeader(message);
+        MatchEntryBuilder matchEntriesBuilder = deserializeHeaderToBuilder(message);
         IpSrcCaseValueBuilder caseBuilder = new IpSrcCaseValueBuilder();
         caseBuilder.setIpSrcValues(new IpSrcValuesBuilder().setValue(message.readUnsignedInt()).build());
         matchEntriesBuilder.setMatchEntryValue(caseBuilder.build());
