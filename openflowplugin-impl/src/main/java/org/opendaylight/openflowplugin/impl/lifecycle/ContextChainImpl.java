@@ -191,7 +191,8 @@ public class ContextChainImpl implements ContextChain {
 
     @Override
     public boolean addAuxiliaryConnection(@Nonnull ConnectionContext connectionContext) {
-        if (this.primaryConnection.getConnectionState() != ConnectionContext.CONNECTION_STATE.RIP) {
+        if ((connectionContext.getFeatures().getAuxiliaryId() != 0) &&
+                (this.primaryConnection.getConnectionState() != ConnectionContext.CONNECTION_STATE.RIP)) {
             this.auxiliaryConnections.add(connectionContext);
             return true;
         } else {
