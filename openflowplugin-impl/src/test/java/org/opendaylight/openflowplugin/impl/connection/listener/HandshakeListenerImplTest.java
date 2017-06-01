@@ -63,7 +63,6 @@ public class HandshakeListenerImplTest {
         connectionContextSpy = Mockito.spy(new ConnectionContextImpl(connectionAdapter));
         Mockito.when(connectionContextSpy.getConnectionAdapter()).thenReturn(connectionAdapter);
         Mockito.when(features.getDatapathId()).thenReturn(BigInteger.TEN);
-        Mockito.doNothing().when(connectionContextSpy).handshakeSuccessful();
         handshakeListener = new HandshakeListenerImpl(connectionContextSpy, deviceConnectedHandler);
         handshakeListener.setHandshakeContext(handshakeContext);
     }
