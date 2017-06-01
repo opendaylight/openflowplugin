@@ -41,7 +41,7 @@ public class EncapEthTypeCodec extends AbstractMatchCodec {
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntryBuilder = deserializeHeader(message);
+        MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
         EncapEthTypeCaseValueBuilder encapEthTypeCaseValueBuilder= new EncapEthTypeCaseValueBuilder();
         encapEthTypeCaseValueBuilder.setEncapEthTypeValues(new EncapEthTypeValuesBuilder().setEncapEthType(message.readUnsignedShort()).build());
         matchEntryBuilder.setMatchEntryValue(encapEthTypeCaseValueBuilder.build());
