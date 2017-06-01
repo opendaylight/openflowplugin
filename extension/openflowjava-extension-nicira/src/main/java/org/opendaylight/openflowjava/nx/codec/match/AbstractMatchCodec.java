@@ -10,6 +10,8 @@ package org.opendaylight.openflowjava.nx.codec.match;
 
 import io.netty.buffer.ByteBuf;
 
+import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderDeserializer;
+import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -18,12 +20,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmC
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 
-public abstract class AbstractMatchCodec implements OFSerializer<MatchEntry>, OFDeserializer<MatchEntry> {
+public abstract class AbstractMatchCodec implements
+        OFSerializer<MatchEntry>,
+        OFDeserializer<MatchEntry>,
+        HeaderSerializer<MatchEntry>,
+        HeaderDeserializer<MatchEntry> {
 
     protected NxmHeader headerWithMask;
     protected NxmHeader headerWithoutMask;
 
-    protected MatchEntryBuilder deserializeHeader(ByteBuf message) {
+    protected MatchEntryBuilder deserializeHeaderToBuilder(ByteBuf message) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
         builder.setOxmClass(getOxmClass());
         // skip oxm_class - provided
@@ -36,7 +42,13 @@ public abstract class AbstractMatchCodec implements OFSerializer<MatchEntry>, OF
         return builder;
     }
 
-    protected void serializeHeader(MatchEntry input, ByteBuf outBuffer) {
+    @Override
+    public MatchEntry deserializeHeader(ByteBuf message) {
+        return deserializeHeaderToBuilder(message).build();
+    }
+
+    @Override
+    public void serializeHeader(MatchEntry input, ByteBuf outBuffer) {
         outBuffer.writeInt(serializeHeaderToLong(input.isHasMask()).intValue());
     }
 

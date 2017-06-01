@@ -48,7 +48,7 @@ public class TcpSrcCodec extends AbstractMatchCodec {
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntryBuilder = deserializeHeader(message);
+        MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
         matchEntryBuilder.setHasMask(true);
         int portNo = message.readUnsignedShort();
         int mask = message.readUnsignedShort();
