@@ -264,6 +264,7 @@ public class ActionConvertorV13Test {
         actionBuilder.setActionChoice(new PopPbbCaseBuilder().build());
         actions.add(actionBuilder.build());
 
+        // Add some unsupported actions and check if they are missing from results
         actionBuilder = new ActionBuilder();
         actionBuilder.setActionChoice(new SetNwDstCaseBuilder().build());
         actions.add(actionBuilder.build());
@@ -281,7 +282,7 @@ public class ActionConvertorV13Test {
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action
                 .Action> mdSalActions = mdSalActionsOptional.orElse(Collections.emptyList());
 
-        Assert.assertEquals("Wrong number of output actions", 18, mdSalActions.size());
+        Assert.assertEquals("Wrong number of output actions", 16, mdSalActions.size());
         org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action = mdSalActions.get(0);
         Assert.assertEquals("Wrong action type", "org.opendaylight.yang.gen.v1.urn.opendaylight.action.types"
                 + ".rev131112.action.action.OutputActionCase", action.getImplementedInterface().getName());
@@ -351,12 +352,6 @@ public class ActionConvertorV13Test {
         action = mdSalActions.get(15);
         Assert.assertEquals("Wrong action type", "org.opendaylight.yang.gen.v1.urn.opendaylight.action.types"
                 + ".rev131112.action.action.PopPbbActionCase", action.getImplementedInterface().getName());
-        action = mdSalActions.get(16);
-        Assert.assertEquals("Wrong action type", "org.opendaylight.yang.gen.v1.urn.opendaylight.action.types"
-                + ".rev131112.action.action.SetNwDstActionCase", action.getImplementedInterface().getName());
-        action = mdSalActions.get(17);
-        Assert.assertEquals("Wrong action type", "org.opendaylight.yang.gen.v1.urn.opendaylight.action.types"
-                + ".rev131112.action.action.PopVlanActionCase", action.getImplementedInterface().getName());
     }
 
     /**

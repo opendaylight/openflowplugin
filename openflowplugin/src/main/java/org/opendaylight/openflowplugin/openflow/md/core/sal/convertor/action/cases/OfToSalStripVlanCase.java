@@ -21,7 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 
 public class OfToSalStripVlanCase extends ConvertorCase<StripVlanCase, Action, ActionResponseConvertorData> {
     public OfToSalStripVlanCase() {
-        super(StripVlanCase.class, true, OFConstants.OFP_VERSION_1_0, OFConstants.OFP_VERSION_1_3);
+        super(StripVlanCase.class, true, OFConstants.OFP_VERSION_1_0);
     }
 
     @Override

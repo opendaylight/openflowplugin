@@ -24,7 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 
 public class OfToSalSetFieldCase extends ConvertorCase<SetFieldCase, Action, ActionResponseConvertorData> {
     public OfToSalSetFieldCase() {
-        super(SetFieldCase.class, true, OFConstants.OFP_VERSION_1_0, OFConstants.OFP_VERSION_1_3);
+        super(SetFieldCase.class, true, OFConstants.OFP_VERSION_1_3);
     }
 
     @Override
