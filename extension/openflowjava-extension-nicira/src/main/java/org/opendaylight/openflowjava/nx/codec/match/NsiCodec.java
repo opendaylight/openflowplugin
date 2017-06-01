@@ -41,7 +41,7 @@ public class NsiCodec extends AbstractMatchCodec {
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntriesBuilder = deserializeHeader(message);
+        MatchEntryBuilder matchEntriesBuilder = deserializeHeaderToBuilder(message);
         NsiCaseValueBuilder nsiCaseValueBuilder = new NsiCaseValueBuilder();
         nsiCaseValueBuilder.setNsiValues(new NsiValuesBuilder().setNsi(message.readUnsignedByte()).build());
         matchEntriesBuilder.setMatchEntryValue(nsiCaseValueBuilder.build());

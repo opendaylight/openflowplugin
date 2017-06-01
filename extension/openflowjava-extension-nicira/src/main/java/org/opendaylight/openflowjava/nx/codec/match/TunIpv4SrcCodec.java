@@ -42,7 +42,7 @@ public class TunIpv4SrcCodec extends AbstractMatchCodec {
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntriesBuilder = deserializeHeader(message);
+        MatchEntryBuilder matchEntriesBuilder = deserializeHeaderToBuilder(message);
         TunIpv4SrcCaseValueBuilder caseBuilder = new TunIpv4SrcCaseValueBuilder();
         TunIpv4SrcValuesBuilder valuesBuilder = new TunIpv4SrcValuesBuilder();
         valuesBuilder.setValue(message.readUnsignedInt());

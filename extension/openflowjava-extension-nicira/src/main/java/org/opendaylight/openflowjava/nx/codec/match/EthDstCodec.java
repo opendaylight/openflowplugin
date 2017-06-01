@@ -44,7 +44,7 @@ public class EthDstCodec extends AbstractMatchCodec {
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntryBuilder = deserializeHeader(message);
+        MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
         byte[] address = new byte[VALUE_LENGTH];
         message.readBytes(address);
         EthDstCaseValueBuilder caseBuilder = new EthDstCaseValueBuilder();

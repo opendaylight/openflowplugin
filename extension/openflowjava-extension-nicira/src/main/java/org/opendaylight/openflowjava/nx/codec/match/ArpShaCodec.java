@@ -44,7 +44,7 @@ public class ArpShaCodec extends AbstractMatchCodec {
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntriesBuilder = deserializeHeader(message);
+        MatchEntryBuilder matchEntriesBuilder = deserializeHeaderToBuilder(message);
         byte[] address = new byte[VALUE_LENGTH];
         message.readBytes(address);
         ArpShaCaseValueBuilder caseBuilder = new ArpShaCaseValueBuilder();
