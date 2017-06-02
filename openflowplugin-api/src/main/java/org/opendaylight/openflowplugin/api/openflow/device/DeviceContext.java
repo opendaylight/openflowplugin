@@ -149,4 +149,3 @@ public interface DeviceContext extends
 
     boolean canUseSingleLayerSerialization();
 }
-
