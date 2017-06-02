@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * @author tkubas
  */
 public class PortUpdateTranslator implements MessageTranslator<PortGrouping, FlowCapableNodeConnector> {
-    private static final Logger logger = LoggerFactory.getLogger(PortUpdateTranslator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PortUpdateTranslator.class);
 
     @Override
     public FlowCapableNodeConnector translate(final PortGrouping input,
@@ -52,7 +52,7 @@ public class PortUpdateTranslator implements MessageTranslator<PortGrouping, Flo
             if (((PortStatusMessage) input).getReason() != null) {
                 builder.setReason(PortReason.forValue(((PortStatusMessage) input).getReason().getIntValue()));
             }else {
-                logger.debug("PortStatus Message has reason as null");
+                LOG.debug("PortStatus Message has reason as null");
             }
         }
         builder.setCurrentSpeed(input.getCurrSpeed());
