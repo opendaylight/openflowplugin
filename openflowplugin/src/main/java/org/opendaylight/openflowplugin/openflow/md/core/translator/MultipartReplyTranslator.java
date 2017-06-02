@@ -112,7 +112,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader,  List<DataObject>> {
 
-    protected static final Logger logger = LoggerFactory
+    protected static final Logger LOG = LoggerFactory
             .getLogger(MultipartReplyTranslator.class);
     private final ConvertorExecutor convertorExecutor;
 
@@ -135,7 +135,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
             NodeId node = MultipartReplyTranslator.nodeIdFromDatapathId(sc.getFeatures().getDatapathId());
             switch (mpReply.getType()){
             case OFPMPFLOW: {
-                logger.debug("Received flow statistics reponse from openflow {} switch",msg.getVersion()==1?"1.0":"1.3+");
+                LOG.debug("Received flow statistics reponse from openflow {} switch",msg.getVersion()==1?"1.0":"1.3+");
                 FlowStatsResponseConvertorData flowData = new FlowStatsResponseConvertorData(data.getVersion());
                 flowData.setDatapathId(data.getDatapathId());
                 flowData.setMatchPath(MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
@@ -149,12 +149,12 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 final Optional<List<FlowAndStatisticsMapList>> flowAndStatisticsMapLists = convertorExecutor.convert(replyBody.getFlowStats(), flowData);
 
                 message.setFlowAndStatisticsMapList(flowAndStatisticsMapLists.orElse(Collections.emptyList()));
-                logger.debug("Converted flow statistics : {}",message.build().toString());
+                LOG.debug("Converted flow statistics : {}",message.build().toString());
                 listDataObject.add(message.build());
                 return listDataObject;
             }
             case OFPMPAGGREGATE: {
-                logger.debug("Received aggregate flow statistics reponse from openflow {} switch",msg.getVersion()==1?"1.0":"1.3+");
+                LOG.debug("Received aggregate flow statistics reponse from openflow {} switch",msg.getVersion()==1?"1.0":"1.3+");
                 AggregateFlowStatisticsUpdateBuilder message = new AggregateFlowStatisticsUpdateBuilder();
                 message.setId(node);
                 message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
@@ -166,13 +166,13 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 message.setPacketCount(new Counter64(replyBody.getPacketCount()));
                 message.setFlowCount(new Counter32(replyBody.getFlowCount()));
 
-                logger.debug("Converted aggregate flow statistics : {}",message.build().toString());
+                LOG.debug("Converted aggregate flow statistics : {}",message.build().toString());
                 listDataObject.add(message.build());
                 return listDataObject;
             }
             case OFPMPPORTSTATS: {
 
-                logger.debug("Received port statistics multipart response");
+                LOG.debug("Received port statistics multipart response");
 
                 NodeConnectorStatisticsUpdateBuilder message = new NodeConnectorStatisticsUpdateBuilder();
                 message.setId(node);
@@ -224,13 +224,13 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 }
                 message.setNodeConnectorStatisticsAndPortNumberMap(statsMap);
 
-                logger.debug("Converted ports statistics : {}",message.build().toString());
+                LOG.debug("Converted ports statistics : {}",message.build().toString());
 
                 listDataObject.add(message.build());
                 return listDataObject;
             }
             case OFPMPGROUP:{
-                logger.debug("Received group statistics multipart reponse");
+                LOG.debug("Received group statistics multipart reponse");
                 GroupStatisticsUpdatedBuilder message = new GroupStatisticsUpdatedBuilder();
                 message.setId(node);
                 message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
@@ -239,12 +239,12 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 MultipartReplyGroup replyBody = caseBody.getMultipartReplyGroup();
                 final Optional<List<GroupStats>> groupStatsList = convertorExecutor.convert(replyBody.getGroupStats(), data);
                 message.setGroupStats(groupStatsList.orElse(Collections.emptyList()));
-                logger.debug("Converted group statistics : {}",message.toString());
+                LOG.debug("Converted group statistics : {}",message.toString());
                 listDataObject.add(message.build());
                 return listDataObject;
             }
             case OFPMPGROUPDESC:{
-                logger.debug("Received group description statistics multipart reponse");
+                LOG.debug("Received group description statistics multipart reponse");
 
                 GroupDescStatsUpdatedBuilder message = new GroupDescStatsUpdatedBuilder();
                 message.setId(node);
@@ -255,12 +255,12 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
 
                 final Optional<List<GroupDescStats>> groupDescStatsList = convertorExecutor.convert(replyBody.getGroupDesc(), data);
                 message.setGroupDescStats(groupDescStatsList.orElse(Collections.emptyList()));
-                logger.debug("Converted group statistics : {}",message.toString());
+                LOG.debug("Converted group statistics : {}",message.toString());
                 listDataObject.add(message.build());
                 return listDataObject;
             }
             case OFPMPGROUPFEATURES: {
-                logger.debug("Received group features multipart reponse");
+                LOG.debug("Received group features multipart reponse");
                 GroupFeaturesUpdatedBuilder message = new GroupFeaturesUpdatedBuilder();
                 message.setId(node);
                 message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
@@ -309,7 +309,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 return listDataObject;
             }
             case OFPMPMETER: {
-                logger.debug("Received meter statistics multipart reponse");
+                LOG.debug("Received meter statistics multipart reponse");
                 MeterStatisticsUpdatedBuilder message = new MeterStatisticsUpdatedBuilder();
                 message.setId(node);
                 message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
@@ -326,7 +326,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 return listDataObject;
             }
             case OFPMPMETERCONFIG:{
-                logger.debug("Received meter config statistics multipart reponse");
+                LOG.debug("Received meter config statistics multipart reponse");
 
                 MeterConfigStatsUpdatedBuilder message = new MeterConfigStatsUpdatedBuilder();
                 message.setId(node);
@@ -343,7 +343,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 return listDataObject;
             }
             case OFPMPMETERFEATURES:{
-                logger.debug("Received meter features multipart reponse");
+                LOG.debug("Received meter features multipart reponse");
                 //Convert OF message and send it to SAL listener
                 MeterFeaturesUpdatedBuilder message = new MeterFeaturesUpdatedBuilder();
                 message.setId(node);
@@ -389,7 +389,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 return listDataObject;
             }
             case OFPMPTABLE: {
-                logger.debug("Received flow table statistics reponse from openflow {} switch",msg.getVersion()==1?"1.0":"1.3+");
+                LOG.debug("Received flow table statistics reponse from openflow {} switch",msg.getVersion()==1?"1.0":"1.3+");
 
                 FlowTableStatisticsUpdateBuilder message = new FlowTableStatisticsUpdateBuilder();
                 message.setId(node);
@@ -413,12 +413,12 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
 
                 message.setFlowTableAndStatisticsMap(salFlowStats);
 
-                logger.debug("Converted flow table statistics : {}",message.build().toString());
+                LOG.debug("Converted flow table statistics : {}",message.build().toString());
                 listDataObject.add(message.build());
                 return listDataObject;
             }
             case OFPMPQUEUE: {
-                logger.debug("Received queue statistics multipart response");
+                LOG.debug("Received queue statistics multipart response");
 
                 QueueStatisticsUpdateBuilder message = new QueueStatisticsUpdateBuilder();
                 message.setId(node);
@@ -455,7 +455,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 }
                 message.setQueueIdAndStatisticsMap(statsMap);
 
-                logger.debug("Converted queue statistics : {}",message.build().toString());
+                LOG.debug("Converted queue statistics : {}",message.build().toString());
                 listDataObject.add(message.build());
                 return listDataObject;
             }
