@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.device.initialization;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -18,10 +19,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.opendaylight.openflowplugin.api.ConnectionException;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -33,6 +36,7 @@ import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerMult
 import org.opendaylight.openflowplugin.impl.util.DeviceInitializationUtil;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.multipart.reply.multipart.reply.body.MultipartReplyDesc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
@@ -46,6 +50,9 @@ import org.slf4j.LoggerFactory;
 public class OF13DeviceInitializer extends AbstractDeviceInitializer {
 
     private static final Logger LOG = LoggerFactory.getLogger(OF13DeviceInitializer.class);
+    private static final String OPEN_VSWITCH = "OPEN VSWITCH";
+    private static final String SWITCH_FEATURES_MANDATORY_AND_OVS_2_0_2 =
+            "Configuration of switch-features-mandatory=true and ovs version 2.0.2 or lower is not enabled. ";
 
     @Override
     protected Future<Void> initializeNodeInformation(@Nonnull final DeviceContext deviceContext,
@@ -63,12 +70,22 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
         return  Futures.transform(
             requestMultipart(MultipartType.OFPMPDESC, deviceContext),
             (AsyncFunction<RpcResult<List<OfHeader>>, Void>) input -> {
-                translateAndWriteResult(
+                if (translateAndWriteResult(
                     MultipartType.OFPMPDESC,
                     input.getResult(),
                     deviceContext,
                     multipartWriterProvider,
-                    convertorExecutor);
+                    convertorExecutor) != null) {
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("Device description: {}", deviceContext.getDeviceDescription());
+                        }
+                        if (switchFeaturesMandatory &&
+                                isVersionOVS202OrLower(
+                                        deviceContext.getDeviceDescription().getHardware(),
+                                        deviceContext.getDeviceDescription().getSoftware())) {
+                            return Futures.immediateFailedFuture(new ConnectionException(SWITCH_FEATURES_MANDATORY_AND_OVS_2_0_2));
+                    }
+                }
 
                 final List<ListenableFuture<RpcResult<List<OfHeader>>>> futures = new ArrayList<>();
                 futures.add(requestAndProcessMultipart(MultipartType.OFPMPMETERFEATURES, deviceContext, multipartWriterProvider, convertorExecutor));
@@ -168,13 +185,17 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
      * @param result multipart messages
      * @param deviceContext device context
      * @param multipartWriterProvider multipart writer provider
-     * @param convertorExecutor convertor executor
+     * @param convertorExecutor converter executor
+     * @return device description
      */
-    private static void translateAndWriteResult(final MultipartType type,
+    @Nullable
+    private static MultipartReplyDesc translateAndWriteResult(final MultipartType type,
                                                 final List<OfHeader> result,
                                                 final DeviceContext deviceContext,
                                                 @Nullable final MultipartWriterProvider multipartWriterProvider,
                                                 @Nullable final ConvertorExecutor convertorExecutor) {
+
+        final MultipartReplyDesc[] desc = new MultipartReplyDesc[1];
         if (Objects.nonNull(result)) {
             try {
                 result.forEach(reply -> {
@@ -197,6 +218,10 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                                 }
                             }
 
+                            if (MultipartType.OFPMPDESC.equals(type)) {
+                                desc[0] = (MultipartReplyDesc) translatedReply;
+                            }
+
                             // Now. try to write translated collected features
                             Optional.ofNullable(multipartWriterProvider)
                                 .flatMap(provider -> provider.lookup(type))
@@ -210,6 +235,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
             LOG.warn("Failed to write node {} to DS because we failed to gather device info.",
                 deviceContext.getDeviceInfo().getLOGValue());
         }
+        return desc[0];
     }
 
     /**
@@ -271,6 +297,43 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                     .build();
             }
         });
+    }
+
+    /**
+     * This method serves as checker for version ovs 2.0.2 or lower
+     * Bug 3549 - old ovs 2.0.2 should be rejected if mandatory
+     * switch features are configured as true
+     */
+    private static boolean isVersionOVS202OrLower(String hardware, String software) {
+
+        //It is OVS ?
+        if (hardware.toUpperCase().equals(OPEN_VSWITCH)) {
+
+            List<String> softwareVersionSplit = Splitter
+                    .on(".")
+                    .omitEmptyStrings()
+                    .trimResults()
+                    .splitToList(software);
+
+            //Standard format should be X.X.X
+            if (softwareVersionSplit.size() == 3) {
+
+                List<Integer> softwareVersionInteger = new ArrayList<>();
+                try {
+                    softwareVersionSplit.forEach(s -> softwareVersionInteger.add(Integer.parseInt(s)));
+                } catch (NumberFormatException ex) {
+                    //Not able to convert software version to numbers
+                    return false;
+                }
+
+                return softwareVersionInteger.get(0) <= 2 &&
+                        softwareVersionInteger.get(1) <= 0 &&
+                        softwareVersionInteger.get(2) <= 2;
+
+            }
+        }
+
+        return false;
     }
 
 }

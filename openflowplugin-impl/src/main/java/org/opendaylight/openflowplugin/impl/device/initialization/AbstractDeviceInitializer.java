@@ -60,5 +60,5 @@ public abstract class AbstractDeviceInitializer {
     protected abstract Future<Void> initializeNodeInformation(@Nonnull final DeviceContext deviceContext,
                                                               final boolean switchFeaturesMandatory,
                                                               @Nullable final MultipartWriterProvider multipartWriterProvider,
-                                                              @Nullable final ConvertorExecutor convertorExecutor);
+                                                              @Nullable final ConvertorExecutor convertorExecutor) throws ExecutionException;
 }
