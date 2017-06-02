@@ -54,10 +54,12 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
 
     private static final Logger LOG = LoggerFactory.getLogger(OF10DeviceInitializer.class);
 
+    OF10DeviceInitializer(@Nonnull ValidDeviceChecker deviceChecker) {
+        super(deviceChecker);
+    }
+
     @Override
     protected Future<Void> initializeNodeInformation(@Nonnull final DeviceContext deviceContext,
-                                                     final boolean switchFeaturesMandatory,
-                                                     final boolean skipTableFeatures,
                                                      @Nullable final MultipartWriterProvider multipartWriterProvider,
                                                      @Nullable final ConvertorExecutor convertorExecutor) {
         final ConnectionContext connectionContext = Preconditions.checkNotNull(deviceContext.getPrimaryConnectionContext());

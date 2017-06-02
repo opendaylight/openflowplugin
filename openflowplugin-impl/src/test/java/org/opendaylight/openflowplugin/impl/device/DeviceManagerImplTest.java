@@ -43,6 +43,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint16Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint32Type;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfigBuilder;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -69,6 +70,8 @@ public class DeviceManagerImplTest {
     private DeviceInfo deviceInfo;
     @Mock
     private ConvertorExecutor convertorExecutor;
+    @Mock
+    private OpenflowProviderConfig config;
     @Before
     public void setUp() throws Exception {
         when(mockConnectionContext.getNodeId()).thenReturn(DUMMY_NODE_ID);
@@ -112,7 +115,7 @@ public class DeviceManagerImplTest {
                 null,
                 new HashedWheelTimer(),
                 convertorExecutor,
-                DeviceInitializerProviderFactory.createDefaultProvider());
+                DeviceInitializerProviderFactory.createDefaultProvider(config));
 
         return deviceManager;
     }

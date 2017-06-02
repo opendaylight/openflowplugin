@@ -101,6 +101,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -158,6 +159,8 @@ public class DeviceContextImplTest {
     private ConvertorExecutor convertorExecutor;
     @Mock
     private MessageSpy messageSpy;
+    @Mock
+    private OpenflowProviderConfig config;
 
     private final AtomicLong atomicLong = new AtomicLong(0);
 
@@ -212,7 +215,7 @@ public class DeviceContextImplTest {
                 translatorLibrary,
                 convertorExecutor,
                 false, timer, false,
-                DeviceInitializerProviderFactory.createDefaultProvider(),
+                DeviceInitializerProviderFactory.createDefaultProvider(config),
                 true, false);
         ((DeviceContextImpl) deviceContext).lazyTransactionManagerInitialization();
         deviceContextSpy = Mockito.spy(deviceContext);

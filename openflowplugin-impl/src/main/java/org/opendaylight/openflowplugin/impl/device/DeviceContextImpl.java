@@ -74,6 +74,7 @@ import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
 import org.opendaylight.openflowplugin.impl.device.initialization.AbstractDeviceInitializer;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProvider;
+import org.opendaylight.openflowplugin.impl.device.initialization.ValidDeviceChecker;
 import org.opendaylight.openflowplugin.impl.device.listener.MultiMsgCollectorImpl;
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
@@ -641,7 +642,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             if (initializer.isPresent()) {
                 initializer
                         .get()
-                        .initialize(this, switchFeaturesMandatory, skipTableFeatures, writerProvider, convertorExecutor)
+                        .initialize(this, writerProvider, convertorExecutor)
                         .get(DEVICE_INIT_TIMEOUT, TimeUnit.MILLISECONDS);
             } else {
                 throw new ExecutionException(new ConnectionException("Unsupported version " + deviceInfo.getVersion()));
