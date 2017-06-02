@@ -16,16 +16,20 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.apache.commons.lang3.tuple.Pair;
+import org.opendaylight.openflowplugin.api.ConnectionException;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceValidator;
 import org.opendaylight.openflowplugin.impl.common.MultipartReplyTranslatorUtil;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerMultipartCollectorService;
@@ -33,13 +37,16 @@ import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerMult
 import org.opendaylight.openflowplugin.impl.util.DeviceInitializationUtil;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.multipart.reply.multipart.reply.body.MultipartReplyDesc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.osgi.service.blueprint.reflect.MapEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,10 +54,12 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
 
     private static final Logger LOG = LoggerFactory.getLogger(OF13DeviceInitializer.class);
 
+    OF13DeviceInitializer(@Nonnull ValidDeviceChecker deviceChecker) {
+        super(deviceChecker);
+    }
+
     @Override
     protected Future<Void> initializeNodeInformation(@Nonnull final DeviceContext deviceContext,
-                                                     final boolean switchFeaturesMandatory,
-                                                     final boolean skipTableFeatures,
                                                      @Nullable final MultipartWriterProvider multipartWriterProvider,
                                                      @Nullable final ConvertorExecutor convertorExecutor) {
         final ConnectionContext connectionContext = Preconditions.checkNotNull(deviceContext.getPrimaryConnectionContext());
@@ -64,21 +73,37 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
         return  Futures.transform(
             requestMultipart(MultipartType.OFPMPDESC, deviceContext),
             (AsyncFunction<RpcResult<List<OfHeader>>, Void>) input -> {
-                translateAndWriteResult(
-                    MultipartType.OFPMPDESC,
-                    input.getResult(),
-                    deviceContext,
-                    multipartWriterProvider,
-                    convertorExecutor);
+                MultipartReplyDesc description = (MultipartReplyDesc) translateAndWriteResult(
+                        MultipartType.OFPMPDESC,
+                        input.getResult(),
+                        deviceContext,
+                        multipartWriterProvider,
+                        convertorExecutor);
+                if (description != null) {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Device description: {}", description);
+                    }
+                    for (Map.Entry<Class<? extends DeviceValidator>, Pair<Boolean, String>> entry :
+                            deviceChecker.checkDevice(description).entrySet()) {
+                        if (!entry.getValue().getLeft()) {
+                            LOG.warn("Device connection refused by device validator: '{}' -> reason: {}",
+                                    entry.getKey().getCanonicalName(),
+                                    entry.getValue().getRight());
+                            return Futures.immediateFailedFuture(new ConnectionException(entry.getValue().getRight()));
+                        }
+                    }
+                }
 
                 final List<ListenableFuture<RpcResult<List<OfHeader>>>> futures = new ArrayList<>();
-                futures.add(requestAndProcessMultipart(MultipartType.OFPMPMETERFEATURES, deviceContext, multipartWriterProvider, skipTableFeatures, convertorExecutor));
-                futures.add(requestAndProcessMultipart(MultipartType.OFPMPGROUPFEATURES, deviceContext, multipartWriterProvider, skipTableFeatures, convertorExecutor));
-                futures.add(requestAndProcessMultipart(MultipartType.OFPMPTABLEFEATURES, deviceContext, multipartWriterProvider, skipTableFeatures, convertorExecutor));
-                futures.add(requestAndProcessMultipart(MultipartType.OFPMPPORTDESC, deviceContext, multipartWriterProvider, skipTableFeatures, convertorExecutor));
+                futures.add(requestAndProcessMultipart(MultipartType.OFPMPMETERFEATURES, deviceContext, multipartWriterProvider, convertorExecutor));
+                futures.add(requestAndProcessMultipart(MultipartType.OFPMPGROUPFEATURES, deviceContext, multipartWriterProvider, convertorExecutor));
+                futures.add(requestAndProcessMultipart(MultipartType.OFPMPTABLEFEATURES, deviceContext, multipartWriterProvider, convertorExecutor));
+                futures.add(requestAndProcessMultipart(MultipartType.OFPMPPORTDESC, deviceContext, multipartWriterProvider, convertorExecutor));
 
                 return Futures.transform(
-                    (switchFeaturesMandatory ? Futures.allAsList(futures) : Futures.successfulAsList(futures)),
+                    (deviceChecker.getConfiguration().isSwitchFeaturesMandatory()
+                            ? Futures.allAsList(futures)
+                            : Futures.successfulAsList(futures)),
                     new Function<List<RpcResult<List<OfHeader>>>, Void>() {
                         @Nullable
                         @Override
@@ -99,13 +124,12 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
      * @param convertorExecutor convertor executor
      * @return list of multipart messages unified to parent interface
      */
-    private static ListenableFuture<RpcResult<List<OfHeader>>> requestAndProcessMultipart(final MultipartType type,
-                                                                                          final DeviceContext deviceContext,
-                                                                                          final MultipartWriterProvider multipartWriterProvider,
-                                                                                          final boolean skipTableFeatures,
-                                                                                          @Nullable final ConvertorExecutor convertorExecutor) {
+    private ListenableFuture<RpcResult<List<OfHeader>>> requestAndProcessMultipart(final MultipartType type,
+                                                                                   final DeviceContext deviceContext,
+                                                                                   final MultipartWriterProvider multipartWriterProvider,
+                                                                                   @Nullable final ConvertorExecutor convertorExecutor) {
         final ListenableFuture<RpcResult<List<OfHeader>>> rpcResultListenableFuture =
-            MultipartType.OFPMPTABLEFEATURES.equals(type) && skipTableFeatures
+            MultipartType.OFPMPTABLEFEATURES.equals(type) && deviceChecker.getConfiguration().isSkipTableFeatures()
                 ? RpcResultBuilder.<List<OfHeader>>success().buildFuture()
                 : requestMultipart(type, deviceContext);
 
@@ -170,13 +194,17 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
      * @param result multipart messages
      * @param deviceContext device context
      * @param multipartWriterProvider multipart writer provider
-     * @param convertorExecutor convertor executor
+     * @param convertorExecutor converter executor
+     * @return device description
      */
-    private static void translateAndWriteResult(final MultipartType type,
+    @Nullable
+    private static MultipartReplyBody translateAndWriteResult(final MultipartType type,
                                                 final List<OfHeader> result,
                                                 final DeviceContext deviceContext,
                                                 @Nullable final MultipartWriterProvider multipartWriterProvider,
                                                 @Nullable final ConvertorExecutor convertorExecutor) {
+
+        MultipartReplyBody[] desc = new MultipartReplyBody[1];
         if (Objects.nonNull(result)) {
             try {
                 result.forEach(reply -> {
@@ -199,6 +227,10 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                                 }
                             }
 
+                            if (MultipartType.OFPMPDESC.equals(type)) {
+                                desc[0] = translatedReply;
+                            }
+
                             // Now. try to write translated collected features
                             Optional.ofNullable(multipartWriterProvider)
                                 .flatMap(provider -> provider.lookup(type))
@@ -212,6 +244,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
             LOG.warn("Failed to write node {} to DS because we failed to gather device info.",
                 deviceContext.getDeviceInfo().getLOGValue());
         }
+        return desc[0];
     }
 
     /**

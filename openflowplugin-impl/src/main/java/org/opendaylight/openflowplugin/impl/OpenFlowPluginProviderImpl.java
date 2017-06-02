@@ -121,7 +121,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         contextChainHolder = new ContextChainHolderImpl(hashedWheelTimer);
         contextChainHolder.changeEntityOwnershipService(entityOwnershipService);
         extensionConverterManager = new ExtensionConverterManagerImpl();
-        deviceInitializerProvider = DeviceInitializerProviderFactory.createDefaultProvider();
+        deviceInitializerProvider = DeviceInitializerProviderFactory.createDefaultProvider(config);
     }
 
 

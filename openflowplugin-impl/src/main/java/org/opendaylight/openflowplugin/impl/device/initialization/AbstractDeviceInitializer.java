@@ -27,17 +27,23 @@ public abstract class AbstractDeviceInitializer {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractDeviceInitializer.class);
 
+    final ValidDeviceChecker deviceChecker;
+
+    AbstractDeviceInitializer(@Nonnull final ValidDeviceChecker deviceChecker) {
+        this.deviceChecker = deviceChecker;
+    }
+
+    private AbstractDeviceInitializer() {
+        throw new IllegalArgumentException("Empty constructor not allowed here.");
+    }
+
     /**
      * Perform initial information gathering and store them to operational datastore
      * @param deviceContext device context
-     * @param switchFeaturesMandatory are switch features mandatory
-     * @param skipTableFeatures skip gathering of table features
      * @param multipartWriterProvider multipart writer provider
      * @param convertorExecutor convertor executor
      */
     public Future<Void> initialize(@Nonnull final DeviceContext deviceContext,
-                                   final boolean switchFeaturesMandatory,
-                                   final boolean skipTableFeatures,
                                    @Nullable final MultipartWriterProvider multipartWriterProvider,
                                    @Nullable final ConvertorExecutor convertorExecutor) throws ExecutionException,InterruptedException {
         Preconditions.checkNotNull(deviceContext);
@@ -58,12 +64,10 @@ public abstract class AbstractDeviceInitializer {
         }
 
         // Get information about device
-        return initializeNodeInformation(deviceContext, switchFeaturesMandatory, skipTableFeatures, multipartWriterProvider, convertorExecutor);
+        return initializeNodeInformation(deviceContext, multipartWriterProvider, convertorExecutor);
     }
 
     protected abstract Future<Void> initializeNodeInformation(@Nonnull final DeviceContext deviceContext,
-                                                              final boolean switchFeaturesMandatory,
-                                                              final boolean skipTableFeatures,
                                                               @Nullable final MultipartWriterProvider multipartWriterProvider,
                                                               @Nullable final ConvertorExecutor convertorExecutor);
 }
