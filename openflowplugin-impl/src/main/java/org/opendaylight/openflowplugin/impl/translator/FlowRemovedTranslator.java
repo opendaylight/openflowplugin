@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  */
 public class FlowRemovedTranslator implements MessageTranslator<FlowRemoved, org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved> {
     private final ConvertorExecutor convertorExecutor;
-    private static final Logger logger = LoggerFactory.getLogger(FlowRemovedTranslator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FlowRemovedTranslator.class);
     public FlowRemovedTranslator(ConvertorExecutor convertorExecutor) {
         this.convertorExecutor = convertorExecutor;
     }
@@ -75,7 +75,7 @@ public class FlowRemovedTranslator implements MessageTranslator<FlowRemoved, org
 
 
     private RemovedFlowReason translateReason(FlowRemoved removedFlow) {
-        logger.debug("--Entering translateReason within FlowRemovedTranslator with reason:{} " + removedFlow.getReason());
+        LOG.debug("--Entering translateReason within FlowRemovedTranslator with reason:{} " + removedFlow.getReason());
         switch (removedFlow.getReason()) {
             case OFPRRIDLETIMEOUT:
                 return RemovedFlowReason.OFPRRIDLETIMEOUT;
@@ -86,7 +86,7 @@ public class FlowRemovedTranslator implements MessageTranslator<FlowRemoved, org
             case OFPRRGROUPDELETE:
                 return RemovedFlowReason.OFPRRGROUPDELETE;
             default:
-                logger.debug("The flow is being deleted for some unknown reason  ");
+                LOG.debug("The flow is being deleted for some unknown reason  ");
                 return RemovedFlowReason.OFPRRDELETE;
         }
     }

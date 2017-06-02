@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 
 public class LearnCodecUtil {
 
-    private static final Logger logger = LoggerFactory.getLogger(LearnCodecUtil.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LearnCodecUtil.class);
     public static final int HEADER_LENGTH = 32;
     private static final short SRC_MASK = 0x2000;
     private static final short DST_MASK = 0x1800;
@@ -203,12 +203,12 @@ public class LearnCodecUtil {
             if(flowMod != null){
                 flowModeList.add(flowMod);
             }else{
-                logger.trace("skipping padding bytes");
+                LOG.trace("skipping padding bytes");
             }
         }
 
         if(LearnCodecUtil.length != 0){
-            logger.error("Learn Codec read " + Math.abs(length) + " bytes more than needed from stream. Packet might be corrupted");
+            LOG.error("Learn Codec read " + Math.abs(length) + " bytes more than needed from stream. Packet might be corrupted");
         }
         nxActionLearnBuilder.setFlowMods(flowModeList);
     }
