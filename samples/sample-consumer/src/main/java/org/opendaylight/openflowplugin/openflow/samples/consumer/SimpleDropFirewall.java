@@ -18,7 +18,6 @@ import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ConsumerContext;
 import org.opendaylight.controller.sal.binding.api.NotificationService;
-import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
@@ -35,7 +34,6 @@ public class SimpleDropFirewall {
     private ConsumerContext context;
     private SalFlowService flowService;
     private DataTreeChangeListener listener = new NodeListener();
-    private DataBrokerService data;
 
     public void setContext(ConsumerContext session) {
         this.context = session;
@@ -67,31 +65,30 @@ public class SimpleDropFirewall {
         }
     }
 
-
     private class InventoryListener implements OpendaylightInventoryListener {
 
         @Override
         public void onNodeConnectorRemoved(NodeConnectorRemoved notification) {
             // TODO Auto-generated method stub
-            
+
         }
 
         @Override
         public void onNodeConnectorUpdated(NodeConnectorUpdated notification) {
-            
+
         }
 
         @Override
         public void onNodeRemoved(NodeRemoved notification) {
             // TODO Auto-generated method stub
-            
+
         }
 
         @Override
         public void onNodeUpdated(NodeUpdated notification) {
             // TODO Auto-generated method stub
-            
+
         }
-        
+
     }
 }
