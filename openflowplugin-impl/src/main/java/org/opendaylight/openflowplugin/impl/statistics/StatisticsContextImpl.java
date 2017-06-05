@@ -306,7 +306,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
                 case RIP:
                     final String errMsg = String.format("Device connection doesn't exist anymore. Primary connection status : %s",
                         deviceContext.getPrimaryConnectionContext().getConnectionState());
-                    resultingFuture = Futures.immediateFailedFuture(new Throwable(errMsg));
+                    resultingFuture = Futures.immediateFailedFuture(new ConnectionException(errMsg));
                     break;
                 default:
                     resultingFuture = Futures.immediateCheckedFuture(Boolean.TRUE);
