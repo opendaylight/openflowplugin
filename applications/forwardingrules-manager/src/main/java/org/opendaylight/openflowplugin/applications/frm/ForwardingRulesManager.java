@@ -8,7 +8,10 @@
 
 package org.opendaylight.openflowplugin.applications.frm;
 
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
+import org.opendaylight.openflowplugin.applications.frm.impl.DeviceMastership;
+import org.opendaylight.openflowplugin.applications.frm.impl.DeviceMastershipManager;
 import org.opendaylight.openflowplugin.applications.frm.impl.FlowNodeConnectorInventoryTranslatorImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
@@ -149,5 +152,10 @@ public interface ForwardingRulesManager extends AutoCloseable {
      */
     FlowNodeConnectorInventoryTranslatorImpl getFlowNodeConnectorInventoryTranslatorImpl();
 
-}
+
+    DataBroker getbroker();
+
+    DeviceMastershipManager getDeviceMastershipManager();
+    FlowNodeReconciliation getFlowNodereconciliation();
+    }
 

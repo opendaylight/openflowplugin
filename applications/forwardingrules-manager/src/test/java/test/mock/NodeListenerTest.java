@@ -20,6 +20,7 @@ import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
+import org.opendaylight.openflowplugin.applications.reconciliation.IReconciliationManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -38,6 +39,8 @@ public class NodeListenerTest extends FRMTest {
     ClusterSingletonServiceProvider clusterSingletonService;
     @Mock
     private NotificationProviderService notificationService;
+    @Mock
+    private IReconciliationManager reconciliationManager;
 
     @Before
     public void setUp() {
@@ -46,7 +49,7 @@ public class NodeListenerTest extends FRMTest {
                 rpcProviderRegistryMock,
                 getConfig(),
                 clusterSingletonService,
-                notificationService, false ,false ,5);
+                notificationService, false ,false ,5, reconciliationManager);
         forwardingRulesManager.start();
     }
 

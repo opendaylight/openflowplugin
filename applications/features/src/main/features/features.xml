@@ -20,6 +20,7 @@
         <bundle>mvn:org.opendaylight.openflowplugin.applications/topology-lldp-discovery/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/statistics-manager/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/inventory-manager/{{VERSION}}</bundle>
+        <bundle>mvn:org.opendaylight.openflowplugin.applications/reconciliation-framework/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/forwardingrules-manager/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.controller/liblldp/{{VERSION}}</bundle>
     </feature>
