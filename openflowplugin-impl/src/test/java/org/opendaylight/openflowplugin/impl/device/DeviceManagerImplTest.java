@@ -35,6 +35,7 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
+import org.opendaylight.openflowplugin.applications.reconciliation.IReconciliationManager;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProviderFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -66,6 +67,8 @@ public class DeviceManagerImplTest {
     private DeviceInfo deviceInfo;
     @Mock
     private ConvertorExecutor convertorExecutor;
+    @Mock
+    private IReconciliationManager reconciliationManager;
     @Before
     public void setUp() throws Exception {
         when(mockConnectionContext.getNodeId()).thenReturn(DUMMY_NODE_ID);
@@ -102,7 +105,8 @@ public class DeviceManagerImplTest {
                 new HashedWheelTimer(),
                 convertorExecutor,
                 DeviceInitializerProviderFactory.createDefaultProvider(),
-                false);
+                false,
+                reconciliationManager);
 
         deviceManager.setBarrierCountLimit(barrierCountLimit);
         deviceManager.setBarrierInterval(barrierIntervalNanos);

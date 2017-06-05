@@ -14,6 +14,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
+import org.opendaylight.openflowplugin.applications.reconciliation.IReconciliationManager;
+import org.opendaylight.openflowplugin.applications.reconciliation.IReconciliationTaskFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -34,12 +36,15 @@ public class DeviceMastership implements ClusterSingletonService, AutoCloseable 
     private final AtomicBoolean deviceMastered = new AtomicBoolean(false);
     private final AtomicBoolean isDeviceInOperDS = new AtomicBoolean(false);
     private final InstanceIdentifier<FlowCapableNode> fcnIID;
+    private final ForwardingReconciliationTaskFactory reconciliationtask;
 
     public DeviceMastership(final NodeId nodeId,
-                            final FlowNodeReconciliation reconcliationAgent) {
+                            final FlowNodeReconciliation reconcliationAgent,
+                            final ForwardingReconciliationTaskFactory reconciliationtask) {
         this.nodeId = nodeId;
         this.identifier = ServiceGroupIdentifier.create(nodeId.getValue());
         this.reconcliationAgent = reconcliationAgent;
+        this.reconciliationtask = reconciliationtask;
         fcnIID = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId)).augmentation
                 (FlowCapableNode.class);
     }
@@ -88,6 +93,7 @@ public class DeviceMastership implements ClusterSingletonService, AutoCloseable 
     public void reconcile() {
         deviceMastered.set(true);
         LOG.info("Triggering reconciliation for device {}", nodeId.getValue());
-        reconcliationAgent.reconcileConfiguration(fcnIID);
+        reconciliationtask.reconcileTask(nodeId);
+
     }
 }

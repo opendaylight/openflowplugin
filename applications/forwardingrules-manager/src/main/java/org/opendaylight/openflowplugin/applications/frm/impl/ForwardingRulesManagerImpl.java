@@ -14,7 +14,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.CheckedFuture;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
-import javax.annotation.Nonnull;
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -25,6 +25,7 @@ import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvid
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
+import org.opendaylight.openflowplugin.applications.reconciliation.IReconciliationManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
@@ -50,6 +51,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private static final Logger LOG = LoggerFactory.getLogger(ForwardingRulesManagerImpl.class);
+    private static final int FRM_PRIORITY_LEVEL = Integer.getInteger("reconciliation.frm.priority.level", 0);
 
     static final int STARTUP_LOOP_TICK = 500;
     static final int STARTUP_LOOP_MAX_RETRIES = 8;
@@ -74,6 +76,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private FlowNodeReconciliation nodeListener;
     private FlowNodeConnectorInventoryTranslatorImpl flowNodeConnectorInventoryTranslatorImpl;
     private DeviceMastershipManager deviceMastershipManager;
+    private IReconciliationManager reconciliationManager;
+
 
     public ForwardingRulesManagerImpl(final DataBroker dataBroker,
                                       final RpcConsumerRegistry rpcRegistry,
@@ -82,7 +86,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                                       final NotificationProviderService notificationService,
                                       final boolean disableReconciliation,
                                       final boolean staleMarkingEnabled,
-                                      final int reconciliationRetryCount) {
+                                      final int reconciliationRetryCount,
+                                      final IReconciliationManager reconciliationManager) {
         this.dataService = Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
         this.forwardingRulesManagerConfig = Preconditions.checkNotNull(config, "Configuration for FRM cannot be null");
         this.clusterSingletonServiceProvider = Preconditions.checkNotNull(clusterSingletonService,
@@ -104,6 +109,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         this.disableReconciliation = disableReconciliation;
         this.staleMarkingEnabled = staleMarkingEnabled;
         this.reconciliationRetryCount = reconciliationRetryCount;
+        this.reconciliationManager = reconciliationManager;
     }
 
     @Override
@@ -119,6 +125,10 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         this.groupListener = new GroupForwarder(this, dataService);
         this.meterListener = new MeterForwarder(this, dataService);
         this.tableListener = new TableForwarder(this, dataService);
+        reconciliationManager.registerService(new ForwardingReconciliationTaskFactory("FRM",FRM_PRIORITY_LEVEL,this));
+
+//        reconciliationManager.registerService(new ForwardingReconciliationTaskFactory("dummy",1,this));
+
         LOG.info("ForwardingRulesManager has started successfully.");
     }
 
@@ -248,7 +258,23 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     }
 
     @Override
+    public DataBroker getbroker() {
+        return dataService;
+    }
+
+    @Override
+    public DeviceMastershipManager getDeviceMastershipManager() {
+        return deviceMastershipManager;
+    }
+
+    @Override
+    public FlowNodeReconciliation getFlowNodereconciliation() {
+        return nodeListener;
+    }
+
+    @Override
     public boolean isNodeOwner(InstanceIdentifier<FlowCapableNode> ident) {
+        LOG.info("inside isNodeowner {}",deviceMastershipManager.isDeviceMastered(ident.firstKeyOf(Node.class).getId()));
         return Objects.nonNull(ident) && deviceMastershipManager.isDeviceMastered(ident.firstKeyOf(Node.class).getId());
     }
 
