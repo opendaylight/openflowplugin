@@ -173,7 +173,7 @@ public class SystemNotificationsListenerImplTest {
      */
     @Test
     public void testOnSwitchIdleEvent1() throws Exception {
-        final Future<RpcResult<EchoOutput>> echoReply = Futures.immediateFuture(RpcResultBuilder.success(new EchoOutputBuilder().build()).build());
+        final Future<RpcResult<EchoOutput>> echoReply = Futures.immediateFuture(RpcResultBuilder.success(new EchoOutputBuilder().setXid(0L).build()).build());
 
         Mockito.when(connectionAdapter.echo(Matchers.any(EchoInput.class))).thenReturn(echoReply);
 
