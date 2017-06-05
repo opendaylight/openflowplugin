@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.api.openflow;
 import java.util.List;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
-import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
@@ -25,7 +24,6 @@ public interface OpenFlowPluginProviderFactory {
     OpenFlowPluginProvider newInstance(OpenflowProviderConfig providerConfig,
                                        DataBroker dataBroker,
                                        RpcProviderRegistry rpcRegistry,
-                                       NotificationService notificationService,
                                        NotificationPublishService notificationPublishService,
                                        EntityOwnershipService entityOwnershipService,
                                        List<SwitchConnectionProvider> switchConnectionProviders,

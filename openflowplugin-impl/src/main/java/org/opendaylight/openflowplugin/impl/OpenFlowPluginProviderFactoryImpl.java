@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Optional;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
-import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
@@ -43,7 +42,6 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
     public OpenFlowPluginProvider newInstance(final OpenflowProviderConfig providerConfig,
                                               final DataBroker dataBroker,
                                               final RpcProviderRegistry rpcRegistry,
-                                              final NotificationService notificationService,
                                               final NotificationPublishService notificationPublishService,
                                               final EntityOwnershipService entityOwnershipService,
                                               final List<SwitchConnectionProvider> switchConnectionProviders,
@@ -56,7 +54,6 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
                 switchConnectionProviders,
                 dataBroker,
                 rpcRegistry,
-                notificationService,
                 notificationPublishService,
                 singletonServiceProvider,
                 entityOwnershipService);

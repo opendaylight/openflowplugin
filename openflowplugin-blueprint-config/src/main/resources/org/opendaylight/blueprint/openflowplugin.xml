@@ -6,7 +6,6 @@
 
     <reference id="dataBroker" interface="org.opendaylight.controller.md.sal.binding.api.DataBroker" odl:type="pingpong"/>
     <reference id="rpcRegistry" interface="org.opendaylight.controller.sal.binding.api.RpcProviderRegistry"/>
-    <reference id="notificationService" interface="org.opendaylight.controller.md.sal.binding.api.NotificationService"/>
     <reference id="notificationPublishService" interface="org.opendaylight.controller.md.sal.binding.api.NotificationPublishService"/>
     <reference id="entityOwnershipService" interface="org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService"/>
     <reference id="clusterSingletonServiceProvider" interface="org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider"/>
@@ -23,11 +22,10 @@
     <reference id="openflowPluginProviderFactory"
                interface="org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProviderFactory"/>
 
-    <bean id="openflowPluginProvider" factory-ref="openflowPluginProviderFactory" factory-method="newInstance">
+    <bean id="openflowPluginProvider" factory-ref="openflowPluginProviderFactory" factory-method="newInstance" destroy-method="close">
         <argument ref="openflowProviderConfig"/>
         <argument ref="dataBroker"/>
         <argument ref="rpcRegistry"/>
-        <argument ref="notificationService"/>
         <argument ref="notificationPublishService"/>
         <argument ref="entityOwnershipService"/>
         <argument>
