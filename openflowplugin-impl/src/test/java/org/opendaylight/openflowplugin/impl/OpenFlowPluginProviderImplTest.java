@@ -23,7 +23,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
-import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListenerRegistration;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
@@ -42,9 +41,6 @@ public class OpenFlowPluginProviderImplTest {
 
     @Mock
     RpcProviderRegistry rpcProviderRegistry;
-
-    @Mock
-    NotificationService notificationService;
 
     @Mock
     NotificationPublishService notificationPublishService;
@@ -87,7 +83,6 @@ public class OpenFlowPluginProviderImplTest {
                 Lists.newArrayList(switchConnectionProvider),
                 dataBroker,
                 rpcProviderRegistry,
-                notificationService,
                 notificationPublishService,
                 clusterSingletonServiceProvider,
                 entityOwnershipService);
