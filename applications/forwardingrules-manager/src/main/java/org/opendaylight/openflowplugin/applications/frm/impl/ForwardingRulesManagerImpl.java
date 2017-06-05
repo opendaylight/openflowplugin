@@ -25,6 +25,8 @@ import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvid
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
+import org.opendaylight.openflowplugin.applications.reconciliation.IReconcile;
+import org.opendaylight.openflowplugin.applications.reconciliation.IReconciliationManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
@@ -48,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * It contains ActiveNodeHolder and provide all RPC services.
  *
  */
-public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
+public class ForwardingRulesManagerImpl implements ForwardingRulesManager,IReconcile {
     private static final Logger LOG = LoggerFactory.getLogger(ForwardingRulesManagerImpl.class);
 
     static final int STARTUP_LOOP_TICK = 500;
@@ -74,6 +76,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private FlowNodeReconciliation nodeListener;
     private FlowNodeConnectorInventoryTranslatorImpl flowNodeConnectorInventoryTranslatorImpl;
     private DeviceMastershipManager deviceMastershipManager;
+    private IReconciliationManager reconciliationManager;
+
 
     public ForwardingRulesManagerImpl(final DataBroker dataBroker,
                                       final RpcConsumerRegistry rpcRegistry,
@@ -82,7 +86,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                                       final NotificationProviderService notificationService,
                                       final boolean disableReconciliation,
                                       final boolean staleMarkingEnabled,
-                                      final int reconciliationRetryCount) {
+                                      final int reconciliationRetryCount,
+                                      final IReconciliationManager reconciliationManager) {
         this.dataService = Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
         this.forwardingRulesManagerConfig = Preconditions.checkNotNull(config, "Configuration for FRM cannot be null");
         this.clusterSingletonServiceProvider = Preconditions.checkNotNull(clusterSingletonService,
@@ -104,6 +109,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         this.disableReconciliation = disableReconciliation;
         this.staleMarkingEnabled = staleMarkingEnabled;
         this.reconciliationRetryCount = reconciliationRetryCount;
+        this.reconciliationManager = reconciliationManager;
     }
 
     @Override
@@ -119,6 +125,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         this.groupListener = new GroupForwarder(this, dataService);
         this.meterListener = new MeterForwarder(this, dataService);
         this.tableListener = new TableForwarder(this, dataService);
+        reconciliationManager.registerService("FRM",this);
         LOG.info("ForwardingRulesManager has started successfully.");
     }
 
@@ -255,6 +262,11 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     @VisibleForTesting
     public void setDeviceMastershipManager(final DeviceMastershipManager deviceMastershipManager) {
         this.deviceMastershipManager = deviceMastershipManager;
+    }
+
+    @Override
+    public void doReconcile() {
+
     }
 }
 

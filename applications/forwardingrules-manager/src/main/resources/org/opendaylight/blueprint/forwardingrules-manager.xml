@@ -8,6 +8,8 @@
   <reference id="rpcRegistry" interface="org.opendaylight.controller.sal.binding.api.RpcProviderRegistry"/>
   <reference id="notificationService" interface="org.opendaylight.controller.sal.binding.api.NotificationProviderService"/>
   <reference id="clusterSingletonService" interface="org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider"/>
+  <reference id="reconciliationservice" interface="org.opendaylight.openflowplugin.applications.reconciliation.IReconciliationManager"/>
+
 
   <odl:clustered-app-config id="frmConfig"
       binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfig"/>
@@ -35,6 +37,7 @@
     <argument value="${frm-disable-reconciliation}"/>
     <argument value="${frm-stale-marking-enabled}"/>
     <argument value="${frm-reconciliation-retry-count}"/>
+    <argument ref="reconciliationservice"/>
 
   </bean>
 </blueprint>
