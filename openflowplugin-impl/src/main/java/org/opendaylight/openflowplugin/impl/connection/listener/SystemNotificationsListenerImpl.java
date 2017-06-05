@@ -33,8 +33,10 @@ import org.slf4j.LoggerFactory;
  */
 public class SystemNotificationsListenerImpl implements SystemNotificationsListener {
 
-    private final ConnectionContext connectionContext;
     private static final Logger LOG = LoggerFactory.getLogger(SystemNotificationsListenerImpl.class);
+    private static final long ECHO_XID = 0L;
+
+    private final ConnectionContext connectionContext;
     @VisibleForTesting
     static final long MAX_ECHO_REPLY_TIMEOUT = 2000;
     private final long echoReplyTimeout;
@@ -71,14 +73,14 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
             connectionContext.changeStateToTimeouting();
             EchoInputBuilder builder = new EchoInputBuilder();
             builder.setVersion(features.getVersion());
-            Xid xid = new Xid(0L);
+            Xid xid = new Xid(ECHO_XID);
             builder.setXid(xid.getValue());
 
             Future<RpcResult<EchoOutput>> echoReplyFuture = connectionContext.getConnectionAdapter().echo(builder.build());
 
             try {
                 RpcResult<EchoOutput> echoReplyValue = echoReplyFuture.get(echoReplyTimeout, TimeUnit.MILLISECONDS);
-                if (echoReplyValue.isSuccessful()) {
+                if (echoReplyValue.isSuccessful() && echoReplyValue.getResult().getXid() == ECHO_XID) {
                     connectionContext.changeStateToWorking();
                     shouldBeDisconnected = false;
                 } else {
