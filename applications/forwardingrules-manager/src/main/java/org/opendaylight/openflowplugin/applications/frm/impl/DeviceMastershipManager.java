@@ -75,6 +75,7 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
     }
 
     public boolean isDeviceMastered(final NodeId nodeId) {
+        LOG.info("inside isDeviceMastered {} {}", deviceMasterships.get(nodeId), deviceMasterships.get(nodeId).isDeviceMastered());
         return deviceMasterships.get(nodeId) != null && deviceMasterships.get(nodeId).isDeviceMastered();
     }
 
@@ -99,9 +100,9 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
     @Override
     public void onNodeUpdated(NodeUpdated notification) {
         LOG.debug("NodeUpdate notification received : {}", notification);
-        DeviceMastership membership = deviceMasterships.computeIfAbsent(notification.getId(), device ->
-                new DeviceMastership(notification.getId(), reconcliationAgent));
-        membership.reconcile();
+//        DeviceMastership membership = deviceMasterships.computeIfAbsent(notification.getId(), device ->
+//                new DeviceMastership(notification.getId(), reconcliationAgent));
+//        membership.reconcile();
     }
 
     @Override

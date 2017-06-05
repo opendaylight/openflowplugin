@@ -33,6 +33,7 @@
     <feature name='odl-openflowplugin-flow-services' description="OpenDaylight :: Openflow Plugin :: Flow Services" version='${project.version}'>
         <feature version="${project.version}">odl-openflowplugin-app-config-pusher</feature>
         <feature version="${project.version}">odl-openflowplugin-app-topology</feature>
+        <feature version="${project.version}">odl-openflowplugin-app-reconciliation-framework</feature>
         <feature version="${project.version}">odl-openflowplugin-app-forwardingrules-manager</feature>
     </feature>
 
@@ -104,6 +105,12 @@
         <feature version="${project.version}">odl-openflowplugin-southbound</feature>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/forwardingrules-manager/{{VERSION}}</bundle>
     </feature>
+
+    <feature name='odl-openflowplugin-app-reconciliation-framework' description="OpenDaylight :: Openflow Plugin :: Application - Reconciliation-framework" version='${project.version}'>
+        <feature version="${project.version}">odl-openflowplugin-southbound</feature>
+        <bundle>mvn:org.opendaylight.openflowplugin.applications/reconciliation-framework/{{VERSION}}</bundle>
+    </feature>
+
 
     <feature name='odl-openflowplugin-app-forwardingrules-sync' description="OpenDaylight :: Openflow Plugin :: Application - FRS" version='${project.version}'>
         <feature version="${project.version}">odl-openflowplugin-southbound</feature>

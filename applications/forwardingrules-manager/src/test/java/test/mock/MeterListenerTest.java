@@ -24,6 +24,7 @@ import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.applications.frm.impl.DeviceMastershipManager;
 import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
+import org.opendaylight.openflowplugin.applications.reconciliation.IReconciliationManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterBuilder;
@@ -56,6 +57,8 @@ public class MeterListenerTest extends FRMTest {
     DeviceMastershipManager deviceMastershipManager;
     @Mock
     private NotificationProviderService notificationService;
+    @Mock
+    private IReconciliationManager reconciliationManager;
 
     @Before
     public void setUp() {
@@ -64,7 +67,7 @@ public class MeterListenerTest extends FRMTest {
                 rpcProviderRegistryMock,
                 getConfig(),
                 clusterSingletonService,
-                notificationService, false, false, 5);
+                notificationService, false, false, 5, reconciliationManager);
         forwardingRulesManager.start();
         // TODO consider tests rewrite (added because of complicated access)
         forwardingRulesManager.setDeviceMastershipManager(deviceMastershipManager);

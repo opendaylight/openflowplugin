@@ -67,6 +67,7 @@ import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRe
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
+import org.opendaylight.openflowplugin.applications.reconciliation.IReconciliationManager;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProviderFactory;
@@ -173,6 +174,8 @@ public class DeviceContextImplTest {
     private ConvertorExecutor convertorExecutor;
     @Mock
     private MessageSpy messageSpy;
+    @Mock
+    private IReconciliationManager reconciliationManager;
 
     private InOrder inOrderDevState;
 
@@ -230,7 +233,8 @@ public class DeviceContextImplTest {
                 deviceManager,
                 convertorExecutor,
                 false, timer, false,
-            DeviceInitializerProviderFactory.createDefaultProvider());
+            DeviceInitializerProviderFactory.createDefaultProvider(),
+                reconciliationManager);
         ((DeviceContextImpl) deviceContext).lazyTransactionManagerInitialization();
         deviceContextSpy = Mockito.spy(deviceContext);
 

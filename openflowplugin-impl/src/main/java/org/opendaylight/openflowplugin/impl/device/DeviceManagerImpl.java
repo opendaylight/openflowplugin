@@ -37,6 +37,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
+import org.opendaylight.openflowplugin.applications.reconciliation.IReconciliationManager;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderKeeper;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.connection.OutboundQueueProviderImpl;
@@ -86,6 +87,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private final MessageSpy messageSpy;
     private final HashedWheelTimer hashedWheelTimer;
     private final boolean useSingleLayerSerialization;
+    private final IReconciliationManager reconciliationManager;
 
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
                              @Nonnull final MessageSpy messageSpy,
@@ -93,11 +95,13 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                              @Nonnull final HashedWheelTimer hashedWheelTimer,
                              @Nonnull final ConvertorExecutor convertorExecutor,
                              @Nonnull final DeviceInitializerProvider deviceInitializerProvider,
-                             final boolean useSingleLayerSerialization) {
+                             final boolean useSingleLayerSerialization,
+                             final IReconciliationManager reconciliationManager) {
 
         this.dataBroker = dataBroker;
         this.deviceInitializerProvider = deviceInitializerProvider;
         this.useSingleLayerSerialization = useSingleLayerSerialization;
+        this.reconciliationManager = reconciliationManager;
 
         /* merge empty nodes to oper DS to predict any problems with missing parent for Node */
         final WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
@@ -250,7 +254,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 skipTableFeatures,
                 hashedWheelTimer,
                 useSingleLayerSerialization,
-                deviceInitializerProvider);
+                deviceInitializerProvider,
+                reconciliationManager);
 
         deviceContext.setSalRoleService(new SalRoleServiceImpl(deviceContext, deviceContext));
         deviceContext.setSwitchFeaturesMandatory(switchFeaturesMandatory);

@@ -33,6 +33,7 @@ import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
+import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
@@ -45,6 +46,7 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainHolder
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
+import org.opendaylight.openflowplugin.applications.reconciliation.IReconciliationManager;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderKeeper;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterRegistrator;
 import org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider;
@@ -115,22 +117,26 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private int threadPoolMaxThreads;
     private long threadPoolTimeout;
     private boolean initialized = false;
+    private IReconciliationManager reconciliationManager;
 
     public static MessageIntelligenceAgency getMessageIntelligenceAgency() {
         return MESSAGE_INTELLIGENCE_AGENCY;
     }
 
-    OpenFlowPluginProviderImpl(final List<SwitchConnectionProvider> switchConnectionProviders,
-                               final DataBroker dataBroker,
-                               final RpcProviderRegistry rpcProviderRegistry,
-                               final NotificationPublishService notificationPublishService,
-                               final ClusterSingletonServiceProvider singletonServiceProvider,
-                               final EntityOwnershipService entityOwnershipService) {
+    public OpenFlowPluginProviderImpl(final List<SwitchConnectionProvider> switchConnectionProviders,
+                                      final DataBroker dataBroker,
+                                      final RpcProviderRegistry rpcProviderRegistry,
+                                      final NotificationService notificationProviderService,
+                                      final NotificationPublishService notificationPublishService,
+                                      final ClusterSingletonServiceProvider singletonServiceProvider,
+                                      final EntityOwnershipService entityOwnershipService,
+                                      final IReconciliationManager reconciliationManager) {
         this.switchConnectionProviders = switchConnectionProviders;
         this.dataBroker = dataBroker;
         this.rpcProviderRegistry = rpcProviderRegistry;
         this.notificationPublishService = notificationPublishService;
         this.singletonServicesProvider = singletonServiceProvider;
+        this.reconciliationManager = reconciliationManager;
         convertorManager = ConvertorManagerFactory.createDefaultManager();
         contextChainHolder = new ContextChainHolderImpl(hashedWheelTimer);
         contextChainHolder.changeEntityOwnershipService(entityOwnershipService);
@@ -216,7 +222,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 hashedWheelTimer,
                 convertorManager,
                 deviceInitializerProvider,
-                useSingleLayerSerialization);
+                useSingleLayerSerialization,
+                reconciliationManager);
 
         deviceManager.setGlobalNotificationQuota(globalNotificationQuota);
         deviceManager.setSwitchFeaturesMandatory(switchFeaturesMandatory);

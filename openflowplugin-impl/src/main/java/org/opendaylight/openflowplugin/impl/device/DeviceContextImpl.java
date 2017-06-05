@@ -64,6 +64,7 @@ import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRe
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleKeeper;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
+import org.opendaylight.openflowplugin.applications.reconciliation.IReconciliationManager;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderKeeper;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
@@ -89,6 +90,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorBuilder;
@@ -175,6 +177,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final boolean useSingleLayerSerialization;
     private boolean hasState;
     private boolean isInitialTransactionSubmitted;
+    private IReconciliationManager reconciliationManager;
 
     DeviceContextImpl(
             @Nonnull final ConnectionContext primaryConnectionContext,
@@ -186,7 +189,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             final boolean skipTableFeatures,
             final HashedWheelTimer hashedWheelTimer,
             final boolean useSingleLayerSerialization,
-            final DeviceInitializerProvider deviceInitializerProvider) {
+            final DeviceInitializerProvider deviceInitializerProvider,
+            final IReconciliationManager reconciliationManager) {
 
         this.primaryConnectionContext = primaryConnectionContext;
         this.deviceInfo = primaryConnectionContext.getDeviceInfo();
@@ -197,6 +201,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.dataBroker = dataBroker;
         this.auxiliaryConnectionContexts = new HashMap<>();
         this.messageSpy = messageSpy;
+        this.reconciliationManager = reconciliationManager;
 
         this.packetInLimiter = new PacketInRateLimiter(primaryConnectionContext.getConnectionAdapter(),
                 /*initial*/ LOW_WATERMARK, /*initial*/HIGH_WATERMARK, this.messageSpy, REJECTED_DRAIN_FACTOR);
@@ -641,6 +646,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
         LOG.info("Starting device context cluster services for node {}", deviceInfo.getLOGValue());
         lazyTransactionManagerInitialization();
+        Futures.addCallback(sendRoleChangeToDevice(OfpRole.BECOMEMASTER),
+                new RpcResultFutureCallback(mastershipChangeListener));
+        final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill = getDeviceFlowRegistry().fill();
+        Futures.addCallback(deviceFlowRegistryFill,
+                new DeviceFlowRegistryCallback(deviceFlowRegistryFill, mastershipChangeListener));
+        final ListenableFuture<NodeId> servicesreconcile = reconciliationManager.startReconciliationTask(deviceInfo.getNodeId());
+        Futures.addCallback(servicesreconcile,new ReconciliationCallback());
 
         try {
             final List<PortStatusMessage> portStatusMessages = primaryConnectionContext
@@ -670,12 +682,12 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             return false;
         }
 
-        Futures.addCallback(sendRoleChangeToDevice(OfpRole.BECOMEMASTER),
-                new RpcResultFutureCallback(mastershipChangeListener));
+//        Futures.addCallback(sendRoleChangeToDevice(OfpRole.BECOMEMASTER),
+//                new RpcResultFutureCallback(mastershipChangeListener));
 
-        final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill = getDeviceFlowRegistry().fill();
-        Futures.addCallback(deviceFlowRegistryFill,
-                new DeviceFlowRegistryCallback(deviceFlowRegistryFill, mastershipChangeListener));
+//        final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill = getDeviceFlowRegistry().fill();
+//        Futures.addCallback(deviceFlowRegistryFill,
+//                new DeviceFlowRegistryCallback(deviceFlowRegistryFill, mastershipChangeListener));
 
         return this.clusterInitializationPhaseHandler.onContextInstantiateService(mastershipChangeListener);
     }
@@ -822,5 +834,19 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     false);
         }
     }
+
+    public class ReconciliationCallback implements FutureCallback<NodeId>{
+        @Override
+        public void onSuccess(@Nullable NodeId nodeId) {
+
+            LOG.info("ReconciliationCallback success {}", nodeId);
+        }
+
+        @Override
+        public void onFailure(Throwable throwable) {
+            LOG.info("ReconciliationCallback failure {}", throwable.getStackTrace());
+        }
+    }
+
 
 }

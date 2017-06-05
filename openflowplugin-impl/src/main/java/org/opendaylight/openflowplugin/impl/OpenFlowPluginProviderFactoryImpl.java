@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
+import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
@@ -23,6 +24,7 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginConfigurationService.PropertyType;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProviderFactory;
+import org.opendaylight.openflowplugin.applications.reconciliation.IReconciliationManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.cm.Configuration;
@@ -42,8 +44,10 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
     public OpenFlowPluginProvider newInstance(final OpenflowProviderConfig providerConfig,
                                               final DataBroker dataBroker,
                                               final RpcProviderRegistry rpcRegistry,
+                                              final NotificationService notificationService,
                                               final NotificationPublishService notificationPublishService,
                                               final EntityOwnershipService entityOwnershipService,
+                                              final IReconciliationManager reconciliationManager,
                                               final List<SwitchConnectionProvider> switchConnectionProviders,
                                               final ClusterSingletonServiceProvider singletonServiceProvider,
                                               final BundleContext bundleContext) {
@@ -54,9 +58,11 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
                 switchConnectionProviders,
                 dataBroker,
                 rpcRegistry,
+                notificationService,
                 notificationPublishService,
                 singletonServiceProvider,
-                entityOwnershipService);
+                entityOwnershipService,
+                reconciliationManager);
 
         LOG.info("Loading configuration from YANG file");
         openflowPluginProvider.updateProperty(PropertyType.RPC_REQUESTS_QUOTA, providerConfig.getRpcRequestsQuota().getValue());
