@@ -1,0 +1,7 @@
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Code-Review+2: Jozef Bacigal <jozef.bacigal@pantheon.tech>
+Submitted-by: Jozef Bacigal <jozef.bacigal@pantheon.tech>
+Submitted-at: Tue, 06 Jun 2017 09:20:48 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/58305
+Project: openflowplugin
+Branch: refs/heads/stable/boron
