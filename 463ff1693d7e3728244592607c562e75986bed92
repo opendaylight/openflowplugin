@@ -1,0 +1,124 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3afa9182_2a5f1610",
+        "filename": "applications/bulk-o-matic/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-06-06T14:17:13Z",
+      "side": 1,
+      "message": "I usually do it in a single step, except for big patches that needs to be divided, but I can create a second patch just to activate it. Ok.",
+      "parentUuid": "3afa9182_cf0f84e0",
+      "range": {
+        "startLine": 59,
+        "startChar": 7,
+        "endLine": 65,
+        "endChar": 15
+      },
+      "revId": "463ff1693d7e3728244592607c562e75986bed92",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3afa9182_8a9baac8",
+        "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/BulkOMaticUtils.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-06-06T14:17:13Z",
+      "side": 1,
+      "message": "Agree, the automatic formatting sometimes mess things up :).",
+      "parentUuid": "3afa9182_af14b8f5",
+      "range": {
+        "startLine": 44,
+        "startChar": 94,
+        "endLine": 49,
+        "endChar": 113
+      },
+      "revId": "463ff1693d7e3728244592607c562e75986bed92",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3afa9182_6aa0fef4",
+        "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/FlowReader.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-06-06T14:17:13Z",
+      "side": 1,
+      "message": "We do not want that other can change those variables along the class, so we should declare them as final.",
+      "parentUuid": "3afa9182_4f0394b8",
+      "range": {
+        "startLine": 40,
+        "startChar": 12,
+        "endLine": 41,
+        "endChar": 18
+      },
+      "revId": "463ff1693d7e3728244592607c562e75986bed92",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3afa9182_aaaae6d1",
+        "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/FlowReader.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-06-06T14:17:13Z",
+      "side": 1,
+      "message": "Again the auto-formatting going wild :P. I\u0027ll fix it.",
+      "parentUuid": "3afa9182_0ff98cc8",
+      "range": {
+        "startLine": 54,
+        "startChar": 37,
+        "endLine": 56,
+        "endChar": 109
+      },
+      "revId": "463ff1693d7e3728244592607c562e75986bed92",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3afa9182_0aafbae4",
+        "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/FlowWriterConcurrent.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-06-06T14:17:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3afa9182_6f3130a2",
+      "range": {
+        "startLine": 196,
+        "startChar": 1,
+        "endLine": 196,
+        "endChar": 1
+      },
+      "revId": "463ff1693d7e3728244592607c562e75986bed92",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
