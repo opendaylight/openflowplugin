@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.connection;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
@@ -226,12 +227,12 @@ public class ConnectionContextImpl implements ConnectionContext {
 
     @Override
     public void handlePortStatusMessage(final PortStatusMessage portStatusMessage) {
-        if (Objects.isNull(deviceInfo)) {
-            LOG.debug("NOOP: Port-status message during handshake phase not supported: {}", portStatusMessage);
-            return;
-        }
+        LOG.info("Received early port status message for node {} with reason {} and state {}",
+                nodeId.getValue(),
+                portStatusMessage.getReason(),
+                MoreObjects.firstNonNull(portStatusMessage.getState(), portStatusMessage.getStateV10()));
 
-        LOG.debug("Handling alien port status message {} for node {}", portStatusMessage, nodeId);
+        LOG.debug("Early port status message body is {}", portStatusMessage);
         portStatusMessages.add(portStatusMessage);
     }
 
