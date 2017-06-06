@@ -226,12 +226,7 @@ public class ConnectionContextImpl implements ConnectionContext {
 
     @Override
     public void handlePortStatusMessage(final PortStatusMessage portStatusMessage) {
-        if (Objects.isNull(deviceInfo)) {
-            LOG.debug("NOOP: Port-status message during handshake phase not supported: {}", portStatusMessage);
-            return;
-        }
-
-        LOG.debug("Handling alien port status message {} for node {}", portStatusMessage, nodeId);
+        LOG.warn("Handling alien port status message {} for node {}", portStatusMessage, nodeId);
         portStatusMessages.add(portStatusMessage);
     }
 
