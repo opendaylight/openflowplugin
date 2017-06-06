@@ -385,9 +385,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     private void writePortStatusMessage(final PortStatus portStatusMessage) {
-        final FlowCapableNodeConnector flowCapableNodeConnector = portStatusTranslator
-                .translate(portStatusMessage, getDeviceInfo(), null);
-
         final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector = getDeviceInfo()
                 .getNodeInstanceIdentifier()
                 .child(NodeConnector.class, new NodeConnectorKey(InventoryDataServiceUtil
@@ -401,7 +398,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector, new NodeConnectorBuilder()
                     .setKey(iiToNodeConnector.getKey())
                     .addAugmentation(FlowCapableNodeConnectorStatisticsData.class, new FlowCapableNodeConnectorStatisticsDataBuilder().build())
-                    .addAugmentation(FlowCapableNodeConnector.class, flowCapableNodeConnector)
+                    .addAugmentation(FlowCapableNodeConnector.class, portStatusTranslator
+                            .translate(portStatusMessage, getDeviceInfo(), null))
                     .build());
         } else if (PortReason.OFPPRDELETE.equals(portStatusMessage.getReason())) {
             addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector);
@@ -638,7 +636,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public boolean onContextInstantiateService(final MastershipChangeListener mastershipChangeListener) {
-
         LOG.info("Starting device context cluster services for node {}", deviceInfo.getLOGValue());
         lazyTransactionManagerInitialization();
 
@@ -650,7 +647,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             submitTransaction();
         } catch (final Exception ex) {
             LOG.warn("Error processing port status messages from device {}", getDeviceInfo().getLOGValue(), ex);
-            return false;
         }
 
         try {
