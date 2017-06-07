@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3afa9182_ba798afe",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/initialization/OF13DeviceInitializer.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-06-07T17:07:52Z",
+      "side": 1,
+      "message": "i think we don;t need this if condition.",
+      "range": {
+        "startLine": 80,
+        "startChar": 20,
+        "endLine": 80,
+        "endChar": 47
+      },
+      "revId": "b407e8c31f0f227e34c8149ba4bba92d26ef327b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3afa9182_9a7e4ee3",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/initialization/OF13DeviceInitializer.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-06-07T17:07:52Z",
+      "side": 1,
+      "message": "please rename this method to something generic, rather than using OVS202 string in that, we need to make sure that the logic we use here works for all the OpenFlow enabled devices and not just OVS.",
+      "range": {
+        "startLine": 84,
+        "startChar": 28,
+        "endLine": 84,
+        "endChar": 50
+      },
+      "revId": "b407e8c31f0f227e34c8149ba4bba92d26ef327b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3afa9182_3a6d9a33",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/initialization/OF13DeviceInitializer.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 335,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-06-07T17:07:52Z",
+      "side": 1,
+      "message": "this logic can fail, if you will connect any other switch and there is a possibility that it keep returning false and never allow the switch to connect. We need some generic way to determine if switch feature is not supported and must not rely on OVS version.",
+      "range": {
+        "startLine": 310,
+        "startChar": 2,
+        "endLine": 335,
+        "endChar": 9
+      },
+      "revId": "b407e8c31f0f227e34c8149ba4bba92d26ef327b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
