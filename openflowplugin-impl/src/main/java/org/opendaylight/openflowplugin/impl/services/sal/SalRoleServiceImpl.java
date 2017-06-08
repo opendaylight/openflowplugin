@@ -16,8 +16,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
 import java.util.concurrent.Future;
-import java.util.concurrent.Semaphore;
-import javax.annotation.concurrent.GuardedBy;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext.CONNECTION_STATE;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -26,12 +24,14 @@ import org.opendaylight.openflowplugin.impl.role.RoleChangeException;
 import org.opendaylight.openflowplugin.impl.services.AbstractSimpleService;
 import org.opendaylight.openflowplugin.impl.services.RoleService;
 import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ErrorType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
+import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
@@ -45,6 +45,8 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
     private static final BigInteger MAX_GENERATION_ID = new BigInteger("ffffffffffffffff", 16);
 
     private static final int MAX_RETRIES = 42;
+
+    private static final String ROLE_REQUEST_UNSUPPORTED = ErrorType.ROLEREQUESTFAILED.name().concat(" code UNSUP");
 
     private final DeviceContext deviceContext;
     private final RoleService roleService;
@@ -124,15 +126,29 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
                     LOG.debug("setRoleOutput received after roleChangeTask execution:{}", result);
                     future.set(RpcResultBuilder.<SetRoleOutput> success().withResult(result.getResult()).build());
                 } else {
-                    LOG.error("setRole() failed with errors, will retry: {} times.", MAX_RETRIES - retryCounter);
-                    repeaterForChangeRole(future, input, (retryCounter + 1));
+                    LOG.warn("setRole() failed with errors, will retry: {} times.", MAX_RETRIES - retryCounter);
+                    final boolean present = result
+                            .getErrors()
+                            .stream()
+                            .anyMatch(rpcError -> (rpcError.getMessage().contains(ROLE_REQUEST_UNSUPPORTED)));
+
+                    if (!present) {
+                        repeaterForChangeRole(future, input, (retryCounter + 1));
+                    } else {
+                        future.set(result);
+                    }
                 }
             }
 
             @Override
             public void onFailure(final Throwable t) {
-                LOG.error("Exception in setRole(), will retry: {} times.", t, MAX_RETRIES - retryCounter);
-                repeaterForChangeRole(future, input, (retryCounter + 1));
+                if (!t.getMessage().contains(ROLE_REQUEST_UNSUPPORTED)) {
+                    LOG.warn("Exception in setRole(), will retry: {} times.", t, MAX_RETRIES - retryCounter);
+                    repeaterForChangeRole(future, input, (retryCounter + 1));
+                } else {
+                    future.set(RpcResultBuilder.<SetRoleOutput>failed()
+                            .withError(RpcError.ErrorType.APPLICATION, t.getMessage()).build());
+                }
             }
         });
     }
