@@ -18,15 +18,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputAction;
 
 public class OutputActionSerializer extends AbstractActionSerializer {
+
     @Override
     public void serialize(Action action, ByteBuf outBuffer) {
         super.serialize(action, outBuffer);
         final OutputAction outputAction = OutputActionCase.class.cast(action).getOutputAction();
-        outBuffer.writeInt(InventoryDataServiceUtil.portNumberfromNodeConnectorId(
+        Long value = InventoryDataServiceUtil.portNumberfromNodeConnectorId(
                 OpenflowVersion.OF13,
-                outputAction.getOutputNodeConnector().getValue()).intValue());
-        outBuffer.writeShort(MoreObjects.firstNonNull(outputAction.getMaxLength(), 0));
-        outBuffer.writeZero(ActionConstants.OUTPUT_PADDING);
+                outputAction.getOutputNodeConnector().getValue());
+        if (value != null) {
+            outBuffer.writeInt(value.intValue());
+            outBuffer.writeShort(MoreObjects.firstNonNull(outputAction.getMaxLength(), 0));
+            outBuffer.writeZero(ActionConstants.OUTPUT_PADDING);
+        }
     }
 
     @Override
