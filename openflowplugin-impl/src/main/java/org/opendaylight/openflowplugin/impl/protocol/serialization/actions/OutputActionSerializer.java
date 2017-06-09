@@ -16,17 +16,25 @@ import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputAction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OutputActionSerializer extends AbstractActionSerializer {
+
+    private static final Logger LOG = LoggerFactory.getLogger(OutputActionSerializer.class);
+
     @Override
     public void serialize(Action action, ByteBuf outBuffer) {
         super.serialize(action, outBuffer);
         final OutputAction outputAction = OutputActionCase.class.cast(action).getOutputAction();
-        outBuffer.writeInt(InventoryDataServiceUtil.portNumberfromNodeConnectorId(
+        Long value = InventoryDataServiceUtil.portNumberfromNodeConnectorId(
                 OpenflowVersion.OF13,
-                outputAction.getOutputNodeConnector().getValue()).intValue());
-        outBuffer.writeShort(MoreObjects.firstNonNull(outputAction.getMaxLength(), 0));
-        outBuffer.writeZero(ActionConstants.OUTPUT_PADDING);
+                outputAction.getOutputNodeConnector().getValue());
+        if (value != null) {
+            outBuffer.writeInt(value.intValue());
+            outBuffer.writeShort(MoreObjects.firstNonNull(outputAction.getMaxLength(), 0));
+            outBuffer.writeZero(ActionConstants.OUTPUT_PADDING);
+        }
     }
 
     @Override
