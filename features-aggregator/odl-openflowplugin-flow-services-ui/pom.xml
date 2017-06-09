@@ -23,15 +23,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- DLUX -->
-            <dependency>
-                <groupId>org.opendaylight.dlux</groupId>
-                <artifactId>odl-dlux-core</artifactId>
-                <version>${dlux.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-
             <!-- restconf -->
             <dependency>
                 <groupId>org.opendaylight.netconf</groupId>
