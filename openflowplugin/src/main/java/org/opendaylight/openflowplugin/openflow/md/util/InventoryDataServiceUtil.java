@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import com.google.common.base.Splitter;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
@@ -130,6 +132,7 @@ public abstract class InventoryDataServiceUtil {
         return new NodeConnectorId(OFConstants.OF_URI_PREFIX + datapathid + ":" + (logicalName == null ? portNo : logicalName));
     }
 
+    @Nullable
     public static Long portNumberfromNodeConnectorId(final OpenflowVersion ofVersion, final NodeConnectorId ncId) {
         return portNumberfromNodeConnectorId(ofVersion, ncId.getValue());
     }
@@ -145,10 +148,10 @@ public abstract class InventoryDataServiceUtil {
         return splitStringList.get(splitStringList.size()-1);
     }
 
-    public static Long portNumberfromNodeConnectorId(final OpenflowVersion ofVersion, final String ncId) {
+    @Nullable
+    public static Long portNumberfromNodeConnectorId(final OpenflowVersion ofVersion, @Nonnull final String ncId) {
         String portNoString = portNoStringfromNodeConnectorID(ncId);
-        Long portNo = OpenflowPortsUtil.getPortFromLogicalName(ofVersion, portNoString);
-        return portNo;
+        return OpenflowPortsUtil.getPortFromLogicalName(ofVersion, portNoString);
     }
 
 
