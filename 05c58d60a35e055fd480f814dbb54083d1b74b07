@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3afa9182_0cc85e21",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/serialization/actions/OutputActionSerializer.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-06-09T21:17:48Z",
+      "side": 1,
+      "message": "please rephrase it to --\u003e \"Not a valid port number.\" and if possible log the value   outputAction.getOutputNodeConnector().getValue()",
+      "revId": "05c58d60a35e055fd480f814dbb54083d1b74b07",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3afa9182_4cd266d3",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/serialization/match/InPortEntrySerializer.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-06-09T21:17:48Z",
+      "side": 1,
+      "message": "please rephrase it to --\u003e \"Not a valid port number.\" and if possible log the value   match.getInPort().getValue()",
+      "revId": "05c58d60a35e055fd480f814dbb54083d1b74b07",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3afa9182_2cd71ac3",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/util/OpenflowPortsUtil.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-06-09T21:17:48Z",
+      "side": 1,
+      "message": "please change it to the class name (OpenflowPortsUtil.class)",
+      "range": {
+        "startLine": 34,
+        "startChar": 62,
+        "endLine": 34,
+        "endChar": 92
+      },
+      "revId": "05c58d60a35e055fd480f814dbb54083d1b74b07",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
