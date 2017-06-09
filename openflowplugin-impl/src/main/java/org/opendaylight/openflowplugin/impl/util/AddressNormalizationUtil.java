@@ -50,8 +50,10 @@ public class AddressNormalizationUtil {
             return null;
         }
 
-        return OpenflowPortsUtil.getProtocolAgnosticPortUri(protocolVersion, InventoryDataServiceUtil
-                .portNumberfromNodeConnectorId(OpenflowVersion.get(protocolVersion), port.getValue()));
+        Long portValue = InventoryDataServiceUtil
+                .portNumberfromNodeConnectorId(OpenflowVersion.get(protocolVersion), port.getValue());
+
+        return portValue == null ? null : OpenflowPortsUtil.getProtocolAgnosticPortUri(protocolVersion, portValue);
     }
 
     /**
