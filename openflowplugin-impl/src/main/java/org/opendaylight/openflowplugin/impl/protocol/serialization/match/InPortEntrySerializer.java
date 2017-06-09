@@ -21,9 +21,13 @@ public class InPortEntrySerializer extends AbstractMatchEntrySerializer {
     @Override
     public void serialize(Match match, ByteBuf outBuffer) {
         super.serialize(match, outBuffer);
-        outBuffer.writeInt(InventoryDataServiceUtil.portNumberfromNodeConnectorId(
+        Long value = InventoryDataServiceUtil.portNumberfromNodeConnectorId(
                 OpenflowVersion.OF13,
-                match.getInPort().getValue()).intValue());
+                match.getInPort().getValue());
+        if (value == null) {
+            throw new IllegalArgumentException("Not a valid port number: " + match.getInPort().getValue());
+        }
+        outBuffer.writeInt(value.intValue());
     }
 
     @Override
