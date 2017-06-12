@@ -45,7 +45,7 @@ public class MplsLabelCodec extends AbstractMatchCodec {
 
   @Override
   public MatchEntry deserialize(ByteBuf message) {
-    MatchEntryBuilder matchEntryBuilder = deserializeHeader(message);
+    MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
     OfMplsLabelCaseValueBuilder caseBuilder = new OfMplsLabelCaseValueBuilder();
     MplsLabelValuesBuilder valuesBuilder = new MplsLabelValuesBuilder();
     valuesBuilder.setMplsLabel(message.readLong()).build();

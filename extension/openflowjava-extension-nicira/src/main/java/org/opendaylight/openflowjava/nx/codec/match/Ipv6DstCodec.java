@@ -37,7 +37,7 @@ public class Ipv6DstCodec extends AbstractMatchCodec {
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntriesBuilder = deserializeHeader(message);
+        MatchEntryBuilder matchEntriesBuilder = deserializeHeaderToBuilder(message);
         IpDstCaseValueBuilder caseBuilder = new IpDstCaseValueBuilder();
         caseBuilder.setIpDstValues(new IpDstValuesBuilder().setValue(message.readUnsignedInt()).build());
         matchEntriesBuilder.setMatchEntryValue(caseBuilder.build());

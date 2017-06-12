@@ -44,7 +44,7 @@ public class TunIdCodec extends AbstractMatchCodec {
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntriesBuilder = deserializeHeader(message);
+        MatchEntryBuilder matchEntriesBuilder = deserializeHeaderToBuilder(message);
         TunIdCaseValueBuilder caseBuilder = new TunIdCaseValueBuilder();
         TunIdValuesBuilder tunIdBuilder = new TunIdValuesBuilder();
         tunIdBuilder.setValue(BigInteger.valueOf(message.readLong()));

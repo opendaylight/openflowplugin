@@ -42,7 +42,7 @@ public class ArpTpaCodec extends AbstractMatchCodec {
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntriesBuilder = deserializeHeader(message);
+        MatchEntryBuilder matchEntriesBuilder = deserializeHeaderToBuilder(message);
         ArpTpaCaseValueBuilder caseBuilder = new ArpTpaCaseValueBuilder();
         caseBuilder.setArpTpaValues(new ArpTpaValuesBuilder().setValue(message.readUnsignedInt()).build());
         matchEntriesBuilder.setMatchEntryValue(caseBuilder.build());

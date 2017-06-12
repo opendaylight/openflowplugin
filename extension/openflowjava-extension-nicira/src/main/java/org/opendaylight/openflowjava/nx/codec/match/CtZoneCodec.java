@@ -46,7 +46,7 @@ public class CtZoneCodec extends AbstractMatchCodec {
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntryBuilder = deserializeHeader(message);
+        MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
         CtZoneCaseValueBuilder caseBuilder = new CtZoneCaseValueBuilder();
         CtZoneValuesBuilder ctZoneValuesBuilder = new CtZoneValuesBuilder();
         ctZoneValuesBuilder.setCtZone(message.readUnsignedShort());

@@ -35,7 +35,7 @@ public class IcmpTypeCodec extends AbstractMatchCodec {
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntriesBuilder = deserializeHeader(message);
+        MatchEntryBuilder matchEntriesBuilder = deserializeHeaderToBuilder(message);
         IcmpTypeCaseValueBuilder icmpTypeCaseValueBuilder = new IcmpTypeCaseValueBuilder();
         icmpTypeCaseValueBuilder.setIcmpTypeValues(new IcmpTypeValuesBuilder().setValue(message.readUnsignedByte()).build());
         matchEntriesBuilder.setMatchEntryValue(icmpTypeCaseValueBuilder.build());

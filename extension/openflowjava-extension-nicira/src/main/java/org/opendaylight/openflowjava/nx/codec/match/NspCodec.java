@@ -41,7 +41,7 @@ public class NspCodec extends AbstractMatchCodec {
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntryBuilder = deserializeHeader(message);
+        MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
         NspCaseValueBuilder nspCaseValueBuilder = new NspCaseValueBuilder();
         nspCaseValueBuilder.setNspValues(new NspValuesBuilder().setNsp(message.readUnsignedInt()).build());
         matchEntryBuilder.setMatchEntryValue(nspCaseValueBuilder.build());
