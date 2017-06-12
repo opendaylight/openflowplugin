@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1af78d9a_1a044114",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/sal/SalRoleServiceImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-06-12T15:29:08Z",
+      "side": 1,
+      "message": "You throw a warning with \"will retry\" but if role unsupported you stop retrying.",
+      "range": {
+        "startLine": 129,
+        "startChar": 20,
+        "endLine": 129,
+        "endChar": 112
+      },
+      "revId": "07fc4247de2f32432248fbd01a9dc74553b809ca",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1af78d9a_ba124d56",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/sal/SalRoleServiceImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-06-12T15:29:08Z",
+      "side": 1,
+      "message": "Any warning/info ?",
+      "range": {
+        "startLine": 148,
+        "startChar": 18,
+        "endLine": 148,
+        "endChar": 24
+      },
+      "revId": "07fc4247de2f32432248fbd01a9dc74553b809ca",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
