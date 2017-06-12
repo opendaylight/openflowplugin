@@ -42,7 +42,7 @@ public class Nshc3Codec extends AbstractMatchCodec {
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntryBuilder = deserializeHeader(message);
+        MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
         Nshc3CaseValueBuilder nsc3CaseValueBuilder = new Nshc3CaseValueBuilder();
         nsc3CaseValueBuilder.setNshc3Values(new Nshc3ValuesBuilder().setNshc(message.readUnsignedInt()).build());
         matchEntryBuilder.setMatchEntryValue(nsc3CaseValueBuilder.build());

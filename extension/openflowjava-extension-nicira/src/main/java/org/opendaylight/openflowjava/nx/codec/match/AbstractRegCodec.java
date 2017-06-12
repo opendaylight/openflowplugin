@@ -25,7 +25,7 @@ public abstract class AbstractRegCodec extends AbstractMatchCodec {
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
-        final MatchEntryBuilder matchEntriesBuilder = deserializeHeader(message);
+        final MatchEntryBuilder matchEntriesBuilder = deserializeHeaderToBuilder(message);
         final RegValuesBuilder regValuesBuilder = new RegValuesBuilder();
         regValuesBuilder.setValue(message.readUnsignedInt());
 

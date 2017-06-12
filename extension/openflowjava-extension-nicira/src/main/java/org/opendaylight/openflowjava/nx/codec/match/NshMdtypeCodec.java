@@ -41,7 +41,7 @@ public class NshMdtypeCodec extends AbstractMatchCodec {
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntriesBuilder = deserializeHeader(message);
+        MatchEntryBuilder matchEntriesBuilder = deserializeHeaderToBuilder(message);
         NshMdtypeCaseValueBuilder nshMdtypeCaseValueBuilder = new NshMdtypeCaseValueBuilder();
         nshMdtypeCaseValueBuilder.setNshMdtypeValues(new NshMdtypeValuesBuilder().setValue(message.readUnsignedByte()).build());
         matchEntriesBuilder.setMatchEntryValue(nshMdtypeCaseValueBuilder.build());

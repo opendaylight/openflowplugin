@@ -44,7 +44,7 @@ public class EncapEthDstCodec extends AbstractMatchCodec {
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntriesBuilder = deserializeHeader(message);
+        MatchEntryBuilder matchEntriesBuilder = deserializeHeaderToBuilder(message);
         byte[] address = new byte[VALUE_LENGTH];
         message.readBytes(address);
         EncapEthDstCaseValueBuilder caseBuilder = new EncapEthDstCaseValueBuilder();

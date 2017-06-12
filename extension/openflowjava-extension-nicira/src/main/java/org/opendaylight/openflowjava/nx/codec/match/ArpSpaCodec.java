@@ -42,7 +42,7 @@ public class ArpSpaCodec extends AbstractMatchCodec {
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntryBuilder = deserializeHeader(message);
+        MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
         ArpSpaCaseValueBuilder caseBuilder = new ArpSpaCaseValueBuilder();
         caseBuilder.setArpSpaValues(new ArpSpaValuesBuilder().setValue(message.readUnsignedInt()).build());
         matchEntryBuilder.setMatchEntryValue(caseBuilder.build());
