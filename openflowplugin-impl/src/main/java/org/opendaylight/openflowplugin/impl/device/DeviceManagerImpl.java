@@ -171,10 +171,14 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
          */
          if (deviceContexts.containsKey(deviceInfo)) {
              DeviceContext deviceContext = deviceContexts.get(deviceInfo);
-             LOG.warn("Node {} already connected disconnecting device. Rejecting connection", deviceInfo.getLOGValue());
+             LOG.warn("New connection received from the already connected Node {}. Disconnecting both the connection " +
+                     "to add the switch back gracefully.", deviceInfo.getLOGValue());
              if (!deviceContext.getState().equals(OFPContext.CONTEXT_STATE.TERMINATION)) {
                  LOG.warn("Node {} context state not in TERMINATION state.",
                          connectionContext.getDeviceInfo().getLOGValue());
+                 //Lets disconnect the existing connection as well and ask switch to connect fresh.
+                 //This will re-add the node properly
+                 deviceContext.getPrimaryConnectionContext().closeConnection(true);
                  return ConnectionStatus.ALREADY_CONNECTED;
              } else {
                  return ConnectionStatus.CLOSING;
