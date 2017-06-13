@@ -11,6 +11,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import java.net.InetSocketAddress;
 import java.util.Date;
+import java.util.Objects;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -34,7 +35,7 @@ import org.slf4j.LoggerFactory;
 public class SystemNotificationsListenerImpl implements SystemNotificationsListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(SystemNotificationsListenerImpl.class);
-    private static final long ECHO_XID = 0L;
+    private static final Xid ECHO_XID = new Xid(0L);
 
     private final ConnectionContext connectionContext;
     @VisibleForTesting
@@ -73,14 +74,14 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
             connectionContext.changeStateToTimeouting();
             EchoInputBuilder builder = new EchoInputBuilder();
             builder.setVersion(features.getVersion());
-            Xid xid = new Xid(ECHO_XID);
-            builder.setXid(xid.getValue());
+            builder.setXid(ECHO_XID.getValue());
 
             Future<RpcResult<EchoOutput>> echoReplyFuture = connectionContext.getConnectionAdapter().echo(builder.build());
 
             try {
                 RpcResult<EchoOutput> echoReplyValue = echoReplyFuture.get(echoReplyTimeout, TimeUnit.MILLISECONDS);
-                if (echoReplyValue.isSuccessful() && echoReplyValue.getResult().getXid() == ECHO_XID) {
+                if (echoReplyValue.isSuccessful() &&
+                        Objects.equals(echoReplyValue.getResult().getXid(), ECHO_XID.getValue())) {
                     connectionContext.changeStateToWorking();
                     shouldBeDisconnected = false;
                 } else {
