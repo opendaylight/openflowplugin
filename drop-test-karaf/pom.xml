@@ -49,7 +49,6 @@
         <dependency>
             <groupId>org.apache.karaf.shell</groupId>
             <artifactId>org.apache.karaf.shell.console</artifactId>
-            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>
