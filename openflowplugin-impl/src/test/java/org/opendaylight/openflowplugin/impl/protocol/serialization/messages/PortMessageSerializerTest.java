@@ -69,6 +69,7 @@ public class PortMessageSerializerTest extends AbstractSerializerTest {
             .setVersion(VERSION)
             .setPortNumber(new PortNumberUni(PORT_NUMBER))
             .setConfiguration(new PortConfig(IS_NOFWD, IS_NOPACKETIN, IS_NORECV, IS_PORTDOWN))
+            .setMask(new PortConfig(true, true, true, true))
             .setAdvertisedFeatures(new PortFeatures(
                     IS_AUTOENG,
                     IS_COPPER,
@@ -125,8 +126,17 @@ public class PortMessageSerializerTest extends AbstractSerializerTest {
                 .put(5, IS_NOFWD)
                 .put(6, IS_NOPACKETIN)
                 .build());
+
+        final int mask = ByteBufUtils.fillBitMaskFromMap(ImmutableMap
+                .<Integer, Boolean>builder()
+                .put(0, true)
+                .put(2, true)
+                .put(5, true)
+                .put(6, true)
+                .build());
+
         assertEquals(out.readInt(), config);
-        assertEquals(out.readInt(), config);
+        assertEquals(out.readInt(), mask);
 
         // Port features
         assertEquals(out.readInt(), ByteBufUtils.fillBitMask(0,

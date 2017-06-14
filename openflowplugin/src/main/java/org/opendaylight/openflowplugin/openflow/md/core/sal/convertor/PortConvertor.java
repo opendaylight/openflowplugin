@@ -9,14 +9,16 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.MoreObjects;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.Port;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfigV10;
@@ -60,6 +62,11 @@ public class PortConvertor extends Convertor<Port, PortModInput, VersionConverto
 
     private static PortConfig maskPortConfigFields(
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig configData) {
+
+        if (Objects.isNull(configData)) {
+            return null;
+        }
+
         Boolean portDown = configData.isPORTDOWN();
         Boolean noRecv = configData.isNORECV();
         Boolean noFwd = configData.isNOFWD();
@@ -71,6 +78,11 @@ public class PortConvertor extends Convertor<Port, PortModInput, VersionConverto
 
     private static PortConfigV10 maskPortConfigV10Fields(
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig configData) {
+
+        if (Objects.isNull(configData)) {
+            return null;
+        }
+
         Boolean portDown = configData.isPORTDOWN();
         Boolean noRecv = configData.isNORECV();
         Boolean noFwd = configData.isNOFWD();
@@ -165,14 +177,16 @@ public class PortConvertor extends Convertor<Port, PortModInput, VersionConverto
                 OpenflowPortsUtil.getProtocolPortNumber(OpenflowVersion.get(data.getVersion()), source.getPortNumber())));
 
         portModInputBuilder.setConfig(config);
-        portModInputBuilder.setMask(config);
+        portModInputBuilder.setMask(MoreObjects.firstNonNull(maskPortConfigFields(source.getMask()),
+                new PortConfig(true, true, true, true)));
 
         portModInputBuilder.setHwAddress(new MacAddress(source.getHardwareAddress()));
 
         portModInputBuilder.setVersion(data.getVersion());
 
         portModInputBuilder.setConfigV10(configV10);
-        portModInputBuilder.setMaskV10(configV10);
+        portModInputBuilder.setMaskV10(MoreObjects.firstNonNull(maskPortConfigV10Fields(source.getMask()),
+                new PortConfigV10(true, true, true, true, true, true, true)));
         portModInputBuilder.setAdvertiseV10(getPortFeaturesV10(source.getAdvertisedFeatures()));
         return portModInputBuilder.build();
     }
