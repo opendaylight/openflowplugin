@@ -47,6 +47,12 @@ public class PortConvertorTest {
             new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfig(
                     false, false, false, false);
 
+    private org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfig configMask31 =
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfig(
+            true, true, true, true);
+
+    private PortConfigV10 portConfMaskV10 = new PortConfigV10(true, true, true, true, true, true, true);;
+
     /**
      * test of {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PortConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.Port, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData)} }
      */
@@ -70,14 +76,14 @@ public class PortConvertorTest {
         PortModInputBuilder portModInputBld = new PortModInputBuilder();
 
         portModInputBld.setConfig(config31);
-        portModInputBld.setMask(config31);
+        portModInputBld.setMask(configMask31);
         portModInputBld.setPortNo(
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber(42L));
         portModInputBld.setHwAddress(new MacAddress(DEFAULT_MAC_ADDRESS));
         portModInputBld.setAdvertise(portf31);
 
         portModInputBld.setConfigV10(portConfV10);
-        portModInputBld.setMaskV10(portConfV10);
+        portModInputBld.setMaskV10(portConfMaskV10);
         portModInputBld.setAdvertiseV10(
                 new PortFeaturesV10(null, null, null, null, null, null, null, true, null, null, null, null));
 

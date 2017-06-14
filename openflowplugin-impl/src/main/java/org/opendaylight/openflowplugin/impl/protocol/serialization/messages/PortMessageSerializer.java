@@ -8,8 +8,10 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.serialization.messages;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableMap;
 import io.netty.buffer.ByteBuf;
+import java.util.Objects;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
@@ -23,9 +25,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.P
  * OF protocol versions: 1.3.
  */
 public class PortMessageSerializer extends AbstractMessageSerializer<PortMessage> {
+
     private static final byte PADDING_IN_PORT_MOD_MESSAGE_01 = 4;
     private static final byte PADDING_IN_PORT_MOD_MESSAGE_02 = 2;
     private static final byte PADDING_IN_PORT_MOD_MESSAGE_03 = 4;
+    private static final int DEFAULT_PORT_CONFIG_MASK = createPortConfigBitMask(
+            new PortConfig(true, true, true, true));
 
     @Override
     public void serialize(final PortMessage message, final ByteBuf outBuffer) {
@@ -35,9 +40,8 @@ public class PortMessageSerializer extends AbstractMessageSerializer<PortMessage
         outBuffer.writeZero(PADDING_IN_PORT_MOD_MESSAGE_01);
         outBuffer.writeBytes(IetfYangUtil.INSTANCE.bytesFor(message.getHardwareAddress()));
         outBuffer.writeZero(PADDING_IN_PORT_MOD_MESSAGE_02);
-        final int portConfigBitMask = createPortConfigBitMask(message.getConfiguration());
-        outBuffer.writeInt(portConfigBitMask); // Configuration
-        outBuffer.writeInt(portConfigBitMask); // Configuration mask
+        outBuffer.writeInt(createPortConfigBitMask(message.getConfiguration()));
+        outBuffer.writeInt(MoreObjects.firstNonNull(createPortConfigBitMask(message.getMask()), DEFAULT_PORT_CONFIG_MASK));
         outBuffer.writeInt(createPortFeaturesBitMask(message.getAdvertisedFeatures()));
         outBuffer.writeZero(PADDING_IN_PORT_MOD_MESSAGE_03);
         outBuffer.setShort(index + 2, outBuffer.writerIndex() - index);
@@ -48,8 +52,8 @@ public class PortMessageSerializer extends AbstractMessageSerializer<PortMessage
         return 16;
     }
 
-    private static int createPortConfigBitMask(final PortConfig config) {
-        return ByteBufUtils.fillBitMaskFromMap(ImmutableMap
+    private static Integer createPortConfigBitMask(final PortConfig config) {
+        return Objects.isNull(config) ? null : ByteBufUtils.fillBitMaskFromMap(ImmutableMap
                 .<Integer, Boolean>builder()
                 .put(0, config.isPORTDOWN())
                 .put(2, config.isNORECV())
