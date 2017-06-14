@@ -92,6 +92,15 @@ module opendaylight-port-types {
         }
     }
 
+    grouping  common-port-with-mask {
+        uses common-port;
+
+        leaf mask {
+            type port-config;
+            description "Bitmap of OFPPC-* flags to be changed";
+        }
+    }
+
     grouping flow-port-status {
         leaf reason {
             type port-reason;
@@ -159,12 +168,7 @@ module opendaylight-port-types {
                     type uint32;
                 }
 
-                uses common-port;
-
-                leaf mask {
-                    type port-config;
-                    description "Bitmap of OFPPC-* flags to be changed";
-                }
+                uses common-port-with-mask;
 
                 leaf container-name {
                     type string;
@@ -182,7 +186,7 @@ module opendaylight-port-types {
     }
 
     container port-message {
-        uses common-port;
+        uses common-port-with-mask;
         uses ofproto:ofHeader;
     }
 
