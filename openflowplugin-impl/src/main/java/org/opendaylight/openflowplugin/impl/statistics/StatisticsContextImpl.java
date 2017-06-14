@@ -281,29 +281,6 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         }
 
         if (!iterator.hasNext()) {
-            if (initial) {
-                Futures.addCallback(StatisticsGatheringUtils.gatherStatistics(
-                        statisticsGatheringService,
-                        getDeviceInfo(),
-                        MultipartType.OFPMPPORTDESC,
-                        deviceContext,
-                        deviceContext,
-                        false,
-                        convertorExecutor,
-                        statisticsWriterProvider), new FutureCallback<Boolean>() {
-                    @Override
-                    public void onSuccess(final Boolean result) {
-                        statChainFuture(iterator, resultFuture, false);
-                    }
-                    @Override
-                    public void onFailure(@Nonnull final Throwable t) {
-                        resultFuture.setException(t);
-                    }
-                });
-
-                return;
-            }
-
             resultFuture.set(Boolean.TRUE);
             LOG.debug("Stats collection successfully finished for node {}", getDeviceInfo().getLOGValue());
             return;
