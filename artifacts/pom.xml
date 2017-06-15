@@ -174,13 +174,6 @@
                 <artifactId>openflowplugin-controller-config</artifactId>
                 <version>${project.version}</version>
                 <type>xml</type>
-                <classifier>config-He</classifier>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>openflowplugin-controller-config</artifactId>
-                <version>${project.version}</version>
-                <type>xml</type>
                 <classifier>config-Li</classifier>
             </dependency>
             <dependency>
@@ -207,21 +200,7 @@
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>features-openflowplugin-he</artifactId>
-                <version>${project.version}</version>
-                <classifier>features</classifier>
-                <type>xml</type>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
                 <artifactId>features-openflowplugin</artifactId>
-                <version>${project.version}</version>
-                <classifier>features</classifier>
-                <type>xml</type>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>features-openflowplugin-extension-he</artifactId>
                 <version>${project.version}</version>
                 <classifier>features</classifier>
                 <type>xml</type>
@@ -235,21 +214,7 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>features4-openflowplugin-he</artifactId>
-                <version>${project.version}</version>
-                <classifier>features</classifier>
-                <type>xml</type>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
                 <artifactId>features4-openflowplugin</artifactId>
-                <version>${project.version}</version>
-                <classifier>features</classifier>
-                <type>xml</type>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>features4-openflowplugin-extension-he</artifactId>
                 <version>${project.version}</version>
                 <classifier>features</classifier>
                 <type>xml</type>
