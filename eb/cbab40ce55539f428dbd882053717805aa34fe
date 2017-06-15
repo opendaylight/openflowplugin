@@ -1,0 +1,7 @@
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Code-Review+2: Jozef Bacigal <jozef.bacigal@pantheon.tech>
+Submitted-by: Jozef Bacigal <jozef.bacigal@pantheon.tech>
+Submitted-at: Thu, 15 Jun 2017 10:52:54 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/57890
+Project: openflowplugin
+Branch: refs/heads/stable/carbon
