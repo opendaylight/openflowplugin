@@ -174,7 +174,7 @@
                 <artifactId>openflowplugin-controller-config</artifactId>
                 <version>${project.version}</version>
                 <type>xml</type>
-                <classifier>config-Li</classifier>
+                <classifier>config</classifier>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
