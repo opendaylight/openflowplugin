@@ -26,7 +26,7 @@ public class AddressNormalizationUtilTest {
     @Test
     public void normalizeProtocolAgnosticPortOF10() throws Exception {
         final Uri left = new Uri("openflow:1:INPORT");
-        final Uri right = new Uri("INPORT");
+        final Uri right = new Uri("IN_PORT");
 
         assertEquals(
                 right,

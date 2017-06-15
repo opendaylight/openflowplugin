@@ -371,7 +371,7 @@ public class MultipartReplyTranslatorThirdTest {
         Assert.assertEquals("Wrong duration sec", 6, stat.getDuration().getSecond().getValue().intValue());
         Assert.assertEquals("Wrong duration n sec", 7, stat.getDuration().getNanosecond().getValue().intValue());
         stat = statUpdate.getQueueIdAndStatisticsMap().get(1);
-        Assert.assertEquals("Wrong port number", "openflow:42:INPORT", stat.getNodeConnectorId().getValue());
+        Assert.assertEquals("Wrong port number", "openflow:42:IN_PORT", stat.getNodeConnectorId().getValue());
         Assert.assertEquals("Wrong queue-id", 20, stat.getQueueId().getValue().intValue());
         Assert.assertEquals("Wrong tx packets", 30, stat.getTransmittedPackets().getValue().intValue());
         Assert.assertEquals("Wrong tx bytes", 40, stat.getTransmittedBytes().getValue().intValue());
