@@ -32,26 +32,26 @@ public class OpenflowPortsUtilTest {
     @BeforeClass
     public static void setupClass() {
         mapOF10Ports = new HashMap<String, Long>();
-        mapOF10Ports.put(OutputPortValues.MAX.toString(), 65280L);
-        mapOF10Ports.put(OutputPortValues.INPORT.toString(), 65528L);
-        mapOF10Ports.put(OutputPortValues.TABLE.toString(), 65529L);
-        mapOF10Ports.put(OutputPortValues.NORMAL.toString(), 65530L);
-        mapOF10Ports.put(OutputPortValues.FLOOD.toString(), 65531L);
-        mapOF10Ports.put(OutputPortValues.ALL.toString(), 65532L);
-        mapOF10Ports.put(OutputPortValues.CONTROLLER.toString(), 65533L);
-        mapOF10Ports.put(OutputPortValues.LOCAL.toString(), 65534L);
-        mapOF10Ports.put(OutputPortValues.NONE.toString(), 65535L);
+        mapOF10Ports.put(OutputPortValues.MAX.getName(), 65280L);
+        mapOF10Ports.put(OutputPortValues.INPORT.getName(), 65528L);
+        mapOF10Ports.put(OutputPortValues.TABLE.getName(), 65529L);
+        mapOF10Ports.put(OutputPortValues.NORMAL.getName(), 65530L);
+        mapOF10Ports.put(OutputPortValues.FLOOD.getName(), 65531L);
+        mapOF10Ports.put(OutputPortValues.ALL.getName(), 65532L);
+        mapOF10Ports.put(OutputPortValues.CONTROLLER.getName(), 65533L);
+        mapOF10Ports.put(OutputPortValues.LOCAL.getName(), 65534L);
+        mapOF10Ports.put(OutputPortValues.NONE.getName(), 65535L);
 
         mapOF13Ports = new HashMap<String, Long>();
-        mapOF13Ports.put(OutputPortValues.MAX.toString(), 4294967040L);
-        mapOF13Ports.put(OutputPortValues.INPORT.toString(), 4294967288L);
-        mapOF13Ports.put(OutputPortValues.TABLE.toString(), 4294967289L);
-        mapOF13Ports.put(OutputPortValues.NORMAL.toString(), 4294967290L);
-        mapOF13Ports.put(OutputPortValues.FLOOD.toString(), 4294967291L);
-        mapOF13Ports.put(OutputPortValues.ALL.toString(), 4294967292L);
-        mapOF13Ports.put(OutputPortValues.CONTROLLER.toString(), 4294967293L);
-        mapOF13Ports.put(OutputPortValues.LOCAL.toString(), 4294967294L);
-        mapOF13Ports.put(OutputPortValues.ANY.toString(), 4294967295L);
+        mapOF13Ports.put(OutputPortValues.MAX.getName(), 4294967040L);
+        mapOF13Ports.put(OutputPortValues.INPORT.getName(), 4294967288L);
+        mapOF13Ports.put(OutputPortValues.TABLE.getName(), 4294967289L);
+        mapOF13Ports.put(OutputPortValues.NORMAL.getName(), 4294967290L);
+        mapOF13Ports.put(OutputPortValues.FLOOD.getName(), 4294967291L);
+        mapOF13Ports.put(OutputPortValues.ALL.getName(), 4294967292L);
+        mapOF13Ports.put(OutputPortValues.CONTROLLER.getName(), 4294967293L);
+        mapOF13Ports.put(OutputPortValues.LOCAL.getName(), 4294967294L);
+        mapOF13Ports.put(OutputPortValues.ANY.getName(), 4294967295L);
 
         mapVersionToPorts = new HashMap<OpenflowVersion, Map<String, Long>>();
         mapVersionToPorts.put(OpenflowVersion.OF10, mapOF10Ports);
@@ -88,32 +88,35 @@ public class OpenflowPortsUtilTest {
     @Test
     public void testGetPortLogicalName() {
 
-        matchGetLogicalName(OpenflowVersion.OF10, OutputPortValues.MAX.toString());
-        matchGetLogicalName(OpenflowVersion.OF10, OutputPortValues.INPORT.toString());
-        matchGetLogicalName(OpenflowVersion.OF10, OutputPortValues.TABLE.toString());
-        matchGetLogicalName(OpenflowVersion.OF10, OutputPortValues.NORMAL.toString());
-        matchGetLogicalName(OpenflowVersion.OF10, OutputPortValues.FLOOD.toString());
-        matchGetLogicalName(OpenflowVersion.OF10, OutputPortValues.ALL.toString());
-        matchGetLogicalName(OpenflowVersion.OF10, OutputPortValues.CONTROLLER.toString());
-        matchGetLogicalName(OpenflowVersion.OF10, OutputPortValues.LOCAL.toString());
-        matchGetLogicalName(OpenflowVersion.OF10, OutputPortValues.NONE.toString());
+        String s = OutputPortValues.INPORT.getName();
+        matchGetLogicalName(OpenflowVersion.OF10, OutputPortValues.MAX.getName());
+        matchGetLogicalName(OpenflowVersion.OF10, OutputPortValues.INPORT.getName());
+        matchGetLogicalName(OpenflowVersion.OF10, OutputPortValues.TABLE.getName());
+        matchGetLogicalName(OpenflowVersion.OF10, OutputPortValues.NORMAL.getName());
+        matchGetLogicalName(OpenflowVersion.OF10, OutputPortValues.FLOOD.getName());
+        matchGetLogicalName(OpenflowVersion.OF10, OutputPortValues.ALL.getName());
+        matchGetLogicalName(OpenflowVersion.OF10, OutputPortValues.CONTROLLER.getName());
+        matchGetLogicalName(OpenflowVersion.OF10, OutputPortValues.LOCAL.getName());
+        matchGetLogicalName(OpenflowVersion.OF10, OutputPortValues.NONE.getName());
 
-        matchGetLogicalName(OpenflowVersion.OF13, OutputPortValues.MAX.toString());
-        matchGetLogicalName(OpenflowVersion.OF13, OutputPortValues.INPORT.toString());
-        matchGetLogicalName(OpenflowVersion.OF13, OutputPortValues.TABLE.toString());
-        matchGetLogicalName(OpenflowVersion.OF13, OutputPortValues.NORMAL.toString());
-        matchGetLogicalName(OpenflowVersion.OF13, OutputPortValues.FLOOD.toString());
-        matchGetLogicalName(OpenflowVersion.OF13, OutputPortValues.ALL.toString());
-        matchGetLogicalName(OpenflowVersion.OF13, OutputPortValues.CONTROLLER.toString());
-        matchGetLogicalName(OpenflowVersion.OF13, OutputPortValues.LOCAL.toString());
-        matchGetLogicalName(OpenflowVersion.OF13, OutputPortValues.ANY.toString());
+        matchGetLogicalName(OpenflowVersion.OF13, OutputPortValues.MAX.getName());
+        matchGetLogicalName(OpenflowVersion.OF13, OutputPortValues.INPORT.getName());
+        matchGetLogicalName(OpenflowVersion.OF13, OutputPortValues.TABLE.getName());
+        matchGetLogicalName(OpenflowVersion.OF13, OutputPortValues.NORMAL.getName());
+        matchGetLogicalName(OpenflowVersion.OF13, OutputPortValues.FLOOD.getName());
+        matchGetLogicalName(OpenflowVersion.OF13, OutputPortValues.ALL.getName());
+        matchGetLogicalName(OpenflowVersion.OF13, OutputPortValues.CONTROLLER.getName());
+        matchGetLogicalName(OpenflowVersion.OF13, OutputPortValues.LOCAL.getName());
+        matchGetLogicalName(OpenflowVersion.OF13, OutputPortValues.ANY.getName());
 
         Assert.assertNull("Invalid port number should return a null",
                 OpenflowPortsUtil.getPortLogicalName(OpenflowVersion.OF10, 99999L));
 
         Assert.assertNull("Invalid port number should return a null",
                 OpenflowPortsUtil.getPortLogicalName(OpenflowVersion.OF13, 99999L));
+        Assert.assertFalse(s.equals("a"));
     }
+
 
 
     /**
@@ -122,25 +125,25 @@ public class OpenflowPortsUtilTest {
     @Test
     public void testGetPortFromLogicalName() {
 
-        matchGetPortfromLogicalName(OpenflowVersion.OF10, OutputPortValues.MAX.toString());
-        matchGetPortfromLogicalName(OpenflowVersion.OF10, OutputPortValues.INPORT.toString());
-        matchGetPortfromLogicalName(OpenflowVersion.OF10, OutputPortValues.TABLE.toString());
-        matchGetPortfromLogicalName(OpenflowVersion.OF10, OutputPortValues.NORMAL.toString());
-        matchGetPortfromLogicalName(OpenflowVersion.OF10, OutputPortValues.FLOOD.toString());
-        matchGetPortfromLogicalName(OpenflowVersion.OF10, OutputPortValues.ALL.toString());
-        matchGetPortfromLogicalName(OpenflowVersion.OF10, OutputPortValues.CONTROLLER.toString());
-        matchGetPortfromLogicalName(OpenflowVersion.OF10, OutputPortValues.LOCAL.toString());
-        matchGetPortfromLogicalName(OpenflowVersion.OF10, OutputPortValues.NONE.toString());
+        matchGetPortfromLogicalName(OpenflowVersion.OF10, OutputPortValues.MAX.getName());
+        matchGetPortfromLogicalName(OpenflowVersion.OF10, OutputPortValues.INPORT.getName());
+        matchGetPortfromLogicalName(OpenflowVersion.OF10, OutputPortValues.TABLE.getName());
+        matchGetPortfromLogicalName(OpenflowVersion.OF10, OutputPortValues.NORMAL.getName());
+        matchGetPortfromLogicalName(OpenflowVersion.OF10, OutputPortValues.FLOOD.getName());
+        matchGetPortfromLogicalName(OpenflowVersion.OF10, OutputPortValues.ALL.getName());
+        matchGetPortfromLogicalName(OpenflowVersion.OF10, OutputPortValues.CONTROLLER.getName());
+        matchGetPortfromLogicalName(OpenflowVersion.OF10, OutputPortValues.LOCAL.getName());
+        matchGetPortfromLogicalName(OpenflowVersion.OF10, OutputPortValues.NONE.getName());
 
-        matchGetPortfromLogicalName(OpenflowVersion.OF13, OutputPortValues.MAX.toString());
-        matchGetPortfromLogicalName(OpenflowVersion.OF13, OutputPortValues.INPORT.toString());
-        matchGetPortfromLogicalName(OpenflowVersion.OF13, OutputPortValues.TABLE.toString());
-        matchGetPortfromLogicalName(OpenflowVersion.OF13, OutputPortValues.NORMAL.toString());
-        matchGetPortfromLogicalName(OpenflowVersion.OF13, OutputPortValues.FLOOD.toString());
-        matchGetPortfromLogicalName(OpenflowVersion.OF13, OutputPortValues.ALL.toString());
-        matchGetPortfromLogicalName(OpenflowVersion.OF13, OutputPortValues.CONTROLLER.toString());
-        matchGetPortfromLogicalName(OpenflowVersion.OF13, OutputPortValues.LOCAL.toString());
-        matchGetPortfromLogicalName(OpenflowVersion.OF13, OutputPortValues.ANY.toString());
+        matchGetPortfromLogicalName(OpenflowVersion.OF13, OutputPortValues.MAX.getName());
+        matchGetPortfromLogicalName(OpenflowVersion.OF13, OutputPortValues.INPORT.getName());
+        matchGetPortfromLogicalName(OpenflowVersion.OF13, OutputPortValues.TABLE.getName());
+        matchGetPortfromLogicalName(OpenflowVersion.OF13, OutputPortValues.NORMAL.getName());
+        matchGetPortfromLogicalName(OpenflowVersion.OF13, OutputPortValues.FLOOD.getName());
+        matchGetPortfromLogicalName(OpenflowVersion.OF13, OutputPortValues.ALL.getName());
+        matchGetPortfromLogicalName(OpenflowVersion.OF13, OutputPortValues.CONTROLLER.getName());
+        matchGetPortfromLogicalName(OpenflowVersion.OF13, OutputPortValues.LOCAL.getName());
+        matchGetPortfromLogicalName(OpenflowVersion.OF13, OutputPortValues.ANY.getName());
 
         Assert.assertNull("Invalid port logical name should return a null",
                 OpenflowPortsUtil.getPortFromLogicalName(OpenflowVersion.OF10, "abc"));
@@ -179,7 +182,7 @@ public class OpenflowPortsUtilTest {
     }
 
     /**
-     * test for method {@link OpenflowPortsUtil#portNumberToString(PortNumber)}
+     * test for method {@link OpenflowPortsUtil}
      */
     @Test
     public void testPortNumberToString() {
