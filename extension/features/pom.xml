@@ -4,17 +4,17 @@
   <parent>
     <groupId>org.opendaylight.odlparent</groupId>
     <artifactId>features-parent</artifactId>
-    <version>1.7.4-SNAPSHOT</version>
+    <version>1.7.4-Boron-SR4</version>
     <relativePath/>
   </parent>
   <groupId>org.opendaylight.openflowplugin</groupId>
-  <version>0.3.4-SNAPSHOT</version>
+  <version>0.3.4-Boron-SR4</version>
   <artifactId>features-openflowplugin-extension</artifactId>
 
   <packaging>jar</packaging>
 
   <properties>
-    <openflowplugin.version>0.3.4-SNAPSHOT</openflowplugin.version>
+    <openflowplugin.version>0.3.4-Boron-SR4</openflowplugin.version>
   </properties>
 
   <dependencyManagement>

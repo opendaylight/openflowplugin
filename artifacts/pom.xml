@@ -14,13 +14,13 @@
   <parent>
     <groupId>org.opendaylight.odlparent</groupId>
     <artifactId>odlparent-lite</artifactId>
-    <version>1.7.4-SNAPSHOT</version>
+    <version>1.7.4-Boron-SR4</version>
     <relativePath/>
   </parent>
 
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>openflowplugin-artifacts</artifactId>
-    <version>0.3.4-SNAPSHOT</version>
+    <version>0.3.4-Boron-SR4</version>
     <packaging>pom</packaging>
 
     <dependencyManagement>
