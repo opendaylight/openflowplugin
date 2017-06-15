@@ -102,7 +102,7 @@
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>openflowplugin-controller-config</artifactId>
             <type>xml</type>
-            <classifier>config-Li</classifier>
+            <classifier>config</classifier>
         </dependency>
     </dependencies>
 
