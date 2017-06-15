@@ -1,0 +1,7 @@
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Code-Review+2: Tomas Slusny <tomas.slusny@pantheon.tech>
+Submitted-by: Tomas Slusny <tomas.slusny@pantheon.tech>
+Submitted-at: Thu, 15 Jun 2017 12:15:51 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/58257
+Project: openflowplugin
+Branch: refs/heads/stable/carbon
