@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2015, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -23,14 +23,20 @@ public class SimpleTaskRetryLooper {
     private final int maxRetries;
 
     /**
-     * @param tick       sleep between steps in miliseconds
-     * @param maxRetries retries limit
+     * It retries the task passed to its method loopUntilNoException a number of
+     * times (maxRetries).
+     *
+     * @param tick
+     *            sleep between steps in miliseconds
+     * @param maxRetries
+     *            retries limit
      */
     public SimpleTaskRetryLooper(long tick, int maxRetries) {
         this.tick = tick;
         this.maxRetries = maxRetries;
     }
 
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public <T> T loopUntilNoException(Callable<T> task) throws Exception {
         T output = null;
 
@@ -49,6 +55,7 @@ public class SimpleTaskRetryLooper {
                 Thread.sleep(tick);
             } catch (InterruptedException e) {
                 LOG.debug("interrupted: {}", e.getMessage(), e);
+                Thread.currentThread().interrupt();
             }
         }
 
