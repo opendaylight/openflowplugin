@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.impl.services.sal;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -30,7 +31,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
-import org.opendaylight.openflowplugin.impl.services.sal.SalRoleServiceImpl;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
@@ -47,6 +47,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetR
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
@@ -93,6 +94,11 @@ public class SalRoleServiceImplTest {
     private static short testVersion = 4;
 
     private static long testXid = 100L;
+
+    private static final String ROLEREQUESTFAILED =
+            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ErrorType.ROLEREQUESTFAILED.name();
+
+    private static final String ROLES_UNSUPPORTED = "Device reported error type "+ ROLEREQUESTFAILED +" code UNSUP";
 
     private NodeRef nodeRef;
 
@@ -149,6 +155,31 @@ public class SalRoleServiceImplTest {
         assertNotNull(setRoleOutput);
         assertEquals(BigInteger.valueOf(testXid), setRoleOutput.getTransactionId().getValue());
 
+    }
+
+    @Test
+    public void testSetRoleUnsupported() throws Exception {
+        ListenableFuture<RpcResult<RoleRequestOutput>> futureOutput =
+                RpcResultBuilder.<RoleRequestOutput>failed()
+                        .withError(ErrorType.APPLICATION, ROLES_UNSUPPORTED)
+                        .buildFuture();
+
+        Mockito.when(mockRequestContext.getFuture()).thenReturn(futureOutput);
+
+        SalRoleService salRoleService = new SalRoleServiceImpl(mockRequestContextStack, mockDeviceContext);
+
+        SetRoleInput setRoleInput = new SetRoleInputBuilder()
+                .setControllerRole(OfpRole.BECOMESLAVE)
+                .setNode(nodeRef)
+                .build();
+
+        Future<RpcResult<SetRoleOutput>> future = salRoleService.setRole(setRoleInput);
+
+        RpcResult<SetRoleOutput> roleOutputRpcResult = future.get(5, TimeUnit.SECONDS);
+        assertNotNull("RpcResult from future cannot be null.", roleOutputRpcResult);
+        assertFalse("RpcResult from future is successful.", roleOutputRpcResult.isSuccessful());
+        assertEquals(ROLES_UNSUPPORTED, roleOutputRpcResult
+                .getErrors().iterator().next().getMessage());
     }
 
     @Test
