@@ -16,14 +16,33 @@
     <reference id="legacySwitchConnProvider" interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider"
                odl:type="openflow-switch-connection-provider-legacy-impl"/>
 
-    <odl:clustered-app-config id="openflowProviderConfig"
-                              binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig"/>
-
     <reference id="openflowPluginProviderFactory"
                interface="org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProviderFactory"/>
 
-    <bean id="openflowPluginProvider" factory-ref="openflowPluginProviderFactory" factory-method="newInstance" destroy-method="close">
-        <argument ref="openflowProviderConfig"/>
+    <reference id="configurationServiceFactory"
+               interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationServiceFactory"/>
+
+    <odl:clustered-app-config id="openflowProviderConfig"
+                              binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig"/>
+
+    <bean id="configurationService"
+          factory-ref="configurationServiceFactory"
+          factory-method="newInstance"
+          destroy-method="close">
+        <argument ref="openflowProviderConfig" />
+        <argument ref="blueprintBundleContext" />
+        <cm:managed-properties persistent-id="org.opendaylight.openflowplugin"
+                               update-strategy="component-managed"
+                               update-method="update"/>
+    </bean>
+
+    <service ref="configurationService" interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService"/>
+
+    <bean id="openflowPluginProvider"
+          factory-ref="openflowPluginProviderFactory"
+          factory-method="newInstance"
+          destroy-method="close">
+        <argument ref="configurationService"/>
         <argument ref="dataBroker"/>
         <argument ref="rpcRegistry"/>
         <argument ref="notificationPublishService"/>
@@ -35,10 +54,6 @@
             </list>
         </argument>
         <argument ref="clusterSingletonServiceProvider"/>
-        <argument ref="blueprintBundleContext" />
-        <cm:managed-properties persistent-id="org.opendaylight.openflowplugin"
-                               update-strategy="component-managed"
-                               update-method="update"/>
     </bean>
 
     <service ref="openflowPluginProvider" odl:type="openflow-plugin-provider-impl">

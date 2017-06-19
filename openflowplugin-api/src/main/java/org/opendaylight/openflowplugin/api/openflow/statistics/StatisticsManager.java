@@ -33,12 +33,6 @@ public interface StatisticsManager extends OFPManager {
     @Override
     void close();
 
-    void setIsStatisticsPollingOn(boolean isStatisticsPollingOn);
-
-    void setBasicTimerDelay(long basicTimerDelay);
-
-    void setMaximumTimerDelay(long maximumTimerDelay);
-
     StatisticsContext createContext(@Nonnull DeviceContext deviceContext);
 
 }
