@@ -9,9 +9,11 @@ package test.mock.util;
 
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
+import org.mockito.Mockito;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -63,11 +65,28 @@ public abstract class FRMTest extends AbstractDataBrokerTest {
         assertCommit(writeTx.submit());
     }
 
-    public ForwardingRulesManagerConfig getConfig(){
+    public ForwardingRulesManagerConfig getConfig() {
         ForwardingRulesManagerConfigBuilder cfgBuilder = new ForwardingRulesManagerConfigBuilder();
+        cfgBuilder.setDisableReconciliation(false);
         cfgBuilder.setStaleMarkingEnabled(false);
         cfgBuilder.setReconciliationRetryCount(0);
         return cfgBuilder.build();
-
     }
+
+    public ConfigurationService getConfigurationService() {
+        final ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
+        final ForwardingRulesManagerConfig config = getConfig();
+
+        Mockito.when(configurationService.getProperty(Mockito.eq("disable-reconciliation"), Mockito.any()))
+                .thenReturn(config.isDisableReconciliation());
+
+        Mockito.when(configurationService.getProperty(Mockito.eq("stale-marking-enabled"), Mockito.any()))
+                .thenReturn(config.isStaleMarkingEnabled());
+
+        Mockito.when(configurationService.getProperty(Mockito.eq("reconciliation-retry-count"), Mockito.any()))
+                .thenReturn(config.getReconciliationRetryCount());
+
+        return configurationService;
+    }
+
 }
