@@ -12,10 +12,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.opendaylight.controller</groupId>
       <artifactId>sal-binding-api</artifactId>
     </dependency>
@@ -43,7 +39,15 @@
       <groupId>org.opendaylight.mdsal</groupId>
       <artifactId>mdsal-singleton-common-api</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin</groupId>
+      <artifactId>openflowplugin-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
@@ -74,7 +78,6 @@
       </plugin>
     </plugins>
   </build>
-
 
   <scm>
     <connection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</connection>
