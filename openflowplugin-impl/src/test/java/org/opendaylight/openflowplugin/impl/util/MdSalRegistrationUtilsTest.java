@@ -42,7 +42,7 @@ public class MdSalRegistrationUtilsTest {
      * Number of currently registrated services (can be changed)
      * (RpcContext, DeviceContext)}
      */
-    private static final int NUMBER_OF_RPC_SERVICE_REGISTRATION = 15;
+    private static final int NUMBER_OF_RPC_SERVICE_REGISTRATION = 16;
     private static final int NUMBER_OF_STAT_COMPAT_RPC_SERVICE_REGISTRATION = 5;
 
     @Mock
