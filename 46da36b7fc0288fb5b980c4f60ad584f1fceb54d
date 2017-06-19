@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1af78d9a_f8dddc43",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/lifecycle/ContextChainHolderImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-06-19T21:23:35Z",
+      "side": 1,
+      "message": "I would suggest to close the previous connection and use the new connection. There is a scenario, where plugin gets the second connection, but first connection still shows healthy in plugin although switch is disconnected. In this case, switch will never be able to connect to controller, because it will keep rejecting the new connection.",
+      "revId": "46da36b7fc0288fb5b980c4f60ad584f1fceb54d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
