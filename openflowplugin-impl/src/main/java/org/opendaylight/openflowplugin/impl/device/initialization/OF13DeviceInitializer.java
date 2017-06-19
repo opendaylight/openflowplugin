@@ -61,7 +61,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
         DeviceStateUtil.setDeviceStateBasedOnV13Capabilities(deviceState, capabilities);
 
         // First process description reply, write data to DS and write consequent data if successful
-        return  Futures.transformAsync(
+        return Futures.transformAsync(
             requestMultipart(MultipartType.OFPMPDESC, deviceContext),
             (AsyncFunction<RpcResult<List<OfHeader>>, Void>) input -> {
                 translateAndWriteResult(

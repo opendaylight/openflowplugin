@@ -32,20 +32,6 @@ public interface DeviceManager extends
      */
     void initialize();
 
-    void setFlowRemovedNotificationOn(boolean value);
-
-    boolean isFlowRemovedNotificationOn();
-
-    void setGlobalNotificationQuota(long globalNotificationQuota);
-
-    void setSwitchFeaturesMandatory(boolean switchFeaturesMandatory);
-
-    void setSkipTableFeatures(boolean skipTableFeatures);
-
-    void setBarrierCountLimit(int barrierCountLimit);
-
-    void setBarrierInterval(long barrierTimeoutLimit);
-
     CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(
             @Nonnull KeyedInstanceIdentifier<Node, NodeKey> ii);
 

@@ -7,10 +7,7 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
-import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListener;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -52,18 +49,6 @@ public interface ContextChainHolder extends
      * @param deviceInfo {@link DeviceInfo}
      */
     void destroyContextChain(DeviceInfo deviceInfo);
-
-    /**
-     * Provider is needed to register cluster singleton service.
-     * @param singletonServicesProvider provider
-     */
-    void addSingletonServicesProvider(ClusterSingletonServiceProvider singletonServicesProvider);
-
-    /**
-     * Register EOS listener.
-     * @param entityOwnershipService EOS services
-     */
-    void changeEntityOwnershipService(@Nonnull EntityOwnershipService entityOwnershipService);
 
     @Override
     void close() throws Exception;

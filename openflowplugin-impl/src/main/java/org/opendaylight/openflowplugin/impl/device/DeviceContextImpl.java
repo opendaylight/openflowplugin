@@ -16,7 +16,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
-import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import java.util.Collection;
 import java.util.HashSet;
@@ -41,7 +40,6 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
@@ -138,60 +136,60 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     private static final int LOW_WATERMARK = 1000;
     private static final int HIGH_WATERMARK = 2000;
+
     private final MultipartWriterProvider writerProvider;
-
-    private boolean initialized;
-
-    private SalRoleService salRoleService = null;
     private final HashedWheelTimer hashedWheelTimer;
-    private volatile ConnectionContext primaryConnectionContext;
     private final DeviceState deviceState;
     private final DataBroker dataBroker;
     private final Collection<RequestContext<?>> requestContexts = new HashSet<>();
-    private TransactionChainManager transactionChainManager;
-    private DeviceFlowRegistry deviceFlowRegistry;
-    private DeviceGroupRegistry deviceGroupRegistry;
-    private DeviceMeterRegistry deviceMeterRegistry;
-    private PacketInRateLimiter packetInLimiter;
     private final MessageSpy messageSpy;
     private final ItemLifeCycleKeeper flowLifeCycleKeeper;
-    private NotificationPublishService notificationPublishService;
-    private Timeout barrierTaskTimeout;
     private final MessageTranslator<PortGrouping, FlowCapableNodeConnector> portStatusTranslator;
     private final MessageTranslator<PacketInMessage, PacketReceived> packetInTranslator;
     private final MessageTranslator<FlowRemoved, org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved> flowRemovedTranslator;
     private final TranslatorLibrary translatorLibrary;
     private final ItemLifeCycleRegistry itemLifeCycleSourceRegistry;
-    private ExtensionConverterProvider extensionConverterProvider;
-    private boolean skipTableFeatures;
-    private boolean switchFeaturesMandatory;
-    private DeviceInfo deviceInfo;
     private final ConvertorExecutor convertorExecutor;
-    private volatile ContextState state;
-    private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
-    private final DeviceManager myManager;
     private final DeviceInitializerProvider deviceInitializerProvider;
+    private final PacketInRateLimiter packetInLimiter;
+    private final DeviceInfo deviceInfo;
+    private final boolean skipTableFeatures;
+    private final boolean switchFeaturesMandatory;
+    private final boolean isFlowRemovedNotificationOn;
     private final boolean useSingleLayerSerialization;
+    private NotificationPublishService notificationPublishService;
+    private TransactionChainManager transactionChainManager;
+    private DeviceFlowRegistry deviceFlowRegistry;
+    private DeviceGroupRegistry deviceGroupRegistry;
+    private DeviceMeterRegistry deviceMeterRegistry;
+    private ExtensionConverterProvider extensionConverterProvider;
+    private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
+    private SalRoleService salRoleService;
+    private boolean initialized;
     private boolean hasState;
     private boolean isInitialTransactionSubmitted;
+    private volatile ConnectionContext primaryConnectionContext;
+    private volatile ContextState state;
 
     DeviceContextImpl(
             @Nonnull final ConnectionContext primaryConnectionContext,
             @Nonnull final DataBroker dataBroker,
             @Nonnull final MessageSpy messageSpy,
             @Nonnull final TranslatorLibrary translatorLibrary,
-            @Nonnull final DeviceManager contextManager,
             final ConvertorExecutor convertorExecutor,
             final boolean skipTableFeatures,
             final HashedWheelTimer hashedWheelTimer,
             final boolean useSingleLayerSerialization,
-            final DeviceInitializerProvider deviceInitializerProvider) {
+            final DeviceInitializerProvider deviceInitializerProvider,
+            final boolean isFlowRemovedNotificationOn,
+            final boolean switchFeaturesMandatory) {
 
         this.primaryConnectionContext = primaryConnectionContext;
         this.deviceInfo = primaryConnectionContext.getDeviceInfo();
         this.hashedWheelTimer = hashedWheelTimer;
         this.deviceInitializerProvider = deviceInitializerProvider;
-        this.myManager = contextManager;
+        this.isFlowRemovedNotificationOn = isFlowRemovedNotificationOn;
+        this.switchFeaturesMandatory = switchFeaturesMandatory;
         this.deviceState = new DeviceStateImpl();
         this.dataBroker = dataBroker;
         this.messageSpy = messageSpy;
@@ -313,11 +311,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved flowRemovedNotification =
                 flowRemovedTranslator.translate(flowRemoved, deviceInfo, null);
 
-        if(myManager.isFlowRemovedNotificationOn()) {
+        if (isFlowRemovedNotificationOn) {
             // Trigger off a notification
             notificationPublishService.offerNotification(flowRemovedNotification);
-        } else if(LOG.isDebugEnabled()) {
-            LOG.debug("For nodeId={} isNotificationFlowRemovedOn={}", getDeviceInfo().getLOGValue(), myManager.isFlowRemovedNotificationOn());
         }
 
         final ItemLifecycleListener itemLifecycleListener = flowLifeCycleKeeper.getItemLifecycleListener();
@@ -464,16 +460,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void setCurrentBarrierTimeout(final Timeout timeout) {
-        barrierTaskTimeout = timeout;
-    }
-
-    @Override
-    public Timeout getBarrierTaskTimeout() {
-        return barrierTaskTimeout;
-    }
-
-    @Override
     public void setNotificationPublishService(final NotificationPublishService notificationPublishService) {
         this.notificationPublishService = notificationPublishService;
     }
@@ -518,11 +504,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @VisibleForTesting
     TransactionChainManager getTransactionChainManager() {
         return this.transactionChainManager;
-    }
-
-    @Override
-    public void setSwitchFeaturesMandatory(boolean switchFeaturesMandatory) {
-        this.switchFeaturesMandatory = switchFeaturesMandatory;
     }
 
     @Override
