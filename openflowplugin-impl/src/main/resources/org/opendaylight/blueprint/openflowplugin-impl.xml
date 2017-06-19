@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-           xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0">
+           xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
+           odl:use-default-for-reference-types="true">
 
   <bean id="ofPluginProviderFactory" class="org.opendaylight.openflowplugin.impl.OpenFlowPluginProviderFactoryImpl"/>
+  <service ref="ofPluginProviderFactory" interface="org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProviderFactory"/>
 
-  <service ref="ofPluginProviderFactory" interface="org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProviderFactory"
-          odl:type="default"/>
-
+  <bean id="configurationServiceFactory" class="org.opendaylight.openflowplugin.impl.configuration.ConfigurationServiceFactoryImpl"/>
+  <service ref="configurationServiceFactory" interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationServiceFactory"/>
 </blueprint>

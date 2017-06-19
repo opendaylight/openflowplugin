@@ -32,20 +32,6 @@ public interface DeviceManager extends
      */
     void initialize();
 
-    void setFlowRemovedNotificationOn(boolean value);
-
-    boolean isFlowRemovedNotificationOn();
-
-    void setGlobalNotificationQuota(long globalNotificationQuota);
-
-    void setSwitchFeaturesMandatory(boolean switchFeaturesMandatory);
-
-    void setSkipTableFeatures(boolean skipTableFeatures);
-
-    void setBarrierCountLimit(int barrierCountLimit);
-
-    void setBarrierInterval(long barrierTimeoutLimit);
-
     CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(
             DeviceInfo deviceInfo);
 
@@ -54,10 +40,5 @@ public interface DeviceManager extends
 
     DeviceContext createContext(@Nonnull ConnectionContext connectionContext);
 
-    long getBarrierIntervalNanos();
-
-    int getBarrierCountLimit();
-
     void sendNodeAddedNotification(@Nonnull DeviceInfo deviceInfo);
 }
-
