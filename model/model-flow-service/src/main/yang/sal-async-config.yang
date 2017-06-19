@@ -1,0 +1,45 @@
+module sal-async-config {
+    namespace "urn:opendaylight:async-config:service";
+    prefix async-config;
+
+    import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
+    import opendaylight-port-types {prefix port-type;revision-date "2013-09-25";}
+    import opendaylight-flow-types  { prefix flow-types;  revision-date "2013-10-26"; }
+    import packet-processing  { prefix packet-processing;  revision-date "2013-07-09"; }
+
+    description "Asynchronous configuration message.";
+
+    revision "2017-06-19" {
+        description "Initial revision of asynchronous configuration service.";
+    }
+
+    grouping async-config {
+        list packet-in-mask {
+            leaf-list mask {
+                type identityref {
+                    base packet-processing:packet-in-reason;
+                }
+            }
+        }
+        list port-status-mask {
+            leaf-list mask {
+                type port-type:port-reason;
+            }
+        }
+        list flow-removed-mask {
+            leaf-list mask {
+                type flow-types:removed-flow-reason;
+            }
+        }
+    }
+
+    rpc set-async {
+        description "Controller to switch message set configuration.";
+
+        input {
+            uses "inv:node-context-ref";
+            uses async-config;
+        }
+    }
+
+}
