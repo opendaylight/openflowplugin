@@ -11,6 +11,8 @@ import com.google.common.base.Function;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.internal.ConcurrentSet;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +28,7 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChain;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainStateListener;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.IncomingConnection;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
@@ -219,5 +222,26 @@ public class ContextChainImpl implements ContextChain {
                     .map(ContextChainStateListener.class::cast)
                     .forEach(listener -> listener.onStateAcquired(contextChainState));
         }
+    }
+
+    @Override
+    public IncomingConnection checkIncomingConnection(@Nonnull final ConnectionContext connectionContext) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Checking new incoming connection from device {}:", connectionContext.getDeviceInfo().getLOGValue());
+            LOG.debug("incoming conn. -> (ip:{}/port{}); primary conn. -> (ip:{}/port{})");
+        }
+        if (primaryConnection.getConnectionState() == ConnectionContext.CONNECTION_STATE.WORKING) {
+            final InetSocketAddress newConnection =
+                    connectionContext.getConnectionAdapter().getRemoteAddress();
+            final InetSocketAddress oldConnection =
+                    primaryConnection.getConnectionAdapter().getRemoteAddress();
+            if (newConnection.getPort() != oldConnection.getPort()) {
+                LOG.info("New incoming connection from device {} but different port (odl port: {} / new port: {})",
+                        connectionContext.getDeviceInfo().getLOGValue(),
+                        oldConnection.getPort(),
+                        newConnection.getPort());
+            }
+        }
+        return IncomingConnection.DROP_PREVIOUS;
     }
 }
