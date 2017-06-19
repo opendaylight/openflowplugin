@@ -83,4 +83,10 @@ public interface ContextChain extends AutoCloseable {
      * @return false if this is primary connection
      */
     boolean auxiliaryConnectionDropped(@Nonnull final ConnectionContext connectionContext);
+
+    /**
+     * Check the connection state.
+     * @return false if the connection is already in closing state.
+     */
+    boolean connectionIsHealthy();
 }

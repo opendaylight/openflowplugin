@@ -225,4 +225,9 @@ public class ContextChainImpl implements ContextChain {
                     .forEach(listener -> listener.onStateAcquired(contextChainState));
         }
     }
+
+    @Override
+    public boolean connectionIsHealthy() {
+        return ConnectionContext.CONNECTION_STATE.WORKING.equals(primaryConnection.getConnectionState());
+    }
 }
