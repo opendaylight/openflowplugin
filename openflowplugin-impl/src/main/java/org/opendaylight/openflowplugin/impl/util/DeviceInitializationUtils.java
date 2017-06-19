@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.ConnectionException;
@@ -152,7 +154,18 @@ public class DeviceInitializationUtils {
             final Capabilities capabilities = connectionContext.getFeatures().getCapabilities();
             LOG.debug("Setting capabilities for device {}", deviceInfo.getNodeId());
             DeviceStateUtil.setDeviceStateBasedOnV13Capabilities(deviceState, capabilities);
-            createDeviceFeaturesForOF13(deviceContext, switchFeaturesMandatory, convertorExecutor).get();
+            try {
+              // Collect device feature
+              if (createDeviceFeaturesForOF13(
+                      deviceContext, switchFeaturesMandatory, convertorExecutor).get(30,TimeUnit.SECONDS) == null){
+                  LOG.warn("Device features are empty for node {}, returning an unexpected exception.", deviceInfo
+                          .getLOGValue());
+                  throw new ExecutionException(new Exception("Device features were not retrieved."));
+              }
+            }catch (TimeoutException e){
+                LOG.warn("Timeout occurred while retrieving features for node {}.", deviceInfo.getLOGValue());
+                throw new ExecutionException(new TimeoutException("Device features were not retrieved in time"));
+            }
         } else {
             throw new ExecutionException(new ConnectionException("Unsupported version " + version));
         }
