@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.impl;
 
-import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import io.netty.util.HashedWheelTimer;
@@ -16,12 +15,10 @@ import io.netty.util.Timer;
 import java.lang.management.ManagementFactory;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.management.InstanceAlreadyExistsException;
@@ -37,8 +34,8 @@ import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipS
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
-import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
+import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainHolder;
@@ -49,6 +46,7 @@ import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderK
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterRegistrator;
 import org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterManager;
+import org.opendaylight.openflowplugin.impl.configuration.OpenFlowProviderConfigImpl;
 import org.opendaylight.openflowplugin.impl.connection.ConnectionManagerImpl;
 import org.opendaylight.openflowplugin.impl.device.DeviceManagerImpl;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProvider;
@@ -66,10 +64,11 @@ import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConve
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenFlowPluginConfigurationService, OpenFlowPluginExtensionRegistratorProvider {
+public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenFlowPluginExtensionRegistratorProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenFlowPluginProviderImpl.class);
 
@@ -93,34 +92,19 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private final ContextChainHolder contextChainHolder;
     private final RpcProviderRegistry rpcProviderRegistry;
     private final ClusterSingletonServiceProvider singletonServicesProvider;
-    private int rpcRequestsQuota;
-    private long globalNotificationQuota;
-    private long barrierInterval;
-    private int barrierCountLimit;
-    private long echoReplyTimeout;
+    private final OpenflowProviderConfig config;
     private DeviceManager deviceManager;
     private RpcManager rpcManager;
     private StatisticsManager statisticsManager;
     private ConnectionManager connectionManager;
-    private boolean switchFeaturesMandatory;
-    private boolean isStatisticsPollingOn;
-    private boolean isStatisticsRpcEnabled;
-    private boolean isFlowRemovedNotificationOn;
-    private boolean skipTableFeatures;
-    private long basicTimerDelay;
-    private long maximumTimerDelay;
-    private boolean useSingleLayerSerialization;
     private ThreadPoolExecutor threadPool;
-    private int threadPoolMinThreads;
-    private int threadPoolMaxThreads;
-    private long threadPoolTimeout;
-    private boolean initialized = false;
 
     public static MessageIntelligenceAgency getMessageIntelligenceAgency() {
         return MESSAGE_INTELLIGENCE_AGENCY;
     }
 
-    OpenFlowPluginProviderImpl(final List<SwitchConnectionProvider> switchConnectionProviders,
+    OpenFlowPluginProviderImpl(final ConfigurationService configurationService,
+                               final List<SwitchConnectionProvider> switchConnectionProviders,
                                final DataBroker dataBroker,
                                final RpcProviderRegistry rpcProviderRegistry,
                                final NotificationPublishService notificationPublishService,
@@ -136,13 +120,14 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         contextChainHolder.changeEntityOwnershipService(entityOwnershipService);
         extensionConverterManager = new ExtensionConverterManagerImpl();
         deviceInitializerProvider = DeviceInitializerProviderFactory.createDefaultProvider();
+        config = new OpenFlowProviderConfigImpl(configurationService);
     }
 
 
     private void startSwitchConnections() {
         Futures.addCallback(Futures.allAsList(switchConnectionProviders.stream().map(switchConnectionProvider -> {
             // Inject OpenFlowPlugin custom serializers and deserializers into OpenFlowJava
-            if (useSingleLayerSerialization) {
+            if (config.isUseSingleLayerSerialization()) {
                 SerializerInjector.injectSerializers(switchConnectionProvider);
                 DeserializerInjector.injectDeserializers(switchConnectionProvider);
             } else {
@@ -168,7 +153,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private void shutdownSwitchConnections() {
         Futures.addCallback(Futures.allAsList(switchConnectionProviders.stream().map(switchConnectionProvider -> {
             // Revert deserializers to their original state
-            if (useSingleLayerSerialization) {
+            if (config.isUseSingleLayerSerialization()) {
                 DeserializerInjector.revertDeserializers(switchConnectionProvider);
             }
 
@@ -189,6 +174,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
     @Override
     public void initialize() {
+        registerMXBean(MESSAGE_INTELLIGENCE_AGENCY, MESSAGE_INTELLIGENCE_AGENCY_MX_BEAN_NAME);
+
         // TODO: copied from OpenFlowPluginProvider (Helium) misusesing the old way of distributing extension converters
         // TODO: rewrite later!
         OFSessionUtil.getSessionManager().setExtensionConverterProvider(extensionConverterManager);
@@ -197,53 +184,42 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         // constructed threads when they are available.
         // Threads that have not been used for x seconds are terminated and removed from the cache.
         threadPool = new ThreadPoolLoggingExecutor(
-                Preconditions.checkNotNull(threadPoolMinThreads),
-                Preconditions.checkNotNull(threadPoolMaxThreads),
-                Preconditions.checkNotNull(threadPoolTimeout),
+                config.getThreadPoolMinThreads(),
+                config.getThreadPoolMaxThreads().getValue(),
+                config.getThreadPoolTimeout(),
                 TimeUnit.SECONDS, new SynchronousQueue<>(), POOL_NAME);
-
-        connectionManager = new ConnectionManagerImpl(threadPool);
-        connectionManager.setEchoReplyTimeout(echoReplyTimeout);
-
-        registerMXBean(MESSAGE_INTELLIGENCE_AGENCY, MESSAGE_INTELLIGENCE_AGENCY_MX_BEAN_NAME);
 
         contextChainHolder.addSingletonServicesProvider(singletonServicesProvider);
 
         deviceManager = new DeviceManagerImpl(
+                config,
                 dataBroker,
                 getMessageIntelligenceAgency(),
                 notificationPublishService,
                 hashedWheelTimer,
                 convertorManager,
-                deviceInitializerProvider,
-                useSingleLayerSerialization);
-
-        deviceManager.setGlobalNotificationQuota(globalNotificationQuota);
-        deviceManager.setSwitchFeaturesMandatory(switchFeaturesMandatory);
-        deviceManager.setBarrierInterval(barrierInterval);
-        deviceManager.setBarrierCountLimit(barrierCountLimit);
-        deviceManager.setFlowRemovedNotificationOn(isFlowRemovedNotificationOn);
-        deviceManager.setSkipTableFeatures(skipTableFeatures);
-
-        ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
-
-        rpcManager = new RpcManagerImpl(rpcProviderRegistry, extensionConverterManager, convertorManager, notificationPublishService);
-        rpcManager.setRpcRequestQuota(rpcRequestsQuota);
-
-        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, hashedWheelTimer, convertorManager);
-        statisticsManager.setBasicTimerDelay(basicTimerDelay);
-        statisticsManager.setMaximumTimerDelay(maximumTimerDelay);
-        statisticsManager.setIsStatisticsPollingOn(isStatisticsPollingOn);
-
-        // Device connection handler moved from device manager to context holder
-        connectionManager.setDeviceConnectedHandler(contextChainHolder);
-
-        /* Termination Phase ordering - OFP Device Context suite */
-        connectionManager.setDeviceDisconnectedHandler(contextChainHolder);
-
-        rpcManager.setStatisticsRpcEnabled(isStatisticsRpcEnabled);
+                deviceInitializerProvider);
 
         TranslatorLibraryUtil.injectBasicTranslatorLibrary(deviceManager, convertorManager);
+        ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
+
+        rpcManager = new RpcManagerImpl(
+                config,
+                rpcProviderRegistry,
+                extensionConverterManager,
+                convertorManager,
+                notificationPublishService);
+
+        statisticsManager = new StatisticsManagerImpl(
+                config,
+                rpcProviderRegistry,
+                hashedWheelTimer,
+                convertorManager);
+
+        connectionManager = new ConnectionManagerImpl(config, threadPool);
+        connectionManager.setDeviceConnectedHandler(contextChainHolder);
+        connectionManager.setDeviceDisconnectedHandler(contextChainHolder);
+
         deviceManager.initialize();
 
         contextChainHolder.addManager(deviceManager);
@@ -251,238 +227,6 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         contextChainHolder.addManager(rpcManager);
 
         startSwitchConnections();
-        initialized = true;
-    }
-
-
-    @Override
-    public void update(@Nonnull final Map<String, Object> properties) {
-        properties.forEach((key, value) -> {
-            final PropertyType propertyType = PropertyType.forValue(key);
-
-            if (Objects.nonNull(propertyType)) {
-                updateProperty(propertyType, value);
-            }
-        });
-    }
-
-    private void doPropertyUpdate(final PropertyType propertyType,
-                                  final boolean modifiable,
-                                  final Object origValue,
-                                  final Object newValue,
-                                  final Consumer<Object> successCallback) {
-        if (initialized) {
-            if (Objects.equals(origValue, newValue)) {
-                LOG.debug("{} config parameter is already set to {})", propertyType, origValue);
-                return;
-            } else if (!modifiable) {
-                LOG.warn("{} update ({} -> {}) is not allowed after controller start", propertyType, origValue, newValue);
-                return;
-            }
-        }
-
-        successCallback.accept(newValue);
-        LOG.info("{} config parameter is updated ({} -> {})", propertyType, origValue, newValue);
-    }
-
-    @Override
-    public void updateProperty(@Nonnull final PropertyType key, @Nonnull final Object value) {
-        try {
-            final String sValue = value.toString();
-            final Consumer<Object> successCallback;
-            final boolean modifiable;
-            final Object oldValue;
-            final Object newValue;
-
-            switch (key) {
-                case RPC_REQUESTS_QUOTA:
-                    successCallback = (result) -> {
-                        rpcRequestsQuota = (int) result;
-
-                        if (initialized) {
-                            rpcManager.setRpcRequestQuota(rpcRequestsQuota);
-                        }
-                    };
-
-                    oldValue = rpcRequestsQuota;
-                    newValue = Integer.valueOf(sValue);
-                    modifiable = true;
-                    break;
-                case SWITCH_FEATURES_MANDATORY:
-                    successCallback = (result) -> {
-                        switchFeaturesMandatory = (boolean) result;
-
-                        if (initialized) {
-                            deviceManager.setSwitchFeaturesMandatory(switchFeaturesMandatory);
-                        }
-                    };
-
-                    oldValue = switchFeaturesMandatory;
-                    newValue = Boolean.valueOf(sValue);
-                    modifiable = true;
-                    break;
-                case GLOBAL_NOTIFICATION_QUOTA:
-                    successCallback = (result) -> {
-                        globalNotificationQuota = (long) result;
-
-                        if (initialized) {
-                            deviceManager.setGlobalNotificationQuota(globalNotificationQuota);
-                        }
-                    };
-
-                    oldValue = globalNotificationQuota;
-                    newValue = Long.valueOf(sValue);
-                    modifiable = true;
-                    break;
-                case IS_STATISTICS_POLLING_ON:
-                    successCallback = (result) -> {
-                        isStatisticsPollingOn = (boolean) result;
-
-                        if (initialized) {
-                            statisticsManager.setIsStatisticsPollingOn(isStatisticsPollingOn);
-                        }
-                    };
-
-                    oldValue = isStatisticsPollingOn;
-                    newValue = Boolean.valueOf(sValue);
-                    modifiable = true;
-                    break;
-                case IS_STATISTICS_RPC_ENABLED:
-                    successCallback = (result) -> {
-                        isStatisticsRpcEnabled = (boolean) result;
-
-                        if (initialized) {
-                            rpcManager.setStatisticsRpcEnabled(isStatisticsRpcEnabled);
-                        }
-                    };
-
-                    oldValue = isStatisticsRpcEnabled;
-                    newValue = Boolean.valueOf(sValue);
-                    modifiable = true;
-                    break;
-                case BARRIER_INTERVAL_TIMEOUT_LIMIT:
-                    successCallback = (result) -> {
-                        barrierInterval = (long) result;
-
-                        if (initialized) {
-                            deviceManager.setBarrierInterval(barrierInterval);
-                        }
-                    };
-
-                    oldValue = barrierInterval;
-                    newValue = Long.valueOf(sValue);
-                    modifiable = true;
-                    break;
-                case BARRIER_COUNT_LIMIT:
-                    successCallback = (result) -> {
-                        barrierCountLimit = (int) result;
-
-                        if (initialized) {
-                            deviceManager.setBarrierCountLimit(barrierCountLimit);
-                        }
-                    };
-
-                    oldValue = barrierCountLimit;
-                    newValue = Integer.valueOf(sValue);
-                    modifiable = true;
-                    break;
-                case ECHO_REPLY_TIMEOUT:
-                    successCallback = (result) -> {
-                        echoReplyTimeout = (long) result;
-
-                        if (initialized) {
-                            connectionManager.setEchoReplyTimeout(echoReplyTimeout);
-                        }
-                    };
-
-                    oldValue = echoReplyTimeout;
-                    newValue = Long.valueOf(sValue);
-                    modifiable = true;
-                    break;
-                case THREAD_POOL_MIN_THREADS:
-                    successCallback = (result) -> threadPoolMinThreads = (int) result;
-                    oldValue = threadPoolMinThreads;
-                    newValue = Integer.valueOf(sValue);
-                    modifiable = false;
-                    break;
-                case THREAD_POOL_MAX_THREADS:
-                    successCallback = (result) -> threadPoolMaxThreads = (int) result;
-                    oldValue = threadPoolMaxThreads;
-                    newValue = Integer.valueOf(sValue);
-                    modifiable = false;
-                    break;
-                case THREAD_POOL_TIMEOUT:
-                    successCallback = (result) -> threadPoolTimeout = (long) result;
-                    oldValue = threadPoolTimeout;
-                    newValue = Long.valueOf(sValue);
-                    modifiable = false;
-                    break;
-                case ENABLE_FLOW_REMOVED_NOTIFICATION:
-                    successCallback = (result) -> {
-                        isFlowRemovedNotificationOn = (boolean) result;
-
-                        if (initialized) {
-                            deviceManager.setFlowRemovedNotificationOn(isFlowRemovedNotificationOn);
-                        }
-                    };
-
-                    oldValue = isFlowRemovedNotificationOn;
-                    newValue = Boolean.valueOf(sValue);
-                    modifiable = true;
-                    break;
-                case SKIP_TABLE_FEATURES:
-                    successCallback = (result) -> {
-                        skipTableFeatures = (boolean) result;
-
-                        if (initialized) {
-                            deviceManager.setSkipTableFeatures(skipTableFeatures);
-                        }
-                    };
-
-                    oldValue = skipTableFeatures;
-                    newValue = Boolean.valueOf(sValue);
-                    modifiable = true;
-                    break;
-                case BASIC_TIMER_DELAY:
-                    successCallback = (result) -> {
-                        basicTimerDelay = (long) result;
-
-                        if (initialized) {
-                            statisticsManager.setBasicTimerDelay(basicTimerDelay);
-                        }
-                    };
-
-                    oldValue = basicTimerDelay;
-                    newValue = Long.valueOf(sValue);
-                    modifiable = true;
-                    break;
-                case MAXIMUM_TIMER_DELAY:
-                    successCallback = (result) -> {
-                        maximumTimerDelay = (long) result;
-
-                        if (initialized) {
-                            statisticsManager.setMaximumTimerDelay(maximumTimerDelay);
-                        }
-                    };
-
-                    oldValue = maximumTimerDelay;
-                    newValue = Long.valueOf(sValue);
-                    modifiable = true;
-                    break;
-                case USE_SINGLE_LAYER_SERIALIZATION:
-                    successCallback = (result) -> useSingleLayerSerialization = (boolean) result;
-                    oldValue = useSingleLayerSerialization;
-                    newValue = Boolean.valueOf(sValue);
-                    modifiable = false;
-                    break;
-                default:
-                    return;
-            }
-
-            doPropertyUpdate(key, modifiable, oldValue, newValue, successCallback);
-        } catch (final Exception ex) {
-            LOG.warn("Failed to read configuration property '{}={}', error: {}", key, value, ex);
-        }
     }
 
     @Override
@@ -492,7 +236,6 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
     @Override
     public void close() throws Exception {
-        initialized = false;
         gracefulShutdown(contextChainHolder);
         gracefulShutdown(deviceManager);
         gracefulShutdown(rpcManager);

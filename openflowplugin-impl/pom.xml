@@ -184,10 +184,6 @@
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>openflowplugin-extension-onf</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowplugin</groupId>
-            <artifactId>openflowplugin-extension-api</artifactId>
-        </dependency>
     </dependencies>
 </project>
 
