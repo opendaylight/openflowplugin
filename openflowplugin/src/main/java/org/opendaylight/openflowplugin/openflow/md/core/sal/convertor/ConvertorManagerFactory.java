@@ -44,6 +44,7 @@ public class ConvertorManagerFactory {
         final FlowConvertor flowConvertor = new FlowConvertor();
         final FlowInstructionResponseConvertor flowInstructionResponseConvertor = new FlowInstructionResponseConvertor();
         final FlowStatsResponseConvertor flowStatsResponseConvertor = new FlowStatsResponseConvertor();
+        final AsyncConfigConvertor asyncConfigConvertor = new AsyncConfigConvertor();
 
         return new ConvertorManager(OFConstants.OFP_VERSION_1_0, OFConstants.OFP_VERSION_1_3)
                 .registerConvertor(OFConstants.OFP_VERSION_1_0, tableFeaturesConvertor)
@@ -78,6 +79,7 @@ public class ConvertorManagerFactory {
                 .registerConvertor(OFConstants.OFP_VERSION_1_0, flowInstructionResponseConvertor)
                 .registerConvertor(OFConstants.OFP_VERSION_1_3, flowInstructionResponseConvertor)
                 .registerConvertor(OFConstants.OFP_VERSION_1_0, flowStatsResponseConvertor)
-                .registerConvertor(OFConstants.OFP_VERSION_1_3, flowStatsResponseConvertor);
+                .registerConvertor(OFConstants.OFP_VERSION_1_3, flowStatsResponseConvertor)
+                .registerConvertor(OFConstants.OFP_VERSION_1_3, asyncConfigConvertor);
     }
 }
