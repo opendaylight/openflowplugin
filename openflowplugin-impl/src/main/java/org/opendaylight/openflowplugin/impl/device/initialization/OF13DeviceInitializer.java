@@ -50,6 +50,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
     @Override
     protected Future<Void> initializeNodeInformation(@Nonnull final DeviceContext deviceContext,
                                                      final boolean switchFeaturesMandatory,
+                                                     final boolean skipTableFeatures,
                                                      @Nullable final MultipartWriterProvider multipartWriterProvider,
                                                      @Nullable final ConvertorExecutor convertorExecutor) {
         final ConnectionContext connectionContext = Preconditions.checkNotNull(deviceContext.getPrimaryConnectionContext());
@@ -71,10 +72,10 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                     convertorExecutor);
 
                 final List<ListenableFuture<RpcResult<List<OfHeader>>>> futures = new ArrayList<>();
-                futures.add(requestAndProcessMultipart(MultipartType.OFPMPMETERFEATURES, deviceContext, multipartWriterProvider, convertorExecutor));
-                futures.add(requestAndProcessMultipart(MultipartType.OFPMPGROUPFEATURES, deviceContext, multipartWriterProvider, convertorExecutor));
-                futures.add(requestAndProcessMultipart(MultipartType.OFPMPTABLEFEATURES, deviceContext, multipartWriterProvider, convertorExecutor));
-                futures.add(requestAndProcessMultipart(MultipartType.OFPMPPORTDESC, deviceContext, multipartWriterProvider, convertorExecutor));
+                futures.add(requestAndProcessMultipart(MultipartType.OFPMPMETERFEATURES, deviceContext, multipartWriterProvider, skipTableFeatures, convertorExecutor));
+                futures.add(requestAndProcessMultipart(MultipartType.OFPMPGROUPFEATURES, deviceContext, multipartWriterProvider, skipTableFeatures, convertorExecutor));
+                futures.add(requestAndProcessMultipart(MultipartType.OFPMPTABLEFEATURES, deviceContext, multipartWriterProvider, skipTableFeatures, convertorExecutor));
+                futures.add(requestAndProcessMultipart(MultipartType.OFPMPPORTDESC, deviceContext, multipartWriterProvider, skipTableFeatures, convertorExecutor));
 
                 return Futures.transform(
                     (switchFeaturesMandatory ? Futures.allAsList(futures) : Futures.successfulAsList(futures)),
@@ -101,9 +102,10 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
     private static ListenableFuture<RpcResult<List<OfHeader>>> requestAndProcessMultipart(final MultipartType type,
                                                                                           final DeviceContext deviceContext,
                                                                                           final MultipartWriterProvider multipartWriterProvider,
+                                                                                          final boolean skipTableFeatures,
                                                                                           @Nullable final ConvertorExecutor convertorExecutor) {
         final ListenableFuture<RpcResult<List<OfHeader>>> rpcResultListenableFuture =
-            MultipartType.OFPMPTABLEFEATURES.equals(type) && deviceContext.isSkipTableFeatures()
+            MultipartType.OFPMPTABLEFEATURES.equals(type) && skipTableFeatures
                 ? RpcResultBuilder.<List<OfHeader>>success().buildFuture()
                 : requestMultipart(type, deviceContext);
 
