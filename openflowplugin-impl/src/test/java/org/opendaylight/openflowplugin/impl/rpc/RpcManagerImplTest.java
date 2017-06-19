@@ -133,7 +133,6 @@ public class RpcManagerImplTest {
     @Test
     public void onDeviceContextLevelUpTwice() throws Exception {
         rpcManager.onDeviceContextLevelUp(deviceInfo, lifecycleService);
-        expectedException.expect(VerifyException.class);
         rpcManager.onDeviceContextLevelUp(deviceInfo, lifecycleService);
     }
 

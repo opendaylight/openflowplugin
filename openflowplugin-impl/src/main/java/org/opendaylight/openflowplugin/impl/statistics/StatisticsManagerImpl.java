@@ -104,11 +104,17 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                         converterExecutor,
                         this);
 
+        // Clean up stale context if present
+        StatisticsContext staleContext = contexts.remove(deviceInfo);
+        if (staleContext != null){
+            LOG.warn("Previous statistics context for node {} was not closed, closing the context.", deviceInfo);
+            staleContext.close();
+        }
+
         Verify.verify(
                 contexts.putIfAbsent(deviceInfo, statisticsContext) == null,
                 "StatisticsCtx still not closed for Node {}", deviceInfo.getLOGValue()
         );
-
         lifecycleService.setStatContext(statisticsContext);
         lifecycleService.registerDeviceRemovedHandler(this);
         deviceInitPhaseHandler.onDeviceContextLevelUp(deviceInfo, lifecycleService);
