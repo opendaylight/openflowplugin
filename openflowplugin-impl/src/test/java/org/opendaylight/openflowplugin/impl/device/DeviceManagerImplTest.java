@@ -40,13 +40,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.CapabilitiesV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint16Type;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint32Type;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfigBuilder;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeviceManagerImplTest {
 
     private static final long TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA = 2000L;
     private static final int barrierCountLimit = 25600;
-    private static final int barrierIntervalNanos = 500;
+    private static final long barrierIntervalNanos = 500;
     private static final NodeId DUMMY_NODE_ID = new NodeId("dummyNodeId");
 
     @Mock
@@ -95,20 +98,20 @@ public class DeviceManagerImplTest {
         when(mockedWriteTransaction.submit()).thenReturn(mockedFuture);
 
         final DeviceManagerImpl deviceManager = new DeviceManagerImpl(
+                new OpenflowProviderConfigBuilder()
+                        .setBarrierCountLimit(new NonZeroUint16Type(barrierCountLimit))
+                        .setBarrierIntervalTimeoutLimit(new NonZeroUint32Type(barrierIntervalNanos))
+                        .setGlobalNotificationQuota(TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA)
+                        .setSwitchFeaturesMandatory(false)
+                        .setEnableFlowRemovedNotification(true)
+                        .setSkipTableFeatures(false)
+                        .build(),
                 mockedDataBroker,
                 messageIntelligenceAgency,
                 null,
                 new HashedWheelTimer(),
                 convertorExecutor,
-                DeviceInitializerProviderFactory.createDefaultProvider(),
-                false);
-
-        deviceManager.setBarrierCountLimit(barrierCountLimit);
-        deviceManager.setBarrierInterval(barrierIntervalNanos);
-        deviceManager.setGlobalNotificationQuota(TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA);
-        deviceManager.setSwitchFeaturesMandatory(false);
-        deviceManager.setFlowRemovedNotificationOn(true);
-        deviceManager.setSkipTableFeatures(false);
+                DeviceInitializerProviderFactory.createDefaultProvider());
 
         return deviceManager;
     }

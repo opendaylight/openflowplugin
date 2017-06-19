@@ -39,6 +39,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint16Type;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfigBuilder;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 
@@ -86,8 +88,9 @@ public class RpcManagerImplTest {
     @Before
     public void setUp() {
         final NodeKey nodeKey = new NodeKey(nodeId);
-        rpcManager = new RpcManagerImpl(rpcProviderRegistry, extensionConverterProvider, convertorExecutor, notificationPublishService);
-        rpcManager.setRpcRequestQuota(QUOTA_VALUE);
+        rpcManager = new RpcManagerImpl(new OpenflowProviderConfigBuilder()
+                .setRpcRequestsQuota(new NonZeroUint16Type(QUOTA_VALUE))
+                .build(), rpcProviderRegistry, extensionConverterProvider, convertorExecutor, notificationPublishService);
 
         GetFeaturesOutput featuresOutput = new GetFeaturesOutputBuilder()
                 .setVersion(OFConstants.OFP_VERSION_1_3)

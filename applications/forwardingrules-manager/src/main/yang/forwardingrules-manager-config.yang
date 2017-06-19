@@ -12,6 +12,11 @@ module forwarding-rules-manager-config {
     }
 
     container forwarding-rules-manager-config {
+        leaf disable-reconciliation {
+            type boolean;
+            default false;
+        }
+
         leaf stale-marking-enabled {
             type boolean;
             default false;

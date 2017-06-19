@@ -28,6 +28,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.ErrorHandlerSimpleImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.HandshakeManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,11 +40,12 @@ public class ConnectionManagerImpl implements ConnectionManager {
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionManagerImpl.class);
     private static final boolean BITMAP_NEGOTIATION_ENABLED = true;
     private DeviceConnectedHandler deviceConnectedHandler;
-    private long echoReplyTimeout = 2000;
+    private final OpenflowProviderConfig config;
     private final ThreadPoolExecutor threadPool;
     private DeviceDisconnectedHandler deviceDisconnectedHandler;
 
-    public ConnectionManagerImpl(final ThreadPoolExecutor threadPool) {
+    public ConnectionManagerImpl(final OpenflowProviderConfig config, final ThreadPoolExecutor threadPool) {
+        this.config = config;
         this.threadPool = threadPool;
     }
 
@@ -70,17 +72,13 @@ public class ConnectionManagerImpl implements ConnectionManager {
                 new OpenflowProtocolListenerInitialImpl(connectionContext, handshakeContext);
         connectionAdapter.setMessageListener(ofMessageListener);
 
-        final SystemNotificationsListener systemListener = new SystemNotificationsListenerImpl(connectionContext, echoReplyTimeout, threadPool);
+        final SystemNotificationsListener systemListener = new SystemNotificationsListenerImpl(
+                connectionContext, config.getEchoReplyTimeout().getValue(), threadPool);
         connectionAdapter.setSystemListener(systemListener);
 
         LOG.trace("connection ballet finished");
     }
 
-    /**
-     * @param connectionAdapter
-     * @param handshakeListener
-     * @return
-     */
     private HandshakeManager createHandshakeManager(final ConnectionAdapter connectionAdapter,
                                                     final HandshakeListener handshakeListener) {
         HandshakeManagerImpl handshakeManager = new HandshakeManagerImpl(connectionAdapter,
@@ -107,10 +105,5 @@ public class ConnectionManagerImpl implements ConnectionManager {
     @Override
     public void setDeviceDisconnectedHandler(final DeviceDisconnectedHandler deviceDisconnectedHandler) {
         this.deviceDisconnectedHandler = deviceDisconnectedHandler;
-    }
-
-    @Override
-    public void setEchoReplyTimeout(long echoReplyTimeout){
-        this.echoReplyTimeout = echoReplyTimeout;
     }
 }
