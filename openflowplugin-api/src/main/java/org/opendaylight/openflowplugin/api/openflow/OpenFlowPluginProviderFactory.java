@@ -14,19 +14,17 @@ import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipS
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
-import org.osgi.framework.BundleContext;
+import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 
 /**
  * Factory for creating OpenFlowPluginProvider instances.
  */
 public interface OpenFlowPluginProviderFactory {
-    OpenFlowPluginProvider newInstance(OpenflowProviderConfig providerConfig,
+    OpenFlowPluginProvider newInstance(ConfigurationService configurationService,
                                        DataBroker dataBroker,
                                        RpcProviderRegistry rpcRegistry,
                                        NotificationPublishService notificationPublishService,
                                        EntityOwnershipService entityOwnershipService,
                                        List<SwitchConnectionProvider> switchConnectionProviders,
-                                       ClusterSingletonServiceProvider singletonServiceProvider,
-                                       BundleContext bundleContext);
+                                       ClusterSingletonServiceProvider singletonServiceProvider);
 }
