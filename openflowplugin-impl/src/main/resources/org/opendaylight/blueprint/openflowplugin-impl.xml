@@ -1,10 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
            xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0">
 
   <bean id="ofPluginProviderFactory" class="org.opendaylight.openflowplugin.impl.OpenFlowPluginProviderFactoryImpl"/>
 
+  <bean id="configurationServiceFactory" class="org.opendaylight.openflowplugin.impl.OpenFlowPluginProviderFactoryImpl"/>
+
   <service ref="ofPluginProviderFactory" interface="org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProviderFactory"
           odl:type="default"/>
 
+  <odl:clustered-app-config id="openflowProviderConfig"
+                            binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig"/>
+
+  <bean id="configurationService" class="org.opendaylight.openflowplugin.impl.configuration.ConfigurationServiceImpl" destroy-method="close">
+    <argument ref="openflowProviderConfig" />
+    <argument ref="blueprintBundleContext" />
+    <cm:managed-properties persistent-id="org.opendaylight.openflowplugin"
+                           update-strategy="component-managed"
+                           update-method="update"/>
+  </bean>
+
+  <service ref="configurationService" interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService"/>
 </blueprint>
