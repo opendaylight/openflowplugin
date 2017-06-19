@@ -15,11 +15,13 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.messages.AsyncConfigMessageSerializer;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.messages.FlowMessageSerializer;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.messages.GroupMessageSerializer;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.messages.MeterMessageSerializer;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.messages.PortMessageSerializer;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.multipart.MultipartRequestMessageSerializer;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.async.config.service.rev170619.AsyncConfigMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupMessage;
@@ -48,6 +50,7 @@ class MessageSerializerInjector {
         injector.apply(PortMessage.class).accept(new PortMessageSerializer());
         injector.apply(GroupMessage.class).accept(new GroupMessageSerializer());
         injector.apply(MultipartRequest.class).accept(new MultipartRequestMessageSerializer());
+        injector.apply(AsyncConfigMessage.class).accept(new AsyncConfigMessageSerializer());
     }
 
     /**

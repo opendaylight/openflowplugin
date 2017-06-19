@@ -17,11 +17,14 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.keys.TypeToClassKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.messages.FlowMessageDeserializer;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.messages.AsyncConfigMessageDeserializer;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.messages.GroupMessageDeserializer;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.messages.MeterMessageDeserializer;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.messages.PacketInMessageDeserializer;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.messages.PortMessageDeserializer;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart.MultipartReplyMessageDeserializer;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.async.config.service.rev170619.AsyncConfigMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.async.config.service.rev170619.GetAsyncOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupMessage;
@@ -51,6 +54,7 @@ class MessageDeserializerInjector {
         injector.apply(10).apply(org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709
                 .PacketInMessage.class).accept(new PacketInMessageDeserializer());
         injector.apply(19).apply(MultipartReply.class).accept(new MultipartReplyMessageDeserializer());
+        injector.apply(27).apply(AsyncConfigMessage.class).accept(new AsyncConfigMessageDeserializer());
     }
 
     /**
@@ -66,6 +70,9 @@ class MessageDeserializerInjector {
         provider.unregisterDeserializerMapping(new TypeToClassKey(EncodeConstants.OF13_VERSION_ID, 19));
         provider.registerDeserializerMapping(new TypeToClassKey(EncodeConstants.OF13_VERSION_ID, 19),
                 MultipartReplyMessage.class);
+        provider.unregisterDeserializerMapping(new TypeToClassKey(EncodeConstants.OF13_VERSION_ID, 27));
+        provider.registerDeserializerMapping(new TypeToClassKey(EncodeConstants.OF13_VERSION_ID, 27),
+                GetAsyncOutput.class);
     }
 
     /**
@@ -78,7 +85,7 @@ class MessageDeserializerInjector {
      */
     @VisibleForTesting
     static Function<Integer, Function<Class<? extends OfHeader>, Consumer<OFDeserializer<? extends OfHeader>>>>
-        createInjector(
+    createInjector(
             final DeserializerExtensionProvider provider,
             final short version) {
         return code -> retType -> deserializer -> {

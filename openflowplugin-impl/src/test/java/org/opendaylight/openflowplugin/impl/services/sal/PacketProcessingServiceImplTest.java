@@ -35,7 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Tr
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
 /**
- * Test for {@link org.opendaylight.openflowplugin.impl.services.sal.PacketProcessingServiceImpl}.
+ * Test for {@link PacketProcessingServiceImpl}.
  */
 public class PacketProcessingServiceImplTest extends ServiceMocking {
 
