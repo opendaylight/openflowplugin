@@ -58,6 +58,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint32Type;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfigBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.ChangeStatisticsWorkModeInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsManagerControlService;
@@ -152,11 +154,14 @@ public class StatisticsManagerImplTest {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         final long basicTimerDelay = 3000L;
         final long maximumTimerDelay = 900000L;
-        statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, new HashedWheelTimer(),
+
+        statisticsManager = new StatisticsManagerImpl(
+                new OpenflowProviderConfigBuilder()
+                        .setBasicTimerDelay(new NonZeroUint32Type(basicTimerDelay))
+                        .setMaximumTimerDelay(new NonZeroUint32Type(maximumTimerDelay))
+                        .setIsStatisticsPollingOn(false)
+                        .build(), rpcProviderRegistry, new HashedWheelTimer(),
                 convertorManager);
-        statisticsManager.setBasicTimerDelay(basicTimerDelay);
-        statisticsManager.setMaximumTimerDelay(maximumTimerDelay);
-        statisticsManager.setIsStatisticsPollingOn(false);
     }
 
     private static Map<DeviceInfo, StatisticsContext> getContextsMap(final StatisticsManagerImpl statisticsManager)

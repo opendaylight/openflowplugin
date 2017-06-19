@@ -13,6 +13,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.Futures;
 import org.junit.After;
@@ -30,7 +31,7 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
-import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginConfigurationService.PropertyType;
+import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsManagerControlService;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -87,11 +88,15 @@ public class OpenFlowPluginProviderImplTest {
                 clusterSingletonServiceProvider,
                 entityOwnershipService);
 
-        provider.updateProperty(PropertyType.THREAD_POOL_MIN_THREADS, THREAD_POOL_MIN_THREADS);
-        provider.updateProperty(PropertyType.THREAD_POOL_MAX_THREADS, THREAD_POOL_MAX_THREADS);
-        provider.updateProperty(PropertyType.THREAD_POOL_TIMEOUT, THREAD_POOL_TIMEOUT);
-        provider.updateProperty(PropertyType.RPC_REQUESTS_QUOTA, RPC_REQUESTS_QUOTA);
-        provider.updateProperty(PropertyType.GLOBAL_NOTIFICATION_QUOTA, GLOBAL_NOTIFICATION_QUOTA);
+        provider.update(ImmutableMap
+                .<String, String>builder()
+                .put(OpenFlowPluginProperty.THREAD_POOL_MIN_THREADS.toString(), String.valueOf(THREAD_POOL_MIN_THREADS))
+                .put(OpenFlowPluginProperty.THREAD_POOL_MAX_THREADS.toString(), String.valueOf(THREAD_POOL_MAX_THREADS))
+                .put(OpenFlowPluginProperty.THREAD_POOL_TIMEOUT.toString(), String.valueOf(THREAD_POOL_TIMEOUT))
+                .put(OpenFlowPluginProperty.RPC_REQUESTS_QUOTA.toString(), String.valueOf(RPC_REQUESTS_QUOTA))
+                .put(OpenFlowPluginProperty.GLOBAL_NOTIFICATION_QUOTA.toString(), String.valueOf(GLOBAL_NOTIFICATION_QUOTA))
+                .put(OpenFlowPluginProperty.BASIC_TIMER_DELAY.toString(), "1")
+                .build());
     }
 
     @After

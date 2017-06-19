@@ -22,6 +22,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginConfigurationService;
 import org.opendaylight.openflowplugin.applications.frm.impl.DeviceMastershipManager;
 import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -51,15 +52,28 @@ public class TableFeaturesListenerTest extends FRMTest {
     DeviceMastershipManager deviceMastershipManager;
     @Mock
     private NotificationProviderService notificationService;
+    @Mock
+    private OpenFlowPluginConfigurationService openFlowPluginConfigurationService;
 
     @Before
     public void setUp() {
+        Mockito.when(openFlowPluginConfigurationService.getProperty(Mockito.eq("disable-reconciliation"), Mockito.any()))
+                .thenReturn(false);
+
+        Mockito.when(openFlowPluginConfigurationService.getProperty(Mockito.eq("stale-marking-enabled"), Mockito.any()))
+                .thenReturn(false);
+
+        Mockito.when(openFlowPluginConfigurationService.getProperty(Mockito.eq("reconciliation-retry-count"), Mockito.any()))
+                .thenReturn(5);
+
         forwardingRulesManager = new ForwardingRulesManagerImpl(
                 getDataBroker(),
                 rpcProviderRegistryMock,
                 getConfig(),
                 clusterSingletonService,
-                notificationService, false, false , 5);
+                notificationService,
+                openFlowPluginConfigurationService);
+
         forwardingRulesManager.start();
         // TODO consider tests rewrite (added because of complicated access)
         forwardingRulesManager.setDeviceMastershipManager(deviceMastershipManager);

@@ -40,6 +40,7 @@ import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.ChangeStatisticsWorkModeInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutputBuilder;
@@ -56,14 +57,13 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsManagerImpl.class);
 
     private static final long DEFAULT_STATS_TIMEOUT_SEC = 50L;
+    @Nonnull
+    private final OpenflowProviderConfig config;
     private final ConvertorExecutor converterExecutor;
 
     private final ConcurrentMap<DeviceInfo, StatisticsContext> contexts = new ConcurrentHashMap<>();
 
-    private long basicTimerDelay;
     private long currentTimerDelay;
-    private long maximumTimerDelay; //wait time for next statistics
-
     private StatisticsWorkMode workMode = StatisticsWorkMode.COLLECTALL;
     private final Semaphore workModeGuard = new Semaphore(1, true);
     private boolean isStatisticsPollingOn;
@@ -71,9 +71,12 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     private final HashedWheelTimer hashedWheelTimer;
 
-    public StatisticsManagerImpl(@Nonnull final RpcProviderRegistry rpcProviderRegistry,
+    public StatisticsManagerImpl(@Nonnull final OpenflowProviderConfig config,
+                                 @Nonnull final RpcProviderRegistry rpcProviderRegistry,
                                  final HashedWheelTimer hashedWheelTimer,
                                  final ConvertorExecutor convertorExecutor) {
+        this.config = config;
+        currentTimerDelay = config.getBasicTimerDelay().getValue();
         this.converterExecutor = convertorExecutor;
         this.controlServiceRegistration = Preconditions.checkNotNull(rpcProviderRegistry
                 .addRpcImplementation(StatisticsManagerControlService.class, this));
@@ -171,14 +174,14 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         final long averageStatisticsGatheringTime = timeCounter.getAverageTimeBetweenMarks();
         if (averageStatisticsGatheringTime > currentTimerDelay) {
             currentTimerDelay *= 2;
-            if (currentTimerDelay > maximumTimerDelay) {
-                currentTimerDelay = maximumTimerDelay;
+            if (currentTimerDelay > config.getMaximumTimerDelay().getValue()) {
+                currentTimerDelay = config.getMaximumTimerDelay().getValue();
             }
         } else {
-            if (currentTimerDelay > basicTimerDelay) {
+            if (currentTimerDelay > config.getBasicTimerDelay().getValue()) {
                 currentTimerDelay /= 2;
             } else {
-                currentTimerDelay = basicTimerDelay;
+                currentTimerDelay = config.getBasicTimerDelay().getValue();
             }
         }
     }
@@ -298,11 +301,6 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     }
 
     @Override
-    public void setIsStatisticsPollingOn(boolean isStatisticsPollingOn){
-        this.isStatisticsPollingOn = isStatisticsPollingOn;
-    }
-
-    @Override
     public StatisticsContext createContext(@Nonnull final DeviceContext deviceContext) {
 
         final MultipartWriterProvider statisticsWriterProvider = MultipartWriterProviderFactory
@@ -334,16 +332,5 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         if (LOG.isDebugEnabled()) {
             LOG.debug("Statistics context removed for node {}", deviceInfo.getLOGValue());
         }
-    }
-
-    @Override
-    public void setBasicTimerDelay(final long basicTimerDelay) {
-        this.basicTimerDelay = basicTimerDelay;
-        this.currentTimerDelay = basicTimerDelay;
-    }
-
-    @Override
-    public void setMaximumTimerDelay(final long maximumTimerDelay) {
-        this.maximumTimerDelay = maximumTimerDelay;
     }
 }

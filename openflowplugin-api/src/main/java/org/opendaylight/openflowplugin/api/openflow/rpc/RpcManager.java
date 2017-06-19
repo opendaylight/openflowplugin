@@ -18,10 +18,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
  */
 public interface RpcManager extends OFPManager {
 
-    void setStatisticsRpcEnabled(boolean statisticsRpcEnabled);
-
-    void setRpcRequestQuota(int rpcRequestQuota);
-
     RpcContext createContext(final @Nonnull DeviceInfo deviceInfo,
                              final @Nonnull DeviceContext deviceContext);
 

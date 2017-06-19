@@ -63,11 +63,12 @@ public abstract class FRMTest extends AbstractDataBrokerTest {
         assertCommit(writeTx.submit());
     }
 
-    public ForwardingRulesManagerConfig getConfig(){
+    public ForwardingRulesManagerConfig getConfig() {
         ForwardingRulesManagerConfigBuilder cfgBuilder = new ForwardingRulesManagerConfigBuilder();
+        cfgBuilder.setDisableReconciliation(false);
         cfgBuilder.setStaleMarkingEnabled(false);
         cfgBuilder.setReconciliationRetryCount(0);
         return cfgBuilder.build();
-
     }
+
 }
