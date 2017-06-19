@@ -172,11 +172,16 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         if (contextChain != null) {
             if (contextChain.addAuxiliaryConnection(connectionContext)) {
                 LOG.info("An auxiliary connection was added to device: {}", deviceInfo.getLOGValue());
-                return ConnectionStatus.MAY_CONTINUE;
             } else {
-                LOG.warn("Device {} already connected. Closing all connection to the device.", deviceInfo.getLOGValue());
-                destroyContextChain(deviceInfo);
-                return ConnectionStatus.ALREADY_CONNECTED;
+                LOG.warn("Device {} already connected.", deviceInfo.getLOGValue());
+                switch (contextChain.checkIncomingConnection(connectionContext)) {
+                    case DROP:
+                        return ConnectionStatus.ALREADY_CONNECTED;
+                    case DROP_PREVIOUS:
+                        destroyContextChain(deviceInfo);
+                    case KEEP_BOTH:
+                    default:
+                }
             }
         } else {
             if (LOG.isDebugEnabled()) {
