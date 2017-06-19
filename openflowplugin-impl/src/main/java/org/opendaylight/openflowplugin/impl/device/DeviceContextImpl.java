@@ -366,7 +366,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         NodeRemovedBuilder builder = new NodeRemovedBuilder();
         builder.setNodeRef(new NodeRef(getDeviceInfo().getNodeInstanceIdentifier()));
         LOG.debug("Publishing node removed notification for {}", builder.build());
-        notificationPublishService.offerNotification(builder.build());
+        if (notificationPublishService != null) {
+          notificationPublishService.offerNotification(builder.build());
+        }
     }
 
     @Override

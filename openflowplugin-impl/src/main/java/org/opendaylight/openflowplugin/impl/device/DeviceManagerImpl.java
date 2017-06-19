@@ -169,14 +169,24 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
          * in {@link org.opendaylight.openflowplugin.impl.connection.org.opendaylight.openflowplugin.impl.connection.HandshakeContextImpl}
          * If context already exist we are in state closing process (connection flapping) and we should not propagate connection close
          */
-         if (deviceContexts.containsKey(deviceInfo)) {
-             DeviceContext deviceContext = deviceContexts.get(deviceInfo);
+         DeviceContext current = deviceContexts.get(deviceInfo);
+         if (current != null) {
+             LOG.warn("New connection received from the already connected Node {}. Disconnecting both the connection " +
+                      "to add the switch back gracefully.", deviceInfo.getLOGValue());
              LOG.warn("Node {} already connected disconnecting device. Rejecting connection", deviceInfo.getLOGValue());
-             if (!deviceContext.getState().equals(OFPContext.CONTEXT_STATE.TERMINATION)) {
+             if (!current.getState().equals(OFPContext.CONTEXT_STATE.TERMINATION)) {
                  LOG.warn("Node {} context state not in TERMINATION state.",
                          connectionContext.getDeviceInfo().getLOGValue());
+                 //Lets disconnect the existing connection as well and ask switch to connect fresh.
+                 //This will re-add the node properly
+                 current.getPrimaryConnectionContext().closeConnection(true);
                  return ConnectionStatus.ALREADY_CONNECTED;
              } else {
+                 // FIX: if the previous connection is terminated but not removed from the map
+                 // then, we close current conection and clean the map to allow a new fresh connection.
+                 LOG.warn("previous connection for {} is terminated but has not been removed from temporal map. Closing new connection and cleaning map.", deviceInfo.getLOGValue());
+                 deviceContexts.remove(deviceInfo);
+                 current.getPrimaryConnectionContext().closeConnection(true);
                  return ConnectionStatus.CLOSING;
              }
          }
@@ -313,7 +323,9 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
             // Connection is not PrimaryConnection so try to remove from Auxiliary Connections
             deviceCtx.removeAuxiliaryConnectionContext(connectionContext);
             // If this is not primary connection, we should not continue disabling everything
-            return;
+            // FIX: we also allow secondary connections to close this device ctx
+            LOG.warn("Node {} disconnected with auxiliary connection, we let continue next step.", connectionContext.getDeviceInfo().getLOGValue());
+            //return;
         }
 
         if (deviceCtx.getState().equals(OFPContext.CONTEXT_STATE.TERMINATION)) {
