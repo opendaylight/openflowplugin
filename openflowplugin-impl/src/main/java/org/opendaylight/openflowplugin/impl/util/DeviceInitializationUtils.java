@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.ConnectionException;
@@ -152,7 +154,18 @@ public class DeviceInitializationUtils {
             final Capabilities capabilities = connectionContext.getFeatures().getCapabilities();
             LOG.debug("Setting capabilities for device {}", deviceInfo.getNodeId());
             DeviceStateUtil.setDeviceStateBasedOnV13Capabilities(deviceState, capabilities);
-            createDeviceFeaturesForOF13(deviceContext, switchFeaturesMandatory, convertorExecutor).get();
+            try {
+              //FIX: if we do not set a maximum wait time for getting the feaures, then cluster initialization
+              // it is blocked when there is no answer and this node is unsable because a thread lock happens.
+              // ensure we wait a maximum time and we get some features.
+              if (createDeviceFeaturesForOF13(deviceContext, switchFeaturesMandatory, convertorExecutor).get(30,TimeUnit.SECONDS) == null){
+                  LOG.warn("returned features are empty for node {}, returning an unexpected exception.", deviceInfo.getNodeId().toString());
+                  throw new ExecutionException(new Exception("unexpected empty features"));
+              }
+            }catch (TimeoutException e){
+                LOG.warn("cannot get features for node {}, timeout error.", deviceInfo.getNodeId().toString());
+                throw new ExecutionException(new Exception("could not get features on time"));
+            }
         } else {
             throw new ExecutionException(new ConnectionException("Unsupported version " + version));
         }

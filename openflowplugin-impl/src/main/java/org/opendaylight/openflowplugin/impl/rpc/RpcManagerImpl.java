@@ -76,6 +76,15 @@ public class RpcManagerImpl implements RpcManager {
                 convertorExecutor,
                 notificationPublishService);
 
+        // FIX: if we receive a new connection and there is still a previous rpc context
+        // returning an error will not solve the problem and no new connection will be allowed
+        // for this device. It is better to close current one and allow the new one.
+        RpcContext current = contexts.remove(deviceInfo);
+        if (current != null){
+            LOG.warn("previous rpc ctx not closed, closing to allow creating the new one for {}", deviceInfo);
+            current.close();
+        }
+
         Verify.verify(contexts.putIfAbsent(deviceInfo, rpcContext) == null, "RpcCtx still not closed for node {}", deviceInfo.getNodeId());
         lifecycleService.setRpcContext(rpcContext);
         lifecycleService.registerDeviceRemovedHandler(this);

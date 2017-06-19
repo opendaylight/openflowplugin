@@ -104,11 +104,19 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                         converterExecutor,
                         this);
 
+        // FIX: if we receive a new connection and there is still a previous rpc context
+        // returning an error will not solve the problem and no new connection will be allowed
+        // for this device. It is better to close current one and allow the new one.
+        StatisticsContext current = contexts.remove(deviceInfo);
+        if (current != null){
+            LOG.warn("previous statistics ctx not closed, closing to allow creating the new one for {}", deviceInfo);
+            current.close();
+        }
+
         Verify.verify(
                 contexts.putIfAbsent(deviceInfo, statisticsContext) == null,
                 "StatisticsCtx still not closed for Node {}", deviceInfo.getLOGValue()
         );
-
         lifecycleService.setStatContext(statisticsContext);
         lifecycleService.registerDeviceRemovedHandler(this);
         deviceInitPhaseHandler.onDeviceContextLevelUp(deviceInfo, lifecycleService);
