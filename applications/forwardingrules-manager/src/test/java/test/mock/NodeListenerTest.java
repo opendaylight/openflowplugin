@@ -15,10 +15,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginConfigurationService;
 import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -38,15 +40,28 @@ public class NodeListenerTest extends FRMTest {
     ClusterSingletonServiceProvider clusterSingletonService;
     @Mock
     private NotificationProviderService notificationService;
+    @Mock
+    private OpenFlowPluginConfigurationService openFlowPluginConfigurationService;
 
     @Before
     public void setUp() {
+        Mockito.when(openFlowPluginConfigurationService.getProperty(Mockito.eq("disable-reconciliation"), Mockito.any()))
+                .thenReturn(false);
+
+        Mockito.when(openFlowPluginConfigurationService.getProperty(Mockito.eq("stale-marking-enabled"), Mockito.any()))
+                .thenReturn(false);
+
+        Mockito.when(openFlowPluginConfigurationService.getProperty(Mockito.eq("reconciliation-retry-count"), Mockito.any()))
+                .thenReturn(5);
+
         forwardingRulesManager = new ForwardingRulesManagerImpl(
                 getDataBroker(),
                 rpcProviderRegistryMock,
                 getConfig(),
                 clusterSingletonService,
-                notificationService, false ,false ,5);
+                notificationService,
+                openFlowPluginConfigurationService);
+
         forwardingRulesManager.start();
     }
 

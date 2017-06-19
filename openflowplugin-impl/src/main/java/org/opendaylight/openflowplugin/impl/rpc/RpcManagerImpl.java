@@ -21,25 +21,27 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RpcManagerImpl implements RpcManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(RpcManagerImpl.class);
+    private final OpenflowProviderConfig config;
     private final RpcProviderRegistry rpcProviderRegistry;
-    private int rpcRequestQuota;
     private final ConcurrentMap<DeviceInfo, RpcContext> contexts = new ConcurrentHashMap<>();
-    private boolean isStatisticsRpcEnabled;
     private final ExtensionConverterProvider extensionConverterProvider;
     private final ConvertorExecutor convertorExecutor;
     private final NotificationPublishService notificationPublishService;
 
 
-    public RpcManagerImpl(final RpcProviderRegistry rpcProviderRegistry,
+    public RpcManagerImpl(final OpenflowProviderConfig config,
+                          final RpcProviderRegistry rpcProviderRegistry,
                           final ExtensionConverterProvider extensionConverterProvider,
                           final ConvertorExecutor convertorExecutor,
                           final NotificationPublishService notificationPublishService) {
+        this.config = config;
         this.rpcProviderRegistry = rpcProviderRegistry;
         this.extensionConverterProvider = extensionConverterProvider;
         this.convertorExecutor = convertorExecutor;
@@ -64,26 +66,15 @@ public class RpcManagerImpl implements RpcManager {
         }
     }
 
-
-    @Override
-    public void setStatisticsRpcEnabled(boolean statisticsRpcEnabled) {
-        isStatisticsRpcEnabled = statisticsRpcEnabled;
-    }
-
-    @Override
-    public void setRpcRequestQuota(final int rpcRequestQuota) {
-        this.rpcRequestQuota = rpcRequestQuota;
-    }
-
     public RpcContext createContext(final @Nonnull DeviceInfo deviceInfo, final @Nonnull DeviceContext deviceContext) {
         return new RpcContextImpl(
                 rpcProviderRegistry,
-                rpcRequestQuota,
+                config.getRpcRequestsQuota().getValue(),
                 deviceContext,
                 extensionConverterProvider,
                 convertorExecutor,
                 notificationPublishService,
-                this.isStatisticsRpcEnabled);
+                config.isIsStatisticsRpcEnabled());
     }
 
     @Override

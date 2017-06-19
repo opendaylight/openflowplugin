@@ -32,9 +32,4 @@ public interface ConnectionManager extends SwitchConnectionHandler {
      */
     void setDeviceDisconnectedHandler(final DeviceDisconnectedHandler deviceDisconnectedHandler);
 
-    /**
-     * Setter for echo reply timeout.
-     * @param echoReplyTimeout {@link Long} timeout
-     */
-    void setEchoReplyTimeout(long echoReplyTimeout);
 }
