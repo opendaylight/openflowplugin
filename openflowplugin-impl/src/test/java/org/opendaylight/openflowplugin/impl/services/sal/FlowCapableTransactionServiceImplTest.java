@@ -22,7 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 
 /**
- * Test for {@link org.opendaylight.openflowplugin.impl.services.sal.FlowCapableTransactionServiceImpl}.
+ * Test for {@link FlowCapableTransactionServiceImpl}.
  */
 public class FlowCapableTransactionServiceImplTest extends ServiceMocking {
 
