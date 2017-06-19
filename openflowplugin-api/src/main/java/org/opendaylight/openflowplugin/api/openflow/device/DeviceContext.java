@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.api.openflow.device;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import io.netty.util.Timeout;
 import java.math.BigInteger;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -97,17 +96,6 @@ public interface DeviceContext extends
      */
     TranslatorLibrary oook();
 
-    /**
-     * store cancellable timeout handler of currently running barrier task.
-     */
-    void setCurrentBarrierTimeout(Timeout timeout);
-
-    /**
-     * Getter.
-     * @return cancellable timeout handle of currently running barrier task
-     */
-    Timeout getBarrierTaskTimeout();
-
     void setNotificationPublishService(NotificationPublishService notificationPublishService);
 
     MessageSpy getMessageSpy();
@@ -130,10 +118,6 @@ public interface DeviceContext extends
      * @return registry point for item life cycle sources of device
      */
     ItemLifeCycleRegistry getItemLifeCycleSourceRegistry();
-
-    void setSwitchFeaturesMandatory(boolean switchFeaturesMandatory);
-
-    boolean isSkipTableFeatures();
 
     /**
      * Setter for sal role service.

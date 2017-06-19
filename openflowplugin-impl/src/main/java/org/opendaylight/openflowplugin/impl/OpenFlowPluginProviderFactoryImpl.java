@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl;
 
+import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -20,7 +21,7 @@ import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginConfigurationService.PropertyType;
+import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProperty;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProviderFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
@@ -59,22 +60,41 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
                 entityOwnershipService);
 
         LOG.info("Loading configuration from YANG file");
-        openflowPluginProvider.updateProperty(PropertyType.RPC_REQUESTS_QUOTA, providerConfig.getRpcRequestsQuota().getValue());
-        openflowPluginProvider.updateProperty(PropertyType.GLOBAL_NOTIFICATION_QUOTA, providerConfig.getGlobalNotificationQuota());
-        openflowPluginProvider.updateProperty(PropertyType.SWITCH_FEATURES_MANDATORY, providerConfig.isSwitchFeaturesMandatory());
-        openflowPluginProvider.updateProperty(PropertyType.ENABLE_FLOW_REMOVED_NOTIFICATION, providerConfig.isEnableFlowRemovedNotification());
-        openflowPluginProvider.updateProperty(PropertyType.IS_STATISTICS_RPC_ENABLED, providerConfig.isIsStatisticsRpcEnabled());
-        openflowPluginProvider.updateProperty(PropertyType.BARRIER_COUNT_LIMIT, providerConfig.getBarrierCountLimit().getValue());
-        openflowPluginProvider.updateProperty(PropertyType.BARRIER_INTERVAL_TIMEOUT_LIMIT, providerConfig.getBarrierIntervalTimeoutLimit().getValue());
-        openflowPluginProvider.updateProperty(PropertyType.ECHO_REPLY_TIMEOUT, providerConfig.getEchoReplyTimeout().getValue());
-        openflowPluginProvider.updateProperty(PropertyType.IS_STATISTICS_POLLING_ON, providerConfig.isIsStatisticsPollingOn());
-        openflowPluginProvider.updateProperty(PropertyType.SKIP_TABLE_FEATURES, providerConfig.isSkipTableFeatures());
-        openflowPluginProvider.updateProperty(PropertyType.BASIC_TIMER_DELAY, providerConfig.getBasicTimerDelay().getValue());
-        openflowPluginProvider.updateProperty(PropertyType.MAXIMUM_TIMER_DELAY, providerConfig.getMaximumTimerDelay().getValue());
-        openflowPluginProvider.updateProperty(PropertyType.USE_SINGLE_LAYER_SERIALIZATION, providerConfig.isUseSingleLayerSerialization());
-        openflowPluginProvider.updateProperty(PropertyType.THREAD_POOL_MIN_THREADS, providerConfig.getThreadPoolMinThreads());
-        openflowPluginProvider.updateProperty(PropertyType.THREAD_POOL_MAX_THREADS, providerConfig.getThreadPoolMaxThreads().getValue());
-        openflowPluginProvider.updateProperty(PropertyType.THREAD_POOL_TIMEOUT, providerConfig.getThreadPoolTimeout());
+        openflowPluginProvider.update(ImmutableMap
+                .<String, String>builder()
+                .put(OpenFlowPluginProperty.RPC_REQUESTS_QUOTA.toString(),
+                        providerConfig.getRpcRequestsQuota().getValue().toString())
+                .put(OpenFlowPluginProperty.GLOBAL_NOTIFICATION_QUOTA.toString(),
+                        providerConfig.getGlobalNotificationQuota().toString())
+                .put(OpenFlowPluginProperty.SWITCH_FEATURES_MANDATORY.toString(),
+                        providerConfig.isSwitchFeaturesMandatory().toString())
+                .put(OpenFlowPluginProperty.ENABLE_FLOW_REMOVED_NOTIFICATION.toString(),
+                        providerConfig.isEnableFlowRemovedNotification().toString())
+                .put(OpenFlowPluginProperty.IS_STATISTICS_RPC_ENABLED.toString(),
+                        providerConfig.isIsStatisticsRpcEnabled().toString())
+                .put(OpenFlowPluginProperty.BARRIER_COUNT_LIMIT.toString(),
+                        providerConfig.getBarrierCountLimit().getValue().toString())
+                .put(OpenFlowPluginProperty.BARRIER_INTERVAL_TIMEOUT_LIMIT.toString(),
+                        providerConfig.getBarrierIntervalTimeoutLimit().getValue().toString())
+                .put(OpenFlowPluginProperty.ECHO_REPLY_TIMEOUT.toString(),
+                        providerConfig.getEchoReplyTimeout().getValue().toString())
+                .put(OpenFlowPluginProperty.IS_STATISTICS_POLLING_ON.toString(),
+                        providerConfig.isIsStatisticsPollingOn().toString())
+                .put(OpenFlowPluginProperty.SKIP_TABLE_FEATURES.toString(),
+                        providerConfig.isSkipTableFeatures().toString())
+                .put(OpenFlowPluginProperty.BASIC_TIMER_DELAY.toString(),
+                        providerConfig.getBasicTimerDelay().getValue().toString())
+                .put(OpenFlowPluginProperty.MAXIMUM_TIMER_DELAY.toString(),
+                        providerConfig.getMaximumTimerDelay().getValue().toString())
+                .put(OpenFlowPluginProperty.USE_SINGLE_LAYER_SERIALIZATION.toString(),
+                        providerConfig.isUseSingleLayerSerialization().toString())
+                .put(OpenFlowPluginProperty.THREAD_POOL_MIN_THREADS.toString(),
+                        providerConfig.getThreadPoolMinThreads().toString())
+                .put(OpenFlowPluginProperty.THREAD_POOL_MAX_THREADS.toString(),
+                        providerConfig.getThreadPoolMaxThreads().getValue().toString())
+                .put(OpenFlowPluginProperty.THREAD_POOL_TIMEOUT.toString(),
+                        providerConfig.getThreadPoolTimeout().toString())
+                .build());
 
         LOG.info("Loading configuration from properties file");
         Optional.ofNullable(bundleContext.getServiceReference(ConfigurationAdmin.class.getName())).ifPresent(serviceReference -> {
@@ -85,11 +105,11 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
 
                 Optional.ofNullable(configuration.getProperties()).ifPresent(properties -> {
                     final Enumeration<String> keys = properties.keys();
-                    final Map<String, Object> mapProperties = new HashMap<>(properties.size());
+                    final Map<String, String> mapProperties = new HashMap<>(properties.size());
 
                     while (keys.hasMoreElements()) {
                         final String key = keys.nextElement();
-                        final Object value = properties.get(key);
+                        final String value = properties.get(key).toString();
                         mapProperties.put(key, value);
                     }
 
