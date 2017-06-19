@@ -37,6 +37,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint32Type;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfigBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
@@ -58,7 +60,7 @@ public class ConnectionManagerImplTest {
     @Captor
     private ArgumentCaptor<OpenflowProtocolListener> ofpListenerAC;
 
-    private final static int ECHO_REPLY_TIMEOUT = 500;
+    private final static long ECHO_REPLY_TIMEOUT = 500;
 
     /**
      * before each test method
@@ -69,8 +71,10 @@ public class ConnectionManagerImplTest {
                 60L, TimeUnit.SECONDS,
                 new SynchronousQueue<>(), "ofppool");
 
-        connectionManagerImpl = new ConnectionManagerImpl(threadPool);
-        connectionManagerImpl.setEchoReplyTimeout(ECHO_REPLY_TIMEOUT);
+        connectionManagerImpl = new ConnectionManagerImpl(new OpenflowProviderConfigBuilder()
+                .setEchoReplyTimeout(new NonZeroUint32Type(ECHO_REPLY_TIMEOUT))
+                .build(), threadPool);
+
         connectionManagerImpl.setDeviceConnectedHandler(deviceConnectedHandler);
         final InetSocketAddress deviceAddress = InetSocketAddress.createUnresolved("yahoo", 42);
         Mockito.when(connection.getRemoteAddress()).thenReturn(deviceAddress);

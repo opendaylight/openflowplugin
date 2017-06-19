@@ -62,22 +62,28 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     private static final String ASYNC_SERVICE_ENTITY_TYPE = "org.opendaylight.mdsal.AsyncServiceCloseEntityType";
 
     private final Map<DeviceInfo, ContextChain> contextChainMap = Collections.synchronizedMap(new HashMap<>());
+    private final EntityOwnershipListenerRegistration eosListenerRegistration;
+    private final ClusterSingletonServiceProvider singletonServiceProvider;
+    private final ItemScheduler<DeviceInfo, ContextChain> scheduler;
+    private final ExecutorService executorService;
     private DeviceManager deviceManager;
     private RpcManager rpcManager;
     private StatisticsManager statisticsManager;
-    private EntityOwnershipListenerRegistration eosListenerRegistration;
-    private ClusterSingletonServiceProvider singletonServicesProvider;
-    private final ItemScheduler<DeviceInfo, ContextChain> scheduler;
-    private final ExecutorService executorService;
 
-    public ContextChainHolderImpl(final HashedWheelTimer timer, final ExecutorService executorService) {
+    public ContextChainHolderImpl(final HashedWheelTimer timer,
+                                  final ExecutorService executorService,
+                                  final ClusterSingletonServiceProvider singletonServiceProvider,
+                                  final EntityOwnershipService entityOwnershipService) {
+        this.singletonServiceProvider = singletonServiceProvider;
+        this.executorService = executorService;
+        this.eosListenerRegistration = Verify.verifyNotNull(entityOwnershipService.registerListener
+                (ASYNC_SERVICE_ENTITY_TYPE, this));
+
         this.scheduler = new ItemScheduler<>(
                 timer,
                 CHECK_ROLE_MASTER_TIMEOUT,
                 CHECK_ROLE_MASTER_TOLERANCE,
                 ContextChain::makeDeviceSlave);
-
-        this.executorService = executorService;
     }
 
     @Override
@@ -145,7 +151,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         scheduler.add(deviceInfo, contextChain);
         scheduler.startIfNotRunning();
         deviceContext.onPublished();
-        contextChain.registerServices(this.singletonServicesProvider);
+        contextChain.registerServices(singletonServiceProvider);
         return contextChain;
     }
 
@@ -180,11 +186,6 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         }
 
         return ConnectionStatus.MAY_CONTINUE;
-    }
-
-    @Override
-    public void addSingletonServicesProvider(final ClusterSingletonServiceProvider singletonServicesProvider) {
-        this.singletonServicesProvider = singletonServicesProvider;
     }
 
     @Override
@@ -241,16 +242,6 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         });
     }
 
-    @Override
-    public void changeEntityOwnershipService(@Nonnull final EntityOwnershipService entityOwnershipService) {
-        if (Objects.nonNull(this.eosListenerRegistration)) {
-            LOG.warn("Entity ownership service listener is already registered.");
-        } else {
-            this.eosListenerRegistration = Verify.verifyNotNull(entityOwnershipService.registerListener
-                    (ASYNC_SERVICE_ENTITY_TYPE, this));
-        }
-    }
-
     @VisibleForTesting
     boolean checkAllManagers() {
         return Objects.nonNull(deviceManager) && Objects.nonNull(rpcManager) && Objects.nonNull(statisticsManager);
@@ -269,12 +260,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         });
 
         contextChainMap.clear();
-
-
-        if (Objects.nonNull(eosListenerRegistration)) {
-            eosListenerRegistration.close();
-            eosListenerRegistration = null;
-        }
+        eosListenerRegistration.close();
     }
 
     @Override

@@ -9,7 +9,11 @@
 package org.opendaylight.openflowplugin.impl.util;
 
 import java.net.InetSocketAddress;
+import java.util.Collections;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -25,6 +29,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.FlowTableStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.FlowTableStatisticsDataBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -40,9 +46,29 @@ public class DeviceInitializationUtil {
     }
 
     /**
+     * Merge empty nodes to operational DS to predict any problems with missing parent for node
+     *
+     * @param dataBroker the data broker
+     */
+    public static void makeEmptyNodes(final DataBroker dataBroker) {
+        final WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
+
+        try {
+            tx.merge(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(Nodes.class), new NodesBuilder()
+                    .setNode(Collections.emptyList())
+                    .build());
+            tx.submit().get();
+        } catch (ExecutionException | InterruptedException e) {
+            LOG.error("Creation of node failed.", e);
+            throw new IllegalStateException(e);
+        }
+    }
+
+    /**
      * Create specified number of empty tables on device
      * FIXME: remove after ovs table features fix
-     * @param txFacade transaction facade
+     *
+     * @param txFacade   transaction facade
      * @param deviceInfo device info
      * @param nrOfTables number of tables
      */
@@ -72,7 +98,8 @@ public class DeviceInitializationUtil {
 
     /**
      * Retrieve ip address from connection
-     * @param connectionContext connection context
+     *
+     * @param connectionContext  connection context
      * @param instanceIdentifier instance identifier
      * @return ip address
      */
@@ -91,7 +118,8 @@ public class DeviceInitializationUtil {
 
     /**
      * Retrieve port number from connection
-     * @param connectionContext connection context
+     *
+     * @param connectionContext  connection context
      * @param instanceIdentifier instance identifier
      * @return port number
      */
@@ -111,6 +139,7 @@ public class DeviceInitializationUtil {
 
     /**
      * Retrieve switch features from connection
+     *
      * @param connectionContext connection context
      * @return switch features
      */
