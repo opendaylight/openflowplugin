@@ -34,6 +34,24 @@
       "revId": "46da36b7fc0288fb5b980c4f60ad584f1fceb54d",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1af78d9a_e7f899e7",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/lifecycle/ContextChainHolderImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-06-20T20:05:13Z",
+      "side": 1,
+      "message": "what do you think why switch will send a second connection on the same port, when controller thinks that one connection already exist? It\u0027s obviously because switch didn\u0027t disconnect the previous connection properly and it\u0027s still dangling with the controller.\n\nNow on the question of switch using 6633 and 6653 for sending two connections. Why do you think we should not close one of the connection? Both of these connections are primary connection, why do plugin want to hold on to both the primary connection? That\u0027s not specified in the openflowplugin specification. If user does that, that\u0027s user mistake, but it doesn\u0027t mean that we need to keep both the connection because user did the mistake.",
+      "parentUuid": "1af78d9a_387764d6",
+      "revId": "46da36b7fc0288fb5b980c4f60ad584f1fceb54d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
