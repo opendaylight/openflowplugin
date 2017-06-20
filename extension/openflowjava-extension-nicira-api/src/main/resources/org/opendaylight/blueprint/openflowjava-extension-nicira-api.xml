@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           odl:use-default-for-reference-types="true">
+
+    <reference id="defaultSwitchConnProvider"
+               interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider"
+               odl:type="openflow-switch-connection-provider-default-impl"/>
+
+    <reference id="legacySwitchConnProvider"
+               interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider"
+               odl:type="openflow-switch-connection-provider-legacy-impl"/>
+
+    <bean id="niciraExtensionCodecRegistrator"
+          class="org.opendaylight.openflowjava.nx.api.impl.NiciraExtensionCodecRegistratorImpl"
+          destroy-method="close">
+        <argument>
+            <list>
+                <ref component-id="defaultSwitchConnProvider"/>
+                <ref component-id="legacySwitchConnProvider"/>
+            </list>
+        </argument>
+    </bean>
+
+    <service ref="niciraExtensionCodecRegistrator"
+             interface="org.opendaylight.openflowjava.nx.api.NiciraExtensionCodecRegistrator"/>
+</blueprint>

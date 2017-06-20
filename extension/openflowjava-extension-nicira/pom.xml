@@ -30,17 +30,6 @@
                             <codeGenerators>
                                 <generator>
                                     <codeGeneratorClass>
-                                        org.opendaylight.controller.config.yangjmxgenerator.plugin.JMXGenerator
-                                    </codeGeneratorClass>
-                                    <outputBaseDir>${project.build.directory}/generated-sources/config</outputBaseDir>
-                                    <additionalConfiguration>
-                                        <namespaceToPackage1>
-                                            urn:opendaylight:params:xml:ns:yang:controller:config==org.opendaylight.controller.config.yang
-                                        </namespaceToPackage1>
-                                    </additionalConfiguration>
-                                </generator>
-                                <generator>
-                                    <codeGeneratorClass>
                                         org.opendaylight.mdsal.binding.maven.api.gen.plugin.CodeGeneratorImpl
                                     </codeGeneratorClass>
                                     <outputBaseDir>${project.build.directory}/generated-sources/sal</outputBaseDir>
@@ -89,10 +78,6 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>openflowjava-extension-nicira-api</artifactId>
         </dependency>
-<!--         <dependency> -->
-<!--             <groupId>org.opendaylight.mdsal.model</groupId> -->
-<!--             <artifactId>yang-ext</artifactId> -->
-<!--         </dependency> -->
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-buffer</artifactId>

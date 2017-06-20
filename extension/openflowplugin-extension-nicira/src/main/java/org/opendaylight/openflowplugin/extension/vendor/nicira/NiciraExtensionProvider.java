@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.extension.vendor.nicira;
 
 import org.opendaylight.openflowjava.nx.codec.match.TunIpv4DstCodec;
+import org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxTunIpv4DstKey;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.TunIPv4DstConvertor;
 
@@ -328,17 +329,10 @@ public class NiciraExtensionProvider implements AutoCloseable {
     }
 
     /**
-     * @param extensionConverterRegistrator
-     */
-    public void setExtensionConverterRegistrator(final ExtensionConverterRegistrator extensionConverterRegistrator) {
-        this.extensionConverterRegistrator = extensionConverterRegistrator;
-    }
-
-    /**
      * register appropriate converters
      */
-    public void registerConverters() {
-        Preconditions.checkNotNull(extensionConverterRegistrator);
+    public NiciraExtensionProvider(final OpenFlowPluginExtensionRegistratorProvider provider) {
+        this.extensionConverterRegistrator = Preconditions.checkNotNull(provider.getExtensionConverterRegistrator());
         registrations = new HashSet<>();
         // src=dataStore/config
         registerAction13(NxActionRegLoadNodesNodeTableFlowApplyActionsCase.class, REG_LOAD_CONVERTOR);

@@ -16,35 +16,39 @@
 
     <name>OpenDaylight :: Openflow Plugin :: Nicira Extensions</name>
 
+    <dependencyManagement>
+        <dependencies>
+            <!-- This project -->
+            <dependency>
+                <groupId>org.opendaylight.openflowplugin</groupId>
+                <artifactId>openflowplugin-artifacts</artifactId>
+                <version>${project.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <!-- feature dependencies -->
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>odl-openflowplugin-southbound</artifactId>
-            <version>${project.version}</version>
             <classifier>features</classifier>
             <type>xml</type>
         </dependency>
-
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>openflowjava-extension-nicira-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>openflowjava-extension-nicira</artifactId>
-            <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>openflowplugin-extension-nicira</artifactId>
-            <version>${project.version}</version>
         </dependency>
-
     </dependencies>
-
 
 </project>

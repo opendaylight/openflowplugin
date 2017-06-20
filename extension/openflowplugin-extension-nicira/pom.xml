@@ -11,14 +11,14 @@
 
     <artifactId>openflowplugin-extension-nicira</artifactId>
     <packaging>bundle</packaging>
-    
+
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
             </plugin>
-            
+
             <plugin>
                 <groupId>org.opendaylight.yangtools</groupId>
                 <artifactId>yang-maven-plugin</artifactId>
@@ -29,17 +29,6 @@
                         </goals>
                         <configuration>
                             <codeGenerators>
-                                <generator>
-                                    <codeGeneratorClass>
-                                        org.opendaylight.controller.config.yangjmxgenerator.plugin.JMXGenerator
-                                    </codeGeneratorClass>
-                                    <outputBaseDir>${project.build.directory}/generated-sources/config</outputBaseDir>
-                                    <additionalConfiguration>
-                                        <namespaceToPackage1>
-                                            urn:opendaylight:params:xml:ns:yang:controller:config==org.opendaylight.controller.config.yang
-                                        </namespaceToPackage1>
-                                    </additionalConfiguration>
-                                </generator>
                                 <generator>
                                     <codeGeneratorClass>
                                         org.opendaylight.mdsal.binding.maven.api.gen.plugin.CodeGeneratorImpl
@@ -85,36 +74,29 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>openflowjava-extension-nicira-api</artifactId>
         </dependency>
-        <dependency>
-            <!-- configSubsystem yang should be moved to API and this would be doomed for removal -->
-            <groupId>org.opendaylight.openflowplugin</groupId>
-            <artifactId>openflowplugin</artifactId>
-        </dependency>
-
         <!-- MD-SAL models -->
         <dependency>
-            <groupId>org.opendaylight.openflowplugin.model</groupId>
+            <groupId>${project.groupId}.model</groupId>
             <artifactId>model-flow-base</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowplugin.model</groupId>
+            <groupId>${project.groupId}.model</groupId>
             <artifactId>model-flow-service</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowplugin.model</groupId>
+            <groupId>${project.groupId}.model</groupId>
             <artifactId>model-flow-statistics</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.controller.model</groupId>
             <artifactId>model-inventory</artifactId>
         </dependency>
-
         <!-- OpenFlowJava-API models -->
         <dependency>
             <groupId>org.opendaylight.openflowjava</groupId>
             <artifactId>openflow-protocol-api</artifactId>
         </dependency>
-        
+        <!-- Test dependencies -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -130,7 +112,6 @@
             <artifactId>slf4j-log4j12</artifactId>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
 </project>
