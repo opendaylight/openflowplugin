@@ -32,7 +32,7 @@ public final class SimpleRequestCallback<T extends DataObject> extends AbstractR
 
     @Override
     public final void onSuccess(final OfHeader result) {
-        spyMessage(MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
+        spyMessage(MessageSpy.StatisticsGroup.TO_SWITCH_SUBMIT_SUCCESS);
 
         if (result == null) {
             setResult(RpcResultBuilder.<T>success().build());

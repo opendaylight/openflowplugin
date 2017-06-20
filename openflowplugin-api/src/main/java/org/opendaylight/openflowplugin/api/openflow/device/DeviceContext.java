@@ -112,7 +112,7 @@ public interface DeviceContext extends
 
     MessageSpy getMessageSpy();
 
-    <T extends OfHeader> MultiMsgCollector<T> getMultiMsgCollector(final RequestContext<List<T>> requestContext);
+    <T extends OfHeader> MultiMsgCollector<T> getMultiMsgCollector(RequestContext<List<T>> requestContext);
 
     /**
      * indicates that device context is fully published (e.g.: packetIn messages should be passed).
@@ -139,7 +139,7 @@ public interface DeviceContext extends
      * Setter for sal role service.
      * @param salRoleService Role Service
      */
-    void setSalRoleService(@Nonnull final SalRoleService salRoleService);
+    void setSalRoleService(@Nonnull SalRoleService salRoleService);
 
     /**
      * Make device slave.

@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of {@link org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency}.
- * Class counts message of {@link org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy.STATISTIC_GROUP} type
+ * Class counts message of {@link StatisticsGroup} type
  * and provides info as debug log.
  */
 public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency, MessageIntelligenceAgencyMXBean {
@@ -51,10 +51,10 @@ public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency,
         }
     }
 
-    private ConcurrentMap<STATISTIC_GROUP, ConcurrentMap<Class<?>, MessageCounters>> inputStats = new ConcurrentHashMap<>();
+    private ConcurrentMap<StatisticsGroup, ConcurrentMap<Class<?>, MessageCounters>> inputStats = new ConcurrentHashMap<>();
 
     @Override
-    public void spyMessage(@Nonnull final Class<?> message, final STATISTIC_GROUP statGroup) {
+    public void spyMessage(@Nonnull final Class<?> message, final StatisticsGroup statGroup) {
         Preconditions.checkNotNull(message, "Message can't be null.");
         getCounters(message, statGroup).increment();
     }
@@ -64,7 +64,7 @@ public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency,
      * @param statGroup statistic counter group
      * @return corresponding counter
      */
-    private MessageCounters getCounters(final Class<?> message, final STATISTIC_GROUP statGroup) {
+    private MessageCounters getCounters(final Class<?> message, final StatisticsGroup statGroup) {
         ConcurrentMap<Class<?>, MessageCounters> groupData = getOrCreateGroupData(statGroup);
         MessageCounters counters = getOrCreateCountersPair(message, groupData);
         return counters;
@@ -82,7 +82,7 @@ public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency,
 
     }
 
-    private ConcurrentMap<Class<?>, MessageCounters> getOrCreateGroupData(final STATISTIC_GROUP statGroup) {
+    private ConcurrentMap<Class<?>, MessageCounters> getOrCreateGroupData(final StatisticsGroup statGroup) {
         final ConcurrentMap<Class<?>, MessageCounters> lookup = inputStats.get(statGroup);
         if (lookup != null) {
             return lookup;
@@ -108,7 +108,7 @@ public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency,
     public List<String> provideIntelligence() {
         List<String> dump = new ArrayList<>();
 
-        for (STATISTIC_GROUP statGroup : STATISTIC_GROUP.values()) {
+        for (StatisticsGroup statGroup : StatisticsGroup.values()) {
             Map<Class<?>, MessageCounters> groupData = inputStats.get(statGroup);
             if (groupData != null) {
                 for (Entry<Class<?>, MessageCounters> statEntry : groupData.entrySet()) {

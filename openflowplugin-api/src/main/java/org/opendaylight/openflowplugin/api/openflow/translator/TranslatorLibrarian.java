@@ -10,22 +10,18 @@ package org.opendaylight.openflowplugin.api.openflow.translator;
 
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 
-/**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 3.4.2015.
- */
 public interface TranslatorLibrarian {
 
     /**
      * Method provides translator library held by Librarian.
-     * @return
+     * @return translator library
      */
-    public TranslatorLibrary oook();
+    TranslatorLibrary oook();
 
     /**
      * Method registers translator library for translating message objects.
-     *
-     * @param translatorLibrary
+     * @param translatorLibrary translator library
      */
-    public void setTranslatorLibrary(TranslatorLibrary translatorLibrary);
+    void setTranslatorLibrary(TranslatorLibrary translatorLibrary);
 
 }

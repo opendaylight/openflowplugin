@@ -22,7 +22,6 @@ public interface RpcManager extends OFPManager {
 
     void setRpcRequestQuota(int rpcRequestQuota);
 
-    RpcContext createContext(final @Nonnull DeviceInfo deviceInfo,
-                             final @Nonnull DeviceContext deviceContext);
+    RpcContext createContext(@Nonnull DeviceInfo deviceInfo, @Nonnull DeviceContext deviceContext);
 
 }

@@ -13,7 +13,7 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 
 /**
- * Manages OpenFlowPlugin configuration
+ * Manages OpenFlowPlugin configuration.
  */
 public interface OpenFlowPluginConfigurationService {
 
@@ -93,12 +93,12 @@ public interface OpenFlowPluginConfigurationService {
         private static final Map<String, PropertyType> KEY_VALUE_MAP;
 
         /**
-         * Get property type from property key
+         * Get property type from property key.
          *
          * @param key the property key
          * @return the property type
          */
-        public static PropertyType forValue(final String key) {
+        public static PropertyType forValue(String key) {
             return KEY_VALUE_MAP.get(key);
         }
 
@@ -114,7 +114,7 @@ public interface OpenFlowPluginConfigurationService {
         }
 
         /**
-         * Converts enum name to property key
+         * Converts enum name to property key.
          *
          * @return the property key
          */
@@ -126,14 +126,14 @@ public interface OpenFlowPluginConfigurationService {
     }
 
     /**
-     * Parses key-value pairs of properties read from OpenFlowPlugin configuration file and processes them
+     * Parses key-value pairs of properties read from OpenFlowPlugin configuration file and processes them.
      *
      * @param properties properties
      */
     void update(@Nonnull Map<String,Object> properties);
 
     /**
-     * Parse and process single property key-value pair
+     * Parse and process single property key-value pair.
      *
      * @see org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginConfigurationService.PropertyType
      * @param key   property type

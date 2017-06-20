@@ -9,11 +9,12 @@
 package org.opendaylight.openflowplugin.api.openflow.statistics.compatibility;
 
 /**
- * Simple delegator pattern support
+ * Simple delegator pattern support.
  */
 public interface Delegator<D> {
 
     /**
+     * Setter.
      * @param delegate backend task executor
      */
     void setDelegate(D delegate);

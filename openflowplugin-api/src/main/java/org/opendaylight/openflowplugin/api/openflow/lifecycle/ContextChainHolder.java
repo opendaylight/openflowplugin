@@ -28,7 +28,7 @@ public interface ContextChainHolder extends
         MastershipChangeListener,
         DeviceDisconnectedHandler,
         EntityOwnershipListener,
-        AutoCloseable{
+        AutoCloseable {
 
     /**
      * Managers need to be added before.
@@ -38,32 +38,32 @@ public interface ContextChainHolder extends
      * @param manager a child class of {@link OFPManager}
      * @param <T> {@link OFPManager}
      */
-    <T extends OFPManager> void addManager(final T manager);
+    <T extends OFPManager> void addManager(T manager);
 
     /**
      * Create a new context chain.
      * @param connectionContext new connection
      * @return {@link ContextChain}
      */
-    ContextChain createContextChain(final ConnectionContext connectionContext);
+    ContextChain createContextChain(ConnectionContext connectionContext);
 
     /**
      * Called if connection needs to be destroyed.
      * @param deviceInfo {@link DeviceInfo}
      */
-    ListenableFuture<Void> destroyContextChain(final DeviceInfo deviceInfo);
+    ListenableFuture<Void> destroyContextChain(DeviceInfo deviceInfo);
 
     /**
      * Provider is needed to register cluster singleton service.
      * @param singletonServicesProvider provider
      */
-    void addSingletonServicesProvider(final ClusterSingletonServiceProvider singletonServicesProvider);
+    void addSingletonServicesProvider(ClusterSingletonServiceProvider singletonServicesProvider);
 
     /**
      * Register EOS listener.
      * @param entityOwnershipService EOS services
      */
-    void changeEntityOwnershipService(final EntityOwnershipService entityOwnershipService);
+    void changeEntityOwnershipService(EntityOwnershipService entityOwnershipService);
 
     @Override
     void close() throws Exception;

@@ -30,14 +30,14 @@ final class PacketInRateLimiter extends SimpleRatelimiter {
 
     @Override
     protected void disableFlow() {
-        messageSpy.spyMessage(DeviceContext.class, MessageSpy.STATISTIC_GROUP.OFJ_BACKPRESSURE_ON);
+        messageSpy.spyMessage(DeviceContext.class, MessageSpy.StatisticsGroup.OFJ_BACKPRESSURE_ON);
         connectionAdapter.setPacketInFiltering(true);
         LOG.debug("PacketIn filtering on: {}", connectionAdapter.getRemoteAddress());
     }
 
     @Override
     protected void enableFlow() {
-        messageSpy.spyMessage(DeviceContext.class, MessageSpy.STATISTIC_GROUP.OFJ_BACKPRESSURE_OFF);
+        messageSpy.spyMessage(DeviceContext.class, MessageSpy.StatisticsGroup.OFJ_BACKPRESSURE_OFF);
         connectionAdapter.setPacketInFiltering(false);
         LOG.debug("PacketIn filtering off: {}", connectionAdapter.getRemoteAddress());
     }

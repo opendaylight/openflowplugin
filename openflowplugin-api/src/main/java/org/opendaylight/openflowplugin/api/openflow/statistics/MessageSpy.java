@@ -10,55 +10,77 @@ package org.opendaylight.openflowplugin.api.openflow.statistics;
 
 
 /**
- * ticket spy - aimed on collecting intel about tickets 
+ * ticket spy - aimed on collecting intel about tickets.
  * @param <M> type of watched message
  */
 @Deprecated
 public interface MessageSpy<M> extends Runnable {
 
     /**
+     * Spy In.
      * @param message content of ticket
      */
     void spyIn(M message);
 
     /**
+     * Spy Out.
      * @param message content of ticket
      */
     void spyOut(M message);
-    
-    
+
     // TODO: temporary solution, should be refactored and moved to managed bean
-    
+
     /**
-     * statistic groups overall in OFPlugin
+     * statistic groups overall in OFPlugin.
      */
-    enum STATISTIC_GROUP {
-        /** message from switch, enqueued for processing */
+    enum StatisticsGroup {
+        /**
+         * message from switch, enqueued for processing.
+         */
         FROM_SWITCH_ENQUEUED,
-        /** message from switch translated successfully - source */
+        /**
+         * message from switch translated successfully - source.
+         */
         FROM_SWITCH_TRANSLATE_IN_SUCCESS,
-        /** message from switch translated successfully - target */
+        /**
+         * message from switch translated successfully - target.
+         */
         FROM_SWITCH_TRANSLATE_OUT_SUCCESS,
-        /** message from switch where translation failed - source */
+        /**
+         * message from switch where translation failed - source.
+         */
         FROM_SWITCH_TRANSLATE_SRC_FAILURE,
-        /** message from switch finally published into MD-SAL */
+        /**
+         * message from switch finally published into MD-SAL.
+         */
         FROM_SWITCH_PUBLISHED_SUCCESS,
-        /** message from switch - publishing into MD-SAL failed */
+        /**
+         * message from switch - publishing into MD-SAL failed.
+         */
         FROM_SWITCH_PUBLISHED_FAILURE,
-        
-        /** message from MD-SAL to switch via RPC enqueued */
+
+        /**
+         * message from MD-SAL to switch via RPC enqueued.
+         */
         TO_SWITCH_ENQUEUED_SUCCESS,
-        /** message from MD-SAL to switch via RPC NOT enqueued */
+        /**
+         * message from MD-SAL to switch via RPC NOT enqueued.
+         */
         TO_SWITCH_ENQUEUED_FAILED,
-        /** message from MD-SAL to switch - sent to OFJava successfully */
+        /**
+         * message from MD-SAL to switch - sent to OFJava successfully.
+         */
         TO_SWITCH_SUBMITTED_SUCCESS,
-        /** message from MD-SAL to switch - sent to OFJava but failed*/
+        /**
+         * message from MD-SAL to switch - sent to OFJava but failed.
+         */
         TO_SWITCH_SUBMITTED_FAILURE
     }
-    
+
     /**
+     * Spy message.
      * @param message from switch or to switch - depends on statGroup
-     * @param statGroup 
+     * @param statGroup statistics group
      */
-    void spyMessage(M message, STATISTIC_GROUP statGroup);
-    }
+    void spyMessage(M message, StatisticsGroup statGroup);
+}

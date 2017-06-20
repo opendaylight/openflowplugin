@@ -17,7 +17,7 @@ import org.opendaylight.yangtools.concepts.Registration;
 public interface ItemLifeCycleRegistry {
 
     /**
-     * register given life cycle source to known sources of device
+     * register given life cycle source to known sources of device.
      *
      * @param lifeCycleSource life cycle changes provider
      * @return closeable registration
@@ -25,11 +25,12 @@ public interface ItemLifeCycleRegistry {
     Registration registerLifeCycleSource(ItemLifeCycleSource lifeCycleSource);
 
     /**
-     * close all existing registrations
+     * close all existing registrations.
      */
     void clear();
 
     /**
+     * Registered sources.
      * @return registered sources
      */
     Iterable<ItemLifeCycleSource> getLifeCycleSources();

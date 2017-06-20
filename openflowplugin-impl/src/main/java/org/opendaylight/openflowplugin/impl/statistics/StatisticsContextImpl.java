@@ -76,7 +76,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     private final StatisticsManager myManager;
 
     private volatile boolean schedulingEnabled;
-    private volatile CONTEXT_STATE state;
+    private volatile ContextState state;
     private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
     private ClusterInitializationPhaseHandler initialSubmitHandler;
 
@@ -96,7 +96,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
             deviceContext, convertorExecutor, statisticsWriterProvider);
         itemLifeCycleListener = new ItemLifecycleListenerImpl(deviceContext);
         statListForCollectingInitialization();
-        this.state = CONTEXT_STATE.INITIALIZATION;
+        this.state = ContextState.INITIALIZATION;
         this.deviceInfo = deviceContext.getDeviceInfo();
         this.myManager = myManager;
         this.lastDataGathering = null;
@@ -222,12 +222,12 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
 
     @Override
     public void close() {
-        if (CONTEXT_STATE.TERMINATION.equals(getState())) {
+        if (ContextState.TERMINATION.equals(getState())) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("StatisticsContext for node {} is already in TERMINATION state.", getDeviceInfo().getLOGValue());
             }
         } else {
-            this.state = CONTEXT_STATE.TERMINATION;
+            this.state = ContextState.TERMINATION;
             stopGatheringData();
 
             for (final Iterator<RequestContext<?>> iterator = Iterators.consumingIterator(requestContexts.iterator());
@@ -308,7 +308,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     }
 
     @Override
-    public CONTEXT_STATE getState() {
+    public ContextState getState() {
         return this.state;
     }
 
@@ -324,7 +324,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
 
     @Override
     public ListenableFuture<Void> stopClusterServices() {
-        if (CONTEXT_STATE.TERMINATION.equals(this.state)) {
+        if (ContextState.TERMINATION.equals(this.state)) {
             return Futures.immediateCancelledFuture();
         }
 

@@ -9,9 +9,6 @@
 package org.opendaylight.openflowplugin.api.openflow.statistics;
 
 
-/**
- * @param <M> message type
- */
 @Deprecated
 public interface MessageObservatory<M> extends MessageSpy<M>, MessageCountDumper {
 

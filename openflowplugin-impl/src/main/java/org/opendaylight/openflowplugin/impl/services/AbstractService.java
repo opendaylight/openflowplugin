@@ -118,14 +118,14 @@ public abstract class AbstractService<I, O> {
             ? DataContainer.class.cast(input).getImplementedInterface()
             : input.getClass();
 
-        getMessageSpy().spyMessage(requestType, MessageSpy.STATISTIC_GROUP.TO_SWITCH_ENTERED);
+        getMessageSpy().spyMessage(requestType, MessageSpy.StatisticsGroup.TO_SWITCH_ENTERED);
 
         LOG.trace("Handling general service call");
         final RequestContext<O> requestContext = requestContextStack.createRequestContext();
 
         if (Objects.isNull(requestContext)) {
             LOG.trace("Request context refused.");
-            getMessageSpy().spyMessage(AbstractService.class, MessageSpy.STATISTIC_GROUP.TO_SWITCH_DISREGARDED);
+            getMessageSpy().spyMessage(AbstractService.class, MessageSpy.StatisticsGroup.TO_SWITCH_DISREGARDED);
             return Futures.immediateFuture(RpcResultBuilder
                     .<O>failed()
                     .withError(RpcError.ErrorType.APPLICATION, "", "Request quota exceeded")
@@ -133,11 +133,11 @@ public abstract class AbstractService<I, O> {
         }
 
         if (Objects.isNull(requestContext.getXid())) {
-            getMessageSpy().spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_RESERVATION_REJECTED);
+            getMessageSpy().spyMessage(requestContext.getClass(), MessageSpy.StatisticsGroup.TO_SWITCH_RESERVATION_REJECTED);
             return RequestContextUtil.closeRequestContextWithRpcError(requestContext, "Outbound queue wasn't able to reserve XID.");
         }
 
-        getMessageSpy().spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_READY_FOR_SUBMIT);
+        getMessageSpy().spyMessage(requestContext.getClass(), MessageSpy.StatisticsGroup.TO_SWITCH_READY_FOR_SUBMIT);
 
         final Xid xid = requestContext.getXid();
         OfHeader request = null;

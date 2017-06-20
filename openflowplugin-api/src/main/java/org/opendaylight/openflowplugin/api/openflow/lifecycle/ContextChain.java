@@ -22,9 +22,9 @@ public interface ContextChain extends AutoCloseable {
      * Add context to the chain, if reference already exist ignore it.
      * @param context child of OFPContext
      */
-    <T extends OFPContext> void addContext(final T context);
+    <T extends OFPContext> void addContext(T context);
 
-    void addLifecycleService(final LifecycleService lifecycleService);
+    void addLifecycleService(LifecycleService lifecycleService);
 
     /**
      * Stop the working contexts, but not release them.
@@ -50,7 +50,7 @@ public interface ContextChain extends AutoCloseable {
      * Registers context chain into cluster singleton service.
      * @param clusterSingletonServiceProvider provider
      */
-    void registerServices(final ClusterSingletonServiceProvider clusterSingletonServiceProvider);
+    void registerServices(ClusterSingletonServiceProvider clusterSingletonServiceProvider);
 
     /**
      * After connect of device make this device SLAVE.
@@ -62,7 +62,7 @@ public interface ContextChain extends AutoCloseable {
      * @param mastershipState - state master on device, initial gather, initial submit, initial registry fill
      * @return true if everything done fine
      */
-    boolean isMastered(@Nonnull final ContextChainMastershipState mastershipState);
+    boolean isMastered(@Nonnull ContextChainMastershipState mastershipState);
 
     /**
      * Device need to be in state SLAVE or MASTER.
@@ -75,12 +75,12 @@ public interface ContextChain extends AutoCloseable {
      * @param connectionContext new connection to the device.
      * @return false if primary connection is broken
      */
-    boolean addAuxiliaryConnection(@Nonnull final ConnectionContext connectionContext);
+    boolean addAuxiliaryConnection(@Nonnull ConnectionContext connectionContext);
 
     /**
      * Check if connection is auxiliary and if yes then continue working.
      * @param connectionContext connection to the device
      * @return false if this is primary connection
      */
-    boolean auxiliaryConnectionDropped(@Nonnull final ConnectionContext connectionContext);
+    boolean auxiliaryConnectionDropped(@Nonnull ConnectionContext connectionContext);
 }

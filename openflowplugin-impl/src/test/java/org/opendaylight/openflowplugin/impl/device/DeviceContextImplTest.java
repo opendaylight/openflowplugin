@@ -344,10 +344,10 @@ public class DeviceContextImplTest {
     public void testProcessReply() {
         final Error mockedError = mock(Error.class);
         deviceContext.processReply(mockedError);
-        verify(messageSpy).spyMessage(any(Class.class), eq(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE));
+        verify(messageSpy).spyMessage(any(Class.class), eq(MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_FAILURE));
         final OfHeader mockedOfHeader = mock(OfHeader.class);
         deviceContext.processReply(mockedOfHeader);
-        verify(messageSpy).spyMessage(any(Class.class), eq(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS));
+        verify(messageSpy).spyMessage(any(Class.class), eq(MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_SUCCESS));
     }
 
     @Test
@@ -356,11 +356,11 @@ public class DeviceContextImplTest {
 
         final Error mockedError = mock(Error.class);
         deviceContext.processReply(dummyXid, Lists.newArrayList(mockedError));
-        verify(messageSpy).spyMessage(any(Class.class), eq(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE));
+        verify(messageSpy).spyMessage(any(Class.class), eq(MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_FAILURE));
 
         final MultipartReply mockedMultipartReply = mock(MultipartReply.class);
         deviceContext.processReply(dummyXid, Lists.newArrayList(mockedMultipartReply));
-        verify(messageSpy).spyMessage(any(Class.class), eq(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS));
+        verify(messageSpy).spyMessage(any(Class.class), eq(MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_SUCCESS));
     }
 
     @Test
@@ -372,7 +372,7 @@ public class DeviceContextImplTest {
         when(mockedNotificationPublishService.offerNotification(any(PacketReceived.class))).thenReturn(stringListenableFuture);
         deviceContext.setNotificationPublishService(mockedNotificationPublishService);
         deviceContext.processPacketInMessage(mockedPacketInMessage);
-        verify(messageSpy).spyMessage(any(Class.class), eq(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS));
+        verify(messageSpy).spyMessage(any(Class.class), eq(MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_SUCCESS));
     }
 
     @Test
@@ -384,7 +384,7 @@ public class DeviceContextImplTest {
         when(mockedNotificationPublishService.offerNotification(any(PacketReceived.class))).thenReturn(dummyFuture);
         deviceContext.setNotificationPublishService(mockedNotificationPublishService);
         deviceContext.processPacketInMessage(mockedPacketInMessage);
-        verify(messageSpy).spyMessage(any(Class.class), eq(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_NOTIFICATION_REJECTED));
+        verify(messageSpy).spyMessage(any(Class.class), eq(MessageSpy.StatisticsGroup.FROM_SWITCH_NOTIFICATION_REJECTED));
     }
 
     @Test

@@ -11,11 +11,12 @@ package org.opendaylight.openflowplugin.api.openflow.statistics;
 import java.util.List;
 
 /**
- * simple message counters dumper
+ * simple message counters dumper.
  */
 public interface MessageCountDumper {
 
     /**
+     * List of counter items.
      * @return list of counter items
      */
     List<String> dumpMessageCounts();

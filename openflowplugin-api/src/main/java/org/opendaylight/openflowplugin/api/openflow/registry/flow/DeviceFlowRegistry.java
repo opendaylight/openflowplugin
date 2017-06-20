@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.api.openflow.registry.flow;
 
-
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;

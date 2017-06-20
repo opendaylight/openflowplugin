@@ -9,7 +9,7 @@ package org.opendaylight.openflowplugin.impl.services;
 
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
-import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy.STATISTIC_GROUP;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy.StatisticsGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -23,7 +23,7 @@ public final class VoidRequestCallback extends AbstractRequestCallback<Void> {
 
     @Override
     public void onSuccess(final OfHeader result) {
-        spyMessage(STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS_NO_RESPONSE);
+        spyMessage(StatisticsGroup.TO_SWITCH_SUBMIT_SUCCESS_NO_RESPONSE);
         setResult(SUCCESS);
     }
 }

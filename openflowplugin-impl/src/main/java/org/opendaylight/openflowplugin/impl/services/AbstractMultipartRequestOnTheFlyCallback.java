@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.impl.services;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import org.opendaylight.openflowplugin.api.openflow.OFPContext.CONTEXT_STATE;
+import org.opendaylight.openflowplugin.api.openflow.OFPContext.ContextState;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceRegistry;
@@ -39,7 +39,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
     private final TxFacade txFacade;
     private final MultipartWriterProvider statisticsWriterProvider;
     private final DeviceRegistry deviceRegistry;
-    private volatile CONTEXT_STATE gatheringState = CONTEXT_STATE.INITIALIZATION;
+    private volatile ContextState gatheringState = ContextState.INITIALIZATION;
     private ConvertorExecutor convertorExecutor;
 
     public AbstractMultipartRequestOnTheFlyCallback(final RequestContext<List<T>> context, Class<?> requestType,
@@ -62,12 +62,12 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
         if (Objects.isNull(result)) {
             LOG.warn("Response received was null.");
 
-            if (!CONTEXT_STATE.TERMINATION.equals(gatheringState)) {
+            if (!ContextState.TERMINATION.equals(gatheringState)) {
                 endCollecting(true);
             }
 
             return;
-        } else if (CONTEXT_STATE.TERMINATION.equals(gatheringState)) {
+        } else if (ContextState.TERMINATION.equals(gatheringState)) {
             LOG.warn("Unexpected response received: xid={}, {}", result.getXid(), result.getImplementedInterface());
             return;
         }
@@ -80,7 +80,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
         } else {
             final T resultCast = (T) result;
 
-            if (CONTEXT_STATE.INITIALIZATION.equals(gatheringState)) {
+            if (ContextState.INITIALIZATION.equals(gatheringState)) {
                 startCollecting();
             }
 
@@ -124,7 +124,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
      */
     private synchronized void startCollecting() {
         EventsTimeCounter.markStart(doneEventIdentifier);
-        gatheringState = CONTEXT_STATE.WORKING;
+        gatheringState = ContextState.WORKING;
 
         final InstanceIdentifier<FlowCapableNode> instanceIdentifier = deviceInfo
                 .getNodeInstanceIdentifier()
@@ -157,10 +157,10 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
      * @param setResult set empty success result
      */
     private void endCollecting(final boolean setResult) {
-        gatheringState = CONTEXT_STATE.TERMINATION;
+        gatheringState = ContextState.TERMINATION;
         EventsTimeCounter.markEnd(doneEventIdentifier);
         EventsTimeCounter.markEnd(getEventIdentifier());
-        spyMessage(MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_OUT_SUCCESS);
+        spyMessage(MessageSpy.StatisticsGroup.FROM_SWITCH_TRANSLATE_OUT_SUCCESS);
 
         if (setResult) {
             setResult(RpcResultBuilder.success(Collections.<T>emptyList()).build());
