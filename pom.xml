@@ -31,12 +31,9 @@
       <module>extension</module>
       <module>distribution/karaf</module>
       <module>distribution/karaf4</module>
-      <module>openflowplugin-controller-config</module>
       <module>openflowplugin-blueprint-config-he</module>
       <module>openflowplugin-blueprint-config</module>
-      <!--
-      <module>openflowplugin-it</module>
-      -->
+      <!-- <module>openflowplugin-it</module> -->
       <module>test-provider</module>
       <module>drop-test-karaf</module>
       <module>test-common</module>
