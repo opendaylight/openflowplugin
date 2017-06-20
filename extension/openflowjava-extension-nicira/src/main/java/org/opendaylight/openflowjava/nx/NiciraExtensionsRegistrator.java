@@ -30,6 +30,7 @@ import org.opendaylight.openflowjava.nx.codec.match.CtZoneCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EthDstCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EthSrcCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EthTypeCodec;
+import org.opendaylight.openflowjava.nx.codec.match.NiciraMatchCodecs;
 import org.opendaylight.openflowjava.nx.codec.match.Nshc1Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Nshc2Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Nshc3Codec;
@@ -63,18 +64,11 @@ import org.opendaylight.openflowjava.nx.codec.match.MplsLabelCodec;
 import com.google.common.base.Preconditions;
 
 public class NiciraExtensionsRegistrator implements AutoCloseable {
-
     private final NiciraExtensionCodecRegistrator registrator;
 
-    /**
-     * @param registrator
-     *            cannot be null
-     */
     public NiciraExtensionsRegistrator(NiciraExtensionCodecRegistrator registrator) {
         this.registrator = Preconditions.checkNotNull(registrator);
-    }
 
-    public void registerNiciraExtensions() {
         registrator.registerActionDeserializer(RegLoadCodec.DESERIALIZER_KEY, NiciraActionCodecs.REG_LOAD_CODEC);
         registrator.registerActionSerializer(RegLoadCodec.SERIALIZER_KEY, NiciraActionCodecs.REG_LOAD_CODEC);
         registrator.registerActionDeserializer(RegMoveCodec.DESERIALIZER_KEY, NiciraActionCodecs.REG_MOVE_CODEC);
@@ -189,7 +183,8 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         registrator.registerMatchEntryDeserializer(CtZoneCodec.DESERIALIZER_KEY, NiciraMatchCodecs.CT_ZONE_CODEC);
     }
 
-    public void unregisterExtensions() {
+    @Override
+    public void close() throws Exception {
         registrator.unregisterActionDeserializer(RegLoadCodec.DESERIALIZER_KEY);
         registrator.unregisterActionSerializer(RegLoadCodec.SERIALIZER_KEY);
         registrator.unregisterActionDeserializer(RegMoveCodec.DESERIALIZER_KEY);
@@ -290,11 +285,6 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         registrator.unregisterMatchEntryDeserializer(CtStateCodec.DESERIALIZER_KEY);
         registrator.unregisterMatchEntrySerializer(CtZoneCodec.SERIALIZER_KEY);
         registrator.unregisterMatchEntryDeserializer(CtZoneCodec.DESERIALIZER_KEY);
-    }
-
-    @Override
-    public void close() throws Exception {
-        unregisterExtensions();
     }
 
 }

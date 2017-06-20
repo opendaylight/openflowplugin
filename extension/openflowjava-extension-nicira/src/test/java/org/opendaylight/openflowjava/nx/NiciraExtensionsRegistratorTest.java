@@ -116,8 +116,6 @@ public class NiciraExtensionsRegistratorTest {
 
     @Test
     public void registerNiciraExtensionsTest() {
-        niciraExtensionsRegistrator.registerNiciraExtensions();
-
         Mockito.verify(registrator).registerActionDeserializer(Matchers.eq(new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, 7)), Matchers.any(RegLoadCodec.class));
         Mockito.verify(registrator).registerActionSerializer(Matchers.eq(new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionRegLoad.class)), Matchers.any(RegLoadCodec.class));
         Mockito.verify(registrator).registerActionDeserializer(Matchers.eq(new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, 6)), Matchers.any(RegMoveCodec.class));
@@ -198,8 +196,8 @@ public class NiciraExtensionsRegistratorTest {
     }
 
     @Test
-    public void unregisterExtensionsTest() {
-        niciraExtensionsRegistrator.unregisterExtensions();
+    public void unregisterExtensionsTest() throws Exception {
+        niciraExtensionsRegistrator.close();
 
         Mockito.verify(registrator).unregisterActionDeserializer(new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, 7));
         Mockito.verify(registrator).unregisterActionSerializer(new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionRegLoad.class));
