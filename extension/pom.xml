@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.opendaylight.openflowplugin</groupId>
         <artifactId>openflowplugin-parent</artifactId>
-        <version>0.4.1-SNAPSHOT</version>
+        <version>0.4.2-SNAPSHOT</version>
         <relativePath>../parent</relativePath>
     </parent>
 
@@ -17,7 +17,6 @@
         <module>openflowjava-extension-nicira</module>
         <module>openflowplugin-extension-api</module>
         <module>openflowplugin-extension-nicira</module>
-        <module>openflowplugin-extension-nicira-config</module>
         <module>openflowplugin-extension-onf</module>
         <module>test-extension</module>
         <module>features-extension-aggregator</module>

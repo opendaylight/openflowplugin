@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -37,7 +37,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  * @author msunal
  *
  */
-public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodecRegistrator, AutoCloseable {
+public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodecRegistrator {
 
     private static final Map<NiciraActionDeserializerKey, OFDeserializer<Action>> actionDeserializers = new ConcurrentHashMap<>();
 
@@ -80,7 +80,7 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.opendaylight.openflow.extension.nicira.api.
      * NiciraExtensionCodecRegistrator
      * #registerActionDeserializer(org.opendaylight
@@ -94,7 +94,7 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.opendaylight.openflow.extension.nicira.api.
      * NiciraExtensionCodecRegistrator
      * #unregisterActionDeserializer(org.opendaylight
@@ -111,7 +111,7 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.opendaylight.openflow.extension.nicira.api.
      * NiciraExtensionCodecRegistrator
      * #registerActionSerializer(org.opendaylight.
@@ -125,7 +125,7 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.opendaylight.openflow.extension.nicira.api.
      * NiciraExtensionCodecRegistrator
      * #unregisterActionSerializer(org.opendaylight
@@ -138,7 +138,7 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.opendaylight.openflow.extension.nicira.api.
      * NiciraExtensionCodecRegistrator
      * #registerMatchEntryDeserializer(org.opendaylight
@@ -154,7 +154,7 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.opendaylight.openflow.extension.nicira.api.
      * NiciraExtensionCodecRegistrator
      * #unregisterMatchEntryDeserializer(org.opendaylight
@@ -167,7 +167,7 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.opendaylight.openflow.extension.nicira.api.
      * NiciraExtensionCodecRegistrator
      * #registerMatchEntrySerializer(org.opendaylight
@@ -184,7 +184,7 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.opendaylight.openflow.extension.nicira.api.
      * NiciraExtensionCodecRegistrator
      * #unregisterMatchEntrySerializer(org.opendaylight
