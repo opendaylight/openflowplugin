@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -20,7 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  * @author msunal
  *
  */
-public interface NiciraExtensionCodecRegistrator {
+public interface NiciraExtensionCodecRegistrator extends AutoCloseable {
 
     void registerActionDeserializer(NiciraActionDeserializerKey key, OFDeserializer<Action> deserializer);
 

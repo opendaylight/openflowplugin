@@ -1,56 +1,11 @@
 /*
- * Copyright (c) 2014, 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2017 Pantheon Technologies s.r.o. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowjava.nx;
-
-import org.opendaylight.openflowjava.nx.codec.match.ArpOpCodec;
-import org.opendaylight.openflowjava.nx.codec.match.ArpShaCodec;
-import org.opendaylight.openflowjava.nx.codec.match.ArpSpaCodec;
-import org.opendaylight.openflowjava.nx.codec.match.ArpThaCodec;
-import org.opendaylight.openflowjava.nx.codec.match.ArpTpaCodec;
-import org.opendaylight.openflowjava.nx.codec.match.CtStateCodec;
-import org.opendaylight.openflowjava.nx.codec.match.CtZoneCodec;
-import org.opendaylight.openflowjava.nx.codec.match.EncapEthDstCodec;
-import org.opendaylight.openflowjava.nx.codec.match.EncapEthSrcCodec;
-import org.opendaylight.openflowjava.nx.codec.match.EncapEthTypeCodec;
-import org.opendaylight.openflowjava.nx.codec.match.EthDstCodec;
-import org.opendaylight.openflowjava.nx.codec.match.EthSrcCodec;
-import org.opendaylight.openflowjava.nx.codec.match.EthTypeCodec;
-import org.opendaylight.openflowjava.nx.codec.match.IcmpTypeCodec;
-import org.opendaylight.openflowjava.nx.codec.match.InPortCodec;
-import org.opendaylight.openflowjava.nx.codec.match.IpDstCodec;
-import org.opendaylight.openflowjava.nx.codec.match.IpSrcCodec;
-import org.opendaylight.openflowjava.nx.codec.match.Ipv6DstCodec;
-import org.opendaylight.openflowjava.nx.codec.match.Ipv6SrcCodec;
-import org.opendaylight.openflowjava.nx.codec.match.MplsLabelCodec;
-import org.opendaylight.openflowjava.nx.codec.match.NshMdtypeCodec;
-import org.opendaylight.openflowjava.nx.codec.match.NshNpCodec;
-import org.opendaylight.openflowjava.nx.codec.match.Nshc1Codec;
-import org.opendaylight.openflowjava.nx.codec.match.Nshc2Codec;
-import org.opendaylight.openflowjava.nx.codec.match.Nshc3Codec;
-import org.opendaylight.openflowjava.nx.codec.match.Nshc4Codec;
-import org.opendaylight.openflowjava.nx.codec.match.NsiCodec;
-import org.opendaylight.openflowjava.nx.codec.match.NspCodec;
-import org.opendaylight.openflowjava.nx.codec.match.Reg0Codec;
-import org.opendaylight.openflowjava.nx.codec.match.Reg1Codec;
-import org.opendaylight.openflowjava.nx.codec.match.Reg2Codec;
-import org.opendaylight.openflowjava.nx.codec.match.Reg3Codec;
-import org.opendaylight.openflowjava.nx.codec.match.Reg4Codec;
-import org.opendaylight.openflowjava.nx.codec.match.Reg5Codec;
-import org.opendaylight.openflowjava.nx.codec.match.Reg6Codec;
-import org.opendaylight.openflowjava.nx.codec.match.Reg7Codec;
-import org.opendaylight.openflowjava.nx.codec.match.TcpDstCodec;
-import org.opendaylight.openflowjava.nx.codec.match.TcpSrcCodec;
-import org.opendaylight.openflowjava.nx.codec.match.TunGpeNpCodec;
-import org.opendaylight.openflowjava.nx.codec.match.TunIdCodec;
-import org.opendaylight.openflowjava.nx.codec.match.TunIpv4DstCodec;
-import org.opendaylight.openflowjava.nx.codec.match.TunIpv4SrcCodec;
-import org.opendaylight.openflowjava.nx.codec.match.UdpDstCodec;
-import org.opendaylight.openflowjava.nx.codec.match.UdpSrcCodec;
+package org.opendaylight.openflowjava.nx.codec.match;
 
 /**
  * @author msunal

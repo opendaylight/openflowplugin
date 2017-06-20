@@ -92,24 +92,6 @@
             <type>cfg</type>
             <classifier>config</classifier>
         </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowplugin</groupId>
-            <artifactId>openflowplugin-controller-config</artifactId>
-            <type>xml</type>
-            <classifier>configmsgspy</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowplugin</groupId>
-            <artifactId>openflowplugin-controller-config</artifactId>
-            <type>xml</type>
-            <classifier>config-Li</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowplugin</groupId>
-            <artifactId>openflowplugin-controller-config</artifactId>
-            <type>xml</type>
-            <classifier>config-He</classifier>
-        </dependency>
     </dependencies>
 
 </project>

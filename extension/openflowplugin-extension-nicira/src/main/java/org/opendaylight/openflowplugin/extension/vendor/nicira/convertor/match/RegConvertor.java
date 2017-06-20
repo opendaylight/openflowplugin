@@ -9,7 +9,7 @@ package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match;
 
 import com.google.common.base.Optional;
 import java.util.Objects;
-import org.opendaylight.openflowjava.nx.NiciraMatchCodecs;
+import org.opendaylight.openflowjava.nx.codec.match.NiciraMatchCodecs;
 import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ExtensionAugment;
