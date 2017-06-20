@@ -16,6 +16,24 @@
       "revId": "46da36b7fc0288fb5b980c4f60ad584f1fceb54d",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1af78d9a_387764d6",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/lifecycle/ContextChainHolderImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-06-20T07:02:00Z",
+      "side": 1,
+      "message": "I know what you mean but the old connection should be closed only be closing event from device. (Plugin have to rely on OFJ events)\n\nIf we close the old connection we can run in circles. Closing old connection causes to rejoin the device and then plugin closes again the latest connection. Replacing will not help either.\n\nIf there is a new connection coming from the same device with another port than the old and running and correct connection plugin shouldn\u0027t be closed.",
+      "parentUuid": "1af78d9a_f8dddc43",
+      "revId": "46da36b7fc0288fb5b980c4f60ad584f1fceb54d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
