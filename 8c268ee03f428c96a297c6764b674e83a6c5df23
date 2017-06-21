@@ -22,6 +22,30 @@
       "revId": "8c268ee03f428c96a297c6764b674e83a6c5df23",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa2559ec_0abfdbd1",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/initialization/OVSDeviceValidator.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-06-21T02:14:29Z",
+      "side": 1,
+      "message": "We should do any of these check only when user set the config flag to true.",
+      "parentUuid": "fa2559ec_caedc3f1",
+      "range": {
+        "startLine": 24,
+        "startChar": 3,
+        "endLine": 24,
+        "endChar": 3
+      },
+      "revId": "8c268ee03f428c96a297c6764b674e83a6c5df23",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
