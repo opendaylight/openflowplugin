@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa2559ec_caedc3f1",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/initialization/OVSDeviceValidator.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-06-21T02:12:39Z",
+      "side": 1,
+      "message": "we don\u0027t need device specific validators. You can use switch_feature to figure out what capabilities switch support. Please reference to the openflowplugin 1.3 specification. Following are the capabilities that switch sends to the controller \n\nenum ofp_capabilities {\nOFPC_FLOW_STATS \u003d 1 \u003c\u003c 0, /* Flow statistics. */\nOFPC_TABLE_STATS \u003d 1 \u003c\u003c 1, /* Table statistics. */\nOFPC_PORT_STATS \u003d 1 \u003c\u003c 2, /* Port statistics. */\nOFPC_GROUP_STATS \u003d 1 \u003c\u003c 3, /* Group statistics. */\nOFPC_IP_REASM \u003d 1 \u003c\u003c 5, /* Can reassemble IP fragments. */\nOFPC_QUEUE_STATS \u003d 1 \u003c\u003c 6, /* Queue statistics. */\nOFPC_PORT_BLOCKED \u003d 1 \u003c\u003c 8 /* Switch will block looping ports. */\n}\n\nso if TABLE_STATS, PORT_STATS, GROUP_STATS is false, we should reject the connection, assuming that their respective *feature* request is not supported as well. We can\u0027t reject the connection if Meter features is not supported, because as per openflow specification this is optional feature.\n\nOther alternate approach is to send these request and if we receive the error from switch, we should reject the connection. \n\nWriting switch specific validators will open up gate for other proprietary switches to add their validators and we should not allow that.",
+      "range": {
+        "startLine": 24,
+        "startChar": 3,
+        "endLine": 24,
+        "endChar": 3
+      },
+      "revId": "8c268ee03f428c96a297c6764b674e83a6c5df23",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
