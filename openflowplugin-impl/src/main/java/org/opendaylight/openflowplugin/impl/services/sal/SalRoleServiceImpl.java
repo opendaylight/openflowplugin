@@ -160,7 +160,7 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
 
         final Future<BigInteger> generationFuture = roleService.getGenerationIdFromDevice(getVersion());
 
-        return Futures.transform(JdkFutureAdapters.listenInPoolThread(generationFuture), (AsyncFunction<BigInteger, RpcResult<SetRoleOutput>>) generationId -> {
+        return Futures.transformAsync(JdkFutureAdapters.listenInPoolThread(generationFuture), (AsyncFunction<BigInteger, RpcResult<SetRoleOutput>>) generationId -> {
             LOG.debug("RoleChangeTask, GenerationIdFromDevice from device {} is {}", getDeviceInfo().getNodeId().getValue(), generationId);
             final BigInteger nextGenerationId = getNextGenerationId(generationId);
             LOG.debug("nextGenerationId received from device:{} is {}", getDeviceInfo().getNodeId().getValue(), nextGenerationId);

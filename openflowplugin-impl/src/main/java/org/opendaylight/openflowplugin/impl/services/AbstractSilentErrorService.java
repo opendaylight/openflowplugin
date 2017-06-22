@@ -30,9 +30,10 @@ public abstract class AbstractSilentErrorService<I, O extends DataObject>
     @Override
     public ListenableFuture<RpcResult<O>> handleServiceCall(@Nonnull I input,
                                                             @Nullable final Function<OfHeader, Boolean> isComplete) {
-        return Futures.withFallback(
+        return Futures.catching(
                 super.handleServiceCall(input, isComplete),
-                t -> RpcResultBuilder.<O>failed().buildFuture());
+                Throwable.class,
+                t -> RpcResultBuilder.<O>failed().build());
     }
 
 }

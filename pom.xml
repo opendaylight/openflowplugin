@@ -30,9 +30,7 @@
       <module>openflowplugin-common</module>
       <module>extension</module>
       <module>distribution/karaf</module>
-      <module>distribution/karaf4</module>
       <module>openflowplugin-controller-config</module>
-      <module>openflowplugin-blueprint-config-he</module>
       <module>openflowplugin-blueprint-config</module>
       <!--
       <module>openflowplugin-it</module>
@@ -41,7 +39,6 @@
       <module>drop-test-karaf</module>
       <module>test-common</module>
       <module>features-aggregator</module>
-      <module>features-he-aggregator</module>
       <module>samples/sample-consumer</module>
       <module>samples/learning-switch</module>
       <module>applications</module>
