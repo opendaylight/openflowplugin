@@ -43,29 +43,25 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>openflowplugin-extension-api</artifactId>
+                <artifactId>openflowplugin-blueprint-config</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>openflowplugin-extension-nicira</artifactId>
+                <artifactId>drop-test-karaf</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>openflowplugin-extension-onf</artifactId>
+                <artifactId>openflowplugin-common</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>openflowjava-extension-nicira</artifactId>
+                <artifactId>test-common</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>openflowjava-extension-nicira-api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+            <!-- models -->
             <dependency>
                 <groupId>${project.groupId}.model</groupId>
                 <artifactId>model-flow-base</artifactId>
@@ -81,6 +77,38 @@
                 <artifactId>model-flow-statistics</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <!-- extensions -->
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>openflowplugin-extension-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>openflowplugin-extension-nicira</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>openflowjava-extension-nicira-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>openflowjava-extension-nicira</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>openflowplugin-extension-onf</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <!-- applications -->
+            <dependency>
+                <groupId>${project.groupId}.applications</groupId>
+                <artifactId>bulk-o-matic</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>${project.groupId}.applications</groupId>
                 <artifactId>forwardingrules-manager</artifactId>
@@ -90,13 +118,6 @@
                 <groupId>${project.groupId}.applications</groupId>
                 <artifactId>forwardingrules-sync</artifactId>
                 <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}.applications</groupId>
-                <artifactId>forwardingrules-sync</artifactId>
-                <version>${project.version}</version>
-                <classifier>config</classifier>
-                <type>xml</type>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}.applications</groupId>
@@ -134,34 +155,11 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>drop-test-karaf</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}.legacy</groupId>
-                <artifactId>sal-compatibility</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>openflowplugin-common</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>test-common</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>${project.groupId}.applications</groupId>
-                <artifactId>table-miss-enforcer</artifactId>
+                <artifactId>notification-supplier</artifactId>
                 <version>${project.version}</version>
-                <type>xml</type>
-                <classifier>config</classifier>
             </dependency>
+            <!-- config files -->
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>openflowplugin-blueprint-config</artifactId>
@@ -169,42 +167,7 @@
                 <type>cfg</type>
                 <classifier>config</classifier>
             </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>openflowplugin-controller-config</artifactId>
-                <version>${project.version}</version>
-                <type>xml</type>
-                <classifier>config-He</classifier>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>openflowplugin-controller-config</artifactId>
-                <version>${project.version}</version>
-                <type>xml</type>
-                <classifier>config-Li</classifier>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>openflowplugin-controller-config</artifactId>
-                <version>${project.version}</version>
-                <type>xml</type>
-                <classifier>configmsgspy</classifier>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>openflowplugin-extension-nicira-config</artifactId>
-                <version>${project.version}</version>
-                <type>xml</type>
-                <classifier>config</classifier>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>drop-test-karaf</artifactId>
-                <version>${project.version}</version>
-                <type>xml</type>
-                <classifier>config</classifier>
-            </dependency>
-
+            <!-- features -->
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>features-openflowplugin</artifactId>
@@ -218,30 +181,6 @@
                 <version>${project.version}</version>
                 <classifier>features</classifier>
                 <type>xml</type>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}.applications</groupId>
-                <artifactId>bulk-o-matic</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}.applications</groupId>
-                <artifactId>bulk-o-matic</artifactId>
-                <version>${project.version}</version>
-                <type>xml</type>
-                <classifier>config</classifier>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}.applications</groupId>
-                <artifactId>notification-supplier</artifactId>
-                <version>${project.version}</version>
-                <type>xml</type>
-                <classifier>config</classifier>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}.applications</groupId>
-                <artifactId>notification-supplier</artifactId>
-                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
@@ -334,7 +273,6 @@
                 <type>xml</type>
                 <version>${project.version}</version>
             </dependency>
-
         </dependencies>
     </dependencyManagement>
 </project>
