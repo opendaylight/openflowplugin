@@ -90,10 +90,6 @@
             <artifactId>openflowplugin</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowplugin</groupId>
-            <artifactId>openflowplugin-extension-api</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.opendaylight.openflowplugin.model</groupId>
             <artifactId>model-flow-base</artifactId>
         </dependency>

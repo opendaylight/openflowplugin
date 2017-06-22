@@ -11,7 +11,6 @@
         <bundle>mvn:org.opendaylight.openflowplugin/openflowjava-extension-nicira-api/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin/openflowjava-extension-nicira/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-extension-nicira/{{VERSION}}</bundle>
-        <configfile finalname="etc/opendaylight/karaf/43-openflowjava-nx-config.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-extension-nicira-config/{{VERSION}}/xml/config</configfile>
     </feature>
 
 </features>
