@@ -79,7 +79,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
         // TODO enable table-update when ready
         //resultVehicle = updateTableFeatures(nodeIdent, configTree);
 
-        resultVehicle = Futures.transform(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
+        resultVehicle = Futures.transformAsync(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
                 if (!input.isSuccessful()) {
@@ -92,7 +92,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
             }
         });
         Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "addMissingGroups"));
-        resultVehicle = Futures.transform(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
+        resultVehicle = Futures.transformAsync(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
                 if (!input.isSuccessful()) {
@@ -102,7 +102,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
             }
         });
         Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "addMissingMeters"));
-        resultVehicle = Futures.transform(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
+        resultVehicle = Futures.transformAsync(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
                 if (!input.isSuccessful()) {
@@ -114,7 +114,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
         Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "addMissingFlows"));
 
 
-        resultVehicle = Futures.transform(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
+        resultVehicle = Futures.transformAsync(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
                 if (!input.isSuccessful()) {
@@ -124,7 +124,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
             }
         });
         Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "removeRedundantFlows"));
-        resultVehicle = Futures.transform(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
+        resultVehicle = Futures.transformAsync(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
                 if (!input.isSuccessful()) {
@@ -134,7 +134,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
             }
         });
         Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "removeRedundantMeters"));
-        resultVehicle = Futures.transform(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
+        resultVehicle = Futures.transformAsync(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
                 if (!input.isSuccessful()) {
@@ -232,7 +232,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
 
         final ListenableFuture<RpcResult<Void>> singleVoidResult = Futures.transform(
                 Futures.allAsList(allResults), ReconcileUtil.<RemoveFlowOutput>createRpcResultCondenser("flow remove"));
-        return Futures.transform(singleVoidResult,
+        return Futures.transformAsync(singleVoidResult,
                 ReconcileUtil.chainBarrierFlush(PathUtil.digNodePath(nodeIdent), transactionService));
 
     }
@@ -284,7 +284,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
             Collections.reverse(groupsRemovalPlan);
             for (final ItemSyncBox<Group> groupsPortion : groupsRemovalPlan) {
                 chainedResult =
-                        Futures.transform(chainedResult, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
+                        Futures.transformAsync(chainedResult, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
                             @Override
                             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input)
                                     throws Exception {
@@ -322,7 +322,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 Futures.allAsList(allResults),
                 ReconcileUtil.<RemoveGroupOutput>createRpcResultCondenser("group remove"));
 
-        return Futures.transform(singleVoidResult,
+        return Futures.transformAsync(singleVoidResult,
                 ReconcileUtil.chainBarrierFlush(PathUtil.digNodePath(nodeIdent), transactionService));
     }
 
@@ -352,7 +352,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 Futures.allAsList(allResults),
                 ReconcileUtil.<UpdateTableOutput>createRpcResultCondenser("table update"));
 
-        return Futures.transform(singleVoidResult,
+        return Futures.transformAsync(singleVoidResult,
                 ReconcileUtil.chainBarrierFlush(PathUtil.digNodePath(nodeIdent), transactionService));
     }
 
@@ -389,7 +389,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 ReconcileUtil.<Void>createRpcResultCondenser("group add/update"));
 
 
-        return Futures.transform(summaryResult, ReconcileUtil.chainBarrierFlush(
+        return Futures.transformAsync(summaryResult, ReconcileUtil.chainBarrierFlush(
                 PathUtil.digNodePath(nodeIdent), transactionService));
     }
 
@@ -462,7 +462,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 chainedResult = flushAddGroupPortionAndBarrier(nodeIdent, groupsAddPlan.get(0));
                 for (final ItemSyncBox<Group> groupsPortion : Iterables.skip(groupsAddPlan, 1)) {
                     chainedResult =
-                            Futures.transform(chainedResult, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
+                            Futures.transformAsync(chainedResult, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
                                 @Override
                                 public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input)
                                         throws Exception {

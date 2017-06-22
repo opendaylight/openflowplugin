@@ -151,7 +151,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
             lastDataGathering = collectingStatType.stream().reduce(
                     lastDataGathering,
                     this::statChainFuture,
-                    (a, b) -> Futures.transform(a, (AsyncFunction<Boolean, Boolean>) result -> b));
+                    (a, b) -> Futures.transformAsync(a, (AsyncFunction<Boolean, Boolean>) result -> b));
 
             // write end timestamp to state snapshot container
             Futures.addCallback(lastDataGathering, new FutureCallback<Boolean>() {
@@ -253,8 +253,8 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     }
 
     private ListenableFuture<Boolean> statChainFuture(final ListenableFuture<Boolean> prevFuture, final MultipartType multipartType) {
-        return Futures.transform(deviceConnectionCheck(), (AsyncFunction<Boolean, Boolean>) connectionResult -> Futures
-                .transform(prevFuture, (AsyncFunction<Boolean, Boolean>) result -> {
+        return Futures.transformAsync(deviceConnectionCheck(), (AsyncFunction<Boolean, Boolean>) connectionResult -> Futures
+                .transformAsync(prevFuture, (AsyncFunction<Boolean, Boolean>) result -> {
                     LOG.debug("Status of previous stat iteration for node {}: {}", deviceInfo.getLOGValue(), result);
                     LOG.debug("Stats iterating to next type for node {} of type {}",
                             deviceInfo.getLOGValue(),

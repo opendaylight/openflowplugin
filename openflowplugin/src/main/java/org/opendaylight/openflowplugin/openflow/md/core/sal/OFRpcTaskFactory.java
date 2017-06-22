@@ -275,7 +275,7 @@ public abstract class OFRpcTaskFactory {
 
         if (ofFlowModInputs.size() > index + 1) {
             // there are more flowmods to chain
-            return Futures.transform(result,
+            return Futures.transformAsync(result,
                     new AsyncFunction<RpcResult<UpdateFlowOutput>, RpcResult<UpdateFlowOutput>>() {
                         @Override
                         public ListenableFuture<RpcResult<UpdateFlowOutput>> apply(RpcResult<UpdateFlowOutput> input) throws Exception {
