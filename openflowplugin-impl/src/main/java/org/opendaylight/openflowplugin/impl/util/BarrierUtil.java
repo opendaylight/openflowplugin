@@ -51,7 +51,7 @@ public final class BarrierUtil {
         final MutablePair<RpcResult<T>, RpcResult<Void>> resultPair = new MutablePair<>();
 
         // store input result and append barrier
-        final ListenableFuture<RpcResult<Void>> barrierResult = Futures.transform(input,
+        final ListenableFuture<RpcResult<Void>> barrierResult = Futures.transformAsync(input,
                 new AsyncFunction<RpcResult<T>, RpcResult<Void>>() {
                     @Override
                     public ListenableFuture<RpcResult<Void>> apply(@Nullable final RpcResult<T> interInput) throws Exception {

@@ -76,7 +76,7 @@ public class ReconcileUtilTest {
     public void testChainBarrierFlush() throws Exception {
         SettableFuture<RpcResult<Void>> testRabbit = SettableFuture.create();
         final ListenableFuture<RpcResult<Void>> vehicle =
-                Futures.transform(testRabbit, ReconcileUtil.chainBarrierFlush(NODE_IDENT, flowCapableService));
+                Futures.transformAsync(testRabbit, ReconcileUtil.chainBarrierFlush(NODE_IDENT, flowCapableService));
         Mockito.when(flowCapableService.sendBarrier(barrierInputCaptor.capture()))
                 .thenReturn(RpcResultBuilder.<Void>success().buildFuture());
 

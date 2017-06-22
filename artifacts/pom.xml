@@ -14,7 +14,7 @@
   <parent>
     <groupId>org.opendaylight.odlparent</groupId>
     <artifactId>odlparent-lite</artifactId>
-    <version>1.9.0</version>
+    <version>2.0.0</version>
     <relativePath/>
   </parent>
 
@@ -207,21 +207,7 @@
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>features-openflowplugin-he</artifactId>
-                <version>${project.version}</version>
-                <classifier>features</classifier>
-                <type>xml</type>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
                 <artifactId>features-openflowplugin</artifactId>
-                <version>${project.version}</version>
-                <classifier>features</classifier>
-                <type>xml</type>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>features-openflowplugin-extension-he</artifactId>
                 <version>${project.version}</version>
                 <classifier>features</classifier>
                 <type>xml</type>
@@ -234,34 +220,6 @@
                 <type>xml</type>
             </dependency>
             <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>features4-openflowplugin-he</artifactId>
-                <version>${project.version}</version>
-                <classifier>features</classifier>
-                <type>xml</type>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>features4-openflowplugin</artifactId>
-                <version>${project.version}</version>
-                <classifier>features</classifier>
-                <type>xml</type>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>features4-openflowplugin-extension-he</artifactId>
-                <version>${project.version}</version>
-                <classifier>features</classifier>
-                <type>xml</type>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>features4-openflowplugin-extension</artifactId>
-                <version>${project.version}</version>
-                <classifier>features</classifier>
-                <type>xml</type>
-            </dependency>
-            <dependency>
                 <groupId>${project.groupId}.applications</groupId>
                 <artifactId>bulk-o-matic</artifactId>
                 <version>${project.version}</version>
@@ -283,14 +241,6 @@
             <dependency>
                 <groupId>${project.groupId}.applications</groupId>
                 <artifactId>notification-supplier</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>odl-openflowplugin-flow-services-ui</artifactId>
-                <classifier>features</classifier>
-                <type>xml</type>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

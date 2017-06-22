@@ -3,8 +3,8 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.opendaylight.odlparent</groupId>
-    <artifactId>karaf-parent</artifactId>
-    <version>1.9.0</version>
+    <artifactId>karaf4-parent</artifactId>
+    <version>2.0.0</version>
   </parent>
   <groupId>org.opendaylight.openflowplugin</groupId>
   <artifactId>openflowplugin-karaf</artifactId>
@@ -17,11 +17,6 @@
 
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>org.apache.karaf.shell</groupId>
-        <artifactId>org.apache.karaf.shell.console</artifactId>
-        <version>${karaf.version}</version>
-      </dependency>
       <dependency>
         <groupId>org.opendaylight.openflowplugin</groupId>
         <artifactId>openflowplugin-artifacts</artifactId>
@@ -42,13 +37,6 @@
     </dependency>
     <!-- openflowplugin feature -->
     <dependency>
-      <artifactId>features-openflowplugin-he</artifactId>
-      <groupId>org.opendaylight.openflowplugin</groupId>
-      <classifier>features</classifier>
-      <type>xml</type>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
       <artifactId>features-openflowplugin</artifactId>
       <groupId>org.opendaylight.openflowplugin</groupId>
       <classifier>features</classifier>
@@ -56,13 +44,6 @@
       <scope>runtime</scope>
     </dependency>
     <!-- openflowplugin extension feature -->
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin</groupId>
-      <artifactId>features-openflowplugin-extension-he</artifactId>
-      <classifier>features</classifier>
-      <type>xml</type>
-      <scope>runtime</scope>
-    </dependency>
     <dependency>
       <groupId>org.opendaylight.openflowplugin</groupId>
       <artifactId>features-openflowplugin-extension</artifactId>
