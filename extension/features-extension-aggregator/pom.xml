@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>odlparent-lite</artifactId>
-        <version>1.9.0</version>
+        <version>2.0.0</version>
         <relativePath/>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -16,7 +16,6 @@
     <version>0.5.0-SNAPSHOT</version>
 
     <modules>
-        <module>features4-openflowplugin-extension</module>
         <module>features-openflowplugin-extension</module>
         <module>odl-openflowplugin-nxm-extensions</module>
         <module>odl-openflowplugin-onf-extensions</module>

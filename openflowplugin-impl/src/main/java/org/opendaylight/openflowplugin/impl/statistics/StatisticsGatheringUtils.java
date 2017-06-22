@@ -79,7 +79,7 @@ public final class StatisticsGatheringUtils {
                                                                           final DeviceRegistry registry,
                                                                           final ConvertorExecutor convertorExecutor,
                                                                           final MultipartWriterProvider statisticsWriterProvider) {
-        return Futures.transform(
+        return Futures.transformAsync(
                 statisticsGatheringService.getStatisticsOfType(
                         new EventIdentifier(QUEUE2_REQCTX + type.toString(), deviceInfo.getNodeId().toString()),
                         type),
@@ -216,7 +216,9 @@ public final class StatisticsGatheringUtils {
 
         try {
             Futures.transform(Futures
-                    .withFallback(readTx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier), t -> {
+                    .catchingAsync(readTx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier),
+                            Throwable.class,
+                            t -> {
                         // we wish to close readTx for fallBack
                         readTx.close();
                         return Futures.immediateFailedFuture(t);

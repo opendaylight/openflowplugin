@@ -159,7 +159,7 @@ public class MdSalRegistrationUtils {
         // pickup low statistics service
         final OpendaylightFlowStatisticsService flowStatisticsService = Preconditions.checkNotNull(
                 rpcContext.lookupRpcService(OpendaylightFlowStatisticsService.class));
-        Preconditions.checkArgument(COMPOSITE_SERVICE_TYPE_TOKEN.isAssignableFrom(flowStatisticsService.getClass()));
+        Preconditions.checkArgument(COMPOSITE_SERVICE_TYPE_TOKEN.isSubtypeOf(flowStatisticsService.getClass()));
         // attach delegate to flow statistics service (to cover all but aggregated stats with match filter input)
         final OpendaylightFlowStatisticsServiceDelegateImpl flowStatisticsDelegate =
                 new OpendaylightFlowStatisticsServiceDelegateImpl(rpcContext, deviceContext, notificationPublishService, new AtomicLong(), convertorExecutor);
