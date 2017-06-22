@@ -28,56 +28,6 @@
                     </instructions>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.opendaylight.yangtools</groupId>
-                <artifactId>yang-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate-sources</goal>
-                        </goals>
-                        <configuration>
-                            <codeGenerators>
-                                <generator>
-                                    <codeGeneratorClass>
-                                        org.opendaylight.controller.config.yangjmxgenerator.plugin.JMXGenerator
-                                    </codeGeneratorClass>
-                                    <outputBaseDir>${project.build.directory}/generated-sources/config</outputBaseDir>
-                                    <additionalConfiguration>
-                                        <namespaceToPackage1>
-                                            urn:opendaylight:params:xml:ns:yang:controller==org.opendaylight.controller.config.yang
-                                        </namespaceToPackage1>
-                                    </additionalConfiguration>
-                                </generator>
-                                <generator>
-                                    <codeGeneratorClass>
-                                        org.opendaylight.mdsal.binding.maven.api.gen.plugin.CodeGeneratorImpl
-                                    </codeGeneratorClass>
-                                    <outputBaseDir>${project.build.directory}/generated-sources/sal</outputBaseDir>
-                                </generator>
-                                <generator>
-                                    <codeGeneratorClass>org.opendaylight.mdsal.binding.yang.unified.doc.generator.maven.DocumentationGeneratorImpl</codeGeneratorClass>
-                                    <outputBaseDir>${project.build.directory}/site/models</outputBaseDir>
-                                </generator>
-                            </codeGenerators>
-                            <inspectDependencies>true</inspectDependencies>
-                        </configuration>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.opendaylight.controller</groupId>
-                        <artifactId>yang-jmx-generator-plugin</artifactId>
-                        <version>${config.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.opendaylight.mdsal</groupId>
-                        <artifactId>maven-sal-api-gen-plugin</artifactId>
-                        <version>${mdsal.model.version}</version>
-                        <type>jar</type>
-                    </dependency>
-                </dependencies>
-            </plugin>
         </plugins>
     </build>
     <dependencies>
