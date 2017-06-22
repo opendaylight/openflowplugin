@@ -19,27 +19,30 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 public interface ItemLifecycleListener {
 
     /**
-     * react upon item added event
+     * react upon item added event.
      *
      * @param itemPath keyed path in DS
      * @param itemBody item body
      */
 
-    <I extends Identifiable<K> & DataObject, K extends Identifier<I>> void onAdded(KeyedInstanceIdentifier<I, K> itemPath, I itemBody);
+    <I extends Identifiable<K> & DataObject, K extends Identifier<I>> void onAdded(
+            KeyedInstanceIdentifier<I, K> itemPath, I itemBody);
 
     /**
-     * react upon item removed event
+     * react upon item removed event.
      *
      * @param itemPath keyed path in DS
      */
-    <I extends Identifiable<K> & DataObject, K extends Identifier<I>> void onRemoved(KeyedInstanceIdentifier<I, K> itemPath);
+    <I extends Identifiable<K> & DataObject, K extends Identifier<I>> void onRemoved(
+            KeyedInstanceIdentifier<I, K> itemPath);
 
     /**
-     * react upon item updated event
+     * react upon item updated event.
      *
      * @param itemPath keyed path in DS
      * @param itemBody item body
      */
 
-    <I extends Identifiable<K> & DataObject, K extends Identifier<I>> void onUpdated(KeyedInstanceIdentifier<I, K> itemPath, I itemBody);
+    <I extends Identifiable<K> & DataObject, K extends Identifier<I>> void onUpdated(
+            KeyedInstanceIdentifier<I, K> itemPath, I itemBody);
 }

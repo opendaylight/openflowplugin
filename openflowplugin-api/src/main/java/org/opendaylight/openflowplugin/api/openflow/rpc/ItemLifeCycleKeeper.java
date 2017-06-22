@@ -12,11 +12,12 @@ import javax.annotation.Nullable;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 
 /**
- * provides read-write access to assigned {@link ItemLifecycleListener}
+ * provides read-write access to assigned {@link ItemLifecycleListener}.
  */
 public interface ItemLifeCycleKeeper extends ItemLifeCycleSource {
 
     /**
+     * lifecycle listener.
      * @return assigned item lifecycle listener
      */
     @Nullable

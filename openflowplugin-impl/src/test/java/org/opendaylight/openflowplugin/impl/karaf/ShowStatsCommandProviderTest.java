@@ -71,7 +71,7 @@ public class ShowStatsCommandProviderTest extends AbstractKarafTest {
     public void testDoExecute_dirty() throws Exception {
         Assert.assertTrue(checkNoActivity(messageIntelligenceAgency.provideIntelligence(), CHECK_NO_ACTIVITY_FUNCTION));
 
-        messageIntelligenceAgency.spyMessage(OfHeader.class, MessageSpy.STATISTIC_GROUP.FROM_SWITCH);
+        messageIntelligenceAgency.spyMessage(OfHeader.class, MessageSpy.StatisticsGroup.FROM_SWITCH);
         Assert.assertFalse(checkNoActivity(messageIntelligenceAgency.provideIntelligence(), CHECK_NO_ACTIVITY_FUNCTION));
 
         showStatsCommandProvider.execute(cmdSession);

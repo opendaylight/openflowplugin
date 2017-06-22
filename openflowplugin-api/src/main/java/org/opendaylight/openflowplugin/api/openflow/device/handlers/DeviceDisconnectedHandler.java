@@ -20,5 +20,5 @@ public interface DeviceDisconnectedHandler {
      * Method is used to propagate information about closed connection with device.
      * It propagates connected device's connection context.
      */
-    void onDeviceDisconnected(final ConnectionContext connectionContext);
+    void onDeviceDisconnected(ConnectionContext connectionContext);
 }

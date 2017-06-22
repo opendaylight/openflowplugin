@@ -9,12 +9,12 @@
 package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
 /**
- * Listens to changes about context chain state
+ * Listens to changes about context chain state.
  */
 public interface ContextChainStateListener {
 
     /**
-     * Event triggered on context chain state change
+     * Event triggered on context chain state change.
      * @param state context chain state
      */
     void onStateAcquired(ContextChainState state);

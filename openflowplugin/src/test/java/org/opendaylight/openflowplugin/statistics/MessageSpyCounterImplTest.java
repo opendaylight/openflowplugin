@@ -31,7 +31,7 @@ public class MessageSpyCounterImplTest {
         assertEquals(EXPECTED_MSG_COUNT,messageCounts.size());
 
         assertEquals("FROM_SWITCH_ENQUEUED: no activity detected", messageCounts.get(0));
-        messageSpyCounter.spyMessage(msg, MessageSpy.STATISTIC_GROUP.FROM_SWITCH_ENQUEUED);
+        messageSpyCounter.spyMessage(msg, MessageSpy.StatisticsGroup.FROM_SWITCH_ENQUEUED);
         messageCounts = messageSpyCounter.dumpMessageCounts();
         assertEquals("FROM_SWITCH_ENQUEUED: MSG[Action] -> +1 | 1", messageCounts.get(0));
 

@@ -24,13 +24,13 @@ public interface ConnectionManager extends SwitchConnectionHandler {
      * device is connected.
      * @param deviceConnectedHandler device connected handler
      */
-    void setDeviceConnectedHandler(final DeviceConnectedHandler deviceConnectedHandler);
+    void setDeviceConnectedHandler(DeviceConnectedHandler deviceConnectedHandler);
 
     /**
-     * Method registers handler responsible handling device disconnected event
+     * Method registers handler responsible handling device disconnected event.
      * @param deviceDisconnectedHandler device disconnected handler
      */
-    void setDeviceDisconnectedHandler(final DeviceDisconnectedHandler deviceDisconnectedHandler);
+    void setDeviceDisconnectedHandler(DeviceDisconnectedHandler deviceDisconnectedHandler);
 
     /**
      * Setter for echo reply timeout.

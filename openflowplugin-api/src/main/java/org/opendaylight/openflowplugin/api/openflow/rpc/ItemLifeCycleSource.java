@@ -19,6 +19,7 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleLi
 public interface ItemLifeCycleSource {
 
     /**
+     * lifecycle changes.
      * @param itemLifecycleListener acts upon lifecycle changes
      */
     void setItemLifecycleListener(@Nullable ItemLifecycleListener itemLifecycleListener);

@@ -11,10 +11,7 @@ package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 import javax.annotation.Nonnull;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
 
 /**
@@ -27,20 +24,20 @@ public interface LifecycleService extends ClusterSingletonService, AutoCloseable
      * @param singletonServiceProvider      from md-sal binding
      * @param deviceContext                 device
      */
-    void registerService(@Nonnull final ClusterSingletonServiceProvider singletonServiceProvider,
-                         @Nonnull final DeviceContext deviceContext);
+    void registerService(@Nonnull ClusterSingletonServiceProvider singletonServiceProvider,
+                         @Nonnull DeviceContext deviceContext);
 
     /**
      * This method registers device removed handler what will be executed when device should be removed.
      * @param deviceRemovedHandler device removed handler
      */
-    void registerDeviceRemovedHandler(@Nonnull final DeviceRemovedHandler deviceRemovedHandler);
+    void registerDeviceRemovedHandler(@Nonnull DeviceRemovedHandler deviceRemovedHandler);
 
     /**
      * Make device SLAVE.
      * @param deviceContext provide device context which can't be stored in lifecycle service.
      */
-    void makeDeviceSlave(final DeviceContext deviceContext);
+    void makeDeviceSlave(DeviceContext deviceContext);
 
     @Override
     void close();

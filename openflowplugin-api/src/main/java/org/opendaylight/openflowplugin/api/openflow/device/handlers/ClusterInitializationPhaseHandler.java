@@ -15,15 +15,15 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeLi
 public interface ClusterInitializationPhaseHandler {
 
     /**
-     * Method for initialization cycle between contexts
+     * Method for initialization cycle between contexts.
      * @param mastershipChangeListener - listener if something goes wrong with initialization
      */
-    boolean onContextInstantiateService(final MastershipChangeListener mastershipChangeListener);
+    boolean onContextInstantiateService(MastershipChangeListener mastershipChangeListener);
 
     /**
      * Method for initial submit transaction after successful initial gathering.
      */
-    default boolean initialSubmitTransaction(){
+    default boolean initialSubmitTransaction() {
         //This method need to be override only in device context to submit initial data.
         return false;
     }

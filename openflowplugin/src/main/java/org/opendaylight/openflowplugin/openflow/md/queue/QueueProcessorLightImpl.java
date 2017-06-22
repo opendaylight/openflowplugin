@@ -26,7 +26,7 @@ import org.opendaylight.openflowplugin.api.openflow.md.queue.QueueItem;
 import org.opendaylight.openflowplugin.api.openflow.md.queue.QueueKeeper;
 import org.opendaylight.openflowplugin.api.openflow.md.queue.QueueProcessor;
 import org.opendaylight.openflowplugin.api.openflow.statistics.MessageSpy;
-import org.opendaylight.openflowplugin.api.openflow.statistics.MessageSpy.STATISTIC_GROUP;
+import org.opendaylight.openflowplugin.api.openflow.statistics.MessageSpy.StatisticsGroup;
 import org.opendaylight.openflowplugin.openflow.md.core.ThreadPoolLoggingExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
@@ -135,7 +135,7 @@ public class QueueProcessorLightImpl implements QueueProcessor<OfHeader, DataObj
 
     @Override
     public void enqueueQueueItem(QueueItem<OfHeader> queueItem) {
-        messageSpy.spyMessage(queueItem.getMessage(), STATISTIC_GROUP.FROM_SWITCH_ENQUEUED);
+        messageSpy.spyMessage(queueItem.getMessage(), StatisticsGroup.FROM_SWITCH_ENQUEUED);
         TicketImpl<OfHeader, DataObject> ticket = new TicketImpl<>();
         ticket.setConductor(queueItem.getConnectionConductor());
         ticket.setMessage(queueItem.getMessage());
@@ -150,7 +150,7 @@ public class QueueProcessorLightImpl implements QueueProcessor<OfHeader, DataObj
 
     @Override
     public void directProcessQueueItem(QueueItem<OfHeader> queueItem) {
-        messageSpy.spyMessage(queueItem.getMessage(), STATISTIC_GROUP.FROM_SWITCH_ENQUEUED);
+        messageSpy.spyMessage(queueItem.getMessage(), StatisticsGroup.FROM_SWITCH_ENQUEUED);
         TicketImpl<OfHeader, DataObject> ticket = new TicketImpl<>();
         ticket.setConductor(queueItem.getConnectionConductor());
         ticket.setMessage(queueItem.getMessage());

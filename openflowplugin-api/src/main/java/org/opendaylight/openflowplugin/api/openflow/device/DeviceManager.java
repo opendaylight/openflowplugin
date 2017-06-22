@@ -46,16 +46,18 @@ public interface DeviceManager extends
 
     void setBarrierInterval(long barrierTimeoutLimit);
 
-    CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(DeviceInfo deviceInfo);
+    CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(
+            DeviceInfo deviceInfo);
 
-    CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(final KeyedInstanceIdentifier<Node, NodeKey> ii);
+    CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(
+            KeyedInstanceIdentifier<Node, NodeKey> ii);
 
-    DeviceContext createContext(@Nonnull final ConnectionContext connectionContext);
+    DeviceContext createContext(@Nonnull ConnectionContext connectionContext);
 
     long getBarrierIntervalNanos();
 
     int getBarrierCountLimit();
 
-    void sendNodeAddedNotification(@Nonnull final DeviceInfo deviceInfo);
+    void sendNodeAddedNotification(@Nonnull DeviceInfo deviceInfo);
 }
 

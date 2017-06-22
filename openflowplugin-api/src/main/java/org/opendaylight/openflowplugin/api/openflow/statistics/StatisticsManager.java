@@ -14,31 +14,31 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 
 /**
- * Manager to start or stop scheduling statistics
+ * Manager to start or stop scheduling statistics.
  */
 public interface StatisticsManager extends OFPManager {
 
     /**
-     * Start scheduling statistic gathering for given device info
+     * Start scheduling statistic gathering for given device info.
      * @param deviceInfo for this device should be running statistics gathering
      */
-    void startScheduling(final DeviceInfo deviceInfo);
+    void startScheduling(DeviceInfo deviceInfo);
 
     /**
-     * Stop scheduling statistic gathering for given device info
+     * Stop scheduling statistic gathering for given device info.
      * @param deviceInfo for this device should be stopped statistics gathering
      */
-    void stopScheduling(final DeviceInfo deviceInfo);
+    void stopScheduling(DeviceInfo deviceInfo);
 
     @Override
     void close();
 
     void setIsStatisticsPollingOn(boolean isStatisticsPollingOn);
 
-    void setBasicTimerDelay(final long basicTimerDelay);
+    void setBasicTimerDelay(long basicTimerDelay);
 
-    void setMaximumTimerDelay(final long maximumTimerDelay);
+    void setMaximumTimerDelay(long maximumTimerDelay);
 
-    StatisticsContext createContext(@Nonnull final DeviceContext deviceContext);
+    StatisticsContext createContext(@Nonnull DeviceContext deviceContext);
 
 }

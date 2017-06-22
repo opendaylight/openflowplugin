@@ -44,7 +44,7 @@ public class PacketInRateLimiterTest {
     public void testDisableFlow() throws Exception {
         rateLimiter.disableFlow();
 
-        Mockito.verify(messageSpy).spyMessage(DeviceContext.class, MessageSpy.STATISTIC_GROUP.OFJ_BACKPRESSURE_ON);
+        Mockito.verify(messageSpy).spyMessage(DeviceContext.class, MessageSpy.StatisticsGroup.OFJ_BACKPRESSURE_ON);
         Mockito.verify(connectionAdapter).setPacketInFiltering(true);
     }
 
@@ -52,7 +52,7 @@ public class PacketInRateLimiterTest {
     public void testEnableFlow() throws Exception {
         rateLimiter.enableFlow();
 
-        Mockito.verify(messageSpy).spyMessage(DeviceContext.class, MessageSpy.STATISTIC_GROUP.OFJ_BACKPRESSURE_OFF);
+        Mockito.verify(messageSpy).spyMessage(DeviceContext.class, MessageSpy.StatisticsGroup.OFJ_BACKPRESSURE_OFF);
         Mockito.verify(connectionAdapter).setPacketInFiltering(false);
     }
 

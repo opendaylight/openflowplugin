@@ -7,11 +7,8 @@
  */
 package org.opendaylight.openflowplugin.api.openflow;
 
-import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import java.util.concurrent.RejectedExecutionException;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
-import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterLifecycleSupervisor;
@@ -22,12 +19,10 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterLifec
 public interface OFPContext extends AutoCloseable, ClusterLifecycleSupervisor, ClusterInitializationPhaseHandler {
 
 
-    String MESSAGE = "Cannot stop abstract services, check implementation of cluster services";
-
     /**
      * Context state.
      */
-    enum CONTEXT_STATE {
+    enum ContextState {
         /* Initialization phase, context not yet fully initialized */
         INITIALIZATION,
         /* Standard working phase everything is fine */
@@ -40,7 +35,7 @@ public interface OFPContext extends AutoCloseable, ClusterLifecycleSupervisor, C
      * Get actual context state.
      * @return actual context state
      */
-    CONTEXT_STATE getState();
+    ContextState getState();
 
     /**
      * About to stop services in cluster not master anymore or going down.

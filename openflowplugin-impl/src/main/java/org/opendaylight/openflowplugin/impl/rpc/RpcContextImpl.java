@@ -16,7 +16,6 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Semaphore;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -51,7 +50,7 @@ class RpcContextImpl implements RpcContext {
     // TODO: add private Sal salBroker
     private final ConcurrentMap<Class<?>, RoutedRpcRegistration<?>> rpcRegistrations = new ConcurrentHashMap<>();
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
-    private volatile CONTEXT_STATE state = CONTEXT_STATE.INITIALIZATION;
+    private volatile ContextState state = ContextState.INITIALIZATION;
     private final DeviceInfo deviceInfo;
     private final DeviceContext deviceContext;
     private final ExtensionConverterProvider extensionConverterProvider;
@@ -135,7 +134,7 @@ class RpcContextImpl implements RpcContext {
                 tracker.release();
                 final long xid = getXid().getValue();
                 LOG.trace("Removed request context with xid {}", xid);
-                messageSpy.spyMessage(RpcContextImpl.class, MessageSpy.STATISTIC_GROUP.REQUEST_STACK_FREED);
+                messageSpy.spyMessage(RpcContextImpl.class, MessageSpy.StatisticsGroup.REQUEST_STACK_FREED);
             }
         };
     }
@@ -157,7 +156,7 @@ class RpcContextImpl implements RpcContext {
     }
 
     @Override
-    public CONTEXT_STATE getState() {
+    public ContextState getState() {
         return this.state;
     }
 
@@ -173,7 +172,7 @@ class RpcContextImpl implements RpcContext {
 
     @Override
     public ListenableFuture<Void> stopClusterServices() {
-        if (CONTEXT_STATE.TERMINATION.equals(this.state)) {
+        if (ContextState.TERMINATION.equals(this.state)) {
             return Futures.immediateCancelledFuture();
         }
 

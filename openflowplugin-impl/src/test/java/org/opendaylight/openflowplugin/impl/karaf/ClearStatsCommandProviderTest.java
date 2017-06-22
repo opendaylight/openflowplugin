@@ -70,7 +70,7 @@ public class ClearStatsCommandProviderTest extends AbstractKarafTest {
     public void testDoExecute_dirty() throws Exception {
         final MessageIntelligenceAgency mi5 = OpenFlowPluginProviderImpl.getMessageIntelligenceAgency();
         Assert.assertTrue(checkNoActivity(mi5.provideIntelligence(), CHECK_NO_ACTIVITY_FUNCTION));
-        mi5.spyMessage(OfHeader.class, MessageSpy.STATISTIC_GROUP.FROM_SWITCH);
+        mi5.spyMessage(OfHeader.class, MessageSpy.StatisticsGroup.FROM_SWITCH);
         Assert.assertFalse(checkNoActivity(mi5.provideIntelligence(), CHECK_NO_ACTIVITY_FUNCTION));
 
         clearStatsCommandProvider.execute(cmdSession);

@@ -17,12 +17,12 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 
 /**
- * Context for statistics
+ * Context for statistics.
  */
 public interface StatisticsContext extends RequestContextStack, OFPContext {
 
     /**
-     * Gather data from device
+     * Gather data from device.
      * @return true if gathering was successful
      */
     ListenableFuture<Boolean> gatherDynamicData();
@@ -38,41 +38,43 @@ public interface StatisticsContext extends RequestContextStack, OFPContext {
     void statListForCollectingInitialization();
 
     /**
+     * Setter.
      * @param pollTimeout handle to nearest scheduled statistics poll
      */
     void setPollTimeout(Timeout pollTimeout);
 
     /**
+     * Getter.
      * @return dedicated item life cycle change listener (per device)
      */
     ItemLifecycleListener getItemLifeCycleListener();
 
     /**
-     * On / Off scheduling
+     * On / Off scheduling.
      * @param schedulingEnabled true if scheduling should be enabled
      */
-    void setSchedulingEnabled(final boolean schedulingEnabled);
+    void setSchedulingEnabled(boolean schedulingEnabled);
 
     /**
-     * Check status
+     * Check status.
      * @return true if scheduling is enabled
      */
     boolean isSchedulingEnabled();
 
     /**
-     * Gain device state
+     * Gain device state.
      * @return device state from device context from lifecycle service
      */
     DeviceState gainDeviceState();
 
     /**
-     * Gain device context
+     * Gain device context.
      * @return device context from lifecycle service
      */
     DeviceContext gainDeviceContext();
 
     /**
-     * In case to change mastership to slave or connection interrupted stop the future and release thread
+     * In case to change mastership to slave or connection interrupted stop the future and release thread.
      */
     void stopGatheringData();
 }

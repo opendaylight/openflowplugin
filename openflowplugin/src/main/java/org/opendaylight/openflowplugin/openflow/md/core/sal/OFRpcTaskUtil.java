@@ -117,7 +117,7 @@ public abstract class OFRpcTaskUtil {
                 } else {
                     notificationProviderService.publish(notificationComposer.compose(result.getResult().getTransactionId()));
                     task.getTaskContext().getMessageSpy().spyMessage(
-                            task.getInput(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
+                            task.getInput(), MessageSpy.StatisticsGroup.TO_SWITCH_SUBMITTED_SUCCESS);
                 }
             }
 
@@ -125,7 +125,7 @@ public abstract class OFRpcTaskUtil {
             public void onFailure(final Throwable t) {
                 //TODO: good place to notify MD-SAL about errors
                 task.getTaskContext().getMessageSpy().spyMessage(
-                        task.getInput(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
+                        task.getInput(), MessageSpy.StatisticsGroup.TO_SWITCH_SUBMITTED_FAILURE);
             }
         }
 

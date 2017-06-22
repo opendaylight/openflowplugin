@@ -18,6 +18,6 @@ public interface MatchEntrySerializer extends OFSerializer<Match> {
      * @param match Openflow match
      * @return true if matched
      */
-    boolean matchTypeCheck(final Match match);
+    boolean matchTypeCheck(Match match);
 
 }

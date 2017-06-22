@@ -168,7 +168,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private boolean switchFeaturesMandatory;
     private DeviceInfo deviceInfo;
     private final ConvertorExecutor convertorExecutor;
-    private volatile CONTEXT_STATE state;
+    private volatile ContextState state;
     private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
     private final DeviceManager myManager;
     private final DeviceInitializerProvider deviceInitializerProvider;
@@ -212,7 +212,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.itemLifeCycleSourceRegistry = new ItemLifeCycleRegistryImpl();
         this.flowLifeCycleKeeper = new ItemLifeCycleSourceImpl();
         this.itemLifeCycleSourceRegistry.registerLifeCycleSource(flowLifeCycleKeeper);
-        this.state = CONTEXT_STATE.INITIALIZATION;
+        this.state = ContextState.INITIALIZATION;
         this.convertorExecutor = convertorExecutor;
         this.skipTableFeatures = skipTableFeatures;
         this.useSingleLayerSerialization = useSingleLayerSerialization;
@@ -319,8 +319,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         messageSpy.spyMessage(
                 ofHeader.getImplementedInterface(),
                 (ofHeader instanceof Error)
-                        ? MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE
-                        : MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
+                        ? MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_FAILURE
+                        : MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_SUCCESS);
     }
 
     @Override
@@ -328,8 +328,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         ofHeaderList.forEach(header -> messageSpy.spyMessage(
                 header.getImplementedInterface(),
                 (header instanceof Error)
-                        ? MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE
-                        : MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS));
+                        ? MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_FAILURE
+                        : MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_SUCCESS));
     }
 
     @Override
@@ -369,7 +369,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public void processPortStatusMessage(final PortStatusMessage portStatus) {
-        messageSpy.spyMessage(portStatus.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
+        messageSpy.spyMessage(portStatus.getImplementedInterface(), MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_SUCCESS);
 
         if (initialized) {
             try {
@@ -410,29 +410,29 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public void processPacketInMessage(final PacketInMessage packetInMessage) {
-        messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH);
+        messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.StatisticsGroup.FROM_SWITCH);
         final ConnectionAdapter connectionAdapter = getPrimaryConnectionContext().getConnectionAdapter();
         final PacketReceived packetReceived = packetInTranslator.translate(packetInMessage, getDeviceInfo(), null);
 
         if (packetReceived == null) {
             LOG.debug("Received a null packet from switch {}", connectionAdapter.getRemoteAddress());
-            messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_SRC_FAILURE);
+            messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.StatisticsGroup.FROM_SWITCH_TRANSLATE_SRC_FAILURE);
             return;
         } else {
-            messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_OUT_SUCCESS);
+            messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.StatisticsGroup.FROM_SWITCH_TRANSLATE_OUT_SUCCESS);
         }
 
         if (!packetInLimiter.acquirePermit()) {
             LOG.debug("Packet limited");
             // TODO: save packet into emergency slot if possible
-            messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PACKET_IN_LIMIT_REACHED_AND_DROPPED);
+            messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.StatisticsGroup.FROM_SWITCH_PACKET_IN_LIMIT_REACHED_AND_DROPPED);
             return;
         }
 
         final ListenableFuture<?> offerNotification = notificationPublishService.offerNotification(packetReceived);
         if (NotificationPublishService.REJECTED.equals(offerNotification)) {
             LOG.debug("notification offer rejected");
-            messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_NOTIFICATION_REJECTED);
+            messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.StatisticsGroup.FROM_SWITCH_NOTIFICATION_REJECTED);
             packetInLimiter.drainLowWaterMark();
             packetInLimiter.releasePermit();
             return;
@@ -441,13 +441,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         Futures.addCallback(offerNotification, new FutureCallback<Object>() {
             @Override
             public void onSuccess(final Object result) {
-                messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
+                messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_SUCCESS);
                 packetInLimiter.releasePermit();
             }
 
             @Override
             public void onFailure(final Throwable t) {
-                messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_NOTIFICATION_REJECTED);
+                messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.StatisticsGroup.FROM_SWITCH_NOTIFICATION_REJECTED);
                 LOG.debug("notification offer failed: {}", t.getMessage());
                 LOG.trace("notification offer failed..", t);
                 packetInLimiter.releasePermit();
@@ -510,8 +510,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public void onPublished() {
-        Verify.verify(CONTEXT_STATE.INITIALIZATION.equals(getState()));
-        this.state = CONTEXT_STATE.WORKING;
+        Verify.verify(ContextState.INITIALIZATION.equals(getState()));
+        this.state = ContextState.WORKING;
         primaryConnectionContext.getConnectionAdapter().setPacketInFiltering(false);
     }
 
@@ -545,7 +545,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         if (LOG.isDebugEnabled()) {
             LOG.debug("Shutdown method for node {}", getDeviceInfo().getLOGValue());
         }
-        if (CONTEXT_STATE.TERMINATION.equals(getState())) {
+        if (ContextState.TERMINATION.equals(getState())) {
             LOG.debug("DeviceCtx for Node {} is in termination process.", getDeviceInfo().getLOGValue());
             return;
         }
@@ -590,7 +590,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public CONTEXT_STATE getState() {
+    public ContextState getState() {
         return this.state;
     }
 

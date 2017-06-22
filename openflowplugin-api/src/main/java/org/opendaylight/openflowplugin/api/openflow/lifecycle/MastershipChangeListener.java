@@ -22,7 +22,7 @@ public interface MastershipChangeListener {
      * @param reason reason
      * @param mandatory if it is mandatory connection will be dropped
      */
-    void onNotAbleToStartMastership(final DeviceInfo deviceInfo, @Nonnull final String reason, final boolean mandatory);
+    void onNotAbleToStartMastership(DeviceInfo deviceInfo, @Nonnull String reason, boolean mandatory);
 
     /**
      * Event occurs if there was a try to acquire MASTER role.
@@ -30,26 +30,26 @@ public interface MastershipChangeListener {
      * @param deviceInfo for this device
      * @param reason reason
      */
-    default void onNotAbleToStartMastershipMandatory(final DeviceInfo deviceInfo, @Nonnull final String reason) {
+    default void onNotAbleToStartMastershipMandatory(DeviceInfo deviceInfo, @Nonnull String reason) {
         onNotAbleToStartMastership(deviceInfo, reason, true);
     }
 
     /**
      * Changed to MASTER role on device.
      * @param deviceInfo device
-     * @param mastershipState
+     * @param mastershipState state
      */
-    void onMasterRoleAcquired(final DeviceInfo deviceInfo, @Nonnull final ContextChainMastershipState mastershipState);
+    void onMasterRoleAcquired(DeviceInfo deviceInfo, @Nonnull ContextChainMastershipState mastershipState);
 
     /**
      * Change to SLAVE role on device was successful.
      * @param deviceInfo device
      */
-    void onSlaveRoleAcquired(final DeviceInfo deviceInfo);
+    void onSlaveRoleAcquired(DeviceInfo deviceInfo);
 
     /**
      * Change to SLAVE role on device was not able.
      * @param deviceInfo device
      */
-    void onSlaveRoleNotAcquired(final DeviceInfo deviceInfo);
+    void onSlaveRoleNotAcquired(DeviceInfo deviceInfo);
 }

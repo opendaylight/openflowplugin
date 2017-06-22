@@ -15,7 +15,7 @@ import org.opendaylight.openflowjava.protocol.api.connection.DeviceRequestFailed
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
-import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy.STATISTIC_GROUP;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy.StatisticsGroup;
 import org.opendaylight.openflowplugin.impl.services.util.RequestContextUtil;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Error;
@@ -45,7 +45,7 @@ public abstract class AbstractRequestCallback<T> implements FutureCallback<OfHea
         context.close();
     }
 
-    protected final void spyMessage(@Nonnull final STATISTIC_GROUP group) {
+    protected final void spyMessage(@Nonnull final StatisticsGroup group) {
         spy.spyMessage(requestType, Preconditions.checkNotNull(group));
     }
 
@@ -64,10 +64,10 @@ public abstract class AbstractRequestCallback<T> implements FutureCallback<OfHea
             final String errorString = String.format("Device reported error type %s code %s", err.getTypeString(), err.getCodeString());
 
             builder = RpcResultBuilder.<T>failed().withError(RpcError.ErrorType.APPLICATION, errorString, t);
-            spyMessage(MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
+            spyMessage(StatisticsGroup.TO_SWITCH_SUBMIT_FAILURE);
         } else {
             builder = RpcResultBuilder.<T>failed().withError(RpcError.ErrorType.APPLICATION, t.getMessage(), t);
-            spyMessage(MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_ERROR);
+            spyMessage(StatisticsGroup.TO_SWITCH_SUBMIT_ERROR);
         }
 
         context.setResult(builder.build());

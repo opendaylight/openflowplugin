@@ -157,7 +157,7 @@ public interface ConnectionContext {
     void handshakeSuccessful();
 
     /**
-     * Handle received port status message
+     * Handle received port status message.
      * @param portStatusMessage port status message
      */
     void handlePortStatusMessage(PortStatusMessage portStatusMessage);

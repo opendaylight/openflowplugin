@@ -43,13 +43,13 @@ public class NotificationPopListener<T> implements PopListener<T> {
         if(processedMessage instanceof Notification) {
             if (notificationProviderService != null) {
                 notificationProviderService.publish((Notification) processedMessage);
-                messageSpy.spyMessage(processedMessage, MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
+                messageSpy.spyMessage(processedMessage, MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_SUCCESS);
                 published = true;
             }
         }
         
         if (! published) {
-            messageSpy.spyMessage(processedMessage, MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
+            messageSpy.spyMessage(processedMessage, MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_FAILURE);
         }
     }
 

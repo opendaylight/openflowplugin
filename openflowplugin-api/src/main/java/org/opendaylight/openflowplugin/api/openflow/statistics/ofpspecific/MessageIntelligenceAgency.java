@@ -10,11 +10,9 @@ package org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific;
 
 import java.util.List;
 
-/**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 20.4.2015.
- */
 public interface MessageIntelligenceAgency extends MessageSpy {
 
     List<String> provideIntelligence();
+
     void resetStatistics();
 }

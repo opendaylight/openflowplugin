@@ -48,20 +48,20 @@ public class MessageSpyCounterImpl implements MessageObservatory<DataContainer> 
         }
     }
 
-    private final ConcurrentMap<STATISTIC_GROUP, ConcurrentMap<Class<? extends DataContainer>, MessageCounters>> inputStats = new ConcurrentHashMap<>();
+    private final ConcurrentMap<StatisticsGroup, ConcurrentMap<Class<? extends DataContainer>, MessageCounters>> inputStats = new ConcurrentHashMap<>();
 
     @Override
     public void spyIn(final DataContainer message) {
-        getCounters(message, STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_IN_SUCCESS).increment();
+        getCounters(message, StatisticsGroup.FROM_SWITCH_TRANSLATE_IN_SUCCESS).increment();
     }
 
     @Override
     public void spyOut(final DataContainer message) {
-        getCounters(message, STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_OUT_SUCCESS).increment();
+        getCounters(message, StatisticsGroup.FROM_SWITCH_TRANSLATE_OUT_SUCCESS).increment();
     }
 
     @Override
-    public void spyMessage(final DataContainer message, final STATISTIC_GROUP statGroup) {
+    public void spyMessage(final DataContainer message, final StatisticsGroup statGroup) {
         getCounters(message, statGroup).increment();
     }
 
@@ -70,7 +70,7 @@ public class MessageSpyCounterImpl implements MessageObservatory<DataContainer> 
      * @param statGroup TODO
      * @return
      */
-    private MessageCounters getCounters(final DataContainer message, final STATISTIC_GROUP statGroup) {
+    private MessageCounters getCounters(final DataContainer message, final StatisticsGroup statGroup) {
         Class<? extends DataContainer> msgType = message.getImplementedInterface();
         ConcurrentMap<Class<? extends DataContainer>, MessageCounters> groupData = getOrCreateGroupData(statGroup);
         MessageCounters counters = getOrCreateCountersPair(msgType, groupData);
@@ -89,7 +89,7 @@ public class MessageSpyCounterImpl implements MessageObservatory<DataContainer> 
 
     }
 
-    private ConcurrentMap<Class<? extends DataContainer>, MessageCounters> getOrCreateGroupData(final STATISTIC_GROUP statGroup) {
+    private ConcurrentMap<Class<? extends DataContainer>, MessageCounters> getOrCreateGroupData(final StatisticsGroup statGroup) {
         final ConcurrentMap<Class<? extends DataContainer>, MessageCounters> lookup = inputStats.get(statGroup);
         if (lookup != null) {
             return lookup;
@@ -115,7 +115,7 @@ public class MessageSpyCounterImpl implements MessageObservatory<DataContainer> 
     public List<String> dumpMessageCounts() {
         List<String> dump = new ArrayList<>();
 
-        for (STATISTIC_GROUP statGroup : STATISTIC_GROUP.values()) {
+        for (StatisticsGroup statGroup : StatisticsGroup.values()) {
             Map<Class<? extends DataContainer>, MessageCounters> groupData = inputStats.get(statGroup);
             if (groupData != null) {
                 for (Entry<Class<? extends DataContainer>, MessageCounters> statEntry : groupData.entrySet()) {

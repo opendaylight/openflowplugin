@@ -137,7 +137,7 @@ public class RpcContextImplTest {
             final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNotNull(requestContext);
             requestContext.close();
-            verify(messageSpy).spyMessage(RpcContextImpl.class, MessageSpy.STATISTIC_GROUP.REQUEST_STACK_FREED);
+            verify(messageSpy).spyMessage(RpcContextImpl.class, MessageSpy.StatisticsGroup.REQUEST_STACK_FREED);
         }
     }
 
@@ -187,7 +187,7 @@ public class RpcContextImplTest {
     public void testCreateRequestContext2() throws InterruptedException {
         RequestContext temp = rpcContext.createRequestContext();
         temp.close();
-        verify(messageSpy).spyMessage(RpcContextImpl.class,MessageSpy.STATISTIC_GROUP.REQUEST_STACK_FREED);
+        verify(messageSpy).spyMessage(RpcContextImpl.class, MessageSpy.StatisticsGroup.REQUEST_STACK_FREED);
     }
 
     @Test

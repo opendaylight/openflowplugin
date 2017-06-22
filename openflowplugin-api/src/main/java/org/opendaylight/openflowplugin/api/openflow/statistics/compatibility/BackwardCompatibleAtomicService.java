@@ -14,7 +14,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 
 /**
  * Prescribes handling and transforming of backward compatible services in order to provide simple to use service
- * with notification support
+ * with notification support.
  *
  * @param <O> rpc input
  * @param <I> rpc input
@@ -24,7 +24,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 public interface BackwardCompatibleAtomicService<I, O> {
 
     /**
-     * process rpc request and publish corresponding notification upon success
+     * process rpc request and publish corresponding notification upon success.
      *
      * @param input                      rpc input
      * @param notificationPublishService publisher handle

@@ -18,5 +18,5 @@ public interface DeviceRemovedHandler {
     /**
      * Method is used to propagate information about device being removed from manager.
      */
-    void onDeviceRemoved(final DeviceInfo deviceInfo);
+    void onDeviceRemoved(DeviceInfo deviceInfo);
 }

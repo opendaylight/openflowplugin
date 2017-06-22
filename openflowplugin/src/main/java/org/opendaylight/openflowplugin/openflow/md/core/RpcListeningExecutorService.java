@@ -58,13 +58,13 @@ public class RpcListeningExecutorService implements ListeningExecutorService {
         if (task instanceof OFRpcTask<?, ?>) {
             if (((OFRpcTask<?, ?>) task).getInput() instanceof DataContainer) {
                 messageSpy.spyMessage((DataContainer) ((OFRpcTask<?, ?>) task).getInput(), 
-                        MessageSpy.STATISTIC_GROUP.TO_SWITCH_ENQUEUED_SUCCESS);
+                        MessageSpy.StatisticsGroup.TO_SWITCH_ENQUEUED_SUCCESS);
                 covered = true;
             }
         } 
         
         if (! covered) {
-            messageSpy.spyMessage(notSupportedTask, MessageSpy.STATISTIC_GROUP.TO_SWITCH_ENQUEUED_FAILED);
+            messageSpy.spyMessage(notSupportedTask, MessageSpy.StatisticsGroup.TO_SWITCH_ENQUEUED_FAILED);
         }
         
         return resultFuture;

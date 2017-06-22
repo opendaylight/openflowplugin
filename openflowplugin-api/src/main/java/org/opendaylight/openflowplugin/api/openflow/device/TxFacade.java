@@ -21,9 +21,7 @@ public interface TxFacade {
     /**
      * Method creates put operation using provided data in underlying transaction chain.
      */
-    <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
-                                                   final InstanceIdentifier<T> path,
-                                                   final T data);
+    <T extends DataObject> void writeToTransaction(LogicalDatastoreType store, InstanceIdentifier<T> path, T data);
 
     /**
      * Method creates put operation using provided data in underlying transaction
@@ -31,15 +29,14 @@ public interface TxFacade {
      * WARNING: This method is slow because of additional reading cost.
      * Use it only if you really need to create parents.
      */
-    <T extends DataObject> void writeToTransactionWithParentsSlow(final LogicalDatastoreType store,
-                                                                  final InstanceIdentifier<T> path,
-                                                                  final T data);
+    <T extends DataObject> void writeToTransactionWithParentsSlow(LogicalDatastoreType store,
+                                                                  InstanceIdentifier<T> path,
+                                                                  T data);
 
     /**
      * Method creates delete operation for provided path in underlying transaction chain.
      */
-    <T extends DataObject> void addDeleteToTxChain(final LogicalDatastoreType store,
-                                                   final InstanceIdentifier<T> path);
+    <T extends DataObject> void addDeleteToTxChain(LogicalDatastoreType store, InstanceIdentifier<T> path);
 
     /**
      * Method submits Transaction to DataStore.
@@ -57,7 +54,7 @@ public interface TxFacade {
     ReadOnlyTransaction getReadTransaction();
 
     /**
-     * Method returns true if transaction chain manager is enabled
+     * Method returns true if transaction chain manager is enabled.
      * @return is transaction chain manager enabled
      */
     boolean isTransactionsEnabled();

@@ -11,7 +11,7 @@ package org.opendaylight.openflowplugin.api.openflow;
 import org.opendaylight.controller.md.sal.binding.api.BindingService;
 
 /**
- * Plugin services provider
+ * Plugin services provider.
  */
 public interface OpenFlowPluginProvider extends AutoCloseable, BindingService {
 
