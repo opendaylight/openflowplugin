@@ -76,6 +76,13 @@ public class RpcManagerImpl implements RpcManager {
                 convertorExecutor,
                 notificationPublishService);
 
+        // Clean up any old context present
+        RpcContext staleContext = contexts.remove(deviceInfo);
+        if (staleContext != null){
+            LOG.warn("Previous rpc context for node {} was not closed, closing the context.", deviceInfo);
+            staleContext.close();
+        }
+
         Verify.verify(contexts.putIfAbsent(deviceInfo, rpcContext) == null, "RpcCtx still not closed for node {}", deviceInfo.getNodeId());
         lifecycleService.setRpcContext(rpcContext);
         lifecycleService.registerDeviceRemovedHandler(this);
