@@ -33,6 +33,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.Sal
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.UseBundleFlag;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
@@ -63,6 +65,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private final ForwardingRulesManagerConfig forwardingRulesManagerConfig;
     private final ClusterSingletonServiceProvider clusterSingletonServiceProvider;
     private final NotificationProviderService notificationService;
+    private final SalBundleService salBundleService;
     private final boolean disableReconciliation;
     private final boolean staleMarkingEnabled;
     private final int reconciliationRetryCount;
@@ -74,6 +77,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private FlowNodeReconciliation nodeListener;
     private FlowNodeConnectorInventoryTranslatorImpl flowNodeConnectorInventoryTranslatorImpl;
     private DeviceMastershipManager deviceMastershipManager;
+    private UseBundleFlag isBundleBasedReconEnabled;
 
     public ForwardingRulesManagerImpl(final DataBroker dataBroker,
                                       final RpcConsumerRegistry rpcRegistry,
@@ -82,7 +86,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                                       final NotificationProviderService notificationService,
                                       final boolean disableReconciliation,
                                       final boolean staleMarkingEnabled,
-                                      final int reconciliationRetryCount) {
+                                      final int reconciliationRetryCount, final UseBundleFlag isBundleBasedReconEnabled) {
         this.dataService = Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
         this.forwardingRulesManagerConfig = Preconditions.checkNotNull(config, "Configuration for FRM cannot be null");
         this.clusterSingletonServiceProvider = Preconditions.checkNotNull(clusterSingletonService,
@@ -100,10 +104,12 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                 "RPC SalMeterService not found.");
         this.salTableService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalTableService.class),
                 "RPC SalTableService not found.");
-
+        this.salBundleService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalBundleService.class),
+                "RPC SalTableService not found.");;
         this.disableReconciliation = disableReconciliation;
         this.staleMarkingEnabled = staleMarkingEnabled;
         this.reconciliationRetryCount = reconciliationRetryCount;
+        this.isBundleBasedReconEnabled = isBundleBasedReconEnabled;
     }
 
     @Override
@@ -208,6 +214,12 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     }
 
     @Override
+    public SalBundleService getSalBundleService() {
+        return salBundleService;
+    }
+
+
+    @Override
     public ForwardingRulesCommiter<Flow> getFlowCommiter() {
         return flowListener;
     }
@@ -245,6 +257,11 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     @Override
     public FlowNodeConnectorInventoryTranslatorImpl getFlowNodeConnectorInventoryTranslatorImpl() {
         return flowNodeConnectorInventoryTranslatorImpl;
+    }
+
+    @Override
+    public UseBundleFlag isBundleBasedReconEnabled() {
+        return isBundleBasedReconEnabled;
     }
 
     @Override

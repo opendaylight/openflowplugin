@@ -17,6 +17,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalF
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.UseBundleFlag;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
@@ -95,6 +97,13 @@ public interface ForwardingRulesManager extends AutoCloseable {
     SalTableService getSalTableService();
 
     /**
+     * Bundle RPC service
+     *
+     * @return
+     */
+    SalBundleService getSalBundleService();
+
+    /**
      * Content definition method and prevent code duplicity in Reconcil
      * @return ForwardingRulesCommiter&lt;Flow&gt;
      */
@@ -148,6 +157,8 @@ public interface ForwardingRulesManager extends AutoCloseable {
      * @return FlowNodeConnectorInventoryTranslatorImpl
      */
     FlowNodeConnectorInventoryTranslatorImpl getFlowNodeConnectorInventoryTranslatorImpl();
+
+    UseBundleFlag isBundleBasedReconEnabled();
 
 }
 

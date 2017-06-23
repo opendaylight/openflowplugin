@@ -60,6 +60,10 @@
       <scope>test</scope>
       <type>test-jar</type>
     </dependency>
+      <dependency>
+          <groupId>org.opendaylight.openflowplugin</groupId>
+          <artifactId>openflowplugin-extension-onf</artifactId>
+      </dependency>
   </dependencies>
 
   <build>

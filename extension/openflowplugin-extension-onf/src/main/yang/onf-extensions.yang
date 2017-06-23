@@ -130,6 +130,22 @@ module onf-extensions {
         }
     }
 
+
+ typedef use-bundle-flag {
+        description "Bundle configuration flags.";
+        type enumeration {
+           enum NONE {
+             value 0;
+           }
+           enum BUNDLE_BASED {
+             value 1;
+           }
+           enum non_bundle_based {
+             value 2;
+           }
+        }
+    }
+
     typedef bundle-property-type {
         description "Bundle property types.";
         type enumeration {
