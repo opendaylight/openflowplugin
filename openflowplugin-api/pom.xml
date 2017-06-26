@@ -72,11 +72,11 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.opendaylight.openflowplugin.model</groupId>
+            <groupId>${project.groupId}.model</groupId>
             <artifactId>model-flow-service</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowplugin.model</groupId>
+            <groupId>${project.groupId}.model</groupId>
             <artifactId>model-flow-statistics</artifactId>
         </dependency>
         <dependency>
@@ -84,11 +84,11 @@
             <artifactId>sal-binding-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowjava</groupId>
+            <groupId>${project.groupId}.openflowjava</groupId>
             <artifactId>openflow-protocol-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowjava</groupId>
+            <groupId>${project.groupId}.openflowjava</groupId>
             <artifactId>openflow-protocol-spi</artifactId>
         </dependency>
         <dependency>

@@ -1,20 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.opendaylight.openflowjava</groupId>
-        <artifactId>openflowjava-parent</artifactId>
-        <version>0.10.0-SNAPSHOT</version>
-        <relativePath>../parent</relativePath>
+        <groupId>org.opendaylight.openflowplugin</groupId>
+        <artifactId>openflowplugin-parent</artifactId>
+        <version>0.5.0-SNAPSHOT</version>
+        <relativePath>../../parent</relativePath>
     </parent>
+
     <artifactId>simple-client</artifactId>
     <packaging>bundle</packaging>
-    <!-- <name> formatting is used by autorelease to parse and notify projects on
-         build failure. Please do not modify this unless you have a good reason. -->
-    <name>ODL :: openflowjava :: ${project.artifactId}</name>
-    <scm>
-        <url>https://wiki.opendaylight.org/view/Openflow_Protocol_Library:Main</url>
-      <tag>HEAD</tag>
-  </scm>
 
     <build>
         <plugins>
@@ -32,7 +26,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>${project.groupId}.openflowjava</groupId>
             <artifactId>openflow-protocol-impl</artifactId>
         </dependency>
         <dependency>
