@@ -18,6 +18,7 @@
 
     <properties>
         <mdsal.version>1.6.0-SNAPSHOT</mdsal.version>
+        <openflowjava.groupId>org.opendaylight.openflowjava</openflowjava.groupId>
         <openflowjava.version>0.10.0-SNAPSHOT</openflowjava.version>
         <mdsal.model.version>0.11.0-SNAPSHOT</mdsal.model.version>
     </properties>
@@ -58,7 +59,7 @@
         </dependency>
 
         <dependency>
-            <groupId>org.opendaylight.openflowjava</groupId>
+            <groupId>${openflowjava.groupId}</groupId>
             <artifactId>odl-openflowjava-protocol</artifactId>
             <version>${openflowjava.version}</version>
             <classifier>features</classifier>

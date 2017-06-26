@@ -9,7 +9,7 @@
   </parent>
 
   <groupId>org.opendaylight.openflowjava</groupId>
-  <artifactId>features-aggregator</artifactId>
+  <artifactId>features-openflowjava-aggregator</artifactId>
   <version>0.10.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <!-- <name> formatting is used by autorelease to parse and notify projects on
@@ -19,7 +19,6 @@
   <modules>
     <module>features-openflowjava</module>
     <module>odl-openflowjava-protocol</module>
-    <module>odl-openflowjava-all</module>
   </modules>
 
 </project>

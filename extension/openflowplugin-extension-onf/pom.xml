@@ -70,7 +70,7 @@
             <artifactId>openflowplugin-blueprint-config</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowjava</groupId>
+            <groupId>${openflowjava.groupId}</groupId>
             <artifactId>openflowjava-blueprint-config</artifactId>
             <version>${openflowjava.version}</version>
         </dependency>
@@ -79,7 +79,7 @@
             <artifactId>openflowplugin-extension-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowjava</groupId>
+            <groupId>${openflowjava.groupId}</groupId>
             <artifactId>openflow-protocol-spi</artifactId>
         </dependency>
         <dependency>

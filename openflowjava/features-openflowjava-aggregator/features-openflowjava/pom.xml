@@ -19,13 +19,6 @@
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>odl-openflowjava-all</artifactId>
-      <version>${project.version}</version>
-      <type>xml</type>
-      <classifier>features</classifier>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
       <artifactId>odl-openflowjava-protocol</artifactId>
       <version>${project.version}</version>
       <type>xml</type>

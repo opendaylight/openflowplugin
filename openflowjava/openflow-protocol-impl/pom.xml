@@ -4,7 +4,7 @@
         <groupId>org.opendaylight.openflowjava</groupId>
         <artifactId>openflowjava-parent</artifactId>
         <version>0.10.0-SNAPSHOT</version>
-        <relativePath>../parent</relativePath>
+        <relativePath>../</relativePath>
     </parent>
     <artifactId>openflow-protocol-impl</artifactId>
     <packaging>bundle</packaging>
@@ -105,7 +105,7 @@
             <artifactId>openflow-protocol-spi</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowjava</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>openflowjava-util</artifactId>
         </dependency>
         <dependency>
