@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl.util;
 
 import java.net.InetSocketAddress;
+import java.util.Optional;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -16,6 +17,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.SwitchFeaturesUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IetfInetUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.flow.node.SwitchFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -52,16 +54,16 @@ public class DeviceInitializationUtil {
         for (int i = 0; i < nrOfTables; i++) {
             try {
                 txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL,
-                    deviceInfo
-                        .getNodeInstanceIdentifier()
-                        .augmentation(FlowCapableNode.class)
-                        .child(Table.class, new TableKey((short) i)),
-                    new TableBuilder()
-                        .setId((short) i)
-                        .addAugmentation(
-                            FlowTableStatisticsData.class,
-                            new FlowTableStatisticsDataBuilder().build())
-                        .build());
+                        deviceInfo
+                                .getNodeInstanceIdentifier()
+                                .augmentation(FlowCapableNode.class)
+                                .child(Table.class, new TableKey((short) i)),
+                        new TableBuilder()
+                                .setId((short) i)
+                                .addAugmentation(
+                                        FlowTableStatisticsData.class,
+                                        new FlowTableStatisticsDataBuilder().build())
+                                .build());
             } catch (final Exception e) {
                 LOG.debug("makeEmptyTables: Failed to write node {} to DS ", deviceInfo.getLOGValue(), e);
             }
@@ -72,21 +74,39 @@ public class DeviceInitializationUtil {
      * Retrieve ip address from connection
      * @param connectionContext connection context
      * @param instanceIdentifier instance identifier
-     * @return ip adress
+     * @return ip address
      */
     public static IpAddress getIpAddress(final ConnectionContext connectionContext,
                                          final InstanceIdentifier<Node> instanceIdentifier) {
-        final InetSocketAddress remoteAddress = connectionContext
-            .getConnectionAdapter()
-            .getRemoteAddress();
+        final String node = PathUtil.extractNodeId(instanceIdentifier).getValue();
 
-        if (remoteAddress == null) {
-            LOG.warn("IP address of the node {} cannot be obtained. No connection with switch.", instanceIdentifier);
-            return null;
-        }
+        return getRemoteAddress(connectionContext, instanceIdentifier)
+                .map(inetSocketAddress -> {
+                    final IpAddress ipAddress = IetfInetUtil.INSTANCE.ipAddressFor(inetSocketAddress.getAddress());
+                    LOG.info("IP address of the node {} is: {}", node, ipAddress);
+                    return ipAddress;
+                })
+                .orElse(null);
+    }
 
-        LOG.info("IP address of the node {} is: {}", instanceIdentifier, remoteAddress);
-        return IetfInetUtil.INSTANCE.ipAddressFor(remoteAddress.getAddress());
+    /**
+     * Retrieve port number from connection
+     * @param connectionContext connection context
+     * @param instanceIdentifier instance identifier
+     * @return port number
+     */
+    public static PortNumber getPortNumber(final ConnectionContext connectionContext,
+                                           final InstanceIdentifier<Node> instanceIdentifier) {
+        final String node = PathUtil.extractNodeId(instanceIdentifier).getValue();
+
+        return getRemoteAddress(connectionContext, instanceIdentifier)
+                .map(inetSocketAddress -> {
+                    final int port = inetSocketAddress.getPort();
+                    LOG.info("Port number of the node {} is: {}", node, port);
+                    return new PortNumber(port);
+                })
+                .orElse(null);
+
     }
 
     /**
@@ -96,10 +116,24 @@ public class DeviceInitializationUtil {
      */
     public static SwitchFeatures getSwitchFeatures(final ConnectionContext connectionContext) {
         return SwitchFeaturesUtil
-            .getInstance()
-            .buildSwitchFeatures(new GetFeaturesOutputBuilder(connectionContext
-                .getFeatures())
-                .build());
+                .getInstance()
+                .buildSwitchFeatures(new GetFeaturesOutputBuilder(connectionContext
+                        .getFeatures())
+                        .build());
+    }
+
+    private static Optional<InetSocketAddress> getRemoteAddress(final ConnectionContext connectionContext,
+                                                                final InstanceIdentifier<Node> instanceIdentifier) {
+        final Optional<InetSocketAddress> inetSocketAddress = Optional
+                .ofNullable(connectionContext.getConnectionAdapter())
+                .flatMap(connectionAdapter -> Optional.ofNullable(connectionAdapter.getRemoteAddress()));
+
+        if (!inetSocketAddress.isPresent()) {
+            LOG.warn("Remote address of the node {} cannot be obtained. No connection with switch.", PathUtil
+                    .extractNodeId(instanceIdentifier));
+        }
+
+        return inetSocketAddress;
     }
 
 }

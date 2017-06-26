@@ -43,6 +43,7 @@ public class DescMultipartWriter extends AbstractMultipartWriter<Desc> {
                 .setMeter(Collections.emptyList())
                 .setGroup(Collections.emptyList())
                 .setIpAddress(DeviceInitializationUtil.getIpAddress(connectionContext, getInstanceIdentifier()))
+                .setPortNumber(DeviceInitializationUtil.getPortNumber(connectionContext, getInstanceIdentifier()))
                 .setSwitchFeatures(DeviceInitializationUtil.getSwitchFeatures(connectionContext))
                 .build(),
             withParents);

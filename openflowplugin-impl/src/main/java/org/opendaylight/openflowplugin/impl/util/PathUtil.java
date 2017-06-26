@@ -17,13 +17,21 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * Purpose: utility class providing path and {@link InstanceIdentifier} tools
  */
 public class PathUtil {
-
     private PathUtil() {
         throw new IllegalStateException("This class should not be instantiated.");
     }
 
+    /**
+     * Extracts node id from instance identifier
+     * @param input instance identifier
+     * @return node-id from given instance identifier
+     */
+    public static NodeId extractNodeId(final InstanceIdentifier<Node> input) {
+        return input.firstKeyOf(Node.class).getId();
+    }
 
     /**
+     * Extracts node id from node reference
      * @param input reference to {@link Node}
      * @return node-id from given reference
      */
