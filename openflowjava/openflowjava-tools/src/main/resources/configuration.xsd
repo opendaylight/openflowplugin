@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:simpleType name="ipAddressType">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="15"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="configurationType">
+        <xs:sequence>
+            <xs:element name="controller-ip" type="ipAddressType" minOccurs="1" maxOccurs="1" default="127.0.0.1"/>
+            <xs:element name="devices-count" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" default="1"/>
+            <xs:element name="ssl" type="xs:boolean" minOccurs="0" maxOccurs="1" default="false"/>
+            <xs:element name="threads" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" default="1"/>
+            <xs:element name="port" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" default="6653"/>
+            <xs:element name="timeout" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" default="1000" />
+            <xs:element name="freeze" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" default="3"/>
+            <xs:element name="sleep" type="xs:long" minOccurs="0" maxOccurs="1" default="100"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:element name="configurations">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="configuration" type="configurationType" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>
