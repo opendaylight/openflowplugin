@@ -82,42 +82,42 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowplugin</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>openflowplugin-api</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowplugin</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>openflowplugin</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowplugin</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>openflowplugin-common</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowplugin</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>openflowplugin-extension-api</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowjava</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>simple-client</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowplugin.model</groupId>
+            <groupId>${project.groupId}.model</groupId>
             <artifactId>model-flow-base</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowplugin.model</groupId>
+            <groupId>${project.groupId}.model</groupId>
             <artifactId>model-flow-statistics</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowplugin.model</groupId>
+            <groupId>${project.groupId}.model</groupId>
             <artifactId>model-flow-service</artifactId>
             <scope>test</scope>
         </dependency>
