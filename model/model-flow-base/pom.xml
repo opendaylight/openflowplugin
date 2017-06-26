@@ -21,7 +21,7 @@
       <artifactId>opendaylight-l2-types</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.openflowjava</groupId>
+      <groupId>org.opendaylight.openflowplugin.openflowjava</groupId>
       <artifactId>openflow-protocol-api</artifactId>
     </dependency>
   </dependencies>
