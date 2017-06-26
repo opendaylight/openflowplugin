@@ -6,7 +6,7 @@
         <groupId>org.opendaylight.openflowjava</groupId>
         <artifactId>openflowjava-parent</artifactId>
         <version>0.10.0-SNAPSHOT</version>
-        <relativePath>../parent</relativePath>
+        <relativePath>../</relativePath>
     </parent>
     <packaging>bundle</packaging>
     <artifactId>openflowjava-util</artifactId>
@@ -21,7 +21,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowjava</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>openflow-protocol-api</artifactId>
         </dependency>
     </dependencies>

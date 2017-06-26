@@ -93,7 +93,7 @@
         </dependency>
         <!-- OpenFlowJava-API models -->
         <dependency>
-            <groupId>org.opendaylight.openflowjava</groupId>
+            <groupId>${openflowjava.groupId}</groupId>
             <artifactId>openflow-protocol-api</artifactId>
         </dependency>
         <!-- Test dependencies -->

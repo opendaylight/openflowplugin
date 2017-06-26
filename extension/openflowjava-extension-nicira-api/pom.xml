@@ -31,11 +31,11 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.opendaylight.openflowjava</groupId>
+            <groupId>${openflowjava.groupId}</groupId>
             <artifactId>openflow-protocol-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowjava</groupId>
+            <groupId>${openflowjava.groupId}</groupId>
             <artifactId>openflow-protocol-spi</artifactId>
         </dependency>
 

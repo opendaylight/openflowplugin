@@ -37,7 +37,7 @@
             <artifactId>model-inventory</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowjava</groupId>
+            <groupId>${openflowjava.groupId}</groupId>
             <artifactId>openflowjava-util</artifactId>
         </dependency>
         <dependency>
