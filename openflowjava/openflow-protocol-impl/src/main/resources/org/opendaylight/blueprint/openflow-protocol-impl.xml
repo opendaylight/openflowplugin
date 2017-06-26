@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0">
+
+  <bean id="switchConnFactory" class="org.opendaylight.openflowjava.protocol.impl.core.SwitchConnectionProviderFactoryImpl"/>
+
+  <service ref="switchConnFactory" interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderFactory"
+          odl:type="default"/>
+</blueprint>

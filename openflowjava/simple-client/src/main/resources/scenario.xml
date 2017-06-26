@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<scenarios xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="scenario.xsd">
+  <scenario name="handshakeScenarioWithBarrier">
+    <step>
+      <order>1</order>
+      <name>send Hello</name>
+      <event>sendEvent</event>
+      <bytes>04 00 00 08 00 00 00 01</bytes>
+    </step>
+    <step>
+      <order>2</order>
+      <name>wait for Hello_21</name>
+      <event>waitForMessageEvent</event>
+      <bytes>04 00 00 10 00 00 00 15 00 01 00 08 00 00 00 12</bytes>
+    </step>
+    <step>
+      <order>3</order>
+      <name>wait for features request</name>
+      <event>waitForMessageEvent</event>
+      <bytes>04 05 00 08 00 00 00 02</bytes>
+    </step>
+    <step>
+      <order>4</order>
+      <name>features reply</name>
+      <event>sendEvent</event>
+      <bytes>04 06 00 20 00 00 00 02 00 01 02 03 04 05 06 07 00 01 02 03 01 00 00 00 00 01 02 03 00 01 02 03</bytes>
+    </step>
+    <step>
+      <order>5</order>
+      <name>wait for barrier</name>
+      <event>waitForMessageEvent</event>
+      <bytes>04 14 00 08 00 00 00 00</bytes>
+    </step>
+    <step>
+      <order>6</order>
+      <name>barrier reply</name>
+      <event>sendEvent</event>
+      <bytes>04 15 00 08 00 00 00 04</bytes>
+    </step>
+  </scenario>
+</scenarios>
+

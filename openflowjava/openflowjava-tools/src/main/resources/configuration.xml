@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<configurations xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="configuration.xsd">
+    <configuration name="test">
+        <controller-ip>127.0.0.1</controller-ip>
+        <devices-count>30</devices-count>
+        <ssl>false</ssl>
+        <threads>100</threads>
+        <port>6653</port>
+        <timeout>1000</timeout>
+        <freeze>2</freeze>
+        <sleep>100</sleep>
+    </configuration>
+    <configuration name="standard">
+        <controller-ip>127.0.0.1</controller-ip>
+        <devices-count>1</devices-count>
+        <ssl>false</ssl>
+        <threads>1</threads>
+        <port>6653</port>
+        <timeout>1000</timeout>
+        <freeze>3</freeze>
+        <sleep>100</sleep>
+    </configuration>
+</configurations>
