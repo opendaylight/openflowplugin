@@ -273,6 +273,77 @@
                 <type>xml</type>
                 <version>${project.version}</version>
             </dependency>
+            <!-- openflow java -->
+            <dependency>
+                <groupId>${project.groupId}.openflowjava</groupId>
+                <artifactId>openflow-protocol-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}.openflowjava</groupId>
+                <artifactId>openflow-protocol-impl</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}.openflowjava</groupId>
+                <artifactId>openflow-protocol-impl</artifactId>
+                <version>${project.version}</version>
+                <type>test-jar</type>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}.openflowjava</groupId>
+                <artifactId>openflowjava-config</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}.openflowjava</groupId>
+                <artifactId>openflowjava-config</artifactId>
+                <type>xml</type>
+                <version>${project.version}</version>
+                <classifier>configstats</classifier>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}.openflowjava</groupId>
+                <artifactId>openflowjava-blueprint-config</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}.openflowjava</groupId>
+                <artifactId>openflowjava-blueprint-config</artifactId>
+                <version>${project.version}</version>
+                <type>xml</type>
+                <classifier>config</classifier>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}.openflowjava</groupId>
+                <artifactId>openflowjava-blueprint-config</artifactId>
+                <version>${project.version}</version>
+                <type>xml</type>
+                <classifier>legacyConfig</classifier>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}.openflowjava</groupId>
+                <artifactId>openflow-protocol-spi</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}.openflowjava</groupId>
+                <artifactId>openflow-protocol-it</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}.openflowjava</groupId>
+                <artifactId>openflowjava-util</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}.openflowjava</groupId>
+                <artifactId>features-openflowjava</artifactId>
+                <version>${project.version}</version>
+                <classifier>features</classifier>
+                <type>xml</type>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>

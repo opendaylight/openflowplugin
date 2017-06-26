@@ -31,18 +31,16 @@
 
     <properties>
         <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
-        <openflowjava.version>0.10.0-SNAPSHOT</openflowjava.version>
-        <openflowplugin.version>0.5.0-SNAPSHOT</openflowplugin.version>
         <sal.api.version>0.13.0-SNAPSHOT</sal.api.version>
         <jmxGeneratorPath>${project.build.directory}/generated-sources/config</jmxGeneratorPath>
         <salGeneratorPath>${project.build.directory}/generated-sources/sal</salGeneratorPath>
-        <exi.nagasena.version>0000.0002.0053.0</exi.nagasena.version>
         <controller.distribution.version>0.6.0-SNAPSHOT</controller.distribution.version>
-
         <config.version>0.7.0-SNAPSHOT</config.version>
         <mdsal.version>1.6.0-SNAPSHOT</mdsal.version>
         <mdsal.model.version>0.11.0-SNAPSHOT</mdsal.model.version>
         <yangtools.version>1.2.0-SNAPSHOT</yangtools.version>
+        <argparse4j.version>0.7.0</argparse4j.version>
+        <exi.nagasena.version>0000.0002.0053.0</exi.nagasena.version>
     </properties>
 
     <dependencyManagement>
@@ -50,11 +48,10 @@
             <dependency>
                 <groupId>org.opendaylight.openflowplugin</groupId>
                 <artifactId>openflowplugin-artifacts</artifactId>
-                <version>${openflowplugin.version}</version>
+                <version>${project.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
-
             <dependency>
                 <groupId>org.opendaylight.yangtools</groupId>
                 <artifactId>yangtools-artifacts</artifactId>
@@ -91,19 +88,10 @@
                 <type>pom</type>
             </dependency>
             <dependency>
-                <groupId>org.opendaylight.openflowjava</groupId>
-                <artifactId>openflowjava-artifacts</artifactId>
-                <version>${openflowjava.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-
-            <dependency>
                 <groupId>org.opendaylight.controller</groupId>
                 <artifactId>liblldp</artifactId>
                 <version>${sal.api.version}</version>
             </dependency>
-
             <!-- thirdparty -->
             <dependency>
                 <groupId>openexi</groupId>
@@ -115,6 +103,11 @@
                 <artifactId>nagasena-rta</artifactId>
                 <version>${exi.nagasena.version}</version>
             </dependency>
+            <dependency>
+                <groupId>net.sourceforge.argparse4j</groupId>
+                <artifactId>argparse4j</artifactId>
+                <version>${argparse4j.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -123,6 +116,18 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>${maven.bundle.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
+                    </instructions>
+                    <manifestLocation>${project.build.directory}/META-INF</manifestLocation>
+                </configuration>
             </plugin>
         </plugins>
 
