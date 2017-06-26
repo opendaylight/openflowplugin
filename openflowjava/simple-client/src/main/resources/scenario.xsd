@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:simpleType name="eventType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="sleepEvent"/>
+            <xs:enumeration value="waitForMessageEvent"/>
+            <xs:enumeration value="sendEvent"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="bytes">
+        <xs:list itemType="xs:short"/>
+    </xs:simpleType>
+
+    <xs:complexType name="step">
+        <xs:sequence>
+            <xs:element name="order" type="xs:short" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="event" type="eventType" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="bytes" type="bytes" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="scenario">
+        <xs:sequence>
+            <xs:element name="step" type="step" minOccurs="1" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:element name="scenarios">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="scenario" type="scenario" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

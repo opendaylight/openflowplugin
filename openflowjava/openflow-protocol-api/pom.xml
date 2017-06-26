@@ -1,0 +1,83 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.opendaylight.mdsal</groupId>
+        <artifactId>binding-parent</artifactId>
+        <version>0.11.0-SNAPSHOT</version>
+        <relativePath/>
+    </parent>
+    <groupId>org.opendaylight.openflowjava</groupId>
+    <artifactId>openflow-protocol-api</artifactId>
+    <version>0.10.0-SNAPSHOT</version>
+    <packaging>bundle</packaging>
+    <!-- <name> formatting is used by autorelease to parse and notify projects on
+         build failure. Please do not modify this unless you have a good reason. -->
+    <name>ODL :: openflowjava :: ${project.artifactId}</name>
+    <scm>
+        <url>https://wiki.opendaylight.org/view/Openflow_Protocol_Library:Main</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <properties>
+      <mdsal.version>2.3.0-SNAPSHOT</mdsal.version>
+      <mdsal.model.version>0.11.0-SNAPSHOT</mdsal.model.version>
+    </properties>
+
+    <dependencyManagement>
+      <dependencies>
+      <!-- MD-SAL -->
+        <dependency>
+          <groupId>org.opendaylight.mdsal</groupId>
+          <artifactId>mdsal-artifacts</artifactId>
+          <version>${mdsal.version}</version>
+          <scope>import</scope>
+          <type>pom</type>
+        </dependency>
+
+        <dependency>
+          <groupId>org.opendaylight.mdsal.model</groupId>
+          <artifactId>mdsal-model-artifacts</artifactId>
+          <version>${mdsal.model.version}</version>
+          <scope>import</scope>
+          <type>pom</type>
+        </dependency>
+      </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.opendaylight.mdsal</groupId>
+            <artifactId>yang-binding</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.yangtools</groupId>
+            <artifactId>yang-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.mdsal.model</groupId>
+            <artifactId>ietf-inet-types-2013-07-15</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.mdsal.model</groupId>
+            <artifactId>ietf-yang-types-20130715</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.mdsal.model</groupId>
+            <artifactId>yang-ext</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-buffer</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+        </dependency>
+    </dependencies>
+</project>
