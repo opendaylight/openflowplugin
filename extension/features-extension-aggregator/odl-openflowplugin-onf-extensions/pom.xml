@@ -16,10 +16,6 @@
 
     <name>OpenDaylight :: Openflow Plugin :: ONF Extensions</name>
 
-    <properties>
-        <openflowjava.version>0.9.0-SNAPSHOT</openflowjava.version>
-    </properties>
-
     <dependencies>
         <!-- feature dependencies -->
         <dependency>
