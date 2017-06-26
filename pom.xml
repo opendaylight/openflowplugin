@@ -14,31 +14,30 @@
     <packaging>pom</packaging>
 
     <scm>
-      <connection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</connection>
-      <developerConnection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</developerConnection>
-      <url>https://wiki.opendaylight.org/view/OpenDaylight_OpenFlow_Plugin:Main</url>
-      <tag>HEAD</tag>
+        <connection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</connection>
+        <developerConnection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</developerConnection>
+        <url>https://wiki.opendaylight.org/view/OpenDaylight_OpenFlow_Plugin:Main</url>
+        <tag>HEAD</tag>
     </scm>
 
     <modules>
-      <module>artifacts</module>
-      <module>parent</module>
-      <module>openflowplugin-api</module>
-      <module>openflowplugin</module>
-      <module>openflowplugin-impl</module>
-      <module>openflowplugin-common</module>
-      <module>extension</module>
-      <module>distribution/karaf</module>
-      <module>openflowplugin-blueprint-config</module>
-      <!-- <module>openflowplugin-it</module> -->
-      <module>test-provider</module>
-      <module>drop-test-karaf</module>
-      <module>test-common</module>
-      <module>features-aggregator</module>
-      <module>samples/sample-consumer</module>
-      <module>samples/learning-switch</module>
-      <module>samples/sample-bundles</module>
-      <module>applications</module>
-      <module>model</module>
-  </modules>
+        <module>artifacts</module>
+        <module>parent</module>
+        <module>openflowjava</module>
+        <module>openflowplugin-api</module>
+        <module>openflowplugin</module>
+        <module>openflowplugin-impl</module>
+        <module>openflowplugin-common</module>
+        <module>extension</module>
+        <module>distribution/karaf</module>
+        <module>openflowplugin-blueprint-config</module>
+        <!-- <module>openflowplugin-it</module> -->
+        <module>test-provider</module>
+        <module>drop-test-karaf</module>
+        <module>test-common</module>
+        <module>features-aggregator</module>
+        <module>applications</module>
+        <module>model</module>
+        <module>samples</module>
+    </modules>
 </project>
