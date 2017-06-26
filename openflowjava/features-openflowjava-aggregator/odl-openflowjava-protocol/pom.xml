@@ -11,9 +11,9 @@
         <relativePath/>
     </parent>
 
-    <groupId>org.opendaylight.openflowjava</groupId>
+    <groupId>org.opendaylight.openflowplugin.openflowjava</groupId>
     <artifactId>odl-openflowjava-protocol</artifactId>
-    <version>0.10.0-SNAPSHOT</version>
+    <version>0.5.0-SNAPSHOT</version>
     <packaging>feature</packaging>
 
     <!-- <name> formatting is used by autorelease to parse and notify projects on
@@ -33,14 +33,14 @@
         <dependencies>
             <!-- This project -->
             <dependency>
-                <groupId>org.opendaylight.openflowjava</groupId>
-                <artifactId>openflowjava-artifacts</artifactId>
+                <groupId>org.opendaylight.openflowplugin</groupId>
+                <artifactId>openflowplugin-artifacts</artifactId>
                 <version>${project.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
 
-            <!-- This project -->
+            <!-- Netty -->
             <dependency>
                 <groupId>org.opendaylight.odlparent</groupId>
                 <artifactId>odl-netty-4</artifactId>
@@ -118,19 +118,19 @@
         </dependency>
         <!-- bundle dependencies -->
         <dependency>
-            <groupId>org.opendaylight.openflowjava</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>openflow-protocol-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowjava</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>openflow-protocol-spi</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowjava</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>openflow-protocol-impl</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowjava</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>openflowjava-util</artifactId>
         </dependency>
         <!-- config files -->
@@ -141,13 +141,13 @@
             <classifier>configstats</classifier>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowjava</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>openflowjava-blueprint-config</artifactId>
             <type>xml</type>
             <classifier>config</classifier>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowjava</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>openflowjava-blueprint-config</artifactId>
             <type>xml</type>
             <classifier>legacyConfig</classifier>
