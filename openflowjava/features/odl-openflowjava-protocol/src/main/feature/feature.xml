@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<features name="odl-openflowjava-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0">
+    <feature name='odl-openflowjava-protocol' version='${project.version}'>
+        <configfile finalname="etc/opendaylight/karaf/45-openflowjava-stats.xml">mvn:org.opendaylight.openflowjava/openflowjava-config/${project.version}/xml/configstats</configfile>
+        <configfile finalname="etc/opendaylight/datastore/initial/config/default-openflow-connection-config.xml">mvn:org.opendaylight.openflowjava/openflowjava-blueprint-config/${project.version}/xml/config</configfile>
+        <configfile finalname="etc/opendaylight/datastore/initial/config/legacy-openflow-connection-config.xml">mvn:org.opendaylight.openflowjava/openflowjava-blueprint-config/${project.version}/xml/legacyConfig</configfile>
+    </feature>
+</features>

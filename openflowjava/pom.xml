@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.opendaylight.openflowjava</groupId>
+        <artifactId>openflowjava-parent</artifactId>
+        <version>0.10.0-SNAPSHOT</version>
+        <relativePath>parent</relativePath>
+    </parent>
+
+    <artifactId>openflowjava-aggregator</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>artifacts</module>
+        <module>features</module>
+        <module>openflowjava-config</module>
+        <module>openflowjava-blueprint-config</module>
+        <module>openflow-protocol-api</module>
+        <module>openflow-protocol-impl</module>
+        <module>openflow-protocol-it</module>
+        <module>openflow-protocol-spi</module>
+        <module>parent</module>
+        <module>simple-client</module>
+        <module>openflowjava-util</module>
+    </modules>
+</project>
