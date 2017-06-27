@@ -82,11 +82,6 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}.openflowjava</groupId>
-                <artifactId>openflowjava-config</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}.openflowjava</groupId>
                 <artifactId>openflowjava-blueprint-config</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -224,13 +219,6 @@
                 <version>${project.version}</version>
                 <type>xml</type>
                 <classifier>legacyConfig</classifier>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}.openflowjava</groupId>
-                <artifactId>openflowjava-config</artifactId>
-                <type>xml</type>
-                <version>${project.version}</version>
-                <classifier>configstats</classifier>
             </dependency>
             <!-- features -->
             <dependency>

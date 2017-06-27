@@ -136,12 +136,6 @@
         <!-- config files -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>openflowjava-config</artifactId>
-            <type>xml</type>
-            <classifier>configstats</classifier>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>openflowjava-blueprint-config</artifactId>
             <type>xml</type>
             <classifier>config</classifier>
