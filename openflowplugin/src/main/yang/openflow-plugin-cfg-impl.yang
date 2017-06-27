@@ -3,42 +3,12 @@ module openflow-provider-impl {
     namespace "urn:opendaylight:params:xml:ns:yang:openflow:common:config:impl";
     prefix "ofplugin-cfg-impl";
 
-    import config {prefix config; revision-date 2013-04-05;}
-    import rpc-context { prefix rpcx; revision-date 2013-06-17; }
-    import openflow-provider { prefix openflow-provider;   revision-date 2014-03-26;  }
-    import openflow-switch-connection-provider {prefix openflow-switch-connection-provider;revision-date 2014-03-28;}
-    import opendaylight-md-sal-binding { prefix md-sal-binding; revision-date 2013-10-28;}
-    import openflowplugin-extension-registry {prefix ofp-ext-reg; revision-date 2015-04-25;}
-    import opendaylight-entity-ownership-service { prefix entity-ownership-service; }
-
     description
         "openflow-plugin-custom-config-impl";
 
     revision "2014-03-26" {
         description
             "Initial revision";
-    }
-
-    identity openflow-provider-impl {
-        base config:module-type;
-        config:provided-service openflow-provider:openflow-provider;
-        config:provided-service ofp-ext-reg:openflow-extension-registry-provider;
-        config:java-name-prefix ConfigurableOpenFlowProvider;
-    }
-
-    identity msg-spy-service {
-        description
-            "MessageCountDumperServiceInterface as a MsgSpyService interface identity";
-        base config:service-type;
-        config:java-class "org.opendaylight.openflowplugin.api.openflow.statistics.MessageCountDumper";
-    }
-
-    identity msg-spy-service-impl {
-        description
-            "This is the definition of MsgSpyService implementation module identity.";
-        base config:module-type;
-        config:provided-service msg-spy-service;
-        config:java-name-prefix MsgSpyService;
     }
 
     // role of OFPlugin instance
@@ -52,117 +22,6 @@ module openflow-provider-impl {
             }
             enum BECOMESLAVE {
                 description "demote current role to SLAVE";
-            }
-        }
-    }
-
-    augment "/config:modules/config:module/config:configuration" {
-        case openflow-provider-impl {
-            when "/config:modules/config:module/config:type = 'openflow-provider-impl'";
-
-            container data-broker {
-                uses config:service-ref {
-                    refine type {
-                        mandatory true;
-                        config:required-identity md-sal-binding:binding-async-data-broker;
-                    }
-                }
-            }
-
-            container ownership-service {
-                uses config:service-ref {
-                    refine type {
-                        mandatory true;
-                        config:required-identity entity-ownership-service:entity-ownership-service;
-                    }
-                }
-            }
-
-            container rpc-registry {
-                uses config:service-ref {
-                    refine type {
-                        mandatory true;
-                        config:required-identity md-sal-binding:binding-rpc-registry;
-                    }
-                }
-            }
-            container notification-service {
-                uses config:service-ref {
-                    refine type {
-                        mandatory true;
-                        config:required-identity md-sal-binding:binding-notification-service;
-                    }
-                }
-            }
-
-            list openflow-switch-connection-provider {
-                uses config:service-ref {
-                    refine type {
-                        mandatory true;
-                        config:required-identity openflow-switch-connection-provider:openflow-switch-connection-provider;
-                    }
-                }
-            }
-            leaf role {
-                type ofp-role;
-                default "NOCHANGE";
-            }
-
-            leaf skip-table-features {
-                description "Ability to skip pulling and storing of large table features. These features are still
-                    available via rpc, so if use set it to true, it won't store table feature data in DataStore.";
-                type boolean;
-                default "false";
-            }
-        }
-
-        case msg-spy-service-impl {
-            when "/config:modules/config:module/config:type = 'msg-spy-service-impl'";
-
-            container openflow-plugin-provider {
-                uses config:service-ref {
-                    refine type {
-                        mandatory true;
-                        config:required-identity openflow-provider:openflow-provider;
-                    }
-                }
-            }
-        }
-    }
-
-    augment "/config:modules/config:module/config:state" {
-        case msg-spy-service-impl {
-            when "/config:modules/config:module/config:type = 'msg-spy-service-impl'";
-
-            description
-                "MXBean designed for Message Statistic providing to JConsole.";
-
-            leaf msgStatistics {
-                type string;
-            }
-
-            rpcx:rpc-context-instance "make-msg-statistics-rpc";
-        }
-    }
-
-    identity make-msg-statistics-rpc;
-
-    rpc make-msg-statistics {
-
-        description
-            "Shortcut JMX call to getMsgStatistics.";
-
-        input {
-            uses rpcx:rpc-context-ref {
-                refine context-instance {
-                    rpcx:rpc-context-instance make-msg-statistics-rpc;
-                }
-            }
-        }
-
-        output {
-            leaf result {
-                type string;
             }
         }
     }

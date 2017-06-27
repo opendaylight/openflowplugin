@@ -15,6 +15,8 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.google.common.collect.Lists;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.group.DefaultChannelGroup;
@@ -37,9 +39,6 @@ import org.opendaylight.openflowjava.protocol.impl.deserialization.Deserializati
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializationFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.KeystoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.PathType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow._switch.connection.provider.impl.rev140328.Tls;
-
-import com.google.common.collect.Lists;
 
 /**
  *
@@ -53,7 +52,7 @@ public class PublishingChannelInitializerTest {
     @Mock ConnectionAdapterFactory mockConnAdaptorFactory;
     @Mock DefaultChannelGroup mockChGrp ;
     @Mock ConnectionFacade mockConnFacade ;
-    @Mock Tls mockTls ;
+    @Mock
     SSLEngine sslEngine ;
 
     @Mock SerializationFactory mockSerializationFactory ;
