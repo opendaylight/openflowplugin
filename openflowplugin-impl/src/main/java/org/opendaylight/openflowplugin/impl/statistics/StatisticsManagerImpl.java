@@ -65,10 +65,9 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     private long currentTimerDelay;
     private StatisticsWorkMode workMode = StatisticsWorkMode.COLLECTALL;
     private final Semaphore workModeGuard = new Semaphore(1, true);
-    private boolean isStatisticsPollingOn;
     private BindingAwareBroker.RpcRegistration<StatisticsManagerControlService> controlServiceRegistration;
-
     private final HashedWheelTimer hashedWheelTimer;
+    private boolean istStatisticsFullyDisabled;
 
     public StatisticsManagerImpl(@Nonnull final OpenflowProviderConfig config,
                                  @Nonnull final RpcProviderRegistry rpcProviderRegistry,
@@ -154,7 +153,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
             LOG.debug("SCHEDULING NEXT STATISTICS POLLING for device: {}", deviceInfo.getNodeId());
         }
 
-        if (isStatisticsPollingOn) {
+        if (isStatisticsEnabled()) {
             final Timeout pollTimeout = hashedWheelTimer.newTimeout(
                     timeout -> pollStatistics(
                             deviceState,
@@ -166,6 +165,10 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
             statisticsContext.setPollTimeout(pollTimeout);
         }
+    }
+
+    private boolean isStatisticsEnabled() {
+        return !istStatisticsFullyDisabled && config.isIsStatisticsPollingOn();
     }
 
     @VisibleForTesting
@@ -204,7 +207,8 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         if (workModeGuard.tryAcquire()) {
             final StatisticsWorkMode targetWorkMode = input.getMode();
             if (!workMode.equals(targetWorkMode)) {
-                isStatisticsPollingOn = !(StatisticsWorkMode.FULLYDISABLED.equals(targetWorkMode));
+                istStatisticsFullyDisabled = StatisticsWorkMode.FULLYDISABLED.equals(targetWorkMode);
+
                 // iterate through stats-ctx: propagate mode
                 for (Map.Entry<DeviceInfo, StatisticsContext> entry : contexts.entrySet()) {
                     final DeviceInfo deviceInfo = entry.getKey();
@@ -241,7 +245,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     @Override
     public void startScheduling(final DeviceInfo deviceInfo) {
-        if (!isStatisticsPollingOn) {
+        if (!isStatisticsEnabled()) {
             LOG.info("Statistics are shutdown for device: {}", deviceInfo.getNodeId());
             return;
         }
@@ -287,6 +291,8 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     @Override
     public void close() {
+        istStatisticsFullyDisabled = true;
+
         if (controlServiceRegistration != null) {
             controlServiceRegistration.close();
             controlServiceRegistration = null;
@@ -307,14 +313,14 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         final StatisticsContext statisticsContext =
             deviceContext.canUseSingleLayerSerialization() ?
             new StatisticsContextImpl<MultipartReply>(
-                isStatisticsPollingOn,
+                isStatisticsEnabled(),
                 deviceContext,
                 converterExecutor,
                     this,
                 statisticsWriterProvider) :
             new StatisticsContextImpl<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
                 .MultipartReply>(
-                isStatisticsPollingOn,
+                isStatisticsEnabled(),
                 deviceContext,
                 converterExecutor,
                     this,
