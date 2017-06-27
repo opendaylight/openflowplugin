@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -14,7 +14,6 @@ import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.MoreExecutors;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CancellationException;
@@ -22,6 +21,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -33,6 +33,7 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionChainClosed
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -55,6 +56,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     private final Object txLock = new Object();
     private final DataBroker dataBroker;
     private final String nodeId;
+    private LifecycleService lifecycleService;
 
     @GuardedBy("txLock")
     private WriteTransaction wTx;
@@ -73,7 +75,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     TransactionChainManager(@Nonnull final DataBroker dataBroker,
                             @Nonnull final DeviceInfo deviceInfo) {
         this.dataBroker = dataBroker;
-        this.nodeId = deviceInfo.getLOGValue();
+        this.nodeId = deviceInfo.getNodeInstanceIdentifier().getKey().getId().getValue();
         this.lastSubmittedFuture = Futures.immediateFuture(null);
     }
 
@@ -82,6 +84,10 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         BindingTransactionChain txChainFactoryTemp = txChainFactory;
         txChainFactory = dataBroker.createTransactionChain(TransactionChainManager.this);
         Optional.ofNullable(txChainFactoryTemp).ifPresent(TransactionChain::close);
+    }
+
+    public void setLifecycleService(final LifecycleService lifecycleService) {
+        this.lifecycleService = lifecycleService;
     }
 
     boolean initialSubmitWriteTransaction() {
@@ -96,15 +102,12 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
      */
     void activateTransactionManager() {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("activateTransactionManager for node {} transaction submit is set to {}",
-                    this.nodeId, submitIsEnabled);
+            LOG.debug("activateTransactionManager for node {} transaction submit is set to {}", this.nodeId, submitIsEnabled);
         }
         synchronized (txLock) {
             if (TransactionChainManagerStatus.SLEEPING == transactionChainManagerStatus) {
-                Preconditions.checkState(txChainFactory == null,
-                        "TxChainFactory survive last close.");
-                Preconditions.checkState(wTx == null,
-                        "We have some unexpected WriteTransaction.");
+                Preconditions.checkState(txChainFactory == null, "TxChainFactory survive last close.");
+                Preconditions.checkState(wTx == null, "We have some unexpected WriteTransaction.");
                 this.transactionChainManagerStatus = TransactionChainManagerStatus.WORKING;
                 this.submitIsEnabled = false;
                 this.initCommit = true;
@@ -128,8 +131,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
             if (TransactionChainManagerStatus.WORKING == transactionChainManagerStatus) {
                 transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
                 future = txChainShuttingDown();
-                Preconditions.checkState(wTx == null,
-                        "We have some unexpected WriteTransaction.");
+                Preconditions.checkState(wTx == null, "We have some unexpected WriteTransaction.");
                 Futures.addCallback(future, new FutureCallback<Void>() {
                     @Override
                     public void onSuccess(final Void result) {
@@ -137,13 +139,13 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                     }
 
                     @Override
-                    public void onFailure(@Nonnull final Throwable t) {
+                    public void onFailure(final Throwable t) {
                         removeTxChainFactory();
                     }
-                }, MoreExecutors.directExecutor());
+                });
             } else {
-                // ignoring redundant deactivate invocation
-                future = Futures.immediateFuture(null);
+                // TODO : ignoring redundant deactivate invocation
+                future = Futures.immediateCheckedFuture(null);
             }
         }
         return future;
@@ -169,8 +171,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                 return true;
             }
             Preconditions.checkState(TransactionChainManagerStatus.WORKING == transactionChainManagerStatus,
-                    "we have here Uncompleted Transaction for node {} and we are not MASTER",
-                    this.nodeId);
+                    "we have here Uncompleted Transaction for node {} and we are not MASTER", this.nodeId);
             final CheckedFuture<Void, TransactionCommitFailedException> submitFuture = wTx.submit();
             lastSubmittedFuture = submitFuture;
             wTx = null;
@@ -193,7 +194,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                 }
 
                 @Override
-                public void onFailure(@Nonnull final Throwable t) {
+                public void onFailure(final Throwable t) {
                     if (t instanceof TransactionCommitFailedException) {
                         LOG.error("Transaction commit failed. ", t);
                     } else {
@@ -205,7 +206,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                         }
                     }
                 }
-            }, MoreExecutors.directExecutor());
+            });
         }
         return true;
     }
@@ -256,6 +257,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     }
 
     @GuardedBy("txLock")
+    @Nullable
     private void ensureTransaction() {
         if (wTx == null && TransactionChainManagerStatus.WORKING == transactionChainManagerStatus
             && txChainFactory != null) {
@@ -289,7 +291,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
 
         if (!wasSubmitEnabled || txChainFactory == null) {
             // stay with actual thread
-            future = Futures.immediateFuture(null);
+            future = Futures.immediateCheckedFuture(null);
 
             if (wTx != null) {
                 wTx.cancel();
@@ -326,6 +328,6 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         /** txChainManager is working - is active (MASTER) */
         SLEEPING,
         /** txChainManager is trying to be closed - device disconnecting */
-        SHUTTING_DOWN
+        SHUTTING_DOWN;
     }
 }

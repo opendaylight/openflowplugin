@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -15,7 +15,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.MoreExecutors;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
@@ -40,6 +39,7 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowplugin.api.ConnectionException;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
@@ -173,6 +173,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final DeviceManager myManager;
     private final DeviceInitializerProvider deviceInitializerProvider;
     private final boolean useSingleLayerSerialization;
+    private OutboundQueueProvider outboundQueueProvider;
     private boolean hasState;
 
     DeviceContextImpl(
@@ -188,6 +189,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             final DeviceInitializerProvider deviceInitializerProvider) {
 
         this.primaryConnectionContext = primaryConnectionContext;
+        this.outboundQueueProvider = (OutboundQueueProvider) primaryConnectionContext.getOutboundQueueProvider();
         this.deviceInfo = primaryConnectionContext.getDeviceInfo();
         this.hashedWheelTimer = hashedWheelTimer;
         this.deviceInitializerProvider = deviceInitializerProvider;
@@ -421,7 +423,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 LOG.trace("notification offer failed..", t);
                 packetInLimiter.releasePermit();
             }
-        }, MoreExecutors.directExecutor());
+        });
     }
 
     @Override
@@ -567,7 +569,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     transactionChainManager.close();
                     transactionChainManager = null;
                 }
-            }, MoreExecutors.directExecutor());
+            });
         }
 
         for (final Iterator<RequestContext<?>> iterator = Iterators
@@ -626,12 +628,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         }
 
         Futures.addCallback(sendRoleChangeToDevice(OfpRole.BECOMEMASTER),
-                new RpcResultFutureCallback(mastershipChangeListener), MoreExecutors.directExecutor());
+                new RpcResultFutureCallback(mastershipChangeListener));
 
         final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill = getDeviceFlowRegistry().fill();
         Futures.addCallback(deviceFlowRegistryFill,
-                new DeviceFlowRegistryCallback(deviceFlowRegistryFill, mastershipChangeListener),
-                MoreExecutors.directExecutor());
+                new DeviceFlowRegistryCallback(deviceFlowRegistryFill, mastershipChangeListener));
 
         return this.clusterInitializationPhaseHandler.onContextInstantiateService(mastershipChangeListener);
     }
@@ -726,7 +727,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         }
 
         @Override
-        public void onFailure(@Nonnull final Throwable throwable) {
+        public void onFailure(final Throwable throwable) {
             mastershipChangeListener.onNotAbleToStartMastershipMandatory(
                     deviceInfo,
                     "Was not able to set MASTER role on device");
