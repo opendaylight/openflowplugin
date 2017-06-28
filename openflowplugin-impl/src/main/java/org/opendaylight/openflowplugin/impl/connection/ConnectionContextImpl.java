@@ -196,7 +196,7 @@ public class ConnectionContextImpl implements ConnectionContext {
 
     private void unregisterOutboundQueue() {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Trying unregister outbound queue handler registration for node {}", nodeId);
+            LOG.debug("Trying unregister outbound queue handler registration for node {}", getSafeNodeIdForLOG());
         }
         if (outboundQueueHandlerRegistration != null) {
             outboundQueueHandlerRegistration.close();
@@ -222,7 +222,7 @@ public class ConnectionContextImpl implements ConnectionContext {
     @Override
     public void handlePortStatusMessage(final PortStatusMessage portStatusMessage) {
         LOG.info("Received early port status message for node {} with reason {} and state {}",
-                nodeId.getValue(),
+                getSafeNodeIdForLOG(),
                 portStatusMessage.getReason(),
                 MoreObjects.firstNonNull(portStatusMessage.getState(), portStatusMessage.getStateV10()));
 
