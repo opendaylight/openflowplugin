@@ -26,8 +26,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.extension.api.GroupingLooseResolver;
-import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionResolvers;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
@@ -46,10 +44,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.TunnelIpv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.TunnelIpv4MatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifUpdateFlowStats;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifUpdateFlowStatsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralExtensionListGrouping;
-import org.opendaylight.yangtools.yang.binding.Augmentation;
 
 /**
  * Utility class for match normalization
@@ -100,25 +94,8 @@ public final class MatchNormalizationUtil {
     }
 
     @Nonnull
-    @SuppressWarnings("unchecked")
     private static MatchBuilder normalizeExtensionMatch(@Nonnull final MatchBuilder match) {
-        final GroupingLooseResolver<GeneralExtensionListGrouping> matchExtensionResolver =
-                ExtensionResolvers.getMatchExtensionResolver();
-
-        return matchExtensionResolver
-                .getExtension(match.build())
-                .flatMap(statExt -> Optional.ofNullable(statExt.getExtensionList()))
-                .map(extensionLists -> {
-                    matchExtensionResolver.getClasses().forEach(aClass -> match
-                            .removeAugmentation((Class<? extends Augmentation<Match>>) aClass));
-
-                    return match.addAugmentation(
-                            GeneralAugMatchNotifUpdateFlowStats.class,
-                            new GeneralAugMatchNotifUpdateFlowStatsBuilder()
-                                    .setExtensionList(extensionLists)
-                                    .build());
-                })
-                .orElse(match);
+        return new MatchBuilder(MatchUtil.transformMatch(match.build(), Match.class));
     }
 
     @Nonnull
