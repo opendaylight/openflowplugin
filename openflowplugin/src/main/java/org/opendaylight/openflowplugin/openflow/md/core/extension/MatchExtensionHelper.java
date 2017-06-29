@@ -36,7 +36,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.ExtensionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionListBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.in.Match;
 import org.opendaylight.yangtools.yang.binding.Augmentable;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
 import org.slf4j.Logger;
@@ -89,8 +89,8 @@ public final class MatchExtensionHelper {
                 break;
             }
             case PACKETRECEIVED_MATCH: {
-                final org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received
-                    .MatchBuilder augMatchBuilder = org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received
+                final org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.in
+                    .MatchBuilder augMatchBuilder = org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.in
                             .MatchBuilder.class.cast(matchBuilder);
 
                 final GeneralAugMatchNotifPacketInBuilder builder = Optional
