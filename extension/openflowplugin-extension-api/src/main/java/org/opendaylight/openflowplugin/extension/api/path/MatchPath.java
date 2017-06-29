@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -21,7 +21,7 @@ public enum MatchPath implements AugmentationPath {
      * <pre>
      * module: sal-flow
      * notifications:
-     *    +---n switch-flow-removed                     
+     *    +---n switch-flow-removed
      *    |  +--ro match
      * </pre>
      */
@@ -31,7 +31,7 @@ public enum MatchPath implements AugmentationPath {
      * <pre>
      * module: packet-processing
      * notifications:
-     *    +---n packet-received    
+     *    +---n packet-received
      *       +--ro match
      * </pre>
      */
@@ -39,9 +39,19 @@ public enum MatchPath implements AugmentationPath {
     /**
      * openflowplugin-extension-general.yang
      * <pre>
+     * module: packet-processing
+     * container:
+     *    +---n packet-in-message
+     *       +--ro match
+     * </pre>
+     */
+    PACKETINMESSAGE_MATCH(null),
+    /**
+     * openflowplugin-extension-general.yang
+     * <pre>
      * module: opendaylight-flow-statistics
      * notifications:
-     *    +---n flows-statistics-update             
+     *    +---n flows-statistics-update
      *    |  +--ro flow-and-statistics-map-list* [flow-id]
      *    |  |  +--ro match
      * </pre>
