@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.extension.api;
 
 import java.util.Collections;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
@@ -21,16 +20,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralExtensionListGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionListBuilder;
-import org.opendaylight.yangtools.yang.binding.Augmentable;
 
 /**
  *  Test of {@link GroupingLooseResolver}
  */
 public class GroupingLooseResolverTest {
 
-    /**
-     * test of method {@link GroupingLooseResolver#getExtension(Augmentable)}
-     */
     @Test
     public void testGetExtension() {
         GroupingLooseResolver<GeneralExtensionListGrouping> eqGroup = new GroupingLooseResolver<>(GeneralExtensionListGrouping.class);
@@ -52,11 +47,11 @@ public class GroupingLooseResolverTest {
         Assert.assertEquals(JoachimTheBig.class, eqGroup.getExtension(match1).get().getExtensionList().get(0).getExtensionKey());
         Assert.assertEquals(JoachimTheTiny.class, eqGroup.getExtension(match2).get().getExtensionList().get(0).getExtensionKey());
     }
-    
+
     private static class JoachimTheBig extends ExtensionKey {
         // nobody
     }
-    
+
     private static class JoachimTheTiny extends ExtensionKey {
         // nobody
     }
