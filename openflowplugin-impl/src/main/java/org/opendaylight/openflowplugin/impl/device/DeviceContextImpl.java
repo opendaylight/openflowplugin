@@ -89,6 +89,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorBuilder;
@@ -98,14 +99,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.experimenter.core.message.ExperimenterMessageOfChoice;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceivedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsDataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
@@ -113,6 +115,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalR
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
@@ -381,29 +384,58 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public void processPacketInMessage(final PacketInMessage packetInMessage) {
-        messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH);
-        final ConnectionAdapter connectionAdapter = getPrimaryConnectionContext().getConnectionAdapter();
         final PacketReceived packetReceived = packetInTranslator.translate(packetInMessage, getDeviceInfo(), null);
+        handlePacketInMessage(packetReceived, packetInMessage.getImplementedInterface());
+    }
 
-        if (packetReceived == null) {
+    private void handlePacketInMessage(final PacketIn packetIn, final Class<?> implementedInterface) {
+        messageSpy.spyMessage(implementedInterface, MessageSpy.STATISTIC_GROUP.FROM_SWITCH);
+        final ConnectionAdapter connectionAdapter = getPrimaryConnectionContext().getConnectionAdapter();
+
+        if (packetIn == null) {
             LOG.debug("Received a null packet from switch {}", connectionAdapter.getRemoteAddress());
-            messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_SRC_FAILURE);
+            messageSpy.spyMessage(implementedInterface, MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_SRC_FAILURE);
             return;
-        } else {
-            messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_OUT_SUCCESS);
         }
+
+        final OpenflowVersion openflowVersion = OpenflowVersion.get(deviceInfo.getVersion());
+
+        // Try to get ingress from match
+        final java.util.Optional<NodeConnectorRef> nodeConnectorRef = java.util.Optional.ofNullable(packetIn.getMatch())
+                .flatMap(match -> java.util.Optional.ofNullable(match.getInPort()))
+                .flatMap(nodeConnectorId -> java.util.Optional.ofNullable(InventoryDataServiceUtil
+                        .portNumberfromNodeConnectorId(
+                                openflowVersion,
+                                packetIn.getMatch().getInPort())))
+                .map(portNumber -> InventoryDataServiceUtil
+                        .nodeConnectorRefFromDatapathIdPortno(
+                                deviceInfo.getDatapathId(),
+                                portNumber,
+                                openflowVersion));
+
+        if (!nodeConnectorRef.isPresent()) {
+            LOG.debug("Received packet from switch {}  but couldn't find an input port", connectionAdapter.getRemoteAddress());
+            messageSpy.spyMessage(implementedInterface, MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_SRC_FAILURE);
+            return;
+        }
+
+        messageSpy.spyMessage(packetIn.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_OUT_SUCCESS);
 
         if (!packetInLimiter.acquirePermit()) {
             LOG.debug("Packet limited");
             // TODO: save packet into emergency slot if possible
-            messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PACKET_IN_LIMIT_REACHED_AND_DROPPED);
+            messageSpy.spyMessage(packetIn.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PACKET_IN_LIMIT_REACHED_AND_DROPPED);
             return;
         }
 
-        final ListenableFuture<?> offerNotification = notificationPublishService.offerNotification(packetReceived);
+        final ListenableFuture<?> offerNotification = notificationPublishService
+                .offerNotification(new PacketReceivedBuilder(packetIn)
+                        .setIngress(nodeConnectorRef.get())
+                        .build());
+
         if (NotificationPublishService.REJECTED.equals(offerNotification)) {
             LOG.debug("notification offer rejected");
-            messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_NOTIFICATION_REJECTED);
+            messageSpy.spyMessage(packetIn.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_NOTIFICATION_REJECTED);
             packetInLimiter.drainLowWaterMark();
             packetInLimiter.releasePermit();
             return;
@@ -412,13 +444,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         Futures.addCallback(offerNotification, new FutureCallback<Object>() {
             @Override
             public void onSuccess(final Object result) {
-                messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
+                messageSpy.spyMessage(packetIn.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
                 packetInLimiter.releasePermit();
             }
 
             @Override
             public void onFailure(final Throwable t) {
-                messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_NOTIFICATION_REJECTED);
+                messageSpy.spyMessage(packetIn.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_NOTIFICATION_REJECTED);
                 LOG.debug("notification offer failed: {}", t.getMessage());
                 LOG.trace("notification offer failed..", t);
                 packetInLimiter.releasePermit();
@@ -451,6 +483,16 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             notificationPublishService.offerNotification(experimenterMessageFromDevBld.build());
         } catch (final ConversionException e) {
             LOG.error("Conversion of experimenter notification failed", e);
+        }
+    }
+
+    @Override
+    public void processAlienMessage(final OfHeader message) {
+        final Class<? extends DataContainer> implementedInterface = message.getImplementedInterface();
+
+        if (org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709
+                .PacketInMessage.class.equals(implementedInterface)) {
+            handlePacketInMessage(PacketIn.class.cast(message), implementedInterface);
         }
     }
 
