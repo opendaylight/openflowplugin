@@ -285,7 +285,7 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
     }
 
     @Override
-    public void setAlienMessageListener(AlienMessageListener alienMessageListener) {
+    public void setAlienMessageListener(final AlienMessageListener alienMessageListener) {
         
     }
 
