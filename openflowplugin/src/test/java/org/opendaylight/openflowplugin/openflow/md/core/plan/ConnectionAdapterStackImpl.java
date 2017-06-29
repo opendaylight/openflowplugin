@@ -78,6 +78,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.opendaylight.openflowjava.protocol.api.extensibility.AlienMessageListener;
 
 /**
  * @author mirehak
@@ -281,6 +282,11 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
     @Override
     public void setSystemListener(final SystemNotificationsListener systemListener) {
         this.systemListener = systemListener;
+    }
+
+    @Override
+    public void setAlienMessageListener(final AlienMessageListener alienMessageListener) {
+
     }
 
     /**
