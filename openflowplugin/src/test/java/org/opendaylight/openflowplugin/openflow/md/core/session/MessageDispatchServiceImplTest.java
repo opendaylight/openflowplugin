@@ -741,7 +741,7 @@ class MockConnectionAdapter implements ConnectionAdapter {
 
     @Override
     public void setAlienMessageListener(AlienMessageListener alienMessageListener) {
-        
+
     }
 
     @Override

@@ -460,6 +460,10 @@ module openflowplugin-extension-nicira-match {
         ext:augment-identifier "nx-aug-match-nodes-node-table-flow";
         uses all-matches-grouping;
     }
+    augment "/sal-packet:packet-in-message/sal-packet:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-match-packet-in-message";
+        uses all-matches-grouping;
+    }
 
     // NOTIFICATIONS
     augment "/sal-flow:switch-flow-removed/sal-flow:match/ext-gen:extension-list/ext-gen:extension" {
