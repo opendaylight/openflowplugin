@@ -31,7 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.ConnectionCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceivedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.in.MatchBuilder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,14 +109,14 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
                     final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder> matchOptional = convertorExecutor.convert(message.getMatch(), datapathIdConvertorData);
                     final MatchBuilder matchBuilder = new MatchBuilder(matchOptional.orElse(new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder()).build());
 
-                    AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match> matchExtensionWrap =
+                    AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.in.Match> matchExtensionWrap =
                             MatchExtensionHelper.processAllExtensions(
                                     message.getMatch().getMatchEntry(), ofVersion, MatchPath.PACKETRECEIVED_MATCH);
                     if (matchExtensionWrap != null) {
                         matchBuilder.addAugmentation(matchExtensionWrap.getAugmentationClass(), matchExtensionWrap.getAugmentationObject());
                     }
 
-                    org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match packetInMatch = matchBuilder.build();
+                    org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.in.Match packetInMatch = matchBuilder.build();
                     pktInBuilder.setMatch(packetInMatch);
 
                     pktInBuilder.setPacketInReason(PacketInUtil.getMdSalPacketInReason(message.getReason()));
