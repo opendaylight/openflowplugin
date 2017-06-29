@@ -26,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
@@ -97,7 +98,7 @@ public class DeviceManagerImplTest {
         final DeviceManagerImpl deviceManager = new DeviceManagerImpl(
                 mockedDataBroker,
                 messageIntelligenceAgency,
-                null,
+                mock(NotificationPublishService.class),
                 new HashedWheelTimer(),
                 convertorExecutor,
                 DeviceInitializerProviderFactory.createDefaultProvider(),

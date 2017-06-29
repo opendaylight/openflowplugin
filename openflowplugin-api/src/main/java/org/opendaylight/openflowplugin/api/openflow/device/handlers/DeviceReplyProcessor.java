@@ -57,4 +57,10 @@ public interface DeviceReplyProcessor {
      * @param notification notification
      */
     void processExperimenterMessage(ExperimenterMessage notification);
+
+    /**
+     * Method processes alien message from device.
+     * @param message alien message
+     */
+    void processAlienMessage(OfHeader message);
 }
