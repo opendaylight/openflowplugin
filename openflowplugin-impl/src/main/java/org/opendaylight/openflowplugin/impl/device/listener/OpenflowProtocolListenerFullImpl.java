@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.impl.device.listener;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
+import org.opendaylight.openflowjava.protocol.api.extensibility.AlienMessageListener;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
 import org.opendaylight.openflowplugin.api.openflow.device.listener.OpenflowMessageListenerFacade;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInputBuilder;
@@ -17,6 +18,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.slf4j.Logger;
@@ -25,7 +27,7 @@ import org.slf4j.LoggerFactory;
 /**
  *
  */
-public class OpenflowProtocolListenerFullImpl implements OpenflowMessageListenerFacade {
+public class OpenflowProtocolListenerFullImpl implements AlienMessageListener, OpenflowMessageListenerFacade {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowProtocolListenerFullImpl.class);
 
@@ -92,6 +94,11 @@ public class OpenflowProtocolListenerFullImpl implements OpenflowMessageListener
     @Override
     public void onPortStatusMessage(final PortStatusMessage notification) {
         deviceReplyProcessor.processPortStatusMessage(notification);
+    }
+
+    @Override
+    public void onAlienMessage(final OfHeader message) {
+        deviceReplyProcessor.processAlienMessage(message);
     }
 
 }

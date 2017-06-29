@@ -71,6 +71,10 @@ module openflowplugin-extension-general {
         ext:augment-identifier "general-aug-match-nodes-node-table-flow";
         uses general-extension-list-grouping;
     }
+    augment "/sal-packet:packet-in-message/sal-packet:match" {
+        ext:augment-identifier "general-aug-match-packet-in-message";
+        uses general-extension-list-grouping;
+    }
 
     // NOTIFICATIONS
     augment "/sal-flow:switch-flow-removed/sal-flow:match" {
