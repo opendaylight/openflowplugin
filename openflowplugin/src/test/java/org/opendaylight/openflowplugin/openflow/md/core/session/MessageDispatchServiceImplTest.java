@@ -78,6 +78,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.S
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.openflowjava.protocol.api.extensibility.AlienMessageListener;
 
 /**
  * test for {@link MessageDispatchServiceImpl}
@@ -735,6 +736,11 @@ class MockConnectionAdapter implements ConnectionAdapter {
     @Override
     public void setSystemListener(SystemNotificationsListener systemListener) {
         // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void setAlienMessageListener(final AlienMessageListener alienMessageListener) {
 
     }
 

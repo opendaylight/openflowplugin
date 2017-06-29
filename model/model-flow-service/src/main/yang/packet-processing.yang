@@ -10,9 +10,10 @@ module packet-processing {
     import opendaylight-table-types {prefix table-type;revision-date "2013-10-26";}
     import opendaylight-action-types {prefix action-type;revision-date "2013-11-12";}
     import opendaylight-flow-types {prefix flow-type;revision-date "2013-10-26";}
+    import openflow-protocol { prefix ofproto; revision-date "2013-07-31"; }
 
     description "Packet processing - sending and receiving.";
-    
+
     revision "2013-07-09" {
         description "Initial.";
     }
@@ -32,6 +33,32 @@ module packet-processing {
     	}
     }
 
+    grouping packet-in {
+	leaf connection-cookie {
+            type connection-cookie;
+        }
+
+        leaf flow-cookie {
+            type flow-type:flow-cookie;
+        }
+
+        leaf table-id {
+		type table-type:table-id;
+        }
+
+        leaf packet-in-reason {
+		type identityref {
+			base packet-in-reason;
+		}
+		}
+
+        container match {
+		uses match-type:match;
+        }
+
+        uses raw-packet;
+    }
+
     grouping ethernet-packet {
         description "Ethernet packet headers structure.";
     	leaf source {
@@ -44,19 +71,19 @@ module packet-processing {
     }
 
     identity packet-in-reason {
-    	description "Base identity for all the available packet in reasons."; 
+	description "Base identity for all the available packet in reasons.";
     }
-    
+
     identity no-match {
     	base packet-in-reason;
     	description "No matching flow in the classifier";
     }
-    
+
     identity send-to-controller {
     	base packet-in-reason;
     	description "Explicit instruction to send packet to controller";
     }
-    
+
     identity invalid-ttl {
     	base packet-in-reason;
     	description "Packet with invalid TTL";
@@ -64,29 +91,7 @@ module packet-processing {
 
     notification packet-received {
         description "Delivery of incoming packet wrapped in openflow structure.";
-    	leaf connection-cookie {
-            type connection-cookie;
-        }
-        
-        leaf flow-cookie {
-            type flow-type:flow-cookie;
-        }
-        
-        leaf table-id {
-        	type table-type:table-id;
-        }
-        
-        leaf packet-in-reason {
-	    	type identityref {
-	    		base packet-in-reason;
-	    	}
-	   	}
-        
-        container match {
-        		uses match-type:match;
-        }
-        
-        uses raw-packet;
+        uses packet-in;
     }
 
     rpc transmit-packet {
@@ -97,7 +102,7 @@ module packet-processing {
             leaf connection-cookie {
                 type connection-cookie;
             }
-            
+
     		leaf egress {
     			type inv:node-connector-ref;
     		}
@@ -108,5 +113,10 @@ module packet-processing {
     		uses raw-packet;
 		uses action-type:action-list;
     	}
+    }
+
+    container packet-in-message {
+        uses packet-in;
+        uses ofproto:ofHeader;
     }
 }
