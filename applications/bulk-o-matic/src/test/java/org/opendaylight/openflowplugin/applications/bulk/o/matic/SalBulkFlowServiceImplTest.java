@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -83,9 +83,9 @@ public class SalBulkFlowServiceImplTest {
     @Mock
     private SalFlowService mockSalFlowService;
     @Mock
-    private WriteTransaction wTx;
+    private WriteTransaction writeTransaction;
     @Mock
-    private ReadOnlyTransaction rTx;
+    private ReadOnlyTransaction readOnlyTransaction;
     @Mock
     private Nodes mockNodes;
     @Mock
@@ -97,20 +97,19 @@ public class SalBulkFlowServiceImplTest {
 
     @Before
     public void setUp() throws Exception {
-        when(mockDataBroker.newWriteOnlyTransaction()).thenReturn(wTx);
-        when(mockDataBroker.newReadOnlyTransaction()).thenReturn(rTx);
-        when(rTx.read(Mockito.any(LogicalDatastoreType.class), Mockito.<InstanceIdentifier<Node>>any()))
+        when(mockDataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
+        when(mockDataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
+        when(readOnlyTransaction.read(Mockito.any(LogicalDatastoreType.class), Mockito.<InstanceIdentifier<Node>>any()))
                 .thenReturn(Futures.immediateCheckedFuture(Optional.of(mockNode)));
         salBulkFlowService = new SalBulkFlowServiceImpl(mockSalFlowService, mockDataBroker);
     }
 
     @Test
     public void testAddRemoveFlowsDs() throws Exception {
-        Mockito.when(wTx.submit()).thenReturn(Futures.immediateCheckedFuture(null));
+        Mockito.when(writeTransaction.submit()).thenReturn(Futures.immediateCheckedFuture(null));
 
-        final BulkFlowDsItemBuilder bulkFlowDsItemBuilder = new BulkFlowDsItemBuilder()
-            .setFlowId(new FlowId("1"))
-            .setTableId((short)2);
+        final BulkFlowDsItemBuilder bulkFlowDsItemBuilder = new BulkFlowDsItemBuilder().setFlowId(new FlowId("1"))
+                .setTableId((short) 2);
 
         final InstanceIdentifier<Node> nodeId = BulkOMaticUtils.getFlowCapableNodeId("1");
         bulkFlowDsItemBuilder.setNode(new NodeRef(nodeId));
@@ -125,8 +124,9 @@ public class SalBulkFlowServiceImplTest {
         final AddFlowsDsInput addFlowsDsInput = addFlowsDsInputBuilder.build();
         salBulkFlowService.addFlowsDs(addFlowsDsInput);
 
-        verify(wTx).submit();
-        verify(wTx).put(Matchers.<LogicalDatastoreType>any(), Matchers.<InstanceIdentifier<Flow>>any(), flowArgumentCaptor.capture(), Mockito.anyBoolean());
+        verify(writeTransaction).submit();
+        verify(writeTransaction).put(Matchers.<LogicalDatastoreType>any(), Matchers.<InstanceIdentifier<Flow>>any(),
+                flowArgumentCaptor.capture(), Mockito.anyBoolean());
 
         Flow flow = flowArgumentCaptor.getValue();
         Assert.assertEquals("1", flow.getId().getValue());
@@ -138,8 +138,8 @@ public class SalBulkFlowServiceImplTest {
         final RemoveFlowsDsInput removeFlowsDsInput = removeFlowsDsInputBuilder.build();
 
         salBulkFlowService.removeFlowsDs(removeFlowsDsInput);
-        verify(wTx).delete(Matchers.<LogicalDatastoreType>any(), Matchers.<InstanceIdentifier<Flow>>any());
-        verify(wTx,times(2)).submit();
+        verify(writeTransaction).delete(Matchers.<LogicalDatastoreType>any(), Matchers.<InstanceIdentifier<Flow>>any());
+        verify(writeTransaction, times(2)).submit();
     }
 
     @Test
@@ -177,13 +177,8 @@ public class SalBulkFlowServiceImplTest {
 
     @Test
     public void testReadFlowTest() throws Exception {
-        final ReadFlowTestInputBuilder readFlowTestInputBuilder = new ReadFlowTestInputBuilder()
-            .setDpnCount(1L)
-            .setStartTableId(1L)
-            .setEndTableId(2L)
-            .setIsConfigDs(false)
-            .setFlowsPerDpn(1L)
-            .setVerbose(true);
+        final ReadFlowTestInputBuilder readFlowTestInputBuilder = new ReadFlowTestInputBuilder().setDpnCount(1L)
+                .setStartTableId(1L).setEndTableId(2L).setIsConfigDs(false).setFlowsPerDpn(1L).setVerbose(true);
 
         final ReadFlowTestInput readFlowTestInput = readFlowTestInputBuilder.build();
         final Future<RpcResult<Void>> resultFuture = salBulkFlowService.readFlowTest(readFlowTestInput);
@@ -193,13 +188,12 @@ public class SalBulkFlowServiceImplTest {
 
     @Test
     public void testFlowRpcAddTest() throws Exception {
-        when(rTx.read(Mockito.any(LogicalDatastoreType.class), Mockito.<InstanceIdentifier<Nodes>>any()))
-                .thenReturn(Futures.immediateCheckedFuture(Optional.of(mockNodes)));
+        when(readOnlyTransaction.read(Mockito.any(LogicalDatastoreType.class),
+                Mockito.<InstanceIdentifier<Nodes>>any()))
+                        .thenReturn(Futures.immediateCheckedFuture(Optional.of(mockNodes)));
 
-        final FlowRpcAddTestInputBuilder flowRpcAddTestInputBuilder = new FlowRpcAddTestInputBuilder()
-                .setFlowCount(1L)
-                .setDpnId("1")
-                .setRpcBatchSize(1L);
+        final FlowRpcAddTestInputBuilder flowRpcAddTestInputBuilder = new FlowRpcAddTestInputBuilder().setFlowCount(1L)
+                .setDpnId("1").setRpcBatchSize(1L);
 
         final FlowRpcAddTestInput flowRpcAddTestInput = flowRpcAddTestInputBuilder.build();
         final Future<RpcResult<Void>> resultFuture = salBulkFlowService.flowRpcAddTest(flowRpcAddTestInput);
@@ -209,18 +203,9 @@ public class SalBulkFlowServiceImplTest {
 
     @Test
     public void testFlowTest() throws Exception {
-        final FlowTestInputBuilder flowTestInputBuilder = new FlowTestInputBuilder()
-                .setBatchSize(1L)
-                .setDpnCount(1L)
-                .setEndTableId(2L)
-                .setFlowsPerDpn(1L)
-                .setIsAdd(true)
-                .setSeq(true)
-                .setSleepAfter(20L)
-                .setSleepFor(1L)
-                .setStartTableId(1L)
-                .setTxChain(true)
-                .setCreateParents(true);
+        final FlowTestInputBuilder flowTestInputBuilder = new FlowTestInputBuilder().setBatchSize(1L).setDpnCount(1L)
+                .setEndTableId(2L).setFlowsPerDpn(1L).setIsAdd(true).setSeq(true).setSleepAfter(20L).setSleepFor(1L)
+                .setStartTableId(1L).setTxChain(true).setCreateParents(true);
 
         FlowTestInput flowTestInput = flowTestInputBuilder.build();
 
@@ -254,12 +239,12 @@ public class SalBulkFlowServiceImplTest {
 
     @Test
     public void testFlowRpcAddMultiple() throws Exception {
-        when(rTx.read(Mockito.any(LogicalDatastoreType.class), Mockito.<InstanceIdentifier<Nodes>>any()))
-                .thenReturn(Futures.immediateCheckedFuture(Optional.of(mockNodes)));
+        when(readOnlyTransaction.read(Mockito.any(LogicalDatastoreType.class),
+                Mockito.<InstanceIdentifier<Nodes>>any()))
+                        .thenReturn(Futures.immediateCheckedFuture(Optional.of(mockNodes)));
 
         final FlowRpcAddMultipleInputBuilder flowRpcAddMultipleInputBuilder = new FlowRpcAddMultipleInputBuilder()
-                .setFlowCount(1L)
-                .setRpcBatchSize(1L);
+                .setFlowCount(1L).setRpcBatchSize(1L);
 
         final FlowRpcAddMultipleInput flowRpcAddMultipleInput = flowRpcAddMultipleInputBuilder.build();
 
@@ -268,11 +253,8 @@ public class SalBulkFlowServiceImplTest {
 
     @Test
     public void testTableTest() throws Exception {
-        final TableTestInputBuilder tableTestInputBuilder = new TableTestInputBuilder()
-                .setStartTableId(0L)
-                .setEndTableId(99L)
-                .setDpnCount(1L)
-                .setOperation(Operation.Add);
+        final TableTestInputBuilder tableTestInputBuilder = new TableTestInputBuilder().setStartTableId(0L)
+                .setEndTableId(99L).setDpnCount(1L).setOperation(Operation.Add);
 
         TableTestInput tableTestInput = tableTestInputBuilder.build();
 
