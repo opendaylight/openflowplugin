@@ -91,7 +91,6 @@
         <module>notification-supplier</module>
         <!-- nsf apps -->
         <module>inventory-manager</module>
-        <module>statistics-manager</module>
         <module>topology-manager</module>
         <module>forwardingrules-manager</module>
         <module>forwardingrules-sync</module>
