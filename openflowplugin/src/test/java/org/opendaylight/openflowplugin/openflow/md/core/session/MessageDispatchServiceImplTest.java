@@ -23,6 +23,7 @@ import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandler;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
+import org.opendaylight.openflowjava.protocol.api.extensibility.AlienMessageListener;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitchRegistration;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
@@ -735,6 +736,11 @@ class MockConnectionAdapter implements ConnectionAdapter {
     @Override
     public void setSystemListener(SystemNotificationsListener systemListener) {
         // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void setAlienMessageListener(AlienMessageListener alienMessageListener) {
 
     }
 
