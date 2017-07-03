@@ -31,6 +31,7 @@ import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandler;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
+import org.opendaylight.openflowjava.protocol.api.extensibility.AlienMessageListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInput;
@@ -281,6 +282,11 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
     @Override
     public void setSystemListener(final SystemNotificationsListener systemListener) {
         this.systemListener = systemListener;
+    }
+
+    @Override
+    public void setAlienMessageListener(final AlienMessageListener alienMessageListener) {
+
     }
 
     /**
