@@ -98,7 +98,7 @@ public class DeviceManagerImplTest {
 
         when(mockedWriteTransaction.submit()).thenReturn(mockedFuture);
 
-        final DeviceManagerImpl deviceManager = new DeviceManagerImpl(
+        return new DeviceManagerImpl(
                 new OpenflowProviderConfigBuilder()
                         .setBarrierCountLimit(new NonZeroUint16Type(barrierCountLimit))
                         .setBarrierIntervalTimeoutLimit(new NonZeroUint32Type(barrierIntervalNanos))
@@ -113,8 +113,6 @@ public class DeviceManagerImplTest {
                 new HashedWheelTimer(),
                 convertorExecutor,
                 DeviceInitializerProviderFactory.createDefaultProvider());
-
-        return deviceManager;
     }
 
     @Test
