@@ -369,7 +369,7 @@ public class ConnectionContextImpl implements ConnectionContext {
 
         @Override
         public String toString() {
-            return getLOGValue();
+            return Objects.isNull(nodeId) ? "null" : getNodeId().getValue();
         }
 
         public void setOutboundQueueProvider(final OutboundQueue outboundQueueProvider) {
