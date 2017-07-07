@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.rpc;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -18,7 +17,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Semaphore;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
@@ -57,6 +55,7 @@ class RpcContextImpl implements RpcContext {
     private final ExtensionConverterProvider extensionConverterProvider;
     private final ConvertorExecutor convertorExecutor;
     private final NotificationPublishService notificationPublishService;
+    private MastershipChangeListener mastershipChangeListener;
 
     RpcContextImpl(@Nonnull final RpcProviderRegistry rpcProviderRegistry,
                    final int maxRequests,
@@ -178,33 +177,24 @@ class RpcContextImpl implements RpcContext {
     }
 
     @Override
-    public ServiceGroupIdentifier getServiceIdentifier() {
-        return this.deviceInfo.getServiceIdentifier();
-    }
-
-    @Override
     public DeviceInfo getDeviceInfo() {
         return this.deviceInfo;
     }
 
     @Override
-    public ListenableFuture<Void> stopClusterServices() {
-        if (ContextState.TERMINATION.equals(this.state)) {
-            return Futures.immediateCancelledFuture();
-        }
-
-        return Futures.transform(Futures.immediateFuture(null), new Function<Object, Void>() {
-            @Nullable
-            @Override
-            public Void apply(@Nullable Object input) {
-                unregisterRPCs();
-                return null;
-            }
-        });
+    public void registerMastershipChangeListener(@Nonnull final MastershipChangeListener mastershipChangeListener) {
+        this.mastershipChangeListener = mastershipChangeListener;
     }
 
     @Override
-    public boolean onContextInstantiateService(final MastershipChangeListener mastershipChangeListener) {
+    public ListenableFuture<Void> closeServiceInstance() {
+        LOG.info("Stopping rpc context cluster services for node {}", deviceInfo.getLOGValue());
+        unregisterRPCs();
+        return Futures.immediateFuture(null);
+    }
+
+    @Override
+    public void instantiateServiceInstance() {
         LOG.info("Starting rpc context cluster services for node {}", deviceInfo.getLOGValue());
         MdSalRegistrationUtils.registerServices(this, deviceContext, extensionConverterProvider, convertorExecutor);
 
@@ -217,6 +207,11 @@ class RpcContextImpl implements RpcContext {
         }
 
         mastershipChangeListener.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.RPC_REGISTRATION);
-        return true;
+    }
+
+    @Nonnull
+    @Override
+    public ServiceGroupIdentifier getIdentifier() {
+        return deviceInfo.getServiceIdentifier();
     }
 }
