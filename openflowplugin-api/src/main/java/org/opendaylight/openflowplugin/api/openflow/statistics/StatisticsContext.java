@@ -14,6 +14,7 @@ import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 
 /**
@@ -77,4 +78,10 @@ public interface StatisticsContext extends RequestContextStack, OFPContext {
      * In case to change mastership to slave or connection interrupted stop the future and release thread.
      */
     void stopGatheringData();
+
+    /**
+     * Sets initial submit handle for this context.
+     * @param initialSubmitHandler initial submit handler
+     */
+    void setInitialSubmitHandler(final ClusterInitializationPhaseHandler initialSubmitHandler);
 }

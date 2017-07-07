@@ -8,15 +8,13 @@
 package org.opendaylight.openflowplugin.api.openflow;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterLifecycleSupervisor;
 
 /**
  * General API for all OFP Context.
  */
-public interface OFPContext extends AutoCloseable, ClusterLifecycleSupervisor, ClusterInitializationPhaseHandler {
+public interface OFPContext extends AutoCloseable, ClusterInitializationPhaseHandler {
 
     /**
      * Context state.
@@ -35,12 +33,6 @@ public interface OFPContext extends AutoCloseable, ClusterLifecycleSupervisor, C
      * @return Future most of services need time to be closed.
      */
     ListenableFuture<Void> stopClusterServices();
-
-    /**
-     * Get cluster singleton service identifier.
-     * @return cluster singleton service identifier.
-     */
-    ServiceGroupIdentifier getServiceIdentifier();
 
     /**
      * Get device info.
