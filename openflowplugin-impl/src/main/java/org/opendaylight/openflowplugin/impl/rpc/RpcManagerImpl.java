@@ -66,7 +66,8 @@ public class RpcManagerImpl implements RpcManager {
         }
     }
 
-    public RpcContext createContext(final @Nonnull DeviceInfo deviceInfo, final @Nonnull DeviceContext deviceContext) {
+    @Override
+    public RpcContext createContext(final @Nonnull DeviceContext deviceContext) {
         final RpcContextImpl rpcContext = new RpcContextImpl(
                 rpcProviderRegistry,
                 config.getRpcRequestsQuota().getValue(),
@@ -76,7 +77,7 @@ public class RpcManagerImpl implements RpcManager {
                 notificationPublishService,
                 config.isIsStatisticsRpcEnabled());
 
-        contexts.put(deviceInfo, rpcContext);
+        contexts.put(deviceContext.getDeviceInfo(), rpcContext);
         return rpcContext;
     }
 
