@@ -7,13 +7,9 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
-import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListener;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
@@ -38,32 +34,14 @@ public interface ContextChainHolder extends
      * @param manager a child class of {@link OFPManager}
      * @param <T> {@link OFPManager}
      */
-    <T extends OFPManager> void addManager(final T manager);
+    <T extends OFPManager> void addManager(T manager);
 
     /**
      * Create a new context chain.
      * @param connectionContext new connection
      * @return {@link ContextChain}
      */
-    ContextChain createContextChain(final ConnectionContext connectionContext);
-
-    /**
-     * Called if connection needs to be destroyed.
-     * @param deviceInfo {@link DeviceInfo}
-     */
-    void destroyContextChain(final DeviceInfo deviceInfo);
-
-    /**
-     * Provider is needed to register cluster singleton service.
-     * @param singletonServicesProvider provider
-     */
-    void addSingletonServicesProvider(final ClusterSingletonServiceProvider singletonServicesProvider);
-
-    /**
-     * Register EOS listener.
-     * @param entityOwnershipService EOS services
-     */
-    void changeEntityOwnershipService(@Nonnull EntityOwnershipService entityOwnershipService);
+    ContextChain createContextChain(ConnectionContext connectionContext);
 
     @Override
     void close() throws Exception;

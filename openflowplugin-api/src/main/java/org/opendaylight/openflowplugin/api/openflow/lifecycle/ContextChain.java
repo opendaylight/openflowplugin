@@ -7,39 +7,26 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
-import com.google.common.util.concurrent.ListenableFuture;
 import javax.annotation.Nonnull;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
 
 /**
  * Chain of contexts, hold references to the contexts.
  */
-public interface ContextChain extends AutoCloseable {
+public interface ContextChain extends ClusterSingletonService, AutoCloseable {
 
     /**
      * Add context to the chain, if reference already exist ignore it.
      * @param context child of OFPContext
      */
-    <T extends OFPContext> void addContext(final T context);
-
-    void addLifecycleService(final LifecycleService lifecycleService);
-
-    /**
-     * Stop the working contexts, but not release them.
-     * @return Future
-     */
-    ListenableFuture<Void> stopChain();
+    <T extends OFPContext> void addContext(@Nonnull T context);
 
     @Override
     void close();
-
-    /**
-     * Method need to be called if connection is dropped to stop the chain.
-     * @return future
-     */
-    ListenableFuture<Void> connectionDropped();
 
     /**
      * Slave was successfully set.
@@ -50,7 +37,7 @@ public interface ContextChain extends AutoCloseable {
      * Registers context chain into cluster singleton service.
      * @param clusterSingletonServiceProvider provider
      */
-    void registerServices(final ClusterSingletonServiceProvider clusterSingletonServiceProvider);
+    void registerServices(ClusterSingletonServiceProvider clusterSingletonServiceProvider);
 
     /**
      * After connect of device make this device SLAVE.
@@ -62,19 +49,25 @@ public interface ContextChain extends AutoCloseable {
      * @param mastershipState - state master on device, initial gather, initial submit, initial registry fill
      * @return true if everything done fine
      */
-    boolean isMastered(@Nonnull final ContextChainMastershipState mastershipState);
+    boolean isMastered(@Nonnull ContextChainMastershipState mastershipState);
 
     /**
      * Add new auxiliary connection if primary is ok.
      * @param connectionContext new connection to the device.
      * @return false if primary connection is broken
      */
-    boolean addAuxiliaryConnection(@Nonnull final ConnectionContext connectionContext);
+    boolean addAuxiliaryConnection(@Nonnull ConnectionContext connectionContext);
 
     /**
      * Check if connection is auxiliary and if yes then continue working.
      * @param connectionContext connection to the device
      * @return false if this is primary connection
      */
-    boolean auxiliaryConnectionDropped(@Nonnull final ConnectionContext connectionContext);
+    boolean auxiliaryConnectionDropped(@Nonnull ConnectionContext connectionContext);
+
+    /**
+     * This method registers device removed handler what will be executed when device should be removed.
+     * @param deviceRemovedHandler device removed handler
+     */
+    void registerDeviceRemovedHandler(@Nonnull DeviceRemovedHandler deviceRemovedHandler);
 }
