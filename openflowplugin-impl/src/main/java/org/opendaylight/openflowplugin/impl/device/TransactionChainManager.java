@@ -33,7 +33,6 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionChainClosed
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -56,7 +55,6 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     private final Object txLock = new Object();
     private final DataBroker dataBroker;
     private final String nodeId;
-    private LifecycleService lifecycleService;
 
     @GuardedBy("txLock")
     private WriteTransaction wTx;
@@ -84,10 +82,6 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         BindingTransactionChain txChainFactoryTemp = txChainFactory;
         txChainFactory = dataBroker.createTransactionChain(TransactionChainManager.this);
         Optional.ofNullable(txChainFactoryTemp).ifPresent(TransactionChain::close);
-    }
-
-    public void setLifecycleService(final LifecycleService lifecycleService) {
-        this.lifecycleService = lifecycleService;
     }
 
     boolean initialSubmitWriteTransaction() {
