@@ -8,23 +8,32 @@
 package org.opendaylight.openflowplugin.impl.lifecycle;
 
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.MoreExecutors;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
+import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChain;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
+import org.opendaylight.openflowplugin.impl.role.RoleChangeException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ContextChainImplTest {
+
+    private static final String TEST_NODE = "test node";
+    private static final ServiceGroupIdentifier SERVICE_GROUP_IDENTIFIER = ServiceGroupIdentifier.create(TEST_NODE);
 
     @Mock
     private StatisticsContext statisticsContext;
@@ -33,36 +42,42 @@ public class ContextChainImplTest {
     @Mock
     private DeviceContext deviceContext;
     @Mock
-    private LifecycleService lifecycleService;
-    @Mock
     private DeviceInfo deviceInfo;
     @Mock
     private ConnectionContext connectionContext;
+    @Mock
+    private ClusterSingletonServiceProvider clusterSingletonServiceProvider;
+    @Mock
+    private ClusterSingletonServiceRegistration clusterSingletonServiceRegistration;
+    @Mock
+    private MastershipChangeListener mastershipChangeListener;
+    @Mock
+    private DeviceRemovedHandler deviceRemovedHandler;
 
     private ContextChain contextChain;
 
     @Before
     public void setUp() throws Exception {
-
         Mockito.when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
-        Mockito.when(deviceContext.stopClusterServices())
-                .thenReturn(Futures.immediateFuture(null));
+        Mockito.when(deviceInfo.getServiceIdentifier()).thenReturn(SERVICE_GROUP_IDENTIFIER);
+        Mockito.when(deviceContext.stopClusterServices()).thenReturn(Futures.immediateFuture(null));
         Mockito.when(rpcContext.stopClusterServices()).thenReturn(Futures.immediateFuture(null));
         Mockito.when(statisticsContext.stopClusterServices()).thenReturn(Futures.immediateFuture(null));
         Mockito.when(statisticsContext.gatherDynamicData()).thenReturn(Futures.immediateFuture(null));
         Mockito.when(connectionContext.getDeviceInfo()).thenReturn(deviceInfo);
+        Mockito.when(clusterSingletonServiceProvider.registerClusterSingletonService(Mockito.any()))
+                .thenReturn(clusterSingletonServiceRegistration);
 
-        contextChain = new ContextChainImpl(connectionContext);
+        contextChain = new ContextChainImpl(mastershipChangeListener, connectionContext, MoreExecutors.newDirectExecutorService());
         contextChain.addContext(statisticsContext);
         contextChain.addContext(rpcContext);
         contextChain.addContext(deviceContext);
-        contextChain.addLifecycleService(lifecycleService);
-
+        contextChain.registerServices(clusterSingletonServiceProvider);
     }
 
     @Test
-    public void stopChain() throws Exception {
-        contextChain.stopChain();
+    public void closeServiceInstance() throws Exception {
+        contextChain.closeServiceInstance();
         Mockito.verify(deviceContext).stopClusterServices();
         Mockito.verify(rpcContext).stopClusterServices();
         Mockito.verify(statisticsContext).stopClusterServices();
@@ -70,31 +85,57 @@ public class ContextChainImplTest {
 
     @Test
     public void close() throws Exception {
+        contextChain.registerDeviceRemovedHandler(deviceRemovedHandler);
         contextChain.close();
         Mockito.verify(statisticsContext).close();
         Mockito.verify(deviceContext).close();
         Mockito.verify(rpcContext).close();
-        Mockito.verify(lifecycleService).close();
+        Mockito.verify(deviceRemovedHandler).onDeviceRemoved(Mockito.any(DeviceInfo.class));
     }
 
     @Test
-    public void connectionDropped() throws Exception {
-        contextChain.isMastered(ContextChainMastershipState.INITIAL_GATHERING);
-        contextChain.isMastered(ContextChainMastershipState.INITIAL_SUBMIT);
-        contextChain.isMastered(ContextChainMastershipState.MASTER_ON_DEVICE);
-        contextChain.isMastered(ContextChainMastershipState.INITIAL_FLOW_REGISTRY_FILL);
-        contextChain.isMastered(ContextChainMastershipState.RPC_REGISTRATION);
-        contextChain.connectionDropped();
-        Mockito.verify(deviceContext).stopClusterServices();
-        Mockito.verify(rpcContext).stopClusterServices();
-        Mockito.verify(statisticsContext).stopClusterServices();
+    public void closeTwoTimes() throws Exception {
+        contextChain.registerDeviceRemovedHandler(deviceRemovedHandler);
+        contextChain.close();
+        contextChain.close();
+        Mockito.verify(deviceRemovedHandler, Mockito.times(1))
+                .onDeviceRemoved(Mockito.any(DeviceInfo.class));
+    }
+
+    @Test
+    public void closeThreeTimes() throws Exception {
+        contextChain.registerDeviceRemovedHandler(deviceRemovedHandler);
+        contextChain.close();
+        contextChain.close();
+        Mockito.verify(deviceRemovedHandler, Mockito.times(1))
+                .onDeviceRemoved(Mockito.any(DeviceInfo.class));
+    }
+
+    @Test
+    public void getIdentifier() throws Exception {
+        Assert.assertEquals(contextChain.getIdentifier(), SERVICE_GROUP_IDENTIFIER);
     }
 
     @Test
     public void makeDeviceSlave() throws Exception {
+        Mockito.when(deviceContext.makeDeviceSlave()).thenReturn(Futures.immediateFuture(null));
         contextChain.makeDeviceSlave();
-        Mockito.verify(lifecycleService).makeDeviceSlave(Mockito.any(DeviceContext.class));
+        Mockito.verify(mastershipChangeListener).onSlaveRoleAcquired(Mockito.any(DeviceInfo.class));
     }
 
-}
+    @Test
+    public void makeDeviceSlaveFailure() throws Exception {
+        Mockito.when(deviceContext.makeDeviceSlave())
+                .thenReturn(Futures.immediateFailedFuture(new RoleChangeException(TEST_NODE)));
+        contextChain.makeDeviceSlave();
+        Mockito.verify(mastershipChangeListener).onSlaveRoleNotAcquired(Mockito.any(DeviceInfo.class));
+    }
 
+    @Test
+    public void instantiateServiceInstanceFail() throws Exception {
+        Mockito.when(deviceContext.onContextInstantiateService(Mockito.any()))
+                .thenReturn(false);
+        contextChain.instantiateServiceInstance();
+        Mockito.verify(mastershipChangeListener).onNotAbleToStartMastershipMandatory(Mockito.any(DeviceInfo.class), Mockito.anyString());
+    }
+}
