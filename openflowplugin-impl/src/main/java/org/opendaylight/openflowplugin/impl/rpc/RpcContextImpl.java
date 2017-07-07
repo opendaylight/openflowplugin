@@ -57,6 +57,7 @@ class RpcContextImpl implements RpcContext {
     private final ExtensionConverterProvider extensionConverterProvider;
     private final ConvertorExecutor convertorExecutor;
     private final NotificationPublishService notificationPublishService;
+    private MastershipChangeListener mastershipChangeListener;
 
     RpcContextImpl(@Nonnull final RpcProviderRegistry rpcProviderRegistry,
                    final int maxRequests,
@@ -178,25 +179,23 @@ class RpcContextImpl implements RpcContext {
     }
 
     @Override
-    public ServiceGroupIdentifier getServiceIdentifier() {
-        return this.deviceInfo.getServiceIdentifier();
-    }
-
-    @Override
     public DeviceInfo getDeviceInfo() {
         return this.deviceInfo;
     }
 
     @Override
-    public ListenableFuture<Void> stopClusterServices() {
-        if (CONTEXT_STATE.TERMINATION.equals(this.state)) {
-            return Futures.immediateCancelledFuture();
-        }
+    public void registerMastershipChangeListener(@Nonnull final MastershipChangeListener mastershipChangeListener) {
+        this.mastershipChangeListener = mastershipChangeListener;
+    }
 
-        return Futures.transform(Futures.immediateFuture(null), new Function<Object, Void>() {
+    @Override
+    public ListenableFuture<Void> closeServiceInstance() {
+        LOG.info("Stopping rpc context cluster services for node {}", deviceInfo.getLOGValue());
+
+        return Futures.transform(Futures.immediateFuture(null), new Function<Void, Void>() {
             @Nullable
             @Override
-            public Void apply(@Nullable Object input) {
+            public Void apply(@Nullable final Void input) {
                 unregisterRPCs();
                 return null;
             }
@@ -204,7 +203,7 @@ class RpcContextImpl implements RpcContext {
     }
 
     @Override
-    public boolean onContextInstantiateService(final MastershipChangeListener mastershipChangeListener) {
+    public void instantiateServiceInstance() {
         LOG.info("Starting rpc context cluster services for node {}", deviceInfo.getLOGValue());
         MdSalRegistrationUtils.registerServices(this, deviceContext, extensionConverterProvider, convertorExecutor);
 
@@ -217,6 +216,11 @@ class RpcContextImpl implements RpcContext {
         }
 
         mastershipChangeListener.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.RPC_REGISTRATION);
-        return true;
+    }
+
+    @Nonnull
+    @Override
+    public ServiceGroupIdentifier getIdentifier() {
+        return deviceInfo.getServiceIdentifier();
     }
 }

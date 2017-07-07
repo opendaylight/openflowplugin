@@ -17,6 +17,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListenerRegistration;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -55,6 +57,10 @@ public class ContextChainHolderImplTest {
     private ExecutorService executorService;
     @Mock
     private ClusterSingletonServiceRegistration clusterSingletonServiceRegistration;
+    @Mock
+    private EntityOwnershipService entityOwnershipService;
+    @Mock
+    private EntityOwnershipListenerRegistration entityOwnershipListenerRegistration;
 
     private ContextChainHolderImpl contextChainHolder;
 
@@ -68,21 +74,20 @@ public class ContextChainHolderImplTest {
 
         Mockito.when(connectionContext.getDeviceInfo()).thenReturn(deviceInfo);
         Mockito.when(deviceManager.createContext(connectionContext)).thenReturn(deviceContext);
-        Mockito.when(rpcManager.createContext(
-                deviceInfo,
-                deviceContext))
-                .thenReturn(rpcContext);
+        Mockito.when(rpcManager.createContext(deviceContext)).thenReturn(rpcContext);
         Mockito.when(statisticsManager.createContext(deviceContext)).thenReturn(statisticsContext);
         Mockito.when(deviceContext.makeDeviceSlave()).thenReturn(Futures.immediateFuture(null));
         Mockito.when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
 
         Mockito.when(singletonServicesProvider.registerClusterSingletonService(Mockito.any()))
                 .thenReturn(clusterSingletonServiceRegistration);
-        contextChainHolder = new ContextChainHolderImpl(timer, executorService);
+        Mockito.when(entityOwnershipService.registerListener(Mockito.any(), Mockito.any()))
+                .thenReturn(entityOwnershipListenerRegistration);
+
+        contextChainHolder = new ContextChainHolderImpl(timer, executorService, singletonServicesProvider, entityOwnershipService);
         contextChainHolder.addManager(statisticsManager);
         contextChainHolder.addManager(rpcManager);
         contextChainHolder.addManager(deviceManager);
-        contextChainHolder.addSingletonServicesProvider(singletonServicesProvider);
     }
 
     @Test
@@ -94,7 +99,7 @@ public class ContextChainHolderImplTest {
     public void createContextChain() throws Exception {
         contextChainHolder.createContextChain(connectionContext);
         Mockito.verify(deviceManager).createContext(Mockito.any(ConnectionContext.class));
-        Mockito.verify(rpcManager).createContext(Mockito.any(DeviceInfo.class), Mockito.any(DeviceContext.class));
+        Mockito.verify(rpcManager).createContext(Mockito.any(DeviceContext.class));
         Mockito.verify(statisticsManager).createContext(Mockito.any(DeviceContext.class));
     }
 
