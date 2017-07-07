@@ -77,7 +77,6 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
 
     private volatile boolean schedulingEnabled;
     private volatile ContextState state;
-    private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
     private ClusterInitializationPhaseHandler initialSubmitHandler;
 
     private volatile ListenableFuture<Boolean> lastDataGathering;
@@ -358,11 +357,6 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     }
 
     @Override
-    public void setLifecycleInitializationPhaseHandler(final ClusterInitializationPhaseHandler handler) {
-        this.clusterInitializationPhaseHandler = handler;
-    }
-
-    @Override
     public boolean onContextInstantiateService(final MastershipChangeListener mastershipChangeListener) {
         LOG.info("Starting statistics context cluster services for node {}", deviceInfo.getLOGValue());
         this.statListForCollectingInitialization();
@@ -401,7 +395,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
             }
         });
 
-        return this.clusterInitializationPhaseHandler.onContextInstantiateService(mastershipChangeListener);
+        return true;
     }
 
     @Override

@@ -45,7 +45,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainState;
@@ -163,7 +162,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private DeviceGroupRegistry deviceGroupRegistry;
     private DeviceMeterRegistry deviceMeterRegistry;
     private ExtensionConverterProvider extensionConverterProvider;
-    private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
     private SalRoleService salRoleService;
     private boolean initialized;
     private boolean hasState;
@@ -574,11 +572,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void setLifecycleInitializationPhaseHandler(final ClusterInitializationPhaseHandler handler) {
-        this.clusterInitializationPhaseHandler = handler;
-    }
-
-    @Override
     public boolean onContextInstantiateService(final MastershipChangeListener mastershipChangeListener) {
         LOG.info("Starting device context cluster services for node {}", deviceInfo.getLOGValue());
         lazyTransactionManagerInitialization();
@@ -619,7 +612,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         Futures.addCallback(deviceFlowRegistryFill,
                 new DeviceFlowRegistryCallback(deviceFlowRegistryFill, mastershipChangeListener));
 
-        return this.clusterInitializationPhaseHandler.onContextInstantiateService(mastershipChangeListener);
+        return true;
     }
 
     @VisibleForTesting

@@ -7,179 +7,232 @@
  */
 package org.opendaylight.openflowplugin.impl.lifecycle;
 
-import com.google.common.base.Function;
+import static org.opendaylight.openflowplugin.api.openflow.OFPContext.*;
+
+import com.google.common.base.Verify;
+import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import io.netty.util.internal.ConcurrentSet;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
+import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChain;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainStateListener;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
-import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
-import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
+import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ContextChainImpl implements ContextChain {
-
     private static final Logger LOG = LoggerFactory.getLogger(ContextChainImpl.class);
-
-    private Set<OFPContext> contexts = new ConcurrentSet<>();
-    private StatisticsContext statisticsContext;
-    private DeviceContext deviceContext;
-    private RpcContext rpcContext;
-    private LifecycleService lifecycleService;
-    private DeviceInfo deviceInfo;
-    private ConnectionContext primaryConnection;
-    private Set<ConnectionContext> auxiliaryConnections = new ConcurrentSet<>();
-
-    private volatile ContextChainState contextChainState = ContextChainState.UNDEFINED;
 
     private final AtomicBoolean masterStateOnDevice = new AtomicBoolean(false);
     private final AtomicBoolean initialGathering = new AtomicBoolean(false);
     private final AtomicBoolean initialSubmitting = new AtomicBoolean(false);
     private final AtomicBoolean registryFilling = new AtomicBoolean(false);
     private final AtomicBoolean rpcRegistration = new AtomicBoolean(false);
+    private final List<DeviceRemovedHandler> deviceRemovedHandlers = new ArrayList<>();
+    private final List<OFPContext> contexts = new ArrayList<>();
+    private final List<ConnectionContext> auxiliaryConnections = Collections.synchronizedList(new ArrayList<>());
+    private final ExecutorService executorService;
+    private final MastershipChangeListener mastershipChangeListener;
+    private final DeviceInfo deviceInfo;
+    private final ConnectionContext primaryConnection;
+    private AutoCloseable registration;
+    private ContextState state;
+    private ServiceGroupIdentifier serviceGroupIdentifier;
+    private DeviceContext deviceContext;
+    private Future<?> serviceInitializationFuture;
 
-    ContextChainImpl(final ConnectionContext connectionContext) {
+    private volatile ContextChainState contextChainState = ContextChainState.UNDEFINED;
+
+    ContextChainImpl(final MastershipChangeListener mastershipChangeListener,
+                     final ConnectionContext connectionContext,
+                     final ExecutorService executorService) {
+        this.mastershipChangeListener = mastershipChangeListener;
         this.primaryConnection = connectionContext;
         this.deviceInfo = connectionContext.getDeviceInfo();
+        this.executorService = executorService;
     }
 
     @Override
     public <T extends OFPContext> void addContext(final T context) {
-        if (context instanceof StatisticsContext) {
-            this.statisticsContext = (StatisticsContext) context;
-        } else {
-            if (context instanceof DeviceContext) {
-                this.deviceContext = (DeviceContext) context;
-            } else {
-                if (context instanceof RpcContext) {
-                    this.rpcContext = (RpcContext) context;
-                }
-            }
+        if (context instanceof DeviceContext) {
+            deviceContext = (DeviceContext) context;
         }
 
         contexts.add(context);
     }
 
     @Override
-    public void addLifecycleService(final LifecycleService lifecycleService) {
-        this.lifecycleService = lifecycleService;
-    }
+    public void instantiateServiceInstance() {
+        serviceInitializationFuture = executorService.submit(() -> {
+            LOG.info("Starting clustering services for node {}", deviceInfo);
 
-    @Override
-    public ListenableFuture<Void> stopChain() {
-        final List<ListenableFuture<Void>> futureList = new ArrayList<>();
-        futureList.add(statisticsContext.stopClusterServices());
-        futureList.add(rpcContext.stopClusterServices());
-        futureList.add(deviceContext.stopClusterServices());
-        this.unMasterMe();
-        return Futures.transform(Futures.successfulAsList(futureList), new Function<List<Void>, Void>() {
-            @Nullable
-            @Override
-            public Void apply(@Nullable List<Void> input) {
-                LOG.info("Closed clustering MASTER services for node {}", deviceContext.getDeviceInfo().getLOGValue());
-                return null;
+            final Boolean wasStartSuccessful = contexts.stream().reduce(
+                    Boolean.TRUE,
+                    (prevResult, context) -> prevResult && context.onContextInstantiateService(mastershipChangeListener),
+                    (a, b) -> a && b);
+
+            if (!wasStartSuccessful) {
+                mastershipChangeListener.onNotAbleToStartMastershipMandatory(deviceInfo, "Cannot initialize device.");
             }
         });
     }
 
-    private void unMasterMe() {
-        this.registryFilling.set(false);
-        this.initialSubmitting.set(false);
-        this.initialGathering.set(false);
-        this.masterStateOnDevice.set(false);
-        this.rpcRegistration.set(false);
+    @Override
+    public ListenableFuture<Void> closeServiceInstance() {
+        unMasterMe();
+        final ListenableFuture<List<Void>> servicesToBeClosed = Futures
+                .successfulAsList(contexts
+                        .stream()
+                        .map(OFPContext::stopClusterServices)
+                        .collect(Collectors.toSet()));
+
+        return Futures.transform(servicesToBeClosed, (input) -> {
+            LOG.info("Closed clustering MASTER services for node {}", deviceContext.getDeviceInfo());
+            return null;
+        }, executorService);
+    }
+
+    @Nonnull
+    @Override
+    public ServiceGroupIdentifier getIdentifier() {
+        return serviceGroupIdentifier;
     }
 
     @Override
     public void close() {
-        this.auxiliaryConnections.forEach(connectionContext -> connectionContext.closeConnection(false));
-        this.primaryConnection.closeConnection(true);
-        lifecycleService.close();
-        deviceContext.close();
-        rpcContext.close();
-        statisticsContext.close();
-        unMasterMe();
+        if (ContextState.TERMINATION.equals(state)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("ContextChain for node {} is already in TERMINATION state.", deviceInfo);
+            }
+        } else {
+            state = ContextState.TERMINATION;
+            unMasterMe();
+
+            // If for some reason service initialization is still happening, terminate it
+            if (Objects.nonNull(serviceInitializationFuture)
+                    && !serviceInitializationFuture.isDone()
+                    && !serviceInitializationFuture.isCancelled()) {
+                serviceInitializationFuture.cancel(true);
+                serviceInitializationFuture = null;
+            }
+
+            // We are closing, so cleanup all managers now
+            deviceRemovedHandlers.forEach(h -> h.onDeviceRemoved(deviceInfo));
+            deviceRemovedHandlers.clear();
+
+            // Close all connections to devices
+            auxiliaryConnections.forEach(connectionContext -> connectionContext.closeConnection(false));
+            auxiliaryConnections.clear();
+            primaryConnection.closeConnection(true);
+
+            // Close all contexts (device, statistics, rpc)
+            contexts.forEach(OFPContext::close);
+            contexts.clear();
+
+            // If we are still registered and we are not already closing, then close the registration
+            if (Objects.nonNull(registration)) {
+                try {
+                    LOG.info("Closing clustering services registration for node {}", deviceInfo);
+                    registration.close();
+                    registration = null;
+                } catch (final Exception e) {
+                    LOG.warn("Failed to close clustering services registration for node {} with exception: ",
+                            deviceInfo, e);
+                }
+            }
+        }
     }
 
     @Override
     public void makeContextChainStateSlave() {
-        this.unMasterMe();
+        unMasterMe();
         changeState(ContextChainState.WORKING_SLAVE);
     }
 
     @Override
-    public ListenableFuture<Void> connectionDropped() {
-        if (this.contextChainState == ContextChainState.WORKING_MASTER) {
-            return this.stopChain();
-        }
-        this.unMasterMe();
-        return Futures.immediateFuture(null);
-    }
-
-    @Override
     public void registerServices(final ClusterSingletonServiceProvider clusterSingletonServiceProvider) {
-        this.lifecycleService.registerService(
-                clusterSingletonServiceProvider,
-                this.deviceContext);
+        Verify.verify(Objects.isNull(registration));
+        serviceGroupIdentifier = deviceContext.getServiceIdentifier();
+        registration = Objects.requireNonNull(clusterSingletonServiceProvider
+                .registerClusterSingletonService(this));
+
+        LOG.info("Registered clustering services for node {}", deviceInfo);
     }
 
     @Override
     public void makeDeviceSlave() {
-        this.unMasterMe();
-        this.lifecycleService.makeDeviceSlave(this.deviceContext);
+        unMasterMe();
+
+        Futures.addCallback(deviceContext.makeDeviceSlave(), new FutureCallback<RpcResult<SetRoleOutput>>() {
+            @Override
+            public void onSuccess(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
+                LOG.debug("Role SLAVE was successfully propagated on device, node {}", deviceInfo);
+                mastershipChangeListener.onSlaveRoleAcquired(deviceInfo);
+            }
+
+            @Override
+            public void onFailure(@Nonnull Throwable throwable) {
+                LOG.warn("Was not able to set role SLAVE to device on node {} ", deviceInfo);
+                mastershipChangeListener.onSlaveRoleNotAcquired(deviceInfo);
+            }
+        }, executorService);
     }
 
     @Override
     public boolean isMastered(@Nonnull ContextChainMastershipState mastershipState) {
         switch (mastershipState) {
             case INITIAL_SUBMIT:
-                LOG.debug("Device {}, initial submit OK.", deviceInfo.getLOGValue());
+                LOG.debug("Device {}, initial submit OK.", deviceInfo);
                 this.initialSubmitting.set(true);
                 break;
             case MASTER_ON_DEVICE:
-                LOG.debug("Device {}, master state OK.", deviceInfo.getLOGValue());
+                LOG.debug("Device {}, master state OK.", deviceInfo);
                 this.masterStateOnDevice.set(true);
                 break;
             case INITIAL_GATHERING:
-                LOG.debug("Device {}, initial gathering OK.", deviceInfo.getLOGValue());
+                LOG.debug("Device {}, initial gathering OK.", deviceInfo);
                 this.initialGathering.set(true);
                 break;
             case RPC_REGISTRATION:
-                LOG.debug("Device {}, RPC registration OK.", deviceInfo.getLOGValue());
+                LOG.debug("Device {}, RPC registration OK.", deviceInfo);
                 this.rpcRegistration.set(true);
-            //Flow registry fill is not mandatory to work as a master
+                //Flow registry fill is not mandatory to work as a master
             case INITIAL_FLOW_REGISTRY_FILL:
-                LOG.debug("Device {}, initial registry filling OK.", deviceInfo.getLOGValue());
+                LOG.debug("Device {}, initial registry filling OK.", deviceInfo);
                 this.registryFilling.set(true);
             case CHECK:
             default:
         }
 
-        final boolean result =
-                this.initialGathering.get() &&
-                this.masterStateOnDevice.get() &&
-                this.initialSubmitting.get() &&
-                this.rpcRegistration.get();
+        final boolean result = initialGathering.get() &&
+                masterStateOnDevice.get() &&
+                initialSubmitting.get() &&
+                rpcRegistration.get();
 
         if (result && mastershipState != ContextChainMastershipState.CHECK) {
             LOG.info("Device {} is able to work as master{}",
-                    deviceInfo.getLOGValue(),
-                    this.registryFilling.get() ? "." : " WITHOUT flow registry !!!");
+                    deviceInfo,
+                    registryFilling.get() ? "." : " WITHOUT flow registry !!!");
             changeState(ContextChainState.WORKING_MASTER);
         }
 
@@ -188,25 +241,19 @@ public class ContextChainImpl implements ContextChain {
 
     @Override
     public boolean addAuxiliaryConnection(@Nonnull ConnectionContext connectionContext) {
-        if ((connectionContext.getFeatures().getAuxiliaryId() != 0) &&
-                (this.primaryConnection.getConnectionState() != ConnectionContext.CONNECTION_STATE.RIP)) {
-            this.auxiliaryConnections.add(connectionContext);
-            return true;
-        } else {
-            return false;
-        }
+        return (connectionContext.getFeatures().getAuxiliaryId() != 0)
+                && (!ConnectionContext.CONNECTION_STATE.RIP.equals(primaryConnection.getConnectionState()))
+                && auxiliaryConnections.add(connectionContext);
     }
 
     @Override
     public boolean auxiliaryConnectionDropped(@Nonnull ConnectionContext connectionContext) {
-        if (this.auxiliaryConnections.isEmpty()) {
-            return false;
-        }
-        if (!this.auxiliaryConnections.contains(connectionContext)) {
-            return false;
-        }
-        this.auxiliaryConnections.remove(connectionContext);
-        return true;
+        return auxiliaryConnections.remove(connectionContext);
+    }
+
+    @Override
+    public void registerDeviceRemovedHandler(@Nonnull final DeviceRemovedHandler deviceRemovedHandler) {
+        deviceRemovedHandlers.add(deviceRemovedHandler);
     }
 
     private void changeState(final ContextChainState contextChainState) {
@@ -219,5 +266,13 @@ public class ContextChainImpl implements ContextChain {
                     .map(ContextChainStateListener.class::cast)
                     .forEach(listener -> listener.onStateAcquired(contextChainState));
         }
+    }
+
+    private void unMasterMe() {
+        registryFilling.set(false);
+        initialSubmitting.set(false);
+        initialGathering.set(false);
+        masterStateOnDevice.set(false);
+        rpcRegistration.set(false);
     }
 }

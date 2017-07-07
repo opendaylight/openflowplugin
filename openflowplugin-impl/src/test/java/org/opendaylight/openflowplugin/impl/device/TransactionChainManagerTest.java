@@ -33,7 +33,6 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFaile
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -68,8 +67,6 @@ public class TransactionChainManagerTest {
     DeviceState deviceState;
     @Mock
     DeviceInfo deviceInfo;
-    @Mock
-    LifecycleService lifecycleService;
 
     @Mock
     private KeyedInstanceIdentifier<Node, NodeKey> nodeKeyIdent;
