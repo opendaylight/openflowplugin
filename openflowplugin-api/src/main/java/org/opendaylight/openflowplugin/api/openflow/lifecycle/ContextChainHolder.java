@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListener;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
@@ -43,12 +42,6 @@ public interface ContextChainHolder extends
      * @return {@link ContextChain}
      */
     ContextChain createContextChain(ConnectionContext connectionContext);
-
-    /**
-     * Called if connection needs to be destroyed.
-     * @param deviceInfo {@link DeviceInfo}
-     */
-    void destroyContextChain(DeviceInfo deviceInfo);
 
     @Override
     void close() throws Exception;
