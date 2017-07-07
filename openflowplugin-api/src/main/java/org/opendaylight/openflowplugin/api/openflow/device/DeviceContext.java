@@ -115,5 +115,10 @@ public interface DeviceContext extends
     ListenableFuture<RpcResult<SetRoleOutput>> makeDeviceSlave();
 
     boolean canUseSingleLayerSerialization();
+
+    /**
+     * Method for initial submit transaction after successful initial gathering.
+     */
+    boolean initialSubmitTransaction();
 }
 
