@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.impl.statistics;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
@@ -35,7 +34,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
@@ -66,20 +64,17 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     private final Object collectionStatTypeLock = new Object();
     private final ConvertorExecutor convertorExecutor;
     private final MultipartWriterProvider statisticsWriterProvider;
+    private final DeviceInfo deviceInfo;
+    private final StatisticsManager myManager;
     @GuardedBy("collectionStatTypeLock")
     private List<MultipartType> collectingStatType;
-
     private StatisticsGatheringService<T> statisticsGatheringService;
     private StatisticsGatheringOnTheFlyService<T> statisticsGatheringOnTheFlyService;
     private Timeout pollTimeout;
-    private final DeviceInfo deviceInfo;
-    private final StatisticsManager myManager;
+    private MastershipChangeListener mastershipChangeListener;
 
     private volatile boolean schedulingEnabled;
     private volatile CONTEXT_STATE state;
-    private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
-    private ClusterInitializationPhaseHandler initialSubmitHandler;
-
     private volatile ListenableFuture<Boolean> lastDataGathering;
 
     StatisticsContextImpl(final boolean isStatisticsPollingOn,
@@ -307,30 +302,21 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     }
 
     @Override
-    public ServiceGroupIdentifier getServiceIdentifier() {
-        return this.deviceInfo.getServiceIdentifier();
-    }
-
-    @Override
     public DeviceInfo getDeviceInfo() {
         return this.deviceInfo;
     }
 
     @Override
-    public ListenableFuture<Void> stopClusterServices() {
-        if (CONTEXT_STATE.TERMINATION.equals(this.state)) {
-            return Futures.immediateCancelledFuture();
-        }
+    public void registerMastershipChangeListener(@Nonnull final MastershipChangeListener mastershipChangeListener) {
+        this.mastershipChangeListener = mastershipChangeListener;
+    }
 
-        return Futures.transform(Futures.immediateFuture(null), new Function<Object, Void>() {
-            @Nullable
-            @Override
-            public Void apply(@Nullable Object input) {
-                schedulingEnabled = false;
-                stopGatheringData();
-                return null;
-            }
-        });
+    @Override
+    public ListenableFuture<Void> closeServiceInstance() {
+        LOG.info("Stopping statistics context cluster services for node {}", deviceInfo.getLOGValue());
+        schedulingEnabled = false;
+        stopGatheringData();
+        return Futures.immediateFuture(null);
     }
 
     @Override
@@ -357,12 +343,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     }
 
     @Override
-    public void setLifecycleInitializationPhaseHandler(final ClusterInitializationPhaseHandler handler) {
-        this.clusterInitializationPhaseHandler = handler;
-    }
-
-    @Override
-    public boolean onContextInstantiateService(final MastershipChangeListener mastershipChangeListener) {
+    public void instantiateServiceInstance() {
         LOG.info("Starting statistics context cluster services for node {}", deviceInfo.getLOGValue());
         this.statListForCollectingInitialization();
 
@@ -374,7 +355,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
                         ContextChainMastershipState.INITIAL_GATHERING
                 );
 
-                if (initialSubmitHandler.initialSubmitTransaction()) {
+                if (deviceContext.initialSubmitTransaction()) {
                     mastershipChangeListener.onMasterRoleAcquired(
                             deviceInfo,
                             ContextChainMastershipState.INITIAL_SUBMIT
@@ -399,12 +380,11 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
                 );
             }
         });
-
-        return this.clusterInitializationPhaseHandler.onContextInstantiateService(mastershipChangeListener);
     }
 
+    @Nonnull
     @Override
-    public void setInitialSubmitHandler(final ClusterInitializationPhaseHandler initialSubmitHandler) {
-        this.initialSubmitHandler = initialSubmitHandler;
+    public ServiceGroupIdentifier getIdentifier() {
+        return deviceInfo.getServiceIdentifier();
     }
 }
