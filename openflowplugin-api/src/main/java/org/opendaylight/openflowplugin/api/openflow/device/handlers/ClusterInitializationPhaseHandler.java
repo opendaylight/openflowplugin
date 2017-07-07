@@ -18,13 +18,5 @@ public interface ClusterInitializationPhaseHandler {
      * Method for initialization cycle between contexts
      * @param mastershipChangeListener - listener if something goes wrong with initialization
      */
-    boolean onContextInstantiateService(final MastershipChangeListener mastershipChangeListener);
-
-    /**
-     * Method for initial submit transaction after successful initial gathering.
-     */
-    default boolean initialSubmitTransaction(){
-        //This method need to be override only in device context to submit initial data.
-        return false;
-    }
+    boolean onContextInstantiateService(MastershipChangeListener mastershipChangeListener);
 }
