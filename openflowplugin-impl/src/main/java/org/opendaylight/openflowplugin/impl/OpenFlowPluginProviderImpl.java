@@ -210,15 +210,11 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 TimeUnit.SECONDS, new SynchronousQueue<>(), POOL_NAME);
 
 
-        contextChainHolder = new ContextChainHolderImpl(hashedWheelTimer, threadPool);
-        contextChainHolder.changeEntityOwnershipService(entityOwnershipService);
-
+        contextChainHolder = new ContextChainHolderImpl(hashedWheelTimer, threadPool, singletonServicesProvider, entityOwnershipService);
         connectionManager = new ConnectionManagerImpl(threadPool);
         connectionManager.setEchoReplyTimeout(echoReplyTimeout);
 
         registerMXBean(MESSAGE_INTELLIGENCE_AGENCY, MESSAGE_INTELLIGENCE_AGENCY_MX_BEAN_NAME);
-
-        contextChainHolder.addSingletonServicesProvider(singletonServicesProvider);
 
         deviceManager = new DeviceManagerImpl(
                 dataBroker,
