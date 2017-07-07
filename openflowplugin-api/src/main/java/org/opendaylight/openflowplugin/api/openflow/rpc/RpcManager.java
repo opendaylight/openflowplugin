@@ -11,13 +11,12 @@ package org.opendaylight.openflowplugin.api.openflow.rpc;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 
 /**
  * The RPC Manager will maintain an RPC Context for each online switch.
  */
 public interface RpcManager extends OFPManager {
 
-    RpcContext createContext(@Nonnull DeviceInfo deviceInfo, @Nonnull DeviceContext deviceContext);
+    RpcContext createContext(@Nonnull DeviceContext deviceContext);
 
 }

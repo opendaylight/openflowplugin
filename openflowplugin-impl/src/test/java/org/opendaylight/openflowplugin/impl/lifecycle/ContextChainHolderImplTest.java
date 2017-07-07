@@ -74,10 +74,7 @@ public class ContextChainHolderImplTest {
 
         Mockito.when(connectionContext.getDeviceInfo()).thenReturn(deviceInfo);
         Mockito.when(deviceManager.createContext(connectionContext)).thenReturn(deviceContext);
-        Mockito.when(rpcManager.createContext(
-                deviceInfo,
-                deviceContext))
-                .thenReturn(rpcContext);
+        Mockito.when(rpcManager.createContext(deviceContext)).thenReturn(rpcContext);
         Mockito.when(statisticsManager.createContext(deviceContext)).thenReturn(statisticsContext);
         Mockito.when(deviceContext.makeDeviceSlave()).thenReturn(Futures.immediateFuture(null));
         Mockito.when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
@@ -102,7 +99,7 @@ public class ContextChainHolderImplTest {
     public void createContextChain() throws Exception {
         contextChainHolder.createContextChain(connectionContext);
         Mockito.verify(deviceManager).createContext(Mockito.any(ConnectionContext.class));
-        Mockito.verify(rpcManager).createContext(Mockito.any(DeviceInfo.class), Mockito.any(DeviceContext.class));
+        Mockito.verify(rpcManager).createContext(Mockito.any(DeviceContext.class));
         Mockito.verify(statisticsManager).createContext(Mockito.any(DeviceContext.class));
     }
 
