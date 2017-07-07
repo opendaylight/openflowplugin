@@ -142,7 +142,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                 });
             } else {
                 // ignoring redundant deactivate invocation
-                future = Futures.immediateCheckedFuture(null);
+                future = Futures.immediateFuture(null);
             }
         }
         return future;

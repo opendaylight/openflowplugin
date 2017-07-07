@@ -11,12 +11,11 @@ import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterLifecycleSupervisor;
 
 /**
  * General API for all OFP Context.
  */
-public interface OFPContext extends AutoCloseable, ClusterLifecycleSupervisor, ClusterInitializationPhaseHandler {
+public interface OFPContext extends AutoCloseable, ClusterInitializationPhaseHandler {
 
     /**
      * Context state.

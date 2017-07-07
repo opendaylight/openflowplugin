@@ -8,10 +8,6 @@
 package org.opendaylight.openflowplugin.impl.lifecycle;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Verify;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,7 +18,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipChange;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListenerRegistration;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
@@ -37,7 +32,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChain;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainHolder;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
@@ -76,8 +70,8 @@ public class ContextChainHolderImpl implements ContextChainHolder {
                                   final EntityOwnershipService entityOwnershipService) {
         this.singletonServiceProvider = singletonServiceProvider;
         this.executorService = executorService;
-        this.eosListenerRegistration = Verify.verifyNotNull(entityOwnershipService.registerListener
-                (ASYNC_SERVICE_ENTITY_TYPE, this));
+        this.eosListenerRegistration = Objects.requireNonNull(entityOwnershipService
+                .registerListener(ASYNC_SERVICE_ENTITY_TYPE, this));
 
         this.scheduler = new ItemScheduler<>(
                 timer,
@@ -104,63 +98,35 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     public ContextChain createContextChain(final ConnectionContext connectionContext) {
         final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
         final String deviceInfoLOGValue = deviceInfo.getLOGValue();
-        final ContextChain contextChain = new ContextChainImpl(connectionContext);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Context chain" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfoLOGValue);
-        }
-
-        final LifecycleService lifecycleService = new LifecycleServiceImpl(this, executorService);
-        lifecycleService.registerDeviceRemovedHandler(deviceManager);
-        lifecycleService.registerDeviceRemovedHandler(rpcManager);
-        lifecycleService.registerDeviceRemovedHandler(statisticsManager);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Lifecycle services" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfoLOGValue);
-        }
 
         final DeviceContext deviceContext = deviceManager.createContext(connectionContext);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Device" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfoLOGValue);
-        }
+        LOG.debug("Device" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfoLOGValue);
 
         final RpcContext rpcContext = rpcManager.createContext(connectionContext.getDeviceInfo(), deviceContext);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("RPC" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfoLOGValue);
-        }
+        LOG.debug("RPC" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfoLOGValue);
 
         final StatisticsContext statisticsContext = statisticsManager.createContext(deviceContext);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Statistics" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfoLOGValue);
-        }
-
-        deviceContext.setLifecycleInitializationPhaseHandler(statisticsContext);
-        statisticsContext.setLifecycleInitializationPhaseHandler(rpcContext);
         statisticsContext.setInitialSubmitHandler(deviceContext);
+        LOG.debug("Statistics" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfoLOGValue);
 
-        contextChain.addLifecycleService(lifecycleService);
+        final ContextChain contextChain = new ContextChainImpl(this, connectionContext, executorService);
+        contextChain.registerDeviceRemovedHandler(deviceManager);
+        contextChain.registerDeviceRemovedHandler(rpcManager);
+        contextChain.registerDeviceRemovedHandler(statisticsManager);
         contextChain.addContext(deviceContext);
-        contextChain.addContext(rpcContext);
         contextChain.addContext(statisticsContext);
+        contextChain.addContext(rpcContext);
+        LOG.debug("Context chain" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfoLOGValue);
 
-        LOG.info("Starting timer for setting SLAVE role on node {} if no role will be set in {}s.",
-                deviceInfo.getLOGValue(), CHECK_ROLE_MASTER_TIMEOUT / 1000L);
         scheduler.add(deviceInfo, contextChain);
         scheduler.startIfNotRunning();
+        LOG.info("Started timer for setting SLAVE role on node {} if no role will be set in {}s.",
+                deviceInfoLOGValue,
+                CHECK_ROLE_MASTER_TIMEOUT / 1000L);
+
         deviceContext.onPublished();
         contextChain.registerServices(singletonServiceProvider);
         return contextChain;
-    }
-
-    @Override
-    public synchronized void destroyContextChain(final DeviceInfo deviceInfo) {
-        Optional.ofNullable(contextChainMap.remove(deviceInfo)).ifPresent(contextChain -> {
-            deviceManager.sendNodeRemovedNotification(deviceInfo.getNodeInstanceIdentifier());
-            contextChain.close();
-        });
     }
 
     @Override
@@ -198,7 +164,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
         Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(contextChain -> {
             LOG.warn("This mastering is mandatory, destroying context chain and closing connection for device {}.", deviceInfo.getLOGValue());
-            addDestroyChainCallback(contextChain.stopChain(), deviceInfo);
+            destroyContextChain(deviceInfo);
         });
     }
 
@@ -216,6 +182,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
     @Override
     public void onSlaveRoleAcquired(final DeviceInfo deviceInfo) {
+        scheduler.remove(deviceInfo);
         Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(ContextChain::makeContextChainStateSlave);
     }
 
@@ -237,7 +204,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
                 LOG.info("Auxiliary connection from device {} disconnected.", deviceInfo.getLOGValue());
             } else {
                 LOG.info("Device {} disconnected.", deviceInfo.getLOGValue());
-                addDestroyChainCallback(contextChain.connectionDropped(), deviceInfo);
+                destroyContextChain(deviceInfo);
             }
         });
     }
@@ -250,15 +217,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     @Override
     public void close() throws Exception {
         scheduler.close();
-
-        contextChainMap.forEach((deviceInfo, contextChain) -> {
-            if (contextChain.isMastered(ContextChainMastershipState.CHECK)) {
-                addDestroyChainCallback(contextChain.stopChain(), deviceInfo);
-            } else {
-                destroyContextChain(deviceInfo);
-            }
-        });
-
+        contextChainMap.keySet().forEach(this::destroyContextChain);
         contextChainMap.clear();
         eosListenerRegistration.close();
     }
@@ -295,6 +254,15 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         }
     }
 
+    private synchronized void destroyContextChain(final DeviceInfo deviceInfo) {
+        scheduler.remove(deviceInfo);
+
+        Optional.ofNullable(contextChainMap.remove(deviceInfo)).ifPresent(contextChain -> {
+            deviceManager.sendNodeRemovedNotification(deviceInfo.getNodeInstanceIdentifier());
+            contextChain.close();
+        });
+    }
+
     private String getEntityNameFromOwnershipChange(final EntityOwnershipChange entityOwnershipChange) {
         final YangInstanceIdentifier.NodeIdentifierWithPredicates lastIdArgument =
                 (YangInstanceIdentifier.NodeIdentifierWithPredicates) entityOwnershipChange
@@ -308,21 +276,5 @@ public class ContextChainHolderImpl implements ContextChainHolder {
                 .iterator()
                 .next()
                 .toString();
-    }
-
-    private void addDestroyChainCallback(final ListenableFuture<Void> future, final DeviceInfo deviceInfo) {
-        scheduler.remove(deviceInfo);
-
-        Futures.addCallback(future, new FutureCallback<Void>() {
-            @Override
-            public void onSuccess(@Nullable final Void aVoid) {
-                destroyContextChain(deviceInfo);
-            }
-
-            @Override
-            public void onFailure(@Nonnull final Throwable throwable) {
-                destroyContextChain(deviceInfo);
-            }
-        });
     }
 }

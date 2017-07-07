@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.impl.statistics;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
@@ -77,7 +76,6 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
 
     private volatile boolean schedulingEnabled;
     private volatile ContextState state;
-    private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
     private ClusterInitializationPhaseHandler initialSubmitHandler;
 
     private volatile ListenableFuture<Boolean> lastDataGathering;
@@ -319,19 +317,10 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
 
     @Override
     public ListenableFuture<Void> stopClusterServices() {
-        if (ContextState.TERMINATION.equals(this.state)) {
-            return Futures.immediateCancelledFuture();
-        }
-
-        return Futures.transform(Futures.immediateFuture(null), new Function<Object, Void>() {
-            @Nullable
-            @Override
-            public Void apply(@Nullable Object input) {
-                schedulingEnabled = false;
-                stopGatheringData();
-                return null;
-            }
-        });
+        LOG.info("Stopping statistics context cluster services for node {}", deviceInfo.getLOGValue());
+        schedulingEnabled = false;
+        stopGatheringData();
+        return Futures.immediateFuture(null);
     }
 
     @Override
@@ -355,11 +344,6 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         if (Objects.nonNull(pollTimeout) && !pollTimeout.isExpired()) {
             pollTimeout.cancel();
         }
-    }
-
-    @Override
-    public void setLifecycleInitializationPhaseHandler(final ClusterInitializationPhaseHandler handler) {
-        this.clusterInitializationPhaseHandler = handler;
     }
 
     @Override
@@ -401,7 +385,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
             }
         });
 
-        return this.clusterInitializationPhaseHandler.onContextInstantiateService(mastershipChangeListener);
+        return true;
     }
 
     @Override

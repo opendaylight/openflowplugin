@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.rpc;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -18,7 +17,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Semaphore;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
@@ -189,18 +187,9 @@ class RpcContextImpl implements RpcContext {
 
     @Override
     public ListenableFuture<Void> stopClusterServices() {
-        if (ContextState.TERMINATION.equals(this.state)) {
-            return Futures.immediateCancelledFuture();
-        }
-
-        return Futures.transform(Futures.immediateFuture(null), new Function<Object, Void>() {
-            @Nullable
-            @Override
-            public Void apply(@Nullable Object input) {
-                unregisterRPCs();
-                return null;
-            }
-        });
+        LOG.info("Stopping rpc context cluster services for node {}", deviceInfo.getLOGValue());
+        unregisterRPCs();
+        return Futures.immediateFuture(null);
     }
 
     @Override
