@@ -116,12 +116,11 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                     // ConnectionException is raised by StatisticsContextImpl class when the connections
                     // move to RIP state. In this particular case, there is no need to reschedule
                     // because this statistics manager should be closed soon
-                    LOG.warn("Device {} is no more connected, stopping the statistics collection",
-                            deviceInfo.getLOGValue(),throwable);
+                    LOG.warn("Device {} is no more connected, stopping the statistics collection. Reason: {}",
+                            deviceInfo.getLOGValue(), throwable.getMessage());
                     stopScheduling(deviceInfo);
                 } else if (throwable instanceof CancellationException) {
-                    LOG.info("Statistics gathering for device {} was cancelled.",
-                            deviceInfo.getLOGValue());
+                    LOG.info("Statistics gathering for device {} was cancelled.", deviceInfo.getLOGValue());
                 } else {
                     LOG.warn("Unexpected error occurred during statistics collection for device {}, rescheduling " +
                             "statistics collections", deviceInfo.getLOGValue(), throwable);
