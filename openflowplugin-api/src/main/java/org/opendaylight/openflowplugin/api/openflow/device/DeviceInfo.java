@@ -54,6 +54,7 @@ public interface DeviceInfo extends XidSequencer {
      * Many uses in log, this will make code more readable.
      * @return string representation of nodeId
      */
+    @Deprecated
     default String getLOGValue() {
         return getNodeId().getValue();
     }
