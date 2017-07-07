@@ -7,16 +7,15 @@
  */
 package org.opendaylight.openflowplugin.api.openflow;
 
-import com.google.common.util.concurrent.ListenableFuture;
-import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
+import javax.annotation.Nonnull;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterLifecycleSupervisor;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
 
 /**
  * General API for all OFP Context.
  */
-public interface OFPContext extends AutoCloseable, ClusterLifecycleSupervisor, ClusterInitializationPhaseHandler {
+public interface OFPContext extends AutoCloseable, ClusterSingletonService {
 
     /**
      * Context state.
@@ -31,22 +30,16 @@ public interface OFPContext extends AutoCloseable, ClusterLifecycleSupervisor, C
     }
 
     /**
-     * About to stop services in cluster not master anymore or going down.
-     * @return Future most of services need time to be closed.
-     */
-    ListenableFuture<Void> stopClusterServices();
-
-    /**
-     * Get cluster singleton service identifier.
-     * @return cluster singleton service identifier.
-     */
-    ServiceGroupIdentifier getServiceIdentifier();
-
-    /**
      * Get device info.
      * @return device info
      */
     DeviceInfo getDeviceInfo();
+
+    /**
+     * Registers mastership change listener to context.
+     * @param mastershipChangeListener mastership change listener
+     */
+    void registerMastershipChangeListener(@Nonnull MastershipChangeListener mastershipChangeListener);
 
     @Override
     void close();

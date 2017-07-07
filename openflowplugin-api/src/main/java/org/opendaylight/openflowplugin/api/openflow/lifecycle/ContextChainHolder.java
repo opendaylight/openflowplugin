@@ -9,11 +9,10 @@ package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListener;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
-import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 
@@ -24,6 +23,7 @@ public interface ContextChainHolder extends
         DeviceConnectedHandler,
         MastershipChangeListener,
         DeviceDisconnectedHandler,
+        DeviceRemovedHandler,
         EntityOwnershipListener,
         AutoCloseable {
 
@@ -36,19 +36,6 @@ public interface ContextChainHolder extends
      * @param <T> {@link OFPManager}
      */
     <T extends OFPManager> void addManager(T manager);
-
-    /**
-     * Create a new context chain.
-     * @param connectionContext new connection
-     * @return {@link ContextChain}
-     */
-    ContextChain createContextChain(ConnectionContext connectionContext);
-
-    /**
-     * Called if connection needs to be destroyed.
-     * @param deviceInfo {@link DeviceInfo}
-     */
-    void destroyContextChain(DeviceInfo deviceInfo);
 
     @Override
     void close() throws Exception;
