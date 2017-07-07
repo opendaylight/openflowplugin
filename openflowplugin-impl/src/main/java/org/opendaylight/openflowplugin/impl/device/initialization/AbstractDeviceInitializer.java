@@ -9,8 +9,8 @@
 package org.opendaylight.openflowplugin.impl.device.initialization;
 
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.Futures;
 import java.util.Collections;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -39,7 +39,7 @@ public abstract class AbstractDeviceInitializer {
                                    final boolean switchFeaturesMandatory,
                                    final boolean skipTableFeatures,
                                    @Nullable final MultipartWriterProvider multipartWriterProvider,
-                                   @Nullable final ConvertorExecutor convertorExecutor) throws ExecutionException,InterruptedException {
+                                   @Nullable final ConvertorExecutor convertorExecutor) {
         Preconditions.checkNotNull(deviceContext);
 
         // Write node to datastore
@@ -54,7 +54,8 @@ public abstract class AbstractDeviceInitializer {
                     .build());
         } catch (final Exception e) {
             LOG.warn("Failed to write node {} to DS ", deviceContext.getDeviceInfo().getNodeId(), e);
-            throw new ExecutionException(new ConnectionException("Failed to write node " + deviceContext.getDeviceInfo().getNodeId() + " to DS ", e));
+            return Futures.immediateFailedFuture(new ConnectionException(
+                    "Failed to write node " + deviceContext.getDeviceInfo().getNodeId() + " to DS ", e));
         }
 
         // Get information about device
