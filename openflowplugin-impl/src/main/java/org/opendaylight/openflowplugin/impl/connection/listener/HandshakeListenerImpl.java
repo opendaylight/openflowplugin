@@ -79,7 +79,7 @@ public class HandshakeListenerImpl implements HandshakeListener {
                     SessionStatistics.countEvent(connectionContext.getDeviceInfo().getLOGValue(),
                             SessionStatistics.ConnectionStatus.CONNECTION_CREATED);
                 } catch (final Exception e) {
-                    LOG.error("ConnectionContext initial processing failed for device {}", connectionContext.getDeviceInfo().getLOGValue(), e);
+                    LOG.warn("initial processing failed for device {}", connectionContext.getDeviceInfo().getLOGValue(), e);
                     SessionStatistics.countEvent(connectionContext.getDeviceInfo().getLOGValue(),
                             SessionStatistics.ConnectionStatus.CONNECTION_DISCONNECTED_BY_OFP);
                     connectionContext.closeConnection(true);
@@ -88,7 +88,7 @@ public class HandshakeListenerImpl implements HandshakeListener {
 
             @Override
             public void onFailure(final Throwable t) {
-                LOG.error("failed to get sweep barrier after post-handshake for device {}", connectionContext.getDeviceInfo().getLOGValue(), t);
+                LOG.warn("failed to get sweep barrier after post-handshake for device {}", connectionContext.getDeviceInfo().getLOGValue(), t);
                 connectionContext.closeConnection(false);
             }
         };
