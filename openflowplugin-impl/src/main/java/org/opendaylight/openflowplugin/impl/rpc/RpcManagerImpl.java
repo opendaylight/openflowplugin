@@ -64,7 +64,6 @@ public class RpcManagerImpl implements RpcManager {
         }
     }
 
-
     @Override
     public void setStatisticsRpcEnabled(boolean statisticsRpcEnabled) {
         isStatisticsRpcEnabled = statisticsRpcEnabled;
@@ -75,7 +74,8 @@ public class RpcManagerImpl implements RpcManager {
         this.rpcRequestQuota = rpcRequestQuota;
     }
 
-    public RpcContext createContext(final @Nonnull DeviceInfo deviceInfo, final @Nonnull DeviceContext deviceContext) {
+    @Override
+    public RpcContext createContext(final @Nonnull DeviceContext deviceContext) {
         final RpcContextImpl rpcContext = new RpcContextImpl(
                 rpcProviderRegistry,
                 rpcRequestQuota,
@@ -85,7 +85,7 @@ public class RpcManagerImpl implements RpcManager {
                 notificationPublishService,
                 this.isStatisticsRpcEnabled);
 
-        contexts.put(deviceInfo, rpcContext);
+        contexts.put(deviceContext.getDeviceInfo(), rpcContext);
         return rpcContext;
     }
 
