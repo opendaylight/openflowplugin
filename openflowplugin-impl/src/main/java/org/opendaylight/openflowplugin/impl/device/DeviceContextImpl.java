@@ -36,7 +36,6 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
-import org.opendaylight.openflowplugin.api.ConnectionException;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -46,7 +45,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainState;
@@ -169,13 +167,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private DeviceGroupRegistry deviceGroupRegistry;
     private DeviceMeterRegistry deviceMeterRegistry;
     private ExtensionConverterProvider extensionConverterProvider;
-    private ClusterInitializationPhaseHandler clusterInitializationPhaseHandler;
     private SalRoleService salRoleService;
     private boolean initialized;
     private boolean hasState;
     private boolean isInitialTransactionSubmitted;
     private volatile ConnectionContext primaryConnectionContext;
     private volatile ContextState state;
+    private MastershipChangeListener mastershipChangeListener;
 
     DeviceContextImpl(
             @Nonnull final ConnectionContext primaryConnectionContext,
@@ -565,20 +563,28 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public ListenableFuture<Void> stopClusterServices() {
+    public ListenableFuture<Void> closeServiceInstance() {
+        LOG.info("Stopping device context cluster services for node {}", deviceInfo.getLOGValue());
+
         return initialized
                 ? transactionChainManager.deactivateTransactionManager()
                 : Futures.immediateFuture(null);
     }
 
     @Override
-    public ServiceGroupIdentifier getServiceIdentifier() {
-        return this.deviceInfo.getServiceIdentifier();
+    public DeviceInfo getDeviceInfo() {
+        return this.deviceInfo;
     }
 
     @Override
-    public DeviceInfo getDeviceInfo() {
-        return this.deviceInfo;
+    public void registerMastershipChangeListener(@Nonnull final MastershipChangeListener mastershipChangeListener) {
+        this.mastershipChangeListener = mastershipChangeListener;
+    }
+
+    @Nonnull
+    @Override
+    public ServiceGroupIdentifier getIdentifier() {
+        return deviceInfo.getServiceIdentifier();
     }
 
     @Override
@@ -632,14 +638,10 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void setLifecycleInitializationPhaseHandler(final ClusterInitializationPhaseHandler handler) {
-        this.clusterInitializationPhaseHandler = handler;
-    }
-
-    @Override
-    public boolean onContextInstantiateService(final MastershipChangeListener mastershipChangeListener) {
+    public void instantiateServiceInstance() {
         LOG.info("Starting device context cluster services for node {}", deviceInfo.getLOGValue());
         lazyTransactionManagerInitialization();
+        transactionChainManager.activateTransactionManager();
 
         try {
             final List<PortStatusMessage> portStatusMessages = primaryConnectionContext
@@ -648,26 +650,36 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             portStatusMessages.forEach(this::writePortStatusMessage);
             submitTransaction();
         } catch (final Exception ex) {
-            LOG.warn("Error processing port status messages from device {}", getDeviceInfo().getLOGValue(), ex);
-            return false;
+            throw new RuntimeException(String.format("Error processing port status messages from device %s: %s",
+                    deviceInfo.getLOGValue(),
+                    ex.toString()));
         }
 
-        try {
-            final Optional<AbstractDeviceInitializer> initializer = deviceInitializerProvider
-                    .lookup(deviceInfo.getVersion());
+        final Optional<AbstractDeviceInitializer> initializer = deviceInitializerProvider
+                .lookup(deviceInfo.getVersion());
 
-            if (initializer.isPresent()) {
-                initializer
-                        .get()
-                        .initialize(this, switchFeaturesMandatory, skipTableFeatures, writerProvider, convertorExecutor)
-                        .get(DEVICE_INIT_TIMEOUT, TimeUnit.MILLISECONDS);
-            } else {
-                throw new ExecutionException(new ConnectionException("Unsupported version " + deviceInfo.getVersion()));
+        if (initializer.isPresent()) {
+            final Future<Void> initialize = initializer
+                    .get()
+                    .initialize(this, switchFeaturesMandatory, skipTableFeatures, writerProvider, convertorExecutor);
+
+            try {
+                initialize.get(DEVICE_INIT_TIMEOUT, TimeUnit.MILLISECONDS);
+            } catch (TimeoutException ex) {
+                initialize.cancel(true);
+                throw new RuntimeException(String.format("Failed to initialize device %s in %ss: %s",
+                        deviceInfo.getLOGValue(),
+                        String.valueOf(DEVICE_INIT_TIMEOUT / 1000),
+                        ex.toString()));
+            } catch (ExecutionException | InterruptedException ex) {
+                throw new RuntimeException(String.format("Device %s cannot be initialized: %s",
+                        deviceInfo.getLOGValue(),
+                        ex.toString()));
             }
-        } catch (ExecutionException | InterruptedException | TimeoutException ex) {
-            LOG.warn("Device {} cannot be initialized: {}", deviceInfo.getLOGValue(), ex.getMessage());
-            LOG.trace("Device {} cannot be initialized: ", deviceInfo.getLOGValue(), ex);
-            return false;
+        } else {
+            throw new RuntimeException(String.format("Unsupported version %s for device %s",
+                    deviceInfo.getVersion(),
+                    deviceInfo.getLOGValue()));
         }
 
         Futures.addCallback(sendRoleChangeToDevice(OfpRole.BECOMEMASTER),
@@ -676,8 +688,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         final ListenableFuture<List<com.google.common.base.Optional<FlowCapableNode>>> deviceFlowRegistryFill = getDeviceFlowRegistry().fill();
         Futures.addCallback(deviceFlowRegistryFill,
                 new DeviceFlowRegistryCallback(deviceFlowRegistryFill, mastershipChangeListener));
-
-        return this.clusterInitializationPhaseHandler.onContextInstantiateService(mastershipChangeListener);
     }
 
     @VisibleForTesting
@@ -690,9 +700,10 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             this.deviceFlowRegistry = new DeviceFlowRegistryImpl(deviceInfo.getVersion(), dataBroker, deviceInfo.getNodeInstanceIdentifier());
             this.deviceGroupRegistry = new DeviceGroupRegistryImpl();
             this.deviceMeterRegistry = new DeviceMeterRegistryImpl();
-            this.transactionChainManager.activateTransactionManager();
-            this.initialized = true;
         }
+
+        transactionChainManager.activateTransactionManager();
+        this.initialized = true;
     }
 
     @Nullable
