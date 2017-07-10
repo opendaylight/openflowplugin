@@ -30,9 +30,9 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChain;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipWatcher;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainStateListener;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
@@ -50,7 +50,7 @@ public class ContextChainImpl implements ContextChain {
     private final List<OFPContext> contexts = new CopyOnWriteArrayList<>();
     private final List<ConnectionContext> auxiliaryConnections = new CopyOnWriteArrayList<>();
     private final ExecutorService executorService;
-    private final MastershipChangeListener mastershipChangeListener;
+    private final ContextChainMastershipWatcher contextChainMastershipWatcher;
     private final DeviceInfo deviceInfo;
     private final ConnectionContext primaryConnection;
     private AutoCloseable registration;
@@ -59,10 +59,10 @@ public class ContextChainImpl implements ContextChain {
 
     private volatile ContextChainState contextChainState = ContextChainState.UNDEFINED;
 
-    ContextChainImpl(@Nonnull final MastershipChangeListener mastershipChangeListener,
+    ContextChainImpl(@Nonnull final ContextChainMastershipWatcher contextChainMastershipWatcher,
                      @Nonnull final ConnectionContext connectionContext,
                      @Nonnull final ExecutorService executorService) {
-        this.mastershipChangeListener = mastershipChangeListener;
+        this.contextChainMastershipWatcher = contextChainMastershipWatcher;
         this.primaryConnection = connectionContext;
         this.deviceInfo = connectionContext.getDeviceInfo();
         this.executorService = executorService;
@@ -83,11 +83,11 @@ public class ContextChainImpl implements ContextChain {
                     (prevResult, context) -> Objects.nonNull(prevResult)
                             && prevResult
                             && Objects.nonNull(context)
-                            && context.onContextInstantiateService(mastershipChangeListener),
+                            && context.onContextInstantiateService(contextChainMastershipWatcher),
                     (a, b) -> a && b);
 
             if (!wasStartSuccessful) {
-                mastershipChangeListener.onNotAbleToStartMastershipMandatory(deviceInfo, "Cannot initialize device.");
+                contextChainMastershipWatcher.onNotAbleToStartMastershipMandatory(deviceInfo, "Cannot initialize device.");
             } else {
                 LOG.info("Started clustering services for node {}", deviceInfo);
             }
@@ -97,7 +97,7 @@ public class ContextChainImpl implements ContextChain {
     @Override
     public ListenableFuture<Void> closeServiceInstance() {
         LOG.info("Closing clustering services for node {}", deviceInfo);
-        mastershipChangeListener.onSlaveRoleAcquired(deviceInfo);
+        contextChainMastershipWatcher.onSlaveRoleAcquired(deviceInfo);
 
         final ListenableFuture<List<Void>> servicesToBeClosed = Futures
                 .successfulAsList(contexts
@@ -275,12 +275,12 @@ public class ContextChainImpl implements ContextChain {
     private final class DeviceSlaveCallback implements FutureCallback<RpcResult<SetRoleOutput>> {
         @Override
         public void onSuccess(@Nullable final RpcResult<SetRoleOutput> result) {
-            mastershipChangeListener.onSlaveRoleAcquired(deviceInfo);
+            contextChainMastershipWatcher.onSlaveRoleAcquired(deviceInfo);
         }
 
         @Override
         public void onFailure(@Nonnull final Throwable t) {
-            mastershipChangeListener.onSlaveRoleNotAcquired(deviceInfo);
+            contextChainMastershipWatcher.onSlaveRoleNotAcquired(deviceInfo);
         }
     }
 }
