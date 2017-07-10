@@ -137,5 +137,13 @@ module openflow-provider-config {
             type boolean;
             default "true";
         }
+
+        leaf using-reconciliation-framework {
+            description "If this flag is set to TRUE the Mastership service will
+                raise the event onDeviceMastershipPrepared which is called before
+                the device is submitted into data store. Otherwise the event is skipped.";
+            type boolean;
+            default "false";
+        }
     }
 }
