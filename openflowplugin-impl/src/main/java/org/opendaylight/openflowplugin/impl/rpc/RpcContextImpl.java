@@ -25,7 +25,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipWatcher;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
@@ -55,7 +55,7 @@ class RpcContextImpl implements RpcContext {
     private final ExtensionConverterProvider extensionConverterProvider;
     private final ConvertorExecutor convertorExecutor;
     private final NotificationPublishService notificationPublishService;
-    private MastershipChangeListener mastershipChangeListener;
+    private ContextChainMastershipWatcher contextChainMastershipWatcher;
 
     RpcContextImpl(@Nonnull final RpcProviderRegistry rpcProviderRegistry,
                    final int maxRequests,
@@ -182,8 +182,8 @@ class RpcContextImpl implements RpcContext {
     }
 
     @Override
-    public void registerMastershipChangeListener(@Nonnull final MastershipChangeListener mastershipChangeListener) {
-        this.mastershipChangeListener = mastershipChangeListener;
+    public void registerMastershipWatcher(@Nonnull final ContextChainMastershipWatcher contextChainMastershipWatcher) {
+        this.contextChainMastershipWatcher = contextChainMastershipWatcher;
     }
 
     @Override
@@ -206,7 +206,7 @@ class RpcContextImpl implements RpcContext {
                     convertorExecutor);
         }
 
-        mastershipChangeListener.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.RPC_REGISTRATION);
+        contextChainMastershipWatcher.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.RPC_REGISTRATION);
     }
 
     @Nonnull

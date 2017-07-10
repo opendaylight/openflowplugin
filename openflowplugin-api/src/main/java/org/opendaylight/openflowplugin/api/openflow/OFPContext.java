@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.api.openflow;
 import javax.annotation.Nonnull;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipWatcher;
 
 /**
  * General API for all OFP Context.
@@ -37,9 +37,9 @@ public interface OFPContext extends AutoCloseable, ClusterSingletonService {
 
     /**
      * Registers mastership change listener to context.
-     * @param mastershipChangeListener mastership change listener
+     * @param contextChainMastershipWatcher mastership change listener
      */
-    void registerMastershipChangeListener(@Nonnull MastershipChangeListener mastershipChangeListener);
+    void registerMastershipWatcher(@Nonnull ContextChainMastershipWatcher contextChainMastershipWatcher);
 
     @Override
     void close();
