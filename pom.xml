@@ -37,6 +37,7 @@
       <module>features-aggregator</module>
       <module>samples/sample-consumer</module>
       <module>samples/learning-switch</module>
+      <module>samples/sample-bundles</module>
       <module>applications</module>
       <module>model</module>
   </modules>
