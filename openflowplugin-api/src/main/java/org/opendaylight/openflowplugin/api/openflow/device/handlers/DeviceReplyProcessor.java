@@ -61,6 +61,7 @@ public interface DeviceReplyProcessor {
     /**
      * Method processes alien message from device.
      * @param message alien message
+     * @return true if alien message was successfully processed
      */
-    void processAlienMessage(OfHeader message);
+    boolean processAlienMessage(OfHeader message);
 }

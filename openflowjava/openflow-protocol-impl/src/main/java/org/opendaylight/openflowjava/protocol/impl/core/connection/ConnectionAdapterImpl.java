@@ -138,23 +138,18 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
             }
         } else if (message instanceof OfHeader) {
             LOG.debug("OF header msg received");
-            boolean found = false;
 
-            if (outputManager == null || !outputManager.onMessage((OfHeader) message)) {
+            if (alienMessageListener != null && alienMessageListener.onAlienMessage((OfHeader) message)) {
+                LOG.debug("Alien message {} received", message.getImplementedInterface());
+            } else if (outputManager == null || !outputManager.onMessage((OfHeader) message)) {
                 final RpcResponseKey key = createRpcResponseKey((OfHeader) message);
                 final ResponseExpectedRpcListener<?> listener = findRpcResponse(key);
                 if (listener != null) {
-                    found = true;
                     LOG.debug("Corresponding rpcFuture found");
                     listener.completed((OfHeader) message);
                     LOG.debug("After setting rpcFuture");
                     responseCache.invalidate(key);
                 }
-            }
-
-            if (!found && alienMessageListener != null) {
-                LOG.debug("Alien message {} received", message.getImplementedInterface());
-                alienMessageListener.onAlienMessage((OfHeader) message);
             }
         } else {
             LOG.warn("message listening not supported for type: {}", message.getClass());
