@@ -20,7 +20,7 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager
  */
 public interface ContextChainHolder extends
         DeviceConnectedHandler,
-        MastershipChangeListener,
+        ContextChainMastershipWatcher,
         DeviceDisconnectedHandler,
         EntityOwnershipListener,
         AutoCloseable {

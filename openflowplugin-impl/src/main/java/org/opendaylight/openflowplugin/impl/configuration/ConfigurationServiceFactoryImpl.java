@@ -80,6 +80,8 @@ public class ConfigurationServiceFactoryImpl implements ConfigurationServiceFact
                             providerConfig.getThreadPoolMaxThreads().getValue().toString())
                     .put(ConfigurationProperty.THREAD_POOL_TIMEOUT.toString(),
                             providerConfig.getThreadPoolTimeout().toString())
+                    .put(ConfigurationProperty.USING_RECONCILIATION_FRAMEWORK.toString(),
+                            providerConfig.isUseSingleLayerSerialization().toString())
                     .build());
 
             LOG.info("Loading configuration from '{}' configuration file", OFConstants.CONFIG_FILE_ID);
