@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
+           odl:use-default-for-reference-types="true">
+
+    <reference id="reconciliationManagerRef"
+               interface="org.opendaylight.openflowplugin.applications.reconciliation.IReconciliationManager"/>
+    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.1.0">
+
+        <command>
+            <action class="org.opendaylight.openflowplugin.applications.reconciliation.cli.GetRegisteredServices">
+                <property name="reconciliationManager" ref="reconciliationManagerRef"/>
+            </action>
+        </command>
+
+    </command-bundle>
+
+</blueprint>
