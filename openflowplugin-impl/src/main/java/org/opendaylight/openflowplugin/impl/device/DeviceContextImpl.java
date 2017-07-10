@@ -50,7 +50,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.ClusterIniti
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainState;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipWatcher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
@@ -633,7 +633,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public boolean onContextInstantiateService(final MastershipChangeListener mastershipChangeListener) {
+    public boolean onContextInstantiateService(final ContextChainMastershipWatcher contextChainMastershipWatcher) {
         LOG.info("Starting device context cluster services for node {}", deviceInfo.getLOGValue());
         lazyTransactionManagerInitialization();
 
@@ -667,13 +667,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         }
 
         Futures.addCallback(sendRoleChangeToDevice(OfpRole.BECOMEMASTER),
-                new RpcResultFutureCallback(mastershipChangeListener));
+                new RpcResultFutureCallback(contextChainMastershipWatcher));
 
         final ListenableFuture<List<com.google.common.base.Optional<FlowCapableNode>>> deviceFlowRegistryFill = getDeviceFlowRegistry().fill();
         Futures.addCallback(deviceFlowRegistryFill,
-                new DeviceFlowRegistryCallback(deviceFlowRegistryFill, mastershipChangeListener));
+                new DeviceFlowRegistryCallback(deviceFlowRegistryFill, contextChainMastershipWatcher));
 
-        return this.clusterInitializationPhaseHandler.onContextInstantiateService(mastershipChangeListener);
+        return this.clusterInitializationPhaseHandler.onContextInstantiateService(contextChainMastershipWatcher);
     }
 
     @VisibleForTesting
@@ -748,15 +748,15 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     private class RpcResultFutureCallback implements FutureCallback<RpcResult<SetRoleOutput>> {
 
-        private final MastershipChangeListener mastershipChangeListener;
+        private final ContextChainMastershipWatcher contextChainMastershipWatcher;
 
-        RpcResultFutureCallback(final MastershipChangeListener mastershipChangeListener) {
-            this.mastershipChangeListener = mastershipChangeListener;
+        RpcResultFutureCallback(final ContextChainMastershipWatcher contextChainMastershipWatcher) {
+            this.contextChainMastershipWatcher = contextChainMastershipWatcher;
         }
 
         @Override
         public void onSuccess(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
-            this.mastershipChangeListener.onMasterRoleAcquired(
+            this.contextChainMastershipWatcher.onMasterRoleAcquired(
                     deviceInfo,
                     ContextChainMastershipState.MASTER_ON_DEVICE
             );
@@ -767,7 +767,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
         @Override
         public void onFailure(final Throwable throwable) {
-            mastershipChangeListener.onNotAbleToStartMastershipMandatory(
+            contextChainMastershipWatcher.onNotAbleToStartMastershipMandatory(
                     deviceInfo,
                     "Was not able to set MASTER role on device");
         }
@@ -775,13 +775,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     private class DeviceFlowRegistryCallback implements FutureCallback<List<com.google.common.base.Optional<FlowCapableNode>>> {
         private final ListenableFuture<List<com.google.common.base.Optional<FlowCapableNode>>> deviceFlowRegistryFill;
-        private final MastershipChangeListener mastershipChangeListener;
+        private final ContextChainMastershipWatcher contextChainMastershipWatcher;
 
         DeviceFlowRegistryCallback(
                 ListenableFuture<List<com.google.common.base.Optional<FlowCapableNode>>> deviceFlowRegistryFill,
-                MastershipChangeListener mastershipChangeListener) {
+                ContextChainMastershipWatcher contextChainMastershipWatcher) {
             this.deviceFlowRegistryFill = deviceFlowRegistryFill;
-            this.mastershipChangeListener = mastershipChangeListener;
+            this.contextChainMastershipWatcher = contextChainMastershipWatcher;
         }
 
         @Override
@@ -808,7 +808,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
                 LOG.debug("Finished filling flow registry with {} flows for node: {}", flowCount, deviceInfo.getLOGValue());
             }
-            this.mastershipChangeListener.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_FLOW_REGISTRY_FILL);
+            this.contextChainMastershipWatcher.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_FLOW_REGISTRY_FILL);
         }
 
         @Override
@@ -820,7 +820,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             } else {
                 LOG.warn("Failed filling flow registry with flows for node: {} with exception: {}", deviceInfo.getLOGValue(), t);
             }
-            mastershipChangeListener.onNotAbleToStartMastership(
+            contextChainMastershipWatcher.onNotAbleToStartMastership(
                     deviceInfo,
                     "Was not able to fill flow registry on device",
                     false);
