@@ -23,7 +23,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.LifecycleService;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipWatcher;
 import org.opendaylight.openflowplugin.impl.role.RoleChangeException;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -41,7 +41,7 @@ public class LifecycleServiceImplTest {
     @Mock
     private ClusterSingletonServiceRegistration clusterSingletonServiceRegistration;
     @Mock
-    private MastershipChangeListener mastershipChangeListener;
+    private ContextChainMastershipWatcher contextChainMastershipWatcher;
     @Mock
     private DeviceRemovedHandler deviceRemovedHandler;
     @Mock
@@ -61,7 +61,7 @@ public class LifecycleServiceImplTest {
             return null;
         }).when(executorService).submit(Mockito.<Runnable>any());
 
-        lifecycleService = new LifecycleServiceImpl(mastershipChangeListener, executorService);
+        lifecycleService = new LifecycleServiceImpl(contextChainMastershipWatcher, executorService);
         lifecycleService.registerService(
                 clusterSingletonServiceProvider,
                 deviceContext);
@@ -77,7 +77,7 @@ public class LifecycleServiceImplTest {
         Mockito.when(deviceContext.makeDeviceSlave())
                 .thenReturn(Futures.immediateFuture(null));
         lifecycleService.makeDeviceSlave(deviceContext);
-        Mockito.verify(mastershipChangeListener).onSlaveRoleAcquired(Mockito.any(DeviceInfo.class));
+        Mockito.verify(contextChainMastershipWatcher).onSlaveRoleAcquired(Mockito.any(DeviceInfo.class));
     }
 
     @Test
@@ -85,7 +85,7 @@ public class LifecycleServiceImplTest {
         Mockito.when(deviceContext.makeDeviceSlave())
                 .thenReturn(Futures.immediateFailedFuture(new RoleChangeException(TEST_NODE)));
         lifecycleService.makeDeviceSlave(deviceContext);
-        Mockito.verify(mastershipChangeListener).onSlaveRoleNotAcquired(Mockito.any(DeviceInfo.class));
+        Mockito.verify(contextChainMastershipWatcher).onSlaveRoleNotAcquired(Mockito.any(DeviceInfo.class));
     }
 
     @Test
@@ -93,7 +93,7 @@ public class LifecycleServiceImplTest {
         Mockito.when(deviceContext.onContextInstantiateService(Mockito.any()))
                 .thenReturn(false);
         lifecycleService.instantiateServiceInstance();
-        Mockito.verify(mastershipChangeListener).onNotAbleToStartMastershipMandatory(Mockito.any(DeviceInfo.class), Mockito.anyString());
+        Mockito.verify(contextChainMastershipWatcher).onNotAbleToStartMastershipMandatory(Mockito.any(DeviceInfo.class), Mockito.anyString());
     }
 
     @Test
