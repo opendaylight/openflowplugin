@@ -82,7 +82,11 @@ public enum ConfigurationProperty {
     /**
      * Thread pool timeout property type.
      */
-    THREAD_POOL_TIMEOUT;
+    THREAD_POOL_TIMEOUT,
+    /**
+     * True if plugin is using reconciliation framework.
+     */
+    USING_RECONCILIATION_FRAMEWORK;
 
     private static final Map<String, ConfigurationProperty> KEY_VALUE_MAP;
 
