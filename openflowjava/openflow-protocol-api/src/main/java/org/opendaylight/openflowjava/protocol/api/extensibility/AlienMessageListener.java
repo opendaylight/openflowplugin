@@ -14,6 +14,7 @@ public interface AlienMessageListener {
     /**
      * Handler for alien but successfully deserialized messages for device
      * @param message alien message
+     * @return true if alien message was successfully processed
      */
-    void onAlienMessage(OfHeader message);
+    boolean onAlienMessage(OfHeader message);
 }
