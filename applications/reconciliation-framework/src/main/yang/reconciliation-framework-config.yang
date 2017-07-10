@@ -1,0 +1,26 @@
+module reconciliation-framework-config {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:openflowplugin:app:reconciliation-framework:config";
+    prefix "reconciliation";
+
+    description
+        "Configuration of Intent";
+
+    revision "2017-07-12" {
+        description
+            "Initial revision.";
+    }
+
+    typedef intent-type {
+        description "Action to to be taken in case the reconciliation fails";
+        type enumeration {
+            enum DO_NOTHING {
+                description "Default mode - No action is taken";
+            }
+            enum DISCONNECT {
+                description "The switch is to be disconnected";
+            }
+        }
+    }
+}
+}
