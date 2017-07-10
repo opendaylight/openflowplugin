@@ -24,7 +24,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChain;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipWatcher;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.impl.role.RoleChangeException;
@@ -50,7 +50,7 @@ public class ContextChainImplTest {
     @Mock
     private ClusterSingletonServiceRegistration clusterSingletonServiceRegistration;
     @Mock
-    private MastershipChangeListener mastershipChangeListener;
+    private ContextChainMastershipWatcher contextChainMastershipWatcher;
     @Mock
     private DeviceRemovedHandler deviceRemovedHandler;
 
@@ -69,7 +69,7 @@ public class ContextChainImplTest {
         Mockito.when(clusterSingletonServiceProvider.registerClusterSingletonService(Mockito.any()))
                 .thenReturn(clusterSingletonServiceRegistration);
 
-        contextChain = new ContextChainImpl(mastershipChangeListener, connectionContext,
+        contextChain = new ContextChainImpl(contextChainMastershipWatcher, connectionContext,
                 MoreExecutors.newDirectExecutorService());
         contextChain.addContext(statisticsContext);
         contextChain.addContext(rpcContext);
@@ -122,7 +122,7 @@ public class ContextChainImplTest {
     public void makeDeviceSlave() throws Exception {
         Mockito.when(deviceContext.makeDeviceSlave()).thenReturn(Futures.immediateFuture(null));
         contextChain.makeDeviceSlave();
-        Mockito.verify(mastershipChangeListener).onSlaveRoleAcquired(Mockito.any(DeviceInfo.class));
+        Mockito.verify(contextChainMastershipWatcher).onSlaveRoleAcquired(Mockito.any(DeviceInfo.class));
     }
 
     @Test
@@ -130,13 +130,13 @@ public class ContextChainImplTest {
         Mockito.when(deviceContext.makeDeviceSlave())
                 .thenReturn(Futures.immediateFailedFuture(new RoleChangeException(TEST_NODE)));
         contextChain.makeDeviceSlave();
-        Mockito.verify(mastershipChangeListener).onSlaveRoleNotAcquired(Mockito.any(DeviceInfo.class));
+        Mockito.verify(contextChainMastershipWatcher).onSlaveRoleNotAcquired(Mockito.any(DeviceInfo.class));
     }
 
     @Test
     public void instantiateServiceInstanceFail() throws Exception {
         Mockito.doThrow(new IllegalStateException()).when(deviceContext).instantiateServiceInstance();
         contextChain.instantiateServiceInstance();
-        Mockito.verify(mastershipChangeListener).onNotAbleToStartMastershipMandatory(Mockito.any(DeviceInfo.class), Mockito.anyString());
+        Mockito.verify(contextChainMastershipWatcher).onNotAbleToStartMastershipMandatory(Mockito.any(DeviceInfo.class), Mockito.anyString());
     }
 }
