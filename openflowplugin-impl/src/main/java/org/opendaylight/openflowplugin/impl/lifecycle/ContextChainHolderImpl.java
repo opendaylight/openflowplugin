@@ -101,15 +101,15 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
 
         final DeviceContext deviceContext = deviceManager.createContext(connectionContext);
-        deviceContext.registerMastershipChangeListener(this);
+        deviceContext.registerMastershipWatcher(this);
         LOG.debug("Device" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfo);
 
         final RpcContext rpcContext = rpcManager.createContext(deviceContext);
-        rpcContext.registerMastershipChangeListener(this);
+        rpcContext.registerMastershipWatcher(this);
         LOG.debug("RPC" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfo);
 
         final StatisticsContext statisticsContext = statisticsManager.createContext(deviceContext);
-        statisticsContext.registerMastershipChangeListener(this);
+        statisticsContext.registerMastershipWatcher(this);
         LOG.debug("Statistics" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfo);
 
         final ContextChain contextChain = new ContextChainImpl(this, connectionContext,
