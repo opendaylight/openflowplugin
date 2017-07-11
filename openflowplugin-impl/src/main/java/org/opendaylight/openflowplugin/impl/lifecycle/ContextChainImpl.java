@@ -162,6 +162,7 @@ public class ContextChainImpl implements ContextChain {
             case RPC_REGISTRATION:
                 LOG.debug("Device {}, RPC registration OK.", deviceInfo.getLOGValue());
                 this.rpcRegistration.set(true);
+                break;
             //Flow registry fill is not mandatory to work as a master
             case INITIAL_FLOW_REGISTRY_FILL:
                 LOG.debug("Device {}, initial registry filling OK.", deviceInfo.getLOGValue());
@@ -172,9 +173,9 @@ public class ContextChainImpl implements ContextChain {
 
         final boolean result =
                 this.initialGathering.get() &&
-                this.masterStateOnDevice.get() &&
-                this.initialSubmitting.get() &&
-                this.rpcRegistration.get();
+                        this.masterStateOnDevice.get() &&
+                        this.initialSubmitting.get() &&
+                        this.rpcRegistration.get();
 
         if (result && mastershipState != ContextChainMastershipState.CHECK) {
             LOG.info("Device {} is able to work as master{}",
@@ -184,6 +185,19 @@ public class ContextChainImpl implements ContextChain {
         }
 
         return result;
+    }
+
+    @Override
+    public boolean isPrepared() {
+        return this.initialGathering.get() &&
+                this.masterStateOnDevice.get() &&
+                this.rpcRegistration.get();
+    }
+
+    @Override
+    public boolean continueInitializationAfterReconciliation() {
+        return statisticsContext.initialSubmitAfterReconciliation() &&
+                isMastered(ContextChainMastershipState.INITIAL_SUBMIT);
     }
 
     @Override

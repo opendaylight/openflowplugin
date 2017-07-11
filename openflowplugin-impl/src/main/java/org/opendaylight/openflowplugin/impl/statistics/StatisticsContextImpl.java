@@ -93,7 +93,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         this.convertorExecutor = convertorExecutor;
         statisticsGatheringService = new StatisticsGatheringService<>(this, deviceContext);
         statisticsGatheringOnTheFlyService = new StatisticsGatheringOnTheFlyService<>(this,
-            deviceContext, convertorExecutor, statisticsWriterProvider);
+                deviceContext, convertorExecutor, statisticsWriterProvider);
         itemLifeCycleListener = new ItemLifecycleListenerImpl(deviceContext);
         statListForCollectingInitialization();
         this.state = ContextState.INITIALIZATION;
@@ -363,8 +363,17 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     }
 
     @Override
+    public boolean initialSubmitAfterReconciliation() {
+        final boolean submit = initialSubmitHandler.initialSubmitTransaction();
+        if (submit) {
+            myManager.startScheduling(deviceInfo);
+        }
+        return submit;
+    }
+
+    @Override
     public boolean onContextInstantiateService(final ContextChainMastershipWatcher contextChainMastershipWatcher) {
-        LOG.info("Starting statistics context cluster services for node {}", deviceInfo.getLOGValue());
+        LOG.info("Starting statistics context cluster services for node {}", deviceInfo);
         this.statListForCollectingInitialization();
 
         Futures.addCallback(this.gatherDynamicData(), new FutureCallback<Boolean>() {
@@ -375,15 +384,19 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
                         ContextChainMastershipState.INITIAL_GATHERING
                 );
 
-                if (initialSubmitHandler.initialSubmitTransaction()) {
-                    contextChainMastershipWatcher.onMasterRoleAcquired(
-                            deviceInfo,
-                            ContextChainMastershipState.INITIAL_SUBMIT
-                    );
+                if (!myManager.isUsingReconciliationFramework()) {
 
-                    if (isStatisticsPollingOn) {
-                        myManager.startScheduling(deviceInfo);
+                    if (initialSubmitHandler.initialSubmitTransaction()) {
+                        contextChainMastershipWatcher.onMasterRoleAcquired(
+                                deviceInfo,
+                                ContextChainMastershipState.INITIAL_SUBMIT
+                        );
+
+                        if (isStatisticsPollingOn) {
+                            myManager.startScheduling(deviceInfo);
+                        }
                     }
+
                 } else {
                     contextChainMastershipWatcher.onNotAbleToStartMastershipMandatory(
                             deviceInfo,

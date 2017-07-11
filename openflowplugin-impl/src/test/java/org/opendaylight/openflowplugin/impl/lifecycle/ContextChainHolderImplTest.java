@@ -25,10 +25,12 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.OwnershipChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ContextChainHolderImplTest {
@@ -61,6 +63,10 @@ public class ContextChainHolderImplTest {
     private EntityOwnershipService entityOwnershipService;
     @Mock
     private EntityOwnershipListenerRegistration entityOwnershipListenerRegistration;
+    @Mock
+    private OwnershipChangeListener ownershipChangeListener;
+    @Mock
+    private OpenflowProviderConfig config;
 
     private ContextChainHolderImpl contextChainHolder;
 
@@ -86,8 +92,15 @@ public class ContextChainHolderImplTest {
                 .thenReturn(clusterSingletonServiceRegistration);
         Mockito.when(entityOwnershipService.registerListener(Mockito.any(), Mockito.any()))
                 .thenReturn(entityOwnershipListenerRegistration);
+        Mockito.when(config.isUsingReconciliationFramework()).thenReturn(false);
 
-        contextChainHolder = new ContextChainHolderImpl(timer, executorService, singletonServicesProvider, entityOwnershipService);
+        contextChainHolder = new ContextChainHolderImpl(
+                timer,
+                executorService,
+                singletonServicesProvider,
+                entityOwnershipService,
+                ownershipChangeListener,
+                config);
         contextChainHolder.addManager(statisticsManager);
         contextChainHolder.addManager(rpcManager);
         contextChainHolder.addManager(deviceManager);
