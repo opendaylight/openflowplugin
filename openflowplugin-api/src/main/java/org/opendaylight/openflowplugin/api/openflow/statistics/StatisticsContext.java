@@ -8,13 +8,16 @@
 
 package org.opendaylight.openflowplugin.api.openflow.statistics;
 
+import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.Timeout;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 
 /**
  * Context for statistics.
@@ -77,4 +80,13 @@ public interface StatisticsContext extends RequestContextStack, OFPContext {
      * In case to change mastership to slave or connection interrupted stop the future and release thread.
      */
     void stopGatheringData();
+
+    /**
+     * In case of using reconciliation framework need to be initialization submit handled separately.
+     * @return true if submitting was ok
+     * @since 0.5.0 Nitrogen
+     * @see OpenflowProviderConfig#isUsingReconciliationFramework()
+     * @see org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeService
+     */
+    boolean initialSubmitAfterReconciliation();
 }

@@ -33,6 +33,7 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMaster
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipWatcher;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainStateListener;
+import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
@@ -212,6 +213,7 @@ public class ContextChainImpl implements ContextChain {
             case RPC_REGISTRATION:
                 LOG.debug("Device {}, RPC registration OK.", deviceInfo);
                 this.rpcRegistration.set(true);
+                break;
             case INITIAL_FLOW_REGISTRY_FILL:
                 // Flow registry fill is not mandatory to work as a master
                 LOG.debug("Device {}, initial registry filling OK.", deviceInfo);
@@ -233,6 +235,23 @@ public class ContextChainImpl implements ContextChain {
         }
 
         return result;
+    }
+
+    @Override
+    public boolean isPrepared() {
+        return this.initialGathering.get() &&
+                this.masterStateOnDevice.get() &&
+                this.rpcRegistration.get();
+    }
+
+    @Override
+    public boolean continueInitializationAfterReconciliation() {
+        return isMastered(ContextChainMastershipState.INITIAL_SUBMIT) && contexts.stream()
+                .filter(StatisticsContext.class::isInstance)
+                .map(StatisticsContext.class::cast)
+                .findAny()
+                .map(StatisticsContext::initialSubmitAfterReconciliation)
+                .orElse(false);
     }
 
     @Override
