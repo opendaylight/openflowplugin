@@ -9,15 +9,31 @@ package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListener;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
+import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
+import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
+import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 
 /**
  * Generic interface for context chain holder, hold all created context chains.
+ * {@link ContextChain} is context that suppose to hold old information about device such as
+ * <ul>
+ *     <li>{@link DeviceContext}</li>
+ *     <li>{@link RpcContext}</li>
+ *     <li>{@link StatisticsContext}</li>
+ * </ul>
+ * Each context is created right after device connect and hold information about particular part of device.
+ * @since 0.4.0 Carbon
+ * @see StatisticsContext
+ * @see RpcContext
+ * @see DeviceContext
  */
 public interface ContextChainHolder extends
         DeviceConnectedHandler,
