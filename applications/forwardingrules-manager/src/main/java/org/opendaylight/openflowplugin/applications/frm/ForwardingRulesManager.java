@@ -162,6 +162,5 @@ public interface ForwardingRulesManager extends ConfigurationListener, AutoClose
      * @return True if user enables bundle-based-reconciliation-enabled field in config file or False
      */
     boolean isBundleBasedReconciliationEnabled();
-
 }
 
