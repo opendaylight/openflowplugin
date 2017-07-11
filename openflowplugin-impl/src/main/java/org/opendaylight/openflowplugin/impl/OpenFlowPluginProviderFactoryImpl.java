@@ -17,6 +17,7 @@ import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionPro
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProviderFactory;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +36,8 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
                                               final NotificationPublishService notificationPublishService,
                                               final EntityOwnershipService entityOwnershipService,
                                               final List<SwitchConnectionProvider> switchConnectionProviders,
-                                              final ClusterSingletonServiceProvider singletonServiceProvider) {
+                                              final ClusterSingletonServiceProvider singletonServiceProvider,
+                                              final MastershipChangeServiceManager mastershipChangeServiceManager) {
         LOG.info("Initializing new OFP southbound.");
         final OpenFlowPluginProvider openflowPluginProvider = new OpenFlowPluginProviderImpl(
                 configurationService,
@@ -44,7 +46,8 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
                 rpcRegistry,
                 notificationPublishService,
                 singletonServiceProvider,
-                entityOwnershipService);
+                entityOwnershipService,
+                mastershipChangeServiceManager);
 
         openflowPluginProvider.initialize();
         return openflowPluginProvider;
