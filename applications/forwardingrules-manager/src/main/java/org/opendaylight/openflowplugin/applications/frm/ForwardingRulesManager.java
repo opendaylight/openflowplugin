@@ -148,6 +148,5 @@ public interface ForwardingRulesManager extends ConfigurationListener, AutoClose
      * @return FlowNodeConnectorInventoryTranslatorImpl
      */
     FlowNodeConnectorInventoryTranslatorImpl getFlowNodeConnectorInventoryTranslatorImpl();
-
 }
 
