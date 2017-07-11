@@ -11,11 +11,13 @@ import javax.annotation.Nonnull;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
+import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationProperty;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
 
 /**
  * Chain of contexts, hold references to the contexts.
+ * @since 0.4.0 Carbon
  */
 public interface ContextChain extends ClusterSingletonService, AutoCloseable {
 
@@ -56,6 +58,25 @@ public interface ContextChain extends ClusterSingletonService, AutoCloseable {
      * @return true if context chain is closing
      */
     boolean isClosing();
+
+    /**
+     * Check all needed to be master except the device is written into data store.
+     * Using by reconciliation framework. Used only if {@link ConfigurationProperty#USING_RECONCILIATION_FRAMEWORK}
+     * is set to {@link Boolean#TRUE}.
+     * @return true if all is set but not submitted txChain
+     * @since 0.5.0 Nitrogen
+     * @see org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeService
+     */
+    boolean isPrepared();
+
+    /**
+     * Allow to continue after reconciliation framework callback success.
+     * @return true if initial submitting was ok and device is fully mastered by controller
+     * @since 0.5.0 Nitrogen
+     * @see org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeService
+     * @see ConfigurationProperty#USING_RECONCILIATION_FRAMEWORK
+     */
+    boolean continueInitializationAfterReconciliation();
 
     /**
      * Add new auxiliary connection if primary is ok.
