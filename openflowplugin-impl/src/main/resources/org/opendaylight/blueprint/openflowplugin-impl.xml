@@ -8,4 +8,7 @@
 
   <bean id="configurationServiceFactory" class="org.opendaylight.openflowplugin.impl.configuration.ConfigurationServiceFactoryImpl"/>
   <service ref="configurationServiceFactory" interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationServiceFactory"/>
+
+  <bean id="mastershipChangeServiceManagerFactory" class="org.opendaylight.openflowplugin.impl.mastership.MastershipChangeServiceManagerFactoryImpl"/>
+  <service ref="mastershipChangeServiceManagerFactory" interface="org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManagerFactory"/>
 </blueprint>
