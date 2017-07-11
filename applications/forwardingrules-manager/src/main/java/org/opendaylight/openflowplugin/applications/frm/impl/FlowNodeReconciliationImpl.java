@@ -26,17 +26,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
+import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationNotificationListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
@@ -62,9 +62,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.StaleGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.StaleGroupKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -77,7 +79,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
  */
-public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
+public class FlowNodeReconciliationImpl implements FlowNodeReconciliation, ReconciliationNotificationListener {
      private static final Logger LOG = LoggerFactory.getLogger(FlowNodeReconciliationImpl.class);
 
     //The number of nanoseconds to wait for a single group to be added.
@@ -90,11 +92,19 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
     private final DataBroker dataBroker;
     private final ForwardingRulesManager provider;
+    private final String serviceName;
+    final private int priority;
+    final private ResultState resultState;
+
     private final ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
-    public FlowNodeReconciliationImpl (final ForwardingRulesManager manager, final DataBroker db) {
+    public FlowNodeReconciliationImpl (final ForwardingRulesManager manager, final DataBroker db,
+            final String serviceName, final int priority, final ResultState resultState) {
         this.provider = Preconditions.checkNotNull(manager, "ForwardingRulesManager can not be null!");
         dataBroker = Preconditions.checkNotNull(db, "DataBroker can not be null!");
+        this.serviceName = serviceName;
+        this.priority = priority;
+        this.resultState = resultState;
     }
 
     @Override
@@ -111,7 +121,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                     .firstKeyOf(Node.class));
             return;
         }
-        if (provider.isNodeOwner(connectedNode)) {
+     //   if (provider.isNodeOwner(connectedNode)) {
             LOG.info("Triggering reconciliation for device {}", connectedNode.firstKeyOf(Node.class));
             if (provider.isStaleMarkingEnabled()) {
                 LOG.info("Stale-Marking is ENABLED and proceeding with deletion of stale-marked entities on switch {}",
@@ -120,7 +130,32 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             }
             ReconciliationTask reconciliationTask = new ReconciliationTask(connectedNode);
             executor.execute(reconciliationTask);
-        }
+      //  }
+    }
+
+    @Override public ListenableFuture<Boolean> startReconciliation(DeviceInfo node) {
+        InstanceIdentifier<FlowCapableNode> connectedNode = InstanceIdentifier.create(Nodes.class)
+                .child(Node.class, new NodeKey(node.getNodeId())).augmentation(FlowCapableNode.class);
+        DeviceMastership deviceMastership = provider.getDeviceMastershipManager().getDeviceMasterships().computeIfAbsent(node.getNodeId(), device ->
+                new DeviceMastership(node.getNodeId(), provider.getFlowNodereconciliation()));
+        deviceMastership.reconcile();
+        return null;
+    }
+
+    @Override public Future<Boolean> endReconciliation(DeviceInfo node) {
+        return null;
+    }
+
+    @Override public int getPriority() {
+        return priority;
+    }
+
+    @Override public String getName() {
+        return serviceName;
+    }
+
+    @Override public ResultState getResultState() {
+        return resultState;
     }
 
     private class ReconciliationTask implements Runnable {
