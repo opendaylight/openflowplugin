@@ -7,14 +7,15 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
-import javax.annotation.Nonnull;
+import java.util.List;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 
-public interface MastershipChangeListener {
+public interface MasterChecker {
 
-    void becomeMaster(@Nonnull DeviceInfo deviceInfo);
-    void becomeSlaveOrDisconnect(@Nonnull DeviceInfo deviceInfo);
-
-    void setMasterChecker(@Nonnull MasterChecker masterChecker);
+    /**
+     * List of mastering devices.
+     * @return - list of devices
+     */
+    List<DeviceInfo> checkForMaster();
 
 }
