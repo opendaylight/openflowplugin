@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -35,6 +36,7 @@ import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase;
@@ -65,6 +67,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -90,11 +93,20 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
     private final DataBroker dataBroker;
     private final ForwardingRulesManager provider;
+    private final String serviceName;
+    final private int priority;
+    final private ResultState resultState;
+    private Map<DeviceInfo, ListenableFuture<Boolean>> futureMap = new HashMap<>();
+
     private final ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
-    public FlowNodeReconciliationImpl (final ForwardingRulesManager manager, final DataBroker db) {
+    public FlowNodeReconciliationImpl (final ForwardingRulesManager manager, final DataBroker db,
+            final String serviceName, final int priority, final ResultState resultState) {
         this.provider = Preconditions.checkNotNull(manager, "ForwardingRulesManager can not be null!");
         dataBroker = Preconditions.checkNotNull(db, "DataBroker can not be null!");
+        this.serviceName = serviceName;
+        this.priority = priority;
+        this.resultState = resultState;
     }
 
     @Override
@@ -104,26 +116,54 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         }
     }
 
-    @Override
-    public void reconcileConfiguration(InstanceIdentifier<FlowCapableNode> connectedNode) {
+    private ListenableFuture<Boolean> reconcileConfiguration(InstanceIdentifier<FlowCapableNode> connectedNode) {
         if (provider.isReconciliationDisabled()) {
             LOG.debug("Reconciliation is disabled by user. Skipping reconciliation of node : {}", connectedNode
                     .firstKeyOf(Node.class));
-            return;
+            return Futures.immediateFuture(true);
         }
-        if (provider.isNodeOwner(connectedNode)) {
-            LOG.info("Triggering reconciliation for device {}", connectedNode.firstKeyOf(Node.class));
-            if (provider.isStaleMarkingEnabled()) {
-                LOG.info("Stale-Marking is ENABLED and proceeding with deletion of stale-marked entities on switch {}",
-                        connectedNode.toString());
-                reconciliationPreProcess(connectedNode);
-            }
-            ReconciliationTask reconciliationTask = new ReconciliationTask(connectedNode);
-            executor.execute(reconciliationTask);
+        LOG.info("Triggering reconciliation for device {}", connectedNode.firstKeyOf(Node.class));
+        if (provider.isStaleMarkingEnabled()) {
+            LOG.info("Stale-Marking is ENABLED and proceeding with deletion of "
+                    + "stale-marked entities on switch {}",
+                    connectedNode.toString());
+            reconciliationPreProcess(connectedNode);
         }
+        ReconciliationTask reconciliationTask = new ReconciliationTask(connectedNode);
+        return JdkFutureAdapters.listenInPoolThread(executor.submit(reconciliationTask));
     }
 
-    private class ReconciliationTask implements Runnable {
+    @Override
+    public ListenableFuture<Boolean> startReconciliation(DeviceInfo node) {
+        InstanceIdentifier<FlowCapableNode> connectedNode = node.getNodeInstanceIdentifier()
+                .augmentation(FlowCapableNode.class);
+        ListenableFuture<Boolean> future = reconcileConfiguration(connectedNode);
+        futureMap.put(node, future);
+        return future;
+    }
+
+    @Override
+    public ListenableFuture<Boolean> endReconciliation(DeviceInfo node) {
+        futureMap.computeIfPresent(node, (key, future) -> future).cancel(true);
+        return Futures.immediateFuture(true);
+    }
+
+    @Override
+    public int getPriority() {
+        return priority;
+    }
+
+    @Override
+    public String getName() {
+        return serviceName;
+    }
+
+    @Override
+    public ResultState getResultState() {
+        return resultState;
+    }
+
+    private class ReconciliationTask implements Callable<Boolean> {
 
         InstanceIdentifier<FlowCapableNode> nodeIdentity;
 
@@ -132,20 +172,20 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         }
 
         @Override
-        public void run() {
+        public Boolean call() {
 
             String sNode = nodeIdentity.firstKeyOf(Node.class, NodeKey.class).getId().getValue();
             BigInteger nDpId = getDpnIdFromNodeName(sNode);
 
             ReadOnlyTransaction trans = provider.getReadTranaction();
             Optional<FlowCapableNode> flowNode = Optional.absent();
-
             //initialize the counter
             int counter = 0;
             try {
                 flowNode = trans.read(LogicalDatastoreType.CONFIGURATION, nodeIdentity).get();
             } catch (Exception e) {
                 LOG.warn("Fail with read Config/DS for Node {} !", nodeIdentity, e);
+                return false;
             }
 
             if (flowNode.isPresent()) {
@@ -288,6 +328,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             }
         /* clean transaction */
             trans.close();
+            return true;
         }
 
         /**
