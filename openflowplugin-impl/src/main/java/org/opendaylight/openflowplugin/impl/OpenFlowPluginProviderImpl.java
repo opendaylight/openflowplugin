@@ -37,10 +37,12 @@ import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipS
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
+import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginMastershipChangeServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
@@ -54,6 +56,7 @@ import org.opendaylight.openflowplugin.impl.device.DeviceManagerImpl;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProvider;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProviderFactory;
 import org.opendaylight.openflowplugin.impl.lifecycle.ContextChainHolderImpl;
+import org.opendaylight.openflowplugin.impl.mastership.MastershipServiceManagerImpl;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.DeserializerInjector;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.SerializerInjector;
 import org.opendaylight.openflowplugin.impl.rpc.RpcManagerImpl;
@@ -70,7 +73,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenFlowPluginExtensionRegistratorProvider {
+public class OpenFlowPluginProviderImpl implements
+        OpenFlowPluginProvider,
+        OpenFlowPluginExtensionRegistratorProvider,
+        OpenFlowPluginMastershipChangeServiceProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenFlowPluginProviderImpl.class);
 
@@ -95,6 +101,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private final ClusterSingletonServiceProvider singletonServicesProvider;
     private final OpenflowProviderConfig config;
     private final EntityOwnershipService entityOwnershipService;
+    private final MastershipChangeServiceManager mastershipChangeServiceManager;
     private DeviceManager deviceManager;
     private RpcManager rpcManager;
     private StatisticsManager statisticsManager;
@@ -123,6 +130,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         extensionConverterManager = new ExtensionConverterManagerImpl();
         deviceInitializerProvider = DeviceInitializerProviderFactory.createDefaultProvider();
         config = new OpenFlowProviderConfigImpl(configurationService);
+        mastershipChangeServiceManager = new MastershipServiceManagerImpl();
     }
 
 
@@ -319,5 +327,10 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 | MalformedObjectNameException e) {
             LOG.warn("Error unregistering MBean {}", e);
         }
+    }
+
+    @Override
+    public MastershipChangeServiceManager getMastershipChangeServiceManager() {
+        return this.mastershipChangeServiceManager;
     }
 }

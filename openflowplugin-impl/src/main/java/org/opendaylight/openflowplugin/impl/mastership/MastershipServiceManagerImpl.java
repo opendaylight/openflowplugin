@@ -13,13 +13,13 @@ import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeRegistration;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeService;
-import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceProvider;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MastershipServiceProviderImpl implements MastershipChangeServiceProvider {
+public class MastershipServiceManagerImpl implements MastershipChangeServiceManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MastershipServiceProviderImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MastershipServiceManagerImpl.class);
 
     private final List<MastershipChangeService> serviceGroup = new LinkedList<>();
 
