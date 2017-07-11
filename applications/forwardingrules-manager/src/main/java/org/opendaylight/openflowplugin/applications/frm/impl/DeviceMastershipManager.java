@@ -100,7 +100,7 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
     public void onNodeUpdated(NodeUpdated notification) {
         LOG.debug("NodeUpdate notification received : {}", notification);
         DeviceMastership membership = deviceMasterships.computeIfAbsent(notification.getId(), device ->
-                new DeviceMastership(notification.getId(), reconcliationAgent));
+                new DeviceMastership(notification.getId()));
         membership.reconcile();
     }
 
