@@ -31,6 +31,7 @@ import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvid
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationProperty;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsManagerControlService;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -66,6 +67,9 @@ public class OpenFlowPluginProviderImplTest {
     @Mock
     ConfigurationService configurationService;
 
+    @Mock
+    MastershipChangeServiceManager mastershipChangeServiceManager;
+
     private static final int RPC_REQUESTS_QUOTA = 500;
     private static final long GLOBAL_NOTIFICATION_QUOTA = 131072;
     private static final int THREAD_POOL_MIN_THREADS = 1;
@@ -98,7 +102,8 @@ public class OpenFlowPluginProviderImplTest {
                 rpcProviderRegistry,
                 notificationPublishService,
                 clusterSingletonServiceProvider,
-                entityOwnershipService);
+                entityOwnershipService,
+                mastershipChangeServiceManager);
     }
 
     @Test
