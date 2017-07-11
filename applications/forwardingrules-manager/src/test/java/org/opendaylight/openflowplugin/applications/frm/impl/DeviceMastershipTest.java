@@ -44,5 +44,4 @@ public class DeviceMastershipTest {
         deviceMastership.closeServiceInstance();
         Assert.assertFalse(deviceMastership.isDeviceMastered());
     }
-
 }

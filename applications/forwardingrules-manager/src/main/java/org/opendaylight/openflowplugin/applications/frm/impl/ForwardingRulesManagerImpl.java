@@ -27,6 +27,8 @@ import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesProperty;
+import org.opendaylight.openflowplugin.applications.reconciliation.NotificationRegistration;
+import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
@@ -36,6 +38,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfig;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -55,6 +58,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
 
     static final int STARTUP_LOOP_TICK = 500;
     static final int STARTUP_LOOP_MAX_RETRIES = 8;
+    private static final int FRM_RECONCILIATION_PRIORITY = Integer.getInteger("frm.reconciliation.priority", 0);
+    private static final String SERVICE_NAME = "FRM";
 
     private final AtomicLong txNum = new AtomicLong();
     private final DataBroker dataService;
@@ -70,8 +75,11 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private ForwardingRulesCommiter<Meter> meterListener;
     private ForwardingRulesCommiter<TableFeatures> tableListener;
     private FlowNodeReconciliation nodeListener;
+    private NotificationRegistration reconciliationNotificationRegistration;
     private FlowNodeConnectorInventoryTranslatorImpl flowNodeConnectorInventoryTranslatorImpl;
     private DeviceMastershipManager deviceMastershipManager;
+    private final ReconciliationManager reconciliationManager;
+
     private boolean disableReconciliation;
     private boolean staleMarkingEnabled;
     private int reconciliationRetryCount;
@@ -81,7 +89,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                                       final ForwardingRulesManagerConfig config,
                                       final ClusterSingletonServiceProvider clusterSingletonService,
                                       final NotificationProviderService notificationService,
-                                      final ConfigurationService configurationService) {
+                                      final ConfigurationService configurationService,
+                                      final ReconciliationManager reconciliationManager) {
         disableReconciliation = config.isDisableReconciliation();
         staleMarkingEnabled = config.isStaleMarkingEnabled();
         reconciliationRetryCount = config.getReconciliationRetryCount();
@@ -92,6 +101,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                 "ClusterSingletonService provider can not be null");
         this.notificationService = Preconditions.checkNotNull(notificationService, "Notification publisher configurationService is" +
                 " not available");
+        this.reconciliationManager = reconciliationManager;
 
         Preconditions.checkArgument(rpcRegistry != null, "RpcConsumerRegistry can not be null !");
 
@@ -107,7 +117,9 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
 
     @Override
     public void start() {
-        this.nodeListener = new FlowNodeReconciliationImpl(this, dataService);
+        this.nodeListener = new FlowNodeReconciliationImpl(this,dataService, SERVICE_NAME, FRM_RECONCILIATION_PRIORITY,
+                ResultState.DONOTHING);
+        this.reconciliationNotificationRegistration = reconciliationManager.registerService(this.nodeListener);
         this.deviceMastershipManager = new DeviceMastershipManager(clusterSingletonServiceProvider,
                 notificationService,
                 this.nodeListener,
@@ -147,6 +159,10 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         }
         if (deviceMastershipManager != null) {
             deviceMastershipManager.close();
+        }
+        if (this.reconciliationNotificationRegistration != null) {
+            this.reconciliationNotificationRegistration.close();
+            this.reconciliationNotificationRegistration = null;
         }
     }
 
