@@ -25,6 +25,7 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
@@ -61,6 +62,8 @@ public class ContextChainHolderImplTest {
     private EntityOwnershipService entityOwnershipService;
     @Mock
     private EntityOwnershipListenerRegistration entityOwnershipListenerRegistration;
+    @Mock
+    private MastershipChangeListener mastershipChangeListener;
 
     private ContextChainHolderImpl contextChainHolder;
 
@@ -87,7 +90,7 @@ public class ContextChainHolderImplTest {
         Mockito.when(entityOwnershipService.registerListener(Mockito.any(), Mockito.any()))
                 .thenReturn(entityOwnershipListenerRegistration);
 
-        contextChainHolder = new ContextChainHolderImpl(timer, executorService, singletonServicesProvider, entityOwnershipService, null);
+        contextChainHolder = new ContextChainHolderImpl(timer, executorService, singletonServicesProvider, entityOwnershipService, mastershipChangeListener);
         contextChainHolder.addManager(statisticsManager);
         contextChainHolder.addManager(rpcManager);
         contextChainHolder.addManager(deviceManager);
