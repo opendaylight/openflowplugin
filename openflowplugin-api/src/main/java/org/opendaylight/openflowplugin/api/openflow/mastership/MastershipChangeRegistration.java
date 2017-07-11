@@ -10,5 +10,5 @@ package org.opendaylight.openflowplugin.api.openflow.mastership;
 /**
  * API provided for all OFP application to use.
  */
-public interface MastershipChangeRegistration {
+public interface MastershipChangeRegistration extends AutoCloseable {
 }
