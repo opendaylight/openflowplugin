@@ -27,10 +27,12 @@ public class DeviceMastershipTest {
 
     @Mock
     private FlowNodeReconciliation reconcliationAgent;
+    @Mock
+    private ForwardingReconciliationTaskFactory reconciliationTask;
 
     @Before
     public void setUp() throws Exception {
-        deviceMastership = new DeviceMastership(NODE_ID, reconcliationAgent);
+        deviceMastership = new DeviceMastership(NODE_ID, reconcliationAgent, reconciliationTask);
     }
 
     @Test
