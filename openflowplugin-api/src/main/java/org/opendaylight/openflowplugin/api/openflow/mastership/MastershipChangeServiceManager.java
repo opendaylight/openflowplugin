@@ -14,11 +14,13 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.OwnershipChangeLis
  * Provider to register mastership change listener.
  * @since 0.5.0 Nitrogen
  */
-public interface MastershipChangeServiceManager extends OwnershipChangeListener {
+public interface MastershipChangeServiceManager extends OwnershipChangeListener, AutoCloseable {
 
     @Nonnull
     MastershipChangeRegistration register(@Nonnull MastershipChangeService service);
 
     void unregister(@Nonnull MastershipChangeService service);
 
+    @Override
+    void close();
 }

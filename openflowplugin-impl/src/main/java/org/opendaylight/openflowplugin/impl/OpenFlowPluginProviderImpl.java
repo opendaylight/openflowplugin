@@ -55,7 +55,6 @@ import org.opendaylight.openflowplugin.impl.device.DeviceManagerImpl;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProvider;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProviderFactory;
 import org.opendaylight.openflowplugin.impl.lifecycle.ContextChainHolderImpl;
-import org.opendaylight.openflowplugin.impl.mastership.MastershipServiceManagerImpl;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.DeserializerInjector;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.SerializerInjector;
 import org.opendaylight.openflowplugin.impl.rpc.RpcManagerImpl;
@@ -117,7 +116,8 @@ public class OpenFlowPluginProviderImpl implements
                                final RpcProviderRegistry rpcProviderRegistry,
                                final NotificationPublishService notificationPublishService,
                                final ClusterSingletonServiceProvider singletonServiceProvider,
-                               final EntityOwnershipService entityOwnershipService) {
+                               final EntityOwnershipService entityOwnershipService,
+                               final MastershipChangeServiceManager mastershipChangeServiceManager) {
         this.switchConnectionProviders = switchConnectionProviders;
         this.dataBroker = dataBroker;
         this.rpcProviderRegistry = rpcProviderRegistry;
@@ -128,7 +128,7 @@ public class OpenFlowPluginProviderImpl implements
         extensionConverterManager = new ExtensionConverterManagerImpl();
         deviceInitializerProvider = DeviceInitializerProviderFactory.createDefaultProvider();
         config = new OpenFlowProviderConfigImpl(configurationService);
-        mastershipChangeServiceManager = new MastershipServiceManagerImpl();
+        this.mastershipChangeServiceManager = mastershipChangeServiceManager;
     }
 
 
