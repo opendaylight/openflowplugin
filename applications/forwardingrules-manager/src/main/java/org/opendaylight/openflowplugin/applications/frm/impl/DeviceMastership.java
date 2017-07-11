@@ -31,15 +31,18 @@ public class DeviceMastership implements ClusterSingletonService, AutoCloseable 
     private final NodeId nodeId;
     private final ServiceGroupIdentifier identifier;
     private final FlowNodeReconciliation reconcliationAgent;
+    private final ForwardingReconciliationTaskFactory reconciliationtask;
     private final AtomicBoolean deviceMastered = new AtomicBoolean(false);
     private final AtomicBoolean isDeviceInOperDS = new AtomicBoolean(false);
     private final InstanceIdentifier<FlowCapableNode> fcnIID;
 
     public DeviceMastership(final NodeId nodeId,
-                            final FlowNodeReconciliation reconcliationAgent) {
+                            final FlowNodeReconciliation reconciliationAgent,
+                            final ForwardingReconciliationTaskFactory reconciliationtask ) {
         this.nodeId = nodeId;
         this.identifier = ServiceGroupIdentifier.create(nodeId.getValue());
-        this.reconcliationAgent = reconcliationAgent;
+        this.reconcliationAgent = reconciliationAgent;
+        this.reconciliationtask = reconciliationtask;
         fcnIID = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId)).augmentation
                 (FlowCapableNode.class);
     }
