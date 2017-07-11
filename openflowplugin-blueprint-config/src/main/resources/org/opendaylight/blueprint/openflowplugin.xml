@@ -60,6 +60,7 @@
         <interfaces>
             <value>org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider</value>
             <value>org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider</value>
+            <value>org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginMastershipChangeServiceProvider</value>
         </interfaces>
     </service>
 
