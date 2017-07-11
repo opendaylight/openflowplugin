@@ -289,6 +289,11 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     }
 
     @Override
+    public boolean isUsingReconciliationFramework() {
+        return config.isUsingReconciliationFramework();
+    }
+
+    @Override
     public void close() {
         istStatisticsFullyDisabled = true;
 
@@ -298,7 +303,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         }
 
         for (final Iterator<StatisticsContext> iterator = Iterators.consumingIterator(contexts.values().iterator());
-                iterator.hasNext();) {
+             iterator.hasNext();) {
             iterator.next().close();
         }
     }
@@ -307,23 +312,23 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     public StatisticsContext createContext(@Nonnull final DeviceContext deviceContext) {
 
         final MultipartWriterProvider statisticsWriterProvider = MultipartWriterProviderFactory
-            .createDefaultProvider(deviceContext);
+                .createDefaultProvider(deviceContext);
 
         final StatisticsContext statisticsContext =
-            deviceContext.canUseSingleLayerSerialization() ?
-            new StatisticsContextImpl<MultipartReply>(
-                isStatisticsEnabled(),
-                deviceContext,
-                converterExecutor,
-                    this,
-                statisticsWriterProvider) :
-            new StatisticsContextImpl<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
-                .MultipartReply>(
-                isStatisticsEnabled(),
-                deviceContext,
-                converterExecutor,
-                    this,
-                statisticsWriterProvider);
+                deviceContext.canUseSingleLayerSerialization() ?
+                        new StatisticsContextImpl<MultipartReply>(
+                                isStatisticsEnabled(),
+                                deviceContext,
+                                converterExecutor,
+                                this,
+                                statisticsWriterProvider) :
+                        new StatisticsContextImpl<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
+                                .MultipartReply>(
+                                isStatisticsEnabled(),
+                                deviceContext,
+                                converterExecutor,
+                                this,
+                                statisticsWriterProvider);
         contexts.putIfAbsent(deviceContext.getDeviceInfo(), statisticsContext);
 
         return statisticsContext;
