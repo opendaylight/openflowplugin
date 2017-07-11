@@ -8,8 +8,7 @@
 
 package org.opendaylight.openflowplugin.applications.frm;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationNotificationListener;
 
 /**
  * Implementation provider of this interface will implement reconciliation functionality for a newly connected node.
@@ -19,12 +18,5 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
  */
-public interface FlowNodeReconciliation extends AutoCloseable {
-
-    /**
-     * Reconcile the switch data store configuration on the switch
-     * @param connectedNode Node that need reconciliation
-     */
-    void reconcileConfiguration(InstanceIdentifier<FlowCapableNode> connectedNode);
+public interface FlowNodeReconciliation extends ReconciliationNotificationListener, AutoCloseable {
 }
-
