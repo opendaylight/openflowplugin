@@ -27,6 +27,8 @@ import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesProperty;
+import org.opendaylight.openflowplugin.applications.reconciliation.IReconciliationManager;
+import org.opendaylight.openflowplugin.applications.reconciliation.Intent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
@@ -55,6 +57,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
 
     static final int STARTUP_LOOP_TICK = 500;
     static final int STARTUP_LOOP_MAX_RETRIES = 8;
+    private static final int FRM_PRIORITY_LEVEL = Integer.getInteger("reconciliation.frm.priority.level", 0);
 
     private final AtomicLong txNum = new AtomicLong();
     private final DataBroker dataService;
@@ -72,6 +75,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private FlowNodeReconciliation nodeListener;
     private FlowNodeConnectorInventoryTranslatorImpl flowNodeConnectorInventoryTranslatorImpl;
     private DeviceMastershipManager deviceMastershipManager;
+    private IReconciliationManager reconciliationManager;
+
     private boolean disableReconciliation;
     private boolean staleMarkingEnabled;
     private int reconciliationRetryCount;
@@ -81,7 +86,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                                       final ForwardingRulesManagerConfig config,
                                       final ClusterSingletonServiceProvider clusterSingletonService,
                                       final NotificationProviderService notificationService,
-                                      final ConfigurationService configurationService) {
+                                      final ConfigurationService configurationService,
+                                      final IReconciliationManager reconciliationManager) {
         disableReconciliation = config.isDisableReconciliation();
         staleMarkingEnabled = config.isStaleMarkingEnabled();
         reconciliationRetryCount = config.getReconciliationRetryCount();
@@ -92,6 +98,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                 "ClusterSingletonService provider can not be null");
         this.notificationService = Preconditions.checkNotNull(notificationService, "Notification publisher configurationService is" +
                 " not available");
+        this.reconciliationManager = reconciliationManager;
 
         Preconditions.checkArgument(rpcRegistry != null, "RpcConsumerRegistry can not be null !");
 
@@ -118,6 +125,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         this.groupListener = new GroupForwarder(this, dataService);
         this.meterListener = new MeterForwarder(this, dataService);
         this.tableListener = new TableForwarder(this, dataService);
+        reconciliationManager.registerService(new ForwardingReconciliationTaskFactory("FRM",FRM_PRIORITY_LEVEL,
+                Intent.DO_NOTHING, this));
         LOG.info("ForwardingRulesManager has started successfully.");
     }
 
@@ -245,6 +254,21 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     @Override
     public FlowNodeConnectorInventoryTranslatorImpl getFlowNodeConnectorInventoryTranslatorImpl() {
         return flowNodeConnectorInventoryTranslatorImpl;
+    }
+
+    @Override
+    public DataBroker getbroker() {
+        return dataService;
+    }
+
+    @Override
+    public DeviceMastershipManager getDeviceMastershipManager() {
+        return deviceMastershipManager;
+    }
+
+    @Override
+    public FlowNodeReconciliation getFlowNodereconciliation() {
+        return nodeListener;
     }
 
     @Override
