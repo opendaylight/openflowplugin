@@ -15,6 +15,7 @@ import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 
 /**
  * Factory for creating OpenFlowPluginProvider instances.
@@ -26,5 +27,6 @@ public interface OpenFlowPluginProviderFactory {
                                        NotificationPublishService notificationPublishService,
                                        EntityOwnershipService entityOwnershipService,
                                        List<SwitchConnectionProvider> switchConnectionProviders,
-                                       ClusterSingletonServiceProvider singletonServiceProvider);
+                                       ClusterSingletonServiceProvider singletonServiceProvider,
+                                       MastershipChangeServiceManager mastershipChangeServiceManager);
 }
