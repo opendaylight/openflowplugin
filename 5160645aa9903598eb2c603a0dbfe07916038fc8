@@ -1,0 +1,188 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da2a55be_a269628d",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/IReconciliationManager.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-07-11T12:41:21Z",
+      "side": 1,
+      "message": "Don\u0027t use \"I\" prefix in interfaces. Client should use interfaces instead of implementation. Make Implementation name with some Prefix-Suffix as the implementation should not be used. It ugly, not good readable and if you change interface to abstract class you may run into problem with this naming convention.",
+      "range": {
+        "startLine": 17,
+        "startChar": 17,
+        "endLine": 17,
+        "endChar": 39
+      },
+      "revId": "5160645aa9903598eb2c603a0dbfe07916038fc8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_82f9beca",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/IReconciliationTaskFactory.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-07-11T12:41:21Z",
+      "side": 1,
+      "message": "missing return type of the Future",
+      "range": {
+        "startLine": 16,
+        "startChar": 8,
+        "endLine": 16,
+        "endChar": 14
+      },
+      "revId": "5160645aa9903598eb2c603a0dbfe07916038fc8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_62f64ad9",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/IReconciliationTaskFactory.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-07-11T12:41:21Z",
+      "side": 1,
+      "message": "missing return type of the Future",
+      "range": {
+        "startLine": 18,
+        "startChar": 8,
+        "endLine": 18,
+        "endChar": 14
+      },
+      "revId": "5160645aa9903598eb2c603a0dbfe07916038fc8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_022dce46",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/Intent.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-07-11T12:41:21Z",
+      "side": 1,
+      "message": "Maybe we should create in yang-enum and/or move it to the OFP core?",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 1
+      },
+      "revId": "5160645aa9903598eb2c603a0dbfe07916038fc8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_c2f1f6ce",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManager.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-07-11T12:41:21Z",
+      "side": 1,
+      "message": "Don\u0027t use * see ODL rules on wiki page. \n\nhttps://wiki.opendaylight.org/view/Developer/Intellij",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 30
+      },
+      "revId": "5160645aa9903598eb2c603a0dbfe07916038fc8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_e2bfdace",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManager.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-07-11T12:41:21Z",
+      "side": 1,
+      "message": "You can see here your naming convention problem.",
+      "range": {
+        "startLine": 22,
+        "startChar": 13,
+        "endLine": 22,
+        "endChar": 68
+      },
+      "revId": "5160645aa9903598eb2c603a0dbfe07916038fc8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_22ba92de",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManager.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-07-11T12:41:21Z",
+      "side": 1,
+      "message": "Multicatch and LOG",
+      "range": {
+        "startLine": 124,
+        "startChar": 0,
+        "endLine": 127,
+        "endChar": 44
+      },
+      "revId": "5160645aa9903598eb2c603a0dbfe07916038fc8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_82cede81",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManager.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-07-11T12:41:21Z",
+      "side": 1,
+      "message": "final ?",
+      "range": {
+        "startLine": 152,
+        "startChar": 0,
+        "endLine": 153,
+        "endChar": 46
+      },
+      "revId": "5160645aa9903598eb2c603a0dbfe07916038fc8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
