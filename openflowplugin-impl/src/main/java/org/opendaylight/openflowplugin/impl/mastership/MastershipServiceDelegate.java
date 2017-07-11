@@ -19,7 +19,7 @@ public class MastershipServiceDelegate implements MastershipChangeService, Maste
     private final MastershipChangeServiceManager manager;
 
     MastershipServiceDelegate(final MastershipChangeService service,
-                                     final MastershipChangeServiceManager manager) {
+                              final MastershipChangeServiceManager manager) {
         this.service = service;
         this.manager = manager;
     }

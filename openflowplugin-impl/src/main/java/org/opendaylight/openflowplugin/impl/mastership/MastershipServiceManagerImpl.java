@@ -33,8 +33,11 @@ public class MastershipServiceManagerImpl implements MastershipChangeServiceMana
         }
         MastershipServiceDelegate registration = new MastershipServiceDelegate(service, this);
         serviceGroup.add(registration);
-        fireBecomeOwnerAfterRegistration(registration);
+        if (masterChecker.isAnyDeviceMastered()) {
+            fireBecomeOwnerAfterRegistration(registration);
+        }
         return registration;
+
     }
 
     @Override
