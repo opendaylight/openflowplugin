@@ -232,7 +232,8 @@ public class OpenFlowPluginProviderImpl implements
                 hashedWheelTimer,
                 threadPool,
                 singletonServicesProvider,
-                entityOwnershipService);
+                entityOwnershipService,
+                mastershipChangeServiceManager);
 
         contextChainHolder.addManager(deviceManager);
         contextChainHolder.addManager(statisticsManager);
