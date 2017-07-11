@@ -12,9 +12,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 
 /**
@@ -25,12 +23,9 @@ public class DeviceMastershipTest {
     private static final NodeId NODE_ID = new NodeId("testNode");
     private DeviceMastership deviceMastership;
 
-    @Mock
-    private FlowNodeReconciliation reconcliationAgent;
-
     @Before
     public void setUp() throws Exception {
-        deviceMastership = new DeviceMastership(NODE_ID, reconcliationAgent);
+        deviceMastership = new DeviceMastership(NODE_ID);
     }
 
     @Test
@@ -44,5 +39,4 @@ public class DeviceMastershipTest {
         deviceMastership.closeServiceInstance();
         Assert.assertFalse(deviceMastership.isDeviceMastered());
     }
-
 }
