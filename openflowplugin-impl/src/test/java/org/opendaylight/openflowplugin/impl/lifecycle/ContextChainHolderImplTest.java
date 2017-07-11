@@ -87,7 +87,7 @@ public class ContextChainHolderImplTest {
         Mockito.when(entityOwnershipService.registerListener(Mockito.any(), Mockito.any()))
                 .thenReturn(entityOwnershipListenerRegistration);
 
-        contextChainHolder = new ContextChainHolderImpl(timer, executorService, singletonServicesProvider, entityOwnershipService);
+        contextChainHolder = new ContextChainHolderImpl(timer, executorService, singletonServicesProvider, entityOwnershipService, null);
         contextChainHolder.addManager(statisticsManager);
         contextChainHolder.addManager(rpcManager);
         contextChainHolder.addManager(deviceManager);

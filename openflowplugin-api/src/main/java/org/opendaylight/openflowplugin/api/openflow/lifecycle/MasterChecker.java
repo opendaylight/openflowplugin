@@ -18,4 +18,10 @@ public interface MasterChecker {
      */
     List<DeviceInfo> checkForMaster();
 
+    /**
+     * Check if any device is mastered by controller.
+     * @return true if there is at least one device mastered by controller
+     */
+    boolean isAnyDeviceMastered();
+
 }
