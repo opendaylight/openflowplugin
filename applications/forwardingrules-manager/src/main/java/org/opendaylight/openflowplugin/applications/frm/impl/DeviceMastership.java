@@ -36,10 +36,10 @@ public class DeviceMastership implements ClusterSingletonService, AutoCloseable 
     private final InstanceIdentifier<FlowCapableNode> fcnIID;
 
     public DeviceMastership(final NodeId nodeId,
-                            final FlowNodeReconciliation reconcliationAgent) {
+                            final FlowNodeReconciliation reconciliationAgent) {
         this.nodeId = nodeId;
         this.identifier = ServiceGroupIdentifier.create(nodeId.getValue());
-        this.reconcliationAgent = reconcliationAgent;
+        this.reconcliationAgent = reconciliationAgent;
         fcnIID = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId)).augmentation
                 (FlowCapableNode.class);
     }
