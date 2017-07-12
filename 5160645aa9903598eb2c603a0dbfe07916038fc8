@@ -140,6 +140,29 @@
     },
     {
       "key": {
+        "uuid": "da2a55be_5c5b2a54",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManager.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-07-12T09:43:03Z",
+      "side": 1,
+      "message": "Move it to generic place.. and use fixed threadpool",
+      "range": {
+        "startLine": 54,
+        "startChar": 0,
+        "endLine": 54,
+        "endChar": 110
+      },
+      "revId": "5160645aa9903598eb2c603a0dbfe07916038fc8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da2a55be_22ba92de",
         "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManager.java",
         "patchSetId": 4
