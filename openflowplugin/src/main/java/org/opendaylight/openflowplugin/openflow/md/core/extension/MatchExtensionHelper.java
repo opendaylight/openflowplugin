@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.extension.api.AugmentTuple;
@@ -24,6 +23,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeTableFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeTableFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifPacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifPacketInBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifSwitchFlowRemoved;
@@ -60,10 +61,10 @@ public final class MatchExtensionHelper {
      * @param ofVersion openflow version
      * @param matchPath match path
      */
-    public static <T> void injectExtension(
+    public static void injectExtension(
             final short ofVersion,
             final MatchEntry matchEntry,
-            final T matchBuilder,
+            final MatchBuilder matchBuilder,
             final MatchPath matchPath) {
 
         final ExtensionListBuilder extBuilder = processExtension(matchEntry, ofVersion, matchPath);
@@ -75,49 +76,13 @@ public final class MatchExtensionHelper {
                     matchPath.name());
         }
 
+        final GeneralAugMatchNodesNodeTableFlowBuilder builder = Optional
+                .ofNullable(matchBuilder.getAugmentation(GeneralAugMatchNodesNodeTableFlow.class))
+                .map(GeneralAugMatchNodesNodeTableFlowBuilder::new)
+                .orElse(new GeneralAugMatchNodesNodeTableFlowBuilder().setExtensionList(new ArrayList<>()));
 
-        switch (matchPath) {
-            case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH: {
-                final MatchBuilder augMatchBuilder = MatchBuilder.class.cast(matchBuilder);
-
-                final GeneralAugMatchNotifUpdateFlowStatsBuilder builder = Optional
-                    .ofNullable(augMatchBuilder.getAugmentation(GeneralAugMatchNotifUpdateFlowStats.class))
-                    .map(aug -> new GeneralAugMatchNotifUpdateFlowStatsBuilder(aug))
-                    .orElse(new GeneralAugMatchNotifUpdateFlowStatsBuilder().setExtensionList(new ArrayList<>()));
-
-                builder.getExtensionList().add(extBuilder.build());
-                break;
-            }
-            case PACKETRECEIVED_MATCH: {
-                final org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received
-                    .MatchBuilder augMatchBuilder = org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received
-                            .MatchBuilder.class.cast(matchBuilder);
-
-                final GeneralAugMatchNotifPacketInBuilder builder = Optional
-                    .ofNullable(augMatchBuilder.getAugmentation(GeneralAugMatchNotifPacketIn.class))
-                    .map(aug -> new GeneralAugMatchNotifPacketInBuilder(aug))
-                    .orElse(new GeneralAugMatchNotifPacketInBuilder().setExtensionList(new ArrayList<>()));
-
-                builder.getExtensionList().add(extBuilder.build());
-                break;
-            }
-            case SWITCHFLOWREMOVED_MATCH: {
-                final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.mod.removed
-                    .MatchBuilder augMatchBuilder = org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.mod.removed
-                        .MatchBuilder.class.cast(matchBuilder);
-
-
-                final GeneralAugMatchNotifSwitchFlowRemovedBuilder builder = Optional
-                    .ofNullable(augMatchBuilder.getAugmentation(GeneralAugMatchNotifSwitchFlowRemoved.class))
-                    .map(aug -> new GeneralAugMatchNotifSwitchFlowRemovedBuilder(aug))
-                    .orElse(new GeneralAugMatchNotifSwitchFlowRemovedBuilder().setExtensionList(new ArrayList<>()));
-
-                builder.getExtensionList().add(extBuilder.build());
-                break;
-            }
-            default:
-                LOG.warn("Match path {} not supported.", matchPath.name());
-        }
+        builder.getExtensionList().add(extBuilder.build());
+        matchBuilder.addAugmentation(GeneralAugMatchNodesNodeTableFlow.class, builder.build());
     }
 
     /**
