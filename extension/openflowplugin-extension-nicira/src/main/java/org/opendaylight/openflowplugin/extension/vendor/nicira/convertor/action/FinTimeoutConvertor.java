@@ -24,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.get.flow.statistics.output.flow.and.statistics.map.list.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionFinTimeoutNotifDirectStatisticsUpdateApplyActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.get.flow.statistics.output.flow.and.statistics.map.list.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionFinTimeoutNotifDirectStatisticsUpdateWriteActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.group.desc.stats.updated.group.desc.stats.buckets.bucket.action.action.NxActionFinTimeoutNotifGroupDescStatsUpdatedCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionFinTimeoutNodesNodeTableFlowApplyActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionFinTimeoutNodesNodeTableFlowWriteActionsCaseBuilder;
 
 /**
@@ -66,6 +67,9 @@ public class FinTimeoutConvertor
                         .setNxActionFinTimeout(nxActionFinTimeout).build();
             case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION:
                 return new NxActionFinTimeoutNotifDirectStatisticsUpdateApplyActionsCaseBuilder()
+                        .setNxActionFinTimeout(nxActionFinTimeout).build();
+            case NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION:
+                return new NxActionFinTimeoutNodesNodeTableFlowApplyActionsCaseBuilder()
                         .setNxActionFinTimeout(nxActionFinTimeout).build();
             default:
                 throw new CodecPreconditionException(path);
