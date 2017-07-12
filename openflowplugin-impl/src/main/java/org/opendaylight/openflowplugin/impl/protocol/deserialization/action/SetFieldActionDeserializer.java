@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.action;
 
+import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
@@ -14,13 +15,12 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.openflow.protocol.deserialization.MatchEntryDeserializer;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.key.MessageCodeMatchKey;
+import org.opendaylight.openflowplugin.impl.util.MatchUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetFieldCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetFieldBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
-
-import io.netty.buffer.ByteBuf;
 
 public class SetFieldActionDeserializer extends AbstractActionDeserializer
     implements DeserializerRegistryInjector {
@@ -48,7 +48,7 @@ public class SetFieldActionDeserializer extends AbstractActionDeserializer
         }
 
         return new SetFieldCaseBuilder()
-            .setSetField(new SetFieldBuilder(builder.build()).build())
+            .setSetField(MatchUtil.transformMatch(builder.build(), SetField.class))
             .build();
     }
 
