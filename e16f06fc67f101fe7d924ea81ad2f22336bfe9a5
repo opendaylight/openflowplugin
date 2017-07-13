@@ -1,0 +1,421 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da2a55be_b4ffd666",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/ReconciliationManager.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-13T22:24:03Z",
+      "side": 1,
+      "message": "please put some documentation about this interface and what\u0027s the purpose of this interface.",
+      "revId": "e16f06fc67f101fe7d924ea81ad2f22336bfe9a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_d4ab6a1c",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/ReconciliationManager.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-13T22:24:03Z",
+      "side": 1,
+      "message": "we should return the NotificationRegistration object to the application, so that it can close the registration, otherwise implementation will have to close the registration, but it can\u0027t do it deterministically. Given that number of applications are not going to be that high, probably few extra bit in memory won\u0027t effect much, but the API won\u0027t be clear enough and application won\u0027t be able clean-up it\u0027s registrations.",
+      "range": {
+        "startLine": 19,
+        "startChar": 9,
+        "endLine": 19,
+        "endChar": 24
+      },
+      "revId": "e16f06fc67f101fe7d924ea81ad2f22336bfe9a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_f4f82e7e",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/ReconciliationManager.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-13T22:24:03Z",
+      "side": 1,
+      "message": "i believe these two API\u0027s should be in separate listener interface. I assume this interface need to be implemented by the services who is registering for getting the reconciliation notification? But it also provides the API for registering the service as well. So application will need a instance that implement this interface for registration (which will be part of the reconciliation-framework) and then application will have to implement this interface as well so that reconciliation framework can call start/cancelReconciliation. So those application will be also the implementation of the same interface. Placement of these API looks incorrect to me.",
+      "range": {
+        "startLine": 21,
+        "startChar": 1,
+        "endLine": 23,
+        "endChar": 45
+      },
+      "revId": "e16f06fc67f101fe7d924ea81ad2f22336bfe9a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_9402926d",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/ReconciliationManager.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-13T22:24:03Z",
+      "side": 1,
+      "message": "please add the documentation here to explain the behavior of these API\u0027s for it\u0027s consumer.",
+      "range": {
+        "startLine": 19,
+        "startChar": 3,
+        "endLine": 25,
+        "endChar": 74
+      },
+      "revId": "e16f06fc67f101fe7d924ea81ad2f22336bfe9a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_34f3e69f",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/ReconciliationTaskFactory.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-13T22:24:03Z",
+      "side": 1,
+      "message": "please add documentation of the interface and the behavior of the exposed APIs.",
+      "revId": "e16f06fc67f101fe7d924ea81ad2f22336bfe9a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_b436b650",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/ReconciliationTaskFactory.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-13T22:24:03Z",
+      "side": 1,
+      "message": "what is the difference between these two API\u0027s and the one defined in ReconciliationManager interface? I believe this interface is something that application will implement. I think we should call it ReconciliationNotificationListener",
+      "range": {
+        "startLine": 17,
+        "startChar": 1,
+        "endLine": 19,
+        "endChar": 54
+      },
+      "revId": "e16f06fc67f101fe7d924ea81ad2f22336bfe9a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_9410d2a9",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/cli/GetRegisteredServices.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-13T22:24:03Z",
+      "side": 1,
+      "message": "remove the blank line",
+      "revId": "e16f06fc67f101fe7d924ea81ad2f22336bfe9a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_f4266e15",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/cli/GetRegisteredServices.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-13T22:24:03Z",
+      "side": 1,
+      "message": "give space after this line.",
+      "revId": "e16f06fc67f101fe7d924ea81ad2f22336bfe9a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_54165aa8",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/cli/GetRegisteredServices.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-13T22:24:03Z",
+      "side": 1,
+      "message": "remove space",
+      "revId": "e16f06fc67f101fe7d924ea81ad2f22336bfe9a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_d421aafd",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/cli/GetRegisteredServices.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-13T22:24:03Z",
+      "side": 1,
+      "message": "add precondition check for reconciliationManager reference",
+      "revId": "e16f06fc67f101fe7d924ea81ad2f22336bfe9a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_141ce2c0",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/cli/GetRegisteredServices.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-13T22:24:03Z",
+      "side": 1,
+      "message": "dump the error message on console as well.",
+      "revId": "e16f06fc67f101fe7d924ea81ad2f22336bfe9a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_547dbae6",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManagerImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-13T22:24:03Z",
+      "side": 1,
+      "message": "please follow the logging best practices here \n\nhttps://wiki.opendaylight.org/view/GettingStarted:_Eclipse_Setup#Import_ordering",
+      "revId": "e16f06fc67f101fe7d924ea81ad2f22336bfe9a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_b484f6d4",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManagerImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-13T22:24:03Z",
+      "side": 1,
+      "message": "remove the blank line here.",
+      "revId": "e16f06fc67f101fe7d924ea81ad2f22336bfe9a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_f46dce33",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManagerImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-13T22:24:03Z",
+      "side": 1,
+      "message": "why static? I believe there is going to be one instance of ReconciliationManagerImpl?",
+      "range": {
+        "startLine": 38,
+        "startChar": 4,
+        "endLine": 40,
+        "endChar": 51
+      },
+      "revId": "e16f06fc67f101fe7d924ea81ad2f22336bfe9a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_347806f2",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManagerImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-13T22:24:03Z",
+      "side": 1,
+      "message": "please mark it final.",
+      "range": {
+        "startLine": 45,
+        "startChar": 37,
+        "endLine": 45,
+        "endChar": 47
+      },
+      "revId": "e16f06fc67f101fe7d924ea81ad2f22336bfe9a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_7461de38",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManagerImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-13T22:24:03Z",
+      "side": 1,
+      "message": "why not use ?\nhttps://google.github.io/guava/releases/19.0/api/docs/com/google/common/util/concurrent/Futures.html#successfulAsList(com.google.common.util.concurrent.ListenableFuture...)\n\nor \n\nhttps://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html#allOf-java.util.concurrent.CompletableFuture...-",
+      "range": {
+        "startLine": 94,
+        "startChar": 1,
+        "endLine": 105,
+        "endChar": 5
+      },
+      "revId": "e16f06fc67f101fe7d924ea81ad2f22336bfe9a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_54649a48",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManagerImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-13T22:24:03Z",
+      "side": 1,
+      "message": "re-phrase it to \"Triggering reconciliation for node : {}\" or something similar.",
+      "range": {
+        "startLine": 117,
+        "startChar": 19,
+        "endLine": 117,
+        "endChar": 50
+      },
+      "revId": "e16f06fc67f101fe7d924ea81ad2f22336bfe9a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_b45b5686",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManagerImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-13T22:24:03Z",
+      "side": 1,
+      "message": "please rephrase it to \"Stopping reconciliation for node {}\" or something similar.",
+      "range": {
+        "startLine": 132,
+        "startChar": 18,
+        "endLine": 132,
+        "endChar": 50
+      },
+      "revId": "e16f06fc67f101fe7d924ea81ad2f22336bfe9a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_f4b02e8d",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManagerImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-13T22:24:03Z",
+      "side": 1,
+      "message": "these is a possibility that you end up calling cancelReconciliation() for the registered service, even when startReconciliation() is not called for it. Given that startReconciliation is kind of blocking till all the task finishes, and if you submit the cancelReconciliation task, there is a possibility that a free thread might pick up the cancelReconciliation task and execute it. I think we should attempt to check if the existing startReconciliation task is triggered or not, if not, cancel it and ignore calling cancelReconciliation.",
+      "revId": "e16f06fc67f101fe7d924ea81ad2f22336bfe9a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_f454ae55",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManagerImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-13T22:24:03Z",
+      "side": 1,
+      "message": "please return the immutableMap rather than the reference of the map used by ReconciliationManagerImpl.",
+      "range": {
+        "startLine": 144,
+        "startChar": 8,
+        "endLine": 144,
+        "endChar": 33
+      },
+      "revId": "e16f06fc67f101fe7d924ea81ad2f22336bfe9a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_b4a07644",
+        "filename": "applications/reconciliation-framework/src/main/yang/reconciliation-framework-config.yang",
+        "patchSetId": 7
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-13T22:24:03Z",
+      "side": 1,
+      "message": "why do we need yand model to define the intent type. I think we should not define any more config using the yang models. It\u0027s better to use the java enum and expose it to applications.",
+      "revId": "e16f06fc67f101fe7d924ea81ad2f22336bfe9a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
