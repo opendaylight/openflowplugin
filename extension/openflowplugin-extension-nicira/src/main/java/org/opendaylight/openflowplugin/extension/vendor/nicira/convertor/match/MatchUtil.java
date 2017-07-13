@@ -26,6 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifPacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifSwitchFlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifUpdateFlowStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchPacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcAddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcRemoveFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcUpdateFlowOriginal;
@@ -144,6 +145,7 @@ public class MatchUtil {
         augmentationsOfExtension.add(NxAugMatchNotifSwitchFlowRemoved.class);
         augmentationsOfExtension.add(NxAugMatchNotifPacketIn.class);
         augmentationsOfExtension.add(NxAugMatchNotifUpdateFlowStats.class);
+        augmentationsOfExtension.add(NxAugMatchPacketInMessage.class);
         regResolver.setAugmentations(augmentationsOfExtension);
         tunIdResolver.setAugmentations(augmentationsOfExtension);
         arpShaResolver.setAugmentations(augmentationsOfExtension);

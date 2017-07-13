@@ -97,8 +97,8 @@ public class OpenflowProtocolListenerFullImpl implements AlienMessageListener, O
     }
 
     @Override
-    public void onAlienMessage(final OfHeader message) {
-        deviceReplyProcessor.processAlienMessage(message);
+    public boolean onAlienMessage(final OfHeader message) {
+        return deviceReplyProcessor.processAlienMessage(message);
     }
 
 }
