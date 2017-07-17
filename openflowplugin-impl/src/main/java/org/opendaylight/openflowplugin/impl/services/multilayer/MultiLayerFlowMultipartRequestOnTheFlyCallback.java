@@ -8,33 +8,18 @@
 
 package org.opendaylight.openflowplugin.impl.services.multilayer;
 
-import com.google.common.base.Function;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;
-import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
-import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
-import org.opendaylight.openflowplugin.impl.common.MultipartReplyTranslatorUtil;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.services.AbstractMultipartRequestOnTheFlyCallback;
-import org.opendaylight.openflowplugin.impl.statistics.StatisticsGatheringUtils;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 
 public class MultiLayerFlowMultipartRequestOnTheFlyCallback<T extends OfHeader> extends AbstractMultipartRequestOnTheFlyCallback<T> {
-
-    private final ConvertorExecutor convertorExecutor;
-    private final DeviceInfo deviceInfo;
-    private final DeviceFlowRegistry deviceFlowRegistry;
-    private boolean virgin = true;
 
     public MultiLayerFlowMultipartRequestOnTheFlyCallback(final RequestContext<List<T>> context,
                                                           final Class<?> requestType,
@@ -42,10 +27,7 @@ public class MultiLayerFlowMultipartRequestOnTheFlyCallback<T extends OfHeader> 
                                                           final EventIdentifier eventIdentifier,
                                                           final MultipartWriterProvider statisticsWriterProvider,
                                                           final ConvertorExecutor convertorExecutor) {
-        super(context, requestType, deviceContext, eventIdentifier, statisticsWriterProvider);
-        this.convertorExecutor = convertorExecutor;
-        deviceInfo = deviceContext.getDeviceInfo();
-        deviceFlowRegistry = deviceContext.getDeviceFlowRegistry();
+        super(context, requestType, deviceContext, eventIdentifier, statisticsWriterProvider, convertorExecutor);
     }
 
     @Override
@@ -62,30 +44,6 @@ public class MultiLayerFlowMultipartRequestOnTheFlyCallback<T extends OfHeader> 
     @Override
     protected MultipartType getMultipartType() {
         return MultipartType.OFPMPFLOW;
-    }
-
-    @Override
-    protected void onFinishedCollecting() {
-        deviceFlowRegistry.processMarks();
-    }
-
-    @Override
-    protected ListenableFuture<Optional<? extends MultipartReplyBody>> processStatistics(T result) {
-        final ListenableFuture<Optional<? extends MultipartReplyBody>> future = Futures.transform(
-            StatisticsGatheringUtils.deleteAllKnownFlows(
-                getTxFacade(),
-                deviceInfo
-                    .getNodeInstanceIdentifier()
-                    .augmentation(FlowCapableNode.class),
-                !virgin),
-            (Function<Void, Optional<? extends MultipartReplyBody>>) input -> MultipartReplyTranslatorUtil
-                .translate(result, deviceInfo, convertorExecutor, null));
-
-        if (virgin) {
-            virgin = false;
-        }
-
-        return future;
     }
 
 }

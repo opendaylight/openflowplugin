@@ -180,6 +180,7 @@ public class StatisticsGatheringUtilsTest {
         when(deviceContext.getReadTransaction()).thenReturn(readTx);
         when(deviceContext.getReadTransaction()).thenReturn(readTx);
         when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionAdapter);
+        when(deviceContext.isTransactionsEnabled()).thenReturn(Boolean.TRUE);
         when(connectionAdapter.getNodeId()).thenReturn(DUMMY_NODE_ID);
         when(connectionAdapter.getFeatures()).thenReturn(features);
         when(features.getDatapathId()).thenReturn(BigInteger.ONE);
@@ -451,7 +452,7 @@ public class StatisticsGatheringUtilsTest {
         verify(deviceContext, Mockito.never()).addDeleteToTxChain(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.<InstanceIdentifier<?>>any());
 
         final InOrder inOrder = Mockito.inOrder(deviceContext);
-        inOrder.verify(deviceContext).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.eq(tablePath), Matchers.any(Table.class));
+        inOrder.verify(deviceContext).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL),Matchers.any(), Matchers.any());
     }
 
     @Test
@@ -493,7 +494,6 @@ public class StatisticsGatheringUtilsTest {
             type,
             deviceContext,
             deviceContext,
-            false,
             ConvertorManagerFactory.createDefaultManager(),
             provider);
 
@@ -525,15 +525,11 @@ public class StatisticsGatheringUtilsTest {
         final Optional<FlowCapableNode> flowNodeOpt = Optional.of(flowNodeBuilder.build());
         final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> flowNodeFuture = Futures.immediateCheckedFuture(flowNodeOpt);
         when(readTx.read(LogicalDatastoreType.OPERATIONAL, nodePath)).thenReturn(flowNodeFuture);
-        final KeyedInstanceIdentifier<Table, TableKey> tablePath = deviceInfo.getNodeInstanceIdentifier()
-                .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tableId));
-
         StatisticsGatheringUtils.deleteAllKnownFlows(deviceContext, deviceInfo.getNodeInstanceIdentifier()
-            .augmentation(FlowCapableNode.class), false);
+            .augmentation(FlowCapableNode.class), deviceFlowRegistry);
 
-        verify(deviceContext).writeToTransaction(
-                LogicalDatastoreType.OPERATIONAL,
-                tablePath,
-                tableDataBld.setFlow(Collections.<Flow>emptyList()).build());
+        verify(deviceContext).isTransactionsEnabled();
+        verify(deviceContext).getReadTransaction();
+        verify(deviceContext).writeToTransaction(Mockito.eq(LogicalDatastoreType.OPERATIONAL), Mockito.any(), Mockito.any());
     }
 }
