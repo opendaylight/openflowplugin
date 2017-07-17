@@ -21,6 +21,7 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.key.MessageCodeMatchKey;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.util.InstructionUtil;
+import org.opendaylight.openflowplugin.impl.util.MatchUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter64;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapList;
@@ -29,7 +30,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.m
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
@@ -85,7 +85,8 @@ public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<Multi
                 .setByteCount(new Counter64(new BigInteger(1, byteCount)));
 
             final OFDeserializer<Match> matchDeserializer = registry.getDeserializer(MATCH_KEY);
-            itemBuilder.setMatch(new MatchBuilder(matchDeserializer.deserialize(itemMessage)).build());
+            itemBuilder.setMatch(MatchUtil.transformMatch(matchDeserializer.deserialize(itemMessage),
+                    org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match.class));
 
             final int length = itemMessage.readableBytes();
 
