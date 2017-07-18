@@ -14,7 +14,8 @@ import java.util.Map;
 public enum ForwardingRulesProperty {
     DISABLE_RECONCILIATION,
     STALE_MARKING_ENABLED,
-    RECONCILIATION_RETRY_COUNT;
+    RECONCILIATION_RETRY_COUNT,
+    BUNDLE_BASED_RECONCILIATION_ENABLED;
 
 
     private static final Map<String, ForwardingRulesProperty> KEY_VALUE_MAP;
