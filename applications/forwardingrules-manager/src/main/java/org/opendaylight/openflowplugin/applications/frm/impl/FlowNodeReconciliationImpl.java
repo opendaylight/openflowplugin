@@ -26,15 +26,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase;
@@ -62,13 +61,31 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.StaleGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.StaleGroupKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.multipart.reply.table.features.TableFeatures;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.*;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.Messages;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.MessagesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.messages.Message;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.messages.MessageBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.BundleAddFlowCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.BundleAddGroupCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.BundleRemoveFlowCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.BundleRemoveGroupCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.bundle.add.flow._case.AddFlowCaseDataBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.bundle.add.group._case.AddGroupCaseDataBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.bundle.remove.flow._case.RemoveFlowCaseDataBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.bundle.remove.group._case.RemoveGroupCaseDataBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleControlType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleFlags;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,9 +109,15 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     private final ForwardingRulesManager provider;
     private final ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
+    private SalBundleService salBundleService;
+
+    private static final BundleId BUNDLE_ID = new BundleId(((long) Math.random()));
+    private static final BundleFlags BUNDLE_FLAGS = new BundleFlags(true, true);
+
     public FlowNodeReconciliationImpl (final ForwardingRulesManager manager, final DataBroker db) {
         this.provider = Preconditions.checkNotNull(manager, "ForwardingRulesManager can not be null!");
         dataBroker = Preconditions.checkNotNull(db, "DataBroker can not be null!");
+        salBundleService = Preconditions.checkNotNull(manager.getSalBundleService(),"salBundleService can not be null!");
     }
 
     @Override
@@ -118,9 +141,96 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         connectedNode.toString());
                 reconciliationPreProcess(connectedNode);
             }
-            ReconciliationTask reconciliationTask = new ReconciliationTask(connectedNode);
-            executor.execute(reconciliationTask);
+            LOG.info("provider.isBundleBasedReconEnabled() ->"+provider.isBundleBasedReconEnabled());
+            if(provider.isBundleBasedReconEnabled()){
+                BundleBasedReconciliationTask bundleBasedReconTask = new BundleBasedReconciliationTask(connectedNode);
+                executor.execute(bundleBasedReconTask);
+            }else{
+                ReconciliationTask reconciliationTask = new ReconciliationTask(connectedNode);
+                executor.execute(reconciliationTask);
+            }
         }
+    }
+
+    private class BundleBasedReconciliationTask implements Runnable
+    {
+        InstanceIdentifier<FlowCapableNode> nodeIdentity;
+
+        public BundleBasedReconciliationTask(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+            nodeIdentity = nodeIdent;
+        }
+
+        @Override
+        public void run() {
+            String sNode = nodeIdentity.firstKeyOf(Node.class, NodeKey.class).getId().getValue();
+            ReadOnlyTransaction trans = provider.getReadTranaction();
+            Optional<FlowCapableNode> flowNode = Optional.absent();
+
+            LOG.info("Triggering bundle based reconciliation for device");
+
+            try {
+                flowNode = trans.read(LogicalDatastoreType.CONFIGURATION, nodeIdentity).get();
+            } catch (Exception e) {
+                LOG.error("Fail with read Config/DS for Node {} !", nodeIdentity, e);
+            }
+
+            if (flowNode.isPresent()) {
+                final NodeRef nodeRef = new NodeRef(nodeIdentity.firstIdentifierOf(Node.class));
+
+                final ControlBundleInput openBundleInput = new ControlBundleInputBuilder()
+                        .setNode(nodeRef)
+                        .setBundleId(BUNDLE_ID)
+                        .setFlags(BUNDLE_FLAGS)
+                        .setType(BundleControlType.ONFBCTOPENREQUEST)
+                        .build();
+
+                final ControlBundleInput commitBundleInput = new ControlBundleInputBuilder()
+                        .setNode(nodeRef)
+                        .setBundleId(BUNDLE_ID)
+                        .setFlags(BUNDLE_FLAGS)
+                        .setType(BundleControlType.ONFBCTCOMMITREQUEST)
+                        .build();
+
+                final List<Message> innerMessages = createMessages(nodeRef, flowNode);
+                final Messages messages = new MessagesBuilder().setMessage(innerMessages).build();
+                final AddBundleMessagesInput addBundleMessagesInput = new AddBundleMessagesInputBuilder()
+                        .setNode(nodeRef)
+                        .setBundleId(BUNDLE_ID)
+                        .setFlags(BUNDLE_FLAGS)
+                        .setMessages(messages)
+                        .build();
+
+                makeCompletableFuture(salBundleService.controlBundle(openBundleInput))
+                        .thenComposeAsync(voidRpcResult -> {
+                            LOG.debug("Open successful: {}, msg: {}", voidRpcResult.isSuccessful(), voidRpcResult.getErrors());
+
+                            final CompletableFuture<RpcResult<Void>> addFuture =
+                                    makeCompletableFuture(salBundleService.addBundleMessages(addBundleMessagesInput));
+
+                            return addFuture;
+                        }).thenComposeAsync(voidRpcResult -> {
+                    LOG.debug("AddBundleMessages successful: {}, msg: {}", voidRpcResult.isSuccessful(), voidRpcResult.getErrors());
+
+                    final CompletableFuture<RpcResult<Void>> controlCommitFuture =
+                            makeCompletableFuture(salBundleService.controlBundle(commitBundleInput));
+
+                    return controlCommitFuture;
+                }).thenAccept(voidRpcResult -> {
+                    LOG.debug("Commit successful: {}, msg: {}", voidRpcResult.isSuccessful(), voidRpcResult.getErrors());
+                });
+            }
+            trans.close();
+        }
+    }
+
+    private <T> CompletableFuture<T> makeCompletableFuture(Future<T> future) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return future.get();
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        }, executor);
     }
 
     private class ReconciliationTask implements Runnable {
@@ -151,12 +261,12 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             if (flowNode.isPresent()) {
             /* Tables - have to be pushed before groups */
                 // CHECK if while pusing the update, updateTableInput can be null to emulate a table add
-                List<TableFeatures> tableList = flowNode.get().getTableFeatures() != null
-                        ? flowNode.get().getTableFeatures() : Collections.<TableFeatures>emptyList();
-                for (TableFeatures tableFeaturesItem : tableList) {
+                List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures> tableList = flowNode.get().getTableFeatures() != null
+                        ? flowNode.get().getTableFeatures() : Collections.<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures>emptyList();
+                for (org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures tableFeaturesItem : tableList) {
                     TableFeaturesKey tableKey = tableFeaturesItem.getKey();
-                    KeyedInstanceIdentifier<TableFeatures, TableFeaturesKey> tableFeaturesII
-                            = nodeIdentity.child(TableFeatures.class, new TableFeaturesKey(tableKey.getTableId()));
+                    KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures, TableFeaturesKey> tableFeaturesII
+                            = nodeIdentity.child(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures.class, new TableFeaturesKey(tableKey.getTableId()));
                     provider.getTableFeaturesCommiter().update(tableFeaturesII, tableFeaturesItem, null, nodeIdentity);
                 }
 
@@ -546,6 +656,52 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 LOG.error("Stale entity removal failed {}", t);
             }
         });
+    }
+
+    private static Flow createDelAllFlow(){
+        FlowBuilder flowBuilder = new FlowBuilder();
+        flowBuilder.setTableId(OFConstants.OFPTT_ALL);
+        LOG.info(" Called because of flow removed method");
+        return flowBuilder.build();
+
+    }
+    private static Group createDelAllGroup(){
+        GroupBuilder groupBuilder = new GroupBuilder();
+        groupBuilder.setGroupType(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes.GroupAll);
+        groupBuilder.setGroupId(new GroupId(OFConstants.OFPG_ALL));
+        LOG.info(" Called because of group removed method");
+        return groupBuilder.build();
+
+    }
+
+    private List<Message> createMessages(NodeRef nodeRef , Optional<FlowCapableNode> flowNode) {
+        List<Message> messages  = new ArrayList<>();
+
+        messages.add(new MessageBuilder().setNode(nodeRef).setBundleInnerMessage(
+                new BundleRemoveFlowCaseBuilder()
+                        .setRemoveFlowCaseData(new RemoveFlowCaseDataBuilder(createDelAllFlow()).build()).build()).build());
+
+        messages.add(new MessageBuilder().setNode(nodeRef).setBundleInnerMessage(
+                new BundleRemoveGroupCaseBuilder()
+                        .setRemoveGroupCaseData(new RemoveGroupCaseDataBuilder(createDelAllGroup()).build()).build()).build());
+
+        for(Group gr : flowNode.get().getGroup()) {
+            messages.add(new MessageBuilder().setNode(nodeRef).setBundleInnerMessage(
+                    new BundleAddGroupCaseBuilder()
+                            .setAddGroupCaseData(new AddGroupCaseDataBuilder(gr).build()).build()).build());
+        }
+
+        for(Table table :flowNode.get().getTable()) {
+            for(Flow flow : table.getFlow()){
+                messages.add(new MessageBuilder().setNode(nodeRef).setBundleInnerMessage(
+                        new BundleAddFlowCaseBuilder()
+                                .setAddFlowCaseData(new AddFlowCaseDataBuilder(flow).build()).build()).build());
+            }
+        }
+
+        LOG.debug("createMessages() passing {}", messages);
+
+        return messages;
     }
 }
 
