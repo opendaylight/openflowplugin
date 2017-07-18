@@ -70,6 +70,7 @@ public abstract class FRMTest extends AbstractDataBrokerTest {
         cfgBuilder.setDisableReconciliation(false);
         cfgBuilder.setStaleMarkingEnabled(false);
         cfgBuilder.setReconciliationRetryCount(0);
+        cfgBuilder.setEnableBundleBasedRecon(false);
         return cfgBuilder.build();
     }
 
@@ -87,6 +88,9 @@ public abstract class FRMTest extends AbstractDataBrokerTest {
 
         Mockito.when(configurationService.getProperty(Mockito.eq("reconciliation-retry-count"), Mockito.any()))
                 .thenReturn(config.getReconciliationRetryCount());
+
+        Mockito.when(configurationService.getProperty(Mockito.eq("enable-bundle-based-recon"), Mockito.any()))
+                .thenReturn(config.isEnableBundleBasedRecon());
 
         return configurationService;
     }

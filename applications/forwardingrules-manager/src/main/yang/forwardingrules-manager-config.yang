@@ -26,5 +26,10 @@ module forwarding-rules-manager-config {
             type uint16;
             default 5;
         }
+
+        leaf enable-bundle-based-recon {
+            type boolean;
+            default false;
+        }
     }
 }
