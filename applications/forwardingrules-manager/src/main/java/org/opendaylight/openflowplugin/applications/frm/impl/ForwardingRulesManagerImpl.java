@@ -35,6 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.Sal
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
@@ -64,6 +65,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private final SalTableService salTableService;
     private final ClusterSingletonServiceProvider clusterSingletonServiceProvider;
     private final NotificationProviderService notificationService;
+    private final SalBundleService salBundleService;
     private final AutoCloseable configurationServiceRegistration;
     private ForwardingRulesCommiter<Flow> flowListener;
     private ForwardingRulesCommiter<Group> groupListener;
@@ -75,6 +77,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private boolean disableReconciliation;
     private boolean staleMarkingEnabled;
     private int reconciliationRetryCount;
+    private boolean isBundleBasedReconciliationEnabled;
 
     public ForwardingRulesManagerImpl(final DataBroker dataBroker,
                                       final RpcConsumerRegistry rpcRegistry,
@@ -85,7 +88,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         disableReconciliation = config.isDisableReconciliation();
         staleMarkingEnabled = config.isStaleMarkingEnabled();
         reconciliationRetryCount = config.getReconciliationRetryCount();
-
+        isBundleBasedReconciliationEnabled = config.isBundleBasedReconciliationEnabled();
         this.configurationServiceRegistration = configurationService.registerListener(this);
         this.dataService = Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
         this.clusterSingletonServiceProvider = Preconditions.checkNotNull(clusterSingletonService,
@@ -103,6 +106,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                 "RPC SalMeterService not found.");
         this.salTableService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalTableService.class),
                 "RPC SalTableService not found.");
+        this.salBundleService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalBundleService.class),
+                "RPC SalBundlService not found.");
     }
 
     @Override
@@ -208,6 +213,11 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     }
 
     @Override
+    public SalBundleService getSalBundleService() {
+        return salBundleService;
+    }
+
+    @Override
     public ForwardingRulesCommiter<Flow> getFlowCommiter() {
         return flowListener;
     }
@@ -248,6 +258,12 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     }
 
     @Override
+    public boolean isBundleBasedReconciliationEnabled() {
+        return isBundleBasedReconciliationEnabled;
+    }
+
+
+    @Override
     public boolean isNodeOwner(InstanceIdentifier<FlowCapableNode> ident) {
         return Objects.nonNull(ident) && deviceMastershipManager.isDeviceMastered(ident.firstKeyOf(Node.class).getId());
     }
@@ -269,6 +285,9 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                     break;
                 case RECONCILIATION_RETRY_COUNT:
                     reconciliationRetryCount = Integer.valueOf(propertyValue);
+                    break;
+                case ENABLE_BUNDLE_BASED_RECONCILIATION:
+                    isBundleBasedReconciliationEnabled = Boolean.valueOf(propertyValue);
                     break;
             }
         });
