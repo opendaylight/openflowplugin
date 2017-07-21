@@ -10,10 +10,8 @@ package org.opendaylight.openflowplugin.api.openflow.statistics;
 
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
-import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationProperty;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 
 /**
  * Manager to start or stop scheduling statistics.
@@ -31,15 +29,6 @@ public interface StatisticsManager extends OFPManager {
      * @param deviceInfo for this device should be stopped statistics gathering
      */
     void stopScheduling(DeviceInfo deviceInfo);
-
-    /**
-     * If plugin uses reconciliation framework. This is shortcut to
-     * {@link OpenflowProviderConfig#isUsingReconciliationFramework()}
-     * to avoid push {@link OpenflowProviderConfig} to each context.
-     * @return {@link ConfigurationProperty#USING_RECONCILIATION_FRAMEWORK}
-     * @since 0.5.0 Nitrogen
-     */
-    boolean isUsingReconciliationFramework();
 
     @Override
     void close();

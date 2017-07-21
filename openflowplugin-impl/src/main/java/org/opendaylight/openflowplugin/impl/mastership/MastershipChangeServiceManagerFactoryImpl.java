@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.mastership;
 
+import com.google.common.base.Verify;
 import com.google.common.util.concurrent.FutureCallback;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,6 +18,7 @@ import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeR
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeService;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManagerFactory;
+import org.opendaylight.openflowplugin.api.openflow.mastership.ReconciliationFrameworkEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,11 +30,14 @@ public class MastershipChangeServiceManagerFactoryImpl implements MastershipChan
         return new MastershipChangeServiceManagerImpl();
     }
 
-    private static final class MastershipChangeServiceManagerImpl implements MastershipChangeServiceManager {
+    private static final class MastershipChangeServiceManagerImpl implements
+            MastershipChangeServiceManager,
+            ReconciliationFrameworkEvent {
 
         private static final Logger LOG = LoggerFactory.getLogger(MastershipChangeServiceManagerImpl.class);
 
         private final List<MastershipChangeService> serviceGroup = new LinkedList<>();
+        private ReconciliationFrameworkEvent rfRegistration;
         private MasterChecker masterChecker;
 
         @Nonnull
@@ -48,6 +53,15 @@ public class MastershipChangeServiceManagerFactoryImpl implements MastershipChan
             }
             return registration;
 
+        }
+
+        @Override
+        public void reconciliationFrameworkRegistration(@Nonnull ReconciliationFrameworkEvent reconciliationFrameworkEvent) {
+            if (rfRegistration != null) {
+                LOG.warn("Reconciliation framework listener already registered.");
+            } else {
+                rfRegistration = reconciliationFrameworkEvent;
+            }
         }
 
         @Override
@@ -71,8 +85,9 @@ public class MastershipChangeServiceManagerFactoryImpl implements MastershipChan
         }
 
         @Override
-        public void becomeMasterBeforeSubmittedDS(@Nonnull DeviceInfo deviceInfo, @Nonnull FutureCallback<ResultState> callback) {
-            serviceGroup.forEach(mastershipChangeService -> mastershipChangeService.onDevicePrepared(deviceInfo, callback));
+        public void becomeMasterBeforeSubmittedDS(@Nonnull DeviceInfo deviceInfo,
+                                                  @Nonnull FutureCallback<ResultState> callback) {
+            rfRegistration.onDevicePrepared(deviceInfo, callback);
         }
 
         @Override

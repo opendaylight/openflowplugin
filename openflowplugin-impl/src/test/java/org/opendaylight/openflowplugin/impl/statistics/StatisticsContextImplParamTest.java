@@ -69,7 +69,8 @@ public class StatisticsContextImplParamTest extends StatisticsContextImpMockInit
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         final StatisticsContextImpl<MultipartReply> statisticsContext = new StatisticsContextImpl<MultipartReply>(
                 true, mockedDeviceContext ,convertorManager, mockedStatisticsManager,
-                MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext));
+                MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext),
+                false);
 
         final ListenableFuture<RpcResult<List<MultipartReply>>> rpcResult = immediateFuture(RpcResultBuilder.success(Collections.<MultipartReply>emptyList()).build());
         when(mockedStatisticsGatheringService.getStatisticsOfType(any(EventIdentifier.class), any(MultipartType
