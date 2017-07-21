@@ -136,7 +136,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         final long statsTimeoutSec = averageTime > 0 ? 3 * averageTime : DEFAULT_STATS_TIMEOUT_SEC;
         final TimerTask timerTask = timeout -> {
             if (!deviceStatisticsCollectionFuture.isDone()) {
-                LOG.info("Statistics collection for node {} still in progress even after {} secs", deviceInfo.getLOGValue(), statsTimeoutSec);
+                LOG.info("Statistics collection for node {} still in progress even after {} secs", deviceInfo, statsTimeoutSec);
                 deviceStatisticsCollectionFuture.cancel(true);
             }
         };
@@ -289,11 +289,6 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     }
 
     @Override
-    public boolean isUsingReconciliationFramework() {
-        return config.isUsingReconciliationFramework();
-    }
-
-    @Override
     public void close() {
         istStatisticsFullyDisabled = true;
 
@@ -321,14 +316,16 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                                 deviceContext,
                                 converterExecutor,
                                 this,
-                                statisticsWriterProvider) :
+                                statisticsWriterProvider,
+                                config.isUsingReconciliationFramework()) :
                         new StatisticsContextImpl<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
                                 .MultipartReply>(
                                 isStatisticsEnabled(),
                                 deviceContext,
                                 converterExecutor,
                                 this,
-                                statisticsWriterProvider);
+                                statisticsWriterProvider,
+                                config.isUsingReconciliationFramework());
         contexts.putIfAbsent(deviceContext.getDeviceInfo(), statisticsContext);
 
         return statisticsContext;
@@ -338,7 +335,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     public void onDeviceRemoved(final DeviceInfo deviceInfo) {
         contexts.remove(deviceInfo);
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Statistics context removed for node {}", deviceInfo.getLOGValue());
+            LOG.debug("Statistics context removed for node {}", deviceInfo);
         }
     }
 }

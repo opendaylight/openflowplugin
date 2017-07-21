@@ -58,7 +58,8 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
     private void initStatisticsContext() {
         statisticsContext = new StatisticsContextImpl<MultipartReply>(
                 true, mockedDeviceContext, convertorManager, mockedStatisticsManager,
-                MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext));
+                MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext),
+                false);
 
         statisticsContext.setStatisticsGatheringService(mockedStatisticsGatheringService);
         statisticsContext.setStatisticsGatheringOnTheFlyService(mockedStatisticsOnFlyGatheringService);
@@ -79,7 +80,8 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
     public void testClose() throws Exception {
         final StatisticsContextImpl<MultipartReply> statisticsContext = new StatisticsContextImpl<MultipartReply>(
                 true, mockedDeviceContext, convertorManager, mockedStatisticsManager,
-                MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext));
+                MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext),
+                false);
 
         final RequestContext<Object> requestContext = statisticsContext.createRequestContext();
         statisticsContext.close();
