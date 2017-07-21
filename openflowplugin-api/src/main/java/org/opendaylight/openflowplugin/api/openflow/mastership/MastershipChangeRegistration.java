@@ -17,6 +17,7 @@ package org.opendaylight.openflowplugin.api.openflow.mastership;
  *     <li><i>onLoseOwnership</i>
  * </ul>
  * @see MastershipChangeService
+ * @see ReconciliationFrameworkEvent
  * @since 0.5.0 Nitrogen
  */
 public interface MastershipChangeRegistration extends AutoCloseable {

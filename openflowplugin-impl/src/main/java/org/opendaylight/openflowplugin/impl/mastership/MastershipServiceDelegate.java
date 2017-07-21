@@ -7,13 +7,11 @@
  */
 package org.opendaylight.openflowplugin.impl.mastership;
 
-import com.google.common.util.concurrent.FutureCallback;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeRegistration;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeService;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
 
 public class MastershipServiceDelegate implements MastershipChangeService, MastershipChangeRegistration {
 
@@ -34,12 +32,6 @@ public class MastershipServiceDelegate implements MastershipChangeService, Maste
     @Override
     public void onLoseOwnership(@Nonnull final DeviceInfo deviceInfo) {
         this.service.onLoseOwnership(deviceInfo);
-    }
-
-    @Override
-    public void onDevicePrepared(@Nonnull final DeviceInfo deviceInfo,
-                                 @Nonnull final FutureCallback<ResultState> callback) {
-        this.service.onDevicePrepared(deviceInfo, callback);
     }
 
     @Override

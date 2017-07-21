@@ -65,6 +65,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     private final MultipartWriterProvider statisticsWriterProvider;
     private final DeviceInfo deviceInfo;
     private final StatisticsManager myManager;
+    private final boolean isUsingReconciliationFramework;
     @GuardedBy("collectionStatTypeLock")
     private List<MultipartType> collectingStatType;
     private StatisticsGatheringService<T> statisticsGatheringService;
@@ -80,7 +81,8 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
                           @Nonnull final DeviceContext deviceContext,
                           @Nonnull final ConvertorExecutor convertorExecutor,
                           @Nonnull final StatisticsManager myManager,
-                          @Nonnull final MultipartWriterProvider statisticsWriterProvider) {
+                          @Nonnull final MultipartWriterProvider statisticsWriterProvider,
+                          boolean isUsingReconciliationFramework) {
         this.deviceContext = deviceContext;
         this.devState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         this.isStatisticsPollingOn = isStatisticsPollingOn;
@@ -94,6 +96,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         this.myManager = myManager;
         this.lastDataGathering = null;
         this.statisticsWriterProvider = statisticsWriterProvider;
+        this.isUsingReconciliationFramework = isUsingReconciliationFramework;
     }
 
     @Override
@@ -217,7 +220,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     public void close() {
         if (ContextState.TERMINATION.equals(state)) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("StatisticsContext for node {} is already in TERMINATION state.", getDeviceInfo().getLOGValue());
+                LOG.debug("StatisticsContext for node {} is already in TERMINATION state.", getDeviceInfo());
             }
         } else {
             this.state = ContextState.TERMINATION;
@@ -248,7 +251,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
                 .transformAsync(prevFuture, (AsyncFunction<Boolean, Boolean>) result -> {
                     LOG.debug("Status of previous stat iteration for node {}: {}", deviceInfo.getLOGValue(), result);
                     LOG.debug("Stats iterating to next type for node {} of type {}",
-                            deviceInfo.getLOGValue(),
+                            deviceInfo,
                             multipartType);
 
                     return chooseStat(multipartType);
@@ -310,7 +313,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
 
     @Override
     public ListenableFuture<Void> closeServiceInstance() {
-        LOG.info("Stopping statistics context cluster services for node {}", deviceInfo.getLOGValue());
+        LOG.info("Stopping statistics context cluster services for node {}", deviceInfo);
 
         return Futures.transform(Futures.immediateFuture(null), new Function<Void, Void>() {
             @Nullable
@@ -335,7 +338,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
 
     @Override
     public void stopGatheringData() {
-        LOG.info("Stopping running statistics gathering for node {}", deviceInfo.getLOGValue());
+        LOG.info("Stopping running statistics gathering for node {}", deviceInfo);
 
         if (Objects.nonNull(lastDataGathering) && !lastDataGathering.isDone() && !lastDataGathering.isCancelled()) {
             lastDataGathering.cancel(true);
@@ -357,7 +360,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
 
     @Override
     public void instantiateServiceInstance() {
-        LOG.info("Starting statistics context cluster services for node {}", deviceInfo.getLOGValue());
+        LOG.info("Starting statistics context cluster services for node {}", deviceInfo);
         this.statListForCollectingInitialization();
 
         Futures.addCallback(this.gatherDynamicData(), new FutureCallback<Boolean>() {
@@ -368,7 +371,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
                         ContextChainMastershipState.INITIAL_GATHERING
                 );
 
-                if (!myManager.isUsingReconciliationFramework()) {
+                if (!isUsingReconciliationFramework) {
                     if (deviceContext.initialSubmitTransaction()) {
                         contextChainMastershipWatcher.onMasterRoleAcquired(
                                 deviceInfo,
