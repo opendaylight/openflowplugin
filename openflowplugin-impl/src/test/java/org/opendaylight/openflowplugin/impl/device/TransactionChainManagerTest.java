@@ -145,7 +145,7 @@ public class TransactionChainManagerTest {
      */
     @Test
     public void testSubmitTransactionFailed() throws Exception {
-        Mockito.when(writeTx.submit()).thenReturn(Futures.<Void, TransactionCommitFailedException>immediateFailedCheckedFuture(new TransactionCommitFailedException("mock")));
+        Mockito.when(writeTx.submit()).thenReturn(Futures.immediateFailedCheckedFuture(new TransactionCommitFailedException("mock")));
         final Node data = new NodeBuilder().setId(nodeId).build();
         txChainManager.initialSubmitWriteTransaction();
         txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data, false);
@@ -154,6 +154,22 @@ public class TransactionChainManagerTest {
         Mockito.verify(txChain).newWriteOnlyTransaction();
         Mockito.verify(writeTx).put(LogicalDatastoreType.CONFIGURATION, path, data, false);
         Mockito.verify(writeTx).submit();
+    }
+
+    @Test
+    public void testSubmitTransactionFailed2() throws Exception {
+        final Node data = new NodeBuilder().setId(nodeId).build();
+        txChainManager.initialSubmitWriteTransaction();
+        txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data, false);
+        txChainManager.submitWriteTransaction();
+
+        Mockito.when(writeTx.submit()).thenReturn(Futures.immediateFailedCheckedFuture(new TransactionCommitFailedException("mock")));
+        txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data, false);
+        txChainManager.submitWriteTransaction();
+
+        Mockito.verify(txChain, Mockito.times(2)).newWriteOnlyTransaction();
+        Mockito.verify(writeTx, Mockito.times(2)).put(LogicalDatastoreType.CONFIGURATION, path, data, false);
+        Mockito.verify(writeTx, Mockito.times(2)).submit();
     }
 
     /**
