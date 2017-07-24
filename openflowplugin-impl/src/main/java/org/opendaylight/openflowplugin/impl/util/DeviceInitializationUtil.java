@@ -72,7 +72,7 @@ public class DeviceInitializationUtil {
      * @param deviceInfo device info
      * @param nrOfTables number of tables
      */
-    public static void makeEmptyTables(final TxFacade txFacade, final DeviceInfo deviceInfo, final Short nrOfTables) {
+    public static void makeEmptyTables(final TxFacade txFacade, final DeviceInfo deviceInfo, final short nrOfTables) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("About to create {} empty tables for node {}.", nrOfTables, deviceInfo.getLOGValue());
         }

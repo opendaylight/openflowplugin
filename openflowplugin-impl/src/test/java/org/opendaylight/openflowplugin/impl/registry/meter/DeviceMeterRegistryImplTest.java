@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.registry.meter;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,7 +53,6 @@ public class DeviceMeterRegistryImplTest {
         Assert.assertEquals(1, deviceMeterRegistry.getAllMeterIds().size());
     }
 
-
     @Test
     public void testClose() throws Exception {
         deviceMeterRegistry.addMark(meterId);
@@ -64,5 +64,13 @@ public class DeviceMeterRegistryImplTest {
         deviceMeterRegistry.processMarks();
         Assert.assertEquals(1, deviceMeterRegistry.getAllMeterIds().size());
 
+    }
+
+    @Test
+    public void testForEach() throws Exception {
+        final AtomicInteger counter = new AtomicInteger(0);
+        deviceMeterRegistry.store(meterId2);
+        deviceMeterRegistry.forEach(meter -> counter.incrementAndGet());
+        Assert.assertEquals(2, counter.get());
     }
 }
