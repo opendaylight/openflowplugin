@@ -17,9 +17,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -57,7 +55,6 @@ public class ContextChainImpl implements ContextChain {
     private final ConnectionContext primaryConnection;
     private AutoCloseable registration;
     private CONTEXT_STATE state = CONTEXT_STATE.INITIALIZATION;
-    private Future<?> initFuture;
 
     private volatile ContextChainState contextChainState = ContextChainState.UNDEFINED;
 
@@ -79,18 +76,17 @@ public class ContextChainImpl implements ContextChain {
     public void instantiateServiceInstance() {
         LOG.info("Starting clustering services for node {}", deviceInfo);
 
-        initFuture = executorService.submit(() -> {
-            try {
-                contexts.forEach(context -> {
-                    if (ConnectionContext.CONNECTION_STATE.WORKING.equals(primaryConnection.getConnectionState())) {
-                        context.instantiateServiceInstance();
-                    }
-                });
-                LOG.info("Started clustering services for node {}", deviceInfo);
-            } catch (final Exception ex) {
-                mastershipChangeListener.onNotAbleToStartMastershipMandatory(deviceInfo, ex.getMessage());
-            }
-        });
+        try {
+            contexts.forEach(context -> {
+                if (ConnectionContext.CONNECTION_STATE.WORKING.equals(primaryConnection.getConnectionState())) {
+                    context.instantiateServiceInstance();
+                }
+            });
+            LOG.info("Started clustering services for node {}", deviceInfo);
+        } catch (final Exception ex) {
+            executorService.submit(() -> mastershipChangeListener
+                    .onNotAbleToStartMastershipMandatory(deviceInfo, ex.getMessage()));
+        }
     }
 
     @Override
@@ -131,26 +127,10 @@ public class ContextChainImpl implements ContextChain {
         state = CONTEXT_STATE.TERMINATION;
         mastershipChangeListener.onSlaveRoleAcquired(deviceInfo);
 
-        // If we somehow have initialization still running, cancel it
-        if (Objects.nonNull(initFuture)) {
-            if (!initFuture.isCancelled() && !initFuture.isDone()) {
-                LOG.info("Waiting for finishing the running initialization process for node {}", deviceInfo);
-
-                try {
-                    initFuture.get();
-                } catch (InterruptedException | ExecutionException e) {
-                    LOG.warn("Failed to await running initialization for node {}: {}", deviceInfo, e);
-                }
-            }
-
-            initFuture = null;
-        }
-
         // Close all connections to devices
         auxiliaryConnections.forEach(connectionContext -> connectionContext.closeConnection(false));
         auxiliaryConnections.clear();
         primaryConnection.closeConnection(true);
-
 
         // Close all contexts (device, statistics, rpc)
         contexts.forEach(OFPContext::close);
