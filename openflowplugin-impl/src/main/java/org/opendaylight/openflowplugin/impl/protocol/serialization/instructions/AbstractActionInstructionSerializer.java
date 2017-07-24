@@ -15,6 +15,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegist
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.util.ActionUtil;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.OrderComparator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.ActionList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 
@@ -38,7 +39,8 @@ public abstract class AbstractActionInstructionSerializer extends AbstractInstru
             int lengthIndex = outBuffer.writerIndex();
             outBuffer.writeShort(EncodeConstants.EMPTY_LENGTH);
             outBuffer.writeZero(InstructionConstants.PADDING_IN_ACTIONS_INSTRUCTION);
-            ActionUtil.sortActions(as).forEach(a -> ActionUtil.writeAction(a.getAction(), version, registry, outBuffer));
+            as.stream().sorted(OrderComparator.build()).forEach(a -> ActionUtil
+                    .writeAction(a.getAction(), version, registry, outBuffer));
             outBuffer.setShort(lengthIndex, outBuffer.writerIndex() - startIndex);
             return actions;
         }).orElseGet(() -> {
