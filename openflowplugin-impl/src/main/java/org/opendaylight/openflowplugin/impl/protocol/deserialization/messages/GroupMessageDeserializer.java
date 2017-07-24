@@ -8,11 +8,10 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.messages;
 
+import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -29,8 +28,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupModCommand;
-
-import io.netty.buffer.ByteBuf;
 
 public class GroupMessageDeserializer implements OFDeserializer<GroupMessage>, DeserializerRegistryInjector {
 
@@ -92,7 +89,7 @@ public class GroupMessageDeserializer implements OFDeserializer<GroupMessage>, D
             buckets.add(bucket.build());
         }
 
-        Collections.sort(buckets, COMPARATOR);
+        buckets.sort(COMPARATOR);
         return builder
             .setBuckets(new BucketsBuilder()
                 .setBucket(buckets)
