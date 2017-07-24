@@ -96,6 +96,7 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
             @Nullable
             @Override
             public Void apply(@Nullable final Boolean input) {
+                LOG.debug("Writing physical port information for {}", deviceInfo.getLOGValue());
                 writePhyPortInformation(deviceContext);
                 return null;
             }

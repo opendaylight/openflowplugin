@@ -83,8 +83,8 @@ public class ConfigurationServiceFactoryImpl implements ConfigurationServiceFact
                     .build());
 
             LOG.info("Loading configuration from '{}' configuration file", OFConstants.CONFIG_FILE_ID);
-            Optional.ofNullable(bundleContext.getServiceReference(ConfigurationAdmin.class.getName())).ifPresent(serviceReference -> {
-                final ConfigurationAdmin configurationAdmin = (ConfigurationAdmin) bundleContext.getService(serviceReference);
+            Optional.ofNullable(bundleContext.getServiceReference(ConfigurationAdmin.class)).ifPresent(serviceReference -> {
+                final ConfigurationAdmin configurationAdmin = bundleContext.getService(serviceReference);
 
                 try {
                     final Configuration configuration = configurationAdmin.getConfiguration(OFConstants.CONFIG_FILE_ID);

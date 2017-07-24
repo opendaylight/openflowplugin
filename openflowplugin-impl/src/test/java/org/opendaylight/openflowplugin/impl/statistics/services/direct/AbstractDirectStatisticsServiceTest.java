@@ -49,7 +49,7 @@ public abstract class AbstractDirectStatisticsServiceTest {
     protected static final Long PORT_NO = 1L;
     protected static final BigInteger DATAPATH_ID = BigInteger.TEN;
     protected static final short OF_VERSION = OFConstants.OFP_VERSION_1_3;
-    protected static final String NODE_ID = "openflow:1";
+    protected static final String NODE_ID = "openflow:10";
 
     @Mock
     protected RequestContextStack requestContextStack;
