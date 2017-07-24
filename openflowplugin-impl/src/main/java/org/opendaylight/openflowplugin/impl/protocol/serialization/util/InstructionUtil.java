@@ -14,7 +14,6 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderSerializer
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 
 /**
@@ -37,7 +36,7 @@ public class InstructionUtil {
 
         registry.<Instruction, OFSerializer<Instruction>>getSerializer(
             new MessageTypeKey<>(
-                EncodeConstants.OF13_VERSION_ID,
+                version,
                 (Class<Instruction>) instruction.getImplementedInterface()))
             .serialize(instruction, outBuffer);
     }
@@ -58,7 +57,7 @@ public class InstructionUtil {
 
         registry.<Instruction, HeaderSerializer<Instruction>>getSerializer(
             new MessageTypeKey<>(
-                EncodeConstants.OF13_VERSION_ID,
+                version,
                 (Class<Instruction>) instruction.getImplementedInterface()))
             .serializeHeader(instruction, outBuffer);
     }

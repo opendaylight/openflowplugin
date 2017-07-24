@@ -23,8 +23,10 @@ public final class RequestContextUtil {
     }
 
 
-    public static <T> ListenableFuture<RpcResult<T>> closeRequestContextWithRpcError(final RequestContext<T> requestContext, final String errorMessage) {
-        RpcResultBuilder<T> rpcResultBuilder = RpcResultBuilder.<T>failed().withRpcError(RpcResultBuilder.newError(RpcError.ErrorType.APPLICATION, "", errorMessage));
+    public static <T> ListenableFuture<RpcResult<T>> closeRequestContextWithRpcError(final RequestContext<T> requestContext,
+                                                                                     final String errorMessage) {
+        RpcResultBuilder<T> rpcResultBuilder = RpcResultBuilder.<T>failed().withRpcError(RpcResultBuilder
+                .newError(RpcError.ErrorType.APPLICATION, "", errorMessage));
         requestContext.setResult(rpcResultBuilder.build());
         closeRequestContext(requestContext);
         return requestContext.getFuture();
