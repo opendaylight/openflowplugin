@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.deserialization;
 
+import org.junit.After;
 import org.junit.Before;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
@@ -42,6 +43,12 @@ public abstract class AbstractDeserializerTest {
         DeserializerInjector.injectDeserializers(provider);
         MessageDeserializerInjector.injectLegacyDeserializers(provider);
         init();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        DeserializerInjector.revertDeserializers(provider);
+        MessageDeserializerInjector.revertLegacyDeserializers(provider);
     }
 
     protected DeserializationFactory getFactory() {
