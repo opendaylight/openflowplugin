@@ -7,7 +7,9 @@
  */
 package org.opendaylight.openflowplugin.impl.rpc;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.concurrent.ConcurrentMap;
@@ -114,6 +116,14 @@ public class RpcManagerImplTest {
                 Matchers.any(), Matchers.any(RpcService.class)))
                 .thenReturn(routedRpcRegistration);
         Mockito.when(contexts.remove(deviceInfo)).thenReturn(removedContexts);
+    }
+
+    @Test
+    public void createContext() throws Exception {
+        final RpcContext context = rpcManager.createContext(deviceContext);
+        assertEquals(deviceInfo, context.getDeviceInfo());
+        rpcManager.close();
+        verify(removedContexts, times(1)).close();
     }
 
     @Test

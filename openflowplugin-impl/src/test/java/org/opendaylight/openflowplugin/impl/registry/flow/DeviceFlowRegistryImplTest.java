@@ -21,6 +21,7 @@ import com.google.common.util.concurrent.Futures;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.junit.Assert;
@@ -230,6 +231,13 @@ public class DeviceFlowRegistryImplTest {
         assertNotNull("index1 parsing failed: " + alienFlowId1, index1);
         assertNotNull("index2 parsing failed: " + alienFlowId2, index2);
         assertTrue(index1 < index2);
+    }
+
+    @Test
+    public void testForEach() throws Exception {
+        final AtomicInteger counter = new AtomicInteger(0);
+        deviceFlowRegistry.forEach(key -> counter.incrementAndGet());
+        Assert.assertEquals(1, counter.get());
     }
 
     private static Integer parseIndex(String alienFlowIdValue) {
