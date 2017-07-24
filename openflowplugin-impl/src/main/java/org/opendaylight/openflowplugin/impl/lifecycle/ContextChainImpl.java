@@ -16,15 +16,14 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
+import org.opendaylight.openflowplugin.api.ConnectionException;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -57,7 +56,6 @@ public class ContextChainImpl implements ContextChain {
     private final ConnectionContext primaryConnection;
     private AutoCloseable registration;
     private ContextState state = ContextState.INITIALIZATION;
-    private Future<?> initFuture;
 
     private volatile ContextChainState contextChainState = ContextChainState.UNDEFINED;
 
@@ -79,18 +77,13 @@ public class ContextChainImpl implements ContextChain {
     public void instantiateServiceInstance() {
         LOG.info("Starting clustering services for node {}", deviceInfo);
 
-        initFuture = executorService.submit(() -> {
-            try {
-                contexts.forEach(context -> {
-                    if (ConnectionContext.CONNECTION_STATE.WORKING.equals(primaryConnection.getConnectionState())) {
-                        context.instantiateServiceInstance();
-                    }
-                });
-                LOG.info("Started clustering services for node {}", deviceInfo);
-            } catch (final Exception ex) {
-                contextChainMastershipWatcher.onNotAbleToStartMastershipMandatory(deviceInfo, ex.getMessage());
-            }
-        });
+        try {
+            contexts.forEach(this::initializeContextService);
+            LOG.info("Started clustering services for node {}", deviceInfo);
+        } catch (final Exception ex) {
+            executorService.submit(() -> contextChainMastershipWatcher
+                    .onNotAbleToStartMastershipMandatory(deviceInfo, ex.getMessage()));
+        }
     }
 
     @Override
@@ -101,7 +94,7 @@ public class ContextChainImpl implements ContextChain {
         final ListenableFuture<List<Void>> servicesToBeClosed = Futures
                 .successfulAsList(Lists.reverse(contexts)
                         .stream()
-                        .map(OFPContext::closeServiceInstance)
+                        .map(this::closeContextService)
                         .collect(Collectors.toList()));
 
         return Futures.transform(servicesToBeClosed, (input) -> {
@@ -126,26 +119,10 @@ public class ContextChainImpl implements ContextChain {
         state = ContextState.TERMINATION;
         contextChainMastershipWatcher.onSlaveRoleAcquired(deviceInfo);
 
-        // If we somehow have initialization still running, cancel it
-        if (Objects.nonNull(initFuture)) {
-            if (!initFuture.isCancelled() && !initFuture.isDone()) {
-                LOG.info("Waiting for finishing the running initialization process for node {}", deviceInfo);
-
-                try {
-                    initFuture.get();
-                } catch (InterruptedException | ExecutionException e) {
-                    LOG.warn("Failed to await running initialization for node {}: {}", deviceInfo, e);
-                }
-            }
-
-            initFuture = null;
-        }
-
         // Close all connections to devices
         auxiliaryConnections.forEach(connectionContext -> connectionContext.closeConnection(false));
         auxiliaryConnections.clear();
         primaryConnection.closeConnection(true);
-
 
         // Close all contexts (device, statistics, rpc)
         contexts.forEach(OFPContext::close);
@@ -290,6 +267,29 @@ public class ContextChainImpl implements ContextChain {
                     .map(ContextChainStateListener.class::cast)
                     .forEach(listener -> listener.onStateAcquired(contextChainState));
         }
+    }
+
+    private void initializeContextService(final OFPContext context) {
+        if (ConnectionContext.CONNECTION_STATE.WORKING.equals(primaryConnection.getConnectionState())) {
+            context.instantiateServiceInstance();
+        } else {
+            LOG.warn("Device connection for node {} doesn't exist anymore. Primary connection status: {}",
+                    deviceInfo,
+                    primaryConnection.getConnectionState());
+        }
+    }
+
+    private ListenableFuture<Void> closeContextService(final OFPContext context) {
+        if (ConnectionContext.CONNECTION_STATE.RIP.equals(primaryConnection.getConnectionState())) {
+            final String errMsg = String
+                    .format("Device connection for node %s doesn't exist anymore. Primary connection status: %s",
+                            deviceInfo.toString(),
+                            primaryConnection.getConnectionState());
+
+            return Futures.immediateFailedFuture(new ConnectionException(errMsg));
+        }
+
+        return context.closeServiceInstance();
     }
 
     private void unMasterMe() {
