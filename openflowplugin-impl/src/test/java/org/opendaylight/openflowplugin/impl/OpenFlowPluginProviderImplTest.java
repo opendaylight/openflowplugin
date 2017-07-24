@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.Futures;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -86,7 +87,8 @@ public class OpenFlowPluginProviderImplTest {
         when(writeTransaction.submit()).thenReturn(Futures.immediateCheckedFuture(null));
         when(entityOwnershipService.registerListener(any(), any())).thenReturn(entityOwnershipListenerRegistration);
         when(rpcProviderRegistry.addRpcImplementation(eq(StatisticsManagerControlService.class), any())).thenReturn(controlServiceRegistration);
-        when(switchConnectionProvider.startup()).thenReturn(Futures.immediateCheckedFuture(null));
+        when(switchConnectionProvider.startup()).thenReturn(Futures.immediateFuture(true));
+        when(switchConnectionProvider.shutdown()).thenReturn(Futures.immediateFuture(true));
         when(configurationService.getProperty(eq(ConfigurationProperty.USE_SINGLE_LAYER_SERIALIZATION.toString()), any())).thenReturn(USE_SINGLE_LAYER_SERIALIZATION);
         when(configurationService.getProperty(eq(ConfigurationProperty.THREAD_POOL_MIN_THREADS.toString()), any())).thenReturn(THREAD_POOL_MIN_THREADS);
         when(configurationService.getProperty(eq(ConfigurationProperty.THREAD_POOL_MAX_THREADS.toString()), any())).thenReturn(THREAD_POOL_MAX_THREADS);
@@ -104,6 +106,11 @@ public class OpenFlowPluginProviderImplTest {
                 clusterSingletonServiceProvider,
                 entityOwnershipService,
                 mastershipChangeServiceManager);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        provider.close();
     }
 
     @Test

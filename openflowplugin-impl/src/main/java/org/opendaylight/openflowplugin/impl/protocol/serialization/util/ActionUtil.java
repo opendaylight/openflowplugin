@@ -8,9 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.serialization.util;
 
-import com.google.common.collect.Ordering;
 import io.netty.buffer.ByteBuf;
-import java.util.List;
 import java.util.Optional;
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
@@ -22,7 +20,6 @@ import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.OrderComparator;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
@@ -35,18 +32,6 @@ import org.slf4j.LoggerFactory;
  */
 public class ActionUtil {
     private static final Logger LOG = LoggerFactory.getLogger(ActionUtil.class);
-
-    private static final Ordering<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> ACTION_ORDERING =
-            Ordering.from(OrderComparator.<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>build());
-
-    /**
-     * Sort actions based on order
-     * @param actions actions
-     * @return sorted copy of actions
-     */
-    public static List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> sortActions(final Iterable<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actions) {
-        return ACTION_ORDERING.sortedCopy(actions);
-    }
 
     /**
      * Serialize OpenFlow action, using extension converter if available
