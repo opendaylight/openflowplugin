@@ -13,7 +13,6 @@ import io.netty.buffer.ByteBuf;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -25,8 +24,8 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.impl.protocol.serialization.util.ActionUtil;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.util.InstructionUtil;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.OrderComparator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.ActionList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.VlanCfi;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushVlanActionCaseBuilder;
@@ -75,12 +74,6 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
     private static final byte PADDING_IN_FLOW_MOD_MESSAGE = 2;
     private static final FlowModFlags DEFAULT_FLAGS = new FlowModFlags(false, false, false, false, false);
     private static final Integer PUSH_VLAN = 0x8100;
-
-    private static final Comparator<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026
-                .instruction.list.Instruction> COMPARATOR = (inst1, inst2) -> {
-        if (inst1.getOrder() == null || inst2.getOrder() == null) return 0;
-        return inst1.getOrder().compareTo(inst2.getOrder());
-    };
 
     private static final VlanMatch VLAN_MATCH_FALSE = new VlanMatchBuilder()
             .setVlanId(new VlanIdBuilder()
@@ -190,7 +183,7 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
                 .ifPresent(is -> is
                         .stream()
                         .filter(Objects::nonNull)
-                        .sorted(COMPARATOR)
+                        .sorted(OrderComparator.build())
                         .map(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Instruction::getInstruction)
                         .filter(Objects::nonNull)
                         .map(i -> protocol.flatMap(p -> updateInstruction(i, p)).orElse(i))
@@ -274,8 +267,8 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
                             ? Optional
                             .ofNullable(ApplyActionsCase.class.cast(i.getInstruction()).getApplyActions())
                             .flatMap(as -> Optional.ofNullable(as.getAction()))
-                            .map(a -> ActionUtil.sortActions(a)
-                                    .stream()
+                            .map(a -> a.stream()
+                                    .sorted(OrderComparator.build())
                                     .flatMap(action -> {
                                 final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112
                                         .action.list.Action> actions = new ArrayList<>();

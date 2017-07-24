@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.registry.group;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,7 +53,6 @@ public class DeviceGroupRegistryImplTest {
         Assert.assertEquals(1, deviceGroupRegistry.getAllGroupIds().size());
     }
 
-
     @Test
     public void testClose() throws Exception {
         deviceGroupRegistry.addMark(groupId);
@@ -63,6 +63,13 @@ public class DeviceGroupRegistryImplTest {
         Assert.assertEquals(1, deviceGroupRegistry.getAllGroupIds().size());
         deviceGroupRegistry.processMarks();
         Assert.assertEquals(1, deviceGroupRegistry.getAllGroupIds().size());
+    }
 
+    @Test
+    public void testForEach() throws Exception {
+        final AtomicInteger counter = new AtomicInteger(0);
+        deviceGroupRegistry.store(groupId2);
+        deviceGroupRegistry.forEach(group -> counter.incrementAndGet());
+        Assert.assertEquals(2, counter.get());
     }
 }

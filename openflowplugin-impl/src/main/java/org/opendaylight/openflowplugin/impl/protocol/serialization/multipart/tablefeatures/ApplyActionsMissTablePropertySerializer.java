@@ -13,6 +13,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegist
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.util.ActionUtil;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.OrderComparator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.TableFeaturesPropType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.ApplyActionsMiss;
@@ -24,16 +25,17 @@ public class ApplyActionsMissTablePropertySerializer extends AbstractTableProper
     @Override
     protected void serializeProperty(final ApplyActionsMiss property, final ByteBuf byteBuf) {
         property
-            .getApplyActionsMiss()
-            .getAction()
-            .stream()
-            .map(Action::getAction)
-            .forEach(action -> ActionUtil
-                .writeActionHeader(
-                    action,
-                    EncodeConstants.OF13_VERSION_ID,
-                    registry,
-                    byteBuf));
+                .getApplyActionsMiss()
+                .getAction()
+                .stream()
+                .sorted(OrderComparator.build())
+                .map(Action::getAction)
+                .forEach(action -> ActionUtil
+                        .writeActionHeader(
+                                action,
+                                EncodeConstants.OF13_VERSION_ID,
+                                registry,
+                                byteBuf));
     }
 
     @Override

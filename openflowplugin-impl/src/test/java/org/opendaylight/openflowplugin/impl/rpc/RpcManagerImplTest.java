@@ -7,14 +7,13 @@
  */
 package org.opendaylight.openflowplugin.impl.rpc;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 
 import java.util.concurrent.ConcurrentMap;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -37,7 +36,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint16Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfigBuilder;
@@ -77,10 +75,7 @@ public class RpcManagerImplTest {
     private ConvertorExecutor convertorExecutor;
     @Mock
     private NotificationPublishService notificationPublishService;
-
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
-
+    @Mock
     private KeyedInstanceIdentifier<Node, NodeKey> nodePath;
 
     private NodeId nodeId = new NodeId("openflow-junit:1");
@@ -90,30 +85,32 @@ public class RpcManagerImplTest {
         final NodeKey nodeKey = new NodeKey(nodeId);
         rpcManager = new RpcManagerImpl(new OpenflowProviderConfigBuilder()
                 .setRpcRequestsQuota(new NonZeroUint16Type(QUOTA_VALUE))
-                .build(), rpcProviderRegistry, extensionConverterProvider, convertorExecutor, notificationPublishService);
+                .setIsStatisticsRpcEnabled(false)
+                .build(),
+                rpcProviderRegistry, extensionConverterProvider, convertorExecutor, notificationPublishService);
 
-        GetFeaturesOutput featuresOutput = new GetFeaturesOutputBuilder()
+        FeaturesReply features = new GetFeaturesOutputBuilder()
                 .setVersion(OFConstants.OFP_VERSION_1_3)
                 .build();
 
-        FeaturesReply features = featuresOutput;
-
-        Mockito.when(connectionContext.getFeatures()).thenReturn(features);
-        Mockito.when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
-        Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
-        Mockito.when(deviceContext.getItemLifeCycleSourceRegistry()).thenReturn(itemLifeCycleRegistry);
-        Mockito.when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodePath);
-        Mockito.when(connectionContext.getFeatures()).thenReturn(features);
-        Mockito.when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
-        Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
-        Mockito.when(deviceContext.getItemLifeCycleSourceRegistry()).thenReturn(itemLifeCycleRegistry);
-        Mockito.when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodePath);
-        Mockito.when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
         Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeKey.getId());
+        Mockito.when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodePath);
+        Mockito.when(connectionContext.getFeatures()).thenReturn(features);
+        Mockito.when(deviceContext.getItemLifeCycleSourceRegistry()).thenReturn(itemLifeCycleRegistry);
+        Mockito.when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
+        Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
+        Mockito.when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
+        Mockito.when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
         Mockito.when(rpcProviderRegistry.addRoutedRpcImplementation(
                 Matchers.any(), Matchers.any(RpcService.class)))
                 .thenReturn(routedRpcRegistration);
         Mockito.when(contexts.remove(deviceInfo)).thenReturn(removedContexts);
+    }
+
+    @Test
+    public void createContext() throws Exception {
+        final RpcContext context = rpcManager.createContext(deviceContext);
+        assertEquals(deviceInfo, context.getDeviceInfo());
     }
 
     @Test
