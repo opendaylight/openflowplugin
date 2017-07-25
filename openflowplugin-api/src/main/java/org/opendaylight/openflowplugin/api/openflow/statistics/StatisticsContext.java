@@ -14,6 +14,7 @@ import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.OwnershipChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 
@@ -83,7 +84,7 @@ public interface StatisticsContext extends RequestContextStack, OFPContext {
      * In case of using reconciliation framework need to be initialization submit handled separately.
      * @return true if submitting was ok
      * @since 0.5.0 Nitrogen
-     * @see OpenflowProviderConfig#isUsingReconciliationFramework()
+     * @see OwnershipChangeListener#isReconciliationFrameworkRegistered()
      * @see org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeService
      */
     boolean initialSubmitAfterReconciliation();

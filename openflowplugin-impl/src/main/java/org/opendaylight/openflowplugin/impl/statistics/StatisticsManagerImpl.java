@@ -32,6 +32,7 @@ import org.opendaylight.openflowplugin.api.ConnectionException;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ReconciliationFrameworkRegistrar;
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
@@ -68,6 +69,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     private BindingAwareBroker.RpcRegistration<StatisticsManagerControlService> controlServiceRegistration;
     private final HashedWheelTimer hashedWheelTimer;
     private boolean istStatisticsFullyDisabled;
+    private ReconciliationFrameworkRegistrar reconciliationFrameworkRegistrar;
 
     public StatisticsManagerImpl(@Nonnull final OpenflowProviderConfig config,
                                  @Nonnull final RpcProviderRegistry rpcProviderRegistry,
@@ -304,6 +306,11 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     }
 
     @Override
+    public void setReconciliationFrameworkRegistrar(@Nonnull ReconciliationFrameworkRegistrar rfRegistrar) {
+        this.reconciliationFrameworkRegistrar = rfRegistrar;
+    }
+
+    @Override
     public StatisticsContext createContext(@Nonnull final DeviceContext deviceContext) {
 
         final MultipartWriterProvider statisticsWriterProvider = MultipartWriterProviderFactory
@@ -317,7 +324,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                                 converterExecutor,
                                 this,
                                 statisticsWriterProvider,
-                                config.isUsingReconciliationFramework()) :
+                                reconciliationFrameworkRegistrar.isReconciliationFrameworkRegistered()) :
                         new StatisticsContextImpl<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
                                 .MultipartReply>(
                                 isStatisticsEnabled(),
@@ -325,7 +332,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                                 converterExecutor,
                                 this,
                                 statisticsWriterProvider,
-                                config.isUsingReconciliationFramework());
+                                reconciliationFrameworkRegistrar.isReconciliationFrameworkRegistered());
         contexts.putIfAbsent(deviceContext.getDeviceInfo(), statisticsContext);
 
         return statisticsContext;
