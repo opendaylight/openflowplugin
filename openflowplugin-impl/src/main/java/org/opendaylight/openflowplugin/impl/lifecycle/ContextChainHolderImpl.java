@@ -47,7 +47,6 @@ import org.opendaylight.openflowplugin.impl.util.ItemScheduler;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -70,7 +69,6 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     private final ItemScheduler<DeviceInfo, ContextChain> scheduler;
     private final ExecutorService executorService;
     private final OwnershipChangeListener ownershipChangeListener;
-    private final OpenflowProviderConfig config;
     private DeviceManager deviceManager;
     private RpcManager rpcManager;
     private StatisticsManager statisticsManager;
@@ -79,14 +77,12 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                                   final ExecutorService executorService,
                                   final ClusterSingletonServiceProvider singletonServiceProvider,
                                   final EntityOwnershipService entityOwnershipService,
-                                  final OwnershipChangeListener ownershipChangeListener,
-                                  final OpenflowProviderConfig config) {
+                                  final OwnershipChangeListener ownershipChangeListener) {
         this.timer = timer;
         this.singletonServiceProvider = singletonServiceProvider;
         this.executorService = executorService;
         this.ownershipChangeListener = ownershipChangeListener;
         this.ownershipChangeListener.setMasterChecker(this);
-        this.config = config;
         this.eosListenerRegistration = Objects.requireNonNull(entityOwnershipService
                 .registerListener(ASYNC_SERVICE_ENTITY_TYPE, this));
 
@@ -199,7 +195,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                                      @Nonnull final ContextChainMastershipState mastershipState) {
         scheduler.remove(deviceInfo);
         Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(contextChain -> {
-            if (config.isUsingReconciliationFramework()) {
+            if (ownershipChangeListener.isReconciliationFrameworkRegistered()) {
                 if (mastershipState == ContextChainMastershipState.INITIAL_SUBMIT) {
                     LOG.error("Initial submit is not allowed here if using reconciliation framework.");
                 } else {

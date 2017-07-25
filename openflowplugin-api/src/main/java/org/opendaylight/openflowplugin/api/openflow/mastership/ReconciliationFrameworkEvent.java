@@ -19,7 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
  * <ul>
  *     <li><i>{@link #onDevicePrepared(DeviceInfo, FutureCallback)}</i>
  *     is called when device is being mastered by controller but not yet submitted into data store.
- *     This method is being called only if the {@link ConfigurationProperty#USING_RECONCILIATION_FRAMEWORK}
+ *     This method is being called only if the {@link OwnershipChangeListener#isReconciliationFrameworkRegistered()}
  *     is set to {@link Boolean#TRUE}</li>
  * </ul>
  * Other event are defined in {@link MastershipChangeService}

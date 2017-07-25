@@ -17,7 +17,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
  * @see ContextChainHolder
  * @since 0.5.0 Nitrogen
  */
-public interface OwnershipChangeListener {
+public interface OwnershipChangeListener extends ReconciliationFrameworkRegistrar {
 
     /**
      * This event is called when device is fully mastered. All condition have to been done successful.
@@ -43,6 +43,7 @@ public interface OwnershipChangeListener {
      * <p> But before: Initial DS submit</p>
      * <b>This is special call designed only for reconciliation framework.</b>
      * @see #becomeMaster(DeviceInfo)
+     * @see #isReconciliationFrameworkRegistered()
      * @param deviceInfo connected switch identification
      * @param callback future callback to be able handle device after reconciliation
      */

@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl.mastership;
 
-import com.google.common.base.Verify;
 import com.google.common.util.concurrent.FutureCallback;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,7 +36,7 @@ public class MastershipChangeServiceManagerFactoryImpl implements MastershipChan
         private static final Logger LOG = LoggerFactory.getLogger(MastershipChangeServiceManagerImpl.class);
 
         private final List<MastershipChangeService> serviceGroup = new LinkedList<>();
-        private ReconciliationFrameworkEvent rfRegistration;
+        private ReconciliationFrameworkEvent rfRegistration = null;
         private MasterChecker masterChecker;
 
         @Nonnull
@@ -93,6 +92,11 @@ public class MastershipChangeServiceManagerFactoryImpl implements MastershipChan
         @Override
         public void setMasterChecker(@Nonnull final MasterChecker masterChecker) {
             this.masterChecker = masterChecker;
+        }
+
+        @Override
+        public boolean isReconciliationFrameworkRegistered() {
+            return (rfRegistration != null);
         }
 
         private void fireBecomeOwnerAfterRegistration(@Nonnull final MastershipChangeService service) {
