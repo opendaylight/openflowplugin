@@ -7,28 +7,15 @@
  */
 package org.opendaylight.openflowplugin.api.openflow;
 
+import com.google.common.util.concurrent.Service;
 import javax.annotation.Nonnull;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipWatcher;
 
 /**
  * General API for all OFP Context.
  */
-public interface OFPContext extends AutoCloseable, ClusterSingletonService {
-
-    /**
-     * Context state.
-     */
-    enum ContextState {
-        /* Initialization phase, context not yet fully initialized */
-        INITIALIZATION,
-        /* Standard working phase everything is fine */
-        WORKING,
-        /* Termination phase context is being shutting down */
-        TERMINATION
-    }
-
+public interface OFPContext extends AutoCloseable, Service {
     /**
      * Get device info.
      * @return device info
@@ -41,6 +28,31 @@ public interface OFPContext extends AutoCloseable, ClusterSingletonService {
      */
     void registerMastershipWatcher(@Nonnull ContextChainMastershipWatcher contextChainMastershipWatcher);
 
+    /**
+     * If the service state is {@link State#NEW}, this initiates service startup and waits
+     * until it was started. A stopped service may not be restarted.
+     *
+     * @throws IllegalStateException if the service is not {@link State#NEW}
+     */
+    default void start() {
+        startAsync();
+        awaitRunning();
+    }
+
+    /**
+     * If the service is {@linkplain State#STARTING starting} or {@linkplain State#RUNNING running},
+     * this initiates service shutdown and waits until it was terminated. If the service is
+     * {@linkplain State#NEW new}, it is {@linkplain State#TERMINATED terminated} without having been
+     * started nor stopped. If the service has already been stopped, this method returns immediately
+     * without taking action.
+     */
+    default void stop() {
+        stopAsync();
+        awaitTerminated();
+    }
+
     @Override
-    void close();
+    default void close() throws Exception {
+        stop();
+    }
 }
