@@ -156,15 +156,6 @@ public class RpcContextImplTest {
         assertEquals(serviceInstance,temp);
     }
 
-    @Test
-    public void testClose() {
-        serviceClass = TestRpcService.class;
-        when(routedRpcReg.getServiceType()).thenReturn(serviceClass);
-        rpcContext.registerRpcServiceImplementation(TestRpcService.class, serviceInstance);
-        rpcContext.close();
-        assertEquals(rpcContext.isEmptyRpcRegistrations(), true);
-    }
-
     /**
      * When deviceContext.reserveXidForDeviceMessage returns null, null should be returned
      * @throws InterruptedException

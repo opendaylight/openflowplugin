@@ -9,24 +9,21 @@
 package org.opendaylight.openflowplugin.impl.statistics;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.util.concurrent.AsyncFunction;
+import com.google.common.util.concurrent.AbstractScheduledService;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import io.netty.util.Timeout;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 import org.opendaylight.mdsal.common.api.TransactionChainClosedException;
-import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.ConnectionException;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -35,12 +32,10 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipWatcher;
-import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
-import org.opendaylight.openflowplugin.impl.rpc.listener.ItemLifecycleListenerImpl;
 import org.opendaylight.openflowplugin.impl.services.util.RequestContextUtil;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringOnTheFlyService;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringService;
@@ -50,12 +45,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
+public class StatisticsContextImpl<T extends OfHeader> extends AbstractScheduledService implements StatisticsContext {
 
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsContextImpl.class);
     private static final String CONNECTION_CLOSED = "Connection closed.";
 
-    private final ItemLifecycleListener itemLifeCycleListener;
     private final Collection<RequestContext<?>> requestContexts = new HashSet<>();
     private final DeviceContext deviceContext;
     private final DeviceState devState;
@@ -64,16 +58,14 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     private final ConvertorExecutor convertorExecutor;
     private final MultipartWriterProvider statisticsWriterProvider;
     private final DeviceInfo deviceInfo;
-    private final StatisticsManager myManager;
     private final boolean isUsingReconciliationFramework;
+    private final long statisticsInterval;
     @GuardedBy("collectionStatTypeLock")
     private List<MultipartType> collectingStatType;
     private StatisticsGatheringService<T> statisticsGatheringService;
     private StatisticsGatheringOnTheFlyService<T> statisticsGatheringOnTheFlyService;
-    private Timeout pollTimeout;
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
 
-    private volatile ContextState state = ContextState.INITIALIZATION;
     private volatile boolean schedulingEnabled;
     private volatile ListenableFuture<Boolean> lastDataGathering;
 
@@ -82,25 +74,155 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
                           @Nonnull final ConvertorExecutor convertorExecutor,
                           @Nonnull final StatisticsManager myManager,
                           @Nonnull final MultipartWriterProvider statisticsWriterProvider,
-                          boolean isUsingReconciliationFramework) {
+                          boolean isUsingReconciliationFramework,
+                          long statisticsInterval) {
         this.deviceContext = deviceContext;
         this.devState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         this.isStatisticsPollingOn = isStatisticsPollingOn;
         this.convertorExecutor = convertorExecutor;
+        this.deviceInfo = deviceContext.getDeviceInfo();
+        this.statisticsWriterProvider = statisticsWriterProvider;
+        this.isUsingReconciliationFramework = isUsingReconciliationFramework;
+        this.statisticsInterval = statisticsInterval;
+
         statisticsGatheringService = new StatisticsGatheringService<>(this, deviceContext);
         statisticsGatheringOnTheFlyService = new StatisticsGatheringOnTheFlyService<>(this,
                 deviceContext, convertorExecutor, statisticsWriterProvider);
-        itemLifeCycleListener = new ItemLifecycleListenerImpl(deviceContext);
-        statListForCollectingInitialization();
-        this.deviceInfo = deviceContext.getDeviceInfo();
-        this.myManager = myManager;
-        this.lastDataGathering = null;
-        this.statisticsWriterProvider = statisticsWriterProvider;
-        this.isUsingReconciliationFramework = isUsingReconciliationFramework;
+    }
+
+    @VisibleForTesting
+    ListenableFuture<Boolean> gatherDynamicData() {
+        if (!isStatisticsPollingOn) {
+            LOG.debug("Statistics for device {} is not enabled.", getDeviceInfo().getNodeId().getValue());
+            return Futures.immediateFuture(Boolean.TRUE);
+        }
+
+        if (Objects.isNull(lastDataGathering)
+                || lastDataGathering.isCancelled()
+                || lastDataGathering.isDone()) {
+            lastDataGathering = Futures.immediateFuture(Boolean.TRUE);
+        }
+
+        synchronized (collectionStatTypeLock) {
+            // write start timestamp to state snapshot container
+            StatisticsGatheringUtils.markDeviceStateSnapshotStart(deviceContext);
+
+            lastDataGathering = collectingStatType.stream().reduce(
+                    lastDataGathering,
+                    this::statChainFuture,
+                    (a, b) -> Futures.transformAsync(a, result -> b));
+
+            // write end timestamp to state snapshot container
+            Futures.addCallback(lastDataGathering, new FutureCallback<Boolean>() {
+                @Override
+                public void onSuccess(final Boolean result) {
+                    StatisticsGatheringUtils.markDeviceStateSnapshotEnd(deviceContext, result);
+                }
+
+                @Override
+                public void onFailure(final Throwable t) {
+                    if (!(t instanceof TransactionChainClosedException)) {
+                        StatisticsGatheringUtils.markDeviceStateSnapshotEnd(deviceContext, false);
+                    }
+                }
+            });
+        }
+
+        return lastDataGathering;
+    }
+
+    private ListenableFuture<Boolean> chooseStat(final MultipartType multipartType){
+        switch (multipartType) {
+            case OFPMPFLOW:
+                return collectStatistics(multipartType, devState.isFlowStatisticsAvailable(), true);
+            case OFPMPTABLE:
+                return collectStatistics(multipartType, devState.isTableStatisticsAvailable(), false);
+            case OFPMPPORTSTATS:
+                return collectStatistics(multipartType, devState.isPortStatisticsAvailable(), false);
+            case OFPMPQUEUE:
+                return collectStatistics(multipartType, devState.isQueueStatisticsAvailable(), false);
+            case OFPMPGROUPDESC:
+                return collectStatistics(multipartType, devState.isGroupAvailable(), false);
+            case OFPMPGROUP:
+                return collectStatistics(multipartType, devState.isGroupAvailable(), false);
+            case OFPMPMETERCONFIG:
+                return collectStatistics(multipartType, devState.isMetersAvailable(), false);
+            case OFPMPMETER:
+                return collectStatistics(multipartType, devState.isMetersAvailable(), false);
+            default:
+                LOG.warn("Unsupported Statistics type {}", multipartType);
+                return Futures.immediateFuture(Boolean.FALSE);
+        }
     }
 
     @Override
-    public void statListForCollectingInitialization() {
+    public <T> RequestContext<T> createRequestContext() {
+        final AbstractRequestContext<T> ret = new AbstractRequestContext<T>(deviceInfo.reserveXidForDeviceMessage()) {
+            @Override
+            public void close() {
+                requestContexts.remove(this);
+            }
+        };
+        requestContexts.add(ret);
+        return ret;
+    }
+
+    @Override
+    public void setSchedulingEnabled(final boolean schedulingEnabled) {
+        this.schedulingEnabled = schedulingEnabled;
+    }
+
+    private ListenableFuture<Boolean> statChainFuture(final ListenableFuture<Boolean> prevFuture,
+                                                      final MultipartType multipartType) {
+        if (ConnectionContext.CONNECTION_STATE.RIP.equals(deviceContext.getPrimaryConnectionContext()
+                .getConnectionState())) {
+            final String errMsg = String
+                    .format("Device connection for node %s doesn't exist anymore. Primary connection status : %s",
+                            getDeviceInfo().getNodeId(),
+                            deviceContext.getPrimaryConnectionContext().getConnectionState());
+
+            return Futures.immediateFailedFuture(new ConnectionException(errMsg));
+        }
+
+        return Futures.transformAsync(prevFuture, result -> {
+            LOG.debug("Status of previous stat iteration for node {}: {}", deviceInfo, result);
+            LOG.debug("Stats iterating to next type for node {} of type {}", deviceInfo, multipartType);
+
+            return chooseStat(multipartType);
+        });
+    }
+
+    private ListenableFuture<Boolean> collectStatistics(final MultipartType multipartType,
+                                                        final boolean supported,
+                                                        final boolean onTheFly) {
+        // TODO: Refactor twice sending deviceContext into gatheringStatistics
+        return supported ? StatisticsGatheringUtils.gatherStatistics(
+                onTheFly ? statisticsGatheringOnTheFlyService : statisticsGatheringService,
+                getDeviceInfo(),
+                multipartType,
+                deviceContext,
+                deviceContext,
+                convertorExecutor,
+                statisticsWriterProvider) : Futures.immediateFuture(Boolean.FALSE);
+    }
+
+    @Override
+    public DeviceInfo getDeviceInfo() {
+        return this.deviceInfo;
+    }
+
+    @Override
+    public void registerMastershipWatcher(@Nonnull final ContextChainMastershipWatcher contextChainMastershipWatcher) {
+        this.contextChainMastershipWatcher = contextChainMastershipWatcher;
+    }
+
+    @Override
+    public boolean initialSubmitAfterReconciliation() {
+        return schedulingEnabled = deviceContext.initialSubmitTransaction();
+    }
+
+    @Override
+    protected void startUp() throws Exception {
         synchronized (collectionStatTypeLock) {
             final List<MultipartType> statListForCollecting = new ArrayList<>();
             if (devState.isTableStatisticsAvailable()) {
@@ -125,165 +247,50 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
             }
             collectingStatType = ImmutableList.copyOf(statListForCollecting);
         }
-    }
 
-    @Override
-    public ListenableFuture<Boolean> gatherDynamicData() {
-        if (!isStatisticsPollingOn) {
-            LOG.debug("Statistics for device {} is not enabled.", getDeviceInfo().getNodeId().getValue());
-            return Futures.immediateFuture(Boolean.TRUE);
-        }
+        gatherDynamicData().get();
+        contextChainMastershipWatcher.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_GATHERING);
 
-        if (Objects.isNull(lastDataGathering)
-                || lastDataGathering.isCancelled()
-                || lastDataGathering.isDone()) {
-            lastDataGathering = Futures.immediateFuture(Boolean.TRUE);
-        }
+        if (!isUsingReconciliationFramework) {
+            if (deviceContext.initialSubmitTransaction()) {
+                contextChainMastershipWatcher.onMasterRoleAcquired(deviceInfo,
+                        ContextChainMastershipState.INITIAL_SUBMIT);
 
-        synchronized (collectionStatTypeLock) {
-            // write start timestamp to state snapshot container
-            StatisticsGatheringUtils.markDeviceStateSnapshotStart(deviceContext);
-
-            lastDataGathering = collectingStatType.stream().reduce(
-                    lastDataGathering,
-                    this::statChainFuture,
-                    (a, b) -> Futures.transformAsync(a, (AsyncFunction<Boolean, Boolean>) result -> b));
-
-            // write end timestamp to state snapshot container
-            Futures.addCallback(lastDataGathering, new FutureCallback<Boolean>() {
-                @Override
-                public void onSuccess(final Boolean result) {
-                    StatisticsGatheringUtils.markDeviceStateSnapshotEnd(deviceContext, result);
+                if (isStatisticsPollingOn) {
+                    schedulingEnabled = true;
                 }
-
-                @Override
-                public void onFailure(final Throwable t) {
-                    if (!(t instanceof TransactionChainClosedException)) {
-                        StatisticsGatheringUtils.markDeviceStateSnapshotEnd(deviceContext, false);
-                    }
-                }
-            });
-        }
-
-        return lastDataGathering;
-    }
-
-    private ListenableFuture<Boolean> chooseStat(final MultipartType multipartType){
-        ListenableFuture<Boolean> result = Futures.immediateCheckedFuture(Boolean.TRUE);
-
-        switch (multipartType) {
-            case OFPMPFLOW:
-                result = collectStatistics(multipartType, devState.isFlowStatisticsAvailable(), true);
-                break;
-            case OFPMPTABLE:
-                result = collectStatistics(multipartType, devState.isTableStatisticsAvailable(), false);
-                break;
-            case OFPMPPORTSTATS:
-                result = collectStatistics(multipartType, devState.isPortStatisticsAvailable(), false);
-                break;
-            case OFPMPQUEUE:
-                result = collectStatistics(multipartType, devState.isQueueStatisticsAvailable(), false);
-                break;
-            case OFPMPGROUPDESC:
-                result = collectStatistics(multipartType, devState.isGroupAvailable(), false);
-                break;
-            case OFPMPGROUP:
-                result = collectStatistics(multipartType, devState.isGroupAvailable(), false);
-                break;
-            case OFPMPMETERCONFIG:
-                result = collectStatistics(multipartType, devState.isMetersAvailable(), false);
-                break;
-            case OFPMPMETER:
-                result = collectStatistics(multipartType, devState.isMetersAvailable(), false);
-                break;
-            default:
-                LOG.warn("Unsupported Statistics type {}", multipartType);
-        }
-
-        return result;
-    }
-
-
-    @Override
-    public <T> RequestContext<T> createRequestContext() {
-        final AbstractRequestContext<T> ret = new AbstractRequestContext<T>(deviceInfo.reserveXidForDeviceMessage()) {
-            @Override
-            public void close() {
-                requestContexts.remove(this);
+            } else {
+                contextChainMastershipWatcher.onNotAbleToStartMastershipMandatory(deviceInfo,
+                        "Initial transaction cannot be submitted.");
             }
-        };
-        requestContexts.add(ret);
-        return ret;
-    }
-
-    @Override
-    public void close() {
-        if (ContextState.TERMINATION.equals(state)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("StatisticsContext for node {} is already in TERMINATION state.", getDeviceInfo());
-            }
-        } else {
-            this.state = ContextState.TERMINATION;
-            stopGatheringData();
-            requestContexts.forEach(requestContext -> RequestContextUtil
-                    .closeRequestContextWithRpcError(requestContext, CONNECTION_CLOSED));
-            requestContexts.clear();
         }
     }
 
     @Override
-    public void setSchedulingEnabled(final boolean schedulingEnabled) {
-        this.schedulingEnabled = schedulingEnabled;
-    }
-
-    @Override
-    public boolean isSchedulingEnabled() {
-        return schedulingEnabled;
-    }
-
-    @Override
-    public void setPollTimeout(final Timeout pollTimeout) {
-        this.pollTimeout = pollTimeout;
-    }
-
-    private ListenableFuture<Boolean> statChainFuture(final ListenableFuture<Boolean> prevFuture, final MultipartType multipartType) {
-        return Futures.transformAsync(deviceConnectionCheck(), (AsyncFunction<Boolean, Boolean>) connectionResult -> Futures
-                .transformAsync(prevFuture, (AsyncFunction<Boolean, Boolean>) result -> {
-                    LOG.debug("Status of previous stat iteration for node {}: {}", deviceInfo.getLOGValue(), result);
-                    LOG.debug("Stats iterating to next type for node {} of type {}",
-                            deviceInfo,
-                            multipartType);
-
-                    return chooseStat(multipartType);
-                }));
-    }
-
-    @VisibleForTesting
-    ListenableFuture<Boolean> deviceConnectionCheck() {
-        if (ConnectionContext.CONNECTION_STATE.RIP.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
-            final String errMsg = String
-                    .format("Device connection for node %s doesn't exist anymore. Primary connection status : %s",
-                            getDeviceInfo().getNodeId(),
-                            deviceContext.getPrimaryConnectionContext().getConnectionState());
-
-            return Futures.immediateFailedFuture(new ConnectionException(errMsg));
+    protected void shutDown() throws Exception {
+        if (Objects.nonNull(lastDataGathering) && !lastDataGathering.isDone() && !lastDataGathering.isCancelled()) {
+            lastDataGathering.cancel(true);
         }
 
-        return Futures.immediateFuture(Boolean.TRUE);
+        requestContexts.forEach(requestContext -> RequestContextUtil
+                .closeRequestContextWithRpcError(requestContext, CONNECTION_CLOSED));
+        requestContexts.clear();
     }
 
-    private ListenableFuture<Boolean> collectStatistics(final MultipartType multipartType,
-                                                        final boolean supported,
-                                                        final boolean onTheFly) {
-        // TODO: Refactor twice sending deviceContext into gatheringStatistics
-        return supported ? StatisticsGatheringUtils.gatherStatistics(
-                onTheFly ? statisticsGatheringOnTheFlyService : statisticsGatheringService,
-                getDeviceInfo(),
-                multipartType,
-                deviceContext,
-                deviceContext,
-                convertorExecutor,
-                statisticsWriterProvider) : Futures.immediateFuture(Boolean.FALSE);
+    @Override
+    protected void runOneIteration() throws Exception {
+        if (!schedulingEnabled) {
+            LOG.debug("Statistics scheduling for device {} is disabled", deviceInfo);
+            return;
+        }
+
+        LOG.debug("POLLING ALL STATISTICS for device: {}", deviceInfo);
+        gatherDynamicData().get();
+    }
+
+    @Override
+    protected Scheduler scheduler() {
+        return Scheduler.newFixedDelaySchedule(0, statisticsInterval, TimeUnit.MILLISECONDS);
     }
 
     @VisibleForTesting
@@ -296,113 +303,4 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         this.statisticsGatheringOnTheFlyService = statisticsGatheringOnTheFlyService;
     }
 
-    @Override
-    public ItemLifecycleListener getItemLifeCycleListener () {
-        return itemLifeCycleListener;
-    }
-
-    @Override
-    public DeviceInfo getDeviceInfo() {
-        return this.deviceInfo;
-    }
-
-    @Override
-    public void registerMastershipWatcher(@Nonnull final ContextChainMastershipWatcher contextChainMastershipWatcher) {
-        this.contextChainMastershipWatcher = contextChainMastershipWatcher;
-    }
-
-    @Override
-    public ListenableFuture<Void> closeServiceInstance() {
-        LOG.info("Stopping statistics context cluster services for node {}", deviceInfo);
-
-        return Futures.transform(Futures.immediateFuture(null), new Function<Void, Void>() {
-            @Nullable
-            @Override
-            public Void apply(@Nullable final Void input) {
-                schedulingEnabled = false;
-                stopGatheringData();
-                return null;
-            }
-        });
-    }
-
-    @Override
-    public DeviceState gainDeviceState() {
-        return gainDeviceContext().getDeviceState();
-    }
-
-    @Override
-    public DeviceContext gainDeviceContext() {
-        return this.deviceContext;
-    }
-
-    @Override
-    public void stopGatheringData() {
-        LOG.info("Stopping running statistics gathering for node {}", deviceInfo);
-
-        if (Objects.nonNull(lastDataGathering) && !lastDataGathering.isDone() && !lastDataGathering.isCancelled()) {
-            lastDataGathering.cancel(true);
-        }
-
-        if (Objects.nonNull(pollTimeout) && !pollTimeout.isExpired()) {
-            pollTimeout.cancel();
-        }
-    }
-
-    @Override
-    public boolean initialSubmitAfterReconciliation() {
-        final boolean submit = deviceContext.initialSubmitTransaction();
-        if (submit) {
-            myManager.startScheduling(deviceInfo);
-        }
-        return submit;
-    }
-
-    @Override
-    public void instantiateServiceInstance() {
-        LOG.info("Starting statistics context cluster services for node {}", deviceInfo);
-        this.statListForCollectingInitialization();
-
-        Futures.addCallback(this.gatherDynamicData(), new FutureCallback<Boolean>() {
-            @Override
-            public void onSuccess(@Nullable Boolean aBoolean) {
-                contextChainMastershipWatcher.onMasterRoleAcquired(
-                        deviceInfo,
-                        ContextChainMastershipState.INITIAL_GATHERING
-                );
-
-                if (!isUsingReconciliationFramework) {
-                    if (deviceContext.initialSubmitTransaction()) {
-                        contextChainMastershipWatcher.onMasterRoleAcquired(
-                                deviceInfo,
-                                ContextChainMastershipState.INITIAL_SUBMIT
-                        );
-
-                        if (isStatisticsPollingOn) {
-                            myManager.startScheduling(deviceInfo);
-                        }
-                    } else {
-                        contextChainMastershipWatcher.onNotAbleToStartMastershipMandatory(
-                                deviceInfo,
-                                "Initial transaction cannot be submitted."
-                        );
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(@Nonnull Throwable throwable) {
-                contextChainMastershipWatcher.onNotAbleToStartMastershipMandatory(
-                        deviceInfo,
-                        "Initial gathering statistics unsuccessful."
-                );
-            }
-        });
-    }
-
-    @Nonnull
-    @Override
-    public ServiceGroupIdentifier getIdentifier() {
-        return deviceInfo.getServiceIdentifier();
-    }
 }

@@ -11,31 +11,12 @@ package org.opendaylight.openflowplugin.api.openflow.statistics;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ReconciliationFrameworkRegistrar;
 
 /**
  * Manager to start or stop scheduling statistics.
  */
 public interface StatisticsManager extends OFPManager {
-
-    /**
-     * Start scheduling statistic gathering for given device info.
-     * @param deviceInfo for this device should be running statistics gathering
-     */
-    void startScheduling(DeviceInfo deviceInfo);
-
-    /**
-     * Stop scheduling statistic gathering for given device info.
-     * @param deviceInfo for this device should be stopped statistics gathering
-     */
-    void stopScheduling(DeviceInfo deviceInfo);
-
-    @Override
-    void close();
-
     StatisticsContext createContext(@Nonnull DeviceContext deviceContext);
-
     void setReconciliationFrameworkRegistrar(@Nonnull ReconciliationFrameworkRegistrar rfRegistrar);
-
 }

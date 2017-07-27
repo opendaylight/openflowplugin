@@ -8,21 +8,17 @@
 package org.opendaylight.openflowplugin.impl.rpc;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.AbstractIdleService;
 import java.util.Iterator;
-import java.util.Map.Entry;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Semaphore;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
@@ -41,23 +37,20 @@ import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class RpcContextImpl implements RpcContext {
+class RpcContextImpl extends AbstractIdleService implements RpcContext {
     private static final Logger LOG = LoggerFactory.getLogger(RpcContextImpl.class);
     private final RpcProviderRegistry rpcProviderRegistry;
     private final MessageSpy messageSpy;
     private final Semaphore tracker;
-    private boolean isStatisticsRpcEnabled;
-
-    // TODO: add private Sal salBroker
     private final ConcurrentMap<Class<?>, RoutedRpcRegistration<?>> rpcRegistrations = new ConcurrentHashMap<>();
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
-    private volatile ContextState state = ContextState.INITIALIZATION;
     private final DeviceInfo deviceInfo;
     private final DeviceContext deviceContext;
     private final ExtensionConverterProvider extensionConverterProvider;
     private final ConvertorExecutor convertorExecutor;
     private final NotificationPublishService notificationPublishService;
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
+    private boolean isStatisticsRpcEnabled;
 
     RpcContextImpl(@Nonnull final RpcProviderRegistry rpcProviderRegistry,
                    final int maxRequests,
@@ -101,38 +94,7 @@ class RpcContextImpl implements RpcContext {
     public <S extends RpcService> S lookupRpcService(final Class<S> serviceClass) {
         RoutedRpcRegistration<?> registration = rpcRegistrations.get(serviceClass);
         final RpcService rpcService = registration.getInstance();
-        return (S) rpcService;
-    }
-
-    /**
-     * Unregisters all services.
-     *
-     * @see java.lang.AutoCloseable#close()
-     */
-    @Override
-    public void close() {
-        if (ContextState.TERMINATION.equals(state)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("RpcContext for node {} is already in TERMINATION state.", getDeviceInfo().getLOGValue());
-            }
-        } else {
-            this.state = ContextState.TERMINATION;
-            unregisterRPCs();
-        }
-    }
-
-    private void unregisterRPCs() {
-        for (final Iterator<Entry<Class<?>, RoutedRpcRegistration<?>>> iterator = Iterators
-                .consumingIterator(rpcRegistrations.entrySet().iterator()); iterator.hasNext(); ) {
-            final RoutedRpcRegistration<?> rpcRegistration = iterator.next().getValue();
-            rpcRegistration.unregisterPath(NodeContext.class, nodeInstanceIdentifier);
-            rpcRegistration.close();
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Closing RPC Registration of service {} for device {}.", rpcRegistration.getServiceType().getSimpleName(),
-                        nodeInstanceIdentifier.getKey().getId().getValue());
-            }
-        }
+        return serviceClass.cast(rpcService);
     }
 
     @Override
@@ -189,22 +151,7 @@ class RpcContextImpl implements RpcContext {
     }
 
     @Override
-    public ListenableFuture<Void> closeServiceInstance() {
-        LOG.info("Stopping rpc context cluster services for node {}", deviceInfo.getLOGValue());
-
-        return Futures.transform(Futures.immediateFuture(null), new Function<Void, Void>() {
-            @Nullable
-            @Override
-            public Void apply(@Nullable final Void input) {
-                unregisterRPCs();
-                return null;
-            }
-        });
-    }
-
-    @Override
-    public void instantiateServiceInstance() {
-        LOG.info("Starting rpc context cluster services for node {}", deviceInfo.getLOGValue());
+    protected void startUp() throws Exception {
         MdSalRegistrationUtils.registerServices(this, deviceContext, extensionConverterProvider, convertorExecutor);
 
         if (isStatisticsRpcEnabled && !deviceContext.canUseSingleLayerSerialization()) {
@@ -218,9 +165,18 @@ class RpcContextImpl implements RpcContext {
         contextChainMastershipWatcher.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.RPC_REGISTRATION);
     }
 
-    @Nonnull
     @Override
-    public ServiceGroupIdentifier getIdentifier() {
-        return deviceInfo.getServiceIdentifier();
+    protected void shutDown() throws Exception {
+        for (final Iterator<Map.Entry<Class<?>, RoutedRpcRegistration<?>>> iterator = Iterators
+                .consumingIterator(rpcRegistrations.entrySet().iterator()); iterator.hasNext(); ) {
+            final RoutedRpcRegistration<?> rpcRegistration = iterator.next().getValue();
+            rpcRegistration.unregisterPath(NodeContext.class, nodeInstanceIdentifier);
+            rpcRegistration.close();
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Closing RPC Registration of service {} for device {}.", rpcRegistration.getServiceType().getSimpleName(),
+                        nodeInstanceIdentifier.getKey().getId().getValue());
+            }
+        }
     }
 }

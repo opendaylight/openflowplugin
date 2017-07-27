@@ -7,11 +7,12 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
+import java.util.List;
+import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
-import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationProperty;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
 
@@ -22,13 +23,10 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemove
 public interface ContextChain extends ClusterSingletonService, AutoCloseable {
 
     /**
-     * Add context to the chain, if reference already exist ignore it.
-     * @param context child of OFPContext
+     * Registers context supplier to context chain.
+     * @param contextsSupplier supplier of list of contexts
      */
-    <T extends OFPContext> void addContext(@Nonnull T context);
-
-    @Override
-    void close();
+    void registerSupplier(@Nonnull Supplier<List<OFPContext>> contextsSupplier);
 
     /**
      * Slave was successfully set.

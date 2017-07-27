@@ -119,7 +119,7 @@ public class DeviceContextImplTest {
     Xid xid;
     Xid xidMulti;
 
-    DeviceContext deviceContext;
+    DeviceContextImpl deviceContext;
     @Mock
     RequestContext<GetAsyncReply> requestContext;
     @Mock
@@ -221,12 +221,11 @@ public class DeviceContextImplTest {
                 false, timer, false,
                 DeviceInitializerProviderFactory.createDefaultProvider(),
                 true, false);
-        ((DeviceContextImpl) deviceContext).lazyTransactionManagerInitialization();
-        deviceContextSpy = Mockito.spy(deviceContext);
 
+        deviceContext.initializeTransactionChainManager();
+        deviceContextSpy = Mockito.spy(deviceContext);
         xid = new Xid(atomicLong.incrementAndGet());
         xidMulti = new Xid(atomicLong.incrementAndGet());
-
         Mockito.doNothing().when(deviceContextSpy).writeToTransaction(any(), any(), any());
 
     }
@@ -250,14 +249,6 @@ public class DeviceContextImplTest {
         deviceContext.addDeleteToTxChain(LogicalDatastoreType.CONFIGURATION, dummyII);
         deviceContext.initialSubmitTransaction();
         verify(wTx).submit();
-    }
-
-    private ConnectionContext prepareConnectionContext() {
-        final ConnectionContext mockedConnectionContext = mock(ConnectionContext.class);
-        final FeaturesReply mockedFeaturesReply = mock(FeaturesReply.class);
-        when(mockedFeaturesReply.getAuxiliaryId()).thenReturn(DUMMY_AUXILIARY_ID);
-        when(mockedConnectionContext.getFeatures()).thenReturn(mockedFeaturesReply);
-        return mockedConnectionContext;
     }
 
     /**
