@@ -1,0 +1,464 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da2a55be_0ad5ae1b",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 6592
+      },
+      "writtenOn": "2017-07-27T08:15:24Z",
+      "side": 1,
+      "message": "add the changes for automicLong",
+      "range": {
+        "startLine": 124,
+        "startChar": 4,
+        "endLine": 124,
+        "endChar": 11
+      },
+      "revId": "7264cc11a2095ede241ebbb9d918d98fbc84f0d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_ead77a21",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 6592
+      },
+      "writtenOn": "2017-07-27T08:15:24Z",
+      "side": 1,
+      "message": "copy this statement, this is as per anil comment",
+      "range": {
+        "startLine": 154,
+        "startChar": 23,
+        "endLine": 154,
+        "endChar": 29
+      },
+      "revId": "7264cc11a2095ede241ebbb9d918d98fbc84f0d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_8ae87ee3",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 6592
+      },
+      "writtenOn": "2017-07-27T08:15:24Z",
+      "side": 1,
+      "message": "same here.. copy the log statement",
+      "range": {
+        "startLine": 183,
+        "startChar": 0,
+        "endLine": 183,
+        "endChar": 16
+      },
+      "revId": "7264cc11a2095ede241ebbb9d918d98fbc84f0d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_eabe5ad3",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 216,
+      "author": {
+        "id": 6592
+      },
+      "writtenOn": "2017-07-27T08:15:24Z",
+      "side": 1,
+      "message": "return the future return by the method directly",
+      "range": {
+        "startLine": 216,
+        "startChar": 28,
+        "endLine": 216,
+        "endChar": 34
+      },
+      "revId": "7264cc11a2095ede241ebbb9d918d98fbc84f0d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_4ab686fb",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 219,
+      "author": {
+        "id": 6592
+      },
+      "writtenOn": "2017-07-27T08:15:24Z",
+      "side": 1,
+      "message": "return the future return by the method directly",
+      "range": {
+        "startLine": 219,
+        "startChar": 28,
+        "endLine": 219,
+        "endChar": 34
+      },
+      "revId": "7264cc11a2095ede241ebbb9d918d98fbc84f0d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_2ab992e9",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 663,
+      "author": {
+        "id": 6592
+      },
+      "writtenOn": "2017-07-27T08:15:24Z",
+      "side": 1,
+      "message": "removing static",
+      "range": {
+        "startLine": 663,
+        "startChar": 0,
+        "endLine": 663,
+        "endChar": 4
+      },
+      "revId": "7264cc11a2095ede241ebbb9d918d98fbc84f0d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_8acfde7e",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 664,
+      "author": {
+        "id": 6592
+      },
+      "writtenOn": "2017-07-27T08:15:24Z",
+      "side": 1,
+      "message": "making the variable final",
+      "range": {
+        "startLine": 664,
+        "startChar": 0,
+        "endLine": 664,
+        "endChar": 8
+      },
+      "revId": "7264cc11a2095ede241ebbb9d918d98fbc84f0d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_6aca6a6f",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 669,
+      "author": {
+        "id": 6592
+      },
+      "writtenOn": "2017-07-27T08:15:24Z",
+      "side": 1,
+      "message": "static removed",
+      "range": {
+        "startLine": 669,
+        "startChar": 0,
+        "endLine": 669,
+        "endChar": 4
+      },
+      "revId": "7264cc11a2095ede241ebbb9d918d98fbc84f0d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_cac9d679",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 670,
+      "author": {
+        "id": 6592
+      },
+      "writtenOn": "2017-07-27T08:15:24Z",
+      "side": 1,
+      "message": "final variable",
+      "range": {
+        "startLine": 670,
+        "startChar": 8,
+        "endLine": 670,
+        "endChar": 13
+      },
+      "revId": "7264cc11a2095ede241ebbb9d918d98fbc84f0d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_0aa3eeb2",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 676,
+      "author": {
+        "id": 6592
+      },
+      "writtenOn": "2017-07-27T08:15:24Z",
+      "side": 1,
+      "message": "arguments final",
+      "range": {
+        "startLine": 676,
+        "startChar": 26,
+        "endLine": 676,
+        "endChar": 40
+      },
+      "revId": "7264cc11a2095ede241ebbb9d918d98fbc84f0d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_aac4625f",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 677,
+      "author": {
+        "id": 6592
+      },
+      "writtenOn": "2017-07-27T08:15:24Z",
+      "side": 1,
+      "message": "final variable",
+      "range": {
+        "startLine": 677,
+        "startChar": 0,
+        "endLine": 677,
+        "endChar": 8
+      },
+      "revId": "7264cc11a2095ede241ebbb9d918d98fbc84f0d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_4aade69b",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/ForwardingRulesManagerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 6592
+      },
+      "writtenOn": "2017-07-27T08:15:24Z",
+      "side": 1,
+      "message": "changing the name of variable to make recon -\u003e reconciliaiton",
+      "range": {
+        "startLine": 79,
+        "startChar": 0,
+        "endLine": 79,
+        "endChar": 4
+      },
+      "revId": "7264cc11a2095ede241ebbb9d918d98fbc84f0d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_2ab072f3",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/ForwardingRulesManagerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 6592
+      },
+      "writtenOn": "2017-07-27T08:15:24Z",
+      "side": 1,
+      "message": "change the API name as well, in forwardingrulesmanager",
+      "range": {
+        "startLine": 91,
+        "startChar": 0,
+        "endLine": 91,
+        "endChar": 8
+      },
+      "revId": "7264cc11a2095ede241ebbb9d918d98fbc84f0d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_8a96be4a",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/ForwardingRulesManagerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 6592
+      },
+      "writtenOn": "2017-07-27T08:15:24Z",
+      "side": 1,
+      "message": "salbundleservice",
+      "range": {
+        "startLine": 111,
+        "startChar": 21,
+        "endLine": 111,
+        "endChar": 37
+      },
+      "revId": "7264cc11a2095ede241ebbb9d918d98fbc84f0d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_caa0b6a1",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/ForwardingRulesManagerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 6592
+      },
+      "writtenOn": "2017-07-27T08:15:24Z",
+      "side": 1,
+      "message": "change API name to isBundleBasedReconciliationEnabled",
+      "range": {
+        "startLine": 262,
+        "startChar": 19,
+        "endLine": 262,
+        "endChar": 44
+      },
+      "revId": "7264cc11a2095ede241ebbb9d918d98fbc84f0d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_aa9bc270",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/ForwardingRulesManagerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 289,
+      "author": {
+        "id": 6592
+      },
+      "writtenOn": "2017-07-27T08:15:24Z",
+      "side": 1,
+      "message": "change in forwardingrulesproperty enum file.",
+      "range": {
+        "startLine": 289,
+        "startChar": 21,
+        "endLine": 289,
+        "endChar": 55
+      },
+      "revId": "7264cc11a2095ede241ebbb9d918d98fbc84f0d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_0a8ace1a",
+        "filename": "applications/forwardingrules-manager/src/main/yang/forwardingrules-manager-config.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 6592
+      },
+      "writtenOn": "2017-07-27T08:15:24Z",
+      "side": 1,
+      "message": "making it reconciliation everywhere, let it be aligned",
+      "range": {
+        "startLine": 29,
+        "startChar": 26,
+        "endLine": 29,
+        "endChar": 40
+      },
+      "revId": "7264cc11a2095ede241ebbb9d918d98fbc84f0d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_6a78aa2b",
+        "filename": "applications/forwardingrules-manager/src/test/java/test/mock/util/FRMTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 6592
+      },
+      "writtenOn": "2017-07-27T08:15:24Z",
+      "side": 1,
+      "message": "after building openflowplugin module, this method will be visible",
+      "range": {
+        "startLine": 73,
+        "startChar": 19,
+        "endLine": 73,
+        "endChar": 54
+      },
+      "revId": "7264cc11a2095ede241ebbb9d918d98fbc84f0d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_2a87d210",
+        "filename": "applications/forwardingrules-manager/src/test/java/test/mock/util/FRMTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 6592
+      },
+      "writtenOn": "2017-07-27T08:15:24Z",
+      "side": 1,
+      "message": "changed according to openflowplugin.cfg file",
+      "range": {
+        "startLine": 92,
+        "startChar": 66,
+        "endLine": 92,
+        "endChar": 101
+      },
+      "revId": "7264cc11a2095ede241ebbb9d918d98fbc84f0d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_ca771639",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
+        "patchSetId": 1
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 6592
+      },
+      "writtenOn": "2017-07-27T08:15:24Z",
+      "side": 1,
+      "message": "reconciliation..",
+      "range": {
+        "startLine": 132,
+        "startChar": 15,
+        "endLine": 132,
+        "endChar": 29
+      },
+      "revId": "7264cc11a2095ede241ebbb9d918d98fbc84f0d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
