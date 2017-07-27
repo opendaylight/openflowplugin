@@ -65,8 +65,6 @@ public class ContextChainHolderImplTest {
     private EntityOwnershipListenerRegistration entityOwnershipListenerRegistration;
     @Mock
     private OwnershipChangeListener ownershipChangeListener;
-    @Mock
-    private OpenflowProviderConfig config;
 
     private ContextChainHolderImpl contextChainHolder;
 
@@ -89,15 +87,15 @@ public class ContextChainHolderImplTest {
                 .thenReturn(clusterSingletonServiceRegistration);
         Mockito.when(entityOwnershipService.registerListener(Mockito.any(), Mockito.any()))
                 .thenReturn(entityOwnershipListenerRegistration);
-        Mockito.when(config.isUsingReconciliationFramework()).thenReturn(false);
+        Mockito.when(ownershipChangeListener.isReconciliationFrameworkRegistered()).thenReturn(false);
 
         contextChainHolder = new ContextChainHolderImpl(
                 timer,
                 executorService,
                 singletonServicesProvider,
                 entityOwnershipService,
-                ownershipChangeListener,
-                config);
+                ownershipChangeListener
+        );
         contextChainHolder.addManager(statisticsManager);
         contextChainHolder.addManager(rpcManager);
         contextChainHolder.addManager(deviceManager);

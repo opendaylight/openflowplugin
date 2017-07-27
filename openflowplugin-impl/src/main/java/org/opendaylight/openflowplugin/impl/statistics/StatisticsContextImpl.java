@@ -381,12 +381,12 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
                         if (isStatisticsPollingOn) {
                             myManager.startScheduling(deviceInfo);
                         }
+                    } else {
+                        contextChainMastershipWatcher.onNotAbleToStartMastershipMandatory(
+                                deviceInfo,
+                                "Initial transaction cannot be submitted."
+                        );
                     }
-                } else {
-                    contextChainMastershipWatcher.onNotAbleToStartMastershipMandatory(
-                            deviceInfo,
-                            "Initial transaction cannot be submitted."
-                    );
                 }
             }
 

@@ -61,7 +61,7 @@ public interface ContextChain extends ClusterSingletonService, AutoCloseable {
 
     /**
      * Check all needed to be master except the device is written into data store.
-     * Using by reconciliation framework. Used only if {@link ConfigurationProperty#USING_RECONCILIATION_FRAMEWORK}
+     * Using by reconciliation framework. Used only if {@link OwnershipChangeListener#isReconciliationFrameworkRegistered()}
      * is set to {@link Boolean#TRUE}.
      * @return true if all is set but not submitted txChain
      * @since 0.5.0 Nitrogen
@@ -74,7 +74,7 @@ public interface ContextChain extends ClusterSingletonService, AutoCloseable {
      * @return true if initial submitting was ok and device is fully mastered by controller
      * @since 0.5.0 Nitrogen
      * @see org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeService
-     * @see ConfigurationProperty#USING_RECONCILIATION_FRAMEWORK
+     * @see OwnershipChangeListener#isReconciliationFrameworkRegistered()
      */
     boolean continueInitializationAfterReconciliation();
 
