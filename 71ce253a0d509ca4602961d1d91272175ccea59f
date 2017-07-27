@@ -1,0 +1,550 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da2a55be_aac0e22a",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T08:49:53Z",
+      "side": 1,
+      "message": "good to use \"switch\" instead of DPN, to keep it in sync in term of terminology used in the writeup.",
+      "range": {
+        "startLine": 19,
+        "startChar": 84,
+        "endLine": 19,
+        "endChar": 87
+      },
+      "revId": "71ce253a0d509ca4602961d1d91272175ccea59f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_0adf6e0e",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T08:49:53Z",
+      "side": 1,
+      "message": "received -\u003e receive",
+      "range": {
+        "startLine": 21,
+        "startChar": 70,
+        "endLine": 21,
+        "endChar": 78
+      },
+      "revId": "71ce253a0d509ca4602961d1d91272175ccea59f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_eae13ad1",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T08:49:53Z",
+      "side": 1,
+      "message": "good to mention full form at the first instance of short form(Data Tree Change Notification, and after that you can use the short form in the remaining document.",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 4
+      },
+      "revId": "71ce253a0d509ca4602961d1d91272175ccea59f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_ea081a93",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T08:49:53Z",
+      "side": 1,
+      "message": "..node added DTCN, while registered applications are done with the switch reconciliation.",
+      "range": {
+        "startLine": 29,
+        "startChar": 33,
+        "endLine": 29,
+        "endChar": 34
+      },
+      "revId": "71ce253a0d509ca4602961d1d91272175ccea59f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_2a3a3236",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T08:49:53Z",
+      "side": 1,
+      "message": "good to define the KNOWN state.",
+      "range": {
+        "startLine": 38,
+        "startChar": 84,
+        "endLine": 38,
+        "endChar": 95
+      },
+      "revId": "71ce253a0d509ca4602961d1d91272175ccea59f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_0a2daefe",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T08:49:53Z",
+      "side": 1,
+      "message": "OpenFlow",
+      "range": {
+        "startLine": 38,
+        "startChar": 18,
+        "endLine": 38,
+        "endChar": 20
+      },
+      "revId": "71ce253a0d509ca4602961d1d91272175ccea59f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_ea165aa6",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T08:49:53Z",
+      "side": 1,
+      "message": "Reconciliation -\u003e reconciliation, please make the change throughout the document.",
+      "range": {
+        "startLine": 40,
+        "startChar": 32,
+        "endLine": 40,
+        "endChar": 46
+      },
+      "revId": "71ce253a0d509ca4602961d1d91272175ccea59f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_ca4a76c4",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T08:49:53Z",
+      "side": 1,
+      "message": "avoid using short form, as this spec will be published as a public document.",
+      "range": {
+        "startLine": 41,
+        "startChar": 8,
+        "endLine": 41,
+        "endChar": 11
+      },
+      "revId": "71ce253a0d509ca4602961d1d91272175ccea59f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_ea649a4a",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T08:49:53Z",
+      "side": 1,
+      "message": "it\u0027s good to mention somewhere above that the application will register with reconciliation framework with a specific priority. What priority individual application should use to register for reconciliation should be decided by user.",
+      "range": {
+        "startLine": 48,
+        "startChar": 77,
+        "endLine": 48,
+        "endChar": 92
+      },
+      "revId": "71ce253a0d509ca4602961d1d91272175ccea59f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_4a5cc67e",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T08:49:53Z",
+      "side": 1,
+      "message": "i think higher is confusing here, i think just same priority is fine. Before this statement we should mention that Application will be executed in the priority order of higher to lower.",
+      "range": {
+        "startLine": 49,
+        "startChar": 81,
+        "endLine": 49,
+        "endChar": 87
+      },
+      "revId": "71ce253a0d509ca4602961d1d91272175ccea59f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_2a5fd273",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T08:49:53Z",
+      "side": 1,
+      "message": "it\u0027s not OVS specific, so use OpenFlow switch. Please make the same changes in remaining document.",
+      "range": {
+        "startLine": 53,
+        "startChar": 5,
+        "endLine": 53,
+        "endChar": 8
+      },
+      "revId": "71ce253a0d509ca4602961d1d91272175ccea59f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_6a50aa5e",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T08:49:53Z",
+      "side": 1,
+      "message": "openflowplugin",
+      "range": {
+        "startLine": 54,
+        "startChar": 5,
+        "endLine": 54,
+        "endChar": 8
+      },
+      "revId": "71ce253a0d509ca4602961d1d91272175ccea59f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_0ac92e26",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T08:49:53Z",
+      "side": 1,
+      "message": "its good to skip this as it\u0027s  future, and we will update this document when we implement that.",
+      "range": {
+        "startLine": 63,
+        "startChar": 10,
+        "endLine": 63,
+        "endChar": 96
+      },
+      "revId": "71ce253a0d509ca4602961d1d91272175ccea59f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_eacbfa1b",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T08:49:53Z",
+      "side": 1,
+      "message": "skip this part, it\u0027s upto the user how they write the application.",
+      "range": {
+        "startLine": 73,
+        "startChar": 5,
+        "endLine": 73,
+        "endChar": 99
+      },
+      "revId": "71ce253a0d509ca4602961d1d91272175ccea59f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_4ad326d6",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T08:49:53Z",
+      "side": 1,
+      "message": "the data store.",
+      "range": {
+        "startLine": 82,
+        "startChar": 108,
+        "endLine": 82,
+        "endChar": 130
+      },
+      "revId": "71ce253a0d509ca4602961d1d91272175ccea59f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_2ad6b2c5",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T08:49:53Z",
+      "side": 1,
+      "message": "duplicate",
+      "range": {
+        "startLine": 83,
+        "startChar": 124,
+        "endLine": 83,
+        "endChar": 146
+      },
+      "revId": "71ce253a0d509ca4602961d1d91272175ccea59f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_8adcfee5",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T08:49:53Z",
+      "side": 1,
+      "message": "I believe this should be part of the registration. Application should specify the intent that if reconciliation fails, please disconnect/Ignore. Based on the intent of majority of the application reconciliation module will take the action.",
+      "range": {
+        "startLine": 83,
+        "startChar": 86,
+        "endLine": 83,
+        "endChar": 113
+      },
+      "revId": "71ce253a0d509ca4602961d1d91272175ccea59f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_2aed128c",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T08:49:53Z",
+      "side": 1,
+      "message": "Please add -\u003e Application don\u0027t do any conflict resolution or guarantee any specific order among the application registered at the same priority level.",
+      "revId": "71ce253a0d509ca4602961d1d91272175ccea59f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_6afeea39",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T08:49:53Z",
+      "side": 1,
+      "message": "change it to --\u003e reconcile event or reconciliation.",
+      "range": {
+        "startLine": 133,
+        "startChar": 50,
+        "endLine": 133,
+        "endChar": 59
+      },
+      "revId": "71ce253a0d509ca4602961d1d91272175ccea59f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_cafd563c",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T08:49:53Z",
+      "side": 1,
+      "message": "implement",
+      "range": {
+        "startLine": 137,
+        "startChar": 42,
+        "endLine": 137,
+        "endChar": 50
+      },
+      "revId": "71ce253a0d509ca4602961d1d91272175ccea59f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_aaf8e249",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T08:49:53Z",
+      "side": 1,
+      "message": "remove a",
+      "range": {
+        "startLine": 137,
+        "startChar": 50,
+        "endLine": 137,
+        "endChar": 51
+      },
+      "revId": "71ce253a0d509ca4602961d1d91272175ccea59f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_ea993a20",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T08:49:53Z",
+      "side": 1,
+      "message": "interface",
+      "range": {
+        "startLine": 137,
+        "startChar": 87,
+        "endLine": 137,
+        "endChar": 93
+      },
+      "revId": "71ce253a0d509ca4602961d1d91272175ccea59f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_4aa16646",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T08:49:53Z",
+      "side": 1,
+      "message": "above API\u0027s says --\u003e endReconciliation",
+      "range": {
+        "startLine": 138,
+        "startChar": 92,
+        "endLine": 138,
+        "endChar": 112
+      },
+      "revId": "71ce253a0d509ca4602961d1d91272175ccea59f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_6a854aac",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T08:49:53Z",
+      "side": 1,
+      "message": "i think we already have a gerrit, so good to merge it",
+      "range": {
+        "startLine": 153,
+        "startChar": 0,
+        "endLine": 153,
+        "endChar": 5
+      },
+      "revId": "71ce253a0d509ca4602961d1d91272175ccea59f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
