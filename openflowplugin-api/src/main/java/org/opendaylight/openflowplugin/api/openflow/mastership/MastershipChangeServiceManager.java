@@ -39,10 +39,10 @@ public interface MastershipChangeServiceManager extends OwnershipChangeListener,
 
     /**
      * Unregister of listener. Registration after unregister need to be closed by client.
-     * @param service implementation of {@link MastershipChangeService}
+     * @param service implementation of {@link MastershipChangeRegistration}
      * @since 0.5.0 Nitrogen
      */
-    void unregister(@Nonnull MastershipChangeService service);
+    void unregister(@Nonnull MastershipChangeRegistration service);
 
     @Override
     void close();

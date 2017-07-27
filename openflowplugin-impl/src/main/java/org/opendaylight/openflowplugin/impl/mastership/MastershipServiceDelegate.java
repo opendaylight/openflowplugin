@@ -36,7 +36,7 @@ public class MastershipServiceDelegate implements MastershipChangeService, Maste
 
     @Override
     public void close() throws Exception {
-        this.manager.unregister(this.service);
+        this.manager.unregister(this);
         this.service.close();
     }
 }

@@ -8,6 +8,10 @@
 
     <modelVersion>4.0.0</modelVersion>
 
+    <properties>
+        <maven-resources/>
+    </properties>
+
     <parent>
         <groupId>org.opendaylight.openflowplugin.openflowjava</groupId>
         <artifactId>openflowjava-parent</artifactId>
