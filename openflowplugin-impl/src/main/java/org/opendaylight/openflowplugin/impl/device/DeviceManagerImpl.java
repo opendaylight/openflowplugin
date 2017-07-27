@@ -24,10 +24,7 @@ import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
-import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
-import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
-import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
@@ -35,7 +32,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderKeeper;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
-import org.opendaylight.openflowplugin.impl.connection.OutboundQueueProviderImpl;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProvider;
 import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.SalRoleServiceImpl;
@@ -52,9 +48,6 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- *
- */
 public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProviderKeeper {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerImpl.class);
@@ -102,12 +95,14 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public void close() {
-        deviceContexts.values().forEach(OFPContext::close);
+    public void close() throws Exception {
+        for (DeviceContext deviceContext : deviceContexts.values()) {
+            deviceContext.close();
+        }
+
         deviceContexts.clear();
         Optional.ofNullable(spyPool).ifPresent(ScheduledThreadPoolExecutor::shutdownNow);
         spyPool = null;
-
     }
 
     @Override
@@ -149,25 +144,6 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     public DeviceContext createContext(@Nonnull final ConnectionContext connectionContext) {
-
-        LOG.info("ConnectionEvent: Device connected to controller, Device:{}, NodeId:{}",
-                connectionContext.getConnectionAdapter().getRemoteAddress(),
-                connectionContext.getDeviceInfo().getNodeId());
-
-        connectionContext.getConnectionAdapter().setPacketInFiltering(true);
-
-        final OutboundQueueProvider outboundQueueProvider
-                = new OutboundQueueProviderImpl(connectionContext.getDeviceInfo().getVersion());
-
-        connectionContext.setOutboundQueueProvider(outboundQueueProvider);
-        final OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration =
-                connectionContext.getConnectionAdapter().registerOutboundQueueHandler(
-                        outboundQueueProvider,
-                        config.getBarrierCountLimit().getValue(),
-                        TimeUnit.MILLISECONDS.toNanos(config.getBarrierIntervalTimeoutLimit().getValue()));
-        connectionContext.setOutboundQueueHandleRegistration(outboundQueueHandlerRegistration);
-
-
         final DeviceContext deviceContext = new DeviceContextImpl(
                 connectionContext,
                 dataBroker,

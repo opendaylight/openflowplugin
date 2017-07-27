@@ -27,10 +27,11 @@ import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipL
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionStatus;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChain;
@@ -38,15 +39,15 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainHolder
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.MasterChecker;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.OwnershipChangeListener;
-import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
-import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
+import org.opendaylight.openflowplugin.impl.connection.OutboundQueueProviderImpl;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.openflowplugin.impl.util.ItemScheduler;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -64,11 +65,11 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
 
     private final Map<DeviceInfo, ContextChain> contextChainMap = Collections.synchronizedMap(new HashMap<>());
     private final EntityOwnershipListenerRegistration eosListenerRegistration;
-    private final HashedWheelTimer timer;
     private final ClusterSingletonServiceProvider singletonServiceProvider;
     private final ItemScheduler<DeviceInfo, ContextChain> scheduler;
     private final ExecutorService executorService;
     private final OwnershipChangeListener ownershipChangeListener;
+    private final OpenflowProviderConfig config;
     private DeviceManager deviceManager;
     private RpcManager rpcManager;
     private StatisticsManager statisticsManager;
@@ -77,8 +78,9 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                                   final ExecutorService executorService,
                                   final ClusterSingletonServiceProvider singletonServiceProvider,
                                   final EntityOwnershipService entityOwnershipService,
-                                  final OwnershipChangeListener ownershipChangeListener) {
-        this.timer = timer;
+                                  final OwnershipChangeListener ownershipChangeListener,
+                                  final OpenflowProviderConfig config) {
+        this.config = config;
         this.singletonServiceProvider = singletonServiceProvider;
         this.executorService = executorService;
         this.ownershipChangeListener = ownershipChangeListener;
@@ -111,31 +113,25 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     ContextChain createContextChain(final ConnectionContext connectionContext) {
         final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
 
-        final DeviceContext deviceContext = deviceManager.createContext(connectionContext);
-        deviceContext.registerMastershipWatcher(this);
-        LOG.debug("Device" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfo);
-
-        final RpcContext rpcContext = rpcManager.createContext(deviceContext);
-        rpcContext.registerMastershipWatcher(this);
-        LOG.debug("RPC" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfo);
-
-        final StatisticsContext statisticsContext = statisticsManager.createContext(deviceContext);
-        statisticsContext.registerMastershipWatcher(this);
-        LOG.debug("Statistics" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfo);
+        final ContextListSupplier contextListSupplier = new ContextListSupplier(
+                deviceManager,
+                rpcManager,
+                statisticsManager,
+                connectionContext,
+                this,
+                executorService);
+        LOG.debug("Context supplier" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfo);
 
         final ContextChain contextChain = new ContextChainImpl(this, connectionContext,
                 executorService);
+        contextChain.registerSupplier(contextListSupplier);
         contextChain.registerDeviceRemovedHandler(deviceManager);
         contextChain.registerDeviceRemovedHandler(rpcManager);
         contextChain.registerDeviceRemovedHandler(statisticsManager);
         contextChain.registerDeviceRemovedHandler(this);
-        contextChain.addContext(deviceContext);
-        contextChain.addContext(rpcContext);
-        contextChain.addContext(statisticsContext);
         contextChainMap.put(deviceInfo, contextChain);
         LOG.debug("Context chain" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfo);
 
-        deviceContext.onPublished();
         scheduler.add(deviceInfo, contextChain);
         scheduler.startIfNotRunning();
         LOG.info("Started timer for setting SLAVE role on node {} if no role will be set in {}s.",
@@ -151,6 +147,9 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
         final ContextChain contextChain = contextChainMap.get(deviceInfo);
         LOG.info("Device {} connected.", deviceInfo);
+        LOG.info("ConnectionEvent: Device connected to controller, Device:{}, NodeId:{}",
+                connectionContext.getConnectionAdapter().getRemoteAddress(),
+                connectionContext.getDeviceInfo().getNodeId());
 
         if (Objects.nonNull(contextChain)) {
             if (contextChain.isClosing()) {
@@ -169,6 +168,17 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         }
 
         LOG.debug("No context chain found for device: {}, creating new.", deviceInfo);
+        final OutboundQueueProvider outboundQueueProvider
+                = new OutboundQueueProviderImpl(connectionContext.getDeviceInfo().getVersion());
+
+        connectionContext.setOutboundQueueProvider(outboundQueueProvider);
+        final OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration =
+                connectionContext.getConnectionAdapter().registerOutboundQueueHandler(
+                        outboundQueueProvider,
+                        config.getBarrierCountLimit().getValue(),
+                        TimeUnit.MILLISECONDS.toNanos(config.getBarrierIntervalTimeoutLimit().getValue()));
+        connectionContext.setOutboundQueueHandleRegistration(outboundQueueHandlerRegistration);
+
         final ContextChain newContextChain = createContextChain(connectionContext);
         LOG.debug("Successfully created context chain with identifier: {}", newContextChain.getIdentifier());
         return ConnectionStatus.MAY_CONTINUE;
@@ -288,7 +298,12 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
 
         Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(contextChain -> {
             deviceManager.sendNodeRemovedNotification(deviceInfo.getNodeInstanceIdentifier());
-            contextChain.close();
+
+            try {
+                contextChain.close();
+            } catch (Exception e) {
+                LOG.warn("Failed to destroy context chain for device {}: {}", deviceInfo, e);
+            }
         });
     }
 

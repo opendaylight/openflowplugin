@@ -19,7 +19,4 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemove
 public interface OFPManager extends
         DeviceRemovedHandler,
         AutoCloseable {
-
-    @Override
-    void close();
 }

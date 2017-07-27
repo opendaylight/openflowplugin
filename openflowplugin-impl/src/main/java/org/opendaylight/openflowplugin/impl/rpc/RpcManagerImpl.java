@@ -8,8 +8,6 @@
 package org.opendaylight.openflowplugin.impl.rpc;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Iterators;
-import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import javax.annotation.Nonnull;
@@ -48,14 +46,6 @@ public class RpcManagerImpl implements RpcManager {
         this.notificationPublishService = notificationPublishService;
     }
 
-    @Override
-    public void close() {
-        for (final Iterator<RpcContext> iterator = Iterators.consumingIterator(contexts.values().iterator());
-                iterator.hasNext();) {
-            iterator.next().close();
-        }
-    }
-
     /**
      * This method is only for testing
      */
@@ -84,8 +74,15 @@ public class RpcManagerImpl implements RpcManager {
     @Override
     public void onDeviceRemoved(final DeviceInfo deviceInfo) {
         contexts.remove(deviceInfo);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Rpc context removed for node {}", deviceInfo.getLOGValue());
+        LOG.debug("Rpc context removed for node {}", deviceInfo);
+    }
+
+    @Override
+    public void close() throws Exception {
+        for (RpcContext context : contexts.values()) {
+            context.close();
         }
+
+        contexts.clear();
     }
 }

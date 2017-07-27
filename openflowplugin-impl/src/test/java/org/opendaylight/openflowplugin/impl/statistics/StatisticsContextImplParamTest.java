@@ -12,6 +12,7 @@ import static com.google.common.util.concurrent.Futures.immediateFuture;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -22,6 +23,7 @@ import java.util.concurrent.ExecutionException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipWatcher;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
@@ -62,7 +64,7 @@ public class StatisticsContextImplParamTest extends StatisticsContextImpMockInit
 
 
     @Test
-    public void gatherDynamicDataTest() {
+    public void gatherDynamicDataTest() throws Exception {
 
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
 
@@ -70,7 +72,9 @@ public class StatisticsContextImplParamTest extends StatisticsContextImpMockInit
         final StatisticsContextImpl<MultipartReply> statisticsContext = new StatisticsContextImpl<MultipartReply>(
                 true, mockedDeviceContext ,convertorManager, mockedStatisticsManager,
                 MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext),
-                false);
+                false, 3000);
+        statisticsContext.registerMastershipWatcher(mock(ContextChainMastershipWatcher.class));
+
 
         final ListenableFuture<RpcResult<List<MultipartReply>>> rpcResult = immediateFuture(RpcResultBuilder.success(Collections.<MultipartReply>emptyList()).build());
         when(mockedStatisticsGatheringService.getStatisticsOfType(any(EventIdentifier.class), any(MultipartType
@@ -80,6 +84,7 @@ public class StatisticsContextImplParamTest extends StatisticsContextImpMockInit
 
         statisticsContext.setStatisticsGatheringService(mockedStatisticsGatheringService);
         statisticsContext.setStatisticsGatheringOnTheFlyService(mockedStatisticsOnFlyGatheringService);
+        statisticsContext.startUp();
 
         final ListenableFuture<Boolean> futureResult = statisticsContext.gatherDynamicData();
 

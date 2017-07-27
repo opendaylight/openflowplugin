@@ -9,6 +9,9 @@ package org.opendaylight.openflowplugin.impl.lifecycle;
 
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.MoreExecutors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,6 +22,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
+import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -53,6 +57,8 @@ public class ContextChainImplTest {
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
     @Mock
     private DeviceRemovedHandler deviceRemovedHandler;
+    @Mock
+    private Supplier<List<OFPContext>> contextListSupplier;
 
     private ContextChain contextChain;
 
@@ -60,29 +66,29 @@ public class ContextChainImplTest {
     public void setUp() throws Exception {
         Mockito.when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
         Mockito.when(deviceInfo.getServiceIdentifier()).thenReturn(SERVICE_GROUP_IDENTIFIER);
-        Mockito.when(deviceContext.closeServiceInstance()).thenReturn(Futures.immediateFuture(null));
-        Mockito.when(rpcContext.closeServiceInstance()).thenReturn(Futures.immediateFuture(null));
-        Mockito.when(statisticsContext.closeServiceInstance()).thenReturn(Futures.immediateFuture(null));
-        Mockito.when(statisticsContext.gatherDynamicData()).thenReturn(Futures.immediateFuture(null));
         Mockito.when(connectionContext.getDeviceInfo()).thenReturn(deviceInfo);
         Mockito.when(connectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
         Mockito.when(clusterSingletonServiceProvider.registerClusterSingletonService(Mockito.any()))
                 .thenReturn(clusterSingletonServiceRegistration);
 
+        final List<OFPContext> contextList = new ArrayList<>();
+        contextList.add(statisticsContext);
+        contextList.add(rpcContext);
+        contextList.add(deviceContext);
+        Mockito.when(contextListSupplier.get()).thenReturn(contextList);
+
         contextChain = new ContextChainImpl(contextChainMastershipWatcher, connectionContext,
                 MoreExecutors.newDirectExecutorService());
-        contextChain.addContext(statisticsContext);
-        contextChain.addContext(rpcContext);
-        contextChain.addContext(deviceContext);
+        contextChain.registerSupplier(contextListSupplier);
         contextChain.registerServices(clusterSingletonServiceProvider);
     }
 
     @Test
     public void closeServiceInstance() throws Exception {
         contextChain.closeServiceInstance();
-        Mockito.verify(deviceContext).closeServiceInstance();
-        Mockito.verify(rpcContext).closeServiceInstance();
-        Mockito.verify(statisticsContext).closeServiceInstance();
+        Mockito.verify(deviceContext).stopAsync();
+        Mockito.verify(rpcContext).stopAsync();
+        Mockito.verify(statisticsContext).stopAsync();
     }
 
     @Test
@@ -131,12 +137,5 @@ public class ContextChainImplTest {
                 .thenReturn(Futures.immediateFailedFuture(new RoleChangeException(TEST_NODE)));
         contextChain.makeDeviceSlave();
         Mockito.verify(contextChainMastershipWatcher).onSlaveRoleNotAcquired(Mockito.any(DeviceInfo.class));
-    }
-
-    @Test
-    public void instantiateServiceInstanceFail() throws Exception {
-        Mockito.doThrow(new IllegalStateException()).when(deviceContext).instantiateServiceInstance();
-        contextChain.instantiateServiceInstance();
-        Mockito.verify(contextChainMastershipWatcher).onNotAbleToStartMastershipMandatory(Mockito.any(DeviceInfo.class), Mockito.anyString());
     }
 }

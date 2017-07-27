@@ -7,23 +7,27 @@
  */
 package org.opendaylight.openflowplugin.impl.lifecycle;
 
-import static org.opendaylight.openflowplugin.api.openflow.OFPContext.ContextState;
-
+import com.google.common.base.Function;
+import com.google.common.base.Verify;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.Service;
+import com.google.common.util.concurrent.SettableFuture;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
-import org.opendaylight.openflowplugin.api.ConnectionException;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -47,17 +51,19 @@ public class ContextChainImpl implements ContextChain {
     private final AtomicBoolean initialSubmitting = new AtomicBoolean(false);
     private final AtomicBoolean registryFilling = new AtomicBoolean(false);
     private final AtomicBoolean rpcRegistration = new AtomicBoolean(false);
-    private final List<DeviceRemovedHandler> deviceRemovedHandlers = new CopyOnWriteArrayList<>();
     private final List<OFPContext> contexts = new CopyOnWriteArrayList<>();
+    private final List<DeviceRemovedHandler> deviceRemovedHandlers = new CopyOnWriteArrayList<>();
     private final List<ConnectionContext> auxiliaryConnections = new CopyOnWriteArrayList<>();
     private final ExecutorService executorService;
     private final ContextChainMastershipWatcher contextChainMastershipWatcher;
     private final DeviceInfo deviceInfo;
     private final ConnectionContext primaryConnection;
-    private AutoCloseable registration;
-    private ContextState state = ContextState.INITIALIZATION;
+    private final AtomicReference<ContextChainState> contextChainState =
+            new AtomicReference<>(ContextChainState.UNDEFINED);
 
-    private volatile ContextChainState contextChainState = ContextChainState.UNDEFINED;
+    private AutoCloseable registration;
+    private Supplier<List<OFPContext>> contextsSupplier;
+    private boolean closing;
 
     ContextChainImpl(@Nonnull final ContextChainMastershipWatcher contextChainMastershipWatcher,
                      @Nonnull final ConnectionContext connectionContext,
@@ -69,37 +75,62 @@ public class ContextChainImpl implements ContextChain {
     }
 
     @Override
-    public <T extends OFPContext> void addContext(@Nonnull final T context) {
-        contexts.add(context);
-    }
-
-    @Override
     public void instantiateServiceInstance() {
         LOG.info("Starting clustering services for node {}", deviceInfo);
+        Verify.verify(contexts.isEmpty());
+        contexts.addAll(contextsSupplier.get());
+        contexts.forEach(context -> {
+            context.addListener(new Service.Listener() {
+                @Override
+                public void failed(final Service.State from, final Throwable failure) {
+                    super.failed(from, failure);
+                    executorService.submit(() -> contextChainMastershipWatcher.onNotAbleToStartMastershipMandatory(
+                            deviceInfo,
+                            failure.getMessage()));
+                }
+            }, executorService);
 
-        try {
-            contexts.forEach(this::initializeContextService);
-            LOG.info("Started clustering services for node {}", deviceInfo);
-        } catch (final Exception ex) {
-            executorService.submit(() -> contextChainMastershipWatcher
-                    .onNotAbleToStartMastershipMandatory(deviceInfo, ex.getMessage()));
-        }
+            context.start();
+        });
+
+        LOG.info("Started clustering services for node {}", deviceInfo);
     }
 
     @Override
     public ListenableFuture<Void> closeServiceInstance() {
         LOG.info("Closing clustering services for node {}", deviceInfo);
-        contextChainMastershipWatcher.onSlaveRoleAcquired(deviceInfo);
 
-        final ListenableFuture<List<Void>> servicesToBeClosed = Futures
-                .successfulAsList(Lists.reverse(contexts)
-                        .stream()
-                        .map(this::closeContextService)
-                        .collect(Collectors.toList()));
+        final ListenableFuture<List<Void>> listListenableFuture = Futures.allAsList(
+                Lists.reverse(contexts).stream().map(context -> {
+                    final SettableFuture<Void> future = SettableFuture.create();
 
-        return Futures.transform(servicesToBeClosed, (input) -> {
-            LOG.info("Closed clustering services for node {}", deviceInfo);
-            return null;
+                    context.addListener(new Service.Listener() {
+                        @Override
+                        public void terminated(final Service.State from) {
+                            super.terminated(from);
+                            future.set(null);
+                        }
+
+                        @Override
+                        public void failed(final Service.State from, final Throwable failure) {
+                            super.failed(from, failure);
+                            future.setException(failure);
+                        }
+                    }, executorService);
+
+                    context.stopAsync();
+                    return future;
+                }).collect(Collectors.toList()));
+
+        return Futures.transform(listListenableFuture, new Function<List<Void>, Void>() {
+            @Nullable
+            @Override
+            public Void apply(@Nullable final List<Void> input) {
+                contextChainMastershipWatcher.onSlaveRoleAcquired(deviceInfo);
+                contexts.clear();
+                LOG.info("Closed clustering services for node {}", deviceInfo);
+                return null;
+            }
         }, executorService);
     }
 
@@ -110,13 +141,13 @@ public class ContextChainImpl implements ContextChain {
     }
 
     @Override
-    public void close() {
-        if (ContextState.TERMINATION.equals(state)) {
-            LOG.debug("ContextChain for node {} is already in TERMINATION state.", deviceInfo);
-            return;
-        }
+    public void registerSupplier(@Nonnull final Supplier<List<OFPContext>> contextsSupplier) {
+        this.contextsSupplier = contextsSupplier;
+    }
 
-        state = ContextState.TERMINATION;
+    @Override
+    public void close() throws Exception {
+        closing = true;
         contextChainMastershipWatcher.onSlaveRoleAcquired(deviceInfo);
 
         // Close all connections to devices
@@ -125,8 +156,9 @@ public class ContextChainImpl implements ContextChain {
         primaryConnection.closeConnection(true);
 
         // Close all contexts (device, statistics, rpc)
-        contexts.forEach(OFPContext::close);
+        contexts.forEach(OFPContext::stop);
         contexts.clear();
+        contextsSupplier = Collections::emptyList;
 
         // If we are still registered and we are not already closing, then close the registration
         if (Objects.nonNull(registration)) {
@@ -155,7 +187,6 @@ public class ContextChainImpl implements ContextChain {
     @Override
     public void registerServices(final ClusterSingletonServiceProvider clusterSingletonServiceProvider) {
         LOG.info("Registering clustering services for node {}", deviceInfo);
-        state = ContextState.WORKING;
         registration = Objects.requireNonNull(clusterSingletonServiceProvider
                 .registerClusterSingletonService(this));
         LOG.info("Registered clustering services for node {}", deviceInfo);
@@ -220,7 +251,7 @@ public class ContextChainImpl implements ContextChain {
 
     @Override
     public boolean isClosing() {
-        return ContextState.TERMINATION.equals(state);
+        return closing;
     }
 
     @Override
@@ -258,8 +289,8 @@ public class ContextChainImpl implements ContextChain {
     }
 
     private void changeState(final ContextChainState contextChainState) {
-        boolean propagate = this.contextChainState == ContextChainState.UNDEFINED;
-        this.contextChainState = contextChainState;
+        boolean propagate = this.contextChainState.get().equals(ContextChainState.UNDEFINED);
+        this.contextChainState.set(contextChainState);
 
         if (propagate) {
             contexts.stream()
@@ -267,29 +298,6 @@ public class ContextChainImpl implements ContextChain {
                     .map(ContextChainStateListener.class::cast)
                     .forEach(listener -> listener.onStateAcquired(contextChainState));
         }
-    }
-
-    private void initializeContextService(final OFPContext context) {
-        if (ConnectionContext.CONNECTION_STATE.WORKING.equals(primaryConnection.getConnectionState())) {
-            context.instantiateServiceInstance();
-        } else {
-            LOG.warn("Device connection for node {} doesn't exist anymore. Primary connection status: {}",
-                    deviceInfo,
-                    primaryConnection.getConnectionState());
-        }
-    }
-
-    private ListenableFuture<Void> closeContextService(final OFPContext context) {
-        if (ConnectionContext.CONNECTION_STATE.RIP.equals(primaryConnection.getConnectionState())) {
-            final String errMsg = String
-                    .format("Device connection for node %s doesn't exist anymore. Primary connection status: %s",
-                            deviceInfo.toString(),
-                            primaryConnection.getConnectionState());
-
-            return Futures.immediateFailedFuture(new ConnectionException(errMsg));
-        }
-
-        return context.closeServiceInstance();
     }
 
     private void unMasterMe() {

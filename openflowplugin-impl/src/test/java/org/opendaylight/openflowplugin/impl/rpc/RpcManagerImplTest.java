@@ -117,7 +117,7 @@ public class RpcManagerImplTest {
     }
 
     @Test
-    public void close() {
+    public void close() throws Exception {
         rpcManager.addRecordToContexts(deviceInfo,removedContexts);
         rpcManager.close();
         verify(removedContexts,atLeastOnce()).close();

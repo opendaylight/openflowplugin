@@ -65,6 +65,8 @@ public class ContextChainHolderImplTest {
     private EntityOwnershipListenerRegistration entityOwnershipListenerRegistration;
     @Mock
     private OwnershipChangeListener ownershipChangeListener;
+    @Mock
+    private OpenflowProviderConfig openflowProviderConfig;
 
     private ContextChainHolderImpl contextChainHolder;
 
@@ -94,8 +96,8 @@ public class ContextChainHolderImplTest {
                 executorService,
                 singletonServicesProvider,
                 entityOwnershipService,
-                ownershipChangeListener
-        );
+                ownershipChangeListener,
+                openflowProviderConfig);
         contextChainHolder.addManager(statisticsManager);
         contextChainHolder.addManager(rpcManager);
         contextChainHolder.addManager(deviceManager);
