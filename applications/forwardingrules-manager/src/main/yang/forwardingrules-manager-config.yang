@@ -26,5 +26,9 @@ module forwarding-rules-manager-config {
             type uint16;
             default 5;
         }
+        leaf bundle-based-reconciliation-enabled {
+            type boolean;
+            default false;
+        }
     }
 }
