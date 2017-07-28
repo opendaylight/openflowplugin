@@ -147,6 +147,9 @@ module nicira-match {
     identity nxm-of-mpls-label {
         base ofoxm:match-field;
     }
+    identity nxm-of-metadata {
+        base ofoxm:match-field;
+    }
 
     grouping ofj-nxm-nx-match-reg-grouping {
         container reg-values {
@@ -162,6 +165,14 @@ module nicira-match {
     grouping ofj-oxm-of-mpls-label-grouping {
         container mpls-label-values {
              leaf mpls-label {
+                 type uint32;
+             }
+        }
+    }
+
+    grouping ofj-oxm-of-metadata-grouping {
+        container metadata-values {
+             leaf metadata {
                  type uint32;
              }
         }
@@ -481,6 +492,9 @@ module nicira-match {
         }
         case of-mpls-label-case-value {
             uses ofj-oxm-of-mpls-label-grouping;
+        }
+        case of-metadata-case-value {
+            uses ofj-oxm-of-metadata-grouping;
         }
         case eth-dst-case-value {
             uses ofj-nxm-of-match-eth-dst-grouping;
