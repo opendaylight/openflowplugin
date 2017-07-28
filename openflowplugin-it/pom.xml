@@ -154,11 +154,6 @@
         </dependency>
         <dependency>
           <groupId>org.opendaylight.controller</groupId>
-          <artifactId>logback-config</artifactId>
-          <scope>test</scope>
-        </dependency>
-        <dependency>
-          <groupId>org.opendaylight.controller</groupId>
           <artifactId>config-persister-api</artifactId>
           <scope>test</scope>
         </dependency>
