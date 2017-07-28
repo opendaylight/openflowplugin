@@ -38,7 +38,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DeviceInitializationUtil {
-
     private static final Logger LOG = LoggerFactory.getLogger(DeviceInitializationUtil.class);
 
     private DeviceInitializationUtil() {
