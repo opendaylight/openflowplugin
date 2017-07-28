@@ -55,24 +55,43 @@ public interface DeviceContext extends
 
     /**
      * Getter.
+     *
      * @return current devices connection context
      */
     ConnectionContext getPrimaryConnectionContext();
 
     /**
      * Getter.
+     *
      * @return translator library
      */
     TranslatorLibrary oook();
 
+    /**
+     * Sets notification publish service.
+     *
+     * @param notificationPublishService the notification publish service
+     */
     void setNotificationPublishService(NotificationPublishService notificationPublishService);
 
+    /**
+     * Gets message spy.
+     *
+     * @return the message spy
+     */
     MessageSpy getMessageSpy();
 
+    /**
+     * Gets multi msg collector.
+     *
+     * @param <T>            the type parameter
+     * @param requestContext the request context
+     * @return the multi msg collector
+     */
     <T extends OfHeader> MultiMsgCollector<T> getMultiMsgCollector(RequestContext<List<T>> requestContext);
 
     /**
-     * indicates that device context is fully published (e.g.: packetIn messages should be passed).
+     * Indicates that device context is fully published (e.g.: packetIn messages should be passed).
      */
     void onPublished();
 
@@ -90,7 +109,7 @@ public interface DeviceContext extends
 
     /**
      * Setter for sal role service.
-     * @param salRoleService Role Service
+     * @param salRoleService role service
      */
     void setSalRoleService(@Nonnull SalRoleService salRoleService);
 
@@ -100,6 +119,10 @@ public interface DeviceContext extends
      */
     ListenableFuture<RpcResult<SetRoleOutput>> makeDeviceSlave();
 
+    /**
+     * Checks if device and controller supports single layer serialization.
+     * @return true if single layer serialization is supported
+     */
     boolean canUseSingleLayerSerialization();
 
     /**
