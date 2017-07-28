@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Verify;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
@@ -26,7 +25,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -47,8 +45,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipWatcher;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainState;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
@@ -168,7 +166,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final AtomicBoolean initialized = new AtomicBoolean(false);
     private final AtomicBoolean hasState = new AtomicBoolean(false);
     private final AtomicBoolean isInitialTransactionSubmitted = new AtomicBoolean(false);
-    private final AtomicReference<ContextState> state = new AtomicReference<>(ContextState.INITIALIZATION);
     private NotificationPublishService notificationPublishService;
     private TransactionChainManager transactionChainManager;
     private DeviceFlowRegistry deviceFlowRegistry;
@@ -529,8 +526,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public void onPublished() {
-        Verify.verify(ContextState.INITIALIZATION.equals(state.get()));
-        state.set(ContextState.WORKING);
         primaryConnectionContext.getConnectionAdapter().setPacketInFiltering(false);
     }
 
@@ -566,8 +561,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public ListenableFuture<Void> closeServiceInstance() {
-        LOG.info("Stopping device context cluster services for node {}", deviceInfo.getLOGValue());
-
         final ListenableFuture<Void> listenableFuture = initialized.get()
                 ? transactionChainManager.deactivateTransactionManager()
                 : Futures.immediateFuture(null);
@@ -599,34 +592,27 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public void close() {
-        if (ContextState.TERMINATION.equals(state)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("DeviceContext for node {} is already in TERMINATION state.", getDeviceInfo());
-            }
-
-            return;
-        }
-
-        state.set(ContextState.TERMINATION);
-
         // Close all datastore registries and transactions
-        if (initialized.get()) {
-            initialized.set(false);
+        if (initialized.getAndSet(false)) {
             deviceGroupRegistry.close();
             deviceFlowRegistry.close();
             deviceMeterRegistry.close();
 
             final ListenableFuture<Void> txChainShuttingDown = transactionChainManager.shuttingDown();
 
-            try {
-                txChainShuttingDown.get(TX_CHAIN_CLOSE_TIMEOUT, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                txChainShuttingDown.cancel(true);
-                LOG.warn("Failed to shut down transaction chain for device {}: {}", deviceInfo, e);
-            }
+            Futures.addCallback(txChainShuttingDown, new FutureCallback<Void>() {
+                @Override
+                public void onSuccess(@Nullable final Void result) {
+                    transactionChainManager.close();
+                    transactionChainManager = null;
+                }
 
-            transactionChainManager.close();
-            transactionChainManager = null;
+                @Override
+                public void onFailure(final Throwable t) {
+                    transactionChainManager.close();
+                    transactionChainManager = null;
+                }
+            });
         }
 
         requestContexts.forEach(requestContext -> RequestContextUtil
@@ -646,7 +632,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public void instantiateServiceInstance() {
-        LOG.info("Starting device context cluster services for node {}", deviceInfo);
         lazyTransactionManagerInitialization();
 
         try {
