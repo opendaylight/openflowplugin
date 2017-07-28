@@ -7,10 +7,10 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import com.google.common.util.concurrent.Service;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import org.opendaylight.openflowplugin.api.openflow.OFPContext.ContextState;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceRegistry;
@@ -39,7 +39,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
     private final TxFacade txFacade;
     private final MultipartWriterProvider statisticsWriterProvider;
     private final DeviceRegistry deviceRegistry;
-    private volatile ContextState gatheringState = ContextState.INITIALIZATION;
+    private volatile Service.State gatheringState = Service.State.NEW;
     private ConvertorExecutor convertorExecutor;
 
     public AbstractMultipartRequestOnTheFlyCallback(final RequestContext<List<T>> context, Class<?> requestType,
@@ -62,12 +62,12 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
         if (Objects.isNull(result)) {
             LOG.warn("Response received was null.");
 
-            if (!ContextState.TERMINATION.equals(gatheringState)) {
+            if (!Service.State.TERMINATED.equals(gatheringState)) {
                 endCollecting(true);
             }
 
             return;
-        } else if (ContextState.TERMINATION.equals(gatheringState)) {
+        } else if (Service.State.TERMINATED.equals(gatheringState)) {
             LOG.warn("Unexpected response received: xid={}, {}", result.getXid(), result.getImplementedInterface());
             return;
         }
@@ -80,7 +80,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
         } else {
             final T resultCast = (T) result;
 
-            if (ContextState.INITIALIZATION.equals(gatheringState)) {
+            if (Service.State.NEW.equals(gatheringState)) {
                 startCollecting();
             }
 
@@ -124,7 +124,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
      */
     private synchronized void startCollecting() {
         EventsTimeCounter.markStart(doneEventIdentifier);
-        gatheringState = ContextState.WORKING;
+        gatheringState = Service.State.RUNNING;
 
         final InstanceIdentifier<FlowCapableNode> instanceIdentifier = deviceInfo
                 .getNodeInstanceIdentifier()
@@ -157,7 +157,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
      * @param setResult set empty success result
      */
     private void endCollecting(final boolean setResult) {
-        gatheringState = ContextState.TERMINATION;
+        gatheringState = Service.State.TERMINATED;
         EventsTimeCounter.markEnd(doneEventIdentifier);
         EventsTimeCounter.markEnd(getEventIdentifier());
         spyMessage(MessageSpy.StatisticsGroup.FROM_SWITCH_TRANSLATE_OUT_SUCCESS);
