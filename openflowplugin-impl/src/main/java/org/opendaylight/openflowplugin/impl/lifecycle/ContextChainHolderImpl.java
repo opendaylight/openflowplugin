@@ -12,13 +12,13 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.MoreExecutors;
 import io.netty.util.HashedWheelTimer;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -65,7 +65,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     private static final long REMOVE_DEVICE_FROM_DS_TIMEOUT = 5000L;
     private static final String ASYNC_SERVICE_ENTITY_TYPE = "org.opendaylight.mdsal.AsyncServiceCloseEntityType";
 
-    private final Map<DeviceInfo, ContextChain> contextChainMap = Collections.synchronizedMap(new HashMap<>());
+    private final Map<DeviceInfo, ContextChain> contextChainMap = new ConcurrentHashMap<>();
     private final EntityOwnershipListenerRegistration eosListenerRegistration;
     private final ClusterSingletonServiceProvider singletonServiceProvider;
     private final ItemScheduler<DeviceInfo, ContextChain> scheduler;
@@ -230,14 +230,16 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     public void onDeviceDisconnected(final ConnectionContext connectionContext) {
         final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
 
-        Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(contextChain -> {
-            if (contextChain.auxiliaryConnectionDropped(connectionContext)) {
-                LOG.info("Auxiliary connection from device {} disconnected.", deviceInfo);
-            } else {
-                LOG.info("Device {} disconnected.", deviceInfo);
-                destroyContextChain(deviceInfo);
-            }
-        });
+        Optional.ofNullable(connectionContext.getDeviceInfo())
+                .map(contextChainMap::get)
+                .ifPresent(contextChain -> {
+                    if (contextChain.auxiliaryConnectionDropped(connectionContext)) {
+                        LOG.info("Auxiliary connection from device {} disconnected.", deviceInfo);
+                    } else {
+                        LOG.info("Device {} disconnected.", deviceInfo);
+                        destroyContextChain(deviceInfo);
+                    }
+                });
     }
 
     @VisibleForTesting
@@ -284,7 +286,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         }
     }
 
-    private synchronized void destroyContextChain(final DeviceInfo deviceInfo) {
+    private void destroyContextChain(final DeviceInfo deviceInfo) {
         scheduler.remove(deviceInfo);
 
         Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(contextChain -> {
