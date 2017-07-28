@@ -7,34 +7,40 @@
  */
 package org.opendaylight.openflowplugin.impl.lifecycle;
 
-import static org.opendaylight.openflowplugin.api.openflow.OFPContext.ContextState;
-
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import io.netty.util.HashedWheelTimer;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
-import org.opendaylight.openflowplugin.api.ConnectionException;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChain;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipWatcher;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainState;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainStateListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
@@ -42,6 +48,10 @@ import org.slf4j.LoggerFactory;
 
 public class ContextChainImpl implements ContextChain {
     private static final Logger LOG = LoggerFactory.getLogger(ContextChainImpl.class);
+
+    // Timeout in seconds after what we will give up on propagating role
+    private static final int SET_ROLE_TIMEOUT = 10;
+
     private final AtomicBoolean masterStateOnDevice = new AtomicBoolean(false);
     private final AtomicBoolean initialGathering = new AtomicBoolean(false);
     private final AtomicBoolean initialSubmitting = new AtomicBoolean(false);
@@ -51,26 +61,29 @@ public class ContextChainImpl implements ContextChain {
     private final List<OFPContext> contexts = new CopyOnWriteArrayList<>();
     private final List<ConnectionContext> auxiliaryConnections = new CopyOnWriteArrayList<>();
     private final ExecutorService executorService;
+    private final HashedWheelTimer timer;
     private final ContextChainMastershipWatcher contextChainMastershipWatcher;
     private final DeviceInfo deviceInfo;
     private final ConnectionContext primaryConnection;
+    private final AtomicReference<ContextChainState> contextChainState =
+            new AtomicReference<>(ContextChainState.UNDEFINED);
     private AutoCloseable registration;
-    private ContextState state = ContextState.INITIALIZATION;
-
-    private volatile ContextChainState contextChainState = ContextChainState.UNDEFINED;
+    private SalRoleService salRoleService;
 
     ContextChainImpl(@Nonnull final ContextChainMastershipWatcher contextChainMastershipWatcher,
                      @Nonnull final ConnectionContext connectionContext,
-                     @Nonnull final ExecutorService executorService) {
+                     @Nonnull final ExecutorService executorService,
+                     @Nonnull final HashedWheelTimer timer) {
         this.contextChainMastershipWatcher = contextChainMastershipWatcher;
         this.primaryConnection = connectionContext;
         this.deviceInfo = connectionContext.getDeviceInfo();
         this.executorService = executorService;
+        this.timer = timer;
     }
 
     @Override
     public <T extends OFPContext> void addContext(@Nonnull final T context) {
-        contexts.add(context);
+        contexts.add(ContextLifecycleGuard.guard(context));
     }
 
     @Override
@@ -78,11 +91,16 @@ public class ContextChainImpl implements ContextChain {
         LOG.info("Starting clustering services for node {}", deviceInfo);
 
         try {
-            contexts.forEach(this::initializeContextService);
+            contexts.forEach(OFPContext::instantiateServiceInstance);
+            Futures.addCallback(
+                    sendRoleChangeToDevice(OfpRole.BECOMEMASTER),
+                    new DeviceMasterCallback(),
+                    executorService);
+
             LOG.info("Started clustering services for node {}", deviceInfo);
         } catch (final Exception ex) {
             executorService.submit(() -> contextChainMastershipWatcher
-                    .onNotAbleToStartMastershipMandatory(deviceInfo, ex.getMessage()));
+                    .onNotAbleToStartMastershipMandatory(deviceInfo, ex.toString()));
         }
     }
 
@@ -92,9 +110,9 @@ public class ContextChainImpl implements ContextChain {
         contextChainMastershipWatcher.onSlaveRoleAcquired(deviceInfo);
 
         final ListenableFuture<List<Void>> servicesToBeClosed = Futures
-                .successfulAsList(Lists.reverse(contexts)
+                .allAsList(Lists.reverse(contexts)
                         .stream()
-                        .map(this::closeContextService)
+                        .map(OFPContext::closeServiceInstance)
                         .collect(Collectors.toList()));
 
         return Futures.transform(servicesToBeClosed, (input) -> {
@@ -111,12 +129,12 @@ public class ContextChainImpl implements ContextChain {
 
     @Override
     public void close() {
-        if (ContextState.TERMINATION.equals(state)) {
+        if (ContextChainState.CLOSED.equals(contextChainState.get())) {
             LOG.debug("ContextChain for node {} is already in TERMINATION state.", deviceInfo);
             return;
         }
 
-        state = ContextState.TERMINATION;
+        contextChainState.set(ContextChainState.CLOSED);
         contextChainMastershipWatcher.onSlaveRoleAcquired(deviceInfo);
 
         // Close all connections to devices
@@ -149,13 +167,12 @@ public class ContextChainImpl implements ContextChain {
     @Override
     public void makeContextChainStateSlave() {
         unMasterMe();
-        changeState(ContextChainState.WORKING_SLAVE);
+        changeMastershipState(ContextChainState.WORKING_SLAVE);
     }
 
     @Override
     public void registerServices(final ClusterSingletonServiceProvider clusterSingletonServiceProvider) {
         LOG.info("Registering clustering services for node {}", deviceInfo);
-        state = ContextState.WORKING;
         registration = Objects.requireNonNull(clusterSingletonServiceProvider
                 .registerClusterSingletonService(this));
         LOG.info("Registered clustering services for node {}", deviceInfo);
@@ -164,16 +181,10 @@ public class ContextChainImpl implements ContextChain {
     @Override
     public void makeDeviceSlave() {
         unMasterMe();
-
-        contexts.stream()
-                .filter(DeviceContext.class::isInstance)
-                .map(DeviceContext.class::cast)
-                .findAny()
-                .ifPresent(deviceContext -> Futures
-                        .addCallback(
-                                deviceContext.makeDeviceSlave(),
-                                new DeviceSlaveCallback(),
-                                executorService));
+        Futures.addCallback(
+                sendRoleChangeToDevice(OfpRole.BECOMESLAVE),
+                new DeviceSlaveCallback(),
+                executorService);
     }
 
     @Override
@@ -212,7 +223,7 @@ public class ContextChainImpl implements ContextChain {
             LOG.info("Device {} is able to work as master{}",
                     deviceInfo,
                     registryFilling.get() ? "." : " WITHOUT flow registry !!!");
-            changeState(ContextChainState.WORKING_MASTER);
+            changeMastershipState(ContextChainState.WORKING_MASTER);
         }
 
         return result;
@@ -220,7 +231,7 @@ public class ContextChainImpl implements ContextChain {
 
     @Override
     public boolean isClosing() {
-        return ContextState.TERMINATION.equals(state);
+        return ContextChainState.CLOSED.equals(contextChainState.get());
     }
 
     @Override
@@ -257,39 +268,22 @@ public class ContextChainImpl implements ContextChain {
         deviceRemovedHandlers.add(deviceRemovedHandler);
     }
 
-    private void changeState(final ContextChainState contextChainState) {
-        boolean propagate = this.contextChainState == ContextChainState.UNDEFINED;
-        this.contextChainState = contextChainState;
+    @Override
+    public void setSalRoleService(@Nonnull final SalRoleService salRoleService) {
+        this.salRoleService = salRoleService;
+    }
+
+    private void changeMastershipState(final ContextChainState contextChainState) {
+        if (ContextChainState.CLOSED.equals(this.contextChainState.get())) {
+            return;
+        }
+
+        boolean propagate = ContextChainState.UNDEFINED.equals(this.contextChainState.get());
+        this.contextChainState.set(contextChainState);
 
         if (propagate) {
-            contexts.stream()
-                    .filter(ContextChainStateListener.class::isInstance)
-                    .map(ContextChainStateListener.class::cast)
-                    .forEach(listener -> listener.onStateAcquired(contextChainState));
+            contexts.forEach(context -> context.onStateAcquired(contextChainState));
         }
-    }
-
-    private void initializeContextService(final OFPContext context) {
-        if (ConnectionContext.CONNECTION_STATE.WORKING.equals(primaryConnection.getConnectionState())) {
-            context.instantiateServiceInstance();
-        } else {
-            LOG.warn("Device connection for node {} doesn't exist anymore. Primary connection status: {}",
-                    deviceInfo,
-                    primaryConnection.getConnectionState());
-        }
-    }
-
-    private ListenableFuture<Void> closeContextService(final OFPContext context) {
-        if (ConnectionContext.CONNECTION_STATE.RIP.equals(primaryConnection.getConnectionState())) {
-            final String errMsg = String
-                    .format("Device connection for node %s doesn't exist anymore. Primary connection status: %s",
-                            deviceInfo.toString(),
-                            primaryConnection.getConnectionState());
-
-            return Futures.immediateFailedFuture(new ConnectionException(errMsg));
-        }
-
-        return context.closeServiceInstance();
     }
 
     private void unMasterMe() {
@@ -298,6 +292,50 @@ public class ContextChainImpl implements ContextChain {
         initialGathering.set(false);
         masterStateOnDevice.set(false);
         rpcRegistration.set(false);
+    }
+
+    private ListenableFuture<RpcResult<SetRoleOutput>> sendRoleChangeToDevice(final OfpRole newRole) {
+        if (ContextChainState.CLOSED.equals(contextChainState.get())) {
+            return Futures.immediateCancelledFuture();
+        }
+
+        LOG.debug("Sending new role {} to device {}", newRole, deviceInfo.getNodeId());
+
+        if (deviceInfo.getVersion() >= OFConstants.OFP_VERSION_1_3) {
+            final SetRoleInput setRoleInput = (new SetRoleInputBuilder())
+                    .setControllerRole(newRole)
+                    .setNode(new NodeRef(deviceInfo.getNodeInstanceIdentifier()))
+                    .build();
+
+            final Future<RpcResult<SetRoleOutput>> setRoleOutputFuture = salRoleService.setRole(setRoleInput);
+
+            timer.newTimeout(timeout -> {
+                if (!setRoleOutputFuture.isDone()) {
+                    LOG.warn("New role {} was not propagated to device {} during {} sec", newRole, deviceInfo,
+                            SET_ROLE_TIMEOUT);
+                    setRoleOutputFuture.cancel(true);
+                }
+            }, SET_ROLE_TIMEOUT, TimeUnit.SECONDS);
+
+            return JdkFutureAdapters.listenInPoolThread(setRoleOutputFuture);
+        }
+
+        LOG.info("Device: {} with version: {} does not support role {}", deviceInfo, deviceInfo.getVersion(), newRole);
+        return Futures.immediateFuture(null);
+    }
+
+    private final class DeviceMasterCallback implements FutureCallback<RpcResult<SetRoleOutput>> {
+        @Override
+        public void onSuccess(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
+            contextChainMastershipWatcher.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.MASTER_ON_DEVICE);
+            LOG.debug("Role MASTER was successfully set on device, node {}", deviceInfo);
+        }
+
+        @Override
+        public void onFailure(@Nonnull final Throwable t) {
+            contextChainMastershipWatcher.onNotAbleToStartMastershipMandatory(deviceInfo,
+                    "Was not able to set MASTER role on device: " + t.getMessage());
+        }
     }
 
     private final class DeviceSlaveCallback implements FutureCallback<RpcResult<SetRoleOutput>> {

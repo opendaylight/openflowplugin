@@ -11,9 +11,9 @@ import javax.annotation.Nonnull;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
-import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationProperty;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
 
 /**
  * Chain of contexts, hold references to the contexts.
@@ -97,4 +97,10 @@ public interface ContextChain extends ClusterSingletonService, AutoCloseable {
      * @param deviceRemovedHandler device removed handler
      */
     void registerDeviceRemovedHandler(@Nonnull DeviceRemovedHandler deviceRemovedHandler);
+
+    /**
+     * Setter for sal role service.
+     * @param salRoleService Role Service
+     */
+    void setSalRoleService(@Nonnull SalRoleService salRoleService);
 }
