@@ -16,19 +16,6 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMaster
  * General API for all OFP Context.
  */
 public interface OFPContext extends AutoCloseable, ClusterSingletonService {
-
-    /**
-     * Context state.
-     */
-    enum ContextState {
-        /* Initialization phase, context not yet fully initialized */
-        INITIALIZATION,
-        /* Standard working phase everything is fine */
-        WORKING,
-        /* Termination phase context is being shutting down */
-        TERMINATION
-    }
-
     /**
      * Get device info.
      * @return device info
