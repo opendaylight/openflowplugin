@@ -8,21 +8,15 @@
 
 package org.opendaylight.openflowplugin.api.openflow.device;
 
-import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;
-import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainStateListener;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
-import org.opendaylight.yangtools.yang.common.RpcResult;
 
 /**
  * The central entity of OFP is the Device Context, which encapsulate the logical state of a switch
@@ -43,8 +37,7 @@ public interface DeviceContext extends
         DeviceReplyProcessor,
         TxFacade,
         DeviceRegistry,
-        RequestContextStack,
-        ContextChainStateListener {
+        RequestContextStack {
 
     /**
      * Method provides state of device represented by this device context.
@@ -55,24 +48,43 @@ public interface DeviceContext extends
 
     /**
      * Getter.
+     *
      * @return current devices connection context
      */
     ConnectionContext getPrimaryConnectionContext();
 
     /**
      * Getter.
+     *
      * @return translator library
      */
     TranslatorLibrary oook();
 
+    /**
+     * Sets notification publish service.
+     *
+     * @param notificationPublishService the notification publish service
+     */
     void setNotificationPublishService(NotificationPublishService notificationPublishService);
 
+    /**
+     * Gets message spy.
+     *
+     * @return the message spy
+     */
     MessageSpy getMessageSpy();
 
+    /**
+     * Gets multi msg collector.
+     *
+     * @param <T>            the type parameter
+     * @param requestContext the request context
+     * @return the multi msg collector
+     */
     <T extends OfHeader> MultiMsgCollector<T> getMultiMsgCollector(RequestContext<List<T>> requestContext);
 
     /**
-     * indicates that device context is fully published (e.g.: packetIn messages should be passed).
+     * Indicates that device context is fully published (e.g.: packetIn messages should be passed).
      */
     void onPublished();
 
@@ -89,17 +101,9 @@ public interface DeviceContext extends
     ItemLifeCycleRegistry getItemLifeCycleSourceRegistry();
 
     /**
-     * Setter for sal role service.
-     * @param salRoleService Role Service
+     * Checks if device and controller supports single layer serialization.
+     * @return true if single layer serialization is supported
      */
-    void setSalRoleService(@Nonnull SalRoleService salRoleService);
-
-    /**
-     * Make device slave.
-     * @return listenable future from sal role service
-     */
-    ListenableFuture<RpcResult<SetRoleOutput>> makeDeviceSlave();
-
     boolean canUseSingleLayerSerialization();
 
     /**

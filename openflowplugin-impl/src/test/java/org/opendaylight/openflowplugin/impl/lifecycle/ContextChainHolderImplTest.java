@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl.lifecycle;
 
-import com.google.common.util.concurrent.Futures;
 import io.netty.util.HashedWheelTimer;
 import java.util.concurrent.ExecutorService;
 import org.junit.Assert;
@@ -30,7 +29,6 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ContextChainHolderImplTest {
@@ -80,7 +78,6 @@ public class ContextChainHolderImplTest {
         Mockito.when(deviceManager.createContext(connectionContext)).thenReturn(deviceContext);
         Mockito.when(rpcManager.createContext(deviceContext)).thenReturn(rpcContext);
         Mockito.when(statisticsManager.createContext(deviceContext)).thenReturn(statisticsContext);
-        Mockito.when(deviceContext.makeDeviceSlave()).thenReturn(Futures.immediateFuture(null));
         Mockito.when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
 
         Mockito.when(singletonServicesProvider.registerClusterSingletonService(Mockito.any()))

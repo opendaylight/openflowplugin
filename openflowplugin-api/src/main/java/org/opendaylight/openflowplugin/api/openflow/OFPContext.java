@@ -11,24 +11,13 @@ import javax.annotation.Nonnull;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipWatcher;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainState;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainStateListener;
 
 /**
  * General API for all OFP Context.
  */
-public interface OFPContext extends AutoCloseable, ClusterSingletonService {
-
-    /**
-     * Context state.
-     */
-    enum ContextState {
-        /* Initialization phase, context not yet fully initialized */
-        INITIALIZATION,
-        /* Standard working phase everything is fine */
-        WORKING,
-        /* Termination phase context is being shutting down */
-        TERMINATION
-    }
-
+public interface OFPContext extends AutoCloseable, ClusterSingletonService, ContextChainStateListener {
     /**
      * Get device info.
      * @return device info
@@ -40,6 +29,11 @@ public interface OFPContext extends AutoCloseable, ClusterSingletonService {
      * @param contextChainMastershipWatcher mastership change listener
      */
     void registerMastershipWatcher(@Nonnull ContextChainMastershipWatcher contextChainMastershipWatcher);
+
+    @Override
+    default void onStateAcquired(final ContextChainState state) {
+        // Do nothing
+    }
 
     @Override
     void close();
