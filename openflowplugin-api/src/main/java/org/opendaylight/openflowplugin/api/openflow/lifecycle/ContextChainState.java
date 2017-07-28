@@ -9,6 +9,10 @@ package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
 public enum ContextChainState {
     /**
+     * Context chain is undefined.
+     */
+    UNDEFINED,
+    /**
      * Context chain is working as MASTER.
      */
     WORKING_MASTER,
@@ -17,8 +21,7 @@ public enum ContextChainState {
      */
     WORKING_SLAVE,
     /**
-     * Context chain is undefined.
+     * Context chain is closed
      */
-    UNDEFINED
-
+    CLOSED
 }

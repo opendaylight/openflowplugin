@@ -72,8 +72,6 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     private StatisticsGatheringOnTheFlyService<T> statisticsGatheringOnTheFlyService;
     private Timeout pollTimeout;
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
-
-    private volatile ContextState state = ContextState.INITIALIZATION;
     private volatile boolean schedulingEnabled;
     private volatile ListenableFuture<Boolean> lastDataGathering;
 
@@ -218,17 +216,10 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
 
     @Override
     public void close() {
-        if (ContextState.TERMINATION.equals(state)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("StatisticsContext for node {} is already in TERMINATION state.", getDeviceInfo());
-            }
-        } else {
-            this.state = ContextState.TERMINATION;
-            stopGatheringData();
-            requestContexts.forEach(requestContext -> RequestContextUtil
-                    .closeRequestContextWithRpcError(requestContext, CONNECTION_CLOSED));
-            requestContexts.clear();
-        }
+        stopGatheringData();
+        requestContexts.forEach(requestContext -> RequestContextUtil
+                .closeRequestContextWithRpcError(requestContext, CONNECTION_CLOSED));
+        requestContexts.clear();
     }
 
     @Override

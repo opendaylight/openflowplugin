@@ -51,7 +51,6 @@ class RpcContextImpl implements RpcContext {
     // TODO: add private Sal salBroker
     private final ConcurrentMap<Class<?>, RoutedRpcRegistration<?>> rpcRegistrations = new ConcurrentHashMap<>();
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
-    private volatile ContextState state = ContextState.INITIALIZATION;
     private final DeviceInfo deviceInfo;
     private final DeviceContext deviceContext;
     private final ExtensionConverterProvider extensionConverterProvider;
@@ -104,21 +103,9 @@ class RpcContextImpl implements RpcContext {
         return (S) rpcService;
     }
 
-    /**
-     * Unregisters all services.
-     *
-     * @see java.lang.AutoCloseable#close()
-     */
     @Override
     public void close() {
-        if (ContextState.TERMINATION.equals(state)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("RpcContext for node {} is already in TERMINATION state.", getDeviceInfo().getLOGValue());
-            }
-        } else {
-            this.state = ContextState.TERMINATION;
-            unregisterRPCs();
-        }
+        unregisterRPCs();
     }
 
     private void unregisterRPCs() {
