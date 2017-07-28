@@ -60,6 +60,11 @@ module openflowplugin-extension-nicira-action {
             type empty;
         }
     }
+    grouping oxm-of-metadata-grouping {
+        leaf of-metadata {
+            type empty;
+        }
+    }
     grouping nxm-of-arp-op-grouping {
         leaf of-arp-op {
             type empty;
@@ -197,6 +202,9 @@ module openflowplugin-extension-nicira-action {
             case dst-of-mpls-label-case {
                  uses oxm-of-mpls-label-grouping;
             }
+            case dst-of-metadata-case {
+                uses oxm-of-metadata-grouping;
+            }
             case dst-nx-arp-sha-case {
                 uses nxm-nx-arp-sha-grouping;
             }
@@ -288,6 +296,9 @@ module openflowplugin-extension-nicira-action {
             }
             case src-nx-of-mpls-label-case {
                 uses oxm-of-mpls-label-grouping;
+            }
+            case src-nx-of-metadata-case {
+                uses oxm-of-metadata-grouping;
             }
             case src-nx-arp-sha-case {
                 uses nxm-nx-arp-sha-grouping;

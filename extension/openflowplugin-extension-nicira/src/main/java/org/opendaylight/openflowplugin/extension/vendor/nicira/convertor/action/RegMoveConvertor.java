@@ -86,6 +86,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstOfIpDstCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstOfIpSrcCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstOfIpSrcCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstOfMetadataCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstOfMetadataCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstOfMplsLabelCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstOfMplsLabelCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.flows.statistics.update.flow.and.statistics.map.list.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegMoveNotifFlowsStatisticsUpdateApplyActionsCaseBuilder;
@@ -131,6 +133,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxNspCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxOfInPortCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxOfInPortCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxOfMetadataCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxOfMetadataCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxOfMplsLabelCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxRegCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxRegCaseBuilder;
@@ -209,6 +213,9 @@ public class RegMoveConvertor implements
         }
         if (dstValue == NiciraMatchCodecs.NXM_OF_IN_PORT_CODEC.getHeaderWithoutHasMask().toLong()) {
             return new DstNxOfInPortCaseBuilder().setOfInPort(true).build();
+        }
+        if (dstValue == NiciraMatchCodecs.OXM_OF_METADATA_CODEC.getHeaderWithoutHasMask().toLong()) {
+            return new DstOfMetadataCaseBuilder().setOfMetadata(true).build();
         }
         if (dstValue == NiciraMatchCodecs.OXM_OF_MPLS_LABEL.getHeaderWithoutHasMask().toLong()) {
             return new DstOfMplsLabelCaseBuilder().setOfMplsLabel(true).build();
@@ -302,6 +309,9 @@ public class RegMoveConvertor implements
         }
         if (srcValue == NiciraMatchCodecs.NXM_OF_IN_PORT_CODEC.getHeaderWithoutHasMask().toLong()) {
             return new SrcNxOfInPortCaseBuilder().setOfInPort(true).build();
+        }
+        if (srcValue == NiciraMatchCodecs.OXM_OF_METADATA_CODEC.getHeaderWithoutHasMask().toLong()) {
+            return new SrcNxOfMetadataCaseBuilder().setOfMetadata(true).build();
         }
         if (srcValue == NiciraMatchCodecs.ETH_DST_CODEC.getHeaderWithoutHasMask().toLong()) {
             return new SrcOfEthDstCaseBuilder().setOfEthDst(true).build();
@@ -459,6 +469,9 @@ public class RegMoveConvertor implements
         if (dstChoice instanceof DstNxOfInPortCase) {
             return NiciraMatchCodecs.NXM_OF_IN_PORT_CODEC.getHeaderWithoutHasMask().toLong();
         }
+        if (dstChoice instanceof DstOfMetadataCase) {
+            return NiciraMatchCodecs.OXM_OF_METADATA_CODEC.getHeaderWithoutHasMask().toLong();
+        }
         if (dstChoice instanceof DstOfMplsLabelCase) {
             return NiciraMatchCodecs.OXM_OF_MPLS_LABEL.getHeaderWithoutHasMask().toLong();
         }
@@ -558,8 +571,14 @@ public class RegMoveConvertor implements
         if (srcChoice instanceof SrcNxOfInPortCase) {
             return NiciraMatchCodecs.NXM_OF_IN_PORT_CODEC.getHeaderWithoutHasMask().toLong();
         }
+        if (srcChoice instanceof SrcNxOfMetadataCase) {
+            return NiciraMatchCodecs.OXM_OF_METADATA_CODEC.getHeaderWithoutHasMask().toLong();
+        }
         if (srcChoice instanceof SrcNxOfMplsLabelCase) {
             return NiciraMatchCodecs.OXM_OF_MPLS_LABEL.getHeaderWithoutHasMask().toLong();
+        }
+        if (srcChoice instanceof SrcNxOfMetadataCase) {
+            return NiciraMatchCodecs.OXM_OF_METADATA_CODEC.getHeaderWithoutHasMask().toLong();
         }
         if (srcChoice instanceof SrcNxTunIpv4DstCase) {
             return NiciraMatchCodecs.TUN_IPV4_DST_CODEC.getHeaderWithoutHasMask().toLong();
