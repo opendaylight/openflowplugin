@@ -51,7 +51,6 @@ class RpcContextImpl implements RpcContext {
     // TODO: add private Sal salBroker
     private final ConcurrentMap<Class<?>, RoutedRpcRegistration<?>> rpcRegistrations = new ConcurrentHashMap<>();
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
-    private volatile ContextState state = ContextState.INITIALIZATION;
     private final DeviceInfo deviceInfo;
     private final DeviceContext deviceContext;
     private final ExtensionConverterProvider extensionConverterProvider;
@@ -78,14 +77,10 @@ class RpcContextImpl implements RpcContext {
         this.tracker = new Semaphore(maxRequests, true);
     }
 
-    /**
-     * @see org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext#registerRpcServiceImplementation(java.lang.Class,
-     * org.opendaylight.yangtools.yang.binding.RpcService)
-     */
     @Override
     public <S extends RpcService> void registerRpcServiceImplementation(final Class<S> serviceClass,
                                                                         final S serviceInstance) {
-        if (! rpcRegistrations.containsKey(serviceClass)) {
+        if (!rpcRegistrations.containsKey(serviceClass)) {
             final RoutedRpcRegistration<S> routedRpcReg = rpcProviderRegistry.addRoutedRpcImplementation(serviceClass, serviceInstance);
             routedRpcReg.registerPath(NodeContext.class, nodeInstanceIdentifier);
             rpcRegistrations.put(serviceClass, routedRpcReg);
@@ -101,24 +96,12 @@ class RpcContextImpl implements RpcContext {
     public <S extends RpcService> S lookupRpcService(final Class<S> serviceClass) {
         RoutedRpcRegistration<?> registration = rpcRegistrations.get(serviceClass);
         final RpcService rpcService = registration.getInstance();
-        return (S) rpcService;
+        return serviceClass.cast(rpcService);
     }
 
-    /**
-     * Unregisters all services.
-     *
-     * @see java.lang.AutoCloseable#close()
-     */
     @Override
     public void close() {
-        if (ContextState.TERMINATION.equals(state)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("RpcContext for node {} is already in TERMINATION state.", getDeviceInfo().getLOGValue());
-            }
-        } else {
-            this.state = ContextState.TERMINATION;
-            unregisterRPCs();
-        }
+        unregisterRPCs();
     }
 
     private void unregisterRPCs() {
@@ -190,8 +173,6 @@ class RpcContextImpl implements RpcContext {
 
     @Override
     public ListenableFuture<Void> closeServiceInstance() {
-        LOG.info("Stopping rpc context cluster services for node {}", deviceInfo.getLOGValue());
-
         return Futures.transform(Futures.immediateFuture(null), new Function<Void, Void>() {
             @Nullable
             @Override
@@ -204,7 +185,6 @@ class RpcContextImpl implements RpcContext {
 
     @Override
     public void instantiateServiceInstance() {
-        LOG.info("Starting rpc context cluster services for node {}", deviceInfo.getLOGValue());
         MdSalRegistrationUtils.registerServices(this, deviceContext, extensionConverterProvider, convertorExecutor);
 
         if (isStatisticsRpcEnabled && !deviceContext.canUseSingleLayerSerialization()) {
