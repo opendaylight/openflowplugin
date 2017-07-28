@@ -139,7 +139,8 @@ public class DeviceInitializationUtil {
 
     /**
      * Retrieve switch features from connection.
-     *
+     :action GotoClass
+
      * @param connectionContext connection context
      * @return switch features
      */
