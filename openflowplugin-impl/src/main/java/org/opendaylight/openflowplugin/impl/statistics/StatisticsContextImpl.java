@@ -73,7 +73,6 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     private Timeout pollTimeout;
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
 
-    private volatile ContextState state = ContextState.INITIALIZATION;
     private volatile boolean schedulingEnabled;
     private volatile ListenableFuture<Boolean> lastDataGathering;
 
@@ -218,17 +217,10 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
 
     @Override
     public void close() {
-        if (ContextState.TERMINATION.equals(state)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("StatisticsContext for node {} is already in TERMINATION state.", getDeviceInfo());
-            }
-        } else {
-            this.state = ContextState.TERMINATION;
-            stopGatheringData();
-            requestContexts.forEach(requestContext -> RequestContextUtil
-                    .closeRequestContextWithRpcError(requestContext, CONNECTION_CLOSED));
-            requestContexts.clear();
-        }
+        stopGatheringData();
+        requestContexts.forEach(requestContext -> RequestContextUtil
+                .closeRequestContextWithRpcError(requestContext, CONNECTION_CLOSED));
+        requestContexts.clear();
     }
 
     @Override
@@ -313,8 +305,6 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
 
     @Override
     public ListenableFuture<Void> closeServiceInstance() {
-        LOG.info("Stopping statistics context cluster services for node {}", deviceInfo);
-
         return Futures.transform(Futures.immediateFuture(null), new Function<Void, Void>() {
             @Nullable
             @Override
@@ -360,7 +350,6 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
 
     @Override
     public void instantiateServiceInstance() {
-        LOG.info("Starting statistics context cluster services for node {}", deviceInfo);
         this.statListForCollectingInitialization();
 
         Futures.addCallback(this.gatherDynamicData(), new FutureCallback<Boolean>() {
