@@ -131,6 +131,30 @@
     },
     {
       "key": {
+        "uuid": "da2a55be_aa3bb99a",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/ReconciliationManager.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-29T00:31:31Z",
+      "side": 1,
+      "message": "plugin should not call any specific api of any external framework/application. External frameworks/applications should register for a notification from the plugin. And for that plugin should expose interface that defines these notifications.",
+      "parentUuid": "da2a55be_aea2d6ab",
+      "range": {
+        "startLine": 21,
+        "startChar": 1,
+        "endLine": 23,
+        "endChar": 45
+      },
+      "revId": "e16f06fc67f101fe7d924ea81ad2f22336bfe9a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da2a55be_9402926d",
         "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/ReconciliationManager.java",
         "patchSetId": 7
@@ -775,6 +799,24 @@
     },
     {
       "key": {
+        "uuid": "da2a55be_0a43e514",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManagerImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-29T00:31:31Z",
+      "side": 1,
+      "message": "yes, i think that should be enough.",
+      "parentUuid": "da2a55be_aed49620",
+      "revId": "e16f06fc67f101fe7d924ea81ad2f22336bfe9a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da2a55be_f454ae55",
         "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManagerImpl.java",
         "patchSetId": 7
@@ -851,6 +893,24 @@
       "side": 1,
       "message": "I had changed from java enum to yang after a review comment. Should I stick with yang or revert it to java enum. Also I would introduce another enum to maintain the status of the reconciliation for each service to be displayed in cli. Should I use java enum there too?",
       "parentUuid": "da2a55be_b4a07644",
+      "revId": "e16f06fc67f101fe7d924ea81ad2f22336bfe9a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_ea45b117",
+        "filename": "applications/reconciliation-framework/src/main/yang/reconciliation-framework-config.yang",
+        "patchSetId": 7
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-29T00:31:31Z",
+      "side": 1,
+      "message": "I don\u0027t see any reason why we should define yang model for the enum that is very specifically defined for the reconciliation framework. Also reconciliation framework API\u0027s can\u0027t be exposed over the restconf, so i don\u0027t see any reason to define the enum in yang.",
+      "parentUuid": "da2a55be_ffabda1b",
       "revId": "e16f06fc67f101fe7d924ea81ad2f22336bfe9a5",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
