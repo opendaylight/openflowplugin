@@ -1,0 +1,101 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da2a55be_4a215d4c",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/mastership/MastershipChangeServiceManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-29T01:18:12Z",
+      "side": 1,
+      "message": "why do you need an explicit unregister method, when you can call .close() on MastershipChangeRegistration ? This is the general pattern used across ODL e.g. DataChangeNotification",
+      "revId": "46084b922c510c6f0e412b16bc96b36bc3a0358c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_aad73922",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/mastership/MastershipChangeServiceManagerFactoryImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-29T01:18:12Z",
+      "side": 1,
+      "message": "do you really need a factory pattern here to return a object of mastership change service manager ?",
+      "range": {
+        "startLine": 13,
+        "startChar": 13,
+        "endLine": 13,
+        "endChar": 54
+      },
+      "revId": "46084b922c510c6f0e412b16bc96b36bc3a0358c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_eae131ff",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/mastership/MastershipChangeServiceManagerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-29T01:18:12Z",
+      "side": 1,
+      "message": "please remove the blank line.",
+      "revId": "46084b922c510c6f0e412b16bc96b36bc3a0358c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_4ae83de2",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/mastership/MastershipChangeServiceManagerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-29T01:18:12Z",
+      "side": 1,
+      "message": "given that it registers the reconciliation framework, we should return the registration object so that application can close the registration.",
+      "range": {
+        "startLine": 52,
+        "startChar": 16,
+        "endLine": 52,
+        "endChar": 51
+      },
+      "revId": "46084b922c510c6f0e412b16bc96b36bc3a0358c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_2ae34906",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/mastership/MastershipChangeServiceManagerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-29T01:18:12Z",
+      "side": 1,
+      "message": "we should throw an exception here.",
+      "revId": "46084b922c510c6f0e412b16bc96b36bc3a0358c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
