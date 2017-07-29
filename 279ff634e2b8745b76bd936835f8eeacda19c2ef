@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da2a55be_ca38ada2",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/ReconciliationManager.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-29T00:31:31Z",
+      "side": 1,
+      "message": "listener",
+      "range": {
+        "startLine": 26,
+        "startChar": 80,
+        "endLine": 26,
+        "endChar": 87
+      },
+      "revId": "279ff634e2b8745b76bd936835f8eeacda19c2ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_8abfd5fa",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/ReconciliationManager.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-29T00:31:31Z",
+      "side": 1,
+      "message": "if we return NotificationRegistration when application register the service, user should use NotificationRegistration.close() to close the service registration. So we don\u0027t need to provide the explicit API to unregister the service.",
+      "range": {
+        "startLine": 31,
+        "startChar": 4,
+        "endLine": 31,
+        "endChar": 71
+      },
+      "revId": "279ff634e2b8745b76bd936835f8eeacda19c2ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_6aba610b",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/ReconciliationManager.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-29T00:31:31Z",
+      "side": 1,
+      "message": "So we want plugin to call this method in case they want reconciliation framework to stop the reconciliation? Plugin should not call any specific method that is exposed by any external framework / application. Plugin should ideally provide a notifications (reconciled , stopReconcile) that framework can register it\u0027s listener.",
+      "range": {
+        "startLine": 37,
+        "startChar": 9,
+        "endLine": 37,
+        "endChar": 27
+      },
+      "revId": "279ff634e2b8745b76bd936835f8eeacda19c2ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
