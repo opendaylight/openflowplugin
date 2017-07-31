@@ -12,6 +12,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeRegistration;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeService;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
+import org.opendaylight.openflowplugin.api.openflow.mastership.ReconciliationFrameworkRegistration;
 
 public class MastershipServiceDelegate implements MastershipChangeService, MastershipChangeRegistration {
 
@@ -36,7 +37,12 @@ public class MastershipServiceDelegate implements MastershipChangeService, Maste
 
     @Override
     public void close() throws Exception {
-        this.manager.unregister(this.service);
+        ((MastershipChangeServiceManagerImpl)manager).unregister(this);
         this.service.close();
+    }
+
+    @Override
+    public String toString() {
+        return service.toString();
     }
 }

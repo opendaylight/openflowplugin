@@ -7,16 +7,16 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.mastership;
 
-/**
- * API provided for all OFP application to use.
- * This is registration of service for mastership changes.
- * Service provides three events.
- * <ul>
- *     <li><i>onBecomeOwner</i>
- *     <li><i>onLoseOwnership</i>
- * </ul>
- * @see MastershipChangeService
- * @since 0.5.0 Nitrogen
- */
-public interface MastershipChangeRegistration extends AutoCloseable {
+public class MastershipChangeException extends Exception {
+
+    private static final long serialVersionUID = 998L;
+
+    public MastershipChangeException(String message) {
+        super(message);
+    }
+
+    public MastershipChangeException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
 }
