@@ -411,23 +411,19 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         final OpenflowVersion openflowVersion = OpenflowVersion.get(deviceInfo.getVersion());
 
         // Try to get ingress from match
-        final Optional<NodeConnectorRef> nodeConnectorRef = Optional.ofNullable(match)
-                .flatMap(m -> Optional.ofNullable(m.getInPort()))
-                .flatMap(nodeConnectorId -> Optional.ofNullable(InventoryDataServiceUtil
+        final NodeConnectorRef nodeConnectorRef = Objects.nonNull(packetIn.getIngress())
+                ? packetIn.getIngress() : Optional.ofNullable(match)
+                .map(Match::getInPort)
+                .map(nodeConnectorId -> InventoryDataServiceUtil
                         .portNumberfromNodeConnectorId(
                                 openflowVersion,
-                                nodeConnectorId)))
+                                nodeConnectorId))
                 .map(portNumber -> InventoryDataServiceUtil
                         .nodeConnectorRefFromDatapathIdPortno(
                                 deviceInfo.getDatapathId(),
                                 portNumber,
-                                openflowVersion));
-
-        if (!nodeConnectorRef.isPresent()) {
-            LOG.debug("Received packet from switch {}  but couldn't find an input port", connectionAdapter.getRemoteAddress());
-            messageSpy.spyMessage(implementedInterface, MessageSpy.StatisticsGroup.FROM_SWITCH_TRANSLATE_SRC_FAILURE);
-            return;
-        }
+                                openflowVersion))
+                .orElse(null);
 
         messageSpy.spyMessage(implementedInterface, MessageSpy.StatisticsGroup.FROM_SWITCH_TRANSLATE_OUT_SUCCESS);
 
@@ -440,7 +436,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
         final ListenableFuture<?> offerNotification = notificationPublishService
                 .offerNotification(new PacketReceivedBuilder(packetIn)
-                        .setIngress(nodeConnectorRef.get())
+                        .setIngress(nodeConnectorRef)
                         .setMatch(MatchUtil.transformMatch(match,
                                 org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received
                                         .Match.class))
