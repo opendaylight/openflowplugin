@@ -8,15 +8,14 @@
 package org.opendaylight.openflowplugin.api.openflow.mastership;
 
 /**
- * API provided for all OFP application to use.
- * This is registration of service for mastership changes.
+ * API provided for reconciliation framework registration.
  * Service provides three events.
  * <ul>
- *     <li><i>onBecomeOwner</i>
- *     <li><i>onLoseOwnership</i>
+ *     <li><i>onDevicePrepared</i>
+ *     <li><i>onDeviceDisconnected</i>
  * </ul>
- * @see MastershipChangeService
+ * @see ReconciliationFrameworkEvent
  * @since 0.5.0 Nitrogen
  */
-public interface MastershipChangeRegistration extends AutoCloseable {
+public interface ReconciliationFrameworkRegistration extends AutoCloseable {
 }

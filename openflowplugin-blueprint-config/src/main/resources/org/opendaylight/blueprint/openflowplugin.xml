@@ -22,8 +22,8 @@
     <reference id="configurationServiceFactory"
                interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationServiceFactory"/>
 
-    <reference id="mastershipChangeServiceManagerFactory"
-               interface="org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManagerFactory"/>
+    <reference id="mastershipChangeServiceManager"
+               interface="org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager"/>
 
     <odl:clustered-app-config id="openflowProviderConfig"
                               binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig"/>
@@ -39,13 +39,9 @@
                                update-method="update"/>
     </bean>
 
-    <bean id="mastershipChangeServiceManager"
-          factory-ref="mastershipChangeServiceManagerFactory"
-          factory-method="newInstance"
-          destroy-method="close"
-    />
+    <!--<bean id="mastershipChangeServiceManager" class="org.opendaylight.openflowplugin.impl.mastership.MastershipChangeServiceManagerImpl"/>-->
 
-    <service ref="mastershipChangeServiceManager" interface="org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager"/>
+    <!--<service ref="mastershipChangeServiceManager" interface="org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager"/>-->
 
     <service ref="configurationService" interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService"/>
 
