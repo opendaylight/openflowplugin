@@ -424,9 +424,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                                 openflowVersion));
 
         if (!nodeConnectorRef.isPresent()) {
-            LOG.debug("Received packet from switch {}  but couldn't find an input port", connectionAdapter.getRemoteAddress());
-            messageSpy.spyMessage(implementedInterface, MessageSpy.StatisticsGroup.FROM_SWITCH_TRANSLATE_SRC_FAILURE);
-            return;
+            LOG.debug("Received packet from switch {} but couldn't find an input port", connectionAdapter.getRemoteAddress());
         }
 
         messageSpy.spyMessage(implementedInterface, MessageSpy.StatisticsGroup.FROM_SWITCH_TRANSLATE_OUT_SUCCESS);
@@ -440,7 +438,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
         final ListenableFuture<?> offerNotification = notificationPublishService
                 .offerNotification(new PacketReceivedBuilder(packetIn)
-                        .setIngress(nodeConnectorRef.get())
+                        .setIngress(nodeConnectorRef.orElse(null))
                         .setMatch(MatchUtil.transformMatch(match,
                                 org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received
                                         .Match.class))
