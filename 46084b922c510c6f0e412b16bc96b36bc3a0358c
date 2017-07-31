@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "ba1f61a0_abcdf588",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/mastership/MastershipChangeServiceManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-07-31T12:00:49Z",
+      "side": 1,
+      "message": "Moved to the implementation, we do not need to define unregister method in API. It defined just to remove registration after calling close method in registration.",
+      "parentUuid": "da2a55be_4a215d4c",
+      "revId": "46084b922c510c6f0e412b16bc96b36bc3a0358c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da2a55be_aad73922",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/mastership/MastershipChangeServiceManagerFactoryImpl.java",
         "patchSetId": 1
@@ -30,6 +48,30 @@
       "writtenOn": "2017-07-29T01:18:12Z",
       "side": 1,
       "message": "do you really need a factory pattern here to return a object of mastership change service manager ?",
+      "range": {
+        "startLine": 13,
+        "startChar": 13,
+        "endLine": 13,
+        "endChar": 54
+      },
+      "revId": "46084b922c510c6f0e412b16bc96b36bc3a0358c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_4846ff24",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/mastership/MastershipChangeServiceManagerFactoryImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-07-31T12:00:49Z",
+      "side": 1,
+      "message": "Yes probably not as no other work is done by this factory.",
+      "parentUuid": "da2a55be_aad73922",
       "range": {
         "startLine": 13,
         "startChar": 13,
@@ -82,6 +124,30 @@
     },
     {
       "key": {
+        "uuid": "ba1f61a0_083c0793",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/mastership/MastershipChangeServiceManagerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-07-31T12:00:49Z",
+      "side": 1,
+      "message": "yes you right",
+      "parentUuid": "da2a55be_4ae83de2",
+      "range": {
+        "startLine": 52,
+        "startChar": 16,
+        "endLine": 52,
+        "endChar": 51
+      },
+      "revId": "46084b922c510c6f0e412b16bc96b36bc3a0358c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da2a55be_2ae34906",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/mastership/MastershipChangeServiceManagerImpl.java",
         "patchSetId": 1
@@ -93,6 +159,24 @@
       "writtenOn": "2017-07-29T01:18:12Z",
       "side": 1,
       "message": "we should throw an exception here.",
+      "revId": "46084b922c510c6f0e412b16bc96b36bc3a0358c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_28374bb2",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/mastership/MastershipChangeServiceManagerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-07-31T12:00:49Z",
+      "side": 1,
+      "message": "agree",
+      "parentUuid": "da2a55be_2ae34906",
       "revId": "46084b922c510c6f0e412b16bc96b36bc3a0358c",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
