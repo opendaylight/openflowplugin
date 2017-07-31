@@ -9,7 +9,6 @@ package org.opendaylight.openflowplugin.api.openflow.mastership;
 
 import com.google.common.util.concurrent.FutureCallback;
 import javax.annotation.Nonnull;
-import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationProperty;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.OwnershipChangeListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
@@ -37,7 +36,16 @@ public interface ReconciliationFrameworkEvent extends AutoCloseable {
      * @param deviceInfo connected switch identification
      * @param callback callback need to be attached to reconciliation result future
      */
-    default void onDevicePrepared(@Nonnull DeviceInfo deviceInfo, @Nonnull FutureCallback<ResultState> callback) {
-        callback.onSuccess(ResultState.DONOTHING);
-    }
+    void onDevicePrepared(@Nonnull DeviceInfo deviceInfo, @Nonnull FutureCallback<ResultState> callback);
+
+    /**
+     * This event occurs after device is disconnected or being slaved.
+     * Event is similar to the {@link MastershipChangeService#onLoseOwnership(DeviceInfo)}. This event is used by
+     * reconciliation framework that the framework don't need to register {@link MastershipChangeService}
+     * @param deviceInfo connected switch identification
+     * @see MastershipChangeService
+     */
+    void onDeviceDisconnected(@Nonnull DeviceInfo deviceInfo);
+
+
 }

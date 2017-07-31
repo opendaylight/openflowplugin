@@ -22,7 +22,6 @@ public interface MastershipChangeServiceManager extends OwnershipChangeListener,
      * It doesn't contain event for reconciliation framework event.
      * @param service implementation of {@link MastershipChangeService}
      * @return registration
-     * @since 0.5.0 Nitrogen
      * @see ReconciliationFrameworkEvent
      */
     @Nonnull
@@ -30,19 +29,13 @@ public interface MastershipChangeServiceManager extends OwnershipChangeListener,
 
     /**
      * Setter for reconciliation framework event listener. It can be registered only once.
-     * Another registrations will be ignored.
-     * @see ReconciliationFrameworkEvent
-     * @since 0.5.0 Nitrogen
+     * Another registrations will throw an exception
      * @param mastershipRFRegistration reconciliation framework
+     * @return registration object, which can be closed to unregister
+     * @throws MastershipChangeException if already reconciliation framework registered
      */
-    void reconciliationFrameworkRegistration(@Nonnull ReconciliationFrameworkEvent mastershipRFRegistration);
-
-    /**
-     * Unregister of listener. Registration after unregister need to be closed by client.
-     * @param service implementation of {@link MastershipChangeService}
-     * @since 0.5.0 Nitrogen
-     */
-    void unregister(@Nonnull MastershipChangeService service);
+    ReconciliationFrameworkRegistration reconciliationFrameworkRegistration(
+            @Nonnull ReconciliationFrameworkEvent mastershipRFRegistration) throws MastershipChangeException;
 
     @Override
     void close();
