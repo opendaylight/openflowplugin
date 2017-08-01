@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.impl.mastership;
 
 import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +21,7 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.MasterChecker;
 import org.opendaylight.openflowplugin.api.openflow.mastership.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,8 +36,6 @@ public class MastershipChangeServiceManagerImplTest {
     private MastershipChangeService secondService;
     @Mock
     private DeviceInfo deviceInfo;
-    @Mock
-    private FutureCallback<ResultState> resultStateFutureCallback;
     @Mock
     private MasterChecker masterChecker;
     @Mock
@@ -105,8 +105,8 @@ public class MastershipChangeServiceManagerImplTest {
 
     @Test
     public void becomeMasterBeforeDS() throws Exception {
-        manager.becomeMasterBeforeSubmittedDS(deviceInfo, resultStateFutureCallback);
-        Mockito.verify(event).onDevicePrepared(deviceInfo, resultStateFutureCallback);
+        manager.becomeMasterBeforeSubmittedDS(deviceInfo);
+        Mockito.verify(event).onDevicePrepared(deviceInfo);
     }
 
     @Test
