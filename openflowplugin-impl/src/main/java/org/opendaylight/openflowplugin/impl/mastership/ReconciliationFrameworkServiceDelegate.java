@@ -8,11 +8,13 @@
 package org.opendaylight.openflowplugin.impl.mastership;
 
 import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.mastership.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
 
 import javax.annotation.Nonnull;
+import java.util.concurrent.Future;
 
 public class ReconciliationFrameworkServiceDelegate implements ReconciliationFrameworkEvent, ReconciliationFrameworkRegistration {
 
@@ -32,13 +34,13 @@ public class ReconciliationFrameworkServiceDelegate implements ReconciliationFra
     }
 
     @Override
-    public void onDevicePrepared(@Nonnull DeviceInfo deviceInfo, @Nonnull FutureCallback<ResultState> callback) {
-        this.service.onDevicePrepared(deviceInfo, callback);
+    public ListenableFuture<ResultState> onDevicePrepared(@Nonnull DeviceInfo deviceInfo) {
+        return this.service.onDevicePrepared(deviceInfo);
     }
 
     @Override
-    public void onDeviceDisconnected(@Nonnull DeviceInfo deviceInfo) {
-        this.service.onDeviceDisconnected(deviceInfo);
+    public ListenableFuture<Void> onDeviceDisconnected(@Nonnull DeviceInfo deviceInfo) {
+        return this.service.onDeviceDisconnected(deviceInfo);
     }
 
     @Override

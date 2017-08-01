@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.impl.mastership;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.MasterChecker;
 import org.opendaylight.openflowplugin.api.openflow.mastership.*;
@@ -19,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Future;
 
 public final class MastershipChangeServiceManagerImpl implements MastershipChangeServiceManager {
 
@@ -91,11 +93,9 @@ public final class MastershipChangeServiceManagerImpl implements MastershipChang
     }
 
     @Override
-    public void becomeMasterBeforeSubmittedDS(@Nonnull DeviceInfo deviceInfo,
-                                              @Nonnull FutureCallback<ResultState> callback) {
-        if (rfRegistration != null) {
-            ((ReconciliationFrameworkEvent)rfRegistration).onDevicePrepared(deviceInfo, callback);
-        }
+    public ListenableFuture<ResultState> becomeMasterBeforeSubmittedDS(@Nonnull DeviceInfo deviceInfo) {
+        return rfRegistration == null ? null :
+                ((ReconciliationFrameworkEvent)rfRegistration).onDevicePrepared(deviceInfo);
     }
 
     @Override

@@ -786,7 +786,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     ContextChainMastershipState.MASTER_ON_DEVICE
             );
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Role MASTER was successfully set on device, node {}", deviceInfo.getLOGValue());
+                LOG.debug("Role MASTER was successfully set on device, node {}", deviceInfo);
             }
         }
 
