@@ -7,8 +7,9 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
-import com.google.common.util.concurrent.FutureCallback;
 import javax.annotation.Nonnull;
+
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
 
@@ -45,9 +46,9 @@ public interface OwnershipChangeListener extends ReconciliationFrameworkRegistra
      * @see #becomeMaster(DeviceInfo)
      * @see #isReconciliationFrameworkRegistered()
      * @param deviceInfo connected switch identification
-     * @param callback future callback to be able handle device after reconciliation
+     * @return future to be able handle device after reconciliation
      */
-    void becomeMasterBeforeSubmittedDS(@Nonnull DeviceInfo deviceInfo, @Nonnull FutureCallback<ResultState> callback);
+    ListenableFuture<ResultState> becomeMasterBeforeSubmittedDS(@Nonnull DeviceInfo deviceInfo);
 
     /**
      * Set the device mastership checker.
