@@ -155,6 +155,30 @@
     },
     {
       "key": {
+        "uuid": "ba1f61a0_5cb51dcc",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/ReconciliationManager.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-08-01T04:25:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da2a55be_aa3bb99a",
+      "range": {
+        "startLine": 21,
+        "startChar": 1,
+        "endLine": 23,
+        "endChar": 45
+      },
+      "revId": "e16f06fc67f101fe7d924ea81ad2f22336bfe9a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da2a55be_9402926d",
         "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/ReconciliationManager.java",
         "patchSetId": 7
@@ -817,6 +841,24 @@
     },
     {
       "key": {
+        "uuid": "ba1f61a0_dcc0ed2c",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManagerImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-08-01T04:25:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da2a55be_0a43e514",
+      "revId": "e16f06fc67f101fe7d924ea81ad2f22336bfe9a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da2a55be_f454ae55",
         "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManagerImpl.java",
         "patchSetId": 7
@@ -911,6 +953,24 @@
       "side": 1,
       "message": "I don\u0027t see any reason why we should define yang model for the enum that is very specifically defined for the reconciliation framework. Also reconciliation framework API\u0027s can\u0027t be exposed over the restconf, so i don\u0027t see any reason to define the enum in yang.",
       "parentUuid": "da2a55be_ffabda1b",
+      "revId": "e16f06fc67f101fe7d924ea81ad2f22336bfe9a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_3cddc915",
+        "filename": "applications/reconciliation-framework/src/main/yang/reconciliation-framework-config.yang",
+        "patchSetId": 7
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-08-01T04:25:32Z",
+      "side": 1,
+      "message": "Its not needed and I have already removed it in the earlier patchset.",
+      "parentUuid": "da2a55be_ea45b117",
       "revId": "e16f06fc67f101fe7d924ea81ad2f22336bfe9a5",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
