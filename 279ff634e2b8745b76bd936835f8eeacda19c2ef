@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "ba1f61a0_bcc9b95c",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/ReconciliationManager.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-08-01T04:25:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da2a55be_ca38ada2",
+      "range": {
+        "startLine": 26,
+        "startChar": 80,
+        "endLine": 26,
+        "endChar": 87
+      },
+      "revId": "279ff634e2b8745b76bd936835f8eeacda19c2ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da2a55be_8abfd5fa",
         "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/ReconciliationManager.java",
         "patchSetId": 10
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "ba1f61a0_9cc67548",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/ReconciliationManager.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-08-01T04:25:32Z",
+      "side": 1,
+      "message": "The unregisterService is called when the user calls NotificationRegistration.close(). The API is for to be used within Reconciliation framework. You could its usage in ReconciliationServiceDelegate.",
+      "parentUuid": "da2a55be_8abfd5fa",
+      "range": {
+        "startLine": 31,
+        "startChar": 4,
+        "endLine": 31,
+        "endChar": 71
+      },
+      "revId": "279ff634e2b8745b76bd936835f8eeacda19c2ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da2a55be_6aba610b",
         "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/ReconciliationManager.java",
         "patchSetId": 10
@@ -59,6 +107,30 @@
       "writtenOn": "2017-07-29T00:31:31Z",
       "side": 1,
       "message": "So we want plugin to call this method in case they want reconciliation framework to stop the reconciliation? Plugin should not call any specific method that is exposed by any external framework / application. Plugin should ideally provide a notifications (reconciled , stopReconcile) that framework can register it\u0027s listener.",
+      "range": {
+        "startLine": 37,
+        "startChar": 9,
+        "endLine": 37,
+        "endChar": 27
+      },
+      "revId": "279ff634e2b8745b76bd936835f8eeacda19c2ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_fcc33136",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/ReconciliationManager.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-08-01T04:25:32Z",
+      "side": 1,
+      "message": "Removed this API. Have discussed with Jozef regrading this. OFP would provide hooks for stopReconcile too. Would make that changes once it is available.",
+      "parentUuid": "da2a55be_6aba610b",
       "range": {
         "startLine": 37,
         "startChar": 9,
