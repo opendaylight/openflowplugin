@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.mastership;
 
-import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.ListenableFuture;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.OwnershipChangeListener;
@@ -16,12 +16,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 /**
  * Service provide one event designed for reconciliation framework.
  * <ul>
- *     <li><i>{@link #onDevicePrepared(DeviceInfo, FutureCallback)}</i>
+ *     <li><i>{@link #onDeviceDisconnected(DeviceInfo)}</i>
  *     is called when device is being mastered by controller but not yet submitted into data store.
  *     This method is being called only if the {@link OwnershipChangeListener#isReconciliationFrameworkRegistered()}
  *     is set to {@link Boolean#TRUE}</li>
+ *     <li><i>{@link #onDevicePrepared(DeviceInfo)}</i>
+ *     is called when device is disconnected or controller loses control of the switch</li>
  * </ul>
- * Other event are defined in {@link MastershipChangeService}
  * <p>
  * <b>This event <i>onDevicePrepared</i> should be used only for reconciliation framework and application can't do anything with
  * node before the device is not stored in to data store.</b>
@@ -32,20 +33,21 @@ public interface ReconciliationFrameworkEvent extends AutoCloseable {
 
     /**
      * Event when device is ready as a master but not yet submitted in data store. This event is evoked by
-     * {@link OwnershipChangeListener#becomeMasterBeforeSubmittedDS(DeviceInfo, FutureCallback)}
+     * {@link OwnershipChangeListener#becomeMasterBeforeSubmittedDS(DeviceInfo)}
      * @param deviceInfo connected switch identification
-     * @param callback callback need to be attached to reconciliation result future
+     * @return result state if the device can continue with connecting or should be disconnected
      */
-    void onDevicePrepared(@Nonnull DeviceInfo deviceInfo, @Nonnull FutureCallback<ResultState> callback);
+    ListenableFuture<ResultState> onDevicePrepared(@Nonnull DeviceInfo deviceInfo);
 
     /**
      * This event occurs after device is disconnected or being slaved.
      * Event is similar to the {@link MastershipChangeService#onLoseOwnership(DeviceInfo)}. This event is used by
      * reconciliation framework that the framework don't need to register {@link MastershipChangeService}
      * @param deviceInfo connected switch identification
+     * @return future
      * @see MastershipChangeService
      */
-    void onDeviceDisconnected(@Nonnull DeviceInfo deviceInfo);
+    ListenableFuture<Void> onDeviceDisconnected(@Nonnull DeviceInfo deviceInfo);
 
 
 }

@@ -8,18 +8,21 @@
 package org.opendaylight.openflowplugin.impl.mastership;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.MasterChecker;
-import org.opendaylight.openflowplugin.api.openflow.mastership.*;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeException;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeRegistration;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeService;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
+import org.opendaylight.openflowplugin.api.openflow.mastership.ReconciliationFrameworkEvent;
+import org.opendaylight.openflowplugin.api.openflow.mastership.ReconciliationFrameworkRegistration;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.annotation.Nonnull;
-import java.util.LinkedList;
-import java.util.List;
 
 public final class MastershipChangeServiceManagerImpl implements MastershipChangeServiceManager {
 
@@ -62,9 +65,6 @@ public final class MastershipChangeServiceManagerImpl implements MastershipChang
         return rfRegistration;
     }
 
-    void unregister(@Nonnull MastershipChangeRegistration service) {
-    }
-
     @Override
     public void close() {
         serviceGroup.clear();
@@ -84,11 +84,9 @@ public final class MastershipChangeServiceManagerImpl implements MastershipChang
     }
 
     @Override
-    public void becomeMasterBeforeSubmittedDS(@Nonnull DeviceInfo deviceInfo,
-                                              @Nonnull FutureCallback<ResultState> callback) {
-        if (rfRegistration != null) {
-            ((ReconciliationFrameworkEvent)rfRegistration).onDevicePrepared(deviceInfo, callback);
-        }
+    public ListenableFuture<ResultState> becomeMasterBeforeSubmittedDS(@Nonnull DeviceInfo deviceInfo) {
+        return rfRegistration == null ? null :
+                ((ReconciliationFrameworkEvent)rfRegistration).onDevicePrepared(deviceInfo);
     }
 
     @Override

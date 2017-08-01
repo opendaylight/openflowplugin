@@ -232,12 +232,13 @@ public class ContextChainImpl implements ContextChain {
 
     @Override
     public boolean continueInitializationAfterReconciliation() {
-        return isMastered(ContextChainMastershipState.INITIAL_SUBMIT) && contexts.stream()
+        return contexts.stream()
                 .filter(StatisticsContext.class::isInstance)
                 .map(StatisticsContext.class::cast)
                 .findAny()
                 .map(StatisticsContext::initialSubmitAfterReconciliation)
-                .orElse(false);
+                .orElse(false) &&
+        isMastered(ContextChainMastershipState.INITIAL_SUBMIT);
     }
 
     @Override

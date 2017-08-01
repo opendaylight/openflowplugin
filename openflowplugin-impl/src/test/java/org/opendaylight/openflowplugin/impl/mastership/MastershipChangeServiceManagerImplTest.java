@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.mastership;
 
-import com.google.common.util.concurrent.FutureCallback;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,13 +18,12 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.MasterChecker;
-import org.opendaylight.openflowplugin.api.openflow.mastership.*;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.*;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeException;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeRegistration;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeService;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
+import org.opendaylight.openflowplugin.api.openflow.mastership.ReconciliationFrameworkEvent;
+import org.opendaylight.openflowplugin.api.openflow.mastership.ReconciliationFrameworkRegistration;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MastershipChangeServiceManagerImplTest {
@@ -34,8 +34,6 @@ public class MastershipChangeServiceManagerImplTest {
     private MastershipChangeService secondService;
     @Mock
     private DeviceInfo deviceInfo;
-    @Mock
-    private FutureCallback<ResultState> resultStateFutureCallback;
     @Mock
     private MasterChecker masterChecker;
     @Mock
@@ -105,8 +103,8 @@ public class MastershipChangeServiceManagerImplTest {
 
     @Test
     public void becomeMasterBeforeDS() throws Exception {
-        manager.becomeMasterBeforeSubmittedDS(deviceInfo, resultStateFutureCallback);
-        Mockito.verify(event).onDevicePrepared(deviceInfo, resultStateFutureCallback);
+        manager.becomeMasterBeforeSubmittedDS(deviceInfo);
+        Mockito.verify(event).onDevicePrepared(deviceInfo);
     }
 
     @Test

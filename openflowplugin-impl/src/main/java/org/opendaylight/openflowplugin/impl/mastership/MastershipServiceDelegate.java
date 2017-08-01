@@ -11,8 +11,6 @@ import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeRegistration;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeService;
-import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
-import org.opendaylight.openflowplugin.api.openflow.mastership.ReconciliationFrameworkRegistration;
 
 public class MastershipServiceDelegate implements MastershipChangeService, MastershipChangeRegistration {
 
