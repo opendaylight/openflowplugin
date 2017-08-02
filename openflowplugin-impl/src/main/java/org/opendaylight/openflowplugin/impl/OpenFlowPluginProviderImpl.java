@@ -223,7 +223,6 @@ public class OpenFlowPluginProviderImpl implements
         statisticsManager = new StatisticsManagerImpl(
                 config,
                 rpcProviderRegistry,
-                hashedWheelTimer,
                 convertorManager);
 
         contextChainHolder = new ContextChainHolderImpl(
@@ -231,10 +230,7 @@ public class OpenFlowPluginProviderImpl implements
                 threadPool,
                 singletonServicesProvider,
                 entityOwnershipService,
-                mastershipChangeServiceManager
-        );
-
-        statisticsManager.setReconciliationFrameworkRegistrar(mastershipChangeServiceManager);
+                mastershipChangeServiceManager );
 
         contextChainHolder.addManager(deviceManager);
         contextChainHolder.addManager(statisticsManager);
