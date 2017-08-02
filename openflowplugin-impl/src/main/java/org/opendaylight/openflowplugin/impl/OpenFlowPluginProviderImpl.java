@@ -223,7 +223,6 @@ public class OpenFlowPluginProviderImpl implements
         statisticsManager = new StatisticsManagerImpl(
                 config,
                 rpcProviderRegistry,
-                hashedWheelTimer,
                 convertorManager);
 
         contextChainHolder = new ContextChainHolderImpl(
