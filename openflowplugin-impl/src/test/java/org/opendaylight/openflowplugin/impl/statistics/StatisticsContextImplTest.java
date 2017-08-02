@@ -15,9 +15,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Collections;
-import java.util.concurrent.ExecutionException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +23,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
@@ -57,9 +54,10 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
 
     private void initStatisticsContext() {
         statisticsContext = new StatisticsContextImpl<MultipartReply>(
-                true, mockedDeviceContext, convertorManager, mockedStatisticsManager,
+                mockedDeviceContext, convertorManager,
                 MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext),
-                false);
+                true,
+                false, 3000, 50000);
 
         statisticsContext.setStatisticsGatheringService(mockedStatisticsGatheringService);
         statisticsContext.setStatisticsGatheringOnTheFlyService(mockedStatisticsOnFlyGatheringService);
@@ -74,14 +72,14 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
     }
 
     /**
-     * There is nothing to check in close method.
+     * There is nothing to check in close method
      */
     @Test
     public void testClose() throws Exception {
         final StatisticsContextImpl<MultipartReply> statisticsContext = new StatisticsContextImpl<MultipartReply>(
-                true, mockedDeviceContext, convertorManager, mockedStatisticsManager,
+                mockedDeviceContext, convertorManager,
                 MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext),
-                false);
+                true, false, 3000, 50000);
 
         final RequestContext<Object> requestContext = statisticsContext.createRequestContext();
         statisticsContext.close();
@@ -89,7 +87,8 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
             Assert.assertTrue(requestContext.getFuture().isDone());
             final RpcResult<?> rpcResult = requestContext.getFuture().get();
             Assert.assertFalse(rpcResult.isSuccessful());
-        } catch (final ExecutionException e) {
+            Assert.assertFalse(rpcResult.isSuccessful());
+        } catch (final Exception e) {
             LOG.error("request future value should be finished", e);
             Assert.fail("request context closing failed");
         }
@@ -97,9 +96,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
 
     @Test
     public void testGatherDynamicData_none() throws Exception {
-        final ListenableFuture<Boolean> gatheringResult = statisticsContext.gatherDynamicData();
-        Assert.assertTrue(gatheringResult.isDone());
-        Assert.assertTrue(gatheringResult.get());
+        statisticsContext.instantiateServiceInstance();
         Mockito.verifyNoMoreInteractions(mockedStatisticsGatheringService, mockedStatisticsOnFlyGatheringService);
     }
 
@@ -115,59 +112,28 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
         when(mockedDeviceInfo.getNodeInstanceIdentifier()).thenReturn(DUMMY_NODE_ID);
         initStatisticsContext();
 
-        when(mockedStatisticsGatheringService
-                .getStatisticsOfType(Matchers.any(EventIdentifier.class), Matchers.any(MultipartType.class)))
+        when(mockedStatisticsGatheringService.getStatisticsOfType(Matchers.any(EventIdentifier.class),
+                    Matchers.any(MultipartType.class)))
                 .thenReturn(
-                    Futures.immediateFuture(RpcResultBuilder.success(Collections.<MultipartReply>emptyList()).build())
-            );
-        when(mockedStatisticsOnFlyGatheringService
-                .getStatisticsOfType(Matchers.any(EventIdentifier.class), Matchers.any(MultipartType.class)))
+                        Futures.immediateFuture(RpcResultBuilder.success(Collections.<MultipartReply>emptyList())
+                            .build())
+                );
+        when(mockedStatisticsOnFlyGatheringService.getStatisticsOfType(Matchers.any(EventIdentifier.class),
+                    Matchers.any(MultipartType.class)))
                 .thenReturn(
-                    Futures.immediateFuture(RpcResultBuilder.success(Collections.<MultipartReply>emptyList()).build())
-            );
+                        Futures.immediateFuture(RpcResultBuilder.success(Collections.<MultipartReply>emptyList())
+                            .build())
+                );
 
-        final ListenableFuture<Boolean> gatheringResult = statisticsContext.gatherDynamicData();
-        Assert.assertTrue(gatheringResult.isDone());
-        Assert.assertTrue(gatheringResult.get());
+        statisticsContext.registerMastershipWatcher(mockedMastershipWatcher);
+        statisticsContext.setStatisticsGatheringService(mockedStatisticsGatheringService);
+        statisticsContext.setStatisticsGatheringOnTheFlyService(mockedStatisticsOnFlyGatheringService);
+        statisticsContext.instantiateServiceInstance();
+
         verify(mockedStatisticsGatheringService, times(7))
                 .getStatisticsOfType(Matchers.any(EventIdentifier.class), Matchers.any(MultipartType.class));
         verify(mockedStatisticsOnFlyGatheringService)
                 .getStatisticsOfType(Matchers.any(EventIdentifier.class), Matchers.any(MultipartType.class));
         Mockito.verifyNoMoreInteractions(mockedStatisticsGatheringService, mockedStatisticsOnFlyGatheringService);
-    }
-
-    @Test
-    public void testDeviceConnectionCheckWorking() throws Exception {
-        final ListenableFuture<Boolean> deviceConnectionCheckResult = statisticsContext.deviceConnectionCheck();
-        Assert.assertTrue(deviceConnectionCheckResult.get());
-    }
-
-    @Test
-    public void testDeviceConnectionCheckRip() throws Exception {
-        Mockito.reset(mockedConnectionContext);
-        when(mockedConnectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.RIP);
-        final ListenableFuture<Boolean> deviceConnectionCheckResult = statisticsContext.deviceConnectionCheck();
-
-        try {
-            deviceConnectionCheckResult.get();
-            Assert.fail("connection in state RIP should have caused exception here");
-        } catch (final ExecutionException e) {
-            LOG.debug("expected behavior for RIP connection achieved");
-            Assert.assertTrue(e instanceof ExecutionException);
-        }
-    }
-
-    @Test
-    public void testDeviceConnectionCheckHandshaking() throws Exception {
-        Mockito.reset(mockedConnectionContext);
-        when(mockedConnectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.HANDSHAKING);
-        final ListenableFuture<Boolean> deviceConnectionCheckResult = statisticsContext.deviceConnectionCheck();
-
-        try {
-            final Boolean checkPositive = deviceConnectionCheckResult.get();
-            Assert.assertTrue(checkPositive);
-        } catch (final ExecutionException e) {
-            Assert.fail("connection in state HANDSHAKING should NOT have caused exception here");
-        }
     }
 }
