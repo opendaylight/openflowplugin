@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.lifecycle;
 
 import com.google.common.collect.Lists;
-import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;
@@ -19,12 +18,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChain;
@@ -34,8 +31,6 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainStateListener;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.GuardedContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
-import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,7 +111,7 @@ public class ContextChainImpl implements ContextChain {
         }
 
         contextChainState.set(ContextChainState.CLOSED);
-        contextChainMastershipWatcher.onSlaveRoleAcquired(deviceInfo);
+        unMasterMe();
 
         // Close all connections to devices
         auxiliaryConnections.forEach(connectionContext -> connectionContext.closeConnection(false));
@@ -157,18 +152,6 @@ public class ContextChainImpl implements ContextChain {
         registration = Objects.requireNonNull(clusterSingletonServiceProvider
                 .registerClusterSingletonService(this));
         LOG.info("Registered clustering services for node {}", deviceInfo);
-    }
-
-    @Override
-    public void makeDeviceSlave() {
-        unMasterMe();
-
-        contexts.forEach(context -> {
-            if (context.map(DeviceContext.class::isInstance)) {
-                Futures.addCallback(context.map(DeviceContext.class::cast).makeDeviceSlave(),
-                        new DeviceSlaveCallback(), executorService);
-            }
-        });
     }
 
     @Override
@@ -278,17 +261,5 @@ public class ContextChainImpl implements ContextChain {
         initialGathering.set(false);
         masterStateOnDevice.set(false);
         rpcRegistration.set(false);
-    }
-
-    private final class DeviceSlaveCallback implements FutureCallback<RpcResult<SetRoleOutput>> {
-        @Override
-        public void onSuccess(@Nullable final RpcResult<SetRoleOutput> result) {
-            contextChainMastershipWatcher.onSlaveRoleAcquired(deviceInfo);
-        }
-
-        @Override
-        public void onFailure(@Nonnull final Throwable t) {
-            contextChainMastershipWatcher.onSlaveRoleNotAcquired(deviceInfo);
-        }
     }
 }
