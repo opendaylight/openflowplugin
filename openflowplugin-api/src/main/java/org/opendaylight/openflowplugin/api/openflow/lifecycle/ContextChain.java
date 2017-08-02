@@ -18,7 +18,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemove
  * Chain of contexts, hold references to the contexts.
  * @since 0.4.0 Carbon
  */
-public interface ContextChain extends ClusterSingletonService, AutoCloseable {
+public interface ContextChain extends ClusterSingletonService, AutoCloseable, ReconciliationFrameworkStep {
 
     /**
      * Add context to the chain, if reference already exist ignore it.
@@ -47,35 +47,22 @@ public interface ContextChain extends ClusterSingletonService, AutoCloseable {
 
     /**
      * Check all needed to be master.
-     * @param mastershipState - state master on device, initial gather, initial submit, initial registry fill
+     * @param mastershipState state master on device, initial gather, initial submit, initial registry fill
+     * @param inReconciliationFrameworkStep if true, check all needed to be master except the device is written
+     *                                      into data store. Using by reconciliation framework. Used only if
+     *                                      {@link OwnershipChangeListener#isReconciliationFrameworkRegistered()} is
+     *                                      set to true.
      * @return true if everything done fine
+     * @see org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeService
      */
-    boolean isMastered(@Nonnull ContextChainMastershipState mastershipState);
+    boolean isMastered(@Nonnull ContextChainMastershipState mastershipState,
+                       boolean inReconciliationFrameworkStep);
 
     /**
      * Checks if context chain is currently closing.
      * @return true if context chain is closing
      */
     boolean isClosing();
-
-    /**
-     * Check all needed to be master except the device is written into data store.
-     * Using by reconciliation framework. Used only if {@link OwnershipChangeListener#isReconciliationFrameworkRegistered()}
-     * is set to {@link Boolean#TRUE}.
-     * @return true if all is set but not submitted txChain
-     * @since 0.5.0 Nitrogen
-     * @see org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeService
-     */
-    boolean isPrepared();
-
-    /**
-     * Allow to continue after reconciliation framework callback success.
-     * @return true if initial submitting was ok and device is fully mastered by controller
-     * @since 0.5.0 Nitrogen
-     * @see org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeService
-     * @see OwnershipChangeListener#isReconciliationFrameworkRegistered()
-     */
-    boolean continueInitializationAfterReconciliation();
 
     /**
      * Add new auxiliary connection if primary is ok.
