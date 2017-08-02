@@ -11,7 +11,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.MoreExecutors;
-import io.netty.util.HashedWheelTimer;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -40,12 +39,13 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainHolder
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.MasterChecker;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.OwnershipChangeListener;
+import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
+import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
-import org.opendaylight.openflowplugin.impl.util.ItemScheduler;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
@@ -60,22 +60,20 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
 
     private static final String CONTEXT_CREATED_FOR_CONNECTION = " context created for connection: {}";
     private static final long CHECK_ROLE_MASTER_TIMEOUT = 20000L;
-    private static final long CHECK_ROLE_MASTER_TOLERANCE = CHECK_ROLE_MASTER_TIMEOUT / 2;
     private static final long REMOVE_DEVICE_FROM_DS_TIMEOUT = 5000L;
     private static final String ASYNC_SERVICE_ENTITY_TYPE = "org.opendaylight.mdsal.AsyncServiceCloseEntityType";
 
     private final Map<DeviceInfo, ContextChain> contextChainMap = Collections.synchronizedMap(new HashMap<>());
     private final EntityOwnershipListenerRegistration eosListenerRegistration;
     private final ClusterSingletonServiceProvider singletonServiceProvider;
-    private final ItemScheduler<DeviceInfo, ContextChain> scheduler;
     private final ExecutorService executorService;
     private final OwnershipChangeListener ownershipChangeListener;
     private DeviceManager deviceManager;
     private RpcManager rpcManager;
     private StatisticsManager statisticsManager;
+    private RoleManager roleManager;
 
-    public ContextChainHolderImpl(final HashedWheelTimer timer,
-                                  final ExecutorService executorService,
+    public ContextChainHolderImpl(final ExecutorService executorService,
                                   final ClusterSingletonServiceProvider singletonServiceProvider,
                                   final EntityOwnershipService entityOwnershipService,
                                   final OwnershipChangeListener ownershipChangeListener) {
@@ -85,12 +83,6 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         this.ownershipChangeListener.setMasterChecker(this);
         this.eosListenerRegistration = Objects.requireNonNull(entityOwnershipService
                 .registerListener(ASYNC_SERVICE_ENTITY_TYPE, this));
-
-        this.scheduler = new ItemScheduler<>(
-                timer,
-                CHECK_ROLE_MASTER_TIMEOUT,
-                CHECK_ROLE_MASTER_TOLERANCE,
-                ContextChain::makeDeviceSlave);
     }
 
     @Override
@@ -104,6 +96,9 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         } else if (Objects.isNull(statisticsManager) && manager instanceof StatisticsManager) {
             LOG.trace("Context chain holder: Statistics manager OK.");
             statisticsManager = (StatisticsManager) manager;
+        } else if (Objects.isNull(roleManager) && manager instanceof RoleManager) {
+            LOG.trace("Context chain holder: Role manager OK.");
+            roleManager = (RoleManager) manager;
         }
     }
 
@@ -123,25 +118,25 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         statisticsContext.registerMastershipWatcher(this);
         LOG.debug("Statistics" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfo);
 
+        final RoleContext roleContext = roleManager.createContext(deviceContext);
+        roleContext.registerMastershipWatcher(this);
+        LOG.debug("Role" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfo);
+
         final ContextChain contextChain = new ContextChainImpl(this, connectionContext,
                 executorService);
         contextChain.registerDeviceRemovedHandler(deviceManager);
         contextChain.registerDeviceRemovedHandler(rpcManager);
         contextChain.registerDeviceRemovedHandler(statisticsManager);
+        contextChain.registerDeviceRemovedHandler(roleManager);
         contextChain.registerDeviceRemovedHandler(this);
         contextChain.addContext(deviceContext);
         contextChain.addContext(rpcContext);
         contextChain.addContext(statisticsContext);
+        contextChain.addContext(roleContext);
         contextChainMap.put(deviceInfo, contextChain);
         LOG.debug("Context chain" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfo);
 
         deviceContext.onPublished();
-        scheduler.add(deviceInfo, contextChain);
-        scheduler.startIfNotRunning();
-        LOG.info("Started timer for setting SLAVE role on node {} if no role will be set in {}s.",
-                deviceInfo,
-                CHECK_ROLE_MASTER_TIMEOUT / 1000L);
-
         contextChain.registerServices(singletonServiceProvider);
     }
 
@@ -191,7 +186,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     @Override
     public void onMasterRoleAcquired(@Nonnull final DeviceInfo deviceInfo,
                                      @Nonnull final ContextChainMastershipState mastershipState) {
-        scheduler.remove(deviceInfo);
+        roleManager.onRoleAcquired(deviceInfo);
         Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(contextChain -> {
             if (ownershipChangeListener.isReconciliationFrameworkRegistered()) {
                 if (mastershipState == ContextChainMastershipState.INITIAL_SUBMIT) {
@@ -215,7 +210,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
 
     @Override
     public void onSlaveRoleAcquired(final DeviceInfo deviceInfo) {
-        scheduler.remove(deviceInfo);
+        roleManager.onRoleAcquired(deviceInfo);
         ownershipChangeListener.becomeSlaveOrDisconnect(deviceInfo);
         Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(ContextChain::makeContextChainStateSlave);
     }
@@ -241,12 +236,14 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
 
     @VisibleForTesting
     boolean checkAllManagers() {
-        return Objects.nonNull(deviceManager) && Objects.nonNull(rpcManager) && Objects.nonNull(statisticsManager);
+        return Objects.nonNull(deviceManager)
+                && Objects.nonNull(rpcManager)
+                && Objects.nonNull(statisticsManager)
+                && Objects.nonNull(roleManager);
     }
 
     @Override
     public void close() throws Exception {
-        scheduler.close();
         Map<DeviceInfo, ContextChain> copyOfChains = new HashMap<>(contextChainMap);
         copyOfChains.keySet().forEach(this::destroyContextChain);
         copyOfChains.clear();
@@ -284,7 +281,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     }
 
     private synchronized void destroyContextChain(final DeviceInfo deviceInfo) {
-        scheduler.remove(deviceInfo);
+        roleManager.onRoleAcquired(deviceInfo);
 
         Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(contextChain -> {
             deviceManager.sendNodeRemovedNotification(deviceInfo.getNodeInstanceIdentifier());
@@ -332,7 +329,6 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
 
     @Override
     public void onDeviceRemoved(final DeviceInfo deviceInfo) {
-        scheduler.remove(deviceInfo);
         contextChainMap.remove(deviceInfo);
         LOG.debug("Context chain removed for node {}", deviceInfo);
     }
