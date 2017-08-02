@@ -26,7 +26,6 @@ import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainClosedException;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
@@ -276,10 +275,11 @@ public final class StatisticsGatheringUtils {
     /**
      * Writes snapshot gathering start timestamp + cleans end mark.
      *
-     * @param deviceContext txManager + node path keeper
+     * @param deviceInfo device info
+     * @param txFacade tx manager
      */
-    static void markDeviceStateSnapshotStart(final DeviceContext deviceContext) {
-        final InstanceIdentifier<FlowCapableStatisticsGatheringStatus> statusPath = deviceContext.getDeviceInfo()
+    static void markDeviceStateSnapshotStart(final DeviceInfo deviceInfo, final TxFacade txFacade) {
+        final InstanceIdentifier<FlowCapableStatisticsGatheringStatus> statusPath = deviceInfo
                 .getNodeInstanceIdentifier().augmentation(FlowCapableStatisticsGatheringStatus.class);
 
         final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AND_TIME_FORMAT);
@@ -290,23 +290,24 @@ public final class StatisticsGatheringUtils {
                 .setSnapshotGatheringStatusEnd(null) // TODO: reconsider if really need to clean end mark here
                 .build();
         try {
-            deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, statusPath, gatheringStatus);
+            txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, statusPath, gatheringStatus);
         } catch (final TransactionChainClosedException e) {
             LOG.warn("Can't write to transaction, transaction chain probably closed.");
             LOG.trace("Write to transaction exception: ", e);
         }
 
-        deviceContext.submitTransaction();
+        txFacade.submitTransaction();
     }
 
     /**
      * Writes snapshot gathering end timestamp + outcome.
      *
-     * @param deviceContext txManager + node path keeper
+     * @param deviceInfo device info
+     * @param txFacade tx manager
      * @param succeeded     outcome of currently finished gathering
      */
-    static void markDeviceStateSnapshotEnd(final DeviceContext deviceContext, final boolean succeeded) {
-        final InstanceIdentifier<SnapshotGatheringStatusEnd> statusEndPath = deviceContext.getDeviceInfo()
+    static void markDeviceStateSnapshotEnd(final DeviceInfo deviceInfo, final TxFacade txFacade, final boolean succeeded) {
+        final InstanceIdentifier<SnapshotGatheringStatusEnd> statusEndPath = deviceInfo
                 .getNodeInstanceIdentifier().augmentation(FlowCapableStatisticsGatheringStatus.class)
                 .child(SnapshotGatheringStatusEnd.class);
 
@@ -316,12 +317,12 @@ public final class StatisticsGatheringUtils {
                 .setSucceeded(succeeded)
                 .build();
         try {
-            deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, statusEndPath, gatheringStatus);
+            txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, statusEndPath, gatheringStatus);
         } catch (TransactionChainClosedException e) {
             LOG.warn("Can't write to transaction, transaction chain probably closed.");
             LOG.trace("Write to transaction exception: ", e);
         }
 
-        deviceContext.submitTransaction();
+        txFacade.submitTransaction();
     }
 }

@@ -9,19 +9,19 @@
 package org.opendaylight.openflowplugin.impl.statistics;
 
 import static com.google.common.util.concurrent.Futures.immediateFuture;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.mockito.Matchers;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
@@ -34,12 +34,10 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 @RunWith(Parameterized.class)
 public class StatisticsContextImplParamTest extends StatisticsContextImpMockInitiation {
 
-    public StatisticsContextImplParamTest(final boolean isTable,
-                                          final boolean isFlow,
-                                          final boolean isGroup,
-                                          final boolean isMeter,
-                                          final boolean isPort,
-                                          final boolean isQueue) {
+
+    public StatisticsContextImplParamTest(final boolean isTable, final boolean isFlow,
+                                          final boolean isGroup, final boolean isMeter,
+                                          final boolean isPort, final boolean isQueue) {
         super();
         this.isTable = isTable;
         this.isFlow = isFlow;
@@ -62,32 +60,38 @@ public class StatisticsContextImplParamTest extends StatisticsContextImpMockInit
     }
 
     @Test
-    public void gatherDynamicDataTest() {
+    public void gatherDynamicDataTest() throws InterruptedException {
 
+        when(mockedDeviceState.isTableStatisticsAvailable()).thenReturn(Boolean.TRUE);
+        when(mockedDeviceState.isFlowStatisticsAvailable()).thenReturn(Boolean.TRUE);
+        when(mockedDeviceState.isGroupAvailable()).thenReturn(Boolean.TRUE);
+        when(mockedDeviceState.isMetersAvailable()).thenReturn(Boolean.TRUE);
+        when(mockedDeviceState.isPortStatisticsAvailable()).thenReturn(Boolean.TRUE);
+        when(mockedDeviceState.isQueueStatisticsAvailable()).thenReturn(Boolean.TRUE);
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
 
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         final StatisticsContextImpl<MultipartReply> statisticsContext = new StatisticsContextImpl<MultipartReply>(
-                true, mockedDeviceContext ,convertorManager, mockedStatisticsManager,
+                mockedDeviceContext ,convertorManager,
                 MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext),
-                false);
+                true, false, 3000, 50000);
 
-        final ListenableFuture<RpcResult<List<MultipartReply>>> rpcResult =
-                immediateFuture(RpcResultBuilder.success(Collections.<MultipartReply>emptyList()).build());
+        final ListenableFuture<RpcResult<List<MultipartReply>>> rpcResult = immediateFuture(RpcResultBuilder
+                .success(Collections.<MultipartReply>emptyList()).build());
         when(mockedStatisticsGatheringService.getStatisticsOfType(any(EventIdentifier.class), any(MultipartType
                 .class))).thenReturn(rpcResult);
         when(mockedStatisticsOnFlyGatheringService.getStatisticsOfType(any(EventIdentifier.class), any(MultipartType
                 .class))).thenReturn(rpcResult);
 
+        statisticsContext.registerMastershipWatcher(mockedMastershipWatcher);
         statisticsContext.setStatisticsGatheringService(mockedStatisticsGatheringService);
         statisticsContext.setStatisticsGatheringOnTheFlyService(mockedStatisticsOnFlyGatheringService);
+        statisticsContext.instantiateServiceInstance();
 
-        final ListenableFuture<Boolean> futureResult = statisticsContext.gatherDynamicData();
-
-        try {
-            assertTrue(futureResult.get());
-        } catch (InterruptedException | ExecutionException e) {
-            fail("Exception wasn't expected.");
-        }
+        verify(mockedStatisticsGatheringService, times(7))
+                .getStatisticsOfType(Matchers.any(EventIdentifier.class), Matchers.any(MultipartType.class));
+        verify(mockedStatisticsOnFlyGatheringService)
+                .getStatisticsOfType(Matchers.any(EventIdentifier.class), Matchers.any(MultipartType.class));
     }
+
 }
