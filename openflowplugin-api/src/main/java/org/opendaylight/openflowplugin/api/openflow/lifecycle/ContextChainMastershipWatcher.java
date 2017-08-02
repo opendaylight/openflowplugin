@@ -9,7 +9,6 @@ package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
-import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeException;
 
 /**
  * Watcher if able to start mastership for device.
@@ -52,6 +51,7 @@ public interface ContextChainMastershipWatcher {
     /**
      * Change to SLAVE role on device was not able.
      * @param deviceInfo connected switch identification
+     * @param reason reason
      */
-    void onSlaveRoleNotAcquired(DeviceInfo deviceInfo);
+    void onSlaveRoleNotAcquired(DeviceInfo deviceInfo, String reason);
 }
