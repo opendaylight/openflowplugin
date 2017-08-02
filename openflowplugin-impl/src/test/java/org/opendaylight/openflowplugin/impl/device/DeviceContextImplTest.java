@@ -241,7 +241,6 @@ public class DeviceContextImplTest {
                 deviceInitializerProvider,
                 true, false);
 
-        deviceContext.setSalRoleService(salRoleService);
         ((DeviceContextImpl) deviceContext).lazyTransactionManagerInitialization();
         deviceContextSpy = Mockito.spy(deviceContext);
 
