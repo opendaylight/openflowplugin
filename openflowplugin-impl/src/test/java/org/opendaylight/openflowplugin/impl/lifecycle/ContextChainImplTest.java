@@ -27,7 +27,6 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChain;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipWatcher;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
-import org.opendaylight.openflowplugin.impl.role.RoleChangeException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ContextChainImplTest {
@@ -116,21 +115,6 @@ public class ContextChainImplTest {
     @Test
     public void getIdentifier() throws Exception {
         Assert.assertEquals(contextChain.getIdentifier(), SERVICE_GROUP_IDENTIFIER);
-    }
-
-    @Test
-    public void makeDeviceSlave() throws Exception {
-        Mockito.when(deviceContext.makeDeviceSlave()).thenReturn(Futures.immediateFuture(null));
-        contextChain.makeDeviceSlave();
-        Mockito.verify(contextChainMastershipWatcher).onSlaveRoleAcquired(Mockito.any(DeviceInfo.class));
-    }
-
-    @Test
-    public void makeDeviceSlaveFailure() throws Exception {
-        Mockito.when(deviceContext.makeDeviceSlave())
-                .thenReturn(Futures.immediateFailedFuture(new RoleChangeException(TEST_NODE)));
-        contextChain.makeDeviceSlave();
-        Mockito.verify(contextChainMastershipWatcher).onSlaveRoleNotAcquired(Mockito.any(DeviceInfo.class));
     }
 
     @Test

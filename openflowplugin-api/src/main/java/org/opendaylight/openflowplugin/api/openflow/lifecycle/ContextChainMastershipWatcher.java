@@ -51,6 +51,7 @@ public interface ContextChainMastershipWatcher {
     /**
      * Change to SLAVE role on device was not able.
      * @param deviceInfo connected switch identification
+     * @param reason reason
      */
-    void onSlaveRoleNotAcquired(DeviceInfo deviceInfo);
+    void onSlaveRoleNotAcquired(DeviceInfo deviceInfo, String reason);
 }
