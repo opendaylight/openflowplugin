@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
-import com.google.common.util.concurrent.FutureCallback;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 
 public interface ReconciliationFrameworkRegistrar {
