@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.lifecycle;
 
 import com.google.common.util.concurrent.Futures;
-import io.netty.util.HashedWheelTimer;
 import java.util.concurrent.ExecutorService;
 import org.junit.Assert;
 import org.junit.Before;
@@ -30,10 +29,11 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.OwnershipChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.api.openflow.mastership.ReconciliationFrameworkEvent;
 import org.opendaylight.openflowplugin.api.openflow.mastership.ReconciliationFrameworkRegistration;
+import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
+import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
@@ -49,19 +49,21 @@ public class ContextChainHolderImplTest {
     private static final String ENTITY_TEST = "EntityTest";
     private static final String OPENFLOW_TEST = "openflow:test";
     @Mock
-    private HashedWheelTimer timer;
-    @Mock
     private StatisticsManager statisticsManager;
     @Mock
     private RpcManager rpcManager;
     @Mock
     private DeviceManager deviceManager;
     @Mock
+    private RoleManager roleManager;
+    @Mock
     private StatisticsContext statisticsContext;
     @Mock
     private RpcContext rpcContext;
     @Mock
     private DeviceContext deviceContext;
+    @Mock
+    private RoleContext roleContext;
     @Mock
     private ConnectionContext connectionContext;
     @Mock
@@ -76,8 +78,6 @@ public class ContextChainHolderImplTest {
     private EntityOwnershipService entityOwnershipService;
     @Mock
     private EntityOwnershipListenerRegistration entityOwnershipListenerRegistration;
-    @Mock
-    private OwnershipChangeListener ownershipChangeListener;
     @Mock
     private ReconciliationFrameworkEvent reconciliationFrameworkEvent;
     @Mock
@@ -100,7 +100,7 @@ public class ContextChainHolderImplTest {
         Mockito.when(deviceManager.createContext(connectionContext)).thenReturn(deviceContext);
         Mockito.when(rpcManager.createContext(deviceContext)).thenReturn(rpcContext);
         Mockito.when(statisticsManager.createContext(deviceContext)).thenReturn(statisticsContext);
-        Mockito.when(deviceContext.makeDeviceSlave()).thenReturn(Futures.immediateFuture(null));
+        Mockito.when(roleManager.createContext(deviceContext)).thenReturn(roleContext);
         Mockito.when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
 
         Mockito.when(singletonServicesProvider.registerClusterSingletonService(Mockito.any()))
@@ -113,15 +113,14 @@ public class ContextChainHolderImplTest {
         registration = manager.reconciliationFrameworkRegistration(reconciliationFrameworkEvent);
 
         contextChainHolder = new ContextChainHolderImpl(
-                timer,
                 executorService,
                 singletonServicesProvider,
                 entityOwnershipService,
-                manager
-        );
+                manager);
         contextChainHolder.addManager(statisticsManager);
         contextChainHolder.addManager(rpcManager);
         contextChainHolder.addManager(deviceManager);
+        contextChainHolder.addManager(roleManager);
     }
 
     @Test
@@ -135,6 +134,7 @@ public class ContextChainHolderImplTest {
         Mockito.verify(deviceManager).createContext(Mockito.any(ConnectionContext.class));
         Mockito.verify(rpcManager).createContext(Mockito.any(DeviceContext.class));
         Mockito.verify(statisticsManager).createContext(Mockito.any(DeviceContext.class));
+        Mockito.verify(roleManager).createContext(Mockito.any(DeviceContext.class));
     }
 
 
@@ -231,7 +231,7 @@ public class ContextChainHolderImplTest {
     public void notAbleToSetSlave() throws Exception {
         registration.close();
         contextChainHolder.deviceConnected(connectionContext);
-        contextChainHolder.onSlaveRoleNotAcquired(deviceInfo);
+        contextChainHolder.onSlaveRoleNotAcquired(deviceInfo, "Test reason");
         Mockito.verify(deviceContext).close();
         Mockito.verify(statisticsContext).close();
         Mockito.verify(rpcContext).close();

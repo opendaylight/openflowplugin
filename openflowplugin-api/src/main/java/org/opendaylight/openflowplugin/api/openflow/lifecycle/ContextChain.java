@@ -41,11 +41,6 @@ public interface ContextChain extends ClusterSingletonService, AutoCloseable {
     void registerServices(ClusterSingletonServiceProvider clusterSingletonServiceProvider);
 
     /**
-     * After connect of device make this device SLAVE.
-     */
-    void makeDeviceSlave();
-
-    /**
      * Check all needed to be master.
      * @param mastershipState - state master on device, initial gather, initial submit, initial registry fill
      * @return true if everything done fine
