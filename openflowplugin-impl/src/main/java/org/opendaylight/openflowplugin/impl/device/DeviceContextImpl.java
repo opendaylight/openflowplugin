@@ -10,10 +10,8 @@ package org.opendaylight.openflowplugin.impl.device;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
-import io.netty.util.TimerTask;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -106,16 +104,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Pa
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceivedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsDataBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -129,9 +122,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private static final float LOW_WATERMARK_FACTOR = 0.75f;
     // TODO: high water mark factor should be parametrized
     private static final float HIGH_WATERMARK_FACTOR = 0.95f;
-
-    // Timeout in seconds after what we will give up on propagating role
-    private static final int SET_ROLE_TIMEOUT = 10;
 
     // Timeout in milliseconds after what we will give up on initializing device
     private static final int DEVICE_INIT_TIMEOUT = 9000;
@@ -175,18 +165,17 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private SalRoleService salRoleService;
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
 
-    DeviceContextImpl(
-            @Nonnull final ConnectionContext primaryConnectionContext,
-            @Nonnull final DataBroker dataBroker,
-            @Nonnull final MessageSpy messageSpy,
-            @Nonnull final TranslatorLibrary translatorLibrary,
-            final ConvertorExecutor convertorExecutor,
-            final boolean skipTableFeatures,
-            final HashedWheelTimer hashedWheelTimer,
-            final boolean useSingleLayerSerialization,
-            final DeviceInitializerProvider deviceInitializerProvider,
-            final boolean isFlowRemovedNotificationOn,
-            final boolean switchFeaturesMandatory) {
+    DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
+                      @Nonnull final DataBroker dataBroker,
+                      @Nonnull final MessageSpy messageSpy,
+                      @Nonnull final TranslatorLibrary translatorLibrary,
+                      final ConvertorExecutor convertorExecutor,
+                      final boolean skipTableFeatures,
+                      final HashedWheelTimer hashedWheelTimer,
+                      final boolean useSingleLayerSerialization,
+                      final DeviceInitializerProvider deviceInitializerProvider,
+                      final boolean isFlowRemovedNotificationOn,
+                      final boolean switchFeaturesMandatory) {
 
         this.primaryConnectionContext = primaryConnectionContext;
         this.deviceInfo = primaryConnectionContext.getDeviceInfo();
@@ -626,11 +615,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void setSalRoleService(@Nonnull SalRoleService salRoleService) {
-        this.salRoleService = salRoleService;
-    }
-
-    @Override
     public void instantiateServiceInstance() {
         lazyTransactionManagerInitialization();
 
@@ -673,9 +657,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     deviceInfo.toString()));
         }
 
-        Futures.addCallback(sendRoleChangeToDevice(OfpRole.BECOMEMASTER),
-                new RpcResultFutureCallback(contextChainMastershipWatcher));
-
         final ListenableFuture<List<com.google.common.base.Optional<FlowCapableNode>>> deviceFlowRegistryFill = getDeviceFlowRegistry().fill();
         Futures.addCallback(deviceFlowRegistryFill,
                 new DeviceFlowRegistryCallback(deviceFlowRegistryFill, contextChainMastershipWatcher));
@@ -713,70 +694,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         return abstractRequestContext;
     }
 
-    private ListenableFuture<RpcResult<SetRoleOutput>> sendRoleChangeToDevice(final OfpRole newRole) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Sending new role {} to device {}", newRole, deviceInfo.getNodeId());
-        }
-
-        final Future<RpcResult<SetRoleOutput>> setRoleOutputFuture;
-
-        if (deviceInfo.getVersion() >= OFConstants.OFP_VERSION_1_3) {
-            final SetRoleInput setRoleInput = (new SetRoleInputBuilder()).setControllerRole(newRole)
-                    .setNode(new NodeRef(deviceInfo.getNodeInstanceIdentifier())).build();
-
-            setRoleOutputFuture = this.salRoleService.setRole(setRoleInput);
-
-            final TimerTask timerTask = timeout -> {
-                if (!setRoleOutputFuture.isDone()) {
-                    LOG.warn("New role {} was not propagated to device {} during {} sec", newRole, deviceInfo.getLOGValue(), SET_ROLE_TIMEOUT);
-                    setRoleOutputFuture.cancel(true);
-                }
-            };
-
-            hashedWheelTimer.newTimeout(timerTask, SET_ROLE_TIMEOUT, TimeUnit.SECONDS);
-        } else {
-            LOG.info("Device: {} with version: {} does not support role", deviceInfo.getLOGValue(), deviceInfo.getVersion());
-            return Futures.immediateFuture(null);
-        }
-
-        return JdkFutureAdapters.listenInPoolThread(setRoleOutputFuture);
-    }
-
-    @Override
-    public ListenableFuture<RpcResult<SetRoleOutput>> makeDeviceSlave() {
-        return sendRoleChangeToDevice(OfpRole.BECOMESLAVE);
-    }
-
     @Override
     public void onStateAcquired(final ContextChainState state) {
         hasState.set(true);
-    }
-
-    private class RpcResultFutureCallback implements FutureCallback<RpcResult<SetRoleOutput>> {
-
-        private final ContextChainMastershipWatcher contextChainMastershipWatcher;
-
-        RpcResultFutureCallback(final ContextChainMastershipWatcher contextChainMastershipWatcher) {
-            this.contextChainMastershipWatcher = contextChainMastershipWatcher;
-        }
-
-        @Override
-        public void onSuccess(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
-            this.contextChainMastershipWatcher.onMasterRoleAcquired(
-                    deviceInfo,
-                    ContextChainMastershipState.MASTER_ON_DEVICE
-            );
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Role MASTER was successfully set on device, node {}", deviceInfo);
-            }
-        }
-
-        @Override
-        public void onFailure(final Throwable throwable) {
-            contextChainMastershipWatcher.onNotAbleToStartMastershipMandatory(
-                    deviceInfo,
-                    "Was not able to set MASTER role on device");
-        }
     }
 
     private class DeviceFlowRegistryCallback implements FutureCallback<List<com.google.common.base.Optional<FlowCapableNode>>> {
