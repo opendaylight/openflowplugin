@@ -30,7 +30,7 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMaster
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainStateListener;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.GuardedContext;
-import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ReconciliationFrameworkStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +69,6 @@ public class ContextChainImpl implements ContextChain {
 
     @Override
     public void instantiateServiceInstance() {
-
         try {
             contexts.forEach(OFPContext::instantiateServiceInstance);
             LOG.info("Started clustering services for node {}", deviceInfo);
@@ -82,7 +81,6 @@ public class ContextChainImpl implements ContextChain {
 
     @Override
     public ListenableFuture<Void> closeServiceInstance() {
-
         contextChainMastershipWatcher.onSlaveRoleAcquired(deviceInfo);
 
         final ListenableFuture<List<Void>> servicesToBeClosed = Futures
@@ -113,10 +111,6 @@ public class ContextChainImpl implements ContextChain {
         contextChainState.set(ContextChainState.CLOSED);
         unMasterMe();
 
-        // Close all connections to devices
-        auxiliaryConnections.forEach(connectionContext -> connectionContext.closeConnection(false));
-        auxiliaryConnections.clear();
-
         // If we are still registered and we are not already closing, then close the registration
         if (Objects.nonNull(registration)) {
             try {
@@ -129,7 +123,6 @@ public class ContextChainImpl implements ContextChain {
             }
         }
 
-
         // Close all contexts (device, statistics, rpc)
         contexts.forEach(OFPContext::close);
         contexts.clear();
@@ -138,8 +131,10 @@ public class ContextChainImpl implements ContextChain {
         deviceRemovedHandlers.forEach(h -> h.onDeviceRemoved(deviceInfo));
         deviceRemovedHandlers.clear();
 
+        // Close all connections to devices
+        auxiliaryConnections.forEach(connectionContext -> connectionContext.closeConnection(false));
+        auxiliaryConnections.clear();
         primaryConnection.closeConnection(false);
-
     }
 
     @Override
@@ -156,7 +151,8 @@ public class ContextChainImpl implements ContextChain {
     }
 
     @Override
-    public boolean isMastered(@Nonnull ContextChainMastershipState mastershipState) {
+    public boolean isMastered(@Nonnull ContextChainMastershipState mastershipState,
+                              boolean inReconciliationFrameworkStep) {
         switch (mastershipState) {
             case INITIAL_SUBMIT:
                 LOG.debug("Device {}, initial submit OK.", deviceInfo);
@@ -184,10 +180,12 @@ public class ContextChainImpl implements ContextChain {
 
         final boolean result = initialGathering.get() &&
                 masterStateOnDevice.get() &&
-                initialSubmitting.get() &&
-                rpcRegistration.get();
+                rpcRegistration.get() &&
+                inReconciliationFrameworkStep || initialSubmitting.get();
 
-        if (result && mastershipState != ContextChainMastershipState.CHECK) {
+        if (!inReconciliationFrameworkStep &&
+                result &&
+                mastershipState != ContextChainMastershipState.CHECK) {
             LOG.info("Device {} is able to work as master{}",
                     deviceInfo,
                     registryFilling.get() ? "." : " WITHOUT flow registry !!!");
@@ -203,23 +201,12 @@ public class ContextChainImpl implements ContextChain {
     }
 
     @Override
-    public boolean isPrepared() {
-        return this.initialGathering.get() &&
-                this.masterStateOnDevice.get() &&
-                this.rpcRegistration.get();
-    }
-
-    @Override
-    public boolean continueInitializationAfterReconciliation() {
-        final AtomicBoolean initialSubmit = new AtomicBoolean(false);
-
+    public void continueInitializationAfterReconciliation() {
         contexts.forEach(context -> {
-            if (context.map(StatisticsContext.class::isInstance)) {
-                initialSubmit.set(context.map(StatisticsContext.class::cast).initialSubmitAfterReconciliation());
+            if (context.map(ReconciliationFrameworkStep.class::isInstance)) {
+                context.map(ReconciliationFrameworkStep.class::cast).continueInitializationAfterReconciliation();
             }
         });
-
-        return initialSubmit.get() && isMastered(ContextChainMastershipState.INITIAL_SUBMIT);
     }
 
     @Override
