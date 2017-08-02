@@ -42,6 +42,7 @@ import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationS
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
+import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
@@ -57,6 +58,7 @@ import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitiali
 import org.opendaylight.openflowplugin.impl.lifecycle.ContextChainHolderImpl;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.DeserializerInjector;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.SerializerInjector;
+import org.opendaylight.openflowplugin.impl.role.RoleManagerImpl;
 import org.opendaylight.openflowplugin.impl.rpc.RpcManagerImpl;
 import org.opendaylight.openflowplugin.impl.statistics.StatisticsManagerImpl;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.MessageIntelligenceAgencyImpl;
@@ -102,6 +104,7 @@ public class OpenFlowPluginProviderImpl implements
     private DeviceManager deviceManager;
     private RpcManager rpcManager;
     private StatisticsManager statisticsManager;
+    private RoleManager roleManager;
     private ConnectionManager connectionManager;
     private ThreadPoolExecutor threadPool;
     private ContextChainHolderImpl contextChainHolder;
@@ -226,19 +229,20 @@ public class OpenFlowPluginProviderImpl implements
                 hashedWheelTimer,
                 convertorManager);
 
+        roleManager = new RoleManagerImpl(hashedWheelTimer);
+
         contextChainHolder = new ContextChainHolderImpl(
-                hashedWheelTimer,
                 threadPool,
                 singletonServicesProvider,
                 entityOwnershipService,
-                mastershipChangeServiceManager
-        );
+                mastershipChangeServiceManager);
 
         statisticsManager.setReconciliationFrameworkRegistrar(mastershipChangeServiceManager);
 
         contextChainHolder.addManager(deviceManager);
         contextChainHolder.addManager(statisticsManager);
         contextChainHolder.addManager(rpcManager);
+        contextChainHolder.addManager(roleManager);
 
         connectionManager = new ConnectionManagerImpl(config, threadPool);
         connectionManager.setDeviceConnectedHandler(contextChainHolder);
@@ -265,6 +269,7 @@ public class OpenFlowPluginProviderImpl implements
         gracefulShutdown(deviceManager);
         gracefulShutdown(rpcManager);
         gracefulShutdown(statisticsManager);
+        gracefulShutdown(roleManager);
         gracefulShutdown(threadPool);
         gracefulShutdown(hashedWheelTimer);
         unregisterMXBean(MESSAGE_INTELLIGENCE_AGENCY_MX_BEAN_NAME);
