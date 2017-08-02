@@ -20,6 +20,7 @@ import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipChange;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListenerRegistration;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -40,6 +41,7 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager
 import org.opendaylight.openflowplugin.impl.mastership.MastershipChangeServiceManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
+import org.opendaylight.yangtools.yang.common.RpcError;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ContextChainHolderImplTest {
@@ -97,8 +99,9 @@ public class ContextChainHolderImplTest {
         Mockito.when(connectionContext.getDeviceInfo()).thenReturn(deviceInfo);
         Mockito.when(deviceManager.createContext(connectionContext)).thenReturn(deviceContext);
         Mockito.when(rpcManager.createContext(deviceContext)).thenReturn(rpcContext);
-        Mockito.when(statisticsManager.createContext(deviceContext)).thenReturn(statisticsContext);
         Mockito.when(roleManager.createContext(deviceContext)).thenReturn(roleContext);
+        Mockito.when(statisticsManager.createContext(Mockito.eq(deviceContext), Mockito.anyBoolean()))
+            .thenReturn(statisticsContext);
         Mockito.when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
 
         Mockito.when(singletonServicesProvider.registerClusterSingletonService(Mockito.any()))
@@ -131,15 +134,15 @@ public class ContextChainHolderImplTest {
         contextChainHolder.createContextChain(connectionContext);
         Mockito.verify(deviceManager).createContext(Mockito.any(ConnectionContext.class));
         Mockito.verify(rpcManager).createContext(Mockito.any(DeviceContext.class));
-        Mockito.verify(statisticsManager).createContext(Mockito.any(DeviceContext.class));
         Mockito.verify(roleManager).createContext(Mockito.any(DeviceContext.class));
+        Mockito.verify(statisticsManager).createContext(Mockito.any(DeviceContext.class), Mockito.anyBoolean());
     }
 
 
     @Test
     public void reconciliationFrameworkFailure() throws Exception {
         Mockito.when(reconciliationFrameworkEvent.onDevicePrepared(deviceInfo))
-                .thenReturn(Futures.immediateFailedFuture(new Throwable("test")));
+            .thenReturn(Futures.immediateFailedFuture(new Throwable("test")));
         contextChainHolder.createContextChain(connectionContext);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_FLOW_REGISTRY_FILL);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_GATHERING);
@@ -151,7 +154,7 @@ public class ContextChainHolderImplTest {
     @Test
     public void reconciliationFrameworkDisconnect() throws Exception {
         Mockito.when(reconciliationFrameworkEvent.onDevicePrepared(deviceInfo))
-                .thenReturn(Futures.immediateFuture(ResultState.DISCONNECT));
+            .thenReturn(Futures.immediateFuture(ResultState.DISCONNECT));
         contextChainHolder.createContextChain(connectionContext);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_FLOW_REGISTRY_FILL);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_GATHERING);
@@ -164,8 +167,7 @@ public class ContextChainHolderImplTest {
     public void reconciliationFrameworkSuccess() throws Exception {
         contextChainHolder.createContextChain(connectionContext);
         Mockito.when(reconciliationFrameworkEvent.onDevicePrepared(deviceInfo))
-                .thenReturn(Futures.immediateFuture(ResultState.DONOTHING));
-        Mockito.when(statisticsContext.initialSubmitAfterReconciliation()).thenReturn(true);
+            .thenReturn(Futures.immediateFuture(ResultState.DONOTHING));
         contextChainHolder.createContextChain(connectionContext);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_FLOW_REGISTRY_FILL);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_GATHERING);
@@ -178,13 +180,12 @@ public class ContextChainHolderImplTest {
     public void reconciliationFrameworkSuccessButNotSubmit() throws Exception {
         contextChainHolder.createContextChain(connectionContext);
         Mockito.when(reconciliationFrameworkEvent.onDevicePrepared(deviceInfo))
-                .thenReturn(Futures.immediateFuture(ResultState.DONOTHING));
-        Mockito.when(statisticsContext.initialSubmitAfterReconciliation()).thenReturn(false);
+            .thenReturn(Futures.immediateFuture(ResultState.DONOTHING));
         contextChainHolder.createContextChain(connectionContext);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_FLOW_REGISTRY_FILL);
-        contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_GATHERING);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.RPC_REGISTRATION);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.MASTER_ON_DEVICE);
+        contextChainHolder.onNotAbleToStartMastershipMandatory(deviceInfo, "Test reason");
         Mockito.verify(reconciliationFrameworkEvent).onDeviceDisconnected(deviceInfo);
     }
 
