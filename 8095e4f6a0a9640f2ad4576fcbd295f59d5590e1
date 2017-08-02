@@ -1,0 +1,52 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_430a55d3",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/mastership/MastershipChangeServiceManagerImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-08-02T12:24:03Z",
+      "side": 1,
+      "message": "Even better solution were to store the service itself not the registration and the we dont need to do cast.\nPatch incomming.",
+      "parentUuid": "ba1f61a0_c3c0057f",
+      "range": {
+        "startLine": 80,
+        "startChar": 8,
+        "endLine": 82,
+        "endChar": 9
+      },
+      "revId": "8095e4f6a0a9640f2ad4576fcbd295f59d5590e1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_a30fd1e0",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/mastership/MastershipChangeServiceManagerImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-08-02T12:24:03Z",
+      "side": 1,
+      "message": "Even better solution were to store the service itself not the registration and the we dont need to do cast.\nPatch incomming.",
+      "parentUuid": "ba1f61a0_23be4100",
+      "range": {
+        "startLine": 89,
+        "startChar": 8,
+        "endLine": 91,
+        "endChar": 9
+      },
+      "revId": "8095e4f6a0a9640f2ad4576fcbd295f59d5590e1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
