@@ -16,10 +16,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipChange;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListenerRegistration;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
+import org.opendaylight.mdsal.eos.binding.api.Entity;
+import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipChange;
+import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipListenerRegistration;
+import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
+import org.opendaylight.mdsal.eos.common.api.EntityOwnershipChangeState;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -270,9 +271,7 @@ public class ContextChainHolderImplTest {
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_SUBMIT);
         EntityOwnershipChange ownershipChange = new EntityOwnershipChange(
                 new Entity(ENTITY_TEST, OPENFLOW_TEST),
-                true,
-                false,
-                false
+                EntityOwnershipChangeState.LOCAL_OWNERSHIP_LOST_NO_OWNER
         );
         contextChainHolder.ownershipChanged(ownershipChange);
         Mockito.verify(deviceManager).removeDeviceFromOperationalDS(Mockito.any());
@@ -289,9 +288,7 @@ public class ContextChainHolderImplTest {
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_SUBMIT);
         EntityOwnershipChange ownershipChange = new EntityOwnershipChange(
                 new Entity(ENTITY_TEST, OPENFLOW_TEST),
-                true,
-                false,
-                true
+                EntityOwnershipChangeState.LOCAL_OWNERSHIP_LOST_NEW_OWNER
         );
         contextChainHolder.ownershipChanged(ownershipChange);
         Mockito.verify(deviceManager,Mockito.never()).removeDeviceFromOperationalDS(Mockito.any());
