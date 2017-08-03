@@ -96,6 +96,30 @@
     },
     {
       "key": {
+        "uuid": "ba1f61a0_49638fb1",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/ReconciliationManager.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-03T20:39:22Z",
+      "side": 1,
+      "message": "If this is not public API, then better keep it as a internal public method.",
+      "parentUuid": "ba1f61a0_9cc67548",
+      "range": {
+        "startLine": 31,
+        "startChar": 4,
+        "endLine": 31,
+        "endChar": 71
+      },
+      "revId": "279ff634e2b8745b76bd936835f8eeacda19c2ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da2a55be_6aba610b",
         "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/ReconciliationManager.java",
         "patchSetId": 10
@@ -131,6 +155,30 @@
       "side": 1,
       "message": "Removed this API. Have discussed with Jozef regrading this. OFP would provide hooks for stopReconcile too. Would make that changes once it is available.",
       "parentUuid": "da2a55be_6aba610b",
+      "range": {
+        "startLine": 37,
+        "startChar": 9,
+        "endLine": 37,
+        "endChar": 27
+      },
+      "revId": "279ff634e2b8745b76bd936835f8eeacda19c2ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_e971a378",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/ReconciliationManager.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-03T20:39:22Z",
+      "side": 1,
+      "message": "Cool. Thanks",
+      "parentUuid": "ba1f61a0_fcc33136",
       "range": {
         "startLine": 37,
         "startChar": 9,
