@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_a9e7abe3",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-03T21:13:52Z",
+      "side": 1,
+      "message": "ideally we should not even register for reconciliation notification if reconciliation is disabled. So in that scenario, you won\u0027t get the callback from reconciliation framework and you don\u0027t have to take care of this scenario explicitly.",
+      "range": {
+        "startLine": 125,
+        "startChar": 12,
+        "endLine": 125,
+        "endChar": 47
+      },
+      "revId": "7a7251c7618e1e5a838efbe3bd1101f4e5f2bf6e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_89ec67c9",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-03T21:13:52Z",
+      "side": 1,
+      "message": "i think you don\u0027t have to block it here, given that the reconciliation framework will block anyways.",
+      "range": {
+        "startLine": 139,
+        "startChar": 54,
+        "endLine": 139,
+        "endChar": 61
+      },
+      "revId": "7a7251c7618e1e5a838efbe3bd1101f4e5f2bf6e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_e9c9a35b",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 238,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-03T21:13:52Z",
+      "side": 1,
+      "message": "please fix the comments here and below.",
+      "range": {
+        "startLine": 230,
+        "startChar": 82,
+        "endLine": 238,
+        "endChar": 94
+      },
+      "revId": "7a7251c7618e1e5a838efbe3bd1101f4e5f2bf6e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_8903c772",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/ForwardingRulesManagerImpl.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-03T21:13:52Z",
+      "side": 1,
+      "message": "i think level is not required here. And we should rename it to \"frm.reconciliation.priority\", as in config file we club the properties based on the applications and we might expose this priority using config file (openflowplugin.cfg).",
+      "range": {
+        "startLine": 61,
+        "startChar": 97,
+        "endLine": 61,
+        "endChar": 103
+      },
+      "revId": "7a7251c7618e1e5a838efbe3bd1101f4e5f2bf6e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_e9f7e38a",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/ForwardingRulesManagerImpl.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-03T21:13:52Z",
+      "side": 1,
+      "message": "please make it final",
+      "range": {
+        "startLine": 80,
+        "startChar": 4,
+        "endLine": 80,
+        "endChar": 12
+      },
+      "revId": "7a7251c7618e1e5a838efbe3bd1101f4e5f2bf6e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_c9f49f89",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/ForwardingRulesManagerImpl.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-03T21:13:52Z",
+      "side": 1,
+      "message": "please define the string as a constant..",
+      "range": {
+        "startLine": 119,
+        "startChar": 77,
+        "endLine": 119,
+        "endChar": 82
+      },
+      "revId": "7a7251c7618e1e5a838efbe3bd1101f4e5f2bf6e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
