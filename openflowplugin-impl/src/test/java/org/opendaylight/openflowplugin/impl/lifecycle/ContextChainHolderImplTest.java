@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2017 Pantheon Technologies s.r.o. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -17,11 +17,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipChange;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListenerRegistration;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+import org.opendaylight.mdsal.eos.binding.api.Entity;
+import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipChange;
+import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipListenerRegistration;
+import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
+import org.opendaylight.mdsal.eos.common.api.EntityOwnershipChangeState;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -30,7 +30,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.OwnershipChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.api.openflow.mastership.ReconciliationFrameworkEvent;
 import org.opendaylight.openflowplugin.api.openflow.mastership.ReconciliationFrameworkRegistration;
@@ -41,7 +40,6 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager
 import org.opendaylight.openflowplugin.impl.mastership.MastershipChangeServiceManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
-import org.opendaylight.yangtools.yang.common.RpcError;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ContextChainHolderImplTest {
@@ -76,8 +74,6 @@ public class ContextChainHolderImplTest {
     private EntityOwnershipService entityOwnershipService;
     @Mock
     private EntityOwnershipListenerRegistration entityOwnershipListenerRegistration;
-    @Mock
-    private OwnershipChangeListener ownershipChangeListener;
     @Mock
     private ReconciliationFrameworkEvent reconciliationFrameworkEvent;
     @Mock
@@ -268,9 +264,7 @@ public class ContextChainHolderImplTest {
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_SUBMIT);
         EntityOwnershipChange ownershipChange = new EntityOwnershipChange(
                 new Entity(ENTITY_TEST, OPENFLOW_TEST),
-                true,
-                false,
-                false
+                EntityOwnershipChangeState.LOCAL_OWNERSHIP_LOST_NO_OWNER
         );
         contextChainHolder.ownershipChanged(ownershipChange);
         Mockito.verify(deviceManager).removeDeviceFromOperationalDS(Mockito.any());
@@ -287,9 +281,7 @@ public class ContextChainHolderImplTest {
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_SUBMIT);
         EntityOwnershipChange ownershipChange = new EntityOwnershipChange(
                 new Entity(ENTITY_TEST, OPENFLOW_TEST),
-                true,
-                false,
-                true
+                EntityOwnershipChangeState.LOCAL_OWNERSHIP_LOST_NEW_OWNER
         );
         contextChainHolder.ownershipChanged(ownershipChange);
         Mockito.verify(deviceManager,Mockito.never()).removeDeviceFromOperationalDS(Mockito.any());
