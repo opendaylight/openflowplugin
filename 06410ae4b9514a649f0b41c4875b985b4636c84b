@@ -48,6 +48,30 @@
     },
     {
       "key": {
+        "uuid": "ba1f61a0_da3d83bd",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManagerImpl.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-08-03T06:39:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba1f61a0_9a25cbad",
+      "range": {
+        "startLine": 107,
+        "startChar": 8,
+        "endLine": 107,
+        "endChar": 39
+      },
+      "revId": "06410ae4b9514a649f0b41c4875b985b4636c84b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba1f61a0_fa3967d9",
         "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManagerImpl.java",
         "patchSetId": 15
@@ -59,6 +83,30 @@
       "writtenOn": "2017-08-03T06:08:12Z",
       "side": 1,
       "message": "Use ListenableFuture\u003cVoid\u003e",
+      "range": {
+        "startLine": 165,
+        "startChar": 62,
+        "endLine": 165,
+        "endChar": 84
+      },
+      "revId": "06410ae4b9514a649f0b41c4875b985b4636c84b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_3a4bff5a",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManagerImpl.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-08-03T06:39:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba1f61a0_fa3967d9",
       "range": {
         "startLine": 165,
         "startChar": 62,
@@ -94,6 +142,30 @@
     },
     {
       "key": {
+        "uuid": "ba1f61a0_1a48bb5a",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManagerImpl.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-08-03T06:39:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba1f61a0_3a349fdd",
+      "range": {
+        "startLine": 173,
+        "startChar": 15,
+        "endLine": 173,
+        "endChar": 36
+      },
+      "revId": "06410ae4b9514a649f0b41c4875b985b4636c84b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba1f61a0_da3623e7",
         "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManagerImpl.java",
         "patchSetId": 15
@@ -105,6 +177,30 @@
       "writtenOn": "2017-08-03T06:08:12Z",
       "side": 1,
       "message": "Futures.immediateFuture(null);",
+      "range": {
+        "startLine": 182,
+        "startChar": 13,
+        "endLine": 182,
+        "endChar": 43
+      },
+      "revId": "06410ae4b9514a649f0b41c4875b985b4636c84b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_7a74579c",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManagerImpl.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-08-03T06:39:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba1f61a0_da3623e7",
       "range": {
         "startLine": 182,
         "startChar": 13,
@@ -140,6 +236,30 @@
     },
     {
       "key": {
+        "uuid": "ba1f61a0_5a799392",
+        "filename": "applications/reconciliation-framework/src/main/resources/org/opendaylight/blueprint/commands.xml",
+        "patchSetId": 15
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-08-03T06:39:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba1f61a0_7a4d7772",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 21
+      },
+      "revId": "06410ae4b9514a649f0b41c4875b985b4636c84b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba1f61a0_1a31dbec",
         "filename": "applications/reconciliation-framework/src/main/resources/org/opendaylight/blueprint/reconciliation-framework.xml",
         "patchSetId": 15
@@ -151,6 +271,30 @@
       "writtenOn": "2017-08-03T06:08:12Z",
       "side": 1,
       "message": "indentation",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 12
+      },
+      "revId": "06410ae4b9514a649f0b41c4875b985b4636c84b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_ba6ecfc7",
+        "filename": "applications/reconciliation-framework/src/main/resources/org/opendaylight/blueprint/reconciliation-framework.xml",
+        "patchSetId": 15
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-08-03T06:39:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba1f61a0_1a31dbec",
       "range": {
         "startLine": 8,
         "startChar": 0,
