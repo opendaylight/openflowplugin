@@ -48,6 +48,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,7 +127,9 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(final KeyedInstanceIdentifier<Node, NodeKey> ii) {
+    public CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(
+            @Nonnull final InstanceIdentifier<?> ii) {
+
         final WriteTransaction delWtx = dataBroker.newWriteOnlyTransaction();
         delWtx.delete(LogicalDatastoreType.OPERATIONAL, ii);
         final CheckedFuture<Void, TransactionCommitFailedException> delFuture = delWtx.submit();
