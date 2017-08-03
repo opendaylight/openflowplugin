@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListener;
+import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipListener;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;

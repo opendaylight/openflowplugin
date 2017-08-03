@@ -24,9 +24,9 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipChange;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListenerRegistration;
-import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
+import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipChange;
+import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipListenerRegistration;
+import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -49,10 +49,10 @@ import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.mdsal.core.general.entity.rev150930.Entity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
-import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -280,29 +280,33 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
 
     @Override
     public void ownershipChanged(EntityOwnershipChange entityOwnershipChange) {
-        if (entityOwnershipChange.hasOwner()) {
+
+        if (entityOwnershipChange.getState().hasOwner()) {
             return;
         }
 
-        final String entityName = getEntityNameFromOwnershipChange(entityOwnershipChange);
+        final String entityName = entityOwnershipChange
+                .getEntity()
+                .getIdentifier()
+                .firstKeyOf(Entity.class)
+                .getName();
 
         if (Objects.nonNull(entityName)) {
             LOG.debug("Entity {} has no owner", entityName);
-            final NodeId nodeId = new NodeId(entityName);
-
             try {
-                final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier =
-                        DeviceStateUtil.createNodeInstanceIdentifier(nodeId);
 
+                //TODO:Remove notifications
+                final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier =
+                        DeviceStateUtil.createNodeInstanceIdentifier(new NodeId(entityName));
                 deviceManager.sendNodeRemovedNotification(nodeInstanceIdentifier);
 
-                LOG.info("Try to remove device {} from operational DS", nodeId);
+                LOG.info("Try to remove device {} from operational DS", entityName);
                 deviceManager
                         .removeDeviceFromOperationalDS(nodeInstanceIdentifier)
                         .get(REMOVE_DEVICE_FROM_DS_TIMEOUT, TimeUnit.MILLISECONDS);
-                LOG.info("Removing device from operational DS {} was successful", nodeId);
+                LOG.info("Removing device from operational DS {} was successful", entityName);
             } catch (TimeoutException | ExecutionException | NullPointerException | InterruptedException e) {
-                LOG.warn("Not able to remove device {} from operational DS. ",nodeId, e);
+                LOG.warn("Not able to remove device {} from operational DS. ",entityName, e);
             }
         }
     }
@@ -336,21 +340,6 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                 .filter(deviceInfoContextChainEntry -> deviceInfoContextChainEntry.getValue()
                         .isMastered(ContextChainMastershipState.CHECK, false))
                 .isPresent();
-    }
-
-    private String getEntityNameFromOwnershipChange(final EntityOwnershipChange entityOwnershipChange) {
-        final YangInstanceIdentifier.NodeIdentifierWithPredicates lastIdArgument =
-                (YangInstanceIdentifier.NodeIdentifierWithPredicates) entityOwnershipChange
-                        .getEntity()
-                        .getId()
-                        .getLastPathArgument();
-
-        return lastIdArgument
-                .getKeyValues()
-                .values()
-                .iterator()
-                .next()
-                .toString();
     }
 
     @Override
