@@ -1,0 +1,51 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_c9d93f85",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/lifecycle/ContextChainHolderImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 267,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-03T19:58:43Z",
+      "side": 1,
+      "message": "I think this is correct. We do registration using the name of the entity and it internally wraps up in EntityKey(). I think we should register the entity using the InstanceIdentifier itself, so no need to convertion.",
+      "parentUuid": "ba1f61a0_c9abffd4",
+      "range": {
+        "startLine": 267,
+        "startChar": 28,
+        "endLine": 267,
+        "endChar": 34
+      },
+      "revId": "51abafb77809a486eff09a0163b27cd8a5d06532",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_e9c36388",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/lifecycle/ContextChainHolderImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 281,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-03T19:58:43Z",
+      "side": 1,
+      "message": "I don\u0027t think so it will work. We register entity with switch name, and this  will return InstanceIdentifier\u003cEntity\u003e.",
+      "range": {
+        "startLine": 281,
+        "startChar": 55,
+        "endLine": 281,
+        "endChar": 104
+      },
+      "revId": "51abafb77809a486eff09a0163b27cd8a5d06532",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
