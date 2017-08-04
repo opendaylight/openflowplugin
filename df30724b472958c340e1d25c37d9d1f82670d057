@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "ba1f61a0_afb04bde",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManagerImpl.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-08-04T10:37:17Z",
+      "side": 1,
+      "message": "Done. Fail fast if result state is \"DISCONNECT\" would be handled later in enhancement. So would be the following changes you had suggested:\n1. Have enum for service priority\n2. Add property file changes for \"reconciliation priority\" property.",
+      "parentUuid": "ba1f61a0_89b907ec",
+      "range": {
+        "startLine": 129,
+        "startChar": 24,
+        "endLine": 129,
+        "endChar": 62
+      },
+      "revId": "df30724b472958c340e1d25c37d9d1f82670d057",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba1f61a0_c9cadf6d",
         "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManagerImpl.java",
         "patchSetId": 16
@@ -36,6 +60,30 @@
       "writtenOn": "2017-08-03T20:39:22Z",
       "side": 1,
       "message": "as i mention above, this should be done based on the majority of application\u0027s intent.",
+      "range": {
+        "startLine": 143,
+        "startChar": 23,
+        "endLine": 143,
+        "endChar": 44
+      },
+      "revId": "df30724b472958c340e1d25c37d9d1f82670d057",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_74b626de",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManagerImpl.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-08-04T10:37:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba1f61a0_c9cadf6d",
       "range": {
         "startLine": 143,
         "startChar": 23,
@@ -60,6 +108,30 @@
       "side": 1,
       "message": "but make sure that you pass the single thread executor, otherwise all the task can execute in parallel and we don\u0027t want that to maintain the execution based on priority.",
       "parentUuid": "ba1f61a0_5a6353b1",
+      "range": {
+        "startLine": 110,
+        "startChar": 4,
+        "endLine": 183,
+        "endChar": 9
+      },
+      "revId": "df30724b472958c340e1d25c37d9d1f82670d057",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_94b59acf",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManagerImpl.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-08-04T10:37:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba1f61a0_a9ab2b88",
       "range": {
         "startLine": 110,
         "startChar": 4,
