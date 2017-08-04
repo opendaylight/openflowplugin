@@ -1,0 +1,148 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_0f2cf7aa",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/DeviceMastershipManager.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-08-04T14:36:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba1f61a0_0f74f7fb",
+      "range": {
+        "startLine": 104,
+        "startChar": 8,
+        "endLine": 105,
+        "endChar": 33
+      },
+      "revId": "5b52886fd4cf20a938c287e8dee8bbfc415b700e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_ef0b6329",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-08-04T14:36:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba1f61a0_cf693f27",
+      "range": {
+        "startLine": 128,
+        "startChar": 12,
+        "endLine": 129,
+        "endChar": 24
+      },
+      "revId": "5b52886fd4cf20a938c287e8dee8bbfc415b700e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_61adc788",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-08-04T14:36:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba1f61a0_8f88e7e8",
+      "range": {
+        "startLine": 122,
+        "startChar": 0,
+        "endLine": 139,
+        "endChar": 5
+      },
+      "revId": "5b52886fd4cf20a938c287e8dee8bbfc415b700e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_8f174751",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-08-04T14:36:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba1f61a0_af832bcb",
+      "range": {
+        "startLine": 143,
+        "startChar": 0,
+        "endLine": 144,
+        "endChar": 102
+      },
+      "revId": "5b52886fd4cf20a938c287e8dee8bbfc415b700e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_af120b60",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-08-04T14:36:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba1f61a0_ef6c0339",
+      "range": {
+        "startLine": 154,
+        "startChar": 8,
+        "endLine": 155,
+        "endChar": 20
+      },
+      "revId": "5b52886fd4cf20a938c287e8dee8bbfc415b700e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_4f1d4f73",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 189,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-08-04T14:36:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba1f61a0_2f773b04",
+      "range": {
+        "startLine": 189,
+        "startChar": 12,
+        "endLine": 189,
+        "endChar": 67
+      },
+      "revId": "5b52886fd4cf20a938c287e8dee8bbfc415b700e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
