@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_57e7a140",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManagerImpl.java",
+        "patchSetId": 22
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-04T18:25:23Z",
+      "side": 1,
+      "message": "That\u0027s not the exact API contract. If intent of majority of application is to DO_NOTHING, then even if one applications intent is DISCONNECT, it should not DISCONNECT the device, given that the majority intent is DO_NOTHING.",
+      "parentUuid": "ba1f61a0_cff49f89",
+      "range": {
+        "startLine": 66,
+        "startChar": 4,
+        "endLine": 76,
+        "endChar": 5
+      },
+      "revId": "f3b9d038cf35b9b60ae62b863862a638006bda09",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
