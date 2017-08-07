@@ -172,24 +172,18 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
 
     @Override
     public boolean checkNodeInOperationalDataStore(InstanceIdentifier<FlowCapableNode> ident) {
-        boolean result = false;
-        InstanceIdentifier<Node> nodeIid = ident.firstIdentifierOf(Node.class);
-        final ReadOnlyTransaction transaction = dataService.newReadOnlyTransaction();
-        CheckedFuture<com.google.common.base.Optional<Node>, ReadFailedException> future = transaction.read(LogicalDatastoreType.OPERATIONAL, nodeIid);
-        try {
-            com.google.common.base.Optional<Node> optionalDataObject = future.checkedGet();
-            if (optionalDataObject.isPresent()) {
-                result = true;
-            } else {
-                LOG.debug("{}: Failed to read {}",
-                        Thread.currentThread().getStackTrace()[1], nodeIid);
-            }
+        final InstanceIdentifier<Node> nodeIid = ident.firstIdentifierOf(Node.class);
+
+        try (final ReadOnlyTransaction transaction = dataService.newReadOnlyTransaction()) {
+            final CheckedFuture<com.google.common.base.Optional<Node>, ReadFailedException> future = transaction
+                    .read(LogicalDatastoreType.OPERATIONAL, nodeIid);
+
+            return future.checkedGet().isPresent();
         } catch (ReadFailedException e) {
             LOG.warn("Failed to read {} ", nodeIid, e);
         }
-        transaction.close();
 
-        return result;
+        return false;
     }
 
     @Override
