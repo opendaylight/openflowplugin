@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others.  All rights reserved.
- *
+ * <p>
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -116,23 +116,19 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     private static final long MAX_ADD_GROUP_TIMEOUT = TimeUnit.SECONDS.toNanos(20);
     private static final String SEPARATOR = ":";
     private static final int THREAD_POOL_SIZE = 4;
-
+    private static final AtomicLong BUNDLE_ID = new AtomicLong();
+    private static final BundleFlags BUNDLE_FLAGS = new BundleFlags(true, true);
     private final DataBroker dataBroker;
     private final ForwardingRulesManager provider;
     private final String serviceName;
     private final int priority;
     private final ResultState resultState;
     private final Map<DeviceInfo, ListenableFuture<Boolean>> futureMap = new HashMap<>();
-
     private final ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
-
     private final SalBundleService salBundleService;
 
-    private static final AtomicLong BUNDLE_ID = new AtomicLong();
-    private static final BundleFlags BUNDLE_FLAGS = new BundleFlags(true, true);
-
     public FlowNodeReconciliationImpl(final ForwardingRulesManager manager, final DataBroker db,
-            final String serviceName, final int priority, final ResultState resultState) {
+                                      final String serviceName, final int priority, final ResultState resultState) {
         this.provider = Preconditions.checkNotNull(manager, "ForwardingRulesManager can not be null!");
         dataBroker = Preconditions.checkNotNull(db, "DataBroker can not be null!");
         this.serviceName = serviceName;
@@ -167,95 +163,6 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         }
     }
 
-    private class BundleBasedReconciliationTask implements Callable<Boolean> {
-        final InstanceIdentifier<FlowCapableNode> nodeIdentity;
-
-        BundleBasedReconciliationTask(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-            nodeIdentity = nodeIdent;
-        }
-
-        @Override
-        public Boolean call() {
-            String node = nodeIdentity.firstKeyOf(Node.class, NodeKey.class).getId().getValue();
-            Optional<FlowCapableNode> flowNode = Optional.absent();
-            BundleId bundleIdValue = new BundleId(BUNDLE_ID.getAndIncrement());
-            BigInteger dpnId = getDpnIdFromNodeName(node);
-            LOG.debug("Triggering bundle based reconciliation for device :{}", dpnId);
-            ReadOnlyTransaction trans = provider.getReadTranaction();
-            try {
-                flowNode = trans.read(LogicalDatastoreType.CONFIGURATION, nodeIdentity).get();
-            } catch (ExecutionException | InterruptedException e) {
-                LOG.error("Error occurred while reading the configuration data store for node {}", nodeIdentity, e);
-            }
-
-            if (flowNode.isPresent()) {
-                LOG.debug("FlowNode present for Datapath ID {}", dpnId);
-                final NodeRef nodeRef = new NodeRef(nodeIdentity.firstIdentifierOf(Node.class));
-
-                final ControlBundleInput openBundleInput = new ControlBundleInputBuilder().setNode(nodeRef)
-                        .setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS).setType(BundleControlType.ONFBCTOPENREQUEST)
-                        .build();
-
-                final ControlBundleInput commitBundleInput = new ControlBundleInputBuilder().setNode(nodeRef)
-                        .setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS)
-                        .setType(BundleControlType.ONFBCTCOMMITREQUEST).build();
-
-                final AddBundleMessagesInput addBundleMessagesInput = new AddBundleMessagesInputBuilder()
-                        .setNode(nodeRef).setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS)
-                        .setMessages(createMessages(nodeRef, flowNode)).build();
-
-                Future<RpcResult<Void>> openBundle = salBundleService.controlBundle(openBundleInput);
-
-                ListenableFuture<RpcResult<Void>> addBundleMessagesFuture = Futures
-                        .transformAsync(JdkFutureAdapters.listenInPoolThread(openBundle), rpcResult -> {
-                            if (rpcResult.isSuccessful()) {
-                                return JdkFutureAdapters
-                                        .listenInPoolThread(salBundleService.addBundleMessages(addBundleMessagesInput));
-                            }
-                            return Futures.immediateFuture(null);
-                        });
-                ListenableFuture<RpcResult<Void>> commitBundleFuture = Futures.transformAsync(addBundleMessagesFuture,
-                    rpcResult -> {
-                        if (rpcResult.isSuccessful()) {
-                            return JdkFutureAdapters
-                                    .listenInPoolThread(salBundleService.controlBundle(commitBundleInput));
-                        }
-                        return Futures.immediateFuture(null);
-                    });
-
-                /* Bundles not supported for meters */
-                List<Meter> meters = flowNode.get().getMeter() != null ? flowNode.get().getMeter()
-                        : Collections.emptyList();
-                Futures.transformAsync(commitBundleFuture,
-                    rpcResult -> {
-                        if (rpcResult.isSuccessful()) {
-                            for (Meter meter : meters) {
-                                final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent = nodeIdentity
-                                        .child(Meter.class, meter.getKey());
-                                provider.getMeterCommiter().add(meterIdent, meter, nodeIdentity);
-                            }
-                        }
-                        return Futures.immediateFuture(null);
-                    });
-
-                trans.close();
-                try {
-                    if (commitBundleFuture.get().isSuccessful()) {
-                        LOG.debug("Completing bundle based reconciliation for device ID:{}", dpnId);
-                        return true;
-                    } else {
-                        return false;
-                    }
-                } catch (InterruptedException | ExecutionException e) {
-                    LOG.error("Error while doing bundle based reconciliation for device ID:{}", nodeIdentity);
-                    return false;
-                }
-            }
-            LOG.error("FlowNode not present for Datapath ID {}", dpnId);
-            return false;
-        }
-    }
-
     @Override
     public ListenableFuture<Boolean> startReconciliation(DeviceInfo node) {
         InstanceIdentifier<FlowCapableNode> connectedNode = node.getNodeInstanceIdentifier()
@@ -283,246 +190,6 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     @Override
     public ResultState getResultState() {
         return resultState;
-    }
-
-    private class ReconciliationTask implements Callable<Boolean> {
-
-        InstanceIdentifier<FlowCapableNode> nodeIdentity;
-
-        ReconciliationTask(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-            nodeIdentity = nodeIdent;
-        }
-
-        @Override
-        public Boolean call() {
-            String node = nodeIdentity.firstKeyOf(Node.class, NodeKey.class).getId().getValue();
-            BigInteger dpnId = getDpnIdFromNodeName(node);
-
-            ReadOnlyTransaction trans = provider.getReadTranaction();
-            Optional<FlowCapableNode> flowNode = Optional.absent();
-            // initialize the counter
-            int counter = 0;
-            try {
-                flowNode = trans.read(LogicalDatastoreType.CONFIGURATION, nodeIdentity).get();
-            } catch (ExecutionException | InterruptedException e) {
-                LOG.warn("Fail with read Config/DS for Node {} !", nodeIdentity, e);
-                return false;
-            }
-
-            if (flowNode.isPresent()) {
-                /* Tables - have to be pushed before groups */
-                // CHECK if while pushing the update, updateTableInput can be null to emulate a
-                // table add
-                List<TableFeatures> tableList = flowNode.get().getTableFeatures() != null
-                        ? flowNode.get().getTableFeatures()
-                        : Collections.<TableFeatures>emptyList();
-                for (TableFeatures tableFeaturesItem : tableList) {
-                    TableFeaturesKey tableKey = tableFeaturesItem.getKey();
-                    KeyedInstanceIdentifier<TableFeatures, TableFeaturesKey> tableFeaturesII = nodeIdentity
-                            .child(TableFeatures.class, new TableFeaturesKey(tableKey.getTableId()));
-                    provider.getTableFeaturesCommiter().update(tableFeaturesII, tableFeaturesItem, null, nodeIdentity);
-                }
-
-                /* Groups - have to be first */
-                List<Group> groups = flowNode.get().getGroup() != null ? flowNode.get().getGroup()
-                        : Collections.<Group>emptyList();
-                List<Group> toBeInstalledGroups = new ArrayList<>();
-                toBeInstalledGroups.addAll(groups);
-                // new list for suspected groups pointing to ports .. when the ports come up
-                // late
-                List<Group> suspectedGroups = new ArrayList<>();
-                Map<Long, ListenableFuture<?>> groupFutures = new HashMap<>();
-
-                while ((!toBeInstalledGroups.isEmpty() || !suspectedGroups.isEmpty())
-                        && counter <= provider.getReconciliationRetryCount()) { // also check if the counter has not
-                                                                                // crossed the threshold
-
-                    if (toBeInstalledGroups.isEmpty() && !suspectedGroups.isEmpty()) {
-                        LOG.debug("These Groups are pointing to node-connectors that are not up yet {}",
-                                suspectedGroups.toString());
-                        toBeInstalledGroups.addAll(suspectedGroups);
-                        break;
-                    }
-
-                    ListIterator<Group> iterator = toBeInstalledGroups.listIterator();
-                    while (iterator.hasNext()) {
-                        Group group = iterator.next();
-                        boolean okToInstall = true;
-                        Buckets buckets = group.getBuckets();
-                        List<Bucket> bucketList = buckets == null ? null : buckets.getBucket();
-                        if (bucketList == null) {
-                            bucketList = Collections.<Bucket>emptyList();
-                        }
-                        for (Bucket bucket : bucketList) {
-                            List<Action> actions = bucket.getAction();
-                            if (actions == null) {
-                                actions = Collections.<Action>emptyList();
-                            }
-                            for (Action action : actions) {
-                                // chained-port
-                                if (action.getAction().getImplementedInterface().getName()
-                                        .equals("org.opendaylight.yang.gen.v1.urn.opendaylight"
-                                                + ".action.types.rev131112.action.action.OutputActionCase")) {
-                                    String nodeConnectorUri = ((OutputActionCase) action.getAction()).getOutputAction()
-                                            .getOutputNodeConnector().getValue();
-
-                                    LOG.debug("Installing the group for node connector {}", nodeConnectorUri);
-
-                                    // check if the nodeconnector is there in the multimap
-                                    boolean isPresent = provider.getFlowNodeConnectorInventoryTranslatorImpl()
-                                            .isNodeConnectorUpdated(dpnId, nodeConnectorUri);
-                                    // if yes set okToInstall = true
-
-                                    if (isPresent) {
-                                        break;
-                                    } else {
-                                        // else put it in a different list and still set okToInstall = true
-                                        suspectedGroups.add(group);
-                                        LOG.debug(
-                                                "Not yet received the node-connector updated for {} "
-                                                        + "for the group with id {}",
-                                                nodeConnectorUri, group.getGroupId().toString());
-                                        break;
-                                    }
-                                } else if (action.getAction().getImplementedInterface().getName()
-                                        .equals("org.opendaylight.yang.gen.v1.urn.opendaylight"
-                                                + ".action.types.rev131112.action.action.GroupActionCase")) {
-                                    // chained groups
-                                    Long groupId = ((GroupActionCase) action.getAction()).getGroupAction().getGroupId();
-                                    ListenableFuture<?> future = groupFutures.get(groupId);
-                                    if (future == null) {
-                                        okToInstall = false;
-                                        break;
-                                    }
-                                    // Need to ensure that the group specified
-                                    // by group-action is already installed.
-                                    awaitGroup(node, future);
-                                }
-                            }
-                            if (!okToInstall) {
-                                // increment retry counter value
-                                counter++;
-                                break;
-                            }
-                        }
-                        if (okToInstall) {
-                            addGroup(groupFutures, group);
-                            iterator.remove();
-                            // resetting the counter to zero
-                            counter = 0;
-                        }
-                    }
-                }
-
-                /* installation of suspected groups */
-                if (!toBeInstalledGroups.isEmpty()) {
-                    for (Group group : toBeInstalledGroups) {
-                        LOG.debug(
-                                "Installing the group {} finally although "
-                                        + "the port is not up after checking for {} times ",
-                                group.getGroupId().toString(), provider.getReconciliationRetryCount());
-                        addGroup(groupFutures, group);
-                    }
-                }
-                /* Meters */
-                List<Meter> meters = flowNode.get().getMeter() != null ? flowNode.get().getMeter()
-                        : Collections.<Meter>emptyList();
-                for (Meter meter : meters) {
-                    final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent = nodeIdentity.child(Meter.class,
-                            meter.getKey());
-                    provider.getMeterCommiter().add(meterIdent, meter, nodeIdentity);
-                }
-
-                // Need to wait for all groups to be installed before adding
-                // flows.
-                awaitGroups(node, groupFutures.values());
-
-                /* Flows */
-                List<Table> tables = flowNode.get().getTable() != null ? flowNode.get().getTable()
-                        : Collections.<Table>emptyList();
-                for (Table table : tables) {
-                    final KeyedInstanceIdentifier<Table, TableKey> tableIdent = nodeIdentity.child(Table.class,
-                            table.getKey());
-                    List<Flow> flows = table.getFlow() != null ? table.getFlow() : Collections.<Flow>emptyList();
-                    for (Flow flow : flows) {
-                        final KeyedInstanceIdentifier<Flow, FlowKey> flowIdent = tableIdent.child(Flow.class,
-                                flow.getKey());
-                        provider.getFlowCommiter().add(flowIdent, flow, nodeIdentity);
-                    }
-                }
-            }
-            /* clean transaction */
-            trans.close();
-            return true;
-        }
-
-        /**
-         * Invoke add-group RPC, and put listenable future associated with the RPC into
-         * the given map.
-         *
-         * @param map
-         *            The map to store listenable futures associated with add-group RPC.
-         * @param group
-         *            The group to add.
-         */
-        private void addGroup(Map<Long, ListenableFuture<?>> map, Group group) {
-            KeyedInstanceIdentifier<Group, GroupKey> groupIdent = nodeIdentity.child(Group.class, group.getKey());
-            final Long groupId = group.getGroupId().getValue();
-            ListenableFuture<?> future = JdkFutureAdapters
-                    .listenInPoolThread(provider.getGroupCommiter().add(groupIdent, group, nodeIdentity));
-
-            Futures.addCallback(future, new FutureCallback<Object>() {
-                @Override
-                public void onSuccess(Object result) {
-                    if (LOG.isTraceEnabled()) {
-                        LOG.trace("add-group RPC completed: node={}, id={}",
-                                nodeIdentity.firstKeyOf(Node.class).getId().getValue(), groupId);
-                    }
-                }
-
-                @Override
-                public void onFailure(Throwable cause) {
-                    String msg = "add-group RPC failed: node=" + nodeIdentity.firstKeyOf(Node.class).getId().getValue()
-                            + ", id=" + groupId;
-                    LOG.debug(msg, cause);
-                }
-            });
-
-            map.put(groupId, future);
-        }
-
-        /**
-         * Wait for completion of add-group RPC.
-         *
-         * @param nodeId
-         *            The identifier for the target node.
-         * @param future
-         *            Future associated with add-group RPC that installs the target
-         *            group.
-         */
-        private void awaitGroup(String nodeId, ListenableFuture<?> future) {
-            awaitGroups(nodeId, Collections.singleton(future));
-        }
-
-        /**
-         * Wait for completion of add-group RPCs.
-         *
-         * @param nodeId
-         *            The identifier for the target node.
-         * @param futures
-         *            A collection of futures associated with add-group RPCs.
-         */
-        private void awaitGroups(String nodeId, Collection<ListenableFuture<?>> futures) {
-            if (!futures.isEmpty()) {
-                long timeout = Math.min(ADD_GROUP_TIMEOUT * futures.size(), MAX_ADD_GROUP_TIMEOUT);
-                try {
-                    Futures.successfulAsList(futures).get(timeout, TimeUnit.NANOSECONDS);
-                    LOG.trace("awaitGroups() completed: node={}", nodeId);
-                } catch (TimeoutException | InterruptedException | ExecutionException e) {
-                    LOG.debug("add-group RPCs did not complete: node={}", nodeId);
-                }
-            }
-        }
     }
 
     private BigInteger getDpnIdFromNodeName(String nodeName) {
@@ -659,7 +326,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     }
 
     private InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight
-        .flow.inventory.rev130819.tables.table.StaleFlow> getStaleFlowInstanceIdentifier(
+            .flow.inventory.rev130819.tables.table.StaleFlow> getStaleFlowInstanceIdentifier(
             StaleFlow staleFlow, InstanceIdentifier<FlowCapableNode> nodeIdent) {
         return nodeIdent.child(Table.class, new TableKey(staleFlow.getTableId())).child(
                 org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlow.class,
@@ -667,13 +334,13 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     }
 
     private InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight
-        .group.types.rev131018.groups.StaleGroup> getStaleGroupInstanceIdentifier(
+            .group.types.rev131018.groups.StaleGroup> getStaleGroupInstanceIdentifier(
             StaleGroup staleGroup, InstanceIdentifier<FlowCapableNode> nodeIdent) {
         return nodeIdent.child(StaleGroup.class, new StaleGroupKey(new GroupId(staleGroup.getGroupId())));
     }
 
     private InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight
-        .flow.inventory.rev130819.meters.StaleMeter> getStaleMeterInstanceIdentifier(
+            .flow.inventory.rev130819.meters.StaleMeter> getStaleMeterInstanceIdentifier(
             StaleMeter staleMeter, InstanceIdentifier<FlowCapableNode> nodeIdent) {
         return nodeIdent.child(StaleMeter.class, new StaleMeterKey(new MeterId(staleMeter.getMeterId())));
     }
@@ -739,5 +406,332 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
         LOG.debug("The size of the flows and group messages created in createMessage() {}", messages.size());
         return new MessagesBuilder().setMessage(messages).build();
+    }
+
+    private class BundleBasedReconciliationTask implements Callable<Boolean> {
+        final InstanceIdentifier<FlowCapableNode> nodeIdentity;
+
+        BundleBasedReconciliationTask(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+            nodeIdentity = nodeIdent;
+        }
+
+        @Override
+        public Boolean call() {
+            String node = nodeIdentity.firstKeyOf(Node.class, NodeKey.class).getId().getValue();
+            Optional<FlowCapableNode> flowNode = Optional.absent();
+            BundleId bundleIdValue = new BundleId(BUNDLE_ID.getAndIncrement());
+            BigInteger dpnId = getDpnIdFromNodeName(node);
+            LOG.debug("Triggering bundle based reconciliation for device :{}", dpnId);
+            ReadOnlyTransaction trans = provider.getReadTranaction();
+            try {
+                flowNode = trans.read(LogicalDatastoreType.CONFIGURATION, nodeIdentity).get();
+            } catch (ExecutionException | InterruptedException e) {
+                LOG.error("Error occurred while reading the configuration data store for node {}", nodeIdentity, e);
+            }
+
+            if (flowNode.isPresent()) {
+                LOG.debug("FlowNode present for Datapath ID {}", dpnId);
+                final NodeRef nodeRef = new NodeRef(nodeIdentity.firstIdentifierOf(Node.class));
+
+                final ControlBundleInput openBundleInput = new ControlBundleInputBuilder().setNode(nodeRef)
+                        .setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS).setType(BundleControlType.ONFBCTOPENREQUEST)
+                        .build();
+
+                final ControlBundleInput commitBundleInput = new ControlBundleInputBuilder().setNode(nodeRef)
+                        .setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS)
+                        .setType(BundleControlType.ONFBCTCOMMITREQUEST).build();
+
+                final AddBundleMessagesInput addBundleMessagesInput = new AddBundleMessagesInputBuilder()
+                        .setNode(nodeRef).setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS)
+                        .setMessages(createMessages(nodeRef, flowNode)).build();
+
+                Future<RpcResult<Void>> openBundle = salBundleService.controlBundle(openBundleInput);
+
+                ListenableFuture<RpcResult<Void>> addBundleMessagesFuture = Futures
+                        .transformAsync(JdkFutureAdapters.listenInPoolThread(openBundle), rpcResult -> {
+                            if (rpcResult.isSuccessful()) {
+                                return JdkFutureAdapters
+                                        .listenInPoolThread(salBundleService.addBundleMessages(addBundleMessagesInput));
+                            }
+                            return Futures.immediateFuture(null);
+                        });
+                ListenableFuture<RpcResult<Void>> commitBundleFuture = Futures.transformAsync(addBundleMessagesFuture,
+                        rpcResult -> {
+                            if (rpcResult.isSuccessful()) {
+                                return JdkFutureAdapters
+                                        .listenInPoolThread(salBundleService.controlBundle(commitBundleInput));
+                            }
+                            return Futures.immediateFuture(null);
+                        });
+
+                /* Bundles not supported for meters */
+                List<Meter> meters = flowNode.get().getMeter() != null ? flowNode.get().getMeter()
+                        : Collections.emptyList();
+                Futures.transformAsync(commitBundleFuture,
+                        rpcResult -> {
+                            if (rpcResult.isSuccessful()) {
+                                for (Meter meter : meters) {
+                                    final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent = nodeIdentity
+                                            .child(Meter.class, meter.getKey());
+                                    provider.getMeterCommiter().add(meterIdent, meter, nodeIdentity);
+                                }
+                            }
+                            return Futures.immediateFuture(null);
+                        });
+
+                trans.close();
+                try {
+                    if (commitBundleFuture.get().isSuccessful()) {
+                        LOG.debug("Completing bundle based reconciliation for device ID:{}", dpnId);
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } catch (InterruptedException | ExecutionException e) {
+                    LOG.error("Error while doing bundle based reconciliation for device ID:{}", nodeIdentity);
+                    return false;
+                }
+            }
+            LOG.error("FlowNode not present for Datapath ID {}", dpnId);
+            return false;
+        }
+    }
+
+    private class ReconciliationTask implements Callable<Boolean> {
+
+        InstanceIdentifier<FlowCapableNode> nodeIdentity;
+
+        ReconciliationTask(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+            nodeIdentity = nodeIdent;
+        }
+
+        @Override
+        public Boolean call() {
+            String node = nodeIdentity.firstKeyOf(Node.class, NodeKey.class).getId().getValue();
+            BigInteger dpnId = getDpnIdFromNodeName(node);
+
+            ReadOnlyTransaction trans = provider.getReadTranaction();
+            Optional<FlowCapableNode> flowNode = Optional.absent();
+            // initialize the counter
+            int counter = 0;
+            try {
+                flowNode = trans.read(LogicalDatastoreType.CONFIGURATION, nodeIdentity).get();
+            } catch (ExecutionException | InterruptedException e) {
+                LOG.warn("Fail with read Config/DS for Node {} !", nodeIdentity, e);
+                return false;
+            }
+
+            if (flowNode.isPresent()) {
+                /* Tables - have to be pushed before groups */
+                // CHECK if while pushing the update, updateTableInput can be null to emulate a
+                // table add
+                List<TableFeatures> tableList = flowNode.get().getTableFeatures() != null
+                        ? flowNode.get().getTableFeatures()
+                        : Collections.<TableFeatures>emptyList();
+                for (TableFeatures tableFeaturesItem : tableList) {
+                    TableFeaturesKey tableKey = tableFeaturesItem.getKey();
+                    KeyedInstanceIdentifier<TableFeatures, TableFeaturesKey> tableFeaturesII = nodeIdentity
+                            .child(TableFeatures.class, new TableFeaturesKey(tableKey.getTableId()));
+                    provider.getTableFeaturesCommiter().update(tableFeaturesII, tableFeaturesItem, null, nodeIdentity);
+                }
+
+                /* Groups - have to be first */
+                List<Group> groups = flowNode.get().getGroup() != null ? flowNode.get().getGroup()
+                        : Collections.<Group>emptyList();
+                List<Group> toBeInstalledGroups = new ArrayList<>();
+                toBeInstalledGroups.addAll(groups);
+                // new list for suspected groups pointing to ports .. when the ports come up
+                // late
+                List<Group> suspectedGroups = new ArrayList<>();
+                Map<Long, ListenableFuture<?>> groupFutures = new HashMap<>();
+
+                while ((!toBeInstalledGroups.isEmpty() || !suspectedGroups.isEmpty())
+                        && counter <= provider.getReconciliationRetryCount()) {
+                    // also check if the counter has not crossed the threshold
+
+                    if (toBeInstalledGroups.isEmpty() && !suspectedGroups.isEmpty()) {
+                        LOG.debug("These Groups are pointing to node-connectors that are not up yet {}",
+                                suspectedGroups.toString());
+                        toBeInstalledGroups.addAll(suspectedGroups);
+                        break;
+                    }
+
+                    ListIterator<Group> iterator = toBeInstalledGroups.listIterator();
+                    while (iterator.hasNext()) {
+                        Group group = iterator.next();
+                        boolean okToInstall = true;
+                        Buckets buckets = group.getBuckets();
+                        List<Bucket> bucketList = buckets == null ? null : buckets.getBucket();
+                        if (bucketList == null) {
+                            bucketList = Collections.<Bucket>emptyList();
+                        }
+                        for (Bucket bucket : bucketList) {
+                            List<Action> actions = bucket.getAction();
+                            if (actions == null) {
+                                actions = Collections.<Action>emptyList();
+                            }
+                            for (Action action : actions) {
+                                //chained-port
+                                if (action.getAction().getImplementedInterface()
+                                        .equals(OutputActionCase.class)) {
+                                    String nodeConnectorUri = ((OutputActionCase) (action.getAction()))
+                                            .getOutputAction().getOutputNodeConnector().getValue();
+
+                                    LOG.debug("Installing the group for node connector {}", nodeConnectorUri);
+
+                                    // check if the nodeconnector is there in the multimap
+                                    boolean isPresent = provider.getFlowNodeConnectorInventoryTranslatorImpl()
+                                            .isNodeConnectorUpdated(dpnId, nodeConnectorUri);
+                                    // if yes set okToInstall = true
+
+                                    if (isPresent) {
+                                        break;
+                                    } else {
+                                        // else put it in a different list and still set okToInstall = true
+                                        suspectedGroups.add(group);
+                                        LOG.debug(
+                                                "Not yet received the node-connector updated for {} "
+                                                        + "for the group with id {}",
+                                                nodeConnectorUri, group.getGroupId().toString());
+                                        break;
+                                    }
+                                } else if (action.getAction().getImplementedInterface()
+                                        .equals(GroupActionCase.class)) {
+                                    //chained groups
+                                    Long groupId = ((GroupActionCase) (action.getAction())).getGroupAction().getGroupId();
+                                    ListenableFuture<?> future = groupFutures.get(groupId);
+                                    if (future == null) {
+                                        okToInstall = false;
+                                        break;
+                                    }
+                                    // Need to ensure that the group specified
+                                    // by group-action is already installed.
+                                    awaitGroup(node, future);
+                                }
+                            }
+                            if (!okToInstall) {
+                                // increment retry counter value
+                                counter++;
+                                break;
+                            }
+                        }
+                        if (okToInstall) {
+                            addGroup(groupFutures, group);
+                            iterator.remove();
+                            // resetting the counter to zero
+                            counter = 0;
+                        }
+                    }
+                }
+
+                /* installation of suspected groups */
+                if (!toBeInstalledGroups.isEmpty()) {
+                    for (Group group : toBeInstalledGroups) {
+                        LOG.debug(
+                                "Installing the group {} finally although "
+                                        + "the port is not up after checking for {} times ",
+                                group.getGroupId().toString(), provider.getReconciliationRetryCount());
+                        addGroup(groupFutures, group);
+                    }
+                }
+                /* Meters */
+                List<Meter> meters = flowNode.get().getMeter() != null ? flowNode.get().getMeter()
+                        : Collections.<Meter>emptyList();
+                for (Meter meter : meters) {
+                    final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent = nodeIdentity.child(Meter.class,
+                            meter.getKey());
+                    provider.getMeterCommiter().add(meterIdent, meter, nodeIdentity);
+                }
+
+                // Need to wait for all groups to be installed before adding
+                // flows.
+                awaitGroups(node, groupFutures.values());
+
+                /* Flows */
+                List<Table> tables = flowNode.get().getTable() != null ? flowNode.get().getTable()
+                        : Collections.<Table>emptyList();
+                for (Table table : tables) {
+                    final KeyedInstanceIdentifier<Table, TableKey> tableIdent = nodeIdentity.child(Table.class,
+                            table.getKey());
+                    List<Flow> flows = table.getFlow() != null ? table.getFlow() : Collections.<Flow>emptyList();
+                    for (Flow flow : flows) {
+                        final KeyedInstanceIdentifier<Flow, FlowKey> flowIdent = tableIdent.child(Flow.class,
+                                flow.getKey());
+                        provider.getFlowCommiter().add(flowIdent, flow, nodeIdentity);
+                    }
+                }
+            }
+            /* clean transaction */
+            trans.close();
+            return true;
+        }
+
+        /**
+         * Invoke add-group RPC, and put listenable future associated with the RPC into
+         * the given map.
+         *
+         * @param map
+         *            The map to store listenable futures associated with add-group RPC.
+         * @param group
+         *            The group to add.
+         */
+        private void addGroup(Map<Long, ListenableFuture<?>> map, Group group) {
+            KeyedInstanceIdentifier<Group, GroupKey> groupIdent = nodeIdentity.child(Group.class, group.getKey());
+            final Long groupId = group.getGroupId().getValue();
+            ListenableFuture<?> future = JdkFutureAdapters
+                    .listenInPoolThread(provider.getGroupCommiter().add(groupIdent, group, nodeIdentity));
+
+            Futures.addCallback(future, new FutureCallback<Object>() {
+                @Override
+                public void onSuccess(Object result) {
+                    if (LOG.isTraceEnabled()) {
+                        LOG.trace("add-group RPC completed: node={}, id={}",
+                                nodeIdentity.firstKeyOf(Node.class).getId().getValue(), groupId);
+                    }
+                }
+
+                @Override
+                public void onFailure(Throwable cause) {
+                    String msg = "add-group RPC failed: node=" + nodeIdentity.firstKeyOf(Node.class).getId().getValue()
+                            + ", id=" + groupId;
+                    LOG.debug(msg, cause);
+                }
+            });
+
+            map.put(groupId, future);
+        }
+
+        /**
+         * Wait for completion of add-group RPC.
+         *
+         * @param nodeId
+         *            The identifier for the target node.
+         * @param future
+         *            Future associated with add-group RPC that installs the target
+         *            group.
+         */
+        private void awaitGroup(String nodeId, ListenableFuture<?> future) {
+            awaitGroups(nodeId, Collections.singleton(future));
+        }
+
+        /**
+         * Wait for completion of add-group RPCs.
+         *
+         * @param nodeId
+         *            The identifier for the target node.
+         * @param futures
+         *            A collection of futures associated with add-group RPCs.
+         */
+        private void awaitGroups(String nodeId, Collection<ListenableFuture<?>> futures) {
+            if (!futures.isEmpty()) {
+                long timeout = Math.min(ADD_GROUP_TIMEOUT * futures.size(), MAX_ADD_GROUP_TIMEOUT);
+                try {
+                    Futures.successfulAsList(futures).get(timeout, TimeUnit.NANOSECONDS);
+                    LOG.trace("awaitGroups() completed: node={}", nodeId);
+                } catch (TimeoutException | InterruptedException | ExecutionException e) {
+                    LOG.debug("add-group RPCs did not complete: node={}", nodeId);
+                }
+            }
+        }
     }
 }
