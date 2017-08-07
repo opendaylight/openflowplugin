@@ -645,8 +645,7 @@ public final class IpConversionUtil {
         long maskBits = 0;
         maskBits = 0xffffffff << IPV4_ADDRESS_LENGTH - cidrMask;
         String mask = String.format("%d.%d.%d.%d", (maskBits & 0x0000000000ff000000L) >> 24, (maskBits & 0x0000000000ff0000) >> 16, (maskBits & 0x0000000000ff00) >> 8, maskBits & 0xff);
-        DottedQuad netMask = new DottedQuad(mask);
-        return netMask;
+        return new DottedQuad(mask);
     }
 
     public static Ipv6ArbitraryMask extractIpv6AddressMask(final Ipv6Prefix ipv6Prefix) {
@@ -662,12 +661,14 @@ public final class IpConversionUtil {
         byte[] finalmask = new byte[16];
         System.arraycopy(ipmask.toByteArray(),0,finalmask,0,ipmask.toByteArray().length);
         InetAddress inetAddress = null;
+
         try {
             inetAddress = InetAddress.getByAddress(finalmask);
         } catch (UnknownHostException e) {
             LOG.error("Failed to convert the Ipv6 subnetmask from integer to mask value ", e);
         }
-        return new Ipv6ArbitraryMask(inetAddress.getHostAddress());
+
+        return inetAddress != null ? new Ipv6ArbitraryMask(inetAddress.getHostAddress()) : null;
     }
 
     public static Integer extractIpv6Prefix(final Ipv6Prefix ipv6Prefix) {
@@ -695,8 +696,7 @@ public final class IpConversionUtil {
         } catch (UnknownHostException e) {
             LOG.error ("Failed to resolve the ip address of the mask ",e);
         }
-        byte[] bytes = maskInIpFormat.getAddress();
-        return bytes;
+        return maskInIpFormat != null ? maskInIpFormat.getAddress() : null;
     }
 
     public static boolean isArbitraryBitMask(byte[] byteMask) {
@@ -743,7 +743,7 @@ public final class IpConversionUtil {
         } catch (UnknownHostException e) {
             LOG.error ("Failed to convert mask string to ipv6 format mask ",e);
         }
-        return maskInIpFormat.getAddress();
+        return maskInIpFormat != null ? maskInIpFormat.getAddress() : null;
     }
 
     public static boolean isIpv6ArbitraryBitMask(final byte[] byteMask) {
