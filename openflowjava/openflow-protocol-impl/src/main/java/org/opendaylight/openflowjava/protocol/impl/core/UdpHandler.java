@@ -185,7 +185,7 @@ public final class UdpHandler implements ServerFacade {
                 group = new EpollEventLoopGroup();
             }
             return;
-        } catch (Throwable ex) {
+        } catch (Exception ex) {
             LOG.debug("Epoll initiation failed");
         }
 
