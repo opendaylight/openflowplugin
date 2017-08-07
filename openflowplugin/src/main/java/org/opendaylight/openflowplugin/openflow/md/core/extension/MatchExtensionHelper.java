@@ -76,6 +76,7 @@ public final class MatchExtensionHelper {
                     matchEntry.toString(),
                     ofVersion,
                     matchPath.name());
+            return;
         }
 
         final GeneralAugMatchNodesNodeTableFlowBuilder builder = Optional
