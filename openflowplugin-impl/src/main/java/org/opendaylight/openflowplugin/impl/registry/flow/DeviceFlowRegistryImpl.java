@@ -100,21 +100,9 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
         // Create new read-only transaction
         final ReadOnlyTransaction transaction = dataBroker.newReadOnlyTransaction();
 
-        // Bail out early if transaction is null
-        if (transaction == null) {
-            return Futures.immediateFailedCheckedFuture(
-                    new ReadFailedException("Read transaction is null"));
-        }
-
         // Prepare read operation from datastore for path
         final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> future =
                 transaction.read(logicalDatastoreType, path);
-
-        // Bail out early if future is null
-        if (future == null) {
-            return Futures.immediateFailedCheckedFuture(
-                    new ReadFailedException("Future from read transaction is null"));
-        }
 
         Futures.addCallback(future, new FutureCallback<Optional<FlowCapableNode>>() {
             @Override
