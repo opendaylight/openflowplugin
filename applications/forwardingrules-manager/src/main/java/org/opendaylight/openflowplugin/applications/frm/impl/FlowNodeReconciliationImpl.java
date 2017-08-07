@@ -27,9 +27,9 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
@@ -361,12 +361,11 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                                 actions = Collections.<Action>emptyList();
                             }
                             for (Action action : actions) {
-                                // chained-port
-                                if (action.getAction().getImplementedInterface().getName()
-                                        .equals("org.opendaylight.yang.gen.v1.urn.opendaylight"
-                                                + ".action.types.rev131112.action.action.OutputActionCase")) {
-                                    String nodeConnectorUri = ((OutputActionCase) action.getAction()).getOutputAction()
-                                            .getOutputNodeConnector().getValue();
+                                //chained-port
+                                if (action.getAction().getImplementedInterface()
+                                        .equals(OutputActionCase.class)) {
+                                    String nodeConnectorUri = ((OutputActionCase) (action.getAction()))
+                                            .getOutputAction().getOutputNodeConnector().getValue();
 
                                     LOG.debug("Installing the group for node connector {}", nodeConnectorUri);
 
@@ -386,12 +385,15 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                                                 nodeConnectorUri, group.getGroupId().toString());
                                         break;
                                     }
-                                } else if (action.getAction().getImplementedInterface().getName()
-                                        .equals("org.opendaylight.yang.gen.v1.urn.opendaylight"
-                                                + ".action.types.rev131112.action.action.GroupActionCase")) {
-                                    // chained groups
-                                    Long groupId = ((GroupActionCase) action.getAction()).getGroupAction().getGroupId();
-                                    ListenableFuture<?> future = groupFutures.get(groupId);
+
+
+                                }
+                                //chained groups
+                                else if (action.getAction().getImplementedInterface()
+                                        .equals(GroupActionCase.class)) {
+                                    Long groupId = ((GroupActionCase) (action.getAction())).getGroupAction().getGroupId();
+                                    ListenableFuture<?> future =
+                                        groupFutures.get(groupId);
                                     if (future == null) {
                                         okToInstall = false;
                                         break;
