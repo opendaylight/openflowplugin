@@ -143,10 +143,6 @@ public class SalFlowServiceImplTest extends TestCase {
         when(mockedFeaturesOutput.getVersion()).thenReturn(version);
         when(mockedDeviceInfo.getVersion()).thenReturn(version);
 
-        if (OFConstants.OFP_VERSION_1_3 >= version) {
-            when(mockedDeviceContext.canUseSingleLayerSerialization()).thenReturn(true);
-        }
-
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         return new SalFlowServiceImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
     }
