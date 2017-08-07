@@ -12,6 +12,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -62,7 +63,8 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleLi
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
-import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProviderFactory;
+import org.opendaylight.openflowplugin.impl.device.initialization.AbstractDeviceInitializer;
+import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProvider;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowDescriptorFactory;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
@@ -89,6 +91,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetAsyncReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
@@ -101,6 +104,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceivedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -158,6 +162,12 @@ public class DeviceContextImplTest {
     private ConvertorExecutor convertorExecutor;
     @Mock
     private MessageSpy messageSpy;
+    @Mock
+    private DeviceInitializerProvider deviceInitializerProvider;
+    @Mock
+    private AbstractDeviceInitializer abstractDeviceInitializer;
+    @Mock
+    private SalRoleService salRoleService;
 
     private final AtomicLong atomicLong = new AtomicLong(0);
 
@@ -209,8 +219,17 @@ public class DeviceContextImplTest {
         Mockito.when(translatorLibrary.lookupTranslator(eq(new TranslatorKey(OFConstants.OFP_VERSION_1_3, PacketIn.class.getName())))).thenReturn(messageTranslatorPacketReceived);
         Mockito.when(translatorLibrary.lookupTranslator(eq(new TranslatorKey(OFConstants.OFP_VERSION_1_3, PortGrouping.class.getName())))).thenReturn(messageTranslatorFlowCapableNodeConnector);
         Mockito.when(translatorLibrary.lookupTranslator(eq(new TranslatorKey(OFConstants.OFP_VERSION_1_3,
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved.class.getName()))))
+                FlowRemoved.class.getName()))))
                 .thenReturn(messageTranslatorFlowRemoved);
+
+        Mockito.when(abstractDeviceInitializer.initialize(any(), anyBoolean(), anyBoolean(), any(), any()))
+                .thenReturn(Futures.immediateFuture(null));
+
+        final java.util.Optional<AbstractDeviceInitializer> deviceInitializer = java.util.Optional
+                .of(this.abstractDeviceInitializer);
+
+        Mockito.when(deviceInitializerProvider.lookup(OFConstants.OFP_VERSION_1_3)).thenReturn(deviceInitializer);
+        Mockito.when(salRoleService.setRole(any())).thenReturn(Futures.immediateFuture(null));
 
         deviceContext = new DeviceContextImpl(
                 connectionContext,
@@ -219,8 +238,10 @@ public class DeviceContextImplTest {
                 translatorLibrary,
                 convertorExecutor,
                 false, timer, false,
-                DeviceInitializerProviderFactory.createDefaultProvider(),
+                deviceInitializerProvider,
                 true, false);
+
+        deviceContext.setSalRoleService(salRoleService);
         ((DeviceContextImpl) deviceContext).lazyTransactionManagerInitialization();
         deviceContextSpy = Mockito.spy(deviceContext);
 
@@ -449,6 +470,21 @@ public class DeviceContextImplTest {
         deviceContext.processExperimenterMessage(experimenterMessage);
 
         verify(mockedNotificationPublishService).offerNotification(any(ExperimenterMessageFromDev.class));
+    }
+
+    @Test
+    public void instantiateServiceInstance() throws Exception {
+        deviceContext.instantiateServiceInstance();
+    }
+
+    @Test
+    public void close() throws Exception {
+        deviceContext.close();
+    }
+
+    @Test
+    public void closeServiceInstance() throws Exception {
+        deviceContext.closeServiceInstance();
     }
 
 }
