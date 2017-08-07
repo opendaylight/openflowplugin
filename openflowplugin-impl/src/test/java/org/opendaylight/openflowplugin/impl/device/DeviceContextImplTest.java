@@ -52,6 +52,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipWatcher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
@@ -148,6 +149,7 @@ public class DeviceContextImplTest {
     ConnectionAdapter connectionAdapter;
     NodeId nodeId = new NodeId("h2g2:42");
     KeyedInstanceIdentifier<Node, NodeKey> nodeKeyIdent = DeviceStateUtil.createNodeInstanceIdentifier(nodeId);
+    InstanceIdentifier<FlowCapableNode> nodeKeyIdent2 = nodeKeyIdent.augmentation(FlowCapableNode.class);
     @Mock
     TranslatorLibrary translatorLibrary;
     @Mock
@@ -168,6 +170,8 @@ public class DeviceContextImplTest {
     private AbstractDeviceInitializer abstractDeviceInitializer;
     @Mock
     private SalRoleService salRoleService;
+    @Mock
+    private ContextChainMastershipWatcher contextChainMastershipWatcher;
 
     private final AtomicLong atomicLong = new AtomicLong(0);
 
@@ -177,7 +181,11 @@ public class DeviceContextImplTest {
     public void setUp() throws Exception {
         final CheckedFuture<Optional<Node>, ReadFailedException> noExistNodeFuture =
                 Futures.immediateCheckedFuture(Optional.<Node>absent());
+        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> noExistNodeFuture2 =
+                Futures.immediateCheckedFuture(Optional.<FlowCapableNode>absent());
         Mockito.when(readTx.read(LogicalDatastoreType.OPERATIONAL, nodeKeyIdent)).thenReturn(noExistNodeFuture);
+        Mockito.when(readTx.read(LogicalDatastoreType.OPERATIONAL, nodeKeyIdent2)).thenReturn(noExistNodeFuture2);
+        Mockito.when(readTx.read(LogicalDatastoreType.CONFIGURATION, nodeKeyIdent2)).thenReturn(noExistNodeFuture2);
         Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(readTx);
         Mockito.when(dataBroker.createTransactionChain(Mockito.any(TransactionChainManager.class)))
                 .thenReturn(txChainFactory);
@@ -198,7 +206,6 @@ public class DeviceContextImplTest {
             return null;
         }).when(requestContextMultiReply).setResult(any(RpcResult.class));
         Mockito.when(txChainFactory.newWriteOnlyTransaction()).thenReturn(writeTx);
-        Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(readTx);
         Mockito.when(connectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);
         Mockito.when(connectionContext.getConnectionAdapter()).thenReturn(connectionAdapter);
         Mockito.when(connectionContext.getDeviceInfo()).thenReturn(deviceInfo);
@@ -247,6 +254,7 @@ public class DeviceContextImplTest {
                 deviceInitializerProvider,
                 true, false);
 
+        deviceContext.registerMastershipWatcher(contextChainMastershipWatcher);
         ((DeviceContextImpl) deviceContext).lazyTransactionManagerInitialization();
         deviceContextSpy = Mockito.spy(deviceContext);
 

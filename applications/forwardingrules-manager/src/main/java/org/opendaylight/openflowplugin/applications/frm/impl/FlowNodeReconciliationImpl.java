@@ -27,9 +27,9 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
@@ -364,8 +364,8 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                             }
                             for (Action action : actions) {
                                 //chained-port
-                                if (action.getAction().getImplementedInterface().getName()
-                                        .equals("org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase")) {
+                                if (action.getAction().getImplementedInterface()
+                                        .equals(OutputActionCase.class)) {
                                     String nodeConnectorUri = ((OutputActionCase) (action.getAction()))
                                             .getOutputAction().getOutputNodeConnector().getValue();
 
@@ -389,8 +389,8 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
                                 }
                                 //chained groups
-                                else if (action.getAction().getImplementedInterface().getName()
-                                        .equals("org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase")) {
+                                else if (action.getAction().getImplementedInterface()
+                                        .equals(GroupActionCase.class)) {
                                     Long groupId = ((GroupActionCase) (action.getAction())).getGroupAction().getGroupId();
                                     ListenableFuture<?> future =
                                         groupFutures.get(groupId);

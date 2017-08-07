@@ -51,7 +51,7 @@ public abstract class EncodeConstants {
     /** Length of short in bytes */
     public static final byte SIZE_OF_SHORT_IN_BYTES = Short.SIZE / Byte.SIZE;
     /** Length of byte in bytes */
-    public static final byte SIZE_OF_BYTE_IN_BYTES = Byte.SIZE / Byte.SIZE;
+    public static final byte SIZE_OF_BYTE_IN_BYTES = 1;
     /** Length of 3 bytes */
     public static final byte SIZE_OF_3_BYTES = 3;
 

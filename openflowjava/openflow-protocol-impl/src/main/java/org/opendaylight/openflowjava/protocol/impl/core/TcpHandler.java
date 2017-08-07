@@ -252,7 +252,7 @@ public class TcpHandler implements ServerFacade {
             }
             ((EpollEventLoopGroup)workerGroup).setIoRatio(100);
             return;
-        } catch (Throwable ex) {
+        } catch (Exception ex) {
             LOG.debug("Epoll initiation failed");
         }
 
