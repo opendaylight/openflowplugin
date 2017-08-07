@@ -23,6 +23,78 @@
       "revId": "f3b9d038cf35b9b60ae62b863862a638006bda09",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_f047bb1b",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManagerImpl.java",
+        "patchSetId": 22
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-08-07T06:31:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba1f61a0_57e7a140",
+      "range": {
+        "startLine": 66,
+        "startChar": 4,
+        "endLine": 76,
+        "endChar": 5
+      },
+      "revId": "f3b9d038cf35b9b60ae62b863862a638006bda09",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_5055e7c4",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManagerImpl.java",
+        "patchSetId": 22
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-08-07T06:31:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba1f61a0_0fefd7b1",
+      "range": {
+        "startLine": 117,
+        "startChar": 29,
+        "endLine": 117,
+        "endChar": 47
+      },
+      "revId": "f3b9d038cf35b9b60ae62b863862a638006bda09",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_2f4e1bc2",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManagerImpl.java",
+        "patchSetId": 22
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-08-07T06:31:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba1f61a0_4f30af56",
+      "range": {
+        "startLine": 126,
+        "startChar": 8,
+        "endLine": 127,
+        "endChar": 31
+      },
+      "revId": "f3b9d038cf35b9b60ae62b863862a638006bda09",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
