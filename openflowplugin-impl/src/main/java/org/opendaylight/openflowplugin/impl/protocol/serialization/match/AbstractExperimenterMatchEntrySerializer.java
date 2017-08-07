@@ -17,7 +17,7 @@ public abstract class AbstractExperimenterMatchEntrySerializer extends AbstractM
     @Override
     public void serialize(Match match, ByteBuf outBuffer) {
         super.serialize(match, outBuffer);
-        outBuffer.writeInt(Long.valueOf(getExperimenterId()).intValue());
+        outBuffer.writeInt((int) getExperimenterId());
     }
 
     @Override
