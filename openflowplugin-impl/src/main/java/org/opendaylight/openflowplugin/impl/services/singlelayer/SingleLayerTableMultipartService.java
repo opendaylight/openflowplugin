@@ -17,15 +17,19 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.services.AbstractTableMultipartService;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartRequestBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.multipart.reply.multipart.reply.body.MultipartReplyTableFeatures;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.multipart.request.multipart.request.body.MultipartRequestTableFeaturesBuilder;
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -38,9 +42,20 @@ public class SingleLayerTableMultipartService extends AbstractTableMultipartServ
 
     public SingleLayerTableMultipartService(RequestContextStack requestContextStack,
                                             DeviceContext deviceContext,
-                                            ConvertorExecutor convertorExecutor,
                                             MultipartWriterProvider multipartWriterProvider) {
-        super(requestContextStack, deviceContext, convertorExecutor, multipartWriterProvider);
+        super(requestContextStack, deviceContext, multipartWriterProvider);
+    }
+
+
+    @Override
+    protected OfHeader buildRequest(final Xid xid, final UpdateTableInput input) throws ServiceException {
+        return new MultipartRequestBuilder()
+                .setXid(xid.getValue())
+                .setVersion(getVersion())
+                .setRequestMore(false)
+                .setMultipartRequestBody(new MultipartRequestTableFeaturesBuilder(input.getUpdatedTable())
+                        .build())
+                .build();
     }
 
     @Override
