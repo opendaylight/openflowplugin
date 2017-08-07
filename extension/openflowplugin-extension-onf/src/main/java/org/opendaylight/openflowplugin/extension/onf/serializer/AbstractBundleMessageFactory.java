@@ -54,7 +54,7 @@ public abstract class AbstractBundleMessageFactory<T extends DataContainer> impl
                 writeBundleExperimenterProperty((BundlePropertyExperimenter)property.getBundlePropertyEntry(), outBuffer);
                 outBuffer.setShort(lengthIndex, outBuffer.writerIndex() - startIndex);
             } else {
-                LOG.warn("Trying to serialize unknown bundle property (type: {}), skipping", type.getIntValue());
+                LOG.warn("Trying to serialize unknown bundle property (type: {}), skipping", type);
             }
         }
     }
