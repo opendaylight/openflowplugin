@@ -38,6 +38,8 @@ public class ConnectionContextImplTest {
     private OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueRegistration;
     @Mock
     private DeviceDisconnectedHandler deviceDisconnectedHandler;
+    @Mock
+    private OutboundQueueProvider outboundQueueProvider;
 
     private ConnectionContextImpl connectionContext;
 

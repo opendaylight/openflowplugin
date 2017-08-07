@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics;
 
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -43,6 +44,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ReconciliationFrameworkRegistrar;
 import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
@@ -106,6 +108,8 @@ public class StatisticsManagerImplTest {
     private DeviceInfo deviceInfo;
     @Mock
     private DataBroker dataBroker;
+    @Mock
+    private ReconciliationFrameworkRegistrar reconciliationFrameworkRegistrar;
 
     private RequestContext<List<MultipartReply>> currentRequestContext;
     private StatisticsManagerImpl statisticsManager;
@@ -161,13 +165,14 @@ public class StatisticsManagerImplTest {
                         .setIsStatisticsPollingOn(false)
                         .build(), rpcProviderRegistry, new HashedWheelTimer(),
                 convertorManager);
+        statisticsManager.setReconciliationFrameworkRegistrar(reconciliationFrameworkRegistrar);
     }
 
     private static Map<DeviceInfo, StatisticsContext> getContextsMap(final StatisticsManagerImpl statisticsManager)
             throws NoSuchFieldException, IllegalAccessException {
         // HACK: contexts map for testing shall be accessed in some more civilized way
         final Field contextsField = StatisticsManagerImpl.class.getDeclaredField("contexts");
-        Assert.assertNotNull(contextsField);
+        assertNotNull(contextsField);
         contextsField.setAccessible(true);
         return (Map<DeviceInfo, StatisticsContext>) contextsField.get(statisticsManager);
     }
@@ -177,7 +182,7 @@ public class StatisticsManagerImplTest {
         final Future<RpcResult<GetStatisticsWorkModeOutput>> workMode = statisticsManager.getStatisticsWorkMode();
         Assert.assertTrue(workMode.isDone());
         Assert.assertTrue(workMode.get().isSuccessful());
-        Assert.assertNotNull(workMode.get().getResult());
+        assertNotNull(workMode.get().getResult());
         Assert.assertEquals(StatisticsWorkMode.COLLECTALL, workMode.get().getResult().getMode());
     }
 
@@ -290,7 +295,7 @@ public class StatisticsManagerImplTest {
 
         final List<ItemLifecycleListener> itemLifeCycleListenerValues = itemLifeCycleListenerCapt.getAllValues();
         Assert.assertEquals(2, itemLifeCycleListenerValues.size());
-        Assert.assertNotNull(itemLifeCycleListenerValues.get(0));
+        assertNotNull(itemLifeCycleListenerValues.get(0));
         Assert.assertNull(itemLifeCycleListenerValues.get(1));
     }
 
@@ -331,5 +336,11 @@ public class StatisticsManagerImplTest {
         when(statisticsContext.gatherDynamicData()).thenReturn(Futures.immediateFailedFuture(new Throwable("error msg")));
         statisticsManager.pollStatistics(mockedDeviceContext.getDeviceState(), statisticsContext, mockTimerCounter, mockedDeviceInfo);
         verify(mockTimerCounter,times(2)).addTimeMark();
+    }
+
+    @Test
+    public void createContext() throws Exception {
+        final StatisticsContext context = statisticsManager.createContext(mockedDeviceContext);
+        assertNotNull(context);
     }
 }

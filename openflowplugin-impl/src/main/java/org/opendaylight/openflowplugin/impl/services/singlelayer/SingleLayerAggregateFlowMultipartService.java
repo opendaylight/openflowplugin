@@ -8,10 +8,8 @@
 
 package org.opendaylight.openflowplugin.impl.services.singlelayer;
 
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
-import java.util.List;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -32,7 +30,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 public class SingleLayerAggregateFlowMultipartService
-    extends AbstractAggregateFlowMultipartService<MultipartReply> {
+        extends AbstractAggregateFlowMultipartService<MultipartReply> {
 
     public SingleLayerAggregateFlowMultipartService(final RequestContextStack requestContextStack,
                                                     final DeviceContext deviceContext) {
@@ -42,40 +40,39 @@ public class SingleLayerAggregateFlowMultipartService
     @Override
     protected OfHeader buildRequest(final Xid xid, final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) throws ServiceException {
         return new MultipartRequestBuilder()
-            .setXid(xid.getValue())
-            .setVersion(getVersion())
-            .setRequestMore(false)
-            .setMultipartRequestBody(new MultipartRequestFlowAggregateStatsBuilder(input)
-                .build())
-            .build();
+                .setXid(xid.getValue())
+                .setVersion(getVersion())
+                .setRequestMore(false)
+                .setMultipartRequestBody(new MultipartRequestFlowAggregateStatsBuilder(input)
+                        .build())
+                .build();
     }
 
     @Override
     public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> handleAndReply(
-        final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) {
-        return Futures.transform(handleServiceCall(input),
-            (Function<RpcResult<List<MultipartReply>>, RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>>) result -> {
-                if (Preconditions.checkNotNull(result).isSuccessful()) {
-                    return RpcResultBuilder
-                        .success(new GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutputBuilder()
-                            .setAggregatedFlowStatistics(result
-                                .getResult()
-                                .stream()
-                                .map(MultipartReply::getMultipartReplyBody)
-                                .filter(MultipartReplyFlowAggregateStats.class::isInstance)
-                                .map(multipartReplyBody ->
-                                    new AggregatedFlowStatisticsBuilder(MultipartReplyFlowAggregateStats.class
-                                        .cast(multipartReplyBody))
-                                        .build())
-                                .collect(Collectors.toList())))
-                        .build();
-                }
-
+            final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) {
+        return Futures.transform(handleServiceCall(input), result -> {
+            if (Preconditions.checkNotNull(result).isSuccessful()) {
                 return RpcResultBuilder
+                        .success(new GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutputBuilder()
+                                .setAggregatedFlowStatistics(result
+                                        .getResult()
+                                        .stream()
+                                        .map(MultipartReply::getMultipartReplyBody)
+                                        .filter(MultipartReplyFlowAggregateStats.class::isInstance)
+                                        .map(multipartReplyBody ->
+                                                new AggregatedFlowStatisticsBuilder(MultipartReplyFlowAggregateStats.class
+                                                        .cast(multipartReplyBody))
+                                                        .build())
+                                        .collect(Collectors.toList())))
+                        .build();
+            }
+
+            return RpcResultBuilder
                     .<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>failed()
                     .withRpcErrors(result.getErrors())
                     .build();
-            });
+        });
     }
 
 }

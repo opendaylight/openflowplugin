@@ -28,7 +28,7 @@ public final class SalTableServiceImpl implements SalTableService {
                                final DeviceContext deviceContext,
                                final ConvertorExecutor convertorExecutor,
                                final MultipartWriterProvider multipartWriterProvider) {
-        singleLayerService = new SingleLayerTableMultipartService(requestContextStack, deviceContext, convertorExecutor, multipartWriterProvider);
+        singleLayerService = new SingleLayerTableMultipartService(requestContextStack, deviceContext, multipartWriterProvider);
         multiLayerService = new MultiLayerTableMultipartService(requestContextStack, deviceContext, convertorExecutor, multipartWriterProvider);
     }
 
