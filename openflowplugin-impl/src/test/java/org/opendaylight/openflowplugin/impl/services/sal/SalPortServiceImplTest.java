@@ -16,7 +16,6 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.ServiceMocking;
-import org.opendaylight.openflowplugin.impl.services.sal.SalPortServiceImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
@@ -40,8 +39,7 @@ public class SalPortServiceImplTest extends ServiceMocking {
     SalPortServiceImpl salPortService;
 
     @Override
-    public void initialization() {
-        super.initialization();
+    protected void setup() {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         salPortService = new SalPortServiceImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
     }

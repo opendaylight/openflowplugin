@@ -14,20 +14,28 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.services.AbstractTableMultipartService;
+import org.opendaylight.openflowplugin.impl.services.util.RequestInputUtils;
+import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.MultipartReplyBody;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyTableFeaturesCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.MultipartReplyTableFeatures;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestTableFeaturesCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table.features._case.MultipartRequestTableFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutputBuilder;
@@ -41,12 +49,32 @@ import org.slf4j.LoggerFactory;
 public class MultiLayerTableMultipartService extends AbstractTableMultipartService<MultipartReply> {
 
     private static final Logger LOG = LoggerFactory.getLogger(MultiLayerTableMultipartService.class);
+    private final VersionConvertorData data;
+    private final ConvertorExecutor convertorExecutor;
 
     public MultiLayerTableMultipartService(RequestContextStack requestContextStack,
                                            DeviceContext deviceContext,
                                            ConvertorExecutor convertorExecutor,
                                            MultipartWriterProvider multipartWriterProvider) {
-        super(requestContextStack, deviceContext, convertorExecutor, multipartWriterProvider);
+        super(requestContextStack, deviceContext, multipartWriterProvider);
+        this.convertorExecutor = convertorExecutor;
+        data = new VersionConvertorData(getVersion());
+    }
+
+    @Override
+    protected OfHeader buildRequest(final Xid xid, final UpdateTableInput input) throws ServiceException {
+        final Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart
+                .request.multipart.request.body.multipart.request.table.features._case.multipart.request
+                .table.features.TableFeatures>> tableFeatures = convertorExecutor.convert(input.getUpdatedTable(), data);
+
+        return RequestInputUtils.createMultipartHeader(MultipartType.OFPMPTABLEFEATURES, xid.getValue(), getVersion())
+                .setMultipartRequestBody(new MultipartRequestTableFeaturesCaseBuilder()
+                        .setMultipartRequestTableFeatures(new MultipartRequestTableFeaturesBuilder()
+                                .setTableFeatures(tableFeatures
+                                        .orElseGet(Collections::emptyList))
+                                .build())
+                        .build())
+                .build();
     }
 
     @Override
@@ -110,7 +138,7 @@ public class MultiLayerTableMultipartService extends AbstractTableMultipartServi
                             .getMultipartReplyTableFeatures();
 
                     final Optional<List<TableFeatures>> salTableFeaturesPartial =
-                            getConvertorExecutor().convert(salTableFeatures, getData());
+                            convertorExecutor.convert(salTableFeatures, data);
 
                     salTableFeaturesPartial.ifPresent(salTableFeaturesAll::addAll);
 
