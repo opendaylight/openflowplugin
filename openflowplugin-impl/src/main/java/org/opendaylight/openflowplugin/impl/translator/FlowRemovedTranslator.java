@@ -73,7 +73,6 @@ public class FlowRemovedTranslator implements MessageTranslator<FlowRemoved, org
         return flowRemoved.getTableId().getValue().shortValue();
     }
 
-
     private RemovedFlowReason translateReason(FlowRemoved removedFlow) {
         LOG.debug("--Entering translateReason within FlowRemovedTranslator with reason:{} " + removedFlow.getReason());
         switch (removedFlow.getReason()) {
