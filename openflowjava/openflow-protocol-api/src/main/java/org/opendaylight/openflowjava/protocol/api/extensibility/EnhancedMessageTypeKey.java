@@ -55,7 +55,7 @@ public class EnhancedMessageTypeKey<E, F> extends MessageTypeKey<E> {
             if (other.msgType2 != null) {
                 return false;
             }
-        } else if (!msgType2.getName().equals(other.msgType2.getName())) {
+        } else if (!msgType2.isAssignableFrom(other.msgType2)) {
             return false;
         }
         return true;

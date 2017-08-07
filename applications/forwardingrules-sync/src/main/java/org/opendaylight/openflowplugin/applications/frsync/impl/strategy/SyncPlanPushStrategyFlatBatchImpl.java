@@ -149,7 +149,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                 }
 
                 return Futures.transform(JdkFutureAdapters.listenInPoolThread(rpcResultFuture),
-                        ReconcileUtil.<ProcessFlatBatchOutput>createRpcResultToVoidFunction("flat-batch"));
+                        ReconcileUtil.createRpcResultToVoidFunction("flat-batch"));
             }
         });
         return resultVehicle;
@@ -161,14 +161,14 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
         return new FutureCallback<RpcResult<ProcessFlatBatchOutput>>() {
             @Override
             public void onSuccess(@Nullable final RpcResult<ProcessFlatBatchOutput> result) {
-                if (!result.isSuccessful() && result.getResult() != null && !result.getResult().getBatchFailure().isEmpty()) {
+                if (result != null && !result.isSuccessful() && result.getResult() != null && !result.getResult().getBatchFailure().isEmpty()) {
                     Map<Range<Integer>, Batch> batchMap = mapBatchesToRanges(inputBatchBag, failureIndexLimit);
                     decrementBatchFailuresCounters(result.getResult().getBatchFailure(), batchMap, counters);
                 }
             }
 
             @Override
-            public void onFailure(final Throwable t) {
+            public void onFailure(@Nullable final Throwable t) {
                 counters.resetAll();
             }
         };
