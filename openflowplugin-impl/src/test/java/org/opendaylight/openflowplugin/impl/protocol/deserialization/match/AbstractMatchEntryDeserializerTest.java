@@ -15,7 +15,19 @@ import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.AbstractDeserializerTest;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.key.MessageCodeMatchKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv4MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv6MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.MetadataBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.ProtocolMatchFieldsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.TcpFlagsMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.TunnelBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatchBuilder;
 
 public abstract class AbstractMatchEntryDeserializerTest extends AbstractDeserializerTest {
 
@@ -24,12 +36,36 @@ public abstract class AbstractMatchEntryDeserializerTest extends AbstractDeseria
     @Override
     protected void init() {
         deserializer = getRegistry().getDeserializer(new MessageCodeMatchKey(EncodeConstants.OF13_VERSION_ID,
-                    EncodeConstants.EMPTY_LENGTH,
-                    Match.class,
-                    MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH));
+                EncodeConstants.EMPTY_LENGTH,
+                Match.class,
+                MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH));
+    }
+
+    private void deserializeAlreadyFilledCase(ByteBuf inBuffer) {
+        final MatchBuilder builder = new MatchBuilder()
+                .setProtocolMatchFields(new ProtocolMatchFieldsBuilder().build());
+                .setEthernetMatch(new EthernetMatchBuilder().build())
+                .setInPhyPort(new NodeConnectorId(""))
+                .setInPort(new NodeConnectorId(""))
+                .setLayer3Match(new Ipv4MatchBuilder().build())
+                .setIpMatch(new IpMatchBuilder().build())
+                .setMetadata(new MetadataBuilder().build())
+                .setTunnel(new TunnelBuilder().build())
+                .setVlanMatch(new VlanMatchBuilder().build())
+                .setTcpFlagsMatch(new TcpFlagsMatchBuilder().build())
+                .setIcmpv4Match(new Icmpv4MatchBuilder().build())
+                .setIcmpv6Match(new Icmpv6MatchBuilder().build())
+                .setLayer4Match(new TcpMatchBuilder().build());
+
+        try {
+            deserializer.deserializeEntry(inBuffer, builder);
+        } catch (final Exception ignored) {
+            // Exceptions are expected here, just ignore them
+        }
     }
 
     protected Match deserialize(ByteBuf inBuffer) {
+        deserializeAlreadyFilledCase(inBuffer.copy());
         final MatchBuilder builder = new MatchBuilder();
         deserializer.deserializeEntry(inBuffer, builder);
         return builder.build();
