@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "ba1f61a0_3052f3dd",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManagerImpl.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-08-07T06:31:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba1f61a0_17dd2971",
+      "range": {
+        "startLine": 129,
+        "startChar": 24,
+        "endLine": 129,
+        "endChar": 62
+      },
+      "revId": "df30724b472958c340e1d25c37d9d1f82670d057",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba1f61a0_c9cadf6d",
         "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManagerImpl.java",
         "patchSetId": 16
