@@ -214,7 +214,7 @@ public class ContextChainHolderImplTest {
                 == ConnectionStatus.MAY_CONTINUE);
         Mockito.when(featuresReply.getAuxiliaryId()).thenReturn(AUXILIARY_ID);
         Assert.assertTrue(contextChainHolder.deviceConnected(connectionContext)
-                == ConnectionStatus.ALREADY_CONNECTED);
+                == ConnectionStatus.MAY_CONTINUE);
     }
 
     @Test
