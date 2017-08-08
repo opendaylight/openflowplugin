@@ -20,5 +20,8 @@ public enum ConnectionStatus {
     ALREADY_CONNECTED,
 
     // this flag should be return if node still connected but already in termination state
-    CLOSING
+    CLOSING,
+
+    //Flag used when auxiliary connection incomming but there is no primary connection
+    REFUSING_AUXILIARY_CONNECTION
 }
