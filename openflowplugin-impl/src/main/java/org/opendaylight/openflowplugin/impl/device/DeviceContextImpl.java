@@ -566,7 +566,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public ListenableFuture<Void> closeServiceInstance() {
-        LOG.info("Stopping device context cluster services for node {}", deviceInfo.getLOGValue());
+        LOG.info("Stopping device context cluster services for node {}", deviceInfo);
 
         final ListenableFuture<Void> listenableFuture = initialized.get()
                 ? transactionChainManager.deactivateTransactionManager()
@@ -599,7 +599,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public void close() {
-        if (ContextState.TERMINATION.equals(state)) {
+        if (ContextState.TERMINATION == state.get()) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("DeviceContext for node {} is already in TERMINATION state.", getDeviceInfo());
             }
