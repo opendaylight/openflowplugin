@@ -12,6 +12,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -190,7 +191,7 @@ class RpcContextImpl implements RpcContext {
 
     @Override
     public ListenableFuture<Void> closeServiceInstance() {
-        LOG.info("Stopping rpc context cluster services for node {}", deviceInfo.getLOGValue());
+        LOG.info("Stopping rpc context cluster services for node {}", deviceInfo);
 
         return Futures.transform(Futures.immediateFuture(null), new Function<Void, Void>() {
             @Nullable
@@ -199,7 +200,7 @@ class RpcContextImpl implements RpcContext {
                 unregisterRPCs();
                 return null;
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     @Override
