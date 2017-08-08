@@ -16,6 +16,7 @@ import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import io.netty.util.Timeout;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -313,7 +314,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
                 stopGatheringData();
                 return null;
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     @Override

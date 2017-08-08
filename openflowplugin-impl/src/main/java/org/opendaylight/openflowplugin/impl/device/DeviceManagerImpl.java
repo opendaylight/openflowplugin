@@ -204,7 +204,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     public void onDeviceRemoved(final DeviceInfo deviceInfo) {
         deviceContexts.remove(deviceInfo);
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Device context removed for node {}", deviceInfo.getLOGValue());
+            LOG.debug("Device context removed for node {}", deviceInfo);
         }
         if (deviceContexts.size() > 0) {
             this.updatePacketInRateLimiters();

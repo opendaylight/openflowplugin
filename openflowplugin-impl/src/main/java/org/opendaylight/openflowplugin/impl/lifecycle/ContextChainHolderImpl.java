@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -27,7 +27,6 @@ import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipChange;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListenerRegistration;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -64,6 +63,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     private static final String ASYNC_SERVICE_ENTITY_TYPE = "org.opendaylight.mdsal.AsyncServiceCloseEntityType";
 
     private final Map<DeviceInfo, ContextChain> contextChainMap = new ConcurrentHashMap<>();
+    private final Map<DeviceInfo, ? super ConnectionContext> connectingDevices = new ConcurrentHashMap<>();
     private final EntityOwnershipListenerRegistration eosListenerRegistration;
     private final ClusterSingletonServiceProvider singletonServiceProvider;
     private final ExecutorService executorService;
@@ -134,6 +134,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         contextChain.addContext(statisticsContext);
         contextChain.addContext(roleContext);
         contextChainMap.put(deviceInfo, contextChain);
+        connectingDevices.remove(deviceInfo);
         LOG.debug("Context chain" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfo);
 
         deviceContext.onPublished();
@@ -142,29 +143,45 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
 
     @Override
     public ConnectionStatus deviceConnected(final ConnectionContext connectionContext) throws Exception {
+
         final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
         final ContextChain contextChain = contextChainMap.get(deviceInfo);
-        LOG.info("Device {} connected.", deviceInfo);
 
-        if (Objects.nonNull(contextChain)) {
-            if (contextChain.isClosing()) {
-                LOG.warn("Device {} is already in termination state, closing all incoming connections.", deviceInfo);
-                return ConnectionStatus.CLOSING;
+        if (connectionContext.getFeatures().getAuxiliaryId() != 0) {
+            if (contextChain == null) {
+                LOG.warn("An auxiliary connection for device {}, but no primary connection. Refusing connection.", deviceInfo);
+                return ConnectionStatus.REFUSING_AUXILIARY_CONNECTION;
+            } else {
+                if (contextChain.addAuxiliaryConnection(connectionContext)) {
+                    LOG.info("An auxiliary connection was added to device: {}", deviceInfo);
+                    return ConnectionStatus.MAY_CONTINUE;
+                } else {
+                    LOG.warn("Not able to add auxiliary connection to the device {}", deviceInfo);
+                    return ConnectionStatus.REFUSING_AUXILIARY_CONNECTION;
+                }
             }
-
-            if (contextChain.addAuxiliaryConnection(connectionContext)) {
-                LOG.info("An auxiliary connection was added to device: {}", deviceInfo);
-                return ConnectionStatus.MAY_CONTINUE;
+        } else {
+            LOG.info("Device {} connected.", deviceInfo);
+            if (connectingDevices.putIfAbsent(deviceInfo, connectionContext) != null) {
+                LOG.warn("Device {} is already trying to connect, wait until succeeded or disconnected.", deviceInfo);
+                return ConnectionStatus.ALREADY_CONNECTED;
             }
-
-            LOG.warn("Device {} already connected. Closing all connection to the device.", deviceInfo);
-            destroyContextChain(deviceInfo);
-            return ConnectionStatus.ALREADY_CONNECTED;
+            if (contextChain != null) {
+                if (contextChain.isClosing()) {
+                    LOG.warn("Device {} is already in termination state, closing all incoming connections.", deviceInfo);
+                    return ConnectionStatus.CLOSING;
+                }
+                LOG.warn("Device {} already connected. Closing previous connection", deviceInfo);
+                destroyContextChain(deviceInfo);
+                LOG.info("Old connection dropped, creating new context chain for device {}", deviceInfo);
+                createContextChain(connectionContext);
+            } else {
+                LOG.info("No context chain found for device: {}, creating new.", deviceInfo);
+                createContextChain(connectionContext);
+            }
+            return ConnectionStatus.MAY_CONTINUE;
         }
 
-        LOG.debug("No context chain found for device: {}, creating new.", deviceInfo);
-        createContextChain(connectionContext);
-        return ConnectionStatus.MAY_CONTINUE;
     }
 
     @Override
