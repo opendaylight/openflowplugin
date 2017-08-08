@@ -157,19 +157,18 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                 LOG.warn("Device {} is already in termination state, closing all incoming connections.", deviceInfo);
                 return ConnectionStatus.CLOSING;
             }
-
             if (contextChain.addAuxiliaryConnection(connectionContext)) {
                 LOG.info("An auxiliary connection was added to device: {}", deviceInfo);
-                return ConnectionStatus.MAY_CONTINUE;
+            } else {
+                LOG.warn("Device {} already connected. Closing previous connection", deviceInfo);
+                destroyContextChain(deviceInfo);
+                LOG.info("Old connection dropped, creating new context chain for device {}", deviceInfo);
+                createContextChain(connectionContext);
             }
-
-            LOG.warn("Device {} already connected. Closing all connection to the device.", deviceInfo);
-            destroyContextChain(deviceInfo);
-            return ConnectionStatus.ALREADY_CONNECTED;
+        } else {
+            LOG.info("No context chain found for device: {}, creating new.", deviceInfo);
+            createContextChain(connectionContext);
         }
-
-        LOG.debug("No context chain found for device: {}, creating new.", deviceInfo);
-        createContextChain(connectionContext);
         return ConnectionStatus.MAY_CONTINUE;
     }
 
