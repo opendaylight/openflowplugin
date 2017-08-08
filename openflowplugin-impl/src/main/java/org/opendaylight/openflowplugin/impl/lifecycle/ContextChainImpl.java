@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.ConnectionException;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
@@ -54,7 +55,7 @@ public class ContextChainImpl implements ContextChain {
     private final ContextChainMastershipWatcher contextChainMastershipWatcher;
     private final DeviceInfo deviceInfo;
     private final ConnectionContext primaryConnection;
-    private AutoCloseable registration;
+    private ClusterSingletonServiceRegistration registration;
     private ContextState state = ContextState.INITIALIZATION;
 
     private volatile ContextChainState contextChainState = ContextChainState.UNDEFINED;
@@ -122,7 +123,7 @@ public class ContextChainImpl implements ContextChain {
         // Close all connections to devices
         auxiliaryConnections.forEach(connectionContext -> connectionContext.closeConnection(false));
         auxiliaryConnections.clear();
-        primaryConnection.closeConnection(true);
+        primaryConnection.closeConnection(false);
 
         // Close all contexts (device, statistics, rpc)
         contexts.forEach(OFPContext::close);
