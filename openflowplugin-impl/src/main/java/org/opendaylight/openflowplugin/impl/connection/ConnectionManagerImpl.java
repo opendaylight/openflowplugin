@@ -12,12 +12,12 @@ import java.net.InetAddress;
 import java.util.concurrent.ThreadPoolExecutor;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager;
 import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
-import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeListener;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeManager;
 import org.opendaylight.openflowplugin.impl.connection.listener.ConnectionReadyListenerImpl;
@@ -82,8 +82,8 @@ public class ConnectionManagerImpl implements ConnectionManager {
     private HandshakeManager createHandshakeManager(final ConnectionAdapter connectionAdapter,
                                                     final HandshakeListener handshakeListener) {
         HandshakeManagerImpl handshakeManager = new HandshakeManagerImpl(connectionAdapter,
-                ConnectionConductor.VERSION_ORDER.get(0),
-                ConnectionConductor.VERSION_ORDER);
+                OFConstants.VERSION_ORDER.get(0),
+                OFConstants.VERSION_ORDER);
         handshakeManager.setUseVersionBitmap(BITMAP_NEGOTIATION_ENABLED);
         handshakeManager.setHandshakeListener(handshakeListener);
         handshakeManager.setErrorHandler(new ErrorHandlerSimpleImpl());

@@ -8,11 +8,8 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core;
 
-import java.util.Arrays;
-
 import org.opendaylight.openflowplugin.api.ConnectionException;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ErrorHandler;
-import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,16 +23,11 @@ public class ErrorHandlerSimpleImpl implements ErrorHandler {
             .getLogger(ErrorHandlerSimpleImpl.class);
 
     @Override
-    public void handleException(Throwable e, SessionContext sessionContext) {
-        String sessionKeyId = null;
-        if (sessionContext != null) {
-            sessionKeyId = Arrays.toString(sessionContext.getSessionKey().getId());
-        }
-        
+    public void handleException(Throwable e) {
         if (e instanceof ConnectionException) {
-            LOG.warn("exception -> {}, session -> {}", e.getMessage(), sessionKeyId, e);
+            LOG.warn("exception -> {}", e.getMessage(), e);
         } else {
-            LOG.error("exception -> {}, session -> {}", e.getMessage(), sessionKeyId, e);
+            LOG.error("exception -> {}", e.getMessage(), e);
         }
     }
 }

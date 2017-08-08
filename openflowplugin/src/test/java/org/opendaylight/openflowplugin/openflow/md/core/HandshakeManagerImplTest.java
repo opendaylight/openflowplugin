@@ -23,10 +23,8 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ErrorHandler;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeListener;
-import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.HelloElementType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
@@ -69,7 +67,7 @@ public class HandshakeManagerImplTest {
     @Before
     public void setUp() {
         handshakeManager = new HandshakeManagerImpl(adapter, OFConstants.OFP_VERSION_1_3,
-                ConnectionConductor.VERSION_ORDER);
+                OFConstants.VERSION_ORDER);
         handshakeManager.setErrorHandler(errorHandler);
         handshakeManager.setHandshakeListener(handshakeListener);
         handshakeManager.setUseVersionBitmap(false);
@@ -89,13 +87,13 @@ public class HandshakeManagerImplTest {
         // logging errors if occurred
         ArgumentCaptor<Throwable> errorCaptor = ArgumentCaptor.forClass(Throwable.class);
         Mockito.verify(errorHandler, Mockito.atMost(1)).handleException(
-                errorCaptor.capture(), Matchers.any(SessionContext.class));
+                errorCaptor.capture());
         for (Throwable problem : errorCaptor.getAllValues()) {
             LOG.warn(problem.getMessage(), problem);
         }
 
         Mockito.verify(errorHandler, Mockito.times(expectedErrors)).handleException(
-                Matchers.any(Throwable.class), Matchers.any(SessionContext.class));
+                Matchers.any(Throwable.class));
     }
 
     /**
