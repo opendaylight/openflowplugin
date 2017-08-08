@@ -8,20 +8,17 @@
 package org.opendaylight.openflowplugin.openflow.md.util;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Splitter;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-
-import com.google.common.base.Splitter;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
-import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdatedBuilder;
@@ -49,45 +46,6 @@ public abstract class InventoryDataServiceUtil {
      * inventory tree We use this alot, so its worth keeping around
      */
     private static final InstanceIdentifier<Nodes> NODES_IDENTIFIER = InstanceIdentifier.create(Nodes.class);
-
-    public static Nodes checkForNodes() {
-        Nodes nodes = null;
-        LOG.error("Before Nodes - nodes: " + nodes);
-        try {
-            nodes = getDataObject(OFSessionUtil.getSessionManager().getDataBroker().newReadOnlyTransaction(), NODES_IDENTIFIER);
-        } catch (Exception e) {
-            LOG.error(
-                    "Caught exception from OFSessionUtil.getSessionManager().getDataBroker().newReadWriteTransaction()",
-                    e);
-        }
-        LOG.error("After Nodes- nodes: " + nodes);
-        return nodes;
-    }
-
-    public static List<Node> readAllNodes() {
-        Nodes nodes = getDataObject(OFSessionUtil.getSessionManager().getDataBroker().newReadOnlyTransaction(), NODES_IDENTIFIER);
-        return nodes.getNode();
-    }
-
-    public static Node readNode(final InstanceIdentifier<Node> instance) {
-        return getDataObject(OFSessionUtil.getSessionManager().getDataBroker().newReadOnlyTransaction(), instance);
-    }
-
-    public static void putNodeConnector(final InstanceIdentifier<Node> instance, final NodeConnector nodeConnector) {
-        WriteTransaction transaction = OFSessionUtil.getSessionManager().getDataBroker().newWriteOnlyTransaction();
-        InstanceIdentifier<NodeConnector> nodeConnectorID = instance.child(NodeConnector.class, nodeConnector.getKey());
-        transaction.merge(LogicalDatastoreType.OPERATIONAL, nodeConnectorID, nodeConnector);
-        transaction.submit();
-    }
-
-    public static void putNodeConnector(final NodeKey nodeKey, final NodeConnector nodeConnector) {
-        InstanceIdentifier<Node> instance = nodeKeyToInstanceIdentifier(nodeKey);
-        putNodeConnector(instance, nodeConnector);
-    }
-
-    public static void putNodeConnector(final NodeId nodeId, final NodeConnector nodeConnector) {
-        putNodeConnector(new NodeKey(nodeId), nodeConnector);
-    }
 
     public static InstanceIdentifier<Node> identifierFromDatapathId(final BigInteger datapathId) {
         NodeKey nodeKey = nodeKeyFromDatapathId(datapathId);

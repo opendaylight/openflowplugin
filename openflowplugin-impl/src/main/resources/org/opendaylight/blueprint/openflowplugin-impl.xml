@@ -3,6 +3,8 @@
            xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
            odl:use-default-for-reference-types="true">
 
+  <odl:action-provider interface="org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService"/>
+
   <bean id="ofPluginProviderFactory" class="org.opendaylight.openflowplugin.impl.OpenFlowPluginProviderFactoryImpl"/>
   <service ref="ofPluginProviderFactory" interface="org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProviderFactory"/>
 
