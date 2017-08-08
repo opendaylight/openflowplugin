@@ -7,12 +7,16 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core;
 
+import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.JdkFutureAdapters;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Future;
-
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
-import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ErrorHandler;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeListener;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeManager;
@@ -26,12 +30,6 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
-
 /**
  * @author mirehak
  *
@@ -39,6 +37,9 @@ import com.google.common.util.concurrent.SettableFuture;
 public class HandshakeManagerImpl implements HandshakeManager {
 
     private static final long activeXID = 20L;
+
+    /** supported version ordered by height (highest version is at the beginning). */
+    private static final List<Short> VERSION_ORDER = Lists.newArrayList((short) 0x04, (short) 0x01);
 
     private static final Logger LOG = LoggerFactory
             .getLogger(HandshakeManagerImpl.class);
@@ -118,7 +119,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
                 handleStepByStepVersionNegotiation(remoteVersion);
             }
         } catch (Exception ex) {
-            errorHandler.handleException(ex, null);
+            errorHandler.handleException(ex);
             LOG.trace("ret - shake fail - closing");
             handshakeListener.onHandshakeFailure();
         }
@@ -144,7 +145,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
                     try {
                         stepByStepVersionSubStep(remoteVersion, lastProposedVersion);
                     } catch (Exception e) {
-                        errorHandler.handleException(e, null);
+                        errorHandler.handleException(e);
                         handshakeListener.onHandshakeFailure();
                     }
                 }
@@ -267,7 +268,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
             for(Elements element : list) {
                 List<Boolean> bitmap = element.getVersionBitmap();
                 // check for version bitmap
-                for(short bitPos : ConnectionConductor.VERSION_ORDER) {
+                for(short bitPos : VERSION_ORDER) {
                     // with all the version it should work.
                     if(bitmap.get(bitPos % Integer.SIZE)) {
                         supportedHighestVersion = bitPos;

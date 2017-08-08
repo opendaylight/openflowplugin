@@ -8,34 +8,19 @@
 package org.opendaylight.openflowplugin.openflow.md.util;
 
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.when;
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.Futures;
+
 import java.math.BigInteger;
-import java.util.List;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
-import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdatedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumberValuesV10;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
@@ -48,70 +33,6 @@ public class InventoryDataServiceUtilTest {
 
     private static final long PORT_NO = PortNumberValuesV10.CONTROLLER.getIntValue();
     private static final BigInteger PATH_ID = BigInteger.TEN;
-
-    @Mock
-    DataBroker dataBroker;
-    @Mock
-    ReadOnlyTransaction readOnlyTransaction;
-    @Mock
-    WriteTransaction writeTransaction;
-    @Mock
-    Nodes nodes;
-    @Mock
-    Node node;
-
-
-    @Before
-    public void setupEnvironment() {
-        when(dataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
-        when(readOnlyTransaction.read(Mockito.any(LogicalDatastoreType.class), Mockito.<InstanceIdentifier<Nodes>>any())).thenReturn(Futures.immediateCheckedFuture(Optional.of(nodes)));
-
-        OFSessionUtil.getSessionManager().setDataBroker(dataBroker);
-
-    }
-
-    @Test
-    /**
-     * Primitive test method for {@link InventoryDataServiceUtil#putNodeConnector(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId, org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector)} ()}.
-     */
-    public void testPutNodeConnector(){
-        when(dataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
-
-        NodeId nodeId = new NodeId("1");
-        NodeConnectorBuilder nodeConnectorBuilder = new NodeConnectorBuilder();
-        NodeConnectorId nodeConnectorId = new NodeConnectorId("1");
-        nodeConnectorBuilder.setId(nodeConnectorId );
-        nodeConnectorBuilder.setKey(new NodeConnectorKey(nodeConnectorId ));
-        InventoryDataServiceUtil.putNodeConnector(nodeId, nodeConnectorBuilder.build());
-    }
-
-    /**
-     * Primitive test method for {@link InventoryDataServiceUtil#readNode(org.opendaylight.yangtools.yang.binding.InstanceIdentifier)} ()}.
-     */
-    @Test
-    public void testReadNode(){
-        when(readOnlyTransaction.read(Mockito.any(LogicalDatastoreType.class), Mockito.<InstanceIdentifier<Node>>any())).thenReturn(Futures.immediateCheckedFuture(Optional.of(node)));
-        InstanceIdentifier<Node> instanceId = InstanceIdentifier.create(Node.class);
-        Node node = InventoryDataServiceUtil.readNode(instanceId);
-        assertNotNull(node);
-    }
-    /**
-     * Test method for {@link InventoryDataServiceUtil#checkForNodes()}.
-     */
-    @Test
-    public void testCheckForNodes() {
-        Nodes nodes = InventoryDataServiceUtil.checkForNodes();
-        assertNotNull(nodes);
-    }
-
-    /**
-     * Test method for {@link InventoryDataServiceUtil#readAllNodes()}.
-     */
-    @Test
-    public void testReadAllNodes() {
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node> nodes = InventoryDataServiceUtil.readAllNodes();
-        assertNotNull(nodes);
-    }
 
     /**
      * Test method for {@link InventoryDataServiceUtil#nodeUpdatedBuilderFromDataPathId(BigInteger datapathId)}.
