@@ -69,12 +69,12 @@ public class ContextChainImpl implements ContextChain {
 
     @Override
     public void instantiateServiceInstance() {
-        LOG.info("Starting clustering services for node {}", deviceInfo);
 
         try {
             contexts.forEach(OFPContext::instantiateServiceInstance);
             LOG.info("Started clustering services for node {}", deviceInfo);
         } catch (final Exception ex) {
+            LOG.warn("Not able to start clustering services for node {}", deviceInfo);
             executorService.submit(() -> contextChainMastershipWatcher
                     .onNotAbleToStartMastershipMandatory(deviceInfo, ex.toString()));
         }
@@ -82,7 +82,7 @@ public class ContextChainImpl implements ContextChain {
 
     @Override
     public ListenableFuture<Void> closeServiceInstance() {
-        LOG.info("Closing clustering services for node {}", deviceInfo);
+
         contextChainMastershipWatcher.onSlaveRoleAcquired(deviceInfo);
 
         final ListenableFuture<List<Void>> servicesToBeClosed = Futures
@@ -116,16 +116,10 @@ public class ContextChainImpl implements ContextChain {
         // Close all connections to devices
         auxiliaryConnections.forEach(connectionContext -> connectionContext.closeConnection(false));
         auxiliaryConnections.clear();
-        primaryConnection.closeConnection(true);
-
-        // Close all contexts (device, statistics, rpc)
-        contexts.forEach(OFPContext::close);
-        contexts.clear();
 
         // If we are still registered and we are not already closing, then close the registration
         if (Objects.nonNull(registration)) {
             try {
-                LOG.info("Closing clustering services registration for node {}", deviceInfo);
                 registration.close();
                 registration = null;
                 LOG.info("Closed clustering services registration for node {}", deviceInfo);
@@ -135,9 +129,17 @@ public class ContextChainImpl implements ContextChain {
             }
         }
 
+
+        // Close all contexts (device, statistics, rpc)
+        contexts.forEach(OFPContext::close);
+        contexts.clear();
+
         // We are closing, so cleanup all managers now
         deviceRemovedHandlers.forEach(h -> h.onDeviceRemoved(deviceInfo));
         deviceRemovedHandlers.clear();
+
+        primaryConnection.closeConnection(false);
+
     }
 
     @Override
@@ -148,10 +150,9 @@ public class ContextChainImpl implements ContextChain {
 
     @Override
     public void registerServices(final ClusterSingletonServiceProvider clusterSingletonServiceProvider) {
-        LOG.info("Registering clustering services for node {}", deviceInfo);
         registration = Objects.requireNonNull(clusterSingletonServiceProvider
                 .registerClusterSingletonService(this));
-        LOG.info("Registered clustering services for node {}", deviceInfo);
+        LOG.debug("Registered clustering services for node {}", deviceInfo);
     }
 
     @Override

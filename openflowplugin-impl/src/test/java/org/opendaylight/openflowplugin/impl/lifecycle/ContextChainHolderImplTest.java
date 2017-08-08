@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2017 Pantheon Technologies s.r.o. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -145,7 +145,7 @@ public class ContextChainHolderImplTest {
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_GATHERING);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.RPC_REGISTRATION);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.MASTER_ON_DEVICE);
-        Mockito.verify(reconciliationFrameworkEvent).onDeviceDisconnected(deviceInfo);
+        Mockito.verify(connectionContext).closeConnection(false);
     }
 
     @Test
@@ -157,7 +157,7 @@ public class ContextChainHolderImplTest {
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_GATHERING);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.RPC_REGISTRATION);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.MASTER_ON_DEVICE);
-        Mockito.verify(reconciliationFrameworkEvent).onDeviceDisconnected(deviceInfo);
+        Mockito.verify(connectionContext).closeConnection(false);
     }
 
     @Test
@@ -185,7 +185,7 @@ public class ContextChainHolderImplTest {
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_GATHERING);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.RPC_REGISTRATION);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.MASTER_ON_DEVICE);
-        Mockito.verify(reconciliationFrameworkEvent).onDeviceDisconnected(deviceInfo);
+        Mockito.verify(connectionContext).closeConnection(false);
     }
 
     @Test
@@ -216,7 +216,7 @@ public class ContextChainHolderImplTest {
                 == ConnectionStatus.MAY_CONTINUE);
         Mockito.when(featuresReply.getAuxiliaryId()).thenReturn(AUXILIARY_ID);
         Assert.assertTrue(contextChainHolder.deviceConnected(connectionContext)
-                == ConnectionStatus.ALREADY_CONNECTED);
+                == ConnectionStatus.MAY_CONTINUE);
     }
 
     @Test
