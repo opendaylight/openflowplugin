@@ -69,18 +69,18 @@ public class HandshakeListenerImpl implements HandshakeListener {
             @Override
             public void onSuccess(@Nullable final RpcResult<BarrierOutput> result) {
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("succeeded by getting sweep barrier after post-handshake for device {}", connectionContext.getDeviceInfo().getLOGValue());
+                    LOG.debug("succeeded by getting sweep barrier after post-handshake for device {}", connectionContext.getDeviceInfo());
                 }
                 try {
                     ConnectionStatus connectionStatusResult = deviceConnectedHandler.deviceConnected(connectionContext);
-                    if (!ConnectionStatus.MAY_CONTINUE.equals(connectionStatusResult)) {
-                        connectionContext.closeConnection(true);
+                    if (connectionStatusResult != ConnectionStatus.MAY_CONTINUE) {
+                        connectionContext.closeConnection(false);
                     }
-                    SessionStatistics.countEvent(connectionContext.getDeviceInfo().getLOGValue(),
+                    SessionStatistics.countEvent(connectionContext.getDeviceInfo().toString(),
                             SessionStatistics.ConnectionStatus.CONNECTION_CREATED);
                 } catch (final Exception e) {
-                    LOG.warn("initial processing failed for device {}", connectionContext.getDeviceInfo().getLOGValue(), e);
-                    SessionStatistics.countEvent(connectionContext.getDeviceInfo().getLOGValue(),
+                    LOG.warn("initial processing failed for device {}", connectionContext.getDeviceInfo(), e);
+                    SessionStatistics.countEvent(connectionContext.getDeviceInfo().toString(),
                             SessionStatistics.ConnectionStatus.CONNECTION_DISCONNECTED_BY_OFP);
                     connectionContext.closeConnection(true);
                 }
@@ -88,7 +88,7 @@ public class HandshakeListenerImpl implements HandshakeListener {
 
             @Override
             public void onFailure(final Throwable t) {
-                LOG.warn("failed to get sweep barrier after post-handshake for device {}", connectionContext.getDeviceInfo().getLOGValue(), t);
+                LOG.warn("failed to get sweep barrier after post-handshake for device {}", connectionContext.getDeviceInfo(), t);
                 connectionContext.closeConnection(false);
             }
         };
