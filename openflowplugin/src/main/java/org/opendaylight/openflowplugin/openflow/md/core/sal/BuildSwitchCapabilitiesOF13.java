@@ -25,9 +25,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 
 /**
  * SwitchFeature builder for OF 1.3
- * 
- * @author jsebin
- *
  */
 public final class BuildSwitchCapabilitiesOF13 implements BuildSwitchFeatures {
 

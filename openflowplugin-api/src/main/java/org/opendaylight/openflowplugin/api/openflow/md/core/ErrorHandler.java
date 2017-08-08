@@ -7,15 +7,12 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.md.core;
 
-import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
-
 public interface ErrorHandler {
 
     /**
      * Exception handler.
      * @param throwable cause
-     * @param sessionContext of source
      */
-    void handleException(Throwable throwable, SessionContext sessionContext);
+    void handleException(Throwable throwable);
 
 }

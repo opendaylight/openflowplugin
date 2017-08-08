@@ -21,9 +21,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- *
- */
 public final class ActionExtensionHelper {
 
     private static final Logger LOG = LoggerFactory

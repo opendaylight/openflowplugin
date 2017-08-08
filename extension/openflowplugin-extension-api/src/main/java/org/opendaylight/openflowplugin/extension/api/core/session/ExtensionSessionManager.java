@@ -10,13 +10,10 @@ package org.opendaylight.openflowplugin.extension.api.core.session;
 
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 
-/**
- * Created by Martin Bobak mbobak@cisco.com on 10/15/14.
- */
 public interface ExtensionSessionManager {
 
     /**
-     * @param extensionConverterProvider
+     * @param extensionConverterProvider extension converter provider
      */
     void setExtensionConverterProvider(ExtensionConverterProvider extensionConverterProvider);
 

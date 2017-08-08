@@ -21,9 +21,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.experimenter.core.message.ExperimenterMessageOfChoice;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
-/**
- *
- */
 public interface ExtensionConverterProvider {
 
     /**

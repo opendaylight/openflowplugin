@@ -45,9 +45,6 @@ import org.opendaylight.yangtools.yang.binding.Augmentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- *
- */
 public final class MatchExtensionHelper {
 
     private static final Logger LOG = LoggerFactory

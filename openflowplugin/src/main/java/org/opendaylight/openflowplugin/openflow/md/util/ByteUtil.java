@@ -13,9 +13,6 @@ import java.util.Arrays;
 import com.google.common.base.Preconditions;
 import com.google.common.io.BaseEncoding;
 
-/**
- * @author mirehak
- */
 public abstract class ByteUtil {
 
     /** default hex string separator */

@@ -13,9 +13,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketInReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.SendToController;
 
-/**
- *
- */
 public final class PacketInUtil {
 
     private PacketInUtil(){

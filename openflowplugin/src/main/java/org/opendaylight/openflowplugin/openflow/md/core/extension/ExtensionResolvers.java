@@ -38,9 +38,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchRpcUpdateGroupUpdatedSetField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralExtensionListGrouping;
 
-/**
- *
- */
 public class ExtensionResolvers {
 
     private static GroupingLooseResolver<GeneralExtensionListGrouping> matchExtensionResolver =

@@ -7,7 +7,9 @@
  */
 package org.opendaylight.openflowplugin.api;
 
+import com.google.common.collect.ImmutableList;
 import java.math.BigInteger;
+import java.util.List;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
@@ -76,4 +78,10 @@ public final class OFConstants {
 
     /** Persistent ID of OpenFlowPlugin configuration file. */
     public static final String CONFIG_FILE_ID = "org.opendaylight.openflowplugin";
+
+    /** supported version ordered by height (highest version is at the beginning). */
+    public static final List<Short> VERSION_ORDER = ImmutableList
+            .<Short>builder()
+            .add((short) 0x04, (short) 0x01)
+            .build();
 }

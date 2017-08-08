@@ -14,10 +14,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * @author mirehak
- *
- */
 public class HandshakeStepWrapper implements Runnable {
 
     private static final Logger LOG = LoggerFactory

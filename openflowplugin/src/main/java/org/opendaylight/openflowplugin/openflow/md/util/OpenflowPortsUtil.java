@@ -26,8 +26,6 @@ import org.slf4j.LoggerFactory;
  * Class which integrates the port constants defined and used by MDSAL and the ports defined in openflow java
  * This class is responsible for converting MDSAL given logical names to port numbers and back.
  * Any newer version of openflow can have a similar mapping or can/should be extended.
- *
- * @author Kamal Rameshan on 5/2/14.
  */
 public class OpenflowPortsUtil {
 
