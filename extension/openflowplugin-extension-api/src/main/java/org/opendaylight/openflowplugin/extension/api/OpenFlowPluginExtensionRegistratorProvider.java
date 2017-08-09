@@ -16,5 +16,5 @@ public interface OpenFlowPluginExtensionRegistratorProvider {
      * @return the extensionConverterRegistry - here extension converters can be registered in order to support
      * vendor messages
      */
-    public ExtensionConverterRegistrator getExtensionConverterRegistrator();
+    ExtensionConverterRegistrator getExtensionConverterRegistrator();
 }

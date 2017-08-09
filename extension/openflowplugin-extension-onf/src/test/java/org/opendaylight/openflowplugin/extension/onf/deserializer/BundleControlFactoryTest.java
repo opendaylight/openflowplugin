@@ -37,9 +37,9 @@ public class BundleControlFactoryTest {
 
     private final OFDeserializer<BundleControlOnf> factory = new BundleControlFactory();
     @Mock
-    DeserializerRegistry registry;
+    private DeserializerRegistry registry;
     @Mock
-    OFDeserializer<BundlePropertyExperimenterData> experimenterPropertyDeserializer;
+    private OFDeserializer<BundlePropertyExperimenterData> experimenterPropertyDeserializer;
 
     @Test
     public void testDeserializeWithoutProperties() {

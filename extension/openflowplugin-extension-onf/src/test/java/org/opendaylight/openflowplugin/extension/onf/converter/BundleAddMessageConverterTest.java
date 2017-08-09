@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -67,6 +68,11 @@ public class BundleAddMessageConverterTest {
             .child(Node.class, new NodeKey(new NodeId("openflow:1"))));
     private static final GroupId GROUP_ID = new GroupId(1L);
 
+    @Before
+    public void setUp() throws Exception {
+        converter.setNode(NODE_REF);
+    }
+
     @Test
     public void testGetExperimenterId() {
         Assert.assertEquals("Wrong ExperimenterId.", new ExperimenterId(0x4F4E4600L), converter.getExperimenterId());
@@ -78,55 +84,46 @@ public class BundleAddMessageConverterTest {
     }
 
     @Test
-    @Ignore
     public void testConvertWithoutProperty() throws Exception {
         testConvert(false);
     }
 
     @Test
-    @Ignore
     public void testConvertWithProperty() throws Exception {
         testConvert(true);
     }
 
     @Test
-    @Ignore
     public void testConvertAddFlowCase() throws Exception {
         testConvert(new BundleAddFlowCaseBuilder().setAddFlowCaseData(new AddFlowCaseDataBuilder().build()).build(), BundleFlowModCase.class);
     }
 
     @Test
-    @Ignore
     public void testConvertUpdateFlowCase() throws Exception {
         testConvert(new BundleUpdateFlowCaseBuilder().setUpdateFlowCaseData(new UpdateFlowCaseDataBuilder().build()).build(), BundleFlowModCase.class);
     }
 
     @Test
-    @Ignore
     public void testConvertRemoveFlowCase() throws Exception {
         testConvert(new BundleRemoveFlowCaseBuilder().setRemoveFlowCaseData(new RemoveFlowCaseDataBuilder().build()).build(), BundleFlowModCase.class);
     }
 
     @Test
-    @Ignore
     public void testConvertAddGroupCase() throws Exception {
         testConvert(new BundleAddGroupCaseBuilder().setAddGroupCaseData(new AddGroupCaseDataBuilder().setGroupId(GROUP_ID).build()).build(), BundleGroupModCase.class);
     }
 
     @Test
-    @Ignore
     public void testConvertUpdateGroupCase() throws Exception {
         testConvert(new BundleUpdateGroupCaseBuilder().setUpdateGroupCaseData(new UpdateGroupCaseDataBuilder().setGroupId(GROUP_ID).build()).build(), BundleGroupModCase.class);
     }
 
     @Test
-    @Ignore
     public void testConvertRemoveGroupCase() throws Exception {
         testConvert(new BundleRemoveGroupCaseBuilder().setRemoveGroupCaseData(new RemoveGroupCaseDataBuilder().setGroupId(GROUP_ID).build()).build(), BundleGroupModCase.class);
     }
 
     @Test
-    @Ignore
     public void testConvertUpdatePortCase() throws Exception {
         testConvert(new BundleUpdatePortCaseBuilder()
                 .setUpdatePortCaseData(new UpdatePortCaseDataBuilder()
@@ -146,7 +143,7 @@ public class BundleAddMessageConverterTest {
     }
 
     private void testConvert(final boolean withProperty) throws Exception {
-        final BundleInnerMessage message = new BundleAddFlowCaseBuilder().build();
+        final BundleInnerMessage message = new BundleAddFlowCaseBuilder().setAddFlowCaseData(new AddFlowCaseDataBuilder().build()).build();
         testConvert(message, BundleFlowModCase.class, withProperty);
     }
 
