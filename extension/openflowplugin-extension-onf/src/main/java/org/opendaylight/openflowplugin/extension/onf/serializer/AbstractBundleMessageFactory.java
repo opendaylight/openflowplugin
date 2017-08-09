@@ -38,12 +38,12 @@ public abstract class AbstractBundleMessageFactory<T extends DataContainer> impl
         this.serializerRegistry = serializerRegistry;
     }
 
-    protected static void writeBundleFlags(final BundleFlags bundleFlags, final ByteBuf outBuffer) {
+    static void writeBundleFlags(final BundleFlags bundleFlags, final ByteBuf outBuffer) {
         short flagsBitMap = fillBitMask(bundleFlags.isAtomic(), bundleFlags.isOrdered());
         outBuffer.writeShort(flagsBitMap);
     }
 
-    protected void writeBundleProperties(final List<BundleProperty> properties, final ByteBuf outBuffer) {
+    void writeBundleProperties(final List<BundleProperty> properties, final ByteBuf outBuffer) {
         for (BundleProperty property : properties) {
             BundlePropertyType type = property.getType();
             if (type != null && type.equals(BundlePropertyType.ONFETBPTEXPERIMENTER)) {
@@ -54,12 +54,13 @@ public abstract class AbstractBundleMessageFactory<T extends DataContainer> impl
                 writeBundleExperimenterProperty((BundlePropertyExperimenter)property.getBundlePropertyEntry(), outBuffer);
                 outBuffer.setShort(lengthIndex, outBuffer.writerIndex() - startIndex);
             } else {
-                LOG.warn("Trying to serialize unknown bundle property (type: {}), skipping", type.getIntValue());
+                LOG.warn("Trying to serialize unknown bundle property (type: {}), skipping",
+                        type != null ? type.getIntValue() : 0);
             }
         }
     }
 
-    protected void writeBundleExperimenterProperty(final BundlePropertyExperimenter property, final ByteBuf outBuffer) {
+    private void writeBundleExperimenterProperty(final BundlePropertyExperimenter property, final ByteBuf outBuffer) {
         int experimenterId = property.getExperimenter().getValue().intValue();
         int expType = property.getExpType().intValue();
         outBuffer.writeInt(experimenterId);
