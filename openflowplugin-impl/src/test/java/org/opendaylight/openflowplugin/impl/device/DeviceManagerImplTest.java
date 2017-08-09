@@ -8,7 +8,10 @@
 
 package org.opendaylight.openflowplugin.impl.device;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,22 +31,31 @@ import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
+import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProviderFactory;
+import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemovedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdatedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.CapabilitiesV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint16Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint32Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfigBuilder;
+import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeviceManagerImplTest {
@@ -52,6 +64,8 @@ public class DeviceManagerImplTest {
     private static final int barrierCountLimit = 25600;
     private static final long barrierIntervalNanos = 500;
     private static final NodeId DUMMY_NODE_ID = new NodeId("dummyNodeId");
+    private static final KeyedInstanceIdentifier<Node, NodeKey> DUMMY_IDENTIFIER  = DeviceStateUtil
+            .createNodeInstanceIdentifier(DUMMY_NODE_ID);
 
     @Mock
     private CheckedFuture<Void, TransactionCommitFailedException> mockedFuture;
@@ -69,6 +83,23 @@ public class DeviceManagerImplTest {
     private DeviceInfo deviceInfo;
     @Mock
     private ConvertorExecutor convertorExecutor;
+    @Mock
+    private DataBroker dataBroker;
+    @Mock
+    private WriteTransaction writeTransaction;
+    @Mock
+    private BindingTransactionChain transactionChain;
+    @Mock
+    private Capabilities capabilities;
+    @Mock
+    private CapabilitiesV10 capabilitiesV10;
+    @Mock
+    private NotificationPublishService notificationPublishService;
+    @Mock
+    private TranslatorLibrary translatorLibrary;
+
+    private DeviceManagerImpl deviceManager;
+
     @Before
     public void setUp() throws Exception {
         when(mockConnectionContext.getNodeId()).thenReturn(DUMMY_NODE_ID);
@@ -76,29 +107,20 @@ public class DeviceManagerImplTest {
         when(mockConnectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
         when(mockConnectionContext.getDeviceInfo()).thenReturn(deviceInfo);
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockConnectionContext);
+        when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(DUMMY_IDENTIFIER);
         when(deviceInfo.getNodeId()).thenReturn(DUMMY_NODE_ID);
 
-        final Capabilities capabilitiesV13 = mock(Capabilities.class);
-        final CapabilitiesV10 capabilitiesV10 = mock(CapabilitiesV10.class);
-        when(mockFeatures.getCapabilities()).thenReturn(capabilitiesV13);
+        when(mockFeatures.getCapabilities()).thenReturn(capabilities);
         when(mockFeatures.getCapabilitiesV10()).thenReturn(capabilitiesV10);
         when(mockFeatures.getDatapathId()).thenReturn(BigInteger.valueOf(21L));
-    }
 
-    private DeviceManagerImpl prepareDeviceManager() {
-        final DataBroker mockedDataBroker = mock(DataBroker.class);
-        final WriteTransaction mockedWriteTransaction = mock(WriteTransaction.class);
+        when(mockedFuture.isDone()).thenReturn(true);
+        when(writeTransaction.submit()).thenReturn(mockedFuture);
+        when(transactionChain.newWriteOnlyTransaction()).thenReturn(writeTransaction);
+        when(dataBroker.createTransactionChain(any(TransactionChainListener.class))).thenReturn(transactionChain);
+        when(dataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
 
-        final BindingTransactionChain mockedTxChain = mock(BindingTransactionChain.class);
-        final WriteTransaction mockedWTx = mock(WriteTransaction.class);
-        when(mockedTxChain.newWriteOnlyTransaction()).thenReturn(mockedWTx);
-        when(mockedDataBroker.createTransactionChain(any(TransactionChainListener.class))).thenReturn
-                (mockedTxChain);
-        when(mockedDataBroker.newWriteOnlyTransaction()).thenReturn(mockedWriteTransaction);
-
-        when(mockedWriteTransaction.submit()).thenReturn(mockedFuture);
-
-        return new DeviceManagerImpl(
+        deviceManager = new DeviceManagerImpl(
                 new OpenflowProviderConfigBuilder()
                         .setBarrierCountLimit(new NonZeroUint16Type(barrierCountLimit))
                         .setBarrierIntervalTimeoutLimit(new NonZeroUint32Type(barrierIntervalNanos))
@@ -106,28 +128,69 @@ public class DeviceManagerImplTest {
                         .setSwitchFeaturesMandatory(false)
                         .setEnableFlowRemovedNotification(true)
                         .setSkipTableFeatures(false)
+                        .setUseSingleLayerSerialization(true)
                         .build(),
-                mockedDataBroker,
+                dataBroker,
                 messageIntelligenceAgency,
-                mock(NotificationPublishService.class),
+                notificationPublishService,
                 new HashedWheelTimer(),
                 convertorExecutor,
                 DeviceInitializerProviderFactory.createDefaultProvider());
+
+        deviceManager.setTranslatorLibrary(translatorLibrary);
+        verify(dataBroker).newWriteOnlyTransaction();
+        verify(writeTransaction).merge(eq(LogicalDatastoreType.OPERATIONAL), any(), any());
+        verify(writeTransaction).submit();
     }
 
     @Test
-    public void testClose() throws Exception {
+    public void createContext() throws Exception {
+        final DeviceContext context = deviceManager.createContext(mockConnectionContext);
+        assertEquals(deviceInfo, context.getDeviceInfo());
+
+    }
+
+    @Test
+    public void removeDeviceFromOperationalDS() throws Exception {
+        final CheckedFuture<Void, TransactionCommitFailedException> future = deviceManager
+                .removeDeviceFromOperationalDS(DUMMY_IDENTIFIER);
+
+        future.get();
+        assertTrue(future.isDone());
+        verify(writeTransaction).delete(LogicalDatastoreType.OPERATIONAL, DUMMY_IDENTIFIER);
+    }
+
+    @Test
+    public void sendNodeAddedNotification() throws Exception {
+        deviceManager.sendNodeAddedNotification(DUMMY_IDENTIFIER);
+        deviceManager.sendNodeAddedNotification(DUMMY_IDENTIFIER);
+        verify(notificationPublishService).offerNotification(new NodeUpdatedBuilder()
+                .setId(DUMMY_NODE_ID)
+                .setNodeRef(new NodeRef(DUMMY_IDENTIFIER))
+                .build());
+    }
+
+    @Test
+    public void sendNodeRemovedNotification() throws Exception {
+        deviceManager.sendNodeAddedNotification(DUMMY_IDENTIFIER);
+        deviceManager.sendNodeRemovedNotification(DUMMY_IDENTIFIER);
+        deviceManager.sendNodeRemovedNotification(DUMMY_IDENTIFIER);
+        verify(notificationPublishService).offerNotification(new NodeRemovedBuilder()
+                .setNodeRef(new NodeRef(DUMMY_IDENTIFIER))
+                .build());
+    }
+
+    @Test
+    public void close() throws Exception {
         final DeviceContext deviceContext = mock(DeviceContext.class);
-        final DeviceManagerImpl deviceManager = prepareDeviceManager();
         final ConcurrentHashMap<DeviceInfo, DeviceContext> deviceContexts = getContextsCollection(deviceManager);
         deviceContexts.put(deviceInfo, deviceContext);
         Assert.assertEquals(1, deviceContexts.size());
-
         deviceManager.close();
-
         verify(deviceContext).close();
     }
 
+    @SuppressWarnings("unchecked")
     private static ConcurrentHashMap<DeviceInfo, DeviceContext> getContextsCollection(final DeviceManagerImpl deviceManager) throws NoSuchFieldException, IllegalAccessException {
         // HACK: contexts collection for testing shall be accessed in some more civilized way
         final Field contextsField = DeviceManagerImpl.class.getDeclaredField("deviceContexts");

@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.util;
 
 import com.google.common.base.Preconditions;
-import com.google.common.reflect.TypeToken;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
@@ -16,6 +15,9 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.compatibility.Delegator;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
+import org.opendaylight.openflowplugin.extension.onf.service.SalBundleServiceImpl;
+import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
+import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
 import org.opendaylight.openflowplugin.impl.services.sal.FlowCapableTransactionServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.NodeConfigServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.PacketProcessingServiceImpl;
@@ -31,9 +33,6 @@ import org.opendaylight.openflowplugin.impl.services.sal.SalMeterServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.SalMetersBatchServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.SalPortServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.SalTableServiceImpl;
-import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
-import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
-import org.opendaylight.openflowplugin.extension.onf.service.SalBundleServiceImpl;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightFlowStatisticsServiceImpl;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightFlowTableStatisticsServiceImpl;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightGroupStatisticsServiceImpl;
@@ -70,12 +69,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.Sal
 public class MdSalRegistrationUtils {
 
     //TODO: Make one register and one unregister method for all services
-
-    private static final TypeToken<Delegator<OpendaylightFlowStatisticsService>> COMPOSITE_SERVICE_TYPE_TOKEN =
-            new TypeToken<Delegator<OpendaylightFlowStatisticsService>>() {
-                //NOBODY
-            };
-
     private MdSalRegistrationUtils() {
         throw new IllegalStateException();
     }
@@ -156,7 +149,7 @@ public class MdSalRegistrationUtils {
         // pickup low statistics service
         final OpendaylightFlowStatisticsService flowStatisticsService = Preconditions.checkNotNull(
                 rpcContext.lookupRpcService(OpendaylightFlowStatisticsService.class));
-        Preconditions.checkArgument(COMPOSITE_SERVICE_TYPE_TOKEN.isSubtypeOf(flowStatisticsService.getClass()));
+
         // attach delegate to flow statistics service (to cover all but aggregated stats with match filter input)
         final OpendaylightFlowStatisticsServiceDelegateImpl flowStatisticsDelegate =
                 new OpendaylightFlowStatisticsServiceDelegateImpl(rpcContext, deviceContext, notificationPublishService, new AtomicLong(), convertorExecutor);
