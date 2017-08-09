@@ -27,9 +27,9 @@ public abstract class AbstractBundleMessageFactoryTest {
     @Mock
     protected SerializerRegistry registry;
     @Mock
-    protected OFSerializer<BundlePropertyExperimenterData> propertySerializer;
+    OFSerializer<BundlePropertyExperimenterData> propertySerializer;
     @Mock
-    protected BundlePropertyExperimenterData propertyExperimenterData;
+    BundlePropertyExperimenterData propertyExperimenterData;
 
     @Test
     public void writeBundleFlags() {
