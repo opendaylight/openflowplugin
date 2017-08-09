@@ -66,7 +66,7 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
         final CapabilitiesV10 capabilitiesV10 = connectionContext.getFeatures().getCapabilitiesV10();
 
         // Set capabilities for this device based on capabilities of connection context
-        LOG.debug("Setting capabilities for device {}", deviceInfo.getLOGValue());
+        LOG.debug("Setting capabilities for device {}", deviceInfo);
         DeviceStateUtil.setDeviceStateBasedOnV10Capabilities(deviceState, capabilitiesV10);
         final ListenableFuture<Boolean> future = requestMultipart(MultipartType.OFPMPDESC, deviceContext);
 
@@ -74,10 +74,10 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
             @Override
             public void onSuccess(@Nullable final Boolean result) {
                 if (Boolean.TRUE.equals(result)) {
-                    LOG.debug("Creating empty flow capable node: {}", deviceInfo.getLOGValue());
+                    LOG.debug("Creating empty flow capable node: {}", deviceInfo);
                     makeEmptyFlowCapableNode(deviceContext, deviceInfo);
 
-                    LOG.debug("Creating empty tables for {}", deviceInfo.getLOGValue());
+                    LOG.debug("Creating empty tables for {}", deviceInfo);
                     DeviceInitializationUtil.makeEmptyTables(
                         deviceContext,
                         deviceInfo,
@@ -87,8 +87,8 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
 
             @Override
             public void onFailure(@Nonnull final Throwable t) {
-                LOG.warn("Error occurred in preparation node {} for protocol 1.0", deviceInfo.getLOGValue());
-                LOG.trace("Error for node {} : ", deviceInfo.getLOGValue(), t);
+                LOG.warn("Error occurred in preparation node {} for protocol 1.0", deviceInfo);
+                LOG.trace("Error for node {} : ", deviceInfo, t);
             }
         });
 
@@ -96,6 +96,7 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
             @Nullable
             @Override
             public Void apply(@Nullable final Boolean input) {
+                LOG.debug("Writing physical port information for {}", deviceInfo);
                 writePhyPortInformation(deviceContext);
                 return null;
             }
@@ -130,7 +131,7 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
                             new FlowCapableNodeConnectorStatisticsDataBuilder().build())
                         .build());
             } catch (final Exception e) {
-                LOG.debug("Failed to write node {} to DS ", deviceInfo.getLOGValue(), e);
+                LOG.debug("Failed to write node {} to DS ", deviceInfo, e);
             }
         });
     }
@@ -143,7 +144,7 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
                     .augmentation(FlowCapableNode.class),
                 new FlowCapableNodeBuilder().build());
         } catch (final Exception e) {
-            LOG.debug("Failed to write empty node {} to DS ", deviceInfo.getLOGValue(), e);
+            LOG.debug("Failed to write empty node {} to DS ", deviceInfo, e);
         }
     }
 
