@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "ba1f61a0_1990a942",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-10T07:04:51Z",
+      "side": 1,
+      "message": "Currently We don\u0027t support changing any of the configuration flag at run time. So it\u0027s good to keep it that way.",
+      "parentUuid": "ba1f61a0_4f09cf94",
+      "range": {
+        "startLine": 125,
+        "startChar": 12,
+        "endLine": 125,
+        "endChar": 47
+      },
+      "revId": "7a7251c7618e1e5a838efbe3bd1101f4e5f2bf6e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba1f61a0_89ec67c9",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
         "patchSetId": 10
