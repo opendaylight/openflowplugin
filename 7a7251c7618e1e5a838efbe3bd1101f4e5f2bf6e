@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "ba1f61a0_0aefa988",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-08-10T12:06:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba1f61a0_1990a942",
+      "range": {
+        "startLine": 125,
+        "startChar": 12,
+        "endLine": 125,
+        "endChar": 47
+      },
+      "revId": "7a7251c7618e1e5a838efbe3bd1101f4e5f2bf6e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba1f61a0_89ec67c9",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
         "patchSetId": 10
@@ -96,6 +120,30 @@
     },
     {
       "key": {
+        "uuid": "ba1f61a0_aae2dd9c",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-08-10T12:06:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba1f61a0_89ec67c9",
+      "range": {
+        "startLine": 139,
+        "startChar": 54,
+        "endLine": 139,
+        "endChar": 61
+      },
+      "revId": "7a7251c7618e1e5a838efbe3bd1101f4e5f2bf6e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba1f61a0_e9c9a35b",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
         "patchSetId": 10
@@ -107,6 +155,30 @@
       "writtenOn": "2017-08-03T21:13:52Z",
       "side": 1,
       "message": "please fix the comments here and below.",
+      "range": {
+        "startLine": 230,
+        "startChar": 82,
+        "endLine": 238,
+        "endChar": 94
+      },
+      "revId": "7a7251c7618e1e5a838efbe3bd1101f4e5f2bf6e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_eaf33571",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 238,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-08-10T12:06:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba1f61a0_e9c9a35b",
       "range": {
         "startLine": 230,
         "startChar": 82,
