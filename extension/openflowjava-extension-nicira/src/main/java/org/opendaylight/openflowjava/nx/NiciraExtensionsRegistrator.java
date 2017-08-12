@@ -25,6 +25,7 @@ import org.opendaylight.openflowjava.nx.codec.match.ArpShaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.ArpSpaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.ArpThaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.ArpTpaCodec;
+import org.opendaylight.openflowjava.nx.codec.match.CtLabelCodec;
 import org.opendaylight.openflowjava.nx.codec.match.CtStateCodec;
 import org.opendaylight.openflowjava.nx.codec.match.CtZoneCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EthDstCodec;
@@ -185,6 +186,8 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         registrator.registerMatchEntryDeserializer(UdpDstCodec.DESERIALIZER_KEY, NiciraMatchCodecs.UDP_DST_CODEC);
         registrator.registerMatchEntrySerializer(CtStateCodec.SERIALIZER_KEY, NiciraMatchCodecs.CT_ST_CODEC);
         registrator.registerMatchEntryDeserializer(CtStateCodec.DESERIALIZER_KEY, NiciraMatchCodecs.CT_ST_CODEC);
+        registrator.registerMatchEntrySerializer(CtLabelCodec.SERIALIZER_KEY, NiciraMatchCodecs.CT_LAB_CODEC);
+        registrator.registerMatchEntryDeserializer(CtLabelCodec.DESERIALIZER_KEY, NiciraMatchCodecs.CT_LAB_CODEC);
         registrator.registerMatchEntrySerializer(CtZoneCodec.SERIALIZER_KEY, NiciraMatchCodecs.CT_ZONE_CODEC);
         registrator.registerMatchEntryDeserializer(CtZoneCodec.DESERIALIZER_KEY, NiciraMatchCodecs.CT_ZONE_CODEC);
     }
@@ -288,6 +291,8 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         registrator.unregisterMatchEntryDeserializer(UdpDstCodec.DESERIALIZER_KEY);
         registrator.unregisterMatchEntrySerializer(CtStateCodec.SERIALIZER_KEY);
         registrator.unregisterMatchEntryDeserializer(CtStateCodec.DESERIALIZER_KEY);
+        registrator.unregisterMatchEntryDeserializer(CtLabelCodec.SERIALIZER_KEY);
+        registrator.unregisterMatchEntryDeserializer(CtLabelCodec.DESERIALIZER_KEY);
         registrator.unregisterMatchEntrySerializer(CtZoneCodec.SERIALIZER_KEY);
         registrator.unregisterMatchEntryDeserializer(CtZoneCodec.DESERIALIZER_KEY);
     }

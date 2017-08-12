@@ -116,6 +116,9 @@ module openflowplugin-extension-nicira-match {
     identity nxm-nx-ct-state-key {
         base ext-gen:extension-key;
     }
+    identity nxm-nx-ct-label-key {
+        base ext-gen:extension-key;
+    }
     identity nxm-nx-ct-zone-key {
         base ext-gen:extension-key;
     }
@@ -335,6 +338,16 @@ module openflowplugin-extension-nicira-match {
             }
         }
     }
+    grouping nxm-nx-ct-label-grouping {
+         container nxm-nx-ct-label {
+            leaf ct-label {
+               type uint32;
+            }
+             leaf mask {
+               type uint32;
+            }
+        }
+    }
     grouping nxm-nx-ct-zone-grouping {
          container nxm-nx-ct-zone {
             leaf ct-zone {
@@ -430,6 +443,7 @@ module openflowplugin-extension-nicira-match {
         uses nxm-of-udp-src-grouping;
         uses nxm-of-udp-dst-grouping;
         uses nxm-nx-ct-state-grouping;
+        uses nxm-nx-ct-label-grouping;
         uses nxm-nx-ct-zone-grouping;
         uses nxm-of-ip-dst-grouping;
         uses nxm-of-ip-src-grouping;

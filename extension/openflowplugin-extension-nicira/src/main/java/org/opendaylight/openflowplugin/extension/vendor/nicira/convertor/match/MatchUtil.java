@@ -32,6 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcUpdateFlowUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxArpShaGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxArpThaGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxCtLabelGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxCtStateGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxCtZoneGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshc1Grouping;
@@ -130,6 +131,8 @@ public class MatchUtil {
             NxmOfUdpDstGrouping.class);
     public final static GroupingResolver<NxmNxCtStateGrouping, Extension> ctStateResolver = new GroupingResolver<>(
             NxmNxCtStateGrouping.class);
+    public final static GroupingResolver<NxmNxCtLabelGrouping, Extension> ctLabelResolver = new GroupingResolver<>(
+            NxmNxCtLabelGrouping.class);
     public final static GroupingResolver<NxmNxCtZoneGrouping, Extension> ctZoneResolver = new GroupingResolver<>(
             NxmNxCtZoneGrouping.class);
     public final static GroupingResolver<NxmOfInPortGrouping, Extension> nxmOfInportResolver = new GroupingResolver<>(
@@ -173,6 +176,7 @@ public class MatchUtil {
         udpSrcResolver.setAugmentations(augmentationsOfExtension);
         udpDstResolver.setAugmentations(augmentationsOfExtension);
         ctStateResolver.setAugmentations(augmentationsOfExtension);
+        ctLabelResolver.setAugmentations(augmentationsOfExtension);
         ctZoneResolver.setAugmentations(augmentationsOfExtension);
         nxmOfInportResolver.setAugmentations(augmentationsOfExtension);
 

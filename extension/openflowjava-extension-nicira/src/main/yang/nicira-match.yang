@@ -114,6 +114,9 @@ module nicira-match {
     identity nxm-nx-ct-state {
         base ofoxm:match-field;
     }
+    identity nxm-nx-ct-label {
+        base ofoxm:match-field;
+    }
     identity nxm-nx-ct-zone {
         base ofoxm:match-field;
     }
@@ -169,7 +172,6 @@ module nicira-match {
              }
         }
     }
-
     grouping ofj-oxm-of-metadata-grouping {
         container metadata-values {
              leaf metadata {
@@ -375,6 +377,17 @@ module nicira-match {
         }
     }
 
+    grouping ofj-nxm-nx-match-ct-label-grouping{
+         container ct-label-values {
+            leaf ct-label {
+               type int64;
+            }
+             leaf mask {
+               type int64;
+            }
+        }
+    }
+
     grouping ofj-nxm-nx-match-ct-zone-grouping{
          container ct-zone-values {
             leaf ct-zone {
@@ -552,6 +565,9 @@ module nicira-match {
         }
         case ct-state-case-value {
             uses ofj-nxm-nx-match-ct-state-grouping;
+        }
+        case ct-label-case-value {
+            uses ofj-nxm-nx-match-ct-label-grouping;
         }
         case ct-zone-case-value {
             uses ofj-nxm-nx-match-ct-zone-grouping;

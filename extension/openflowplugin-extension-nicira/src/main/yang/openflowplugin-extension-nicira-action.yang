@@ -514,6 +514,12 @@ bits specified from the register.";
             leaf conntrack-zone {
                 type uint16;
             }
+            leaf ct-label-mask {
+                type int64;
+            }
+            leaf ct-label-value {
+                type int64;
+            }
             leaf recirc-table {
                 type uint8;
             }

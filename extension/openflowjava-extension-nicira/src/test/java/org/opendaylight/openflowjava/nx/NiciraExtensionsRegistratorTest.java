@@ -29,6 +29,7 @@ import org.opendaylight.openflowjava.nx.codec.match.ArpShaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.ArpSpaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.ArpThaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.ArpTpaCodec;
+import org.opendaylight.openflowjava.nx.codec.match.CtLabelCodec;
 import org.opendaylight.openflowjava.nx.codec.match.CtStateCodec;
 import org.opendaylight.openflowjava.nx.codec.match.CtZoneCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EthDstCodec;
@@ -193,6 +194,8 @@ public class NiciraExtensionsRegistratorTest {
         Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers.eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_0_CLASS, 12)), Matchers.any(UdpDstCodec.class));
         Mockito.verify(registrator).registerMatchEntrySerializer(Matchers.eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxCtState.class)), Matchers.any(CtStateCodec.class));
         Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers.eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 105)), Matchers.any(CtStateCodec.class));
+        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers.eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxCtState.class)), Matchers.any(CtLabelCodec.class));
+        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers.eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 107)), Matchers.any(CtLabelCodec.class));
         Mockito.verify(registrator).registerMatchEntrySerializer(Matchers.eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxCtZone.class)), Matchers.any(CtZoneCodec.class));
         Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers.eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 106)), Matchers.any(CtZoneCodec.class));
     }

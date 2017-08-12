@@ -65,6 +65,8 @@ public class ConntrackCodec extends AbstractActionCodec {
         outBuffer.writeShort(action.getNxActionConntrack().getFlags().shortValue());
         outBuffer.writeInt(action.getNxActionConntrack().getZoneSrc().intValue());
         outBuffer.writeShort(action.getNxActionConntrack().getConntrackZone().shortValue());
+        outBuffer.writeInt(action.getNxActionConntrack().getCtLabelMask().intValue());
+        outBuffer.writeInt(action.getNxActionConntrack().getCtLabelValue().intValue());
         outBuffer.writeByte(action.getNxActionConntrack().getRecircTable().byteValue());
         outBuffer.writeZero(5);
         serializeCtAction(outBuffer,action);
@@ -153,6 +155,8 @@ public class ConntrackCodec extends AbstractActionCodec {
         nxActionConntrackBuilder.setFlags(message.readUnsignedShort());
         nxActionConntrackBuilder.setZoneSrc(message.readUnsignedInt());
         nxActionConntrackBuilder.setConntrackZone(message.readUnsignedShort());
+        nxActionConntrackBuilder.setCtLabelMask(message.readUnsignedShort());
+        nxActionConntrackBuilder.setCtLabelValue(message.readUnsignedShort());
         nxActionConntrackBuilder.setRecircTable(message.readUnsignedByte());
         message.skipBytes(5);
         if  (length > CT_LENGTH) {

@@ -33,6 +33,7 @@ import org.opendaylight.openflowjava.nx.codec.match.ArpSpaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.ArpThaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.ArpTpaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.InPortCodec;
+import org.opendaylight.openflowjava.nx.codec.match.CtLabelCodec;
 import org.opendaylight.openflowjava.nx.codec.match.CtStateCodec;
 import org.opendaylight.openflowjava.nx.codec.match.CtZoneCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EthDstCodec;
@@ -86,6 +87,7 @@ import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.A
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.ArpSpaConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.ArpThaConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.ArpTpaConvertor;
+import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.CtLabelConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.CtStateConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.CtZoneConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.EthDstConvertor;
@@ -224,6 +226,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.update.group.input.updated.group.buckets.bucket.action.action.NxActionPopNshRpcUpdateGroupUpdatedCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxArpShaKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxArpThaKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxCtLabelKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxCtStateKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxCtZoneKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshc1Key;
@@ -313,6 +316,7 @@ public class NiciraExtensionProvider implements AutoCloseable {
     private static final ConntrackConvertor CONNTRACK_CONVERTOR = new ConntrackConvertor();
     private static final LearnConvertor LEARN_CONVERTOR = new LearnConvertor();
     private static final CtStateConvertor CT_STATE_CONVERTOR = new CtStateConvertor();
+    private static final CtLabelConvertor CT_LABEL_CONVERTOR = new CtLabelConvertor();
     private static final CtZoneConvertor CT_ZONE_CONVERTOR = new CtZoneConvertor();
 
     @Override
@@ -635,8 +639,13 @@ public class NiciraExtensionProvider implements AutoCloseable {
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
                 new ConverterExtensionKey<>(NxmNxCtStateKey.class, EncodeConstants.OF13_VERSION_ID),
                 CT_STATE_CONVERTOR));
+        registrations.add(extensionConverterRegistrator.registerMatchConvertor(
+                new ConverterExtensionKey<>(NxmNxCtLabelKey.class, EncodeConstants.OF13_VERSION_ID),
+                CT_LABEL_CONVERTOR));
         registrations.add(
                 extensionConverterRegistrator.registerMatchConvertor(CtStateCodec.SERIALIZER_KEY, CT_STATE_CONVERTOR));
+        registrations.add(
+                extensionConverterRegistrator.registerMatchConvertor(CtLabelCodec.SERIALIZER_KEY, CT_LABEL_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
                 new ConverterExtensionKey<>(NxmNxCtZoneKey.class, EncodeConstants.OF13_VERSION_ID), CT_ZONE_CONVERTOR));
         registrations.add(
