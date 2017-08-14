@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.api.openflow.device;
 
 import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.ListenableFuture;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
@@ -32,7 +33,7 @@ public interface DeviceManager extends
      */
     void initialize();
 
-    CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(
+    ListenableFuture<Void> removeDeviceFromOperationalDS(
             @Nonnull KeyedInstanceIdentifier<Node, NodeKey> ii);
 
     DeviceContext createContext(@Nonnull ConnectionContext connectionContext);

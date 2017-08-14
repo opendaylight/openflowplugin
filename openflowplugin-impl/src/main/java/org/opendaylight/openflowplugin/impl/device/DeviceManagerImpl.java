@@ -7,9 +7,10 @@
  */
 package org.opendaylight.openflowplugin.impl.device;
 
-import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.internal.ConcurrentSet;
 import java.util.Optional;
@@ -23,7 +24,6 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -126,26 +126,13 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public CheckedFuture<Void, TransactionCommitFailedException> removeDeviceFromOperationalDS(final KeyedInstanceIdentifier<Node, NodeKey> ii) {
+    public ListenableFuture<Void> removeDeviceFromOperationalDS(
+            @Nonnull final KeyedInstanceIdentifier<Node, NodeKey> ii) {
+
         final WriteTransaction delWtx = dataBroker.newWriteOnlyTransaction();
         delWtx.delete(LogicalDatastoreType.OPERATIONAL, ii);
-        final CheckedFuture<Void, TransactionCommitFailedException> delFuture = delWtx.submit();
+        return delWtx.submit();
 
-        Futures.addCallback(delFuture, new FutureCallback<Void>() {
-            @Override
-            public void onSuccess(final Void result) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Delete Node {} was successful", ii);
-                }
-            }
-
-            @Override
-            public void onFailure(@Nonnull final Throwable t) {
-                LOG.warn("Delete node {} failed with exception {}", ii, t);
-            }
-        });
-
-        return delFuture;
     }
 
     public DeviceContext createContext(@Nonnull final ConnectionContext connectionContext) {
