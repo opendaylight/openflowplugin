@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -272,13 +273,13 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
 
                 deviceManager.sendNodeRemovedNotification(nodeInstanceIdentifier);
 
-                LOG.info("Removing device {} from operational DS", nodeId);
+                LOG.info("Try to remove device {} from operational DS", nodeId);
                 deviceManager
                         .removeDeviceFromOperationalDS(nodeInstanceIdentifier)
-                        .checkedGet(REMOVE_DEVICE_FROM_DS_TIMEOUT, TimeUnit.MILLISECONDS);
-            } catch (TimeoutException | TransactionCommitFailedException | NullPointerException e) {
-                LOG.info("Not able to remove device {} from operational DS. Probably removed by another cluster node.",
-                        nodeId);
+                        .get(REMOVE_DEVICE_FROM_DS_TIMEOUT, TimeUnit.MILLISECONDS);
+                LOG.info("Removing device from operational DS {} was successful", nodeId);
+            } catch (TimeoutException | ExecutionException | NullPointerException | InterruptedException e) {
+                LOG.warn("Not able to remove device {} from operational DS. ",nodeId, e);
             }
         }
     }
