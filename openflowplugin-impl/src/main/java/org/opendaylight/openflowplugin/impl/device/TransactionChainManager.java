@@ -10,10 +10,10 @@ package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CancellationException;
@@ -170,7 +170,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
             Preconditions.checkState(TransactionChainManagerStatus.WORKING == transactionChainManagerStatus,
                     "we have here Uncompleted Transaction for node {} and we are not MASTER",
                     this.nodeId);
-            final CheckedFuture<Void, TransactionCommitFailedException> submitFuture = wTx.submit();
+            final ListenableFuture<Void> submitFuture = wTx.submit();
             lastSubmittedFuture = submitFuture;
             wTx = null;
 
@@ -204,7 +204,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                         }
                     }
                 }
-            });
+            }, MoreExecutors.directExecutor());
         }
         return true;
     }
