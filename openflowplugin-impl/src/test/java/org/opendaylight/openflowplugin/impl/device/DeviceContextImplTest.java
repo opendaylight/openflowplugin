@@ -26,7 +26,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
 import java.math.BigInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,32 +53,17 @@ import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
-import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
-import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
-import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
-import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.device.initialization.AbstractDeviceInitializer;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProvider;
-import org.opendaylight.openflowplugin.impl.registry.flow.FlowDescriptorFactory;
-import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.ExperimenterMessageFromDev;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemovedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -92,7 +76,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetAsyncReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
@@ -108,52 +91,43 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalR
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeviceContextImplTest {
-    private static final Logger LOG = LoggerFactory
-            .getLogger(DeviceContextImplTest.class);
-    private static final short DUMMY_AUXILIARY_ID = 33;
-    private static final BigInteger DUMMY_COOKIE = new BigInteger("33");
-    private static final Long DUMMY_XID = 544L;
-    private static final Long DUMMY_PORT_NUMBER = 159L;
-    private static final BigInteger DUMMY_DATAPATH_ID = new BigInteger("55");
-    Xid xid;
-    Xid xidMulti;
 
-    DeviceContext deviceContext;
+    private static final short DUMMY_AUXILIARY_ID = 33;
+    private static final Long DUMMY_XID = 544L;
+    private static final BigInteger DUMMY_DATAPATH_ID = new BigInteger("55");
+
+    private DeviceContext deviceContext;
     @Mock
-    RequestContext<GetAsyncReply> requestContext;
+    private RequestContext<GetAsyncReply> requestContext;
     @Mock
-    RequestContext<MultipartReply> requestContextMultiReply;
+    private RequestContext<MultipartReply> requestContextMultiReply;
     @Mock
-    ConnectionContext connectionContext;
+    private ConnectionContext connectionContext;
     @Mock
-    GetFeaturesOutput featuresOutput;
+    private GetFeaturesOutput featuresOutput;
     @Mock
-    DataBroker dataBroker;
+    private DataBroker dataBroker;
     @Mock
-    WriteTransaction wTx;
+    private WriteTransaction wTx;
     @Mock
-    ReadOnlyTransaction rTx;
+    private ReadOnlyTransaction rTx;
     @Mock
-    BindingTransactionChain txChainFactory;
+    private BindingTransactionChain txChainFactory;
     @Mock
-    HashedWheelTimer timer;
+    private HashedWheelTimer timer;
     @Mock
-    OutboundQueueProvider outboundQueueProvider;
+    private OutboundQueueProvider outboundQueueProvider;
     @Mock
-    ConnectionAdapter connectionAdapter;
-    NodeId nodeId = new NodeId("h2g2:42");
-    KeyedInstanceIdentifier<Node, NodeKey> nodeKeyIdent = DeviceStateUtil.createNodeInstanceIdentifier(nodeId);
+    private ConnectionAdapter connectionAdapter;
     @Mock
-    TranslatorLibrary translatorLibrary;
+    private TranslatorLibrary translatorLibrary;
     @Mock
-    MessageTranslator messageTranslatorPacketReceived;
+    private MessageTranslator<Object, Object> messageTranslatorPacketReceived;
     @Mock
-    MessageTranslator messageTranslatorFlowCapableNodeConnector;
+    private MessageTranslator messageTranslatorFlowCapableNodeConnector;
     @Mock
     private MessageTranslator<Object, Object> messageTranslatorFlowRemoved;
     @Mock
@@ -169,8 +143,8 @@ public class DeviceContextImplTest {
     @Mock
     private SalRoleService salRoleService;
 
-    private final AtomicLong atomicLong = new AtomicLong(0);
-
+    private NodeId nodeId = new NodeId("h2g2:42");
+    private KeyedInstanceIdentifier<Node, NodeKey> nodeKeyIdent = DeviceStateUtil.createNodeInstanceIdentifier(nodeId);
     private DeviceContext deviceContextSpy;
 
     @Before
@@ -245,11 +219,7 @@ public class DeviceContextImplTest {
         ((DeviceContextImpl) deviceContext).lazyTransactionManagerInitialization();
         deviceContextSpy = Mockito.spy(deviceContext);
 
-        xid = new Xid(atomicLong.incrementAndGet());
-        xidMulti = new Xid(atomicLong.incrementAndGet());
-
         Mockito.doNothing().when(deviceContextSpy).writeToTransaction(any(), any(), any());
-
     }
 
     @Test
@@ -412,45 +382,6 @@ public class DeviceContextImplTest {
 
         deviceContextSpy.processPortStatusMessage(mockedPortStatusMessage);
         verify(messageSpy).spyMessage(any(), any());
-    }
-
-    @Test
-    public void testProcessFlowRemovedMessage() throws Exception {
-        // prepare translation result
-        final FlowRemovedBuilder flowRemovedMdsalBld = new FlowRemovedBuilder()
-                .setTableId((short) 0)
-                .setPriority(42)
-                .setCookie(new FlowCookie(BigInteger.ONE))
-                .setMatch(new MatchBuilder().build());
-        final NotificationPublishService mockedNotificationPublishService = mock(NotificationPublishService.class);
-
-        Mockito.when(messageTranslatorFlowRemoved.translate(any(Object.class), any(DeviceInfo.class), any(Object.class)))
-                .thenReturn(flowRemovedMdsalBld.build());
-
-        // insert flow+flowId into local registry
-        final FlowRegistryKey flowRegKey = FlowRegistryKeyFactory.create(deviceInfo.getVersion(), flowRemovedMdsalBld.build());
-        final FlowDescriptor flowDescriptor = FlowDescriptorFactory.create((short) 0, new FlowId("ut-ofp:f456"));
-        deviceContext.getDeviceFlowRegistry().storeDescriptor(flowRegKey, flowDescriptor);
-
-        // plug in lifecycleListener
-        final ItemLifecycleListener itemLifecycleListener = Mockito.mock(ItemLifecycleListener.class);
-        for (final ItemLifeCycleSource lifeCycleSource : deviceContext.getItemLifeCycleSourceRegistry().getLifeCycleSources()) {
-            lifeCycleSource.setItemLifecycleListener(itemLifecycleListener);
-        }
-
-        // prepare empty input message
-        final FlowRemovedMessageBuilder flowRemovedBld = new FlowRemovedMessageBuilder();
-
-        // prepare path to flow to be removed
-        final KeyedInstanceIdentifier<Flow, FlowKey> flowToBeRemovedPath = nodeKeyIdent
-                .augmentation(FlowCapableNode.class)
-                .child(Table.class, new TableKey((short) 0))
-                .child(Flow.class, new FlowKey(new FlowId("ut-ofp:f456")));
-
-        deviceContext.setNotificationPublishService(mockedNotificationPublishService);
-        deviceContext.processFlowRemovedMessage(flowRemovedBld.build());
-
-        Mockito.verify(itemLifecycleListener).onRemoved(flowToBeRemovedPath);
     }
 
     @Test
