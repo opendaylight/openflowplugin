@@ -41,7 +41,7 @@ public class MastershipChangeServiceManagerImplTest {
     @Mock
     private ReconciliationFrameworkEvent secondEvent;
 
-    final private MastershipChangeServiceManager manager = new MastershipChangeServiceManagerImpl();
+    private final MastershipChangeServiceManager manager = new MastershipChangeServiceManagerImpl();
     private MastershipChangeRegistration registration;
     private ReconciliationFrameworkRegistration registrationRF;
 

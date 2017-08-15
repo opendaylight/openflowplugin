@@ -20,7 +20,7 @@ public final class ErrorUtil {
         throw new IllegalStateException("This class should not be instantiated.");
     }
 
-    public static final String errorsToString(final Collection<RpcError> rpcErrors) {
+    public static String errorsToString(final Collection<RpcError> rpcErrors) {
         final StringBuilder errors = new StringBuilder();
         if ((null != rpcErrors) && (rpcErrors.size() > 0)) {
             for (final RpcError rpcError : rpcErrors) {

@@ -27,19 +27,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessageBuilder;
 
-/**
- * Created by Tomas Slusny on 24.3.2016.
- */
 @RunWith(MockitoJUnitRunner.class)
 public class NodeConnectorRefToPortTranslatorTest extends TestCase {
 
-    static final String PACKET_DATA = "Test_Data";
-    static final Long PORT_NO = 5l;
-    static final Long SECOND_PORT_NO = 6l;
-    static final BigInteger DATA_PATH_ID = BigInteger.TEN;
-    static final short OF_VERSION = OFConstants.OFP_VERSION_1_3;
-    static final String ID_VALUE = "openflow:" + DATA_PATH_ID;
-    static final Long TABLE_ID = 42L;
+    private static final String PACKET_DATA = "Test_Data";
+    private static final Long PORT_NO = 5L;
+    private static final BigInteger DATA_PATH_ID = BigInteger.TEN;
+    private static final short OF_VERSION = OFConstants.OFP_VERSION_1_3;
+    private static final Long TABLE_ID = 42L;
 
     private static PacketIn createPacketIn(long portNo) {
         InPortBuilder inPortBuilder = new InPortBuilder()
