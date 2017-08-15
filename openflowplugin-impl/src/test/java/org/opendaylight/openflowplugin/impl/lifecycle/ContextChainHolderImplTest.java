@@ -84,7 +84,7 @@ public class ContextChainHolderImplTest {
     private ContextChainHolderImpl contextChainHolder;
     private ReconciliationFrameworkRegistration registration;
     private MastershipChangeServiceManager manager = new MastershipChangeServiceManagerImpl();
-    private final Short AUXILIARY_ID = 0;
+    private final Short auxiliaryId = 0;
 
     @Before
     public void setUp() throws Exception {
@@ -106,7 +106,7 @@ public class ContextChainHolderImplTest {
         Mockito.when(entityOwnershipService.registerListener(Mockito.any(), Mockito.any()))
                 .thenReturn(entityOwnershipListenerRegistration);
         Mockito.when(connectionContext.getFeatures()).thenReturn(featuresReply);
-        Mockito.when(featuresReply.getAuxiliaryId()).thenReturn(AUXILIARY_ID);
+        Mockito.when(featuresReply.getAuxiliaryId()).thenReturn(auxiliaryId);
 
         registration = manager.reconciliationFrameworkRegistration(reconciliationFrameworkEvent);
 
@@ -138,7 +138,8 @@ public class ContextChainHolderImplTest {
 
     @Test
     public void reconciliationFrameworkFailure() throws Exception {
-        Mockito.when(reconciliationFrameworkEvent.onDevicePrepared(deviceInfo)).thenReturn(Futures.immediateFailedFuture(new Throwable("test")));
+        Mockito.when(reconciliationFrameworkEvent.onDevicePrepared(deviceInfo))
+                .thenReturn(Futures.immediateFailedFuture(new Throwable("test")));
         contextChainHolder.createContextChain(connectionContext);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_FLOW_REGISTRY_FILL);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_GATHERING);
@@ -149,7 +150,8 @@ public class ContextChainHolderImplTest {
 
     @Test
     public void reconciliationFrameworkDisconnect() throws Exception {
-        Mockito.when(reconciliationFrameworkEvent.onDevicePrepared(deviceInfo)).thenReturn(Futures.immediateFuture(ResultState.DISCONNECT));
+        Mockito.when(reconciliationFrameworkEvent.onDevicePrepared(deviceInfo))
+                .thenReturn(Futures.immediateFuture(ResultState.DISCONNECT));
         contextChainHolder.createContextChain(connectionContext);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_FLOW_REGISTRY_FILL);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_GATHERING);
@@ -161,7 +163,8 @@ public class ContextChainHolderImplTest {
     @Test
     public void reconciliationFrameworkSuccess() throws Exception {
         contextChainHolder.createContextChain(connectionContext);
-        Mockito.when(reconciliationFrameworkEvent.onDevicePrepared(deviceInfo)).thenReturn(Futures.immediateFuture(ResultState.DONOTHING));
+        Mockito.when(reconciliationFrameworkEvent.onDevicePrepared(deviceInfo))
+                .thenReturn(Futures.immediateFuture(ResultState.DONOTHING));
         Mockito.when(statisticsContext.initialSubmitAfterReconciliation()).thenReturn(true);
         contextChainHolder.createContextChain(connectionContext);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_FLOW_REGISTRY_FILL);
@@ -174,7 +177,8 @@ public class ContextChainHolderImplTest {
     @Test
     public void reconciliationFrameworkSuccessButNotSubmit() throws Exception {
         contextChainHolder.createContextChain(connectionContext);
-        Mockito.when(reconciliationFrameworkEvent.onDevicePrepared(deviceInfo)).thenReturn(Futures.immediateFuture(ResultState.DONOTHING));
+        Mockito.when(reconciliationFrameworkEvent.onDevicePrepared(deviceInfo))
+                .thenReturn(Futures.immediateFuture(ResultState.DONOTHING));
         Mockito.when(statisticsContext.initialSubmitAfterReconciliation()).thenReturn(false);
         contextChainHolder.createContextChain(connectionContext);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_FLOW_REGISTRY_FILL);
@@ -210,7 +214,7 @@ public class ContextChainHolderImplTest {
         Mockito.when(featuresReply.getAuxiliaryId()).thenReturn(AUXILIARY_ID_1);
         Assert.assertTrue(contextChainHolder.deviceConnected(connectionContext)
                 == ConnectionStatus.MAY_CONTINUE);
-        Mockito.when(featuresReply.getAuxiliaryId()).thenReturn(AUXILIARY_ID);
+        Mockito.when(featuresReply.getAuxiliaryId()).thenReturn(auxiliaryId);
         Assert.assertTrue(contextChainHolder.deviceConnected(connectionContext)
                 == ConnectionStatus.ALREADY_CONNECTED);
     }
@@ -274,7 +278,6 @@ public class ContextChainHolderImplTest {
         Mockito.verify(deviceManager).removeDeviceFromOperationalDS(Mockito.any());
     }
     @Test
-
     public void ownershipChangedButHasOwner() throws Exception {
         registration.close();
         contextChainHolder.createContextChain(connectionContext);

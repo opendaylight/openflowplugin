@@ -52,7 +52,7 @@ public class ItemScheduler<K, V> implements AutoCloseable {
     }
 
     /**
-     * Start scheduler timeout if it is not already running and if there are any items scheduled
+     * Start scheduler timeout if it is not already running and if there are any items scheduled.
      */
     public void startIfNotRunning() {
         synchronized (scheduleLock) {
@@ -67,8 +67,8 @@ public class ItemScheduler<K, V> implements AutoCloseable {
 
             runningTimeout = hashedWheelTimer.newTimeout((timeout) -> {
                 synchronized (scheduleLock) {
-                    LOG.debug("Running configured action on {} scheduled items for scheduler {}. There are {} items left in queue.",
-                            items.size(), this, queue.size());
+                    LOG.debug("Running configured action on {} scheduled items for scheduler {}. "
+                            + "There are {} items left in queue.", items.size(), this, queue.size());
                     items.forEach((key, item) -> action.accept(item));
                     items.clear();
                     items.putAll(queue);
@@ -82,7 +82,7 @@ public class ItemScheduler<K, V> implements AutoCloseable {
     }
 
     /**
-     * Schedule item for processing
+     * Schedule item for processing.
      *
      * @param key the item key
      * @param item the item
@@ -102,7 +102,7 @@ public class ItemScheduler<K, V> implements AutoCloseable {
     }
 
     /**
-     * Remove item for processing
+     * Remove item for processing.
      * @param key the item key
      */
     public void remove(final K key) {

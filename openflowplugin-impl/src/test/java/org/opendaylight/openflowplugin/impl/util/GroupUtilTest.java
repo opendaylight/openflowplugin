@@ -41,10 +41,11 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
  */
 public class GroupUtilTest {
 
-    public static final NodeId DUMMY_NODE_ID = new NodeId("dummyNodeId");
+    private static final NodeId DUMMY_NODE_ID = new NodeId("dummyNodeId");
     private static final GroupId DUMMY_GROUP_ID = new GroupId(42L);
     private static final GroupId DUMMY_GROUP_ID_2 = new GroupId(43L);
-    private static final Long GROUP_ACTION_BITMAP = 0b00000000000000000000000000000000000001111111111111001100000000001L;
+    private static final Long GROUP_ACTION_BITMAP =
+            0b00000000000000000000000000000000000001111111111111001100000000001L;
 
     @Test
     public void testBuildGroupPath() throws Exception {
@@ -82,42 +83,43 @@ public class GroupUtilTest {
     }
 
     @Test
-    public void testGROUP_ADD_TRANSFORM__failure() throws Exception {
+    public void testGroupAddTransformFailure() throws Exception {
         final RpcResult<List<BatchFailedGroupsOutput>> input = createBatchOutcomeWithError();
         checkBatchErrorOutcomeTransformation(GroupUtil.GROUP_ADD_TRANSFORM.apply(input));
     }
 
     @Test
-    public void testGROUP_ADD_TRANSFORM__success() throws Exception {
+    public void testGroupAddTransformFailureSuccess() throws Exception {
         final RpcResult<List<BatchFailedGroupsOutput>> input = createEmptyBatchOutcome();
         checkBatchSuccessOutcomeTransformation(GroupUtil.GROUP_ADD_TRANSFORM.apply(input));
     }
 
     @Test
-    public void testGROUP_REMOVE_TRANSFORM__failure() throws Exception {
+    public void testGroupRemoveTransformFailure() throws Exception {
         final RpcResult<List<BatchFailedGroupsOutput>> input = createBatchOutcomeWithError();
         checkBatchErrorOutcomeTransformation(GroupUtil.GROUP_REMOVE_TRANSFORM.apply(input));
     }
 
     @Test
-    public void testFLOW_REMOVE_TRANSFORM__success() throws Exception {
+    public void testFlowRemoveTransformSuccess() throws Exception {
         final RpcResult<List<BatchFailedGroupsOutput>> input = createEmptyBatchOutcome();
         checkBatchSuccessOutcomeTransformation(GroupUtil.GROUP_REMOVE_TRANSFORM.apply(input));
     }
 
     @Test
-    public void testFLOW_UPDATE_TRANSFORM__failure() throws Exception {
+    public void testFlowUpdateTransformFailure() throws Exception {
         final RpcResult<List<BatchFailedGroupsOutput>> input = createBatchOutcomeWithError();
         checkBatchErrorOutcomeTransformation(GroupUtil.GROUP_UPDATE_TRANSFORM.apply(input));
     }
 
     @Test
-    public void testFLOW_UPDATE_TRANSFORM__success() throws Exception {
+    public void testFlowUpdateTransformSuccess() throws Exception {
         final RpcResult<List<BatchFailedGroupsOutput>> input = createEmptyBatchOutcome();
         checkBatchSuccessOutcomeTransformation(GroupUtil.GROUP_UPDATE_TRANSFORM.apply(input));
     }
 
-    private <T extends BatchGroupOutputListGrouping> void checkBatchSuccessOutcomeTransformation(final RpcResult<T> output) {
+    private <T extends BatchGroupOutputListGrouping> void checkBatchSuccessOutcomeTransformation(
+            final RpcResult<T> output) {
         Assert.assertTrue(output.isSuccessful());
         Assert.assertEquals(0, output.getResult().getBatchFailedGroupsOutput().size());
         Assert.assertEquals(0, output.getErrors().size());
@@ -138,7 +140,8 @@ public class GroupUtilTest {
                 .build();
     }
 
-    private <T extends BatchGroupOutputListGrouping> void checkBatchErrorOutcomeTransformation(final RpcResult<T> output) {
+    private <T extends BatchGroupOutputListGrouping> void checkBatchErrorOutcomeTransformation(
+            final RpcResult<T> output) {
         Assert.assertFalse(output.isSuccessful());
         Assert.assertEquals(1, output.getResult().getBatchFailedGroupsOutput().size());
         Assert.assertEquals(DUMMY_GROUP_ID, output.getResult().getBatchFailedGroupsOutput().get(0).getGroupId());
@@ -148,12 +151,13 @@ public class GroupUtilTest {
 
     @Test
     public void testCreateComposingFunction_success_success() throws Exception {
-        final Function<Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<Void>>, RpcResult<AddGroupsBatchOutput>> compositeFunction =
-                GroupUtil.createComposingFunction();
+        final Function<Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<Void>>, RpcResult<AddGroupsBatchOutput>>
+                compositeFunction = GroupUtil.createComposingFunction();
 
         final RpcResult<AddGroupsBatchOutput> addGroupBatchOutput = createAddGroupsBatchSuccessOutput();
         final RpcResult<Void> barrierOutput = RpcResultBuilder.<Void>success().build();
-        final Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<Void>> input = Pair.of(addGroupBatchOutput, barrierOutput);
+        final Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<Void>> input =
+                Pair.of(addGroupBatchOutput, barrierOutput);
         final RpcResult<AddGroupsBatchOutput> composite = compositeFunction.apply(input);
 
         Assert.assertTrue(composite.isSuccessful());
@@ -163,12 +167,13 @@ public class GroupUtilTest {
 
     @Test
     public void testCreateComposingFunction_failure_success() throws Exception {
-        final Function<Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<Void>>, RpcResult<AddGroupsBatchOutput>> compositeFunction =
-                GroupUtil.createComposingFunction();
+        final Function<Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<Void>>, RpcResult<AddGroupsBatchOutput>>
+                compositeFunction = GroupUtil.createComposingFunction();
 
         final RpcResult<AddGroupsBatchOutput> addGroupBatchOutput = createAddGroupsBatchFailureOutcome();
         final RpcResult<Void> barrierOutput = RpcResultBuilder.<Void>success().build();
-        final Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<Void>> input = Pair.of(addGroupBatchOutput, barrierOutput);
+        final Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<Void>> input =
+                Pair.of(addGroupBatchOutput, barrierOutput);
         final RpcResult<AddGroupsBatchOutput> composite = compositeFunction.apply(input);
 
         Assert.assertFalse(composite.isSuccessful());
@@ -178,12 +183,13 @@ public class GroupUtilTest {
 
     @Test
     public void testCreateComposingFunction_success_failure() throws Exception {
-        final Function<Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<Void>>, RpcResult<AddGroupsBatchOutput>> compositeFunction =
-                GroupUtil.createComposingFunction();
+        final Function<Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<Void>>, RpcResult<AddGroupsBatchOutput>>
+                compositeFunction = GroupUtil.createComposingFunction();
 
         final RpcResult<AddGroupsBatchOutput> addGroupBatchOutput = createAddGroupsBatchSuccessOutput();
         final RpcResult<Void> barrierOutput = createBarrierFailureOutcome();
-        final Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<Void>> input = Pair.of(addGroupBatchOutput, barrierOutput);
+        final Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<Void>> input =
+                Pair.of(addGroupBatchOutput, barrierOutput);
         final RpcResult<AddGroupsBatchOutput> composite = compositeFunction.apply(input);
 
         Assert.assertFalse(composite.isSuccessful());
@@ -193,12 +199,13 @@ public class GroupUtilTest {
 
     @Test
     public void testCreateComposingFunction_failure_failure() throws Exception {
-        final Function<Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<Void>>, RpcResult<AddGroupsBatchOutput>> compositeFunction =
-                GroupUtil.createComposingFunction();
+        final Function<Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<Void>>, RpcResult<AddGroupsBatchOutput>>
+                compositeFunction = GroupUtil.createComposingFunction();
 
         final RpcResult<AddGroupsBatchOutput> addGroupBatchOutput = createAddGroupsBatchFailureOutcome();
         final RpcResult<Void> barrierOutput = createBarrierFailureOutcome();
-        final Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<Void>> input = Pair.of(addGroupBatchOutput, barrierOutput);
+        final Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<Void>> input =
+                Pair.of(addGroupBatchOutput, barrierOutput);
         final RpcResult<AddGroupsBatchOutput> composite = compositeFunction.apply(input);
 
         Assert.assertFalse(composite.isSuccessful());
@@ -208,8 +215,10 @@ public class GroupUtilTest {
 
     @Test
     public void testExtractGroupActionsSupportBitmap() {
-        ActionType actionSupported = new ActionType(true,true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true);
-        final List<Long> groupActionsSupportBitmap = GroupUtil.extractGroupActionsSupportBitmap(Lists.newArrayList(actionSupported));
+        ActionType actionSupported = new ActionType(true,true, true, true, true, true, true, true, true, true, true,
+                true, true, true, true, true, true);
+        final List<Long> groupActionsSupportBitmap =
+                GroupUtil.extractGroupActionsSupportBitmap(Lists.newArrayList(actionSupported));
         assertEquals(1, groupActionsSupportBitmap.size());
         final Long bitmap = groupActionsSupportBitmap.get(0);
         assertEquals(GROUP_ACTION_BITMAP, bitmap);
