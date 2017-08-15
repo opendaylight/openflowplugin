@@ -23,7 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 /**
- * provides barrier message chaining and factory methods
+ * Provides barrier message chaining and factory methods.
  */
 public final class BarrierUtil {
 
@@ -34,14 +34,14 @@ public final class BarrierUtil {
 
 
     /**
-     * chain a barrier message - regardless of previous result and use given {@link Function} to combine
-     * original result and barrier result
+     * Chain a barrier message - regardless of previous result and use given {@link Function} to combine
+     * original result and barrier result.
      *
      * @param <T>                type of input future
      * @param input              future to chain barrier to
      * @param nodeRef            target device
      * @param transactionService barrier service
-     * @param compositeTransform
+     * @param compositeTransform composite transform
      * @return future holding both results (input and of the barrier)
      */
     public static <T> ListenableFuture<RpcResult<T>> chainBarrier(
@@ -54,7 +54,8 @@ public final class BarrierUtil {
         final ListenableFuture<RpcResult<Void>> barrierResult = Futures.transformAsync(input,
                 new AsyncFunction<RpcResult<T>, RpcResult<Void>>() {
                     @Override
-                    public ListenableFuture<RpcResult<Void>> apply(@Nullable final RpcResult<T> interInput) throws Exception {
+                    public ListenableFuture<RpcResult<Void>> apply(@Nullable final RpcResult<T> interInput)
+                            throws Exception {
                         resultPair.setLeft(interInput);
                         final SendBarrierInput barrierInput = createSendBarrierInput(nodeRef);
                         return JdkFutureAdapters.listenInPoolThread(transactionService.sendBarrier(barrierInput));
@@ -75,6 +76,8 @@ public final class BarrierUtil {
     }
 
     /**
+     * Creates barrier input.
+     *
      * @param nodeRef rpc routing context
      * @return input for {@link FlowCapableTransactionService#sendBarrier(SendBarrierInput)}
      */

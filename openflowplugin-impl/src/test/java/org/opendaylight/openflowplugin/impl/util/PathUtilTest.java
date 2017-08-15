@@ -24,7 +24,8 @@ public class PathUtilTest {
 
     private static final NodeId NODE_ID = new NodeId("ut-dummy-node");
     private static final NodeKey NODE_KEY = new NodeKey(NODE_ID);
-    private static final InstanceIdentifier<Node> NODE_II = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY);
+    private static final InstanceIdentifier<Node> NODE_II
+            = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY);
     private static final NodeRef NODE_REF = new NodeRef(NODE_II);
 
     @Test

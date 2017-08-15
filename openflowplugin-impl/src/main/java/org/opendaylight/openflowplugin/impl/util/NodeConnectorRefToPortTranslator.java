@@ -31,7 +31,7 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
  */
 public class NodeConnectorRefToPortTranslator {
     /**
-     * Converts {@link PacketIn} to {@link NodeConnectorRef}
+     * Converts {@link PacketIn} to {@link NodeConnectorRef}.
      * @param packetIn Packet input
      * @param dataPathId Data path id
      * @return packet input converted to node connector reference
