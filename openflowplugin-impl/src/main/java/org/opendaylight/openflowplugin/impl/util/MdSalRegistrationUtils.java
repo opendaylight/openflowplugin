@@ -74,9 +74,14 @@ public class MdSalRegistrationUtils {
     }
 
     /**
-     * Method registers all OF services for role {@link OfpRole#BECOMEMASTER}
-     *  @param rpcContext    - registration processing is implemented in {@link org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext}
-     * @param deviceContext - every service needs {@link org.opendaylight.openflowplugin.api.openflow.device.DeviceContext} as input parameter
+     * Method registers all OF services for role {@link OfpRole#BECOMEMASTER}.
+     *
+     * @param rpcContext    - registration processing is implemented in
+     *        {@link org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext}
+     *
+     * @param deviceContext - every service needs
+     *        {@link org.opendaylight.openflowplugin.api.openflow.device.DeviceContext} as input parameter
+     *
      * @param convertorExecutor convertor executor
      */
     public static void registerServices(@Nonnull final RpcContext rpcContext,
@@ -89,21 +94,30 @@ public class MdSalRegistrationUtils {
 
         // create service instances
         final SalFlowServiceImpl salFlowService = new SalFlowServiceImpl(rpcContext, deviceContext, convertorExecutor);
-        final FlowCapableTransactionServiceImpl flowCapableTransactionService = new FlowCapableTransactionServiceImpl(rpcContext, deviceContext);
-        final SalGroupServiceImpl salGroupService = new SalGroupServiceImpl(rpcContext, deviceContext, convertorExecutor);
-        final SalMeterServiceImpl salMeterService = new SalMeterServiceImpl(rpcContext, deviceContext, convertorExecutor);
+        final FlowCapableTransactionServiceImpl flowCapableTransactionService =
+                new FlowCapableTransactionServiceImpl(rpcContext, deviceContext);
+        final SalGroupServiceImpl salGroupService =
+                new SalGroupServiceImpl(rpcContext, deviceContext, convertorExecutor);
+        final SalMeterServiceImpl salMeterService =
+                new SalMeterServiceImpl(rpcContext, deviceContext, convertorExecutor);
 
         // register routed service instances
-        rpcContext.registerRpcServiceImplementation(SalEchoService.class, new SalEchoServiceImpl(rpcContext, deviceContext));
+        rpcContext.registerRpcServiceImplementation(SalEchoService.class,
+                new SalEchoServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(SalFlowService.class, salFlowService);
         rpcContext.registerRpcServiceImplementation(FlowCapableTransactionService.class, flowCapableTransactionService);
         rpcContext.registerRpcServiceImplementation(SalMeterService.class, salMeterService);
         rpcContext.registerRpcServiceImplementation(SalGroupService.class, salGroupService);
-        rpcContext.registerRpcServiceImplementation(SalTableService.class, new SalTableServiceImpl(rpcContext, deviceContext, convertorExecutor, multipartWriterProvider));
-        rpcContext.registerRpcServiceImplementation(SalPortService.class, new SalPortServiceImpl(rpcContext, deviceContext, convertorExecutor));
-        rpcContext.registerRpcServiceImplementation(PacketProcessingService.class, new PacketProcessingServiceImpl(rpcContext, deviceContext, convertorExecutor));
-        rpcContext.registerRpcServiceImplementation(NodeConfigService.class, new NodeConfigServiceImpl(rpcContext, deviceContext));
-        rpcContext.registerRpcServiceImplementation(OpendaylightFlowStatisticsService.class, OpendaylightFlowStatisticsServiceImpl.createWithOook(rpcContext, deviceContext, convertorExecutor));
+        rpcContext.registerRpcServiceImplementation(SalTableService.class,
+                new SalTableServiceImpl(rpcContext, deviceContext, convertorExecutor, multipartWriterProvider));
+        rpcContext.registerRpcServiceImplementation(SalPortService.class,
+                new SalPortServiceImpl(rpcContext, deviceContext, convertorExecutor));
+        rpcContext.registerRpcServiceImplementation(PacketProcessingService.class,
+                new PacketProcessingServiceImpl(rpcContext, deviceContext, convertorExecutor));
+        rpcContext.registerRpcServiceImplementation(NodeConfigService.class,
+                new NodeConfigServiceImpl(rpcContext, deviceContext));
+        rpcContext.registerRpcServiceImplementation(OpendaylightFlowStatisticsService.class,
+                OpendaylightFlowStatisticsServiceImpl.createWithOook(rpcContext, deviceContext, convertorExecutor));
 
         // register direct statistics gathering services
         rpcContext.registerRpcServiceImplementation(OpendaylightDirectStatisticsService.class,
@@ -129,17 +143,22 @@ public class MdSalRegistrationUtils {
         //register onf extension bundles
         rpcContext.registerRpcServiceImplementation(SalBundleService.class,
                 new SalBundleServiceImpl(new SalExperimenterMessageServiceImpl(
-                        rpcContext, deviceContext, extensionConverterProvider
-                )));
+                        rpcContext, deviceContext, extensionConverterProvider)));
     }
 
     /**
      * Support deprecated statistic related services for backward compatibility. The only exception from deprecation is
      * the aggregated flow statistic with match criteria input.
-     * @param rpcContext
-     * @param deviceContext
-     * @param notificationPublishService
-     * @param convertorExecutor
+     *
+     * @param rpcContext    - registration processing is implemented in
+     *        {@link org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext}
+     *
+     * @param deviceContext - every service needs
+     *        {@link org.opendaylight.openflowplugin.api.openflow.device.DeviceContext} as input parameter
+     *
+     * @param notificationPublishService - notification service
+     *
+     * @param convertorExecutor - convertor executor
      */
     public static void registerStatCompatibilityServices(final RpcContext rpcContext, final DeviceContext deviceContext,
                                                          final NotificationPublishService notificationPublishService,
@@ -152,19 +171,25 @@ public class MdSalRegistrationUtils {
 
         // attach delegate to flow statistics service (to cover all but aggregated stats with match filter input)
         final OpendaylightFlowStatisticsServiceDelegateImpl flowStatisticsDelegate =
-                new OpendaylightFlowStatisticsServiceDelegateImpl(rpcContext, deviceContext, notificationPublishService, new AtomicLong(), convertorExecutor);
+                new OpendaylightFlowStatisticsServiceDelegateImpl(rpcContext, deviceContext, notificationPublishService,
+                        new AtomicLong(), convertorExecutor);
         ((Delegator<OpendaylightFlowStatisticsService>) flowStatisticsService).setDelegate(flowStatisticsDelegate);
 
         // register all statistics (deprecated) services
         rpcContext.registerRpcServiceImplementation(OpendaylightFlowTableStatisticsService.class,
-                new OpendaylightFlowTableStatisticsServiceImpl(rpcContext, deviceContext, compatibilityXidSeed, notificationPublishService));
+                new OpendaylightFlowTableStatisticsServiceImpl(rpcContext, deviceContext,
+                        compatibilityXidSeed, notificationPublishService));
         rpcContext.registerRpcServiceImplementation(OpendaylightGroupStatisticsService.class,
-                new OpendaylightGroupStatisticsServiceImpl(rpcContext, deviceContext, compatibilityXidSeed, notificationPublishService, convertorExecutor));
+                new OpendaylightGroupStatisticsServiceImpl(rpcContext, deviceContext,
+                        compatibilityXidSeed, notificationPublishService, convertorExecutor));
         rpcContext.registerRpcServiceImplementation(OpendaylightMeterStatisticsService.class,
-                new OpendaylightMeterStatisticsServiceImpl(rpcContext, deviceContext, compatibilityXidSeed, notificationPublishService, convertorExecutor));
+                new OpendaylightMeterStatisticsServiceImpl(rpcContext, deviceContext,
+                        compatibilityXidSeed, notificationPublishService, convertorExecutor));
         rpcContext.registerRpcServiceImplementation(OpendaylightQueueStatisticsService.class,
-                new OpendaylightQueueStatisticsServiceImpl(rpcContext, deviceContext, compatibilityXidSeed, notificationPublishService));
+                new OpendaylightQueueStatisticsServiceImpl(rpcContext, deviceContext,
+                        compatibilityXidSeed, notificationPublishService));
         rpcContext.registerRpcServiceImplementation(OpendaylightPortStatisticsService.class,
-                new OpendaylightPortStatisticsServiceImpl(rpcContext, deviceContext, compatibilityXidSeed, notificationPublishService));
+                new OpendaylightPortStatisticsServiceImpl(rpcContext, deviceContext,
+                        compatibilityXidSeed, notificationPublishService));
     }
 }
