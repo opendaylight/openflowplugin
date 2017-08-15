@@ -48,73 +48,83 @@ public final class FlowUtil {
             RpcResultBuilder.success(Collections.<BatchFailedFlowsOutput>emptyList());
 
     /**
-     * Attach barrier response to given {@link RpcResult}&lt;RemoveFlowsBatchOutput&gt;
+     * Attach barrier response to given {@link RpcResult}&lt;RemoveFlowsBatchOutput&gt;.
      */
-    public static final Function<Pair<RpcResult<RemoveFlowsBatchOutput>, RpcResult<Void>>, RpcResult<RemoveFlowsBatchOutput>>
+    public static final Function<Pair<RpcResult<RemoveFlowsBatchOutput>,
+                                 RpcResult<Void>>,
+                                 RpcResult<RemoveFlowsBatchOutput>>
             FLOW_REMOVE_COMPOSING_TRANSFORM = createComposingFunction();
 
     /**
-     * Attach barrier response to given {@link RpcResult}&lt;AddFlowsBatchOutput&gt;
+     * Attach barrier response to given {@link RpcResult}&lt;AddFlowsBatchOutput&gt;.
      */
     public static final Function<Pair<RpcResult<AddFlowsBatchOutput>, RpcResult<Void>>, RpcResult<AddFlowsBatchOutput>>
             FLOW_ADD_COMPOSING_TRANSFORM = createComposingFunction();
 
     /**
-     * Attach barrier response to given {@link RpcResult}&lt;UpdateFlowsBatchOutput&gt;
+     * Attach barrier response to given {@link RpcResult}&lt;UpdateFlowsBatchOutput&gt;.
      */
-    public static final Function<Pair<RpcResult<UpdateFlowsBatchOutput>, RpcResult<Void>>, RpcResult<UpdateFlowsBatchOutput>>
+    public static final Function<Pair<RpcResult<UpdateFlowsBatchOutput>,
+                                 RpcResult<Void>>,
+                                 RpcResult<UpdateFlowsBatchOutput>>
             FLOW_UPDATE_COMPOSING_TRANSFORM = createComposingFunction();
 
     /**
-     * Gather errors into collection and wrap it into {@link RpcResult} and propagate all {@link RpcError}
+     * Gather errors into collection and wrap it into {@link RpcResult} and propagate all {@link RpcError}.
      */
-    public static final Function<RpcResult<List<BatchFailedFlowsOutput>>, RpcResult<RemoveFlowsBatchOutput>> FLOW_REMOVE_TRANSFORM =
-            new Function<RpcResult<List<BatchFailedFlowsOutput>>, RpcResult<RemoveFlowsBatchOutput>>() {
-                @Nullable
-                @Override
-                public RpcResult<RemoveFlowsBatchOutput> apply(@Nullable final RpcResult<List<BatchFailedFlowsOutput>> batchFlowsCumulativeResult) {
-                    final RemoveFlowsBatchOutput batchOutput = new RemoveFlowsBatchOutputBuilder()
-                            .setBatchFailedFlowsOutput(batchFlowsCumulativeResult.getResult()).build();
+    public static final Function<RpcResult<List<BatchFailedFlowsOutput>>,
+                                 RpcResult<RemoveFlowsBatchOutput>> FLOW_REMOVE_TRANSFORM =
+        new Function<RpcResult<List<BatchFailedFlowsOutput>>, RpcResult<RemoveFlowsBatchOutput>>() {
+            @Nullable
+            @Override
+            public RpcResult<RemoveFlowsBatchOutput> apply(
+                    @Nullable final RpcResult<List<BatchFailedFlowsOutput>> batchFlowsCumulativeResult) {
+                final RemoveFlowsBatchOutput batchOutput = new RemoveFlowsBatchOutputBuilder()
+                        .setBatchFailedFlowsOutput(batchFlowsCumulativeResult.getResult()).build();
 
-                    final RpcResultBuilder<RemoveFlowsBatchOutput> resultBld =
-                            createCumulativeRpcResult(batchFlowsCumulativeResult, batchOutput);
-                    return resultBld.build();
-                }
-            };
+                final RpcResultBuilder<RemoveFlowsBatchOutput> resultBld =
+                        createCumulativeRpcResult(batchFlowsCumulativeResult, batchOutput);
+                return resultBld.build();
+            }
+        };
 
     /**
-     * Gather errors into collection and wrap it into {@link RpcResult} and propagate all {@link RpcError}
+     * Gather errors into collection and wrap it into {@link RpcResult} and propagate all {@link RpcError}.
      */
-    public static final Function<RpcResult<List<BatchFailedFlowsOutput>>, RpcResult<AddFlowsBatchOutput>> FLOW_ADD_TRANSFORM =
-            new Function<RpcResult<List<BatchFailedFlowsOutput>>, RpcResult<AddFlowsBatchOutput>>() {
-                @Nullable
-                @Override
-                public RpcResult<AddFlowsBatchOutput> apply(@Nullable final RpcResult<List<BatchFailedFlowsOutput>> batchFlowsCumulativeResult) {
-                    final AddFlowsBatchOutput batchOutput = new AddFlowsBatchOutputBuilder()
-                            .setBatchFailedFlowsOutput(batchFlowsCumulativeResult.getResult()).build();
+    public static final Function<RpcResult<List<BatchFailedFlowsOutput>>,
+                                 RpcResult<AddFlowsBatchOutput>> FLOW_ADD_TRANSFORM =
+        new Function<RpcResult<List<BatchFailedFlowsOutput>>, RpcResult<AddFlowsBatchOutput>>() {
+            @Nullable
+            @Override
+            public RpcResult<AddFlowsBatchOutput> apply(
+                    @Nullable final RpcResult<List<BatchFailedFlowsOutput>> batchFlowsCumulativeResult) {
+                final AddFlowsBatchOutput batchOutput = new AddFlowsBatchOutputBuilder()
+                        .setBatchFailedFlowsOutput(batchFlowsCumulativeResult.getResult()).build();
 
-                    final RpcResultBuilder<AddFlowsBatchOutput> resultBld =
-                            createCumulativeRpcResult(batchFlowsCumulativeResult, batchOutput);
-                    return resultBld.build();
-                }
-            };
+                final RpcResultBuilder<AddFlowsBatchOutput> resultBld =
+                        createCumulativeRpcResult(batchFlowsCumulativeResult, batchOutput);
+                return resultBld.build();
+            }
+        };
 
     /**
-     * Gather errors into collection and wrap it into {@link RpcResult} and propagate all {@link RpcError}
+     * Gather errors into collection and wrap it into {@link RpcResult} and propagate all {@link RpcError}.
      */
-    public static final Function<RpcResult<List<BatchFailedFlowsOutput>>, RpcResult<UpdateFlowsBatchOutput>> FLOW_UPDATE_TRANSFORM =
-            new Function<RpcResult<List<BatchFailedFlowsOutput>>, RpcResult<UpdateFlowsBatchOutput>>() {
-                @Nullable
-                @Override
-                public RpcResult<UpdateFlowsBatchOutput> apply(@Nullable final RpcResult<List<BatchFailedFlowsOutput>> batchFlowsCumulativeResult) {
-                    final UpdateFlowsBatchOutput batchOutput = new UpdateFlowsBatchOutputBuilder()
-                            .setBatchFailedFlowsOutput(batchFlowsCumulativeResult.getResult()).build();
+    public static final Function<RpcResult<List<BatchFailedFlowsOutput>>,
+                                 RpcResult<UpdateFlowsBatchOutput>> FLOW_UPDATE_TRANSFORM =
+        new Function<RpcResult<List<BatchFailedFlowsOutput>>, RpcResult<UpdateFlowsBatchOutput>>() {
+            @Nullable
+            @Override
+            public RpcResult<UpdateFlowsBatchOutput> apply(
+                    @Nullable final RpcResult<List<BatchFailedFlowsOutput>> batchFlowsCumulativeResult) {
+                final UpdateFlowsBatchOutput batchOutput = new UpdateFlowsBatchOutputBuilder()
+                        .setBatchFailedFlowsOutput(batchFlowsCumulativeResult.getResult()).build();
 
-                    final RpcResultBuilder<UpdateFlowsBatchOutput> resultBld =
-                            createCumulativeRpcResult(batchFlowsCumulativeResult, batchOutput);
-                    return resultBld.build();
-                }
-            };
+                final RpcResultBuilder<UpdateFlowsBatchOutput> resultBld =
+                        createCumulativeRpcResult(batchFlowsCumulativeResult, batchOutput);
+                return resultBld.build();
+            }
+        };
 
     private FlowUtil() {
         throw new IllegalStateException("This class should not be instantiated.");
@@ -124,13 +134,12 @@ public final class FlowUtil {
      * Wrap given list of problematic flow-ids into {@link RpcResult} of given type.
      *
      * @param batchFlowsCumulativeResult list of ids failed flows
-     * @param batchOutput
-     * @param <T>                        flow operation type
+     * @param batchOutput flow operation type
      * @return batch flow operation output of given type containing list of flow-ids and corresponding success flag
      */
-    private static <T extends BatchFlowOutputListGrouping>
-    RpcResultBuilder<T> createCumulativeRpcResult(final @Nullable RpcResult<List<BatchFailedFlowsOutput>> batchFlowsCumulativeResult,
-                                                  final T batchOutput) {
+    private static <T extends BatchFlowOutputListGrouping> RpcResultBuilder<T> createCumulativeRpcResult(
+            final @Nullable RpcResult<List<BatchFailedFlowsOutput>> batchFlowsCumulativeResult,
+            final T batchOutput) {
         final RpcResultBuilder<T> resultBld;
         if (batchFlowsCumulativeResult.isSuccessful()) {
             resultBld = RpcResultBuilder.success(batchOutput);
@@ -153,7 +162,7 @@ public final class FlowUtil {
      */
     @VisibleForTesting
     static <T extends BatchFlowOutputListGrouping>
-    Function<Pair<RpcResult<T>, RpcResult<Void>>, RpcResult<T>> createComposingFunction() {
+        Function<Pair<RpcResult<T>, RpcResult<Void>>, RpcResult<T>> createComposingFunction() {
         return new Function<Pair<RpcResult<T>, RpcResult<Void>>, RpcResult<T>>() {
             @Nullable
             @Override
@@ -210,7 +219,7 @@ public final class FlowUtil {
     private static class CumulatingFunction<O> {
         private final List<? extends BatchFlowIdGrouping> inputBatchFlows;
 
-        public CumulatingFunction(List<? extends BatchFlowIdGrouping> inputBatchFlows) {
+        CumulatingFunction(List<? extends BatchFlowIdGrouping> inputBatchFlows) {
             this.inputBatchFlows = inputBatchFlows;
         }
 

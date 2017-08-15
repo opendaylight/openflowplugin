@@ -212,11 +212,13 @@ public final class FlatBatchUtil {
      * @param status RPC result status
      * @return ListenableFuture of RPC result with empty list of errors and batch failures
      */
-    public static ListenableFuture<RpcResult<ProcessFlatBatchOutput>> createEmptyRpcBatchResultFuture(final boolean status) {
+    public static ListenableFuture<RpcResult<ProcessFlatBatchOutput>> createEmptyRpcBatchResultFuture(
+            final boolean status) {
         return RpcResultBuilder.<ProcessFlatBatchOutput>status(status)
                                .withRpcErrors(new ArrayList<>())
-                               .withResult(new ProcessFlatBatchOutputBuilder().setBatchFailure(new ArrayList<>()).build())
+                               .withResult(new ProcessFlatBatchOutputBuilder()
+                                       .setBatchFailure(new ArrayList<>())
+                                       .build())
                                .buildFuture();
     }
-
 }

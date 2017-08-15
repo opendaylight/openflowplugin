@@ -34,67 +34,79 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.Up
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.batch.group.output.list.grouping.BatchFailedGroupsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.batch.group.output.list.grouping.BatchFailedGroupsOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionType;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionType;
 
 /**
- * provides group util methods
+ * Provides group util methods.
  */
 public final class GroupUtil {
 
     private static final RpcResultBuilder<List<BatchFailedGroupsOutput>> SUCCESSFUL_GROUP_OUTPUT_RPC_RESULT =
             RpcResultBuilder.success(Collections.<BatchFailedGroupsOutput>emptyList());
 
-    public static final Function<RpcResult<List<BatchFailedGroupsOutput>>, RpcResult<AddGroupsBatchOutput>> GROUP_ADD_TRANSFORM =
-            new Function<RpcResult<List<BatchFailedGroupsOutput>>, RpcResult<AddGroupsBatchOutput>>() {
-                @Nullable
-                @Override
-                public RpcResult<AddGroupsBatchOutput> apply(@Nullable final RpcResult<List<BatchFailedGroupsOutput>> batchGroupsCumulatedResult) {
-                    final AddGroupsBatchOutput batchOutput = new AddGroupsBatchOutputBuilder()
-                            .setBatchFailedGroupsOutput(batchGroupsCumulatedResult.getResult()).build();
+    public static final Function<RpcResult<List<BatchFailedGroupsOutput>>, RpcResult<AddGroupsBatchOutput>>
+        GROUP_ADD_TRANSFORM =
+        new Function<RpcResult<List<BatchFailedGroupsOutput>>, RpcResult<AddGroupsBatchOutput>>() {
+            @Nullable
+            @Override
+            public RpcResult<AddGroupsBatchOutput> apply(
+                    @Nullable final RpcResult<List<BatchFailedGroupsOutput>> batchGroupsCumulatedResult) {
+                final AddGroupsBatchOutput batchOutput = new AddGroupsBatchOutputBuilder()
+                        .setBatchFailedGroupsOutput(batchGroupsCumulatedResult.getResult()).build();
 
-                    final RpcResultBuilder<AddGroupsBatchOutput> resultBld =
-                            createCumulativeRpcResult(batchGroupsCumulatedResult, batchOutput);
-                    return resultBld.build();
-                }
-            };
-    public static final Function<Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<Void>>, RpcResult<AddGroupsBatchOutput>>
-            GROUP_ADD_COMPOSING_TRANSFORM = createComposingFunction();
+                final RpcResultBuilder<AddGroupsBatchOutput> resultBld =
+                        createCumulativeRpcResult(batchGroupsCumulatedResult, batchOutput);
+                return resultBld.build();
+            }
+        };
+    public static final Function<Pair<RpcResult<AddGroupsBatchOutput>,
+                                 RpcResult<Void>>,
+                                 RpcResult<AddGroupsBatchOutput>>
+        GROUP_ADD_COMPOSING_TRANSFORM = createComposingFunction();
 
-    public static final Function<RpcResult<List<BatchFailedGroupsOutput>>, RpcResult<RemoveGroupsBatchOutput>> GROUP_REMOVE_TRANSFORM =
-            new Function<RpcResult<List<BatchFailedGroupsOutput>>, RpcResult<RemoveGroupsBatchOutput>>() {
-                @Nullable
-                @Override
-                public RpcResult<RemoveGroupsBatchOutput> apply(@Nullable final RpcResult<List<BatchFailedGroupsOutput>> batchGroupsCumulatedResult) {
-                    final RemoveGroupsBatchOutput batchOutput = new RemoveGroupsBatchOutputBuilder()
-                            .setBatchFailedGroupsOutput(batchGroupsCumulatedResult.getResult()).build();
+    public static final Function<RpcResult<List<BatchFailedGroupsOutput>>, RpcResult<RemoveGroupsBatchOutput>>
+        GROUP_REMOVE_TRANSFORM =
+        new Function<RpcResult<List<BatchFailedGroupsOutput>>, RpcResult<RemoveGroupsBatchOutput>>() {
+            @Nullable
+            @Override
+            public RpcResult<RemoveGroupsBatchOutput> apply(
+                    @Nullable final RpcResult<List<BatchFailedGroupsOutput>> batchGroupsCumulatedResult) {
+                final RemoveGroupsBatchOutput batchOutput = new RemoveGroupsBatchOutputBuilder()
+                        .setBatchFailedGroupsOutput(batchGroupsCumulatedResult.getResult()).build();
 
-                    final RpcResultBuilder<RemoveGroupsBatchOutput> resultBld =
-                            createCumulativeRpcResult(batchGroupsCumulatedResult, batchOutput);
-                    return resultBld.build();
-                }
-            };
-    public static final Function<Pair<RpcResult<RemoveGroupsBatchOutput>, RpcResult<Void>>, RpcResult<RemoveGroupsBatchOutput>>
-            GROUP_REMOVE_COMPOSING_TRANSFORM = createComposingFunction();
+                final RpcResultBuilder<RemoveGroupsBatchOutput> resultBld =
+                        createCumulativeRpcResult(batchGroupsCumulatedResult, batchOutput);
+                return resultBld.build();
+            }
+        };
+    public static final Function<Pair<RpcResult<RemoveGroupsBatchOutput>,
+                                      RpcResult<Void>>,
+                                      RpcResult<RemoveGroupsBatchOutput>>
+        GROUP_REMOVE_COMPOSING_TRANSFORM = createComposingFunction();
 
-    public static final Function<RpcResult<List<BatchFailedGroupsOutput>>, RpcResult<UpdateGroupsBatchOutput>> GROUP_UPDATE_TRANSFORM =
-            new Function<RpcResult<List<BatchFailedGroupsOutput>>, RpcResult<UpdateGroupsBatchOutput>>() {
-                @Nullable
-                @Override
-                public RpcResult<UpdateGroupsBatchOutput> apply(@Nullable final RpcResult<List<BatchFailedGroupsOutput>> batchGroupsCumulatedResult) {
-                    final UpdateGroupsBatchOutput batchOutput = new UpdateGroupsBatchOutputBuilder()
-                            .setBatchFailedGroupsOutput(batchGroupsCumulatedResult.getResult()).build();
+    public static final Function<RpcResult<List<BatchFailedGroupsOutput>>, RpcResult<UpdateGroupsBatchOutput>>
+        GROUP_UPDATE_TRANSFORM =
+        new Function<RpcResult<List<BatchFailedGroupsOutput>>, RpcResult<UpdateGroupsBatchOutput>>() {
+            @Nullable
+            @Override
+            public RpcResult<UpdateGroupsBatchOutput> apply(
+                    @Nullable final RpcResult<List<BatchFailedGroupsOutput>> batchGroupsCumulatedResult) {
+                final UpdateGroupsBatchOutput batchOutput = new UpdateGroupsBatchOutputBuilder()
+                        .setBatchFailedGroupsOutput(batchGroupsCumulatedResult.getResult()).build();
 
-                    final RpcResultBuilder<UpdateGroupsBatchOutput> resultBld =
-                            createCumulativeRpcResult(batchGroupsCumulatedResult, batchOutput);
-                    return resultBld.build();
-                }
-            };
-    public static final Function<Pair<RpcResult<UpdateGroupsBatchOutput>, RpcResult<Void>>, RpcResult<UpdateGroupsBatchOutput>>
+                final RpcResultBuilder<UpdateGroupsBatchOutput> resultBld =
+                        createCumulativeRpcResult(batchGroupsCumulatedResult, batchOutput);
+                return resultBld.build();
+            }
+        };
+    public static final Function<Pair<RpcResult<UpdateGroupsBatchOutput>,
+                                      RpcResult<Void>>,
+                                      RpcResult<UpdateGroupsBatchOutput>>
             GROUP_UPDATE_COMPOSING_TRANSFORM = createComposingFunction();
 
     private GroupUtil() {
@@ -102,8 +114,9 @@ public final class GroupUtil {
     }
 
     /**
-     * @param nodePath
-     * @param groupId
+     * Method build the group path.
+     * @param nodePath - node path
+     * @param groupId - group Id
      * @return instance identifier assembled for given node and group
      */
     public static GroupRef buildGroupPath(final InstanceIdentifier<Node> nodePath, final GroupId groupId) {
@@ -115,25 +128,27 @@ public final class GroupUtil {
     }
 
     public static <O> Function<List<RpcResult<O>>, RpcResult<List<BatchFailedGroupsOutput>>> createCumulatingFunction(
-            final Iterable<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group> inputBatchGroups) {
+            final Iterable<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group>
+                    inputBatchGroups) {
         return createCumulatingFunction(inputBatchGroups, Iterables.size(inputBatchGroups));
     }
 
     public static <O> Function<List<RpcResult<O>>, RpcResult<List<BatchFailedGroupsOutput>>> createCumulatingFunction(
-            final Iterable<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group> inputBatchGroups,
-            final int sizeOfInputBatch) {
+            final Iterable<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group>
+                    inputBatchGroups, final int sizeOfInputBatch) {
         return new CumulatingFunction<O>(inputBatchGroups, sizeOfInputBatch).invoke();
     }
 
     /*
      * Method returns the bitmap of actions supported by each group.
      *
-     * @param actionsSupported
+     * @param actionsSupported - list of supported actions
      * @return
      */
     public static List<Long> extractGroupActionsSupportBitmap(final List<ActionType> actionsSupported) {
         List<Long> supportActionByGroups = new ArrayList<>();
-        for (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionType supportedActions : actionsSupported) {
+        for (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionType supportedActions
+                : actionsSupported) {
             long supportActionBitmap = 0;
             supportActionBitmap |= supportedActions.isOFPATOUTPUT() ? (1) : 0;
             supportActionBitmap |= supportedActions.isOFPATCOPYTTLOUT() ? (1 << 11) : 0;
@@ -166,8 +181,8 @@ public final class GroupUtil {
      * @return reusable static function
      */
     @VisibleForTesting
-    static <T extends BatchGroupOutputListGrouping>
-    Function<Pair<RpcResult<T>, RpcResult<Void>>, RpcResult<T>> createComposingFunction() {
+    static <T extends BatchGroupOutputListGrouping> Function<Pair<RpcResult<T>, RpcResult<Void>>, RpcResult<T>>
+        createComposingFunction() {
         return new Function<Pair<RpcResult<T>, RpcResult<Void>>, RpcResult<T>>() {
             @Nullable
             @Override
@@ -194,13 +209,12 @@ public final class GroupUtil {
      * Wrap given list of problematic group-ids into {@link RpcResult} of given type.
      *
      * @param batchGroupsCumulativeResult list of ids failed groups
-     * @param batchOutput
-     * @param <T>                         group operation type
+     * @param batchOutput group operation type
      * @return batch group operation output of given type containing list of group-ids and corresponding success flag
      */
-    private static <T extends BatchGroupOutputListGrouping>
-    RpcResultBuilder<T> createCumulativeRpcResult(@Nullable final RpcResult<List<BatchFailedGroupsOutput>> batchGroupsCumulativeResult,
-                                                  final T batchOutput) {
+    private static <T extends BatchGroupOutputListGrouping> RpcResultBuilder<T> createCumulativeRpcResult(
+        @Nullable
+        final RpcResult<List<BatchFailedGroupsOutput>> batchGroupsCumulativeResult, final T batchOutput) {
         final RpcResultBuilder<T> resultBld;
         if (batchGroupsCumulativeResult.isSuccessful()) {
             resultBld = RpcResultBuilder.success(batchOutput);
@@ -213,10 +227,13 @@ public final class GroupUtil {
     }
 
     private static class CumulatingFunction<O> {
-        private final Iterable<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group> inputBatchGroups;
+        private final Iterable<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group>
+                inputBatchGroups;
         private final int sizeOfInputBatch;
 
-        public CumulatingFunction(Iterable<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group> inputBatchGroups, int sizeOfInputBatch) {
+        CumulatingFunction(
+                Iterable<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group>
+                        inputBatchGroups, int sizeOfInputBatch) {
             this.inputBatchGroups = inputBatchGroups;
             this.sizeOfInputBatch = sizeOfInputBatch;
         }

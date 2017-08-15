@@ -14,7 +14,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
- * Purpose: utility class providing path and {@link InstanceIdentifier} tools
+ * Purpose: utility class providing path and {@link InstanceIdentifier} tools.
  */
 public class PathUtil {
     private PathUtil() {
@@ -22,7 +22,7 @@ public class PathUtil {
     }
 
     /**
-     * Extracts node id from instance identifier
+     * Extracts node id from instance identifier.
      * @param input instance identifier
      * @return node-id from given instance identifier
      */
@@ -31,7 +31,7 @@ public class PathUtil {
     }
 
     /**
-     * Extracts node id from node reference
+     * Extracts node id from node reference.
      * @param input reference to {@link Node}
      * @return node-id from given reference
      */
