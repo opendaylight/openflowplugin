@@ -41,68 +41,81 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 /**
- * provides meter util methods
+ * Provides meter util methods.
  */
 public final class MeterUtil {
 
     private static final RpcResultBuilder<List<BatchFailedMetersOutput>> SUCCESSFUL_METER_OUTPUT_RPC_RESULT =
             RpcResultBuilder.success(Collections.<BatchFailedMetersOutput>emptyList());
 
-    public static final Function<RpcResult<List<BatchFailedMetersOutput>>, RpcResult<AddMetersBatchOutput>> METER_ADD_TRANSFORM =
-            new Function<RpcResult<List<BatchFailedMetersOutput>>, RpcResult<AddMetersBatchOutput>>() {
-                @Nullable
-                @Override
-                public RpcResult<AddMetersBatchOutput> apply(@Nullable final RpcResult<List<BatchFailedMetersOutput>> batchMetersCumulatedResult) {
-                    final AddMetersBatchOutput batchOutput = new AddMetersBatchOutputBuilder()
-                            .setBatchFailedMetersOutput(batchMetersCumulatedResult.getResult()).build();
+    public static final Function<RpcResult<List<BatchFailedMetersOutput>>, RpcResult<AddMetersBatchOutput>>
+        METER_ADD_TRANSFORM =
+        new Function<RpcResult<List<BatchFailedMetersOutput>>, RpcResult<AddMetersBatchOutput>>() {
+            @Nullable
+            @Override
+            public RpcResult<AddMetersBatchOutput> apply(
+                    @Nullable final RpcResult<List<BatchFailedMetersOutput>> batchMetersCumulatedResult) {
+                final AddMetersBatchOutput batchOutput = new AddMetersBatchOutputBuilder()
+                        .setBatchFailedMetersOutput(batchMetersCumulatedResult.getResult()).build();
 
-                    final RpcResultBuilder<AddMetersBatchOutput> resultBld =
-                            createCumulativeRpcResult(batchMetersCumulatedResult, batchOutput);
-                    return resultBld.build();
-                }
-            };
-    public static final Function<Pair<RpcResult<AddMetersBatchOutput>, RpcResult<Void>>, RpcResult<AddMetersBatchOutput>>
-            METER_ADD_COMPOSING_TRANSFORM = createComposingFunction();
+                final RpcResultBuilder<AddMetersBatchOutput> resultBld =
+                        createCumulativeRpcResult(batchMetersCumulatedResult, batchOutput);
+                return resultBld.build();
+            }
+        };
+    public static final Function<Pair<RpcResult<AddMetersBatchOutput>,
+                                      RpcResult<Void>>,
+                                      RpcResult<AddMetersBatchOutput>>
+        METER_ADD_COMPOSING_TRANSFORM = createComposingFunction();
 
-    public static final Function<RpcResult<List<BatchFailedMetersOutput>>, RpcResult<RemoveMetersBatchOutput>> METER_REMOVE_TRANSFORM =
-            new Function<RpcResult<List<BatchFailedMetersOutput>>, RpcResult<RemoveMetersBatchOutput>>() {
-                @Nullable
-                @Override
-                public RpcResult<RemoveMetersBatchOutput> apply(@Nullable final RpcResult<List<BatchFailedMetersOutput>> batchMetersCumulatedResult) {
-                    final RemoveMetersBatchOutput batchOutput = new RemoveMetersBatchOutputBuilder()
-                            .setBatchFailedMetersOutput(batchMetersCumulatedResult.getResult()).build();
+    public static final Function<RpcResult<List<BatchFailedMetersOutput>>, RpcResult<RemoveMetersBatchOutput>>
+        METER_REMOVE_TRANSFORM =
+        new Function<RpcResult<List<BatchFailedMetersOutput>>, RpcResult<RemoveMetersBatchOutput>>() {
+            @Nullable
+            @Override
+            public RpcResult<RemoveMetersBatchOutput> apply(
+                    @Nullable final RpcResult<List<BatchFailedMetersOutput>> batchMetersCumulatedResult) {
+                final RemoveMetersBatchOutput batchOutput = new RemoveMetersBatchOutputBuilder()
+                        .setBatchFailedMetersOutput(batchMetersCumulatedResult.getResult()).build();
 
-                    final RpcResultBuilder<RemoveMetersBatchOutput> resultBld =
-                            createCumulativeRpcResult(batchMetersCumulatedResult, batchOutput);
-                    return resultBld.build();
-                }
-            };
-    public static final Function<Pair<RpcResult<RemoveMetersBatchOutput>, RpcResult<Void>>, RpcResult<RemoveMetersBatchOutput>>
-            METER_REMOVE_COMPOSING_TRANSFORM = createComposingFunction();
+                final RpcResultBuilder<RemoveMetersBatchOutput> resultBld =
+                        createCumulativeRpcResult(batchMetersCumulatedResult, batchOutput);
+                return resultBld.build();
+            }
+        };
+    public static final Function<Pair<RpcResult<RemoveMetersBatchOutput>,
+                                      RpcResult<Void>>,
+                                      RpcResult<RemoveMetersBatchOutput>>
+        METER_REMOVE_COMPOSING_TRANSFORM = createComposingFunction();
 
-    public static final Function<RpcResult<List<BatchFailedMetersOutput>>, RpcResult<UpdateMetersBatchOutput>> METER_UPDATE_TRANSFORM =
-            new Function<RpcResult<List<BatchFailedMetersOutput>>, RpcResult<UpdateMetersBatchOutput>>() {
-                @Nullable
-                @Override
-                public RpcResult<UpdateMetersBatchOutput> apply(@Nullable final RpcResult<List<BatchFailedMetersOutput>> batchMetersCumulatedResult) {
-                    final UpdateMetersBatchOutput batchOutput = new UpdateMetersBatchOutputBuilder()
-                            .setBatchFailedMetersOutput(batchMetersCumulatedResult.getResult()).build();
+    public static final Function<RpcResult<List<BatchFailedMetersOutput>>, RpcResult<UpdateMetersBatchOutput>>
+        METER_UPDATE_TRANSFORM =
+        new Function<RpcResult<List<BatchFailedMetersOutput>>, RpcResult<UpdateMetersBatchOutput>>() {
+            @Nullable
+            @Override
+            public RpcResult<UpdateMetersBatchOutput> apply(
+                    @Nullable final RpcResult<List<BatchFailedMetersOutput>> batchMetersCumulatedResult) {
+                final UpdateMetersBatchOutput batchOutput = new UpdateMetersBatchOutputBuilder()
+                        .setBatchFailedMetersOutput(batchMetersCumulatedResult.getResult()).build();
 
-                    final RpcResultBuilder<UpdateMetersBatchOutput> resultBld =
-                            createCumulativeRpcResult(batchMetersCumulatedResult, batchOutput);
-                    return resultBld.build();
-                }
-            };
-    public static final Function<Pair<RpcResult<UpdateMetersBatchOutput>, RpcResult<Void>>, RpcResult<UpdateMetersBatchOutput>>
-            METER_UPDATE_COMPOSING_TRANSFORM = createComposingFunction();
+                final RpcResultBuilder<UpdateMetersBatchOutput> resultBld =
+                        createCumulativeRpcResult(batchMetersCumulatedResult, batchOutput);
+                return resultBld.build();
+            }
+        };
+    public static final Function<Pair<RpcResult<UpdateMetersBatchOutput>,
+                                      RpcResult<Void>>,
+                                      RpcResult<UpdateMetersBatchOutput>>
+        METER_UPDATE_COMPOSING_TRANSFORM = createComposingFunction();
 
     private MeterUtil() {
         throw new IllegalStateException("This class should not be instantiated.");
     }
 
     /**
-     * @param nodePath
-     * @param meterId
+     * Create meter path.
+     * @param nodePath node path
+     * @param meterId meter Id
      * @return instance identifier assembled for given node and meter
      */
     public static MeterRef buildMeterPath(final InstanceIdentifier<Node> nodePath, final MeterId meterId) {
@@ -114,12 +127,14 @@ public final class MeterUtil {
     }
 
     public static <O> Function<List<RpcResult<O>>, RpcResult<List<BatchFailedMetersOutput>>> createCumulativeFunction(
-            final Iterable<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter> inputBatchMeters) {
+            final Iterable<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter>
+                    inputBatchMeters) {
         return createCumulativeFunction(inputBatchMeters, Iterables.size(inputBatchMeters));
     }
 
     public static <O> Function<List<RpcResult<O>>, RpcResult<List<BatchFailedMetersOutput>>> createCumulativeFunction(
-            final Iterable<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter> inputBatchMeters,
+            final Iterable<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter>
+                    inputBatchMeters,
             final int sizeOfInputBatch) {
         return new CumulativeFunction<O>(inputBatchMeters, sizeOfInputBatch).invoke();
     }
@@ -135,7 +150,7 @@ public final class MeterUtil {
      */
     @VisibleForTesting
     static <T extends BatchMeterOutputListGrouping>
-    Function<Pair<RpcResult<T>, RpcResult<Void>>, RpcResult<T>> createComposingFunction() {
+        Function<Pair<RpcResult<T>, RpcResult<Void>>, RpcResult<T>> createComposingFunction() {
         return new Function<Pair<RpcResult<T>, RpcResult<Void>>, RpcResult<T>>() {
             @Nullable
             @Override
@@ -162,13 +177,13 @@ public final class MeterUtil {
      * Wrap given list of problematic group-ids into {@link RpcResult} of given type.
      *
      * @param batchMetersCumulativeResult list of ids failed groups
-     * @param batchOutput
-     * @param <T>                         group operation type
+     * @param batchOutput group operation type
      * @return batch group operation output of given type containing list of group-ids and corresponding success flag
      */
     private static <T extends BatchMeterOutputListGrouping>
-    RpcResultBuilder<T> createCumulativeRpcResult(final @Nullable RpcResult<List<BatchFailedMetersOutput>> batchMetersCumulativeResult,
-                                                  final T batchOutput) {
+        RpcResultBuilder<T> createCumulativeRpcResult(
+            final @Nullable RpcResult<List<BatchFailedMetersOutput>> batchMetersCumulativeResult,
+            final T batchOutput) {
         final RpcResultBuilder<T> resultBld;
         if (batchMetersCumulativeResult.isSuccessful()) {
             resultBld = RpcResultBuilder.success(batchOutput);
@@ -181,10 +196,13 @@ public final class MeterUtil {
     }
 
     private static class CumulativeFunction<O> {
-        private final Iterable<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter> inputBatchMeters;
+        private final Iterable<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter>
+                inputBatchMeters;
         private final int sizeOfInputBatch;
 
-        public CumulativeFunction(Iterable<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter> inputBatchMeters, int sizeOfInputBatch) {
+        CumulativeFunction(
+                Iterable<? extends org.opendaylight.yang.gen.v1.urn
+                        .opendaylight.meter.types.rev130918.Meter> inputBatchMeters, int sizeOfInputBatch) {
             this.inputBatchMeters = inputBatchMeters;
             this.sizeOfInputBatch = sizeOfInputBatch;
         }

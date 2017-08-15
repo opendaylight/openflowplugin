@@ -54,7 +54,8 @@ public class DeviceStateUtilTest {
 
     @Test
     public void setDeviceStateBasedOnV10CapabilitiesTest() {
-        CapabilitiesV10 dummyCapabilitiesV10 = new CapabilitiesV10(false, false, false, false, false, false, false, false);
+        CapabilitiesV10 dummyCapabilitiesV10 =
+                new CapabilitiesV10(false, false, false, false, false, false, false, false);
 
         DeviceStateUtil.setDeviceStateBasedOnV10Capabilities(mockedDeviceState, dummyCapabilitiesV10);
         verify(mockedDeviceState).setFlowStatisticsAvailable(false);

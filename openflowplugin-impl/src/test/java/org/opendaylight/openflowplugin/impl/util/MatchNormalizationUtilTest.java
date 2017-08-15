@@ -97,8 +97,10 @@ public class MatchNormalizationUtilTest {
                         .setTunnelIpv4Destination(new Ipv4Prefix(destination))
                         .build()));
 
-        assertEquals("192.168.1.0/24", TunnelIpv4Match.class.cast(matchBuilder.getLayer3Match()).getTunnelIpv4Source().getValue());
-        assertEquals("192.168.2.0/24", TunnelIpv4Match.class.cast(matchBuilder.getLayer3Match()).getTunnelIpv4Destination().getValue());
+        assertEquals("192.168.1.0/24",
+                TunnelIpv4Match.class.cast(matchBuilder.getLayer3Match()).getTunnelIpv4Source().getValue());
+        assertEquals("192.168.2.0/24",
+                TunnelIpv4Match.class.cast(matchBuilder.getLayer3Match()).getTunnelIpv4Destination().getValue());
     }
 
     @Test
@@ -113,7 +115,8 @@ public class MatchNormalizationUtilTest {
                         .build()));
 
         assertEquals("192.168.1.0/24", Ipv4Match.class.cast(matchBuilder.getLayer3Match()).getIpv4Source().getValue());
-        assertEquals("192.168.2.0/24", Ipv4Match.class.cast(matchBuilder.getLayer3Match()).getIpv4Destination().getValue());
+        assertEquals("192.168.2.0/24",
+                Ipv4Match.class.cast(matchBuilder.getLayer3Match()).getIpv4Destination().getValue());
     }
 
     @Test
