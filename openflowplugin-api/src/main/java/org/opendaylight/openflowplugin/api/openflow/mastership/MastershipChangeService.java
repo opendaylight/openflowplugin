@@ -21,7 +21,6 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.OwnershipChangeLis
  * </ul>
  * There is no need to have two different method for slave or disconnect because application just have to stop working
  * with the device in both cases.
- * <p>
  * @since 0.5.0 Nitrogen
  */
 public interface MastershipChangeService extends AutoCloseable {
