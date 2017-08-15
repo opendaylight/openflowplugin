@@ -15,7 +15,6 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainStateListener;
-import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 
@@ -50,30 +49,18 @@ public interface DeviceContext extends
 
     /**
      * Getter.
-     *
      * @return current devices connection context
      */
     ConnectionContext getPrimaryConnectionContext();
 
     /**
      * Getter.
-     *
      * @return translator library
      */
     TranslatorLibrary oook();
 
-    /**
-     * Sets notification publish service.
-     *
-     * @param notificationPublishService the notification publish service
-     */
     void setNotificationPublishService(NotificationPublishService notificationPublishService);
 
-    /**
-     * Gets message spy.
-     *
-     * @return the message spy
-     */
     MessageSpy getMessageSpy();
 
     /**
@@ -95,12 +82,6 @@ public interface DeviceContext extends
      * @param upperBound max amount of outstanding packetIns
      */
     void updatePacketInRateLimit(long upperBound);
-
-    /**
-     * Getter.
-     * @return registry point for item life cycle sources of device
-     */
-    ItemLifeCycleRegistry getItemLifeCycleSourceRegistry();
 
     /**
      * Checks if device and controller supports single layer serialization.

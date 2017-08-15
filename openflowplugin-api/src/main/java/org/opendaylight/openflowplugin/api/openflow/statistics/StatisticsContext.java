@@ -15,7 +15,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.OwnershipChangeListener;
-import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
+
 
 /**
  * Context for statistics.
@@ -43,12 +43,6 @@ public interface StatisticsContext extends RequestContextStack, OFPContext {
      * @param pollTimeout handle to nearest scheduled statistics poll
      */
     void setPollTimeout(Timeout pollTimeout);
-
-    /**
-     * Getter.
-     * @return dedicated item life cycle change listener (per device)
-     */
-    ItemLifecycleListener getItemLifeCycleListener();
 
     /**
      * On / Off scheduling.
