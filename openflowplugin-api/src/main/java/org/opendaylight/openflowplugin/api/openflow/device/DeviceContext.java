@@ -17,7 +17,6 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainStateListener;
-import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
@@ -81,12 +80,6 @@ public interface DeviceContext extends
      * @param upperBound max amount of outstanding packetIns
      */
     void updatePacketInRateLimit(long upperBound);
-
-    /**
-     * Getter.
-     * @return registry point for item life cycle sources of device
-     */
-    ItemLifeCycleRegistry getItemLifeCycleSourceRegistry();
 
     /**
      * Setter for sal role service.
