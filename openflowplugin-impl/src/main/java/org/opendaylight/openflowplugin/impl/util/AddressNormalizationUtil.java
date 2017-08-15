@@ -69,7 +69,8 @@ public class AddressNormalizationUtil {
         }
 
         final byte[] address = IetfInetUtil.INSTANCE.ipv6AddressBytes(IpConversionUtil.extractIpv6Address(ipv6Prefix));
-        final byte[] mask = IpConversionUtil.convertIpv6PrefixToByteArray(IpConversionUtil.extractIpv6Prefix(ipv6Prefix));
+        final byte[] mask =
+                IpConversionUtil.convertIpv6PrefixToByteArray(IpConversionUtil.extractIpv6Prefix(ipv6Prefix));
         return normalizeIpv6Address(address, mask);
     }
 
@@ -81,7 +82,8 @@ public class AddressNormalizationUtil {
      * @return normalized Ipv6 prefix
      */
     @Nullable
-    public static Ipv6Prefix normalizeIpv6Arbitrary(@Nullable final Ipv6Address ipv6Address, @Nullable final Ipv6ArbitraryMask ipv4Mask) {
+    public static Ipv6Prefix normalizeIpv6Arbitrary(@Nullable final Ipv6Address ipv6Address,
+                                                    @Nullable final Ipv6ArbitraryMask ipv4Mask) {
         if (Objects.isNull(ipv6Address)) {
             return null;
         }
@@ -118,7 +120,8 @@ public class AddressNormalizationUtil {
         }
 
         final byte[] address = IetfInetUtil.INSTANCE.ipv4AddressBytes(IpConversionUtil.extractIpv4Address(ipv4Prefix));
-        final byte[] mask = IpConversionUtil.convertArbitraryMaskToByteArray(IpConversionUtil.extractIpv4AddressMask(ipv4Prefix));
+        final byte[] mask =
+                IpConversionUtil.convertArbitraryMaskToByteArray(IpConversionUtil.extractIpv4AddressMask(ipv4Prefix));
         return normalizeIpv4Address(address, mask);
     }
 
@@ -130,7 +133,8 @@ public class AddressNormalizationUtil {
      * @return normalized Ipv4 prefix
      */
     @Nullable
-    public static Ipv4Prefix normalizeIpv4Arbitrary(@Nullable final Ipv4Address ipv4Address, @Nullable final DottedQuad ipv4Mask) {
+    public static Ipv4Prefix normalizeIpv4Arbitrary(@Nullable final Ipv4Address ipv4Address,
+                                                    @Nullable final DottedQuad ipv4Mask) {
         if (Objects.isNull(ipv4Address)) {
             return null;
         }
@@ -193,9 +197,9 @@ public class AddressNormalizationUtil {
         final byte[] result = new byte[address.length];
 
         for (int i = 0; i < address.length; i++) {
-            result[i] = Objects.nonNull(mask) ?
-                    (byte) (address[i] & mask[i]) :
-                    address[i];
+            result[i] = Objects.nonNull(mask)
+                    ? (byte) (address[i] & mask[i])
+                    : address[i];
         }
 
         try {
@@ -207,26 +211,27 @@ public class AddressNormalizationUtil {
     }
 
     /**
-     * Convert arbitrary mask to prefix mask and append it to textual representation of Inet address
+     * Convert arbitrary mask to prefix mask and append it to textual representation of Inet address.
      *
      * @param address the address
      * @param mask    the mask
      * @return the string
      */
     @Nullable
-    public static String normalizeInetAddressWithMask(@Nullable final InetAddress address, @Nullable final byte[] mask) {
+    public static String normalizeInetAddressWithMask(@Nullable final InetAddress address,
+                                                      @Nullable final byte[] mask) {
         if (Objects.isNull(address)) {
             return null;
         }
 
-        return address.getHostAddress() +
-                (Objects.nonNull(mask)
+        return address.getHostAddress()
+                + (Objects.nonNull(mask)
                         ? PREFIX_SEPARATOR + String.valueOf(IpConversionUtil.countBits(mask))
                         : "");
     }
 
     /**
-     * Convert MAC address to it's lower case format
+     * Convert MAC address to it's lower case format.
      *
      * @param macAddress the MAC address
      * @return normalized MAC address
@@ -241,7 +246,7 @@ public class AddressNormalizationUtil {
     }
 
     /**
-     * Convert MAC address mask to it's lower case format and if it is full F mask, return null
+     * Convert MAC address mask to it's lower case format and if it is full F mask, return null.
      *
      * @param macAddress the MAC address
      * @return normalized MAC address

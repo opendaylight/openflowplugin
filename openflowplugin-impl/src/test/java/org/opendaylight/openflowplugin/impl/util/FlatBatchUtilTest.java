@@ -122,7 +122,9 @@ public class FlatBatchUtilTest {
         FlatBatchUtil.markBarriersWhereNeeded(batchPlan);
         LOG.debug("checking barrier between {} / {}", typeOfFirst, typeOfSecond);
         Assert.assertEquals(2, batchPlan.size());
-        Assert.assertTrue("barrier expected between " + typeOfFirst + " / " + typeOfSecond, batchPlan.get(0).isBarrierAfter());
+        Assert.assertTrue("barrier expected between "
+                + typeOfFirst + " / "
+                + typeOfSecond, batchPlan.get(0).isBarrierAfter());
         Assert.assertFalse(batchPlan.get(1).isBarrierAfter());
     }
 
@@ -145,14 +147,18 @@ public class FlatBatchUtilTest {
         Assert.assertTrue(FlatBatchUtil.decideBarrier(EnumSet.of(BatchStepType.GROUP_ADD), BatchStepType.FLOW_ADD));
         Assert.assertTrue(FlatBatchUtil.decideBarrier(EnumSet.of(BatchStepType.GROUP_ADD), BatchStepType.FLOW_UPDATE));
 
-        Assert.assertTrue(FlatBatchUtil.decideBarrier(EnumSet.of(BatchStepType.FLOW_REMOVE), BatchStepType.GROUP_REMOVE));
-        Assert.assertTrue(FlatBatchUtil.decideBarrier(EnumSet.of(BatchStepType.FLOW_UPDATE), BatchStepType.GROUP_REMOVE));
+        Assert.assertTrue(FlatBatchUtil
+                .decideBarrier(EnumSet.of(BatchStepType.FLOW_REMOVE), BatchStepType.GROUP_REMOVE));
+        Assert.assertTrue(FlatBatchUtil
+                .decideBarrier(EnumSet.of(BatchStepType.FLOW_UPDATE), BatchStepType.GROUP_REMOVE));
 
         Assert.assertTrue(FlatBatchUtil.decideBarrier(EnumSet.of(BatchStepType.METER_ADD), BatchStepType.FLOW_ADD));
         Assert.assertTrue(FlatBatchUtil.decideBarrier(EnumSet.of(BatchStepType.METER_ADD), BatchStepType.FLOW_UPDATE));
 
-        Assert.assertTrue(FlatBatchUtil.decideBarrier(EnumSet.of(BatchStepType.FLOW_REMOVE), BatchStepType.METER_REMOVE));
-        Assert.assertTrue(FlatBatchUtil.decideBarrier(EnumSet.of(BatchStepType.FLOW_UPDATE), BatchStepType.METER_REMOVE));
+        Assert.assertTrue(FlatBatchUtil
+                .decideBarrier(EnumSet.of(BatchStepType.FLOW_REMOVE), BatchStepType.METER_REMOVE));
+        Assert.assertTrue(FlatBatchUtil
+                .decideBarrier(EnumSet.of(BatchStepType.FLOW_UPDATE), BatchStepType.METER_REMOVE));
     }
 
     @Test
@@ -168,12 +174,12 @@ public class FlatBatchUtilTest {
         final List<BatchPlanStep> batchPlanSteps = FlatBatchUtil.assembleBatchPlan(batches);
         Assert.assertEquals(5, batchPlanSteps.size());
 
-        int i = 0;
-        checkSegment(batchPlanSteps.get(i++), BatchStepType.GROUP_ADD, 1);
-        checkSegment(batchPlanSteps.get(i++), BatchStepType.GROUP_REMOVE, 2);
-        checkSegment(batchPlanSteps.get(i++), BatchStepType.GROUP_REMOVE, 1);
-        checkSegment(batchPlanSteps.get(i++), BatchStepType.GROUP_ADD, 1);
-        checkSegment(batchPlanSteps.get(i++), BatchStepType.GROUP_UPDATE, 3);
+        int index = 0;
+        checkSegment(batchPlanSteps.get(index++), BatchStepType.GROUP_ADD, 1);
+        checkSegment(batchPlanSteps.get(index++), BatchStepType.GROUP_REMOVE, 2);
+        checkSegment(batchPlanSteps.get(index++), BatchStepType.GROUP_REMOVE, 1);
+        checkSegment(batchPlanSteps.get(index++), BatchStepType.GROUP_ADD, 1);
+        checkSegment(batchPlanSteps.get(index++), BatchStepType.GROUP_UPDATE, 3);
     }
 
     private void checkSegment(final BatchPlanStep planStep, final BatchStepType stepType, final int expected) {
@@ -270,7 +276,8 @@ public class FlatBatchUtilTest {
                         .build())
                 .build();
 
-        final ProcessFlatBatchOutput output = new ProcessFlatBatchOutputBuilder().setBatchFailure(Lists.newArrayList(batchFailure)).build();
+        final ProcessFlatBatchOutput output
+                = new ProcessFlatBatchOutputBuilder().setBatchFailure(Lists.newArrayList(batchFailure)).build();
 
         final RpcResult<ProcessFlatBatchOutput> rpcResultFailed = RpcResultBuilder.<ProcessFlatBatchOutput>failed()
                 .withError(RpcError.ErrorType.APPLICATION, "ut-rpcError")
@@ -278,15 +285,18 @@ public class FlatBatchUtilTest {
         final RpcResult<ProcessFlatBatchOutput> rpcResultSuccess = RpcResultBuilder.<ProcessFlatBatchOutput>success()
                 .withResult(new ProcessFlatBatchOutputBuilder().setBatchFailure(new ArrayList<>())).build();
 
-        final RpcResult<ProcessFlatBatchOutput> rpcResult1 = FlatBatchUtil.mergeRpcResults().apply(Lists.newArrayList(rpcResultFailed, rpcResultSuccess));
+        final RpcResult<ProcessFlatBatchOutput> rpcResult1
+                = FlatBatchUtil.mergeRpcResults().apply(Lists.newArrayList(rpcResultFailed, rpcResultSuccess));
         Assert.assertEquals(1, rpcResult1.getErrors().size());
         Assert.assertFalse(rpcResult1.isSuccessful());
 
-        final RpcResult<ProcessFlatBatchOutput> rpcResult2 = FlatBatchUtil.mergeRpcResults().apply(Lists.newArrayList(rpcResultFailed, rpcResultFailed));
+        final RpcResult<ProcessFlatBatchOutput> rpcResult2
+                = FlatBatchUtil.mergeRpcResults().apply(Lists.newArrayList(rpcResultFailed, rpcResultFailed));
         Assert.assertEquals(2, rpcResult2.getErrors().size());
         Assert.assertFalse(rpcResult2.isSuccessful());
 
-        final RpcResult<ProcessFlatBatchOutput> rpcResult3 = FlatBatchUtil.mergeRpcResults().apply(Lists.newArrayList(rpcResultSuccess, rpcResultSuccess));
+        final RpcResult<ProcessFlatBatchOutput> rpcResult3
+                = FlatBatchUtil.mergeRpcResults().apply(Lists.newArrayList(rpcResultSuccess, rpcResultSuccess));
         Assert.assertEquals(0, rpcResult3.getErrors().size());
         Assert.assertTrue(rpcResult3.isSuccessful());
     }

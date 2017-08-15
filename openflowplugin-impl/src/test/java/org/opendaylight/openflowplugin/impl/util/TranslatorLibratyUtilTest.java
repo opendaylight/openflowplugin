@@ -55,30 +55,30 @@ public class TranslatorLibratyUtilTest {
         TranslatorLibrary translatorLibrary = translatorLibrarian.oook();
 
         TranslatorKeyFactory of13TranslatorKeyFactory = new TranslatorKeyFactory(OFP_VERSION_1_3);
-        TranslatorKeyFactory of10TranslatorKeyFactory = new TranslatorKeyFactory(OFP_VERSION_1_0);
 
         MessageTranslator<Object, Object> translator;
-        translator = translatorLibrary.lookupTranslator(of13TranslatorKeyFactory
-                .createTranslatorKey(PacketIn.class));
+        translator = translatorLibrary.lookupTranslator(of13TranslatorKeyFactory.createTranslatorKey(PacketIn.class));
         assertNotNull(translator);
 
-        translator = translatorLibrary.lookupTranslator(of13TranslatorKeyFactory.createTranslatorKey(PortGrouping
-                .class));
+        translator = translatorLibrary
+                .lookupTranslator(of13TranslatorKeyFactory.createTranslatorKey(PortGrouping.class));
         assertNotNull(translator);
 
-        translator = translatorLibrary.lookupTranslator(of13TranslatorKeyFactory.createTranslatorKey
-                (MultipartReplyAggregateCase
-                .class));
+        translator = translatorLibrary
+                .lookupTranslator(of13TranslatorKeyFactory.createTranslatorKey(MultipartReplyAggregateCase.class));
         assertNotNull(translator);
+
+        TranslatorKeyFactory of10TranslatorKeyFactory = new TranslatorKeyFactory(OFP_VERSION_1_0);
 
         translator = translatorLibrary.lookupTranslator(of10TranslatorKeyFactory.createTranslatorKey(PacketIn.class));
         assertNotNull(translator);
 
-        translator = translatorLibrary.lookupTranslator(of10TranslatorKeyFactory.createTranslatorKey(PortGrouping.class));
+        translator = translatorLibrary
+                .lookupTranslator(of10TranslatorKeyFactory.createTranslatorKey(PortGrouping.class));
         assertNotNull(translator);
 
-        translator = translatorLibrary.lookupTranslator(of10TranslatorKeyFactory.createTranslatorKey(MultipartReplyAggregateCase
-                .class));
+        translator = translatorLibrary
+                .lookupTranslator(of10TranslatorKeyFactory.createTranslatorKey(MultipartReplyAggregateCase.class));
         assertNotNull(translator);
     }
 
