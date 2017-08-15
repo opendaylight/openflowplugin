@@ -11,7 +11,6 @@ import javax.annotation.Nonnull;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
-import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationProperty;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
 
@@ -61,7 +60,8 @@ public interface ContextChain extends ClusterSingletonService, AutoCloseable {
 
     /**
      * Check all needed to be master except the device is written into data store.
-     * Using by reconciliation framework. Used only if {@link OwnershipChangeListener#isReconciliationFrameworkRegistered()}
+     * Using by reconciliation framework.
+     * Used only if {@link OwnershipChangeListener#isReconciliationFrameworkRegistered()}
      * is set to {@link Boolean#TRUE}.
      * @return true if all is set but not submitted txChain
      * @since 0.5.0 Nitrogen
