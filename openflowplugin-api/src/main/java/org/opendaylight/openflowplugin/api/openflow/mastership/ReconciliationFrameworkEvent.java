@@ -23,9 +23,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
  *     <li><i>{@link #onDevicePrepared(DeviceInfo)}</i>
  *     is called when device is disconnected or controller loses control of the switch</li>
  * </ul>
- * <p>
- * <b>This event <i>onDevicePrepared</i> should be used only for reconciliation framework and application can't do anything with
- * node before the device is not stored in to data store.</b>
+ * <b>This event <i>onDevicePrepared</i> should be used only for reconciliation framework
+ * and application can't do anything with node before the device is not stored in to data store.</b>
  * @since 0.5.0 Nitrogen
  */
 
