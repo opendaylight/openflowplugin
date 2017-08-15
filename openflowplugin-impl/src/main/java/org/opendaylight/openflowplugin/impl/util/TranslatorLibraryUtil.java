@@ -24,9 +24,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyAggregateCase;
 
-/**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 3.4.2015.
- */
 public final class TranslatorLibraryUtil {
 
 
@@ -34,21 +31,31 @@ public final class TranslatorLibraryUtil {
         throw new IllegalStateException("This class should not be instantiated");
     }
 
-    private static final TranslatorKeyFactory of13TranslatorKeyFactory = new TranslatorKeyFactory(OFConstants.OFP_VERSION_1_3);
-    private static final TranslatorKeyFactory of10TranslatorKeyFactory = new TranslatorKeyFactory(OFConstants.OFP_VERSION_1_0);
+    private static final TranslatorKeyFactory OF_13_TRANSLATOR_KEY_FACTORY =
+            new TranslatorKeyFactory(OFConstants.OFP_VERSION_1_3);
+    private static final TranslatorKeyFactory OF_10_TRANSLATOR_KEY_FACTORY =
+            new TranslatorKeyFactory(OFConstants.OFP_VERSION_1_0);
 
-    public static void injectBasicTranslatorLibrary(final TranslatorLibrarian librarian, final ConvertorExecutor convertorExecutor) {
-        final TranslatorLibrary basicTranslatorLibrary = new TranslatorLibraryBuilder().
-                addTranslator(of13TranslatorKeyFactory.createTranslatorKey(PacketIn.class), new PacketReceivedTranslator(convertorExecutor)).
-                addTranslator(of13TranslatorKeyFactory.createTranslatorKey(PortGrouping.class), new PortUpdateTranslator()).
-                addTranslator(of13TranslatorKeyFactory.createTranslatorKey(MultipartReplyAggregateCase.class), new AggregatedFlowStatisticsTranslator()).
-                addTranslator(of13TranslatorKeyFactory.createTranslatorKey(FlowRemoved.class), new FlowRemovedTranslator(convertorExecutor)).
-                addTranslator(of10TranslatorKeyFactory.createTranslatorKey(PacketIn.class), new PacketReceivedTranslator(convertorExecutor)).
-                addTranslator(of10TranslatorKeyFactory.createTranslatorKey(PortGrouping.class), new PortUpdateTranslator()).
-                addTranslator(of10TranslatorKeyFactory.createTranslatorKey(MultipartReplyAggregateCase.class), new AggregatedFlowStatisticsTranslator()).
-                addTranslator(of10TranslatorKeyFactory.createTranslatorKey(FlowRemoved.class), new FlowRemovedV10Translator(convertorExecutor)).
-
-                build();
+    public static void injectBasicTranslatorLibrary(final TranslatorLibrarian librarian,
+                                                    final ConvertorExecutor convertorExecutor) {
+        final TranslatorLibrary basicTranslatorLibrary = new TranslatorLibraryBuilder()
+                .addTranslator(OF_13_TRANSLATOR_KEY_FACTORY.createTranslatorKey(PacketIn.class),
+                        new PacketReceivedTranslator(convertorExecutor))
+                .addTranslator(OF_13_TRANSLATOR_KEY_FACTORY.createTranslatorKey(PortGrouping.class),
+                        new PortUpdateTranslator())
+                .addTranslator(OF_13_TRANSLATOR_KEY_FACTORY.createTranslatorKey(MultipartReplyAggregateCase.class),
+                        new AggregatedFlowStatisticsTranslator())
+                .addTranslator(OF_13_TRANSLATOR_KEY_FACTORY.createTranslatorKey(FlowRemoved.class),
+                        new FlowRemovedTranslator(convertorExecutor))
+                .addTranslator(OF_10_TRANSLATOR_KEY_FACTORY.createTranslatorKey(PacketIn.class),
+                        new PacketReceivedTranslator(convertorExecutor))
+                .addTranslator(OF_10_TRANSLATOR_KEY_FACTORY.createTranslatorKey(PortGrouping.class),
+                        new PortUpdateTranslator())
+                .addTranslator(OF_10_TRANSLATOR_KEY_FACTORY.createTranslatorKey(MultipartReplyAggregateCase.class),
+                        new AggregatedFlowStatisticsTranslator())
+                .addTranslator(OF_10_TRANSLATOR_KEY_FACTORY.createTranslatorKey(FlowRemoved.class),
+                        new FlowRemovedV10Translator(convertorExecutor))
+                .build();
 
         librarian.setTranslatorLibrary(basicTranslatorLibrary);
     }

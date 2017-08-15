@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.impl.util;
 
-
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -40,7 +39,7 @@ public class MdSalRegistrationUtilsTest {
 
     /**
      * Number of currently registrated services (can be changed)
-     * (RpcContext, DeviceContext)}
+     * (RpcContext, DeviceContext)}.
      */
     private static final int NUMBER_OF_RPC_SERVICE_REGISTRATION = 15;
     private static final int NUMBER_OF_STAT_COMPAT_RPC_SERVICE_REGISTRATION = 5;
@@ -79,7 +78,10 @@ public class MdSalRegistrationUtilsTest {
 
     @Test
     public void registerServiceTest() {
-        MdSalRegistrationUtils.registerServices(mockedRpcContext, mockedDeviceContext, extensionConverterProvider, convertorManager);
+        MdSalRegistrationUtils.registerServices(mockedRpcContext,
+                                                mockedDeviceContext,
+                                                extensionConverterProvider,
+                                                convertorManager);
         verify(mockedRpcContext, times(NUMBER_OF_RPC_SERVICE_REGISTRATION)).registerRpcServiceImplementation(
                 Matchers.any(), any(RpcService.class));
     }
@@ -91,9 +93,12 @@ public class MdSalRegistrationUtilsTest {
 
         when(mockedRpcContext.lookupRpcService(OpendaylightFlowStatisticsService.class)).thenReturn(
                 flowStatService);
-        MdSalRegistrationUtils.registerStatCompatibilityServices(mockedRpcContext, mockedDeviceContext, notificationPublishService, convertorManager);
-        verify(mockedRpcContext, times(NUMBER_OF_STAT_COMPAT_RPC_SERVICE_REGISTRATION)).registerRpcServiceImplementation(
-                Matchers.any(), any(RpcService.class));
+        MdSalRegistrationUtils.registerStatCompatibilityServices(mockedRpcContext,
+                                                                 mockedDeviceContext,
+                                                                 notificationPublishService,
+                                                                 convertorManager);
+        verify(mockedRpcContext, times(NUMBER_OF_STAT_COMPAT_RPC_SERVICE_REGISTRATION))
+                .registerRpcServiceImplementation(Matchers.any(), any(RpcService.class));
     }
 
 }

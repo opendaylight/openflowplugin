@@ -120,6 +120,7 @@ public class ContextChainImplTest {
     public void instantiateServiceInstanceFail() throws Exception {
         Mockito.doThrow(new IllegalStateException()).when(deviceContext).instantiateServiceInstance();
         contextChain.instantiateServiceInstance();
-        Mockito.verify(contextChainMastershipWatcher).onNotAbleToStartMastershipMandatory(Mockito.any(DeviceInfo.class), Mockito.anyString());
+        Mockito.verify(contextChainMastershipWatcher)
+                .onNotAbleToStartMastershipMandatory(Mockito.any(DeviceInfo.class), Mockito.anyString());
     }
 }

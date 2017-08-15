@@ -73,49 +73,51 @@ public class MeterUtilTest {
         Assert.assertEquals(1, output.getResult().get(0).getBatchOrder().intValue());
     }
 
-    private org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter createBatchMeter(final MeterId meterId) {
+    private org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter createBatchMeter(
+            final MeterId meterId) {
         return new MeterBuilder()
                 .setMeterId(meterId)
                 .build();
     }
 
     @Test
-    public void testMETER_ADD_TRANSFORM__failure() throws Exception {
+    public void testMeterAddTransformFailure() throws Exception {
         final RpcResult<List<BatchFailedMetersOutput>> input = createBatchOutcomeWithError();
         checkBatchErrorOutcomeTransformation(MeterUtil.METER_ADD_TRANSFORM.apply(input));
     }
 
     @Test
-    public void testMETER_ADD_TRANSFORM__success() throws Exception {
+    public void testMeterAddTransformSuccess() throws Exception {
         final RpcResult<List<BatchFailedMetersOutput>> input = createEmptyBatchOutcome();
         checkBatchSuccessOutcomeTransformation(MeterUtil.METER_ADD_TRANSFORM.apply(input));
     }
 
     @Test
-    public void testMETER_REMOVE_TRANSFORM__failure() throws Exception {
+    public void testMeterRemoveTransformFailure() throws Exception {
         final RpcResult<List<BatchFailedMetersOutput>> input = createBatchOutcomeWithError();
         checkBatchErrorOutcomeTransformation(MeterUtil.METER_REMOVE_TRANSFORM.apply(input));
     }
 
     @Test
-    public void testFLOW_REMOVE_TRANSFORM__success() throws Exception {
+    public void testFlowRemoveTransformSuccess() throws Exception {
         final RpcResult<List<BatchFailedMetersOutput>> input = createEmptyBatchOutcome();
         checkBatchSuccessOutcomeTransformation(MeterUtil.METER_REMOVE_TRANSFORM.apply(input));
     }
 
     @Test
-    public void testFLOW_UPDATE_TRANSFORM__failure() throws Exception {
+    public void testFlowUpdateTransformFailure() throws Exception {
         final RpcResult<List<BatchFailedMetersOutput>> input = createBatchOutcomeWithError();
         checkBatchErrorOutcomeTransformation(MeterUtil.METER_UPDATE_TRANSFORM.apply(input));
     }
 
     @Test
-    public void testFLOW_UPDATE_TRANSFORM__success() throws Exception {
+    public void testFlowUpdateTransformSuccess() throws Exception {
         final RpcResult<List<BatchFailedMetersOutput>> input = createEmptyBatchOutcome();
         checkBatchSuccessOutcomeTransformation(MeterUtil.METER_UPDATE_TRANSFORM.apply(input));
     }
 
-    private <T extends BatchMeterOutputListGrouping> void checkBatchSuccessOutcomeTransformation(final RpcResult<T> output) {
+    private <T extends BatchMeterOutputListGrouping> void checkBatchSuccessOutcomeTransformation(
+            final RpcResult<T> output) {
         Assert.assertTrue(output.isSuccessful());
         Assert.assertEquals(0, output.getResult().getBatchFailedMetersOutput().size());
         Assert.assertEquals(0, output.getErrors().size());
@@ -136,7 +138,8 @@ public class MeterUtilTest {
                 .build();
     }
 
-    private <T extends BatchMeterOutputListGrouping> void checkBatchErrorOutcomeTransformation(final RpcResult<T> output) {
+    private <T extends BatchMeterOutputListGrouping> void checkBatchErrorOutcomeTransformation(
+            final RpcResult<T> output) {
         Assert.assertFalse(output.isSuccessful());
         Assert.assertEquals(1, output.getResult().getBatchFailedMetersOutput().size());
         Assert.assertEquals(DUMMY_METER_ID, output.getResult().getBatchFailedMetersOutput().get(0).getMeterId());
@@ -146,12 +149,13 @@ public class MeterUtilTest {
 
     @Test
     public void testCreateComposingFunction_success_success() throws Exception {
-        final Function<Pair<RpcResult<AddMetersBatchOutput>, RpcResult<Void>>, RpcResult<AddMetersBatchOutput>> compositeFunction =
-                MeterUtil.createComposingFunction();
+        final Function<Pair<RpcResult<AddMetersBatchOutput>, RpcResult<Void>>, RpcResult<AddMetersBatchOutput>>
+                compositeFunction = MeterUtil.createComposingFunction();
 
         final RpcResult<AddMetersBatchOutput> addGroupBatchOutput = createAddMetersBatchSuccessOutput();
         final RpcResult<Void> barrierOutput = RpcResultBuilder.<Void>success().build();
-        final Pair<RpcResult<AddMetersBatchOutput>, RpcResult<Void>> input = Pair.of(addGroupBatchOutput, barrierOutput);
+        final Pair<RpcResult<AddMetersBatchOutput>, RpcResult<Void>> input =
+                Pair.of(addGroupBatchOutput, barrierOutput);
         final RpcResult<AddMetersBatchOutput> composite = compositeFunction.apply(input);
 
         Assert.assertTrue(composite.isSuccessful());
@@ -161,12 +165,13 @@ public class MeterUtilTest {
 
     @Test
     public void testCreateComposingFunction_failure_success() throws Exception {
-        final Function<Pair<RpcResult<AddMetersBatchOutput>, RpcResult<Void>>, RpcResult<AddMetersBatchOutput>> compositeFunction =
-                MeterUtil.createComposingFunction();
+        final Function<Pair<RpcResult<AddMetersBatchOutput>, RpcResult<Void>>, RpcResult<AddMetersBatchOutput>>
+                compositeFunction = MeterUtil.createComposingFunction();
 
         final RpcResult<AddMetersBatchOutput> addGroupBatchOutput = createAddMetersBatchFailureOutcome();
         final RpcResult<Void> barrierOutput = RpcResultBuilder.<Void>success().build();
-        final Pair<RpcResult<AddMetersBatchOutput>, RpcResult<Void>> input = Pair.of(addGroupBatchOutput, barrierOutput);
+        final Pair<RpcResult<AddMetersBatchOutput>, RpcResult<Void>> input =
+                Pair.of(addGroupBatchOutput, barrierOutput);
         final RpcResult<AddMetersBatchOutput> composite = compositeFunction.apply(input);
 
         Assert.assertFalse(composite.isSuccessful());
@@ -176,12 +181,13 @@ public class MeterUtilTest {
 
     @Test
     public void testCreateComposingFunction_success_failure() throws Exception {
-        final Function<Pair<RpcResult<AddMetersBatchOutput>, RpcResult<Void>>, RpcResult<AddMetersBatchOutput>> compositeFunction =
-                MeterUtil.createComposingFunction();
+        final Function<Pair<RpcResult<AddMetersBatchOutput>, RpcResult<Void>>, RpcResult<AddMetersBatchOutput>>
+                compositeFunction = MeterUtil.createComposingFunction();
 
         final RpcResult<AddMetersBatchOutput> addGroupBatchOutput = createAddMetersBatchSuccessOutput();
         final RpcResult<Void> barrierOutput = createBarrierFailureOutcome();
-        final Pair<RpcResult<AddMetersBatchOutput>, RpcResult<Void>> input = Pair.of(addGroupBatchOutput, barrierOutput);
+        final Pair<RpcResult<AddMetersBatchOutput>, RpcResult<Void>> input =
+                Pair.of(addGroupBatchOutput, barrierOutput);
         final RpcResult<AddMetersBatchOutput> composite = compositeFunction.apply(input);
 
         Assert.assertFalse(composite.isSuccessful());
@@ -191,12 +197,13 @@ public class MeterUtilTest {
 
     @Test
     public void testCreateComposingFunction_failure_failure() throws Exception {
-        final Function<Pair<RpcResult<AddMetersBatchOutput>, RpcResult<Void>>, RpcResult<AddMetersBatchOutput>> compositeFunction =
-                MeterUtil.createComposingFunction();
+        final Function<Pair<RpcResult<AddMetersBatchOutput>, RpcResult<Void>>, RpcResult<AddMetersBatchOutput>>
+                compositeFunction = MeterUtil.createComposingFunction();
 
         final RpcResult<AddMetersBatchOutput> addGroupBatchOutput = createAddMetersBatchFailureOutcome();
         final RpcResult<Void> barrierOutput = createBarrierFailureOutcome();
-        final Pair<RpcResult<AddMetersBatchOutput>, RpcResult<Void>> input = Pair.of(addGroupBatchOutput, barrierOutput);
+        final Pair<RpcResult<AddMetersBatchOutput>, RpcResult<Void>> input =
+                Pair.of(addGroupBatchOutput, barrierOutput);
         final RpcResult<AddMetersBatchOutput> composite = compositeFunction.apply(input);
 
         Assert.assertFalse(composite.isSuccessful());
