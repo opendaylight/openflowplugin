@@ -21,7 +21,6 @@ import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipChange;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipListenerRegistration;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -41,7 +40,6 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager
 import org.opendaylight.openflowplugin.impl.mastership.MastershipChangeServiceManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
-import org.opendaylight.yangtools.yang.common.RpcError;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ContextChainHolderImplTest {

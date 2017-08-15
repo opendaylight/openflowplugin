@@ -16,7 +16,6 @@ import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
-import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.impl.services.ServiceMocking;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
@@ -43,9 +42,9 @@ public class SalGroupServiceImplTest extends ServiceMocking {
     private static final Long DUMMY_GROUP_ID = 15L;
 
     @Mock
-    DeviceGroupRegistry mockedDeviceGroupRegistry;
+    private DeviceGroupRegistry mockedDeviceGroupRegistry;
 
-    SalGroupServiceImpl salGroupService;
+    private SalGroupServiceImpl salGroupService;
 
     @Override
     protected void setup() {
@@ -56,83 +55,31 @@ public class SalGroupServiceImplTest extends ServiceMocking {
 
     @Test
     public void testAddGroup() throws Exception {
-        addGroup(null);
-    }
-
-    @Test
-    public void testAddGroupWithItemLifecycle() throws Exception {
-        addGroup(mock(ItemLifecycleListener.class));
-    }
-
-    private void addGroup(final ItemLifecycleListener itemLifecycleListener) {
         final GroupId dummyGroupId = new GroupId(DUMMY_GROUP_ID);
         AddGroupInput addGroupInput = new AddGroupInputBuilder().setGroupId(dummyGroupId).build();
-
         this.<AddGroupOutput>mockSuccessfulFuture();
-
-        salGroupService.setItemLifecycleListener(itemLifecycleListener);
-
         salGroupService.addGroup(addGroupInput);
         verify(mockedRequestContextStack).createRequestContext();
         verify(mockedDeviceGroupRegistry).store(eq(dummyGroupId));
-
-        if (itemLifecycleListener != null) {
-            verify(itemLifecycleListener).onAdded(Matchers.<KeyedInstanceIdentifier<Group, GroupKey>>any(),Matchers.<Group>any());
-        }
     }
 
     @Test
     public void testUpdateGroup() throws Exception {
-        updateGroup(null);
-    }
-
-    @Test
-    public void testUpdateGroupWithItemLifecycle() throws Exception {
-        updateGroup(mock(ItemLifecycleListener.class));
-    }
-
-    private void updateGroup(final ItemLifecycleListener itemLifecycleListener) {
         final UpdatedGroup updatedGroup = new UpdatedGroupBuilder().setGroupId(new GroupId(DUMMY_GROUP_ID)).build();
         final OriginalGroup originalGroup = new OriginalGroupBuilder().setGroupId(new GroupId(DUMMY_GROUP_ID)).build();
         final UpdateGroupInput updateGroupInput = new UpdateGroupInputBuilder().setUpdatedGroup(updatedGroup).setOriginalGroup(originalGroup).build();
-
         this.<UpdateGroupOutput>mockSuccessfulFuture();
-
-        salGroupService.setItemLifecycleListener(itemLifecycleListener);
-
         salGroupService.updateGroup(updateGroupInput);
         verify(mockedRequestContextStack).createRequestContext();
-
-        if (itemLifecycleListener != null) {
-            verify(itemLifecycleListener).onAdded(Matchers.<KeyedInstanceIdentifier<Group, GroupKey>>any(),Matchers.<Group>any());
-            verify(itemLifecycleListener).onRemoved(Matchers.<KeyedInstanceIdentifier<Group, GroupKey>>any());
-        }
     }
 
     @Test
     public void testRemoveGroup() throws Exception {
-        removeGroup(null);
-    }
-
-    @Test
-    public void testRemoveGroupWithItemLifecycle() throws Exception {
-        removeGroup(mock(ItemLifecycleListener.class));
-    }
-
-    private void removeGroup(final ItemLifecycleListener itemLifecycleListener) throws Exception {
         final GroupId dummyGroupId = new GroupId(DUMMY_GROUP_ID);
         RemoveGroupInput removeGroupInput = new RemoveGroupInputBuilder().setGroupId(dummyGroupId).build();
-
         this.<RemoveGroupOutput>mockSuccessfulFuture();
-
-        salGroupService.setItemLifecycleListener(itemLifecycleListener);
-
         salGroupService.removeGroup(removeGroupInput);
         verify(mockedRequestContextStack).createRequestContext();
         verify(mockedDeviceGroupRegistry).addMark(eq(dummyGroupId));
-
-        if (itemLifecycleListener != null) {
-            verify(itemLifecycleListener).onRemoved(Matchers.<KeyedInstanceIdentifier<Group, GroupKey>>any());
-        }
     }
 }
