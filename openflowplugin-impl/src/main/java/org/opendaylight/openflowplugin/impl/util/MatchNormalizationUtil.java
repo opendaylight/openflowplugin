@@ -47,14 +47,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.TunnelIpv4MatchBuilder;
 
 /**
- * Utility class for match normalization
+ * Utility class for match normalization.
  */
 public final class MatchNormalizationUtil {
     // Cache normalizers for common OpenFlow versions
     private static final Map<Short, Set<Function<MatchBuilder, MatchBuilder>>> NORMALIZERS = ImmutableMap
             .<Short, Set<Function<MatchBuilder, MatchBuilder>>>builder()
-            .put(OFConstants.OFP_VERSION_1_0, createNormalizers(OFConstants.OFP_VERSION_1_0).collect(Collectors.toSet()))
-            .put(OFConstants.OFP_VERSION_1_3, createNormalizers(OFConstants.OFP_VERSION_1_3).collect(Collectors.toSet()))
+            .put(OFConstants.OFP_VERSION_1_0, createNormalizers(OFConstants.OFP_VERSION_1_0)
+                    .collect(Collectors.toSet()))
+            .put(OFConstants.OFP_VERSION_1_3, createNormalizers(OFConstants.OFP_VERSION_1_3)
+                    .collect(Collectors.toSet()))
             .build();
 
     private MatchNormalizationUtil() {
