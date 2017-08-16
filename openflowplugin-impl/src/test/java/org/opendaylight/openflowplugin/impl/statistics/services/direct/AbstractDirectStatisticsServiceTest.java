@@ -78,6 +78,7 @@ public abstract class AbstractDirectStatisticsServiceTest {
     protected KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
     protected ConvertorManager convertorManager;
     protected MultipartWriterProvider multipartWriterProvider;
+
     protected static NodeRef createNodeRef(String nodeIdValue) {
         InstanceIdentifier<Node> nodePath = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId(nodeIdValue)));
