@@ -16,7 +16,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved;
 
 /**
- * translate {@link FlowRemoved} message to FlowRemoved notification (omit instructions)
+ * Translate {@link FlowRemoved} message to FlowRemoved notification (omit instructions).
  */
 public class FlowRemovedV10Translator extends FlowRemovedTranslator {
 
@@ -26,7 +26,8 @@ public class FlowRemovedV10Translator extends FlowRemovedTranslator {
 
     @Override
     protected MatchBuilder translateMatch(FlowRemoved flowRemoved, DeviceInfo deviceInfo) {
-        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(deviceInfo.getVersion());
+        final VersionDatapathIdConvertorData datapathIdConvertorData =
+                new VersionDatapathIdConvertorData(deviceInfo.getVersion());
         datapathIdConvertorData.setDatapathId(deviceInfo.getDatapathId());
 
         final Optional<MatchBuilder> matchBuilderOptional = getConvertorExecutor().convert(
