@@ -40,7 +40,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
 /**
- * Test of {@link AggregatedFlowStatisticsTranslator}
+ * Test of {@link AggregatedFlowStatisticsTranslator}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class FlowRemovedTranslatorTest {
@@ -82,7 +82,8 @@ public class FlowRemovedTranslatorTest {
 
     @Test
     public void testTranslate() throws Exception {
-        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved flowRemovedMessage = buildMessage(false);
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved flowRemovedMessage =
+                buildMessage(false);
         final FlowRemoved flowRemoved = translator.translate(flowRemovedMessage, deviceInfo, null);
 
         assertEquals(flowRemovedMessage.getCookie(), flowRemoved.getCookie().getValue());
@@ -92,7 +93,8 @@ public class FlowRemovedTranslatorTest {
 
     @Test
     public void testTranslateV10() throws Exception {
-        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved flowRemovedMessage = buildMessage(true);
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved flowRemovedMessage =
+                buildMessage(true);
         final FlowRemoved flowRemoved = translatorV10.translate(flowRemovedMessage, deviceInfo, null);
 
         assertEquals(flowRemovedMessage.getCookie(), flowRemoved.getCookie().getValue());
@@ -100,7 +102,8 @@ public class FlowRemovedTranslatorTest {
         assertEquals((short)0, flowRemoved.getTableId().shortValue());
     }
 
-    private org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved buildMessage(boolean isV10) {
+    private org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved
+            buildMessage(boolean isV10) {
         FlowRemovedMessageBuilder builder = new FlowRemovedMessageBuilder()
                 .setCookie(BigInteger.ONE)
                 .setReason(FlowRemovedReason.OFPRRGROUPDELETE)

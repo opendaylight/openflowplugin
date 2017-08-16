@@ -45,7 +45,8 @@ public class FlowRegistryKeyFactoryTest {
     private static final Logger LOG = LoggerFactory.getLogger(FlowRegistryKeyFactoryTest.class);
 
 
-    private static final FlowsStatisticsUpdateBuilder FLOWS_STATISTICS_UPDATE_BUILDER = new FlowsStatisticsUpdateBuilder();
+    private static final FlowsStatisticsUpdateBuilder FLOWS_STATISTICS_UPDATE_BUILDER =
+            new FlowsStatisticsUpdateBuilder();
     @Mock
     private DeviceContext deviceContext;
     @Mock
@@ -82,7 +83,8 @@ public class FlowRegistryKeyFactoryTest {
 
     @Test
     public void testEqualsNegative() throws Exception {
-        final FlowAndStatisticsMapList flowStatisticsMapList1 = TestFlowHelper.createFlowAndStatisticsMapListBuilder(1).build();
+        final FlowAndStatisticsMapList flowStatisticsMapList1 =
+                TestFlowHelper.createFlowAndStatisticsMapListBuilder(1).build();
         final FlowRegistryKey key1 = FlowRegistryKeyFactory.create(deviceInfo.getVersion(), flowStatisticsMapList1);
 
         FlowRegistryKey key2;
@@ -150,7 +152,7 @@ public class FlowRegistryKeyFactoryTest {
         try {
             FlowRegistryKeyFactory.create(deviceInfo.getVersion(), fb1.build());
             Assert.fail("hash creation should have failed because of NPE");
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             // expected
             Assert.assertEquals("flow tableId must not be null", e.getMessage());
         }
@@ -159,7 +161,7 @@ public class FlowRegistryKeyFactoryTest {
         fb2.setPriority(null);
         try {
             FlowRegistryKeyFactory.create(deviceInfo.getVersion(), fb2.build());
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             // not expected
             Assert.fail("no exception was expected while hash was creating.");
         }
