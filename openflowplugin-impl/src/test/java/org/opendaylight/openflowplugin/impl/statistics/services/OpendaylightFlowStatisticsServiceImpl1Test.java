@@ -26,7 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Table
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 /**
- * Test for {@link OpendaylightFlowStatisticsServiceImpl} - only delegated methods (failing)
+ * Test for {@link OpendaylightFlowStatisticsServiceImpl} - only delegated methods (failing).
  */
 public class OpendaylightFlowStatisticsServiceImpl1Test extends AbstractStatsServiceTest {
 
@@ -39,7 +39,8 @@ public class OpendaylightFlowStatisticsServiceImpl1Test extends AbstractStatsSer
 
     public void setUp() {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        flowStatisticsService = OpendaylightFlowStatisticsServiceImpl.createWithOook(rqContextStack, deviceContext, convertorManager);
+        flowStatisticsService =
+                OpendaylightFlowStatisticsServiceImpl.createWithOook(rqContextStack, deviceContext, convertorManager);
 
         rqContext = new AbstractRequestContext<Object>(42L) {
             @Override
@@ -52,7 +53,8 @@ public class OpendaylightFlowStatisticsServiceImpl1Test extends AbstractStatsSer
 
     @Test(expected = IllegalAccessError.class)
     public void testGetAggregateFlowStatisticsFromFlowTableForAllFlows() throws Exception {
-        GetAggregateFlowStatisticsFromFlowTableForAllFlowsInputBuilder input = new GetAggregateFlowStatisticsFromFlowTableForAllFlowsInputBuilder()
+        GetAggregateFlowStatisticsFromFlowTableForAllFlowsInputBuilder input =
+                new GetAggregateFlowStatisticsFromFlowTableForAllFlowsInputBuilder()
                 .setNode(createNodeRef("unitProt:123"))
                 .setTableId(new TableId((short) 1));
 
@@ -70,7 +72,8 @@ public class OpendaylightFlowStatisticsServiceImpl1Test extends AbstractStatsSer
 
     @Test(expected = IllegalAccessError.class)
     public void testGetAllFlowsStatisticsFromAllFlowTables() throws Exception {
-        GetAllFlowsStatisticsFromAllFlowTablesInputBuilder input = new GetAllFlowsStatisticsFromAllFlowTablesInputBuilder()
+        GetAllFlowsStatisticsFromAllFlowTablesInputBuilder input =
+                new GetAllFlowsStatisticsFromAllFlowTablesInputBuilder()
                 .setNode(createNodeRef("unitProt:123"));
 
         flowStatisticsService.getAllFlowsStatisticsFromAllFlowTables(input.build());

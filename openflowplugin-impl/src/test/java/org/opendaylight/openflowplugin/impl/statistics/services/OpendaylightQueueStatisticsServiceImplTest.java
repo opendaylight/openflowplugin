@@ -40,7 +40,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 /**
- * Test for {@link OpendaylightQueueStatisticsServiceImpl}
+ * Test for {@link OpendaylightQueueStatisticsServiceImpl}.
  */
 public class OpendaylightQueueStatisticsServiceImplTest extends AbstractSingleStatsServiceTest {
 

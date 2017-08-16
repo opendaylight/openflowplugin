@@ -140,7 +140,8 @@ public class StatisticsManagerImplTest {
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimConnectionContext);
         when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessagSpy);
-        when(mockedDeviceContext.getDeviceFlowRegistry()).thenReturn(new DeviceFlowRegistryImpl(OFConstants.OFP_VERSION_1_3, dataBroker, nodePath));
+        when(mockedDeviceContext.getDeviceFlowRegistry())
+                .thenReturn(new DeviceFlowRegistryImpl(OFConstants.OFP_VERSION_1_3, dataBroker, nodePath));
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getMultiMsgCollector(
                 Matchers.<RequestContext<List<MultipartReply>>>any())).thenAnswer(
@@ -187,9 +188,9 @@ public class StatisticsManagerImplTest {
     }
 
     /**
-     * switching to {@link StatisticsWorkMode#FULLYDISABLED}; no pollTimeout and no lifecycleRegistry
+     * Switching to {@link StatisticsWorkMode#FULLYDISABLED}; no pollTimeout and no lifecycleRegistry.
      *
-     * @throws Exception
+     * @throws Exception if work mode change failed
      */
     @Test
     public void testChangeStatisticsWorkMode1() throws Exception {
@@ -214,16 +215,16 @@ public class StatisticsManagerImplTest {
         verify(statisticContext).stopGatheringData();
     }
 
-    private static void checkWorkModeChangeOutcome(Future<RpcResult<Void>> workMode) throws InterruptedException, ExecutionException {
+    private static void checkWorkModeChangeOutcome(Future<RpcResult<Void>> workMode)
+            throws InterruptedException, ExecutionException {
         Assert.assertTrue(workMode.isDone());
         Assert.assertTrue(workMode.get().isSuccessful());
     }
 
-
     /**
-     * switching to {@link StatisticsWorkMode#FULLYDISABLED}; with pollTimeout and lifecycleRegistry
+     * Switching to {@link StatisticsWorkMode#FULLYDISABLED}; with pollTimeout and lifecycleRegistry.
      *
-     * @throws Exception
+     * @throws Exception if work mode change failed
      */
     @Test
     public void testChangeStatisticsWorkMode2() throws Exception {
@@ -243,7 +244,8 @@ public class StatisticsManagerImplTest {
                 new ChangeStatisticsWorkModeInputBuilder()
                         .setMode(StatisticsWorkMode.FULLYDISABLED);
 
-        Future<RpcResult<Void>> workMode = statisticsManager.changeStatisticsWorkMode(changeStatisticsWorkModeInputBld.build());
+        Future<RpcResult<Void>> workMode =
+                statisticsManager.changeStatisticsWorkMode(changeStatisticsWorkModeInputBld.build());
         checkWorkModeChangeOutcome(workMode);
 
         verify(itemLifeCycleRegistry).getLifeCycleSources();
@@ -252,10 +254,10 @@ public class StatisticsManagerImplTest {
     }
 
     /**
-     * switching to {@link StatisticsWorkMode#FULLYDISABLED} and back
-     * to {@link StatisticsWorkMode#COLLECTALL}; with lifecycleRegistry and pollTimeout
+     * Switching to {@link StatisticsWorkMode#FULLYDISABLED} and back
+     * to {@link StatisticsWorkMode#COLLECTALL}; with lifecycleRegistry and pollTimeout.
      *
-     * @throws Exception
+     * @throws Exception if work mode change failed
      */
     @Test
     public void testChangeStatisticsWorkMode3() throws Exception {
@@ -320,21 +322,37 @@ public class StatisticsManagerImplTest {
         final StatisticsContext statisticsContext = Mockito.mock(StatisticsContext.class);
         final TimeCounter mockTimerCounter = Mockito.mock(TimeCounter.class);
 
-        statisticsManager.pollStatistics(mockedDeviceContext.getDeviceState(), statisticsContext, mockTimerCounter, mockedDeviceInfo);
+        statisticsManager.pollStatistics(mockedDeviceContext.getDeviceState(),
+                                         statisticsContext,
+                                         mockTimerCounter,
+                                         mockedDeviceInfo);
         verify(mockedDeviceContext).getDeviceState();
 
-        statisticsManager.pollStatistics(mockedDeviceContext.getDeviceState(), statisticsContext, mockTimerCounter, mockedDeviceInfo);
+        statisticsManager.pollStatistics(mockedDeviceContext.getDeviceState(),
+                                         statisticsContext,
+                                         mockTimerCounter,
+                                         mockedDeviceInfo);
 
-        statisticsManager.pollStatistics(mockedDeviceContext.getDeviceState(), statisticsContext, mockTimerCounter, mockedDeviceInfo);
+        statisticsManager.pollStatistics(mockedDeviceContext.getDeviceState(),
+                                         statisticsContext,
+                                         mockTimerCounter,
+                                         mockedDeviceInfo);
 
         when(statisticsContext.gatherDynamicData()).thenReturn(Futures.immediateCheckedFuture(Boolean.TRUE));
         when(statisticsContext.isSchedulingEnabled()).thenReturn(Boolean.TRUE);
-        statisticsManager.pollStatistics(mockedDeviceContext.getDeviceState(), statisticsContext, mockTimerCounter, mockedDeviceInfo);
+        statisticsManager.pollStatistics(mockedDeviceContext.getDeviceState(),
+                                                             statisticsContext,
+                                                             mockTimerCounter,
+                                                             mockedDeviceInfo);
         verify(mockTimerCounter).markStart();
         verify(mockTimerCounter).addTimeMark();
 
-        when(statisticsContext.gatherDynamicData()).thenReturn(Futures.immediateFailedFuture(new Throwable("error msg")));
-        statisticsManager.pollStatistics(mockedDeviceContext.getDeviceState(), statisticsContext, mockTimerCounter, mockedDeviceInfo);
+        when(statisticsContext.gatherDynamicData())
+                .thenReturn(Futures.immediateFailedFuture(new Throwable("error msg")));
+        statisticsManager.pollStatistics(mockedDeviceContext.getDeviceState(),
+                        statisticsContext,
+                        mockTimerCounter,
+                        mockedDeviceInfo);
         verify(mockTimerCounter,times(2)).addTimeMark();
     }
 

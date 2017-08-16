@@ -19,7 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.GetNodeConnectorStatisticsInputBuilder;
 
 /**
- * Test of {@link PortStatsService}
+ * Test of {@link PortStatsService}.
  */
 public class PortStatsServiceTest extends AbstractStatsServiceTest {
 
@@ -42,7 +42,8 @@ public class PortStatsServiceTest extends AbstractStatsServiceTest {
         Assert.assertTrue(request instanceof MultipartRequestInput);
         final MultipartRequestInput mpRequest = (MultipartRequestInput) request;
         Assert.assertTrue(mpRequest.getMultipartRequestBody() instanceof MultipartRequestPortStatsCase);
-        final MultipartRequestPortStatsCase mpRequestBody = (MultipartRequestPortStatsCase) mpRequest.getMultipartRequestBody();
+        final MultipartRequestPortStatsCase mpRequestBody =
+                (MultipartRequestPortStatsCase) mpRequest.getMultipartRequestBody();
         Assert.assertEquals(12L, mpRequestBody.getMultipartRequestPortStats().getPortNo().longValue());
 
     }

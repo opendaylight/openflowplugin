@@ -15,9 +15,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 
-/**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 28.5.2015.
- */
 public final class EventsTimeCounter {
 
     private static final Map<String, Map<String, EventTimeCounter>> DEVICES_EVENTS = new HashMap<>();
@@ -38,7 +35,8 @@ public final class EventsTimeCounter {
         eventTimeCounter.markEnd();
     }
 
-    private static EventTimeCounter getOrCreateEventOfType(final String event, final Map<String, EventTimeCounter> deviceEvents) {
+    private static EventTimeCounter getOrCreateEventOfType(final String event,
+                                                           final Map<String, EventTimeCounter> deviceEvents) {
         EventTimeCounter lookup = deviceEvents.get(event);
         if (null == lookup) {
             lookup = new EventTimeCounter();
@@ -141,6 +139,4 @@ public final class EventsTimeCounter {
         }
 
     }
-
-
 }
