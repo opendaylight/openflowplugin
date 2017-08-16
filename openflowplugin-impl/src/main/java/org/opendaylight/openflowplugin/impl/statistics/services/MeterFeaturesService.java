@@ -46,9 +46,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 
 final class MeterFeaturesService
         extends AbstractCompatibleStatService<GetMeterFeaturesInput, GetMeterFeaturesOutput, MeterFeaturesUpdated> {
-    private static final MultipartRequestMeterFeaturesCase METER_FEATURES_CASE = new MultipartRequestMeterFeaturesCaseBuilder().build();
+    private static final MultipartRequestMeterFeaturesCase METER_FEATURES_CASE =
+            new MultipartRequestMeterFeaturesCaseBuilder().build();
 
-    public MeterFeaturesService(RequestContextStack requestContextStack, DeviceContext deviceContext, AtomicLong compatibilityXidSeed) {
+    MeterFeaturesService(RequestContextStack requestContextStack,
+                                DeviceContext deviceContext,
+                                AtomicLong compatibilityXidSeed) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
     }
 
@@ -75,7 +78,8 @@ final class MeterFeaturesService
         notification.setMoreReplies(Boolean.FALSE);
         notification.setTransactionId(emulatedTxId);
 
-        MultipartReplyMeterFeaturesCase caseBody = (MultipartReplyMeterFeaturesCase) result.get(0).getMultipartReplyBody();
+        MultipartReplyMeterFeaturesCase caseBody =
+                (MultipartReplyMeterFeaturesCase) result.get(0).getMultipartReplyBody();
         MultipartReplyMeterFeatures replyBody = caseBody.getMultipartReplyMeterFeatures();
         notification.setMaxBands(replyBody.getMaxBands());
         notification.setMaxColor(replyBody.getMaxColor());
@@ -87,7 +91,8 @@ final class MeterFeaturesService
     }
 
     @VisibleForTesting
-    protected List<Class<? extends MeterBand>> extractSupportedMeterBand(MultipartReplyMeterFeatures replyBody, MeterBandTypeBitmap bandTypes) {
+    protected List<Class<? extends MeterBand>> extractSupportedMeterBand(MultipartReplyMeterFeatures replyBody,
+                                                                         MeterBandTypeBitmap bandTypes) {
         List<Class<? extends MeterBand>> supportedMeterBand = new ArrayList<>();
         if (bandTypes.isOFPMBTDROP()) {
             supportedMeterBand.add(MeterBandDrop.class);

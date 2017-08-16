@@ -24,19 +24,22 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter._case.MultipartReplyMeter;
 
 /**
- * pulled out meter stats to notification transformation
+ * Pulled out meter stats to notification transformation.
  */
 public class MeterStatisticsToNotificationTransformer {
 
     private MeterStatisticsToNotificationTransformer() {
         // Hide implicit constructor
     }
+
     /**
+     * Transform statistics to notification.
+     *
      * @param mpReplyList   raw multipart response from device
-     * @param deviceInfo   device state
+     * @param deviceInfo    device state
      * @param ofVersion     device version
-     * @param emulatedTxId
-     * @param convertorExecutor
+     * @param emulatedTxId  emulated transaction Id
+     * @param convertorExecutor convertor executor
      * @return notification containing flow stats
      */
     public static MeterStatisticsUpdated transformToNotification(final List<MultipartReply> mpReplyList,
@@ -55,7 +58,8 @@ public class MeterStatisticsToNotificationTransformer {
         for (MultipartReply mpReply : mpReplyList) {
             MultipartReplyMeterCase caseBody = (MultipartReplyMeterCase) mpReply.getMultipartReplyBody();
             MultipartReplyMeter replyBody = caseBody.getMultipartReplyMeter();
-            final Optional<List<MeterStats>> meterStatsList = convertorExecutor.convert(replyBody.getMeterStats(), data);
+            final Optional<List<MeterStats>> meterStatsList =
+                    convertorExecutor.convert(replyBody.getMeterStats(), data);
 
             if (meterStatsList.isPresent()) {
                 notification.getMeterStats().addAll(meterStatsList.get());
