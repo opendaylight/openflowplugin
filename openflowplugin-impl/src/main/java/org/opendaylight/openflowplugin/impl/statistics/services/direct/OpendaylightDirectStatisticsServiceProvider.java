@@ -16,7 +16,8 @@ import java.util.Optional;
  * The Opendaylight direct statistics service provider.
  */
 public class OpendaylightDirectStatisticsServiceProvider {
-    private Map<Class<? extends AbstractDirectStatisticsService>, AbstractDirectStatisticsService> services = new HashMap<>();
+    private Map<Class<? extends AbstractDirectStatisticsService>, AbstractDirectStatisticsService> services =
+            new HashMap<>();
 
     /**
      * Register direct statistics service.
@@ -24,7 +25,8 @@ public class OpendaylightDirectStatisticsServiceProvider {
      * @param type    the service type
      * @param service the service instance
      */
-    public void register(Class<? extends AbstractDirectStatisticsService> type, AbstractDirectStatisticsService service) {
+    public void register(Class<? extends AbstractDirectStatisticsService> type,
+                               AbstractDirectStatisticsService service) {
         services.put(type, service);
     }
 
@@ -34,7 +36,8 @@ public class OpendaylightDirectStatisticsServiceProvider {
      * @param type the service type
      * @return the service instance
      */
-    public Optional<? extends AbstractDirectStatisticsService> lookup(Class<? extends AbstractDirectStatisticsService> type) {
+    public Optional<? extends AbstractDirectStatisticsService>
+            lookup(Class<? extends AbstractDirectStatisticsService> type) {
         return Optional.ofNullable(services.get(type)).map(type::cast);
     }
 }

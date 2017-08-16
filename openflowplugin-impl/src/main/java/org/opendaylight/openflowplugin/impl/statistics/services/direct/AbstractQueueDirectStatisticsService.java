@@ -27,7 +27,7 @@ public abstract class AbstractQueueDirectStatisticsService<T extends OfHeader>
                                                 final DeviceContext deviceContext,
                                                 final ConvertorExecutor convertorExecutor,
                                                 final MultipartWriterProvider statisticsWriterProvider) {
-        super(MultipartType.OFPMPQUEUE, requestContextStack, deviceContext, convertorExecutor, statisticsWriterProvider);
+        super(MultipartType.OFPMPQUEUE, requestContextStack, deviceContext, convertorExecutor,
+                statisticsWriterProvider);
     }
-
 }

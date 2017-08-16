@@ -33,7 +33,9 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
  * @param <I> the input type parameter
  * @param <O> the output type parameter
  */
-abstract class AbstractDirectStatisticsService<I extends StoreStatsGrouping, O extends DataContainer, T extends OfHeader>
+abstract class AbstractDirectStatisticsService<I extends StoreStatsGrouping,
+                                               O extends DataContainer,
+                                               T extends OfHeader>
         extends AbstractMultipartService<I, T> {
 
     private final MultipartType multipartType;
@@ -97,7 +99,7 @@ abstract class AbstractDirectStatisticsService<I extends StoreStatsGrouping, O e
     }
 
     /**
-     * Get multipart type
+     * Get multipart type.
      * @return multipart type
      */
     protected MultipartType getMultipartType() {
@@ -105,7 +107,7 @@ abstract class AbstractDirectStatisticsService<I extends StoreStatsGrouping, O e
     }
 
     /**
-     * Get convertor executor
+     * Get convertor executor.
      * @return convertor executor
      */
     protected ConvertorExecutor getConvertorExecutor() {

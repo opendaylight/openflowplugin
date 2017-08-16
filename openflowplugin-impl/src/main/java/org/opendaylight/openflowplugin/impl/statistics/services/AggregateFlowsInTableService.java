@@ -36,28 +36,37 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestAggregateCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.aggregate._case.MultipartRequestAggregateBuilder;
 
-public final class AggregateFlowsInTableService extends AbstractCompatibleStatService<GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput,
-        GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput, AggregateFlowStatisticsUpdate> {
+public final class AggregateFlowsInTableService extends
+        AbstractCompatibleStatService<GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput,
+                                      GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput,
+                                      AggregateFlowStatisticsUpdate> {
 
     final TranslatorLibrary translatorLibrary;
 
     public static AggregateFlowsInTableService createWithOook(final RequestContextStack requestContextStack,
                                                                                   final DeviceContext deviceContext,
                                                                                   AtomicLong compatibilityXidSeed) {
-        return new AggregateFlowsInTableService(requestContextStack, deviceContext, compatibilityXidSeed, deviceContext.oook());
+        return new AggregateFlowsInTableService(requestContextStack,
+                                                deviceContext,
+                                                compatibilityXidSeed,
+                                                deviceContext.oook());
     }
 
-    public AggregateFlowsInTableService(final RequestContextStack requestContextStack, final DeviceContext deviceContext,
-                                        AtomicLong compatibilityXidSeed, TranslatorLibrary translatorLibrary) {
+    public AggregateFlowsInTableService(final RequestContextStack requestContextStack,
+                                        final DeviceContext deviceContext,
+                                        AtomicLong compatibilityXidSeed,
+                                        TranslatorLibrary translatorLibrary) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
 
         this.translatorLibrary = translatorLibrary;
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput input) throws ServiceException {
+    protected OfHeader buildRequest(final Xid xid, final GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput input)
+            throws ServiceException {
         // Create multipart request body for fetch all the group stats
-        final MultipartRequestAggregateCaseBuilder multipartRequestAggregateCaseBuilder = new MultipartRequestAggregateCaseBuilder();
+        final MultipartRequestAggregateCaseBuilder multipartRequestAggregateCaseBuilder =
+                new MultipartRequestAggregateCaseBuilder();
         final MultipartRequestAggregateBuilder mprAggregateRequestBuilder = new MultipartRequestAggregateBuilder();
         mprAggregateRequestBuilder.setTableId(input.getTableId().getValue());
         mprAggregateRequestBuilder.setOutPort(OFConstants.OFPP_ANY);
@@ -80,20 +89,25 @@ public final class AggregateFlowsInTableService extends AbstractCompatibleStatSe
 
     @Override
     public GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput buildTxCapableResult(TransactionId emulatedTxId) {
-        return new GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutputBuilder().setTransactionId(emulatedTxId).build();
+        return new GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutputBuilder().setTransactionId(emulatedTxId)
+                .build();
     }
 
     @Override
-    public AggregateFlowStatisticsUpdate transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
+    public AggregateFlowStatisticsUpdate transformToNotification(List<MultipartReply> result,
+                                                                 TransactionId emulatedTxId) {
         final int mpSize = result.size();
         Preconditions.checkArgument(mpSize == 1, "unexpected (!=1) mp-reply size received: {}", mpSize);
 
         MultipartReply mpReply = result.get(0);
-        final TranslatorKey translatorKey = new TranslatorKey(mpReply.getVersion(), MultipartReplyAggregateCase.class.getName());
-        final MessageTranslator<MultipartReply, AggregatedFlowStatistics> messageTranslator = translatorLibrary.lookupTranslator(translatorKey);
+        final TranslatorKey translatorKey =
+                new TranslatorKey(mpReply.getVersion(), MultipartReplyAggregateCase.class.getName());
+        final MessageTranslator<MultipartReply, AggregatedFlowStatistics> messageTranslator =
+                translatorLibrary.lookupTranslator(translatorKey);
 
         final AggregatedFlowStatistics flowStatistics = messageTranslator.translate(mpReply, getDeviceInfo(), null);
-        final AggregateFlowStatisticsUpdateBuilder notification = new AggregateFlowStatisticsUpdateBuilder(flowStatistics)
+        final AggregateFlowStatisticsUpdateBuilder notification =
+                new AggregateFlowStatisticsUpdateBuilder(flowStatistics)
                 .setId(getDeviceInfo().getNodeId())
                 .setMoreReplies(Boolean.FALSE)
                 .setTransactionId(emulatedTxId);
