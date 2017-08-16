@@ -29,9 +29,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Pa
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId;
 
-/**
- * Created by tkubas on 4/1/15.
- */
 public class PacketReceivedTranslator implements MessageTranslator<PacketInMessage, PacketReceived> {
     private final ConvertorExecutor convertorExecutor;
 
@@ -40,7 +37,9 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
     }
 
     @Override
-    public PacketReceived translate(final PacketInMessage input, final DeviceInfo deviceInfo, final Object connectionDistinguisher) {
+    public PacketReceived translate(final PacketInMessage input,
+                                    final DeviceInfo deviceInfo,
+                                    final Object connectionDistinguisher) {
 
         PacketReceivedBuilder packetReceivedBuilder = new PacketReceivedBuilder();
         BigInteger datapathId = deviceInfo.getDatapathId();
@@ -69,7 +68,8 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
         }
 
         if (input.getMatch() != null) {
-            org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match packetInMatch = getPacketInMatch(input, datapathId);
+            org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match packetInMatch =
+                    getPacketInMatch(input, datapathId);
             packetReceivedBuilder.setMatch(packetInMatch);
         }
 
@@ -77,23 +77,28 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
     }
 
     @VisibleForTesting
-    org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match getPacketInMatch(final PacketInMessage input, final BigInteger datapathId) {
-        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(input.getVersion());
+    org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match
+            getPacketInMatch(final PacketInMessage input, final BigInteger datapathId) {
+
+        final VersionDatapathIdConvertorData datapathIdConvertorData =
+                new VersionDatapathIdConvertorData(input.getVersion());
         datapathIdConvertorData.setDatapathId(datapathId);
 
-        final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder> matchOptional = convertorExecutor.convert(input.getMatch(), datapathIdConvertorData);
-        final MatchBuilder matchBuilder = matchOptional.isPresent() ?
-                new MatchBuilder(matchOptional.get().build()) :
-                new MatchBuilder();
+        final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder>
+                matchOptional = convertorExecutor.convert(input.getMatch(), datapathIdConvertorData);
+        final MatchBuilder matchBuilder = matchOptional.isPresent()
+                ? new MatchBuilder(matchOptional.get().build())
+                : new MatchBuilder();
 
-        final AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match> matchExtensionWrap =
-                MatchExtensionHelper.processAllExtensions(
+        final AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match>
+                matchExtensionWrap = MatchExtensionHelper.processAllExtensions(
                         input.getMatch().getMatchEntry(),
                         OpenflowVersion.get(input.getVersion()),
                         MatchPath.PACKETRECEIVED_MATCH);
 
         if (matchExtensionWrap != null) {
-            matchBuilder.addAugmentation(matchExtensionWrap.getAugmentationClass(), matchExtensionWrap.getAugmentationObject());
+            matchBuilder.addAugmentation(matchExtensionWrap.getAugmentationClass(),
+                                         matchExtensionWrap.getAugmentationObject());
         }
 
         return matchBuilder.build();

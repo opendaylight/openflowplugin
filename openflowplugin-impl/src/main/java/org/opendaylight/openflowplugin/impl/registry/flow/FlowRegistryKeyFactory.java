@@ -29,8 +29,10 @@ public class FlowRegistryKeyFactory {
         //TODO: mandatory flow input values (or default values) should be specified via yang model
         final short tableId = Preconditions.checkNotNull(flow.getTableId(), "flow tableId must not be null");
         final int priority = MoreObjects.firstNonNull(flow.getPriority(), OFConstants.DEFAULT_FLOW_PRIORITY);
-        final BigInteger cookie = MoreObjects.firstNonNull(flow.getCookie(), OFConstants.DEFAULT_FLOW_COOKIE).getValue();
-        final Match match = MatchNormalizationUtil.normalizeMatch(MoreObjects.firstNonNull(flow.getMatch(), OFConstants.EMPTY_MATCH), version);
+        final BigInteger cookie =
+                MoreObjects.firstNonNull(flow.getCookie(), OFConstants.DEFAULT_FLOW_COOKIE).getValue();
+        final Match match = MatchNormalizationUtil
+                .normalizeMatch(MoreObjects.firstNonNull(flow.getMatch(), OFConstants.EMPTY_MATCH), version);
         return new FlowRegistryKeyDto(tableId, priority, cookie, match);
     }
 
@@ -51,21 +53,21 @@ public class FlowRegistryKeyFactory {
         }
 
         @Override
-        public boolean equals(final Object o) {
-            if (this == o) {
+        public boolean equals(final Object object) {
+            if (this == object) {
                 return true;
             }
 
-            if (o == null || !(o instanceof FlowRegistryKey)) {
+            if (object == null || !(object instanceof FlowRegistryKey)) {
                 return false;
             }
 
-            final FlowRegistryKey that = (FlowRegistryKey) o;
+            final FlowRegistryKey that = (FlowRegistryKey) object;
 
-            return getPriority() == that.getPriority() &&
-                    getTableId() == that.getTableId() &&
-                    getCookie().equals(that.getCookie()) &&
-                    getMatch().equals(that.getMatch());
+            return getPriority() == that.getPriority()
+                    && getTableId() == that.getTableId()
+                    && getCookie().equals(that.getCookie())
+                    && getMatch().equals(that.getMatch());
         }
 
         @Override
@@ -97,5 +99,4 @@ public class FlowRegistryKeyFactory {
             return match;
         }
     }
-
 }
