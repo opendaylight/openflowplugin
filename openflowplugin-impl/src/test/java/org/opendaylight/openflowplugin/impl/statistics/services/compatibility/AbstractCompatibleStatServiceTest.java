@@ -102,7 +102,8 @@ public class AbstractCompatibleStatServiceTest extends AbstractStatsServiceTest 
         Mockito.when(deviceInfo.getNodeId()).thenReturn(NODE_ID);
         Mockito.when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         Mockito.doAnswer(closeRequestFutureAnswer).when(multiMsgCollector).endCollecting(null);
-        Mockito.doAnswer(closeRequestFutureAnswer).when(multiMsgCollector).endCollecting(Matchers.any(EventIdentifier.class));
+        Mockito.doAnswer(closeRequestFutureAnswer).when(multiMsgCollector)
+                .endCollecting(Matchers.any(EventIdentifier.class));
 
         Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)
                 .commitEntry(Matchers.eq(42L), requestInput.capture(), Matchers.any(FutureCallback.class));
@@ -154,7 +155,7 @@ public class AbstractCompatibleStatServiceTest extends AbstractStatsServiceTest 
         final RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput> rpcResult = resultFuture.get();
         Assert.assertTrue(rpcResult.isSuccessful());
         Assert.assertEquals(MultipartType.OFPMPAGGREGATE, requestInput.getValue().getType());
-        Mockito.verify(notificationPublishService, Mockito.timeout(500)).offerNotification(Matchers.any(AggregateFlowStatisticsUpdate.class));
+        Mockito.verify(notificationPublishService, Mockito.timeout(500))
+                .offerNotification(Matchers.any(AggregateFlowStatisticsUpdate.class));
     }
-
 }

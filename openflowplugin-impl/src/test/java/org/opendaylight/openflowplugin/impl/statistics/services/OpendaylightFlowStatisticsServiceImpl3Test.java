@@ -25,7 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.O
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId;
 
 /**
- * Test for {@link OpendaylightFlowStatisticsServiceImpl} - only delegated methods
+ * Test for {@link OpendaylightFlowStatisticsServiceImpl} - only delegated methods.
  */
 public class OpendaylightFlowStatisticsServiceImpl3Test extends AbstractStatsServiceTest {
 
@@ -36,13 +36,15 @@ public class OpendaylightFlowStatisticsServiceImpl3Test extends AbstractStatsSer
 
     public void setUp() {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        flowStatisticsService = OpendaylightFlowStatisticsServiceImpl.createWithOook(rqContextStack, deviceContext, convertorManager);
+        flowStatisticsService =
+                OpendaylightFlowStatisticsServiceImpl.createWithOook(rqContextStack, deviceContext, convertorManager);
         flowStatisticsService.setDelegate(flowStatisticsDelegate);
     }
 
     @Test
     public void testGetAggregateFlowStatisticsFromFlowTableForAllFlows() throws Exception {
-        GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput input = new GetAggregateFlowStatisticsFromFlowTableForAllFlowsInputBuilder()
+        GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput input =
+                new GetAggregateFlowStatisticsFromFlowTableForAllFlowsInputBuilder()
                 .setNode(createNodeRef("unitProt:123"))
                 .setTableId(new TableId((short) 1))
                 .build();

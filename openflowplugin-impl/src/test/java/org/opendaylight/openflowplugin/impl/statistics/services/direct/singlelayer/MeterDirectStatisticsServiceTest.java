@@ -45,7 +45,10 @@ public class MeterDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
 
     @Override
     public void setUp() throws Exception {
-        service = new MeterDirectStatisticsService(requestContextStack, deviceContext, convertorManager, multipartWriterProvider);
+        service = new MeterDirectStatisticsService(requestContextStack,
+                                                   deviceContext,
+                                                   convertorManager,
+                                                   multipartWriterProvider);
     }
 
     @Override
@@ -93,10 +96,14 @@ public class MeterDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
 
     @Override
     public void testStoreStatistics() throws Exception {
-        final org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats stat = mock(org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats.class);
+        final org.opendaylight.yang.gen.v1.urn
+                .opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats stat =
+                mock(org.opendaylight.yang.gen.v1.urn
+                        .opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats.class);
         when(stat.getMeterId()).thenReturn(new MeterId(METER_NO));
 
-        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats> stats = Arrays.asList(stat);
+        final List<org.opendaylight.yang.gen.v1.urn
+                .opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats> stats = Arrays.asList(stat);
         final GetMeterStatisticsOutput output = mock(GetMeterStatisticsOutput.class);
         when(output.getMeterStats()).thenReturn(stats);
 

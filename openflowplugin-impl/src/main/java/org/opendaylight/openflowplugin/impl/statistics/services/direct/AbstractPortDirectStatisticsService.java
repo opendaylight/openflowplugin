@@ -27,7 +27,11 @@ public abstract class AbstractPortDirectStatisticsService<T extends OfHeader>
                                                final DeviceContext deviceContext,
                                                final ConvertorExecutor convertorExecutor,
                                                final MultipartWriterProvider statisticsWriterProvider) {
-        super(MultipartType.OFPMPPORTSTATS, requestContextStack, deviceContext, convertorExecutor, statisticsWriterProvider);
+        super(MultipartType.OFPMPPORTSTATS,
+                requestContextStack,
+                deviceContext,
+                convertorExecutor,
+                statisticsWriterProvider);
     }
 
 }

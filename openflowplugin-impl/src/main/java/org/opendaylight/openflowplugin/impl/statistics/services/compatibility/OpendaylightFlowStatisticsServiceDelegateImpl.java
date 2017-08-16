@@ -32,9 +32,6 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * @author joe
- */
 public class OpendaylightFlowStatisticsServiceDelegateImpl implements OpendaylightFlowStatisticsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpendaylightFlowStatisticsServiceDelegateImpl.class);
@@ -51,25 +48,35 @@ public class OpendaylightFlowStatisticsServiceDelegateImpl implements Opendaylig
                                                          final AtomicLong compatibilityXidSeed,
                                                          final ConvertorExecutor convertorExecutor) {
         this.notificationService = notificationService;
-        aggregateFlowsInTable = AggregateFlowsInTableService.createWithOook(requestContextStack, deviceContext, compatibilityXidSeed);
-        allFlowsInAllTables = new AllFlowsInAllTablesService(requestContextStack, deviceContext, compatibilityXidSeed, convertorExecutor);
-        allFlowsInTable = new AllFlowsInTableService(requestContextStack, deviceContext, compatibilityXidSeed, convertorExecutor);
-        flowsInTable = new FlowsInTableService(requestContextStack, deviceContext, compatibilityXidSeed, convertorExecutor);
+        aggregateFlowsInTable =
+                AggregateFlowsInTableService.createWithOook(requestContextStack, deviceContext, compatibilityXidSeed);
+        allFlowsInAllTables = new AllFlowsInAllTablesService(requestContextStack,
+                                                             deviceContext,
+                                                             compatibilityXidSeed,
+                                                             convertorExecutor);
+        allFlowsInTable =
+                new AllFlowsInTableService(requestContextStack, deviceContext, compatibilityXidSeed, convertorExecutor);
+        flowsInTable =
+                new FlowsInTableService(requestContextStack, deviceContext, compatibilityXidSeed, convertorExecutor);
     }
 
     /**
-     * @deprecated this is the only method with real implementation provided, in delegate it makes no sense
+     * Get statistics for the given match.
+     *
+     * @deprecated this is the only method with real implementation provided, in delegate it makes no sense.
      */
     @Override
     @Deprecated
-    public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> getAggregateFlowStatisticsFromFlowTableForGivenMatch(
+    public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>>
+        getAggregateFlowStatisticsFromFlowTableForGivenMatch(
             final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) {
-        throw new IllegalAccessError("unsupported by backward compatibility delegate service " +
-                "- this rpc is always provided by default service implementation");
+        throw new IllegalAccessError("unsupported by backward compatibility delegate service "
+                + "- this rpc is always provided by default service implementation");
     }
 
     @Override
-    public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>> getAggregateFlowStatisticsFromFlowTableForAllFlows(
+    public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>>
+        getAggregateFlowStatisticsFromFlowTableForAllFlows(
             final GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput input) {
         return aggregateFlowsInTable.handleAndNotify(input, notificationService);
     }

@@ -31,16 +31,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * pulled up common functionality of notification emitting stats services (backward compatibility relic)
+ * Pulled up common functionality of notification emitting stats services (backward compatibility relic).
  */
-public abstract class AbstractCompatibleStatService<I extends DataContainer, O, N extends Notification> extends AbstractMultipartService<I, MultipartReply> implements BackwardCompatibleAtomicService<I, O> {
+public abstract class AbstractCompatibleStatService<I extends DataContainer, O, N extends Notification> extends
+        AbstractMultipartService<I, MultipartReply> implements BackwardCompatibleAtomicService<I, O> {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractCompatibleStatService.class);
 
     private final AtomicLong compatibilityXidSeed;
     private final OpenflowVersion ofVersion;
 
-    public AbstractCompatibleStatService(RequestContextStack requestContextStack, DeviceContext deviceContext, AtomicLong compatibilityXidSeed) {
+    public AbstractCompatibleStatService(RequestContextStack requestContextStack,
+                                         DeviceContext deviceContext,
+                                         AtomicLong compatibilityXidSeed) {
         super(requestContextStack, deviceContext);
         this.compatibilityXidSeed = compatibilityXidSeed;
         ofVersion = OpenflowVersion.get(getVersion());
@@ -51,7 +54,8 @@ public abstract class AbstractCompatibleStatService<I extends DataContainer, O, 
     }
 
     @Override
-    public ListenableFuture<RpcResult<O>> handleAndNotify(final I input, final NotificationPublishService notificationPublishService) {
+    public ListenableFuture<RpcResult<O>> handleAndNotify(final I input,
+                                                          final NotificationPublishService notificationPublishService) {
         // prepare emulated xid
         final long emulatedXid = compatibilityXidSeed.incrementAndGet();
         final TransactionId emulatedTxId = new TransactionId(BigInteger.valueOf(emulatedXid));
@@ -68,13 +72,15 @@ public abstract class AbstractCompatibleStatService<I extends DataContainer, O, 
                     final N flowNotification = transformToNotification(result.getResult(), emulatedTxId);
                     notificationPublishService.offerNotification(flowNotification);
                 } else {
-                    LOG.debug("compatibility callback failed - NOT emitting notification: {}", input.getClass().getSimpleName());
+                    LOG.debug("compatibility callback failed - NOT emitting notification: {}",
+                            input.getClass().getSimpleName());
                 }
             }
 
             @Override
-            public void onFailure(Throwable t) {
-                LOG.debug("compatibility callback crashed - NOT emitting notification: {}", input.getClass().getSimpleName(), t);
+            public void onFailure(Throwable throwable) {
+                LOG.debug("compatibility callback crashed - NOT emitting notification: {}",
+                        input.getClass().getSimpleName(), throwable);
             }
         });
 
