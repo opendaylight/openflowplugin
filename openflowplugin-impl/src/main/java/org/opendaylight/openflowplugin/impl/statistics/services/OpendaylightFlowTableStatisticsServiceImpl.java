@@ -42,7 +42,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Table
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 public final class OpendaylightFlowTableStatisticsServiceImpl extends
-        AbstractCompatibleStatService<GetFlowTablesStatisticsInput, GetFlowTablesStatisticsOutput, FlowTableStatisticsUpdate> implements
+        AbstractCompatibleStatService<GetFlowTablesStatisticsInput,
+        GetFlowTablesStatisticsOutput,
+        FlowTableStatisticsUpdate> implements
         OpendaylightFlowTableStatisticsService {
 
     private final NotificationPublishService notificationPublishService;
@@ -64,7 +66,8 @@ public final class OpendaylightFlowTableStatisticsServiceImpl extends
     @Override
     protected OfHeader buildRequest(final Xid xid, final GetFlowTablesStatisticsInput input) throws ServiceException {
         // Create multipart request body for fetch all the group stats
-        final MultipartRequestTableCaseBuilder multipartRequestTableCaseBuilder = new MultipartRequestTableCaseBuilder();
+        final MultipartRequestTableCaseBuilder multipartRequestTableCaseBuilder =
+                new MultipartRequestTableCaseBuilder();
         final MultipartRequestTableBuilder multipartRequestTableBuilder = new MultipartRequestTableBuilder();
         multipartRequestTableBuilder.setEmpty(true);
         multipartRequestTableCaseBuilder.setMultipartRequestTable(multipartRequestTableBuilder.build());
@@ -84,7 +87,8 @@ public final class OpendaylightFlowTableStatisticsServiceImpl extends
     }
 
     @Override
-    public FlowTableStatisticsUpdate transformToNotification(List<MultipartReply> mpReplyList, TransactionId emulatedTxId) {
+    public FlowTableStatisticsUpdate transformToNotification(List<MultipartReply> mpReplyList,
+                                                             TransactionId emulatedTxId) {
         FlowTableStatisticsUpdateBuilder notification = new FlowTableStatisticsUpdateBuilder();
         notification.setId(getDeviceInfo().getNodeId());
         notification.setMoreReplies(Boolean.FALSE);
