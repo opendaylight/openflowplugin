@@ -23,11 +23,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * translate {@link FlowRemoved} message to FlowRemoved notification (omit instructions)
+ * Translate {@link FlowRemoved} message to FlowRemoved notification (omit instructions).
  */
-public class FlowRemovedTranslator implements MessageTranslator<FlowRemoved, org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved> {
+public class FlowRemovedTranslator implements MessageTranslator
+        <FlowRemoved, org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved> {
     private final ConvertorExecutor convertorExecutor;
     private static final Logger LOG = LoggerFactory.getLogger(FlowRemovedTranslator.class);
+
     public FlowRemovedTranslator(ConvertorExecutor convertorExecutor) {
         this.convertorExecutor = convertorExecutor;
     }
@@ -37,7 +39,8 @@ public class FlowRemovedTranslator implements MessageTranslator<FlowRemoved, org
     }
 
     @Override
-    public org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved translate(FlowRemoved input, DeviceInfo deviceInfo, Object connectionDistinguisher) {
+    public org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved
+            translate(FlowRemoved input, DeviceInfo deviceInfo, Object connectionDistinguisher) {
         FlowRemovedBuilder flowRemovedBld = new FlowRemovedBuilder()
                 .setMatch(translateMatch(input, deviceInfo).build())
                 .setCookie(new FlowCookie(input.getCookie()))
@@ -45,7 +48,7 @@ public class FlowRemovedTranslator implements MessageTranslator<FlowRemoved, org
                 .setPriority(input.getPriority())
                 .setTableId(translateTableId(input));
 
-        if(Objects.nonNull(input.getReason())) {
+        if (Objects.nonNull(input.getReason())) {
             flowRemovedBld.setReason(translateReason(input));
         }
 
@@ -53,7 +56,8 @@ public class FlowRemovedTranslator implements MessageTranslator<FlowRemoved, org
     }
 
     protected MatchBuilder translateMatch(FlowRemoved flowRemoved, DeviceInfo deviceInfo) {
-        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(deviceInfo.getVersion());
+        final VersionDatapathIdConvertorData datapathIdConvertorData =
+                new VersionDatapathIdConvertorData(deviceInfo.getVersion());
         datapathIdConvertorData.setDatapathId(deviceInfo.getDatapathId());
 
         final Optional<MatchBuilder> matchBuilderOptional = getConvertorExecutor().convert(
