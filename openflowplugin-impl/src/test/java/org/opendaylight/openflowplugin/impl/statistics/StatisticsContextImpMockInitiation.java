@@ -52,7 +52,7 @@ class StatisticsContextImpMockInitiation {
     StatisticsManager mockedStatisticsManager;
     ContextChainMastershipWatcher mockedMastershipWatcher;
 
-    static final KeyedInstanceIdentifier<Node, NodeKey> dummyNodeII = InstanceIdentifier.create(Nodes.class)
+    static final KeyedInstanceIdentifier<Node, NodeKey> DUMMY_NODE_ID = InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(new NodeId("dummyNodeId")));
 
     @Before
@@ -82,16 +82,16 @@ class StatisticsContextImpMockInitiation {
         when(mockedDeviceState.isMetersAvailable()).thenReturn(isMeter);
         when(mockedDeviceState.isPortStatisticsAvailable()).thenReturn(isPort);
         when(mockedDeviceState.isQueueStatisticsAvailable()).thenReturn(isQueue);
-        when(mockedDeviceInfo.getNodeInstanceIdentifier()).thenReturn(dummyNodeII);
+        when(mockedDeviceInfo.getNodeInstanceIdentifier()).thenReturn(DUMMY_NODE_ID);
         when(mockedDeviceInfo.getDatapathId()).thenReturn(BigInteger.TEN);
 
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedConnectionContext);
         when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessageSpy);
-        when(mockedDeviceInfo.getNodeId()).thenReturn(dummyNodeII.getKey().getId());
+        when(mockedDeviceInfo.getNodeId()).thenReturn(DUMMY_NODE_ID.getKey().getId());
 
-        when(mockedConnectionContext.getNodeId()).thenReturn(dummyNodeII.getKey().getId());
+        when(mockedConnectionContext.getNodeId()).thenReturn(DUMMY_NODE_ID.getKey().getId());
         when(mockedConnectionContext.getFeatures()).thenReturn(mockedFeatures);
         when(mockedConnectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
         when(mockedConnectionContext.getOutboundQueueProvider()).thenReturn(mockedOutboundQueue);

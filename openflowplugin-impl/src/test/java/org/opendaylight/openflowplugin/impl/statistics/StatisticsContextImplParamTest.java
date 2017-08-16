@@ -74,7 +74,7 @@ public class StatisticsContextImplParamTest extends StatisticsContextImpMockInit
         final StatisticsContextImpl<MultipartReply> statisticsContext = new StatisticsContextImpl<>(
                 mockedDeviceContext, convertorManager,
                 MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext),
-                true, false, 3000, 50000);
+               true, false, 3000, 50000);
 
         final ListenableFuture<RpcResult<List<MultipartReply>>> rpcResult = immediateFuture(RpcResultBuilder
                 .success(Collections.<MultipartReply>emptyList()).build());
@@ -93,5 +93,4 @@ public class StatisticsContextImplParamTest extends StatisticsContextImpMockInit
         verify(mockedStatisticsOnFlyGatheringService)
                 .getStatisticsOfType(Matchers.any(EventIdentifier.class), Matchers.any(MultipartType.class));
     }
-
 }

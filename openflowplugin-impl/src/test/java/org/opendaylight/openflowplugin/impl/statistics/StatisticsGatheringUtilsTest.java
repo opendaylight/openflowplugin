@@ -244,7 +244,8 @@ public class StatisticsGatheringUtilsTest {
         fireAndCheck(type, statsData);
 
         final InstanceIdentifier<GroupStatistics> groupPath = dummyNodePath.augmentation(FlowCapableNode.class)
-                .child(Group.class, new GroupKey(new org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId(groupIdValue)))
+                .child(Group.class, new GroupKey(new org.opendaylight.yang.gen.v1.urn
+                        .opendaylight.group.types.rev131018.GroupId(groupIdValue)))
                 .augmentation(NodeGroupStatistics.class)
                 .child(GroupStatistics.class);
         verify(deviceContext).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL),
@@ -272,14 +273,17 @@ public class StatisticsGatheringUtilsTest {
 
         fireAndCheck(type, statsData);
 
-        final org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId storedGroupId = new org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId(groupIdValue);
-        final KeyedInstanceIdentifier<Group, GroupKey> groupPath = dummyNodePath.augmentation(FlowCapableNode.class).child(Group.class, new GroupKey(storedGroupId));
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId storedGroupId =
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId(groupIdValue);
+        final KeyedInstanceIdentifier<Group, GroupKey> groupPath =
+                dummyNodePath.augmentation(FlowCapableNode.class).child(Group.class, new GroupKey(storedGroupId));
 
-        verify(deviceContext, Mockito.never()).addDeleteToTxChain(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.<InstanceIdentifier<?>> any());
+        verify(deviceContext, Mockito.never()).addDeleteToTxChain(Matchers.eq(LogicalDatastoreType.OPERATIONAL),
+                                                                  Matchers.<InstanceIdentifier<?>>any());
         verify(deviceGroupRegistry).processMarks();
         verify(deviceGroupRegistry).store(storedGroupId);
-        verify(deviceContext).writeToTransaction(
-                Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.eq(groupPath), Matchers.any(Group.class));
+        verify(deviceContext).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL),
+                                                 Matchers.eq(groupPath), Matchers.any(Group.class));
     }
 
     @Test
@@ -309,7 +313,8 @@ public class StatisticsGatheringUtilsTest {
         fireAndCheck(type, statsData);
 
         final InstanceIdentifier<MeterStatistics> meterPath = dummyNodePath.augmentation(FlowCapableNode.class)
-                .child(Meter.class, new MeterKey(new org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId(meterIdValue)))
+                .child(Meter.class, new MeterKey(new org.opendaylight.yang.gen.v1.urn
+                        .opendaylight.meter.types.rev130918.MeterId(meterIdValue)))
                 .augmentation(NodeMeterStatistics.class)
                 .child(MeterStatistics.class);
         verify(deviceContext).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL),
@@ -333,7 +338,8 @@ public class StatisticsGatheringUtilsTest {
         fireAndCheck(type, statsData);
 
         final InstanceIdentifier<FlowCapableNodeConnectorStatistics> portPath = dummyNodePath
-                .child(NodeConnector.class, new NodeConnectorKey(new NodeConnectorId("openflow:" + DUMMY_NODE_ID_VALUE + ":11")))
+                .child(NodeConnector.class,
+                        new NodeConnectorKey(new NodeConnectorId("openflow:" + DUMMY_NODE_ID_VALUE + ":11")))
                 .augmentation(FlowCapableNodeConnectorStatisticsData.class)
                 .child(FlowCapableNodeConnectorStatistics.class);
         verify(deviceContext).writeToTransaction(
@@ -397,7 +403,8 @@ public class StatisticsGatheringUtilsTest {
         fireAndCheck(type, statsData);
 
         final KeyedInstanceIdentifier<Queue, QueueKey> queuePath = dummyNodePath
-                .child(NodeConnector.class, new NodeConnectorKey(new NodeConnectorId("openflow:" + DUMMY_NODE_ID_VALUE + ":11")))
+                .child(NodeConnector.class,
+                        new NodeConnectorKey(new NodeConnectorId("openflow:" + DUMMY_NODE_ID_VALUE + ":11")))
                 .augmentation(FlowCapableNodeConnector.class)
                 .child(Queue.class, new QueueKey(new QueueId(queueIdValue)));
         verify(deviceContext).writeToTransaction(
@@ -411,17 +418,20 @@ public class StatisticsGatheringUtilsTest {
         final short tableId = 0;
         final MultipartType type = MultipartType.OFPMPFLOW;
 
-        final InstanceIdentifier<FlowCapableNode> nodePath = deviceInfo.getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
+        final InstanceIdentifier<FlowCapableNode> nodePath =
+                deviceInfo.getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
         final TableBuilder tableDataBld = new TableBuilder();
         tableDataBld.setId(tableId);
         final FlowCapableNodeBuilder flowNodeBuilder = new FlowCapableNodeBuilder();
         flowNodeBuilder.setTable(Collections.singletonList(tableDataBld.build()));
         final Optional<FlowCapableNode> flowNodeOpt = Optional.of(flowNodeBuilder.build());
-        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> flowNodeFuture = Futures.immediateCheckedFuture(flowNodeOpt);
+        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> flowNodeFuture =
+                Futures.immediateCheckedFuture(flowNodeOpt);
         when(readTx.read(LogicalDatastoreType.OPERATIONAL, nodePath)).thenReturn(flowNodeFuture);
         when(flowDescriptor.getFlowId()).thenReturn(flowId);
 
-        final org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder matchBld =
+        final org.opendaylight.yang.gen.v1.urn
+                .opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder matchBld =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder()
                         .setMatchEntry(Collections.<MatchEntry>emptyList());
         final FlowStatsBuilder flowStatsBld = new FlowStatsBuilder()
@@ -449,10 +459,13 @@ public class StatisticsGatheringUtilsTest {
                 .child(Table.class, new TableKey((short) 0));
         final KeyedInstanceIdentifier<Flow, FlowKey> flowPath =  tablePath.child(Flow.class, new FlowKey(flowId));
 
-        verify(deviceContext, Mockito.never()).addDeleteToTxChain(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.<InstanceIdentifier<?>>any());
+        verify(deviceContext, Mockito.never()).addDeleteToTxChain(Matchers.eq(LogicalDatastoreType.OPERATIONAL),
+                                                                  Matchers.<InstanceIdentifier<?>>any());
 
         final InOrder inOrder = Mockito.inOrder(deviceContext);
-        inOrder.verify(deviceContext).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL),Matchers.any(), Matchers.any());
+        inOrder.verify(deviceContext).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL),
+                                                         Matchers.any(),
+                                                         Matchers.any());
     }
 
     @Test
@@ -467,7 +480,8 @@ public class StatisticsGatheringUtilsTest {
 
         final MultipartReplyMeterConfigBuilder mpReplyMeterConfigBld = new MultipartReplyMeterConfigBuilder();
         mpReplyMeterConfigBld.setMeterConfig(Lists.newArrayList(meterConfigBld.build()));
-        final MultipartReplyMeterConfigCaseBuilder mpReplyMeterConfigCaseBld = new MultipartReplyMeterConfigCaseBuilder();
+        final MultipartReplyMeterConfigCaseBuilder mpReplyMeterConfigCaseBld =
+                new MultipartReplyMeterConfigCaseBuilder();
         mpReplyMeterConfigCaseBld.setMultipartReplyMeterConfig(mpReplyMeterConfigBld.build());
 
         final MultipartReply meterConfigUpdated = assembleMPReplyMessage(type, mpReplyMeterConfigCaseBld.build());
@@ -479,12 +493,15 @@ public class StatisticsGatheringUtilsTest {
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId(meterIdValue);
         final KeyedInstanceIdentifier<Meter, MeterKey> meterPath = dummyNodePath.augmentation(FlowCapableNode.class)
                 .child(Meter.class, new MeterKey(meterId));
-        verify(deviceContext, Mockito.never()).addDeleteToTxChain(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.<InstanceIdentifier<?>>any());
+        verify(deviceContext, Mockito.never()).addDeleteToTxChain(Matchers.eq(LogicalDatastoreType.OPERATIONAL),
+                                                                  Matchers.<InstanceIdentifier<?>>any());
         verify(deviceMeterRegistry).store(meterId);
-        verify(deviceContext).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.eq(meterPath), Matchers.any(Meter.class));
+        verify(deviceContext).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL),
+                                                 Matchers.eq(meterPath), Matchers.any(Meter.class));
     }
 
-    private void fireAndCheck(final MultipartType type, final List<MultipartReply> statsData) throws InterruptedException, ExecutionException, TimeoutException {
+    private void fireAndCheck(final MultipartType type, final List<MultipartReply> statsData)
+            throws InterruptedException, ExecutionException, TimeoutException {
         when(statisticsService.getStatisticsOfType(Matchers.any(EventIdentifier.class), Matchers.eq(type)))
                 .thenReturn(Futures.immediateFuture(RpcResultBuilder.success(statsData).build()));
 
@@ -501,7 +518,8 @@ public class StatisticsGatheringUtilsTest {
         verify(deviceContext).submitTransaction();
     }
 
-    private static MultipartReplyMessage assembleMPReplyMessage(final MultipartType type, final MultipartReplyBody mpReplyGroupCaseBld) {
+    private static MultipartReplyMessage assembleMPReplyMessage(final MultipartType type,
+                                                                final MultipartReplyBody mpReplyGroupCaseBld) {
         return new MultipartReplyMessageBuilder()
                 .setMultipartReplyBody(mpReplyGroupCaseBld)
                 .setType(type)
@@ -511,25 +529,30 @@ public class StatisticsGatheringUtilsTest {
     }
 
     private static BucketStats createBucketStat(final long byteCount, final long packetCount) {
-        return new BucketStatsBuilder().setByteCount(BigInteger.valueOf(byteCount)).setPacketCount(BigInteger.valueOf(packetCount)).build();
+        return new BucketStatsBuilder()
+                .setByteCount(BigInteger.valueOf(byteCount)).setPacketCount(BigInteger.valueOf(packetCount)).build();
     }
 
     @Test
     public void testDeleteAllKnownFlows() throws Exception {
         final short tableId = 0;
-        final InstanceIdentifier<FlowCapableNode> nodePath = deviceInfo.getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
+        final InstanceIdentifier<FlowCapableNode> nodePath =
+                deviceInfo.getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
         final TableBuilder tableDataBld = new TableBuilder();
         tableDataBld.setId(tableId);
         final FlowCapableNodeBuilder flowNodeBuilder = new FlowCapableNodeBuilder();
         flowNodeBuilder.setTable(Collections.singletonList(tableDataBld.build()));
         final Optional<FlowCapableNode> flowNodeOpt = Optional.of(flowNodeBuilder.build());
-        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> flowNodeFuture = Futures.immediateCheckedFuture(flowNodeOpt);
+        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> flowNodeFuture =
+                Futures.immediateCheckedFuture(flowNodeOpt);
         when(readTx.read(LogicalDatastoreType.OPERATIONAL, nodePath)).thenReturn(flowNodeFuture);
         StatisticsGatheringUtils.deleteAllKnownFlows(deviceContext, deviceInfo.getNodeInstanceIdentifier()
             .augmentation(FlowCapableNode.class), deviceFlowRegistry);
 
         verify(deviceContext).isTransactionsEnabled();
         verify(deviceContext).getReadTransaction();
-        verify(deviceContext).writeToTransaction(Mockito.eq(LogicalDatastoreType.OPERATIONAL), Mockito.any(), Mockito.any());
+        verify(deviceContext).writeToTransaction(Mockito.eq(LogicalDatastoreType.OPERATIONAL),
+                                                 Mockito.any(),
+                                                 Mockito.any());
     }
 }

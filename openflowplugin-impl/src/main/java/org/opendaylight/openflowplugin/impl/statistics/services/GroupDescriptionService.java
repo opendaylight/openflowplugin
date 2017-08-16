@@ -36,11 +36,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupDescCaseBuilder;
 
 final class GroupDescriptionService
-        extends AbstractCompatibleStatService<GetGroupDescriptionInput, GetGroupDescriptionOutput, GroupDescStatsUpdated> {
-    private static final MultipartRequestGroupDescCase GROUP_DESC_CASE = new MultipartRequestGroupDescCaseBuilder().build();
+        extends AbstractCompatibleStatService<GetGroupDescriptionInput,
+                                              GetGroupDescriptionOutput,
+                                              GroupDescStatsUpdated> {
+    private static final MultipartRequestGroupDescCase GROUP_DESC_CASE =
+            new MultipartRequestGroupDescCaseBuilder().build();
     private final ConvertorExecutor convertorExecutor;
 
-    public GroupDescriptionService(RequestContextStack requestContextStack, DeviceContext deviceContext, AtomicLong compatibilityXidSeed, ConvertorExecutor convertorExecutor) {
+    GroupDescriptionService(RequestContextStack requestContextStack,
+                            DeviceContext deviceContext,
+                            AtomicLong compatibilityXidSeed,
+                            ConvertorExecutor convertorExecutor) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
         this.convertorExecutor = convertorExecutor;
     }

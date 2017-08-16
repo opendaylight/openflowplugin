@@ -17,7 +17,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -42,7 +41,10 @@ public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
 
     @Override
     public void setUp() throws Exception {
-        service = new GroupDirectStatisticsService(requestContextStack, deviceContext, convertorManager, multipartWriterProvider);
+        service = new GroupDirectStatisticsService(requestContextStack,
+                                                   deviceContext,
+                                                   convertorManager,
+                                                   multipartWriterProvider);
     }
 
     @Override
@@ -67,7 +69,8 @@ public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         final MultipartReplyGroupCase groupCase = mock(MultipartReplyGroupCase.class);
         final MultipartReplyGroup group = mock(MultipartReplyGroup.class);
         final GroupStats groupStat = new GroupStatsBuilder()
-                .setGroupId(new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupId(GROUP_NO))
+                .setGroupId(new org.opendaylight.yang.gen.v1.urn
+                        .opendaylight.openflow.common.types.rev130731.GroupId(GROUP_NO))
                 .setByteCount(BigInteger.ONE)
                 .setPacketCount(BigInteger.ONE)
                 .setBucketStats(Collections.emptyList())
@@ -86,19 +89,23 @@ public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         final GetGroupStatisticsOutput output = service.buildReply(input, true);
         assertTrue(output.getGroupStats().size() > 0);
 
-        final org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStats stats =
-                output.getGroupStats().get(0);
+        final org.opendaylight.yang.gen.v1.urn
+            .opendaylight.group.types.rev131018.group.statistics.reply.GroupStats stats = output.getGroupStats().get(0);
 
         assertEquals(stats.getGroupId().getValue(), GROUP_NO);
     }
 
     @Override
     public void testStoreStatistics() throws Exception {
-        final org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStats stat = mock(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStats.class);
+        final org.opendaylight.yang.gen.v1.urn
+                .opendaylight.group.types.rev131018.group.statistics.reply.GroupStats stat =
+                mock(org.opendaylight.yang.gen.v1.urn
+                        .opendaylight.group.types.rev131018.group.statistics.reply.GroupStats.class);
         when(stat.getGroupId()).thenReturn(new GroupId(GROUP_NO));
 
-        final List<org.opendaylight.yang.gen.v1.urn
-                .opendaylight.group.types.rev131018.group.statistics.reply.GroupStats> stats = Collections.singletonList(stat);
+        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
+                .GroupStats>
+                stats = Collections.singletonList(stat);
         final GetGroupStatisticsOutput output = mock(GetGroupStatisticsOutput.class);
         when(output.getGroupStats()).thenReturn(stats);
 
