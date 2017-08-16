@@ -105,7 +105,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         final ListenableFuture<Boolean> deviceStatisticsCollectionFuture = statisticsContext.gatherDynamicData();
         Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback<Boolean>() {
             @Override
-            public void onSuccess(final Boolean o) {
+            public void onSuccess(final Boolean isSuccess) {
                 timeCounter.addTimeMark();
                 calculateTimerDelay(timeCounter);
                 scheduleNextPolling(deviceState, deviceInfo, statisticsContext, timeCounter);
@@ -126,8 +126,8 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                 } else if (throwable instanceof CancellationException) {
                     LOG.info("Statistics gathering for device {} was cancelled.", deviceInfo);
                 } else {
-                    LOG.warn("Unexpected error occurred during statistics collection for device {}, rescheduling " +
-                            "statistics collections", deviceInfo, throwable);
+                    LOG.warn("Unexpected error occurred during statistics collection for device {}, rescheduling "
+                            + "statistics collections", deviceInfo, throwable);
 
                     scheduleNextPolling(deviceState, deviceInfo, statisticsContext, timeCounter);
                 }
@@ -138,7 +138,8 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         final long statsTimeoutSec = averageTime > 0 ? 3 * averageTime : DEFAULT_STATS_TIMEOUT_SEC;
         final TimerTask timerTask = timeout -> {
             if (!deviceStatisticsCollectionFuture.isDone()) {
-                LOG.info("Statistics collection for node {} still in progress even after {} secs", deviceInfo, statsTimeoutSec);
+                LOG.info("Statistics collection for node {} still in progress even after {} secs",
+                        deviceInfo, statsTimeoutSec);
                 deviceStatisticsCollectionFuture.cancel(true);
             }
         };
@@ -156,13 +157,13 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
         if (isStatisticsEnabled()) {
             final Timeout pollTimeout = hashedWheelTimer.newTimeout(
-                    timeout -> pollStatistics(
-                            deviceState,
-                            statisticsContext,
-                            timeCounter,
-                            deviceInfo),
-                    currentTimerDelay,
-                    TimeUnit.MILLISECONDS);
+                timeout -> pollStatistics(
+                        deviceState,
+                        statisticsContext,
+                        timeCounter,
+                        deviceInfo),
+                currentTimerDelay,
+                TimeUnit.MILLISECONDS);
 
             statisticsContext.setPollTimeout(pollTimeout);
         }
@@ -217,14 +218,19 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                     final DeviceContext deviceContext = statisticsContext.gainDeviceContext();
                     switch (targetWorkMode) {
                         case COLLECTALL:
-                            scheduleNextPolling(statisticsContext.gainDeviceState(), deviceInfo, statisticsContext, new TimeCounter());
-                            for (final ItemLifeCycleSource lifeCycleSource : deviceContext.getItemLifeCycleSourceRegistry().getLifeCycleSources()) {
+                            scheduleNextPolling(statisticsContext.gainDeviceState(),
+                                                deviceInfo,
+                                                statisticsContext,
+                                                new TimeCounter());
+                            for (final ItemLifeCycleSource lifeCycleSource :
+                                    deviceContext.getItemLifeCycleSourceRegistry().getLifeCycleSources()) {
                                 lifeCycleSource.setItemLifecycleListener(null);
                             }
                             break;
                         case FULLYDISABLED:
                             statisticsContext.stopGatheringData();
-                            for (final ItemLifeCycleSource lifeCycleSource : deviceContext.getItemLifeCycleSourceRegistry().getLifeCycleSources()) {
+                            for (final ItemLifeCycleSource lifeCycleSource :
+                                    deviceContext.getItemLifeCycleSourceRegistry().getLifeCycleSources()) {
                                 lifeCycleSource.setItemLifecycleListener(statisticsContext.getItemLifeCycleListener());
                             }
                             break;
@@ -317,16 +323,16 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                 .createDefaultProvider(deviceContext);
 
         final StatisticsContext statisticsContext =
-                deviceContext.canUseSingleLayerSerialization() ?
-                        new StatisticsContextImpl<MultipartReply>(
+                deviceContext.canUseSingleLayerSerialization()
+                        ? new StatisticsContextImpl<MultipartReply>(
                                 isStatisticsEnabled(),
                                 deviceContext,
                                 converterExecutor,
                                 this,
                                 statisticsWriterProvider,
-                                reconciliationFrameworkRegistrar.isReconciliationFrameworkRegistered()) :
-                        new StatisticsContextImpl<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
-                                .MultipartReply>(
+                                reconciliationFrameworkRegistrar.isReconciliationFrameworkRegistered())
+                        : new StatisticsContextImpl<org.opendaylight.yang.gen.v1.urn
+                                .opendaylight.openflow.protocol.rev130731.MultipartReply>(
                                 isStatisticsEnabled(),
                                 deviceContext,
                                 converterExecutor,

@@ -83,7 +83,8 @@ public abstract class AbstractStatsServiceTest {
     public void init() throws Exception {
         Mockito.when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         Mockito.when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
-        Mockito.when(deviceContext.getMultiMsgCollector(Matchers.any(RequestContext.class))).thenReturn(multiMsgCollector);
+        Mockito.when(deviceContext.getMultiMsgCollector(Matchers.any(RequestContext.class)))
+                .thenReturn(multiMsgCollector);
         Mockito.when(deviceContext.oook()).thenReturn(translatorLibrary);
         Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
         Mockito.when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);

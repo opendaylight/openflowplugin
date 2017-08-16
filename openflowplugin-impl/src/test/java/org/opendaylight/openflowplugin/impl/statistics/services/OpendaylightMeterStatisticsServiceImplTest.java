@@ -55,11 +55,13 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 /**
- * Test for {@link OpendaylightMeterStatisticsServiceImpl}
+ * Test for {@link OpendaylightMeterStatisticsServiceImpl}.
  */
 public class OpendaylightMeterStatisticsServiceImplTest extends AbstractSingleStatsServiceTest {
 
-    private static final org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterId METER_ID = new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterId(123L);
+    private static final org.opendaylight.yang.gen.v1.urn
+                .opendaylight.openflow.common.types.rev130731.MeterId METER_ID =
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterId(123L);
     @Captor
     private ArgumentCaptor<MultipartRequestInput> requestInput;
 

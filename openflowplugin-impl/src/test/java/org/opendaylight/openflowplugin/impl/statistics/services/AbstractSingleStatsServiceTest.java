@@ -19,9 +19,6 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.Event
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
-/**
- * Created by mirehak on 9/9/15.
- */
 public abstract class AbstractSingleStatsServiceTest extends AbstractStatsServiceTest {
 
     @Mock
@@ -51,6 +48,7 @@ public abstract class AbstractSingleStatsServiceTest extends AbstractStatsServic
 
         Mockito.when(rqContextStack.<Object>createRequestContext()).thenReturn(rqContext);
         Mockito.doAnswer(closeRequestFutureAnswer).when(multiMsgCollector).endCollecting(null);
-        Mockito.doAnswer(closeRequestFutureAnswer).when(multiMsgCollector).endCollecting(Matchers.any(EventIdentifier.class));
+        Mockito.doAnswer(closeRequestFutureAnswer).when(multiMsgCollector)
+                .endCollecting(Matchers.any(EventIdentifier.class));
     }
 }

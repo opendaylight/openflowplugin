@@ -50,11 +50,13 @@ final class AllGroupsStatsService extends
     private final ConvertorExecutor convertorExecutor;
 
 
-    public AllGroupsStatsService(RequestContextStack requestContextStack, DeviceContext deviceContext, AtomicLong compatibilityXidSeed, ConvertorExecutor convertorExecutor) {
+    AllGroupsStatsService(RequestContextStack requestContextStack,
+                                 DeviceContext deviceContext,
+                                 AtomicLong compatibilityXidSeed,
+                                 ConvertorExecutor convertorExecutor) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
         this.convertorExecutor = convertorExecutor;
     }
-
 
     @Override
     protected OfHeader buildRequest(final Xid xid, final GetAllGroupStatisticsInput input) throws ServiceException {
@@ -76,6 +78,9 @@ final class AllGroupsStatsService extends
 
     @Override
     public GroupStatisticsUpdated transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
-        return GroupStatisticsToNotificationTransformer.transformToNotification(result, getDeviceInfo(), emulatedTxId, convertorExecutor);
+        return GroupStatisticsToNotificationTransformer.transformToNotification(result,
+                                                                                getDeviceInfo(),
+                                                                                emulatedTxId,
+                                                                                convertorExecutor);
     }
 }
