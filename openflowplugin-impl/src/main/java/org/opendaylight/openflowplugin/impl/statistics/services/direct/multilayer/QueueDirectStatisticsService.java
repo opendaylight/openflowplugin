@@ -95,7 +95,8 @@ public class QueueDirectStatisticsService extends AbstractQueueDirectStatisticsS
         }
 
         if (input.getNodeConnectorId() != null) {
-            mprQueueBuilder.setPortNo(InventoryDataServiceUtil.portNumberfromNodeConnectorId(getOfVersion(), input.getNodeConnectorId()));
+            mprQueueBuilder.setPortNo(InventoryDataServiceUtil.portNumberfromNodeConnectorId(getOfVersion(),
+                    input.getNodeConnectorId()));
         } else {
             mprQueueBuilder.setPortNo(OFConstants.OFPP_ANY);
         }

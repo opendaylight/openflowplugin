@@ -42,7 +42,10 @@ public class MeterDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
 
     @Override
     public void setUp() throws Exception {
-        service = new MeterDirectStatisticsService(requestContextStack, deviceContext, convertorManager, multipartWriterProvider);
+        service = new MeterDirectStatisticsService(requestContextStack,
+                                                   deviceContext,
+                                                   convertorManager,
+                                                   multipartWriterProvider);
     }
 
     @Override
@@ -67,7 +70,8 @@ public class MeterDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         final MultipartReplyMeterCase MeterCase = mock(MultipartReplyMeterCase.class);
         final MultipartReplyMeter meter = mock(MultipartReplyMeter.class);
         final MeterStats meterStat = new MeterStatsBuilder()
-                .setMeterId(new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterId(METER_NO))
+                .setMeterId(new org.opendaylight.yang.gen.v1.urn
+                        .opendaylight.openflow.common.types.rev130731.MeterId(METER_NO))
                 .setByteInCount(BigInteger.ONE)
                 .setPacketInCount(BigInteger.ONE)
                 .setDurationSec(1L)
@@ -86,18 +90,22 @@ public class MeterDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         final GetMeterStatisticsOutput output = service.buildReply(input, true);
         assertTrue(output.getMeterStats().size() > 0);
 
-        final org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats stats =
-                output.getMeterStats().get(0);
+        final org.opendaylight.yang.gen.v1.urn
+            .opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats stats = output.getMeterStats().get(0);
 
         assertEquals(stats.getMeterId().getValue(), METER_NO);
     }
 
     @Override
     public void testStoreStatistics() throws Exception {
-        final org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats stat = mock(org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats.class);
+        final org.opendaylight.yang.gen.v1.urn
+                .opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats stat =
+                mock(org.opendaylight.yang.gen.v1.urn
+                        .opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats.class);
         when(stat.getMeterId()).thenReturn(new MeterId(METER_NO));
 
-        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats> stats = Arrays.asList(stat);
+        final List<org.opendaylight.yang.gen.v1.urn
+                .opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats> stats = Arrays.asList(stat);
         final GetMeterStatisticsOutput output = mock(GetMeterStatisticsOutput.class);
         when(output.getMeterStats()).thenReturn(stats);
 
