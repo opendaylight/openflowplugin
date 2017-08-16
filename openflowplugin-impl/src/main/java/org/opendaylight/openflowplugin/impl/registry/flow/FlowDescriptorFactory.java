@@ -16,8 +16,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 
 /**
- * This class serves as factory for creating {@link org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor}
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 9.4.2015.
+ * This class serves as factory for creating
+ * {@link org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor}.
  */
 public class FlowDescriptorFactory {
 
@@ -43,12 +43,15 @@ public class FlowDescriptorFactory {
         }
 
         @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            FlowDescriptorDto that = (FlowDescriptorDto) o;
-            return Objects.equal(flowId, that.flowId) &&
-                    Objects.equal(tableKey, that.tableKey);
+        public boolean equals(Object object) {
+            if (this == object) {
+                return true;
+            }
+            if (object == null || getClass() != object.getClass()) {
+                return false;
+            }
+            FlowDescriptorDto that = (FlowDescriptorDto) object;
+            return Objects.equal(flowId, that.flowId) && Objects.equal(tableKey, that.tableKey);
         }
 
         @Override

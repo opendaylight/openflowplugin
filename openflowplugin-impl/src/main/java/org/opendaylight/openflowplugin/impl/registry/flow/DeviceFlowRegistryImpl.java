@@ -55,7 +55,9 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     private final List<ListenableFuture<List<Optional<FlowCapableNode>>>> lastFillFutures = new ArrayList<>();
     private final Consumer<Flow> flowConsumer;
 
-    public DeviceFlowRegistryImpl(final short version, final DataBroker dataBroker, final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier) {
+    public DeviceFlowRegistryImpl(final short version,
+                                  final DataBroker dataBroker,
+                                  final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier) {
         this.dataBroker = dataBroker;
         this.instanceIdentifier = instanceIdentifier;
 
@@ -81,22 +83,27 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
         final InstanceIdentifier<FlowCapableNode> path = instanceIdentifier.augmentation(FlowCapableNode.class);
 
         // First, try to fill registry with flows from DS/Configuration
-        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> configFuture = fillFromDatastore(LogicalDatastoreType.CONFIGURATION, path);
+        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> configFuture =
+                fillFromDatastore(LogicalDatastoreType.CONFIGURATION, path);
 
         // Now, try to fill registry with flows from DS/Operational
         // in case of cluster fail over, when clients are not using DS/Configuration
         // for adding flows, but only RPCs
-        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> operationalFuture = fillFromDatastore(LogicalDatastoreType.OPERATIONAL, path);
+        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> operationalFuture =
+                fillFromDatastore(LogicalDatastoreType.OPERATIONAL, path);
 
         // And at last, chain and return futures created above.
         // Also, cache this future, so call to DeviceFlowRegistry.close() will be able
         // to cancel this future immediately if it will be still in progress
-        final ListenableFuture<List<Optional<FlowCapableNode>>> lastFillFuture = Futures.allAsList(Arrays.asList(configFuture, operationalFuture));
+        final ListenableFuture<List<Optional<FlowCapableNode>>> lastFillFuture =
+                Futures.allAsList(Arrays.asList(configFuture, operationalFuture));
         lastFillFutures.add(lastFillFuture);
         return lastFillFuture;
     }
 
-    private CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> fillFromDatastore(final LogicalDatastoreType logicalDatastoreType, final InstanceIdentifier<FlowCapableNode> path) {
+    private CheckedFuture<Optional<FlowCapableNode>, ReadFailedException>
+            fillFromDatastore(final LogicalDatastoreType logicalDatastoreType,
+                              final InstanceIdentifier<FlowCapableNode> path) {
         // Create new read-only transaction
         final ReadOnlyTransaction transaction = dataBroker.newReadOnlyTransaction();
 
@@ -135,7 +142,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Throwable throwable) {
                 // Even when read operation failed, close the transaction
                 transaction.close();
             }
@@ -159,13 +166,16 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
         try {
             if (LOG.isTraceEnabled()) {
                 LOG.trace("Storing flowDescriptor with table ID : {} and flow ID : {} for flow hash : {}",
-                        flowDescriptor.getTableKey().getId(), flowDescriptor.getFlowId().getValue(), flowRegistryKey.hashCode());
+                        flowDescriptor.getTableKey().getId(),
+                        flowDescriptor.getFlowId().getValue(),
+                        flowRegistryKey.hashCode());
             }
 
             flowRegistry.put(flowRegistryKey, flowDescriptor);
         } catch (IllegalArgumentException ex) {
             if (LOG.isWarnEnabled()) {
-                LOG.warn("Flow with flow ID {} already exists in table {}, generating alien flow ID", flowDescriptor.getFlowId().getValue(),
+                LOG.warn("Flow with flow ID {} already exists in table {}, generating alien flow ID",
+                        flowDescriptor.getFlowId().getValue(),
                         flowDescriptor.getTableKey().getId());
             }
 
@@ -183,7 +193,8 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     public void store(final FlowRegistryKey flowRegistryKey) {
         if (Objects.isNull(retrieveDescriptor(flowRegistryKey))) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Flow descriptor for flow hash : {} not found, generating alien flow ID", flowRegistryKey.hashCode());
+                LOG.debug("Flow descriptor for flow hash : {} not found, generating alien flow ID",
+                        flowRegistryKey.hashCode());
             }
 
             // We do not found flow in flow registry, that means it do not have any ID already assigned, so we need

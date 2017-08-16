@@ -51,10 +51,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Pa
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
-/**
- * Created by tkubas on 4/1/15.
- */
-
 @RunWith(MockitoJUnitRunner.class)
 public class PacketReceivedTranslatorTest {
 
@@ -79,10 +75,10 @@ public class PacketReceivedTranslatorTest {
 
     ConvertorManager convertorManager;
 
-    static final Long PORT_NO = 5l;
-    static final Long PORT_NO_DS = 6l;
+    static final Long PORT_NO = 5L;
+    static final Long PORT_NO_DS = 6L;
     static final String DATA = "Test_Data";
-    static final Long PORT_NUM_VALUE = 11l;
+    static final Long PORT_NUM_VALUE = 11L;
 
     @Before
     public void setUp() throws Exception {
