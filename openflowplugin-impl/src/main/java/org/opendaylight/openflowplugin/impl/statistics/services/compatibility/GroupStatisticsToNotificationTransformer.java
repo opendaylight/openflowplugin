@@ -23,17 +23,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.MultipartReplyGroup;
 
 /**
- * pulled out group stats to notification transformation
+ * Pulled out group stats to notification transformation.
  */
 public class GroupStatisticsToNotificationTransformer {
+
     private GroupStatisticsToNotificationTransformer() {
         // Hide implicit constructor
     }
+
     /**
+     * Transform notification.
      * @param mpReplyList   raw multipart response from device
      * @param deviceInfo   device state
-     * @param emulatedTxId
-     * @param convertorExecutor
+     * @param emulatedTxId emulated transaction id
+     * @param convertorExecutor convertor executor
      * @return notification containing flow stats
      */
     public static GroupStatisticsUpdated transformToNotification(final List<MultipartReply> mpReplyList,

@@ -28,18 +28,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.G
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
-/**
- * @author joe
- */
-public class OpendaylightFlowStatisticsServiceImpl implements OpendaylightFlowStatisticsService, Delegator<OpendaylightFlowStatisticsService> {
+public class OpendaylightFlowStatisticsServiceImpl implements OpendaylightFlowStatisticsService,
+                                                              Delegator<OpendaylightFlowStatisticsService> {
 
     private final SingleLayerAggregateFlowMultipartService singleLayerService;
     private final MultiLayerAggregateFlowMultipartService multiLayerService;
     private OpendaylightFlowStatisticsService delegate;
 
     public static OpendaylightFlowStatisticsServiceImpl createWithOook(final RequestContextStack requestContextStack,
-                                                              final DeviceContext deviceContext, final ConvertorExecutor convertorExecutor) {
-        return new OpendaylightFlowStatisticsServiceImpl(requestContextStack, deviceContext, deviceContext.oook(), convertorExecutor);
+                                                                       final DeviceContext deviceContext,
+                                                                       final ConvertorExecutor convertorExecutor) {
+        return new OpendaylightFlowStatisticsServiceImpl(requestContextStack,
+                                                         deviceContext,
+                                                         deviceContext.oook(),
+                                                         convertorExecutor);
     }
 
     public OpendaylightFlowStatisticsServiceImpl(final RequestContextStack requestContextStack,
@@ -57,12 +59,15 @@ public class OpendaylightFlowStatisticsServiceImpl implements OpendaylightFlowSt
     }
 
     /**
-     * @deprecated provided for Be-release as backward compatibility relic
+     * Get aggregate statistics.
+     *
+     * @deprecated provided for Be-release as backward compatibility relic.
      */
     @Override
     @Deprecated
-    public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>> getAggregateFlowStatisticsFromFlowTableForAllFlows(
-            final GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput input) {
+    public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>>
+        getAggregateFlowStatisticsFromFlowTableForAllFlows(
+                final GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput input) {
         if (delegate != null) {
             return delegate.getAggregateFlowStatisticsFromFlowTableForAllFlows(input);
         } else {
@@ -71,15 +76,18 @@ public class OpendaylightFlowStatisticsServiceImpl implements OpendaylightFlowSt
     }
 
     @Override
-    public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> getAggregateFlowStatisticsFromFlowTableForGivenMatch(
-            final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) {
+    public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>>
+        getAggregateFlowStatisticsFromFlowTableForGivenMatch(
+                final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) {
         return singleLayerService.canUseSingleLayerSerialization()
             ? singleLayerService.handleAndReply(input)
             : multiLayerService.handleAndReply(input);
     }
 
     /**
-     * @deprecated provided for Be-release as backward compatibility relic
+     * Get flow statistics.
+     *
+     * @deprecated provided for Be-release as backward compatibility relic.
      */
     @Override
     @Deprecated
@@ -93,7 +101,9 @@ public class OpendaylightFlowStatisticsServiceImpl implements OpendaylightFlowSt
     }
 
     /**
-     * @deprecated provided for Be-release as backward compatibility relic
+     * Get flow statistics.
+     *
+     * @deprecated provided for Be-release as backward compatibility relic.
      */
     @Override
     @Deprecated
@@ -107,7 +117,9 @@ public class OpendaylightFlowStatisticsServiceImpl implements OpendaylightFlowSt
     }
 
     /**
-     * @deprecated provided for Be-release as backward compatibility relic
+     * Get flow statistics.
+     *
+     * @deprecated provided for Be-release as backward compatibility relic.
      */
     @Override
     @Deprecated
