@@ -18,12 +18,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyAggregateCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.aggregate._case.MultipartReplyAggregate;
 
-/**
- * Created by tkubas on 4/27/15.
- */
 public class AggregatedFlowStatisticsTranslator implements MessageTranslator<MultipartReply, AggregatedFlowStatistics> {
     @Override
-    public AggregatedFlowStatistics translate(final MultipartReply input, final DeviceInfo deviceInfo, final Object connectionDistinguisher) {
+    public AggregatedFlowStatistics translate(final MultipartReply input,
+                                              final DeviceInfo deviceInfo,
+                                              final Object connectionDistinguisher) {
         AggregatedFlowStatisticsBuilder aggregatedFlowStatisticsBuilder = new AggregatedFlowStatisticsBuilder();
 
         MultipartReplyAggregateCase caseBody = (MultipartReplyAggregateCase)input.getMultipartReplyBody();

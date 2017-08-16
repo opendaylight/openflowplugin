@@ -18,32 +18,32 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
 
 /**
- * flow building helper
+ * Flow building helper.
  */
 public class TestFlowHelper {
     /**
-     * @param i data seed
+     * Creates flow and statistics builder.
+     * @param index data seed
      * @return flow stats builder with dummy content
      */
-    protected static FlowAndStatisticsMapListBuilder createFlowAndStatisticsMapListBuilder(int i) {
+    protected static FlowAndStatisticsMapListBuilder createFlowAndStatisticsMapListBuilder(int index) {
         FlowAndStatisticsMapListBuilder flowAndStatisticsMapListBuilder = new FlowAndStatisticsMapListBuilder();
-        flowAndStatisticsMapListBuilder.setPriority(i);
-        flowAndStatisticsMapListBuilder.setTableId((short) i);
+        flowAndStatisticsMapListBuilder.setPriority(index);
+        flowAndStatisticsMapListBuilder.setTableId((short) index);
         flowAndStatisticsMapListBuilder.setCookie(new FlowCookie(BigInteger.TEN));
-
-        MatchBuilder matchBuilder = new MatchBuilder();
 
         EthernetMatchBuilder ethernetMatchBuilder = new EthernetMatchBuilder();
 
         EthernetSourceBuilder ethernetSourceBuilder = new EthernetSourceBuilder();
-        MacAddress macAddress = new MacAddress("00:00:00:00:00:0" + i);
+        MacAddress macAddress = new MacAddress("00:00:00:00:00:0" + index);
         ethernetSourceBuilder.setAddress(macAddress);
         ethernetMatchBuilder.setEthernetSource(ethernetSourceBuilder.build());
 
         EthernetDestinationBuilder ethernetDestinationBuilder = new EthernetDestinationBuilder();
-        ethernetDestinationBuilder.setAddress(new MacAddress("00:00:00:0" + i + ":00:00"));
+        ethernetDestinationBuilder.setAddress(new MacAddress("00:00:00:0" + index + ":00:00"));
         ethernetMatchBuilder.setEthernetDestination(ethernetDestinationBuilder.build());
 
+        MatchBuilder matchBuilder = new MatchBuilder();
         matchBuilder.setEthernetMatch(ethernetMatchBuilder.build());
 
         flowAndStatisticsMapListBuilder.setMatch(matchBuilder.build());
