@@ -55,11 +55,12 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 /**
- * Test for {@link OpendaylightGroupStatisticsServiceImpl}
+ * Test for {@link OpendaylightGroupStatisticsServiceImpl}.
  */
 public class OpendaylightGroupStatisticsServiceImplTest extends AbstractSingleStatsServiceTest {
 
-    private static final org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupId GROUP_ID =
+    private static final org.opendaylight.yang.gen.v1.urn
+            .opendaylight.openflow.common.types.rev130731.GroupId GROUP_ID =
             new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupId(123L);
     @Captor
     private ArgumentCaptor<MultipartRequestInput> requestInput;

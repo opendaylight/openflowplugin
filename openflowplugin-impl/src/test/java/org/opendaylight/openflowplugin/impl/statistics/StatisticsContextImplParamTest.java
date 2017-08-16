@@ -34,8 +34,11 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 @RunWith(Parameterized.class)
 public class StatisticsContextImplParamTest extends StatisticsContextImpMockInitiation {
 
-
-    public StatisticsContextImplParamTest(final boolean isTable, final boolean isFlow, final boolean isGroup, final boolean isMeter, final boolean isPort,
+    public StatisticsContextImplParamTest(final boolean isTable,
+                                          final boolean isFlow,
+                                          final boolean isGroup,
+                                          final boolean isMeter,
+                                          final boolean isPort,
                                           final boolean isQueue) {
         super();
         this.isTable = isTable;
@@ -58,9 +61,6 @@ public class StatisticsContextImplParamTest extends StatisticsContextImpMockInit
         });
     }
 
-
-
-
     @Test
     public void gatherDynamicDataTest() {
 
@@ -72,7 +72,8 @@ public class StatisticsContextImplParamTest extends StatisticsContextImpMockInit
                 MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext),
                 false);
 
-        final ListenableFuture<RpcResult<List<MultipartReply>>> rpcResult = immediateFuture(RpcResultBuilder.success(Collections.<MultipartReply>emptyList()).build());
+        final ListenableFuture<RpcResult<List<MultipartReply>>> rpcResult =
+                immediateFuture(RpcResultBuilder.success(Collections.<MultipartReply>emptyList()).build());
         when(mockedStatisticsGatheringService.getStatisticsOfType(any(EventIdentifier.class), any(MultipartType
                 .class))).thenReturn(rpcResult);
         when(mockedStatisticsOnFlyGatheringService.getStatisticsOfType(any(EventIdentifier.class), any(MultipartType
@@ -88,7 +89,5 @@ public class StatisticsContextImplParamTest extends StatisticsContextImpMockInit
         } catch (InterruptedException | ExecutionException e) {
             fail("Exception wasn't expected.");
         }
-
     }
-
 }

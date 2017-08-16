@@ -40,7 +40,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 /**
- * Test for {@link OpendaylightFlowStatisticsServiceImpl} - only not delegated method
+ * Test for {@link OpendaylightFlowStatisticsServiceImpl} - only not delegated method.
  */
 public class OpendaylightFlowStatisticsServiceImpl2Test extends AbstractStatsServiceTest {
 
@@ -56,7 +56,9 @@ public class OpendaylightFlowStatisticsServiceImpl2Test extends AbstractStatsSer
 
     public void setUp() {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        flowStatisticsService = OpendaylightFlowStatisticsServiceImpl.createWithOook(rqContextStack, deviceContext, convertorManager);
+        flowStatisticsService = OpendaylightFlowStatisticsServiceImpl.createWithOook(rqContextStack,
+                                                                                     deviceContext,
+                                                                                     convertorManager);
 
         rqContextMp = new AbstractRequestContext<List<MultipartReply>>(42L) {
             @Override
@@ -65,7 +67,8 @@ public class OpendaylightFlowStatisticsServiceImpl2Test extends AbstractStatsSer
             }
         };
         Mockito.when(rqContextStack.<List<MultipartReply>>createRequestContext()).thenReturn(rqContextMp);
-        Mockito.when(translatorLibrary.<MultipartReply, AggregatedFlowStatistics>lookupTranslator(Matchers.any(TranslatorKey.class)))
+        Mockito.when(translatorLibrary
+                .<MultipartReply, AggregatedFlowStatistics>lookupTranslator(Matchers.any(TranslatorKey.class)))
                 .thenReturn(translator);
     }
 
@@ -73,16 +76,17 @@ public class OpendaylightFlowStatisticsServiceImpl2Test extends AbstractStatsSer
     public void testGetAggregateFlowStatisticsFromFlowTableForGivenMatch() throws Exception {
         Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)
                 .commitEntry(Matchers.eq(42L), requestInput.capture(), Matchers.any(FutureCallback.class));
-        Mockito.doAnswer(new Answer<Void>() {
-                             @Override
-                             public Void answer(InvocationOnMock invocation) throws Throwable {
-                                 final MultipartReplyMessageBuilder messageBuilder = new MultipartReplyMessageBuilder()
-                                         .setVersion(OFConstants.OFP_VERSION_1_3);
-                                 rqContextMp.setResult(RpcResultBuilder.success(
-                                         Collections.<MultipartReply>singletonList(messageBuilder.build())).build());
-                                 return null;
-                             }
-                         }
+        Mockito.doAnswer(
+            new Answer<Void>() {
+                 @Override
+                 public Void answer(InvocationOnMock invocation) throws Throwable {
+                     final MultipartReplyMessageBuilder messageBuilder = new MultipartReplyMessageBuilder()
+                             .setVersion(OFConstants.OFP_VERSION_1_3);
+                     rqContextMp.setResult(RpcResultBuilder.success(
+                             Collections.<MultipartReply>singletonList(messageBuilder.build())).build());
+                     return null;
+                 }
+             }
         ).when(multiMsgCollector).endCollecting(Matchers.any(EventIdentifier.class));
         Mockito.when(translator.translate(
                         Matchers.any(MultipartReply.class), Matchers.same(deviceInfo), Matchers.isNull())
@@ -104,6 +108,4 @@ public class OpendaylightFlowStatisticsServiceImpl2Test extends AbstractStatsSer
         Assert.assertEquals(1, rpcResult.getResult().getAggregatedFlowStatistics().size());
         Assert.assertEquals(MultipartType.OFPMPAGGREGATE, requestInput.getValue().getType());
     }
-
-
 }

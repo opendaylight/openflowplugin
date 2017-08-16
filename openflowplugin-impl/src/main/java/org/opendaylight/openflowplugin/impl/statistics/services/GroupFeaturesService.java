@@ -52,7 +52,9 @@ final class GroupFeaturesService
     private static final MultipartRequestGroupFeaturesCase GROUP_FEAT_CASE =
             new MultipartRequestGroupFeaturesCaseBuilder().build();
 
-    public GroupFeaturesService(RequestContextStack requestContextStack, DeviceContext deviceContext, AtomicLong compatibilityXidSeed) {
+    GroupFeaturesService(RequestContextStack requestContextStack,
+                                DeviceContext deviceContext,
+                                AtomicLong compatibilityXidSeed) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
     }
 
@@ -79,7 +81,8 @@ final class GroupFeaturesService
         notification.setMoreReplies(Boolean.FALSE);
         notification.setTransactionId(emulatedTxId);
 
-        MultipartReplyGroupFeaturesCase caseBody = (MultipartReplyGroupFeaturesCase) result.get(0).getMultipartReplyBody();
+        MultipartReplyGroupFeaturesCase caseBody =
+                (MultipartReplyGroupFeaturesCase) result.get(0).getMultipartReplyBody();
         MultipartReplyGroupFeatures replyBody = caseBody.getMultipartReplyGroupFeatures();
 
         notification.setGroupTypesSupported(extractSupportedGroupTypes(replyBody.getTypes()));

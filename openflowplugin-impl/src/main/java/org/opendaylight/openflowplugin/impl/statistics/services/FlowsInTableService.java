@@ -36,13 +36,17 @@ public final class FlowsInTableService extends AbstractCompatibleStatService<Get
 
     private final ConvertorExecutor convertorExecutor;
 
-    public FlowsInTableService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, AtomicLong compatibilityXidSeed, ConvertorExecutor convertorExecutor) {
+    public FlowsInTableService(final RequestContextStack requestContextStack,
+                               final DeviceContext deviceContext,
+                               AtomicLong compatibilityXidSeed,
+                               ConvertorExecutor convertorExecutor) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
         this.convertorExecutor = convertorExecutor;
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final GetFlowStatisticsFromFlowTableInput input) throws ServiceException {
+    protected OfHeader buildRequest(final Xid xid,
+                                    final GetFlowStatisticsFromFlowTableInput input) throws ServiceException {
         final MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
         final MultipartRequestFlowBuilder mprFlowRequestBuilder = new MultipartRequestFlowBuilder();
 
@@ -96,6 +100,10 @@ public final class FlowsInTableService extends AbstractCompatibleStatService<Get
 
     @Override
     public FlowsStatisticsUpdate transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
-        return FlowStatisticsToNotificationTransformer.transformToNotification(result, getDeviceInfo(), getOfVersion(), emulatedTxId, convertorExecutor);
+        return FlowStatisticsToNotificationTransformer.transformToNotification(result,
+                                                                               getDeviceInfo(),
+                                                                               getOfVersion(),
+                                                                               emulatedTxId,
+                                                                               convertorExecutor);
     }
 }
