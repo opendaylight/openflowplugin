@@ -18,7 +18,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.flow.capable.port.StateBuilder;
@@ -32,7 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessageBuilder;
 
 /**
- * Test of {@link PortUpdateTranslator}
+ * Test of {@link PortUpdateTranslator}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class PortUpdateTranslatorTest {
@@ -40,8 +39,6 @@ public class PortUpdateTranslatorTest {
     private PortUpdateTranslator portUpdateTranslator;
     @Mock
     private DeviceContext deviceContext;
-    @Mock
-    private DeviceState deviceState;
     @Mock
     private DeviceInfo deviceInfo;
 
@@ -69,7 +66,8 @@ public class PortUpdateTranslatorTest {
                         .getDefaultInstance("hundredGbFd");
 
 
-        final FlowCapableNodeConnector nodeConnector = portUpdateTranslator.translate(portBld.build(), deviceInfo, null);
+        final FlowCapableNodeConnector nodeConnector =
+                portUpdateTranslator.translate(portBld.build(), deviceInfo, null);
 
         commonCheck(nodeConnector);
 
@@ -99,7 +97,8 @@ public class PortUpdateTranslatorTest {
                         null, false, false, null, null, null, null, null
                 );
 
-        final FlowCapableNodeConnector nodeConnector = portUpdateTranslator.translate(portBld.build(), deviceInfo, null);
+        final FlowCapableNodeConnector nodeConnector =
+                portUpdateTranslator.translate(portBld.build(), deviceInfo, null);
 
         commonCheck(nodeConnector);
 

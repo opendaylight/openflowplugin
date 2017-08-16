@@ -73,9 +73,11 @@ public class DeviceFlowRegistryImplTest {
 
     @Before
     public void setUp() throws Exception {
-        nodeInstanceIdentifier = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(new NodeId(NODE_ID)));
+        nodeInstanceIdentifier =
+                InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(new NodeId(NODE_ID)));
         when(dataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
-        deviceFlowRegistry = new DeviceFlowRegistryImpl(OFConstants.OFP_VERSION_1_3, dataBroker, nodeInstanceIdentifier);
+        deviceFlowRegistry =
+                new DeviceFlowRegistryImpl(OFConstants.OFP_VERSION_1_3, dataBroker, nodeInstanceIdentifier);
         final FlowAndStatisticsMapList flowStats = TestFlowHelper.createFlowAndStatisticsMapListBuilder(1).build();
         key = FlowRegistryKeyFactory.create(OFConstants.OFP_VERSION_1_3, flowStats);
         descriptor = FlowDescriptorFactory.create(key.getTableId(), new FlowId("ut:1"));
@@ -104,7 +106,7 @@ public class DeviceFlowRegistryImplTest {
                 .setTable(Collections.singletonList(table))
                 .build();
 
-        final Map<FlowRegistryKey, FlowDescriptor> allFlowDescriptors = testFill(path, flowCapableNode);
+        final Map<FlowRegistryKey, FlowDescriptor> allFlowDescriptors = fillRegistry(path, flowCapableNode);
         final FlowRegistryKey key = FlowRegistryKeyFactory.create(OFConstants.OFP_VERSION_1_3, flow);
 
         InOrder order = inOrder(dataBroker, readOnlyTransaction);
@@ -121,29 +123,29 @@ public class DeviceFlowRegistryImplTest {
     public void testFailedFill() throws Exception {
         final InstanceIdentifier<FlowCapableNode> path = nodeInstanceIdentifier.augmentation(FlowCapableNode.class);
 
-        testFill(path, null);
+        fillRegistry(path, null);
 
-        testFill(path, new FlowCapableNodeBuilder()
+        fillRegistry(path, new FlowCapableNodeBuilder()
                 .setTable(null)
                 .build());
 
-        testFill(path, new FlowCapableNodeBuilder()
+        fillRegistry(path, new FlowCapableNodeBuilder()
                 .setTable(Collections.singletonList(null))
                 .build());
 
-        testFill(path, new FlowCapableNodeBuilder()
+        fillRegistry(path, new FlowCapableNodeBuilder()
                 .setTable(Collections.singletonList(new TableBuilder()
                         .setFlow(null)
                         .build()))
                 .build());
 
-        testFill(path, new FlowCapableNodeBuilder()
+        fillRegistry(path, new FlowCapableNodeBuilder()
                 .setTable(Collections.singletonList(new TableBuilder()
                         .setFlow(Collections.singletonList(null))
                         .build()))
                 .build());
 
-        testFill(path, new FlowCapableNodeBuilder()
+        fillRegistry(path, new FlowCapableNodeBuilder()
                 .setTable(Collections.singletonList(new TableBuilder()
                         .setFlow(Collections.singletonList(new FlowBuilder()
                                 .setId(null)
@@ -158,9 +160,10 @@ public class DeviceFlowRegistryImplTest {
         Assert.assertEquals(1, deviceFlowRegistry.getAllFlowDescriptors().size());
     }
 
-    private Map<FlowRegistryKey, FlowDescriptor> testFill(final InstanceIdentifier<FlowCapableNode> path,
-                                                          final FlowCapableNode flowCapableNode) throws Exception {
-        when(readOnlyTransaction.read(any(), any())).thenReturn(Futures.immediateCheckedFuture(Optional.fromNullable(flowCapableNode)));
+    private Map<FlowRegistryKey, FlowDescriptor> fillRegistry(final InstanceIdentifier<FlowCapableNode> path,
+                                                              final FlowCapableNode flowCapableNode) throws Exception {
+        when(readOnlyTransaction.read(any(), any()))
+                .thenReturn(Futures.immediateCheckedFuture(Optional.fromNullable(flowCapableNode)));
         deviceFlowRegistry.fill().get();
         return deviceFlowRegistry.getAllFlowDescriptors();
     }
@@ -200,7 +203,8 @@ public class DeviceFlowRegistryImplTest {
 
         //store new key
         final String alienPrefix = "#UF$TABLE*2-";
-        final FlowRegistryKey key2 = FlowRegistryKeyFactory.create(OFConstants.OFP_VERSION_1_3, TestFlowHelper.createFlowAndStatisticsMapListBuilder(2).build());
+        final FlowRegistryKey key2 = FlowRegistryKeyFactory.create(OFConstants.OFP_VERSION_1_3,
+                TestFlowHelper.createFlowAndStatisticsMapListBuilder(2).build());
         deviceFlowRegistry.store(key2);
         newFlowId = deviceFlowRegistry.retrieveDescriptor(key2).getFlowId();
 

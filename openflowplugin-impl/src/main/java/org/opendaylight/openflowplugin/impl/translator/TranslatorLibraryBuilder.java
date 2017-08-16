@@ -15,9 +15,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 
-/**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 3.4.2015.
- */
 public class TranslatorLibraryBuilder {
 
     private final Map<TranslatorKey, MessageTranslator<?, ?>> translators = new HashMap<>();
