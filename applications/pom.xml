@@ -96,6 +96,7 @@
         <module>topology-lldp-discovery</module>
         <!-- experimental apps -->
         <module>bulk-o-matic</module>
+        <module>reconciliation-framework</module>
     </modules>
 
 </project>
