@@ -39,6 +39,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterManager;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
@@ -47,8 +48,8 @@ import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFac
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerFlowMultipartRequestOnTheFlyCallback;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.MessageIntelligenceAgencyImpl;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
+import org.opendaylight.openflowplugin.protocol.converter.ConverterManagerFactory;
+import org.opendaylight.openflowplugin.protocol.extension.ExtensionConverterManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -156,14 +157,14 @@ public class MultipartRequestOnTheFlyCallbackTest {
             }
         };
 
-        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
+        final ConverterManager converterManager = new ConverterManagerFactory().newInstance(new ExtensionConverterManagerImpl());
         multipartRequestOnTheFlyCallback = new MultiLayerFlowMultipartRequestOnTheFlyCallback<>(
             dummyRequestContext,
             String.class,
             mockedDeviceContext,
             dummyEventIdentifier,
             MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext),
-            convertorManager);
+            converterManager);
     }
 
 

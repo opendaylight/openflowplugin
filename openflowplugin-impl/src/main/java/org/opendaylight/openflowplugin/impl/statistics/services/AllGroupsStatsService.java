@@ -17,7 +17,7 @@ import org.opendaylight.openflowplugin.impl.services.util.RequestInputUtils;
 import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.GroupStatisticsToNotificationTransformer;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetAllGroupStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetAllGroupStatisticsOutput;
@@ -47,12 +47,12 @@ final class AllGroupsStatsService extends
         GROUP_CASE = caseBuilder.build();
     }
 
-    private final ConvertorExecutor convertorExecutor;
+    private final ConverterExecutor converterExecutor;
 
 
-    public AllGroupsStatsService(RequestContextStack requestContextStack, DeviceContext deviceContext, AtomicLong compatibilityXidSeed, ConvertorExecutor convertorExecutor) {
+    public AllGroupsStatsService(RequestContextStack requestContextStack, DeviceContext deviceContext, AtomicLong compatibilityXidSeed, ConverterExecutor converterExecutor) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
-        this.convertorExecutor = convertorExecutor;
+        this.converterExecutor = converterExecutor;
     }
 
 
@@ -76,6 +76,6 @@ final class AllGroupsStatsService extends
 
     @Override
     public GroupStatisticsUpdated transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
-        return GroupStatisticsToNotificationTransformer.transformToNotification(result, getDeviceInfo(), emulatedTxId, convertorExecutor);
+        return GroupStatisticsToNotificationTransformer.transformToNotification(result, getDeviceInfo(), emulatedTxId, converterExecutor);
     }
 }

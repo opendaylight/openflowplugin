@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
+import org.opendaylight.openflowplugin.protocol.converter.data.VersionConverterData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterStatisticsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterStatisticsUpdatedBuilder;
@@ -36,16 +36,16 @@ public class MeterStatisticsToNotificationTransformer {
      * @param deviceInfo   device state
      * @param ofVersion     device version
      * @param emulatedTxId
-     * @param convertorExecutor
+     * @param converterExecutor
      * @return notification containing flow stats
      */
     public static MeterStatisticsUpdated transformToNotification(final List<MultipartReply> mpReplyList,
                                                                  final DeviceInfo deviceInfo,
                                                                  final OpenflowVersion ofVersion,
                                                                  final TransactionId emulatedTxId,
-                                                                 final ConvertorExecutor convertorExecutor) {
+                                                                 final ConverterExecutor converterExecutor) {
 
-        VersionConvertorData data = new VersionConvertorData(deviceInfo.getVersion());
+        VersionConverterData data = new VersionConverterData(deviceInfo.getVersion());
         MeterStatisticsUpdatedBuilder notification = new MeterStatisticsUpdatedBuilder();
         notification.setId(deviceInfo.getNodeId());
         notification.setMoreReplies(Boolean.FALSE);
@@ -55,7 +55,7 @@ public class MeterStatisticsToNotificationTransformer {
         for (MultipartReply mpReply : mpReplyList) {
             MultipartReplyMeterCase caseBody = (MultipartReplyMeterCase) mpReply.getMultipartReplyBody();
             MultipartReplyMeter replyBody = caseBody.getMultipartReplyMeter();
-            final Optional<List<MeterStats>> meterStatsList = convertorExecutor.convert(replyBody.getMeterStats(), data);
+            final Optional<List<MeterStats>> meterStatsList = converterExecutor.convert(replyBody.getMeterStats(), data);
 
             if (meterStatsList.isPresent()) {
                 notification.getMeterStats().addAll(meterStatsList.get());

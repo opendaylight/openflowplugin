@@ -16,6 +16,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.keys.TypeToClassKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.messages.FlowMessageDeserializer;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.messages.GroupMessageDeserializer;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.messages.MeterMessageDeserializer;
@@ -82,12 +83,13 @@ class MessageDeserializerInjector {
     }
 
     @VisibleForTesting
-    static void injectLegacyDeserializers(final DeserializerExtensionProvider provider) {
+    static void injectLegacyDeserializers(final DeserializerExtensionProvider provider,
+                                          final ExtensionConverterProvider extensionConverterProvider) {
         final Function<Integer, Function<Class<? extends OfHeader>, Consumer<OFDeserializer<? extends OfHeader>>>> injector =
             createInjector(provider, EncodeConstants.OF13_VERSION_ID);
 
          injector.apply(14).apply(FlowMessage.class).accept(new FlowMessageDeserializer());
-         injector.apply(15).apply(GroupMessage.class).accept(new GroupMessageDeserializer());
+         injector.apply(15).apply(GroupMessage.class).accept(new GroupMessageDeserializer(extensionConverterProvider));
          injector.apply(29).apply(MeterMessage.class).accept(new MeterMessageDeserializer());
          injector.apply(16).apply(PortMessage.class).accept(new PortMessageDeserializer());
     }

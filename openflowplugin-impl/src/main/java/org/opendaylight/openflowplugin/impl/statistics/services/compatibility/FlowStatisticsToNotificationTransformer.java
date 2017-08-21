@@ -15,8 +15,8 @@ import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.FlowStatsResponseConvertorData;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
+import org.opendaylight.openflowplugin.protocol.converter.data.FlowStatsResponseConverterData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapList;
@@ -40,15 +40,15 @@ public class FlowStatisticsToNotificationTransformer {
      * @param deviceInfo   device state
      * @param ofVersion     device version
      * @param emulatedTxId
-     * @param convertorExecutor
+     * @param converterExecutor
      * @return notification containing flow stats
      */
     public static FlowsStatisticsUpdate transformToNotification(final List<MultipartReply> mpResult,
                                                                 final DeviceInfo deviceInfo,
                                                                 final OpenflowVersion ofVersion,
                                                                 final TransactionId emulatedTxId,
-                                                                final ConvertorExecutor convertorExecutor) {
-        final FlowStatsResponseConvertorData data = new FlowStatsResponseConvertorData(ofVersion.getVersion());
+                                                                final ConverterExecutor converterExecutor) {
+        final FlowStatsResponseConverterData data = new FlowStatsResponseConverterData(ofVersion.getVersion());
         data.setDatapathId(deviceInfo.getDatapathId());
         data.setMatchPath(MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
         final FlowsStatisticsUpdateBuilder notification = new FlowsStatisticsUpdateBuilder();
@@ -64,7 +64,7 @@ public class FlowStatisticsToNotificationTransformer {
             MultipartReplyFlowCase caseBody = (MultipartReplyFlowCase) mpRawReply.getMultipartReplyBody();
             MultipartReplyFlow replyBody = caseBody.getMultipartReplyFlow();
             final Optional<List<FlowAndStatisticsMapList>> outStatsItem =
-                    convertorExecutor.convert(replyBody.getFlowStats(), data);
+                    converterExecutor.convert(replyBody.getFlowStats(), data);
 
 
             if (outStatsItem.isPresent()) {

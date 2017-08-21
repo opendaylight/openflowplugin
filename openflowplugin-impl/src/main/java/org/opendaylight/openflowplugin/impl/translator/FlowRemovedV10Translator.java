@@ -10,8 +10,8 @@ package org.opendaylight.openflowplugin.impl.translator;
 
 import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
+import org.opendaylight.openflowplugin.protocol.converter.data.VersionDatapathIdConverterData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved;
 
@@ -20,18 +20,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  */
 public class FlowRemovedV10Translator extends FlowRemovedTranslator {
 
-    public FlowRemovedV10Translator(ConvertorExecutor convertorExecutor) {
-        super(convertorExecutor);
+    public FlowRemovedV10Translator(ConverterExecutor converterExecutor) {
+        super(converterExecutor);
     }
 
     @Override
     protected MatchBuilder translateMatch(FlowRemoved flowRemoved, DeviceInfo deviceInfo) {
-        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(deviceInfo.getVersion());
-        datapathIdConvertorData.setDatapathId(deviceInfo.getDatapathId());
+        final VersionDatapathIdConverterData datapathIdConverterData = new VersionDatapathIdConverterData(deviceInfo.getVersion());
+        datapathIdConverterData.setDatapathId(deviceInfo.getDatapathId());
 
-        final Optional<MatchBuilder> matchBuilderOptional = getConvertorExecutor().convert(
+        final Optional<MatchBuilder> matchBuilderOptional = getConverterExecutor().convert(
                 flowRemoved.getMatchV10(),
-                datapathIdConvertorData);
+                datapathIdConverterData);
 
         return matchBuilderOptional.orElse(new MatchBuilder());
     }

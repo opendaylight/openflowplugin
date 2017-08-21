@@ -17,6 +17,7 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.api.openflow.protocol.deserialization.MatchEntryDeserializer;
 import org.opendaylight.openflowplugin.api.openflow.protocol.deserialization.MatchEntryDeserializerRegistry;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.key.MessageCodeMatchKey;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.match.ArpOpEntryDeserializer;
@@ -72,9 +73,10 @@ public class MatchDeserializerInjector {
      * Injects deserializers into provided {@link org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider}
      * @param provider OpenflowJava deserializer extension provider
      */
-    static void injectDeserializers(final DeserializerExtensionProvider provider) {
+    static void injectDeserializers(final DeserializerExtensionProvider provider,
+                                    final ExtensionConverterProvider extensionConverterProvider) {
         for (MatchPath path : MatchPath.values()) {
-            final MatchDeserializer deserializer = new MatchDeserializer(path);
+            final MatchDeserializer deserializer = new MatchDeserializer(path, extensionConverterProvider);
             provider.registerDeserializer(
                     new MessageCodeMatchKey(
                         EncodeConstants.OF13_VERSION_ID,

@@ -8,36 +8,34 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.instruction;
 
+import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.util.ActionUtil;
-import org.opendaylight.openflowplugin.api.openflow.protocol.deserialization.MessageCodeExperimenterKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
-import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
-import org.opendaylight.openflowplugin.api.openflow.protocol.deserialization.MessageCodeExperimenterKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
-
-import io.netty.buffer.ByteBuf;
 
 public abstract class AbstractActionInstructionDeserializer extends AbstractInstructionDeserializer
     implements DeserializerRegistryInjector {
 
     private DeserializerRegistry registry;
     private final ActionPath actionPath;
+    private final ExtensionConverterProvider extensionConverterProvider;
 
     /**
      * Create new instacte of action instruction deserializer
      * @param actionPath action extension path
      */
-    public AbstractActionInstructionDeserializer(final ActionPath actionPath) {
+    public AbstractActionInstructionDeserializer(final ActionPath actionPath,
+                                                 final ExtensionConverterProvider extensionConverterProvider) {
         this.actionPath = actionPath;
+        this.extensionConverterProvider = extensionConverterProvider;
     }
 
     /**
@@ -73,7 +71,8 @@ public abstract class AbstractActionInstructionDeserializer extends AbstractInst
                         .setKey(new ActionKey(offset))
                         .setOrder(offset)
                         .setAction(ActionUtil
-                            .readAction(EncodeConstants.OF13_VERSION_ID, message, registry, actionPath))
+                            .readAction(EncodeConstants.OF13_VERSION_ID, message, registry, actionPath,
+                                    extensionConverterProvider))
                         .build());
 
                 offset++;
