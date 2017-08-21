@@ -57,7 +57,7 @@ public class BundleControlFactoryTest extends AbstractBundleMessageFactoryTest {
         if (withProperty) {
             dataBuilder.setBundleProperty((new ArrayList<>(Collections.singleton(
                     BundleTestUtils.createExperimenterProperty(propertyExperimenterData)))));
-            Mockito.when(registry.getSerializer(Matchers.any(MessageTypeKey.class))).thenReturn(propertySerializer);
+            Mockito.when(registry.getSerializer(Matchers.any())).thenReturn(propertySerializer);
             ((SerializerRegistryInjector) factory).injectSerializerRegistry(registry);
         }
 
