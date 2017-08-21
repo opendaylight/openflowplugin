@@ -8,8 +8,8 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.util;
 
+import io.netty.buffer.ByteBuf;
 import java.util.Objects;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderDeserializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -19,11 +19,10 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.api.openflow.protocol.deserialization.MessageCodeExperimenterKey;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
-import org.opendaylight.openflowplugin.openflow.md.core.extension.ActionExtensionHelper;
+import org.opendaylight.openflowplugin.protocol.extension.ActionExtensionHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
-
-import io.netty.buffer.ByteBuf;
 
 /**
  * Utility class for action deserialization
@@ -40,7 +39,7 @@ public class ActionUtil {
      * @param path Action path
      */
     public static Action readAction(short version, ByteBuf message, DeserializerRegistry registry,
-            ActionPath path) {
+                                    ActionPath path, ExtensionConverterProvider extensionConverterProvider) {
         int type = message.getUnsignedShort(message.readerIndex());
         Long expId = null;
 
@@ -65,7 +64,7 @@ public class ActionUtil {
                 .actions.grouping.Action> deserializer = registry.getDeserializer(key);
 
             return ActionExtensionHelper.processAlienAction(deserializer.deserialize(message),
-                    OpenflowVersion.get(version), path);
+                    OpenflowVersion.get(version), path, extensionConverterProvider);
         }
     }
 
@@ -79,7 +78,7 @@ public class ActionUtil {
      * @param path Action path
      */
     public static Action readActionHeader(short version, ByteBuf message, DeserializerRegistry registry,
-            ActionPath path) {
+                                          ActionPath path, ExtensionConverterProvider extensionConverterProvider) {
         int type = message.getUnsignedShort(message.readerIndex());
         Long expId = null;
 
@@ -104,7 +103,7 @@ public class ActionUtil {
                 .actions.grouping.Action> deserializer = registry.getDeserializer(key);
 
             return ActionExtensionHelper.processAlienAction(deserializer.deserializeHeader(message),
-                    OpenflowVersion.get(version), path);
+                    OpenflowVersion.get(version), path, extensionConverterProvider);
         }
     }
 

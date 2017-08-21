@@ -31,7 +31,7 @@ import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegist
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
@@ -72,7 +72,7 @@ public class RpcManagerImplTest {
     @Mock
     private ExtensionConverterProvider extensionConverterProvider;
     @Mock
-    private ConvertorExecutor convertorExecutor;
+    private ConverterExecutor converterExecutor;
     @Mock
     private NotificationPublishService notificationPublishService;
     @Mock
@@ -87,7 +87,7 @@ public class RpcManagerImplTest {
                 .setRpcRequestsQuota(new NonZeroUint16Type(QUOTA_VALUE))
                 .setIsStatisticsRpcEnabled(false)
                 .build(),
-                rpcProviderRegistry, extensionConverterProvider, convertorExecutor, notificationPublishService);
+                rpcProviderRegistry, extensionConverterProvider, converterExecutor, notificationPublishService);
 
         FeaturesReply features = new GetFeaturesOutputBuilder()
                 .setVersion(OFConstants.OFP_VERSION_1_3)

@@ -28,7 +28,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -66,7 +66,7 @@ public class RpcContextImplTest {
     @Mock
     private ExtensionConverterProvider extensionConverterProvider;
     @Mock
-    private ConvertorExecutor convertorExecutor;
+    private ConverterExecutor converterExecutor;
 
     private KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
 
@@ -86,7 +86,7 @@ public class RpcContextImplTest {
                 MAX_REQUESTS,
                 deviceContext,
                 extensionConverterProvider,
-                convertorExecutor,
+                converterExecutor,
                 notificationPublishService, true);
 
         when(rpcProviderRegistry.addRoutedRpcImplementation(TestRpcService.class, serviceInstance))
@@ -100,8 +100,9 @@ public class RpcContextImplTest {
                 100,
                 deviceContext,
                 extensionConverterProvider,
-                convertorExecutor,
-                notificationPublishService, true)) {
+                converterExecutor,
+                notificationPublishService,
+                true)){
             final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNotNull(requestContext);
         }
@@ -114,8 +115,9 @@ public class RpcContextImplTest {
                 0,
                 deviceContext,
                 extensionConverterProvider,
-                convertorExecutor,
-                notificationPublishService, true)) {
+                converterExecutor,
+                notificationPublishService,
+                true)){
             final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNull(requestContext);
         }
@@ -128,8 +130,16 @@ public class RpcContextImplTest {
                 100,
                 deviceContext,
                 extensionConverterProvider,
+<<<<<<< HEAD
                 convertorExecutor,
                 notificationPublishService, true)) {
+||||||| parent of 99c0544c2... Move converters to 'openflowplugin-protocol'
+                convertorExecutor,
+                notificationPublishService, true)){
+=======
+                converterExecutor,
+                notificationPublishService, true)){
+>>>>>>> 99c0544c2... Move converters to 'openflowplugin-protocol'
             final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNotNull(requestContext);
             requestContext.close();
