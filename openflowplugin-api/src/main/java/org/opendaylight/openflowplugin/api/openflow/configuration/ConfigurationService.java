@@ -13,7 +13,7 @@ import java.util.function.Function;
 import javax.annotation.Nonnull;
 
 /**
- * Manages OpenFlowPlugin configuration
+ * Manages OpenFlowPlugin configuration.
  */
 public interface ConfigurationService extends AutoCloseable {
 

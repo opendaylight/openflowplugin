@@ -9,7 +9,6 @@ package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
-import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeException;
 
 /**
  * Watcher if able to start mastership for device.

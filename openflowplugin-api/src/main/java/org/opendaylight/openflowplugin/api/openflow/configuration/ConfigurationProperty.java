@@ -87,7 +87,7 @@ public enum ConfigurationProperty {
     private static final Map<String, ConfigurationProperty> KEY_VALUE_MAP;
 
     /**
-     * Get property type from property key
+     * Get property type from property key.
      *
      * @param key the property key
      * @return the property type
@@ -108,7 +108,7 @@ public enum ConfigurationProperty {
     }
 
     /**
-     * Converts enum name to property key
+     * Converts enum name to property key.
      *
      * @return the property key
      */
