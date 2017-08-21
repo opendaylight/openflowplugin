@@ -64,6 +64,7 @@ public class SingleLayerTableMultipartService extends AbstractTableMultipartServ
 
         Futures.addCallback(handleServiceCall(input), new FutureCallback<RpcResult<List<MultipartReply>>>() {
             @Override
+            @SuppressWarnings("checkstyle:IllegalCatch")
             public void onSuccess(final RpcResult<List<MultipartReply>> result) {
                 if (result.isSuccessful()) {
                     final List<MultipartReply> multipartReplies = result.getResult();
@@ -74,7 +75,8 @@ public class SingleLayerTableMultipartService extends AbstractTableMultipartServ
                     } else {
                         finalFuture.set(RpcResultBuilder
                             .success(new UpdateTableOutputBuilder()
-                                .setTransactionId(new TransactionId(BigInteger.valueOf(multipartReplies.get(0).getXid())))
+                                .setTransactionId(
+                                        new TransactionId(BigInteger.valueOf(multipartReplies.get(0).getXid())))
                                 .build())
                             .build());
 
@@ -93,21 +95,21 @@ public class SingleLayerTableMultipartService extends AbstractTableMultipartServ
                         }
                     }
                 } else {
-                    LOG.debug("OnSuccess, rpc result unsuccessful, multipart response for rpc update-table was unsuccessful.");
+                    LOG.debug("OnSuccess, rpc result unsuccessful,"
+                            + " multipart response for rpc update-table was unsuccessful.");
                     finalFuture.set(RpcResultBuilder.<UpdateTableOutput>failed().withRpcErrors(result.getErrors())
                         .build());
                 }
             }
 
             @Override
-            public void onFailure(Throwable t) {
-                LOG.error("Failure multipart response for table features request. Exception: {}", t);
+            public void onFailure(Throwable throwable) {
+                LOG.error("Failure multipart response for table features request. Exception: {}", throwable);
                 finalFuture.set(RpcResultBuilder.<UpdateTableOutput>failed()
-                    .withError(ErrorType.RPC, "Future error", t).build());
+                    .withError(ErrorType.RPC, "Future error", throwable).build());
             }
         });
 
         return finalFuture;
     }
-
 }

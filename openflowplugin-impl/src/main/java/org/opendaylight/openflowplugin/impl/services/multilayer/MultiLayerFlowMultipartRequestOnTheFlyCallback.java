@@ -19,7 +19,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 
-public class MultiLayerFlowMultipartRequestOnTheFlyCallback<T extends OfHeader> extends AbstractMultipartRequestOnTheFlyCallback<T> {
+public class MultiLayerFlowMultipartRequestOnTheFlyCallback<T extends OfHeader>
+                                                        extends AbstractMultipartRequestOnTheFlyCallback<T> {
 
     public MultiLayerFlowMultipartRequestOnTheFlyCallback(final RequestContext<List<T>> context,
                                                           final Class<?> requestType,
@@ -45,5 +46,4 @@ public class MultiLayerFlowMultipartRequestOnTheFlyCallback<T extends OfHeader> 
     protected MultipartType getMultipartType() {
         return MultipartType.OFPMPFLOW;
     }
-
 }

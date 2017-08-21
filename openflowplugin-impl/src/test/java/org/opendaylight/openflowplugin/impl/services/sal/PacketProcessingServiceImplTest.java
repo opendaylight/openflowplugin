@@ -48,7 +48,8 @@ public class PacketProcessingServiceImplTest extends ServiceMocking {
     @Override
     protected void setup() {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        packetProcessingService = new PacketProcessingServiceImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
+        packetProcessingService =
+                new PacketProcessingServiceImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
         pathToNodeconnector = KeyedInstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId("ofp-ut:123")))
                 .child(NodeConnector.class, new NodeConnectorKey(new NodeConnectorId("ofp-ut:123:1")));
