@@ -5,7 +5,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package test.mock.util;
+package org.opendaylight.openflowplugin.applications.frm.impl.util;
 
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
@@ -80,16 +80,16 @@ public abstract class FRMTest extends AbstractDataBrokerTest {
 
         Mockito.when(configurationService.registerListener(Mockito.any())).thenReturn(() -> {});
 
-        Mockito.when(configurationService.getProperty(Mockito.eq("disable-reconciliation"), Mockito.any()))
+        Mockito.when(configurationService.getProperty(Mockito.eq("disable-tasks"), Mockito.any()))
                 .thenReturn(config.isDisableReconciliation());
 
         Mockito.when(configurationService.getProperty(Mockito.eq("stale-marking-enabled"), Mockito.any()))
                 .thenReturn(config.isStaleMarkingEnabled());
 
-        Mockito.when(configurationService.getProperty(Mockito.eq("reconciliation-retry-count"), Mockito.any()))
+        Mockito.when(configurationService.getProperty(Mockito.eq("tasks-retry-count"), Mockito.any()))
                 .thenReturn(config.getReconciliationRetryCount());
 
-        Mockito.when(configurationService.getProperty(Mockito.eq("bundle-based-reconciliation-enabled"), Mockito.any()))
+        Mockito.when(configurationService.getProperty(Mockito.eq("bundle-based-tasks-enabled"), Mockito.any()))
                 .thenReturn(config.isBundleBasedReconciliationEnabled());
 
         return configurationService;

@@ -80,7 +80,7 @@ public interface StatisticsContext extends RequestContextStack, OFPContext {
     void stopGatheringData();
 
     /**
-     * In case of using reconciliation framework need to be initialization submit handled separately.
+     * In case of using tasks framework need to be initialization submit handled separately.
      * @return true if submitting was ok
      * @since 0.5.0 Nitrogen
      * @see OwnershipChangeListener#isReconciliationFrameworkRegistered()
