@@ -76,11 +76,6 @@ public interface ForwardingRulesCommiter<D extends DataObject> extends AutoClose
                 InstanceIdentifier<FlowCapableNode> nodeIdent);
 
 
-
     Future<? extends RpcResult<?>> removeWithResult(InstanceIdentifier<D> identifier, D del,
                                                InstanceIdentifier<FlowCapableNode> nodeIdent);
-
-
-
 }
-
