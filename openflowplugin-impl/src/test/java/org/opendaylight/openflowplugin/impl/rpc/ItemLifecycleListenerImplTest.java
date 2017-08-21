@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl.rpc;
 
-
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -57,7 +56,8 @@ public class ItemLifecycleListenerImplTest {
     @Test
     public void testOnAdded() throws Exception {
         itemLifecycleListener.onAdded(nodeInstanceIdentifier, node);
-        verify(deviceContext).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL), eq(nodeInstanceIdentifier), eq(node));
+        verify(deviceContext)
+                .writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL), eq(nodeInstanceIdentifier), eq(node));
         verify(deviceContext).submitTransaction();
     }
 
