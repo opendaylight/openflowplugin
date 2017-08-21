@@ -26,11 +26,12 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
 import org.opendaylight.openflowplugin.impl.services.ServiceMocking;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
+import org.opendaylight.openflowplugin.protocol.converter.ConverterManagerFactory;
+import org.opendaylight.openflowplugin.protocol.extension.ExtensionConverterManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessageBuilder;
@@ -74,9 +75,9 @@ public class SalTableServiceImplTest extends ServiceMocking {
                 .when(mockedOutboundQueue).commitEntry(
                 Matchers.anyLong(), Matchers.<OfHeader>any(), Matchers.<FutureCallback<OfHeader>>any());
 
-        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
+        final ConverterManager converterManager = new ConverterManagerFactory().newInstance(new ExtensionConverterManagerImpl());
         salTableService = new SalTableServiceImpl(mockedRequestContextStack, mockedDeviceContext,
-                convertorManager, MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext));
+                converterManager, MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext));
     }
 
     @Test

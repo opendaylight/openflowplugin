@@ -33,6 +33,8 @@ import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationProperty;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
+import org.opendaylight.openflowplugin.protocol.converter.ConverterManagerFactory;
+import org.opendaylight.openflowplugin.protocol.extension.ExtensionConverterManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsManagerControlService;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -106,7 +108,8 @@ public class OpenFlowPluginProviderImplTest {
                 entityOwnershipService,
                 Lists.newArrayList(switchConnectionProvider),
                 clusterSingletonServiceProvider,
-                mastershipChangeServiceManager);
+                mastershipChangeServiceManager,
+                new ConverterManagerFactory().newInstance(new ExtensionConverterManagerImpl()));
 
         verify(switchConnectionProvider).startup();
         provider.close();

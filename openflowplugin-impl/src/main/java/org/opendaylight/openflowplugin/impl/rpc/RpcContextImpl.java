@@ -32,7 +32,7 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.util.MdSalRegistrationUtils;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
@@ -54,7 +54,7 @@ class RpcContextImpl implements RpcContext {
     private final DeviceInfo deviceInfo;
     private final DeviceContext deviceContext;
     private final ExtensionConverterProvider extensionConverterProvider;
-    private final ConvertorExecutor convertorExecutor;
+    private final ConverterExecutor converterExecutor;
     private final NotificationPublishService notificationPublishService;
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
 
@@ -62,7 +62,7 @@ class RpcContextImpl implements RpcContext {
                    final int maxRequests,
                    @Nonnull final DeviceContext deviceContext,
                    @Nonnull final ExtensionConverterProvider extensionConverterProvider,
-                   @Nonnull final ConvertorExecutor convertorExecutor,
+                   @Nonnull final ConverterExecutor converterExecutor,
                    @Nonnull final NotificationPublishService notificationPublishService,
                    boolean statisticsRpcEnabled) {
         this.deviceContext = deviceContext;
@@ -72,7 +72,7 @@ class RpcContextImpl implements RpcContext {
         this.rpcProviderRegistry = rpcProviderRegistry;
         this.extensionConverterProvider = extensionConverterProvider;
         this.notificationPublishService = notificationPublishService;
-        this.convertorExecutor = convertorExecutor;
+        this.converterExecutor = converterExecutor;
         this.isStatisticsRpcEnabled = statisticsRpcEnabled;
         this.tracker = new Semaphore(maxRequests, true);
     }
@@ -185,14 +185,14 @@ class RpcContextImpl implements RpcContext {
 
     @Override
     public void instantiateServiceInstance() {
-        MdSalRegistrationUtils.registerServices(this, deviceContext, extensionConverterProvider, convertorExecutor);
+        MdSalRegistrationUtils.registerServices(this, deviceContext, extensionConverterProvider, converterExecutor);
 
         if (isStatisticsRpcEnabled && !deviceContext.canUseSingleLayerSerialization()) {
             MdSalRegistrationUtils.registerStatCompatibilityServices(
                     this,
                     deviceContext,
                     notificationPublishService,
-                    convertorExecutor);
+                    converterExecutor);
         }
 
         contextChainMastershipWatcher.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.RPC_REGISTRATION);

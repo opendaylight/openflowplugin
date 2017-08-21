@@ -9,7 +9,7 @@
 package org.opendaylight.openflowplugin.impl.protocol.serialization.actions;
 
 import java.util.Optional;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IPProtocols;
+import org.opendaylight.openflowplugin.protocol.converter.common.IPProtocols;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetFieldCase;

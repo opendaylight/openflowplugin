@@ -20,7 +20,6 @@ import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
-import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralExtensionGrouping;
@@ -41,32 +40,35 @@ public class ActionUtil {
      * @param version   OpenFlow version
      * @param registry  serializer registry
      * @param outBuffer output buffer
+     * @param extensionConverterProvider extension converter provider
      */
     @SuppressWarnings("unchecked")
-    public static void writeAction(Action action, short version, SerializerRegistry registry, ByteBuf outBuffer) {
+    public static void writeAction(Action action,
+                                   short version,
+                                   SerializerRegistry registry,
+                                   ByteBuf outBuffer,
+                                   ExtensionConverterProvider extensionConverterProvider) {
         try {
-            Optional.ofNullable(OFSessionUtil.getExtensionConvertorProvider())
-                .flatMap(provider ->
-                    (GeneralExtensionGrouping.class.isInstance(action)
-                        ? convertExtensionGrouping(provider, action, version)
-                        : convertGenericAction(provider, action, version))
-                        .map(ofjAction -> {
-                            final OFSerializer<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common
+            (GeneralExtensionGrouping.class.isInstance(action)
+                    ? convertExtensionGrouping(extensionConverterProvider, action, version)
+                    : convertGenericAction(extensionConverterProvider, action, version))
+                    .map(ofjAction -> {
+                        final OFSerializer<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common
                                 .action.rev150203.actions.grouping.Action> serializer = registry
                                 .getSerializer(TypeKeyMakerFactory.createActionKeyMaker(version)
-                                    .make(ofjAction));
+                                        .make(ofjAction));
 
-                            serializer.serialize(ofjAction, outBuffer);
-                            return action;
-                        })
-                ).orElseGet(() -> {
-                final OFSerializer<Action> serializer = registry.getSerializer(
-                    new MessageTypeKey<>(
-                        version, (Class<? extends Action>) action.getImplementedInterface()));
+                        serializer.serialize(ofjAction, outBuffer);
+                        return action;
+                    })
+                    .orElseGet(() -> {
+                        final OFSerializer<Action> serializer = registry.getSerializer(
+                                new MessageTypeKey<>(
+                                        version, (Class<? extends Action>) action.getImplementedInterface()));
 
-                serializer.serialize(action, outBuffer);
-                return action;
-            });
+                        serializer.serialize(action, outBuffer);
+                        return action;
+                    });
         } catch (final IllegalStateException | ClassCastException e) {
             LOG.warn("Serializer for action {} for version {} not found.", action.getImplementedInterface(), version);
         }
@@ -80,32 +82,35 @@ public class ActionUtil {
      * @param version   OpenFlow version
      * @param registry  serializer registry
      * @param outBuffer output buffer
+     * @param extensionConverterProvider extension converter provider
      */
     @SuppressWarnings("unchecked")
-    public static void writeActionHeader(Action action, short version, SerializerRegistry registry, ByteBuf outBuffer) {
+    public static void writeActionHeader(Action action,
+                                         short version,
+                                         SerializerRegistry registry,
+                                         ByteBuf outBuffer,
+                                         ExtensionConverterProvider extensionConverterProvider) {
         try {
-            Optional.ofNullable(OFSessionUtil.getExtensionConvertorProvider())
-                .flatMap(provider ->
-                    (GeneralExtensionGrouping.class.isInstance(action)
-                        ? convertExtensionGrouping(provider, action, version)
-                        : convertGenericAction(provider, action, version))
-                        .map(ofjAction -> {
-                            final HeaderSerializer<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common
+            (GeneralExtensionGrouping.class.isInstance(action)
+                    ? convertExtensionGrouping(extensionConverterProvider, action, version)
+                    : convertGenericAction(extensionConverterProvider, action, version))
+                    .map(ofjAction -> {
+                        final HeaderSerializer<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common
                                 .action.rev150203.actions.grouping.Action> serializer = registry
                                 .getSerializer(TypeKeyMakerFactory.createActionKeyMaker(version)
-                                    .make(ofjAction));
+                                        .make(ofjAction));
 
-                            serializer.serializeHeader(ofjAction, outBuffer);
-                            return action;
-                        })
-                ).orElseGet(() -> {
-                final HeaderSerializer<Action> serializer = registry.getSerializer(
-                    new MessageTypeKey<>(
-                        version, (Class<? extends Action>) action.getImplementedInterface()));
+                        serializer.serializeHeader(ofjAction, outBuffer);
+                        return action;
+                    })
+                    .orElseGet(() -> {
+                        final HeaderSerializer<Action> serializer = registry.getSerializer(
+                                new MessageTypeKey<>(
+                                        version, (Class<? extends Action>) action.getImplementedInterface()));
 
-                serializer.serializeHeader(action, outBuffer);
-                return action;
-            });
+                        serializer.serializeHeader(action, outBuffer);
+                        return action;
+                    });
         } catch (final IllegalStateException | ClassCastException e) {
             LOG.warn("Header Serializer for action {} for version {} not found.", action.getImplementedInterface(), version);
         }

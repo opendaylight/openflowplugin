@@ -37,7 +37,7 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.Event
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.StatisticsGatherer;
 import org.opendaylight.openflowplugin.impl.common.MultipartReplyTranslatorUtil;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableStatisticsGatheringStatus;
@@ -77,7 +77,7 @@ public final class StatisticsGatheringUtils {
                                                                           final MultipartType type,
                                                                           final TxFacade txFacade,
                                                                           final DeviceRegistry registry,
-                                                                          final ConvertorExecutor convertorExecutor,
+                                                                          final ConverterExecutor converterExecutor,
                                                                           final MultipartWriterProvider statisticsWriterProvider) {
         return Futures.transformAsync(
                 statisticsGatheringService.getStatisticsOfType(
@@ -102,7 +102,7 @@ public final class StatisticsGatheringUtils {
                                             .getResult()
                                             .stream()
                                             .map(reply ->  MultipartReplyTranslatorUtil
-                                                    .translate(reply, deviceInfo, convertorExecutor, null))
+                                                    .translate(reply, deviceInfo, converterExecutor, null))
                                             .filter(java.util.Optional::isPresent)
                                             .map(java.util.Optional::get)
                                             .collect(Collectors.toList());

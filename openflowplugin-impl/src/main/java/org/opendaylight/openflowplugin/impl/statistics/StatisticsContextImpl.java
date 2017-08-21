@@ -44,7 +44,7 @@ import org.opendaylight.openflowplugin.impl.rpc.listener.ItemLifecycleListenerIm
 import org.opendaylight.openflowplugin.impl.services.util.RequestContextUtil;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringOnTheFlyService;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringService;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.slf4j.Logger;
@@ -61,7 +61,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     private final DeviceState devState;
     private final boolean isStatisticsPollingOn;
     private final Object collectionStatTypeLock = new Object();
-    private final ConvertorExecutor convertorExecutor;
+    private final ConverterExecutor converterExecutor;
     private final MultipartWriterProvider statisticsWriterProvider;
     private final DeviceInfo deviceInfo;
     private final StatisticsManager myManager;
@@ -78,17 +78,17 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
 
     StatisticsContextImpl(final boolean isStatisticsPollingOn,
                           @Nonnull final DeviceContext deviceContext,
-                          @Nonnull final ConvertorExecutor convertorExecutor,
+                          @Nonnull final ConverterExecutor converterExecutor,
                           @Nonnull final StatisticsManager myManager,
                           @Nonnull final MultipartWriterProvider statisticsWriterProvider,
                           boolean isUsingReconciliationFramework) {
         this.deviceContext = deviceContext;
         this.devState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         this.isStatisticsPollingOn = isStatisticsPollingOn;
-        this.convertorExecutor = convertorExecutor;
+        this.converterExecutor = converterExecutor;
         statisticsGatheringService = new StatisticsGatheringService<>(this, deviceContext);
         statisticsGatheringOnTheFlyService = new StatisticsGatheringOnTheFlyService<>(this,
-                deviceContext, convertorExecutor, statisticsWriterProvider);
+                deviceContext, converterExecutor, statisticsWriterProvider);
         itemLifeCycleListener = new ItemLifecycleListenerImpl(deviceContext);
         statListForCollectingInitialization();
         this.deviceInfo = deviceContext.getDeviceInfo();
@@ -274,7 +274,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
                 multipartType,
                 deviceContext,
                 deviceContext,
-                convertorExecutor,
+                converterExecutor,
                 statisticsWriterProvider) : Futures.immediateFuture(Boolean.FALSE);
     }
 

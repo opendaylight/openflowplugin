@@ -24,10 +24,11 @@ import org.mockito.stubbing.Answer;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
+import org.opendaylight.openflowplugin.protocol.converter.ConverterManagerFactory;
+import org.opendaylight.openflowplugin.protocol.extension.ExtensionConverterManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatchInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.get.aggregate.flow.statistics.from.flow.table._for.given.match.output.AggregatedFlowStatistics;
@@ -55,8 +56,8 @@ public class OpendaylightFlowStatisticsServiceImpl2Test extends AbstractStatsSer
 
 
     public void setUp() {
-        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        flowStatisticsService = OpendaylightFlowStatisticsServiceImpl.createWithOook(rqContextStack, deviceContext, convertorManager);
+        final ConverterManager converterManager = new ConverterManagerFactory().newInstance(new ExtensionConverterManagerImpl());
+        flowStatisticsService = OpendaylightFlowStatisticsServiceImpl.createWithOook(rqContextStack, deviceContext, converterManager);
 
         rqContextMp = new AbstractRequestContext<List<MultipartReply>>(42L) {
             @Override

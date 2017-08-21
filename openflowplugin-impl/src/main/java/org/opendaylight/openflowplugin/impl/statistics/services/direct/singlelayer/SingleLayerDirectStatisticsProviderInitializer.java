@@ -17,7 +17,7 @@ import org.opendaylight.openflowplugin.impl.statistics.services.direct.AbstractM
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.AbstractPortDirectStatisticsService;
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.AbstractQueueDirectStatisticsService;
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.OpendaylightDirectStatisticsServiceProvider;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 
 /**
  * Utility class for instantiating #{@link org.opendaylight.openflowplugin.impl.statistics.services.direct.OpendaylightDirectStatisticsServiceProvider}
@@ -28,21 +28,21 @@ public class SingleLayerDirectStatisticsProviderInitializer {
     public static OpendaylightDirectStatisticsServiceProvider createProvider(
         final RequestContextStack requestContextStack,
         final DeviceContext deviceContext,
-        final ConvertorExecutor convertorExecutor,
+        final ConverterExecutor converterExecutor,
         final MultipartWriterProvider statisticsWriterProvider) {
 
         final OpendaylightDirectStatisticsServiceProvider provider = new OpendaylightDirectStatisticsServiceProvider();
 
         provider.register(AbstractFlowDirectStatisticsService.class, new FlowDirectStatisticsService(
-            requestContextStack, deviceContext, convertorExecutor, statisticsWriterProvider));
+            requestContextStack, deviceContext, converterExecutor, statisticsWriterProvider));
         provider.register(AbstractGroupDirectStatisticsService.class, new GroupDirectStatisticsService(
-            requestContextStack, deviceContext, convertorExecutor, statisticsWriterProvider));
+            requestContextStack, deviceContext, converterExecutor, statisticsWriterProvider));
         provider.register(AbstractMeterDirectStatisticsService.class, new MeterDirectStatisticsService(
-            requestContextStack, deviceContext, convertorExecutor, statisticsWriterProvider));
+            requestContextStack, deviceContext, converterExecutor, statisticsWriterProvider));
         provider.register(AbstractPortDirectStatisticsService.class, new PortDirectStatisticsService(
-            requestContextStack, deviceContext, convertorExecutor, statisticsWriterProvider));
+            requestContextStack, deviceContext, converterExecutor, statisticsWriterProvider));
         provider.register(AbstractQueueDirectStatisticsService.class, new QueueDirectStatisticsService(
-            requestContextStack, deviceContext, convertorExecutor, statisticsWriterProvider));
+            requestContextStack, deviceContext, converterExecutor, statisticsWriterProvider));
 
         return provider;
     }

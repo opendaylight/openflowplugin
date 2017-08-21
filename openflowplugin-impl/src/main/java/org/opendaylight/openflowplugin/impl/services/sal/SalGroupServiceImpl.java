@@ -19,7 +19,7 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleLi
 import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerGroupService;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerGroupService;
 import org.opendaylight.openflowplugin.impl.util.ErrorUtil;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
@@ -51,11 +51,11 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
     private final DeviceContext deviceContext;
     private ItemLifecycleListener itemLifecycleListener;
 
-    public SalGroupServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConvertorExecutor convertorExecutor) {
+    public SalGroupServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConverterExecutor converterExecutor) {
         this.deviceContext = deviceContext;
-        addGroup = new MultiLayerGroupService<>(requestContextStack, deviceContext, AddGroupOutput.class, convertorExecutor);
-        updateGroup = new MultiLayerGroupService<>(requestContextStack, deviceContext, UpdateGroupOutput.class, convertorExecutor);
-        removeGroup = new MultiLayerGroupService<>(requestContextStack, deviceContext, RemoveGroupOutput.class, convertorExecutor);
+        addGroup = new MultiLayerGroupService<>(requestContextStack, deviceContext, AddGroupOutput.class, converterExecutor);
+        updateGroup = new MultiLayerGroupService<>(requestContextStack, deviceContext, UpdateGroupOutput.class, converterExecutor);
+        removeGroup = new MultiLayerGroupService<>(requestContextStack, deviceContext, RemoveGroupOutput.class, converterExecutor);
 
         addGroupMessage = new SingleLayerGroupService<>(requestContextStack, deviceContext, AddGroupOutput.class);
         updateGroupMessage = new SingleLayerGroupService<>(requestContextStack, deviceContext, UpdateGroupOutput.class);

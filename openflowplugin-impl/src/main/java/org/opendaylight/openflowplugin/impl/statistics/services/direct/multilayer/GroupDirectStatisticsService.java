@@ -18,8 +18,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.services.util.RequestInputUtils;
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.AbstractGroupDirectStatisticsService;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
+import org.opendaylight.openflowplugin.protocol.converter.data.VersionConverterData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetGroupStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetGroupStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetGroupStatisticsOutputBuilder;
@@ -34,14 +34,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 
 public class GroupDirectStatisticsService extends AbstractGroupDirectStatisticsService<MultipartReply> {
 
-    private final VersionConvertorData data;
+    private final VersionConverterData data;
 
     public GroupDirectStatisticsService(final RequestContextStack requestContextStack,
                                         final DeviceContext deviceContext,
-                                        final ConvertorExecutor convertorExecutor,
+                                        final ConverterExecutor converterExecutor,
                                         final MultipartWriterProvider statisticsWriterProvider) {
-        super(requestContextStack, deviceContext, convertorExecutor, statisticsWriterProvider);
-        data = new VersionConvertorData(getVersion());
+        super(requestContextStack, deviceContext, converterExecutor, statisticsWriterProvider);
+        data = new VersionConverterData(getVersion());
     }
 
     @Override
@@ -52,7 +52,7 @@ public class GroupDirectStatisticsService extends AbstractGroupDirectStatisticsS
             for (final MultipartReply mpReply : input) {
                 final MultipartReplyGroupCase caseBody = (MultipartReplyGroupCase) mpReply.getMultipartReplyBody();
                 final MultipartReplyGroup replyBody = caseBody.getMultipartReplyGroup();
-                final Optional<List<GroupStats>> groupStatsList = getConvertorExecutor().convert(
+                final Optional<List<GroupStats>> groupStatsList = getConverterExecutor().convert(
                     replyBody.getGroupStats(), data);
 
                 groupStatsList.ifPresent(groupStats::addAll);

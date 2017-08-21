@@ -7,10 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.device;
 
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.MoreExecutors;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.internal.ConcurrentSet;
 import java.util.Optional;
@@ -39,7 +36,7 @@ import org.opendaylight.openflowplugin.impl.connection.OutboundQueueProviderImpl
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProvider;
 import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
 import org.opendaylight.openflowplugin.impl.util.DeviceInitializationUtil;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemovedBuilder;
@@ -62,7 +59,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private final OpenflowProviderConfig config;
     private final DataBroker dataBroker;
     private final DeviceInitializerProvider deviceInitializerProvider;
-    private final ConvertorExecutor convertorExecutor;
+    private final ConverterExecutor converterExecutor;
     private final ConcurrentMap<DeviceInfo, DeviceContext> deviceContexts = new ConcurrentHashMap<>();
     private final Set<KeyedInstanceIdentifier<Node, NodeKey>> notificationCreateNodeSend = new ConcurrentSet<>();
     private final NotificationPublishService notificationPublishService;
@@ -77,12 +74,12 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                              @Nonnull final MessageSpy messageSpy,
                              @Nonnull final NotificationPublishService notificationPublishService,
                              @Nonnull final HashedWheelTimer hashedWheelTimer,
-                             @Nonnull final ConvertorExecutor convertorExecutor,
+                             @Nonnull final ConverterExecutor converterExecutor,
                              @Nonnull final DeviceInitializerProvider deviceInitializerProvider) {
         this.config = config;
         this.dataBroker = dataBroker;
         this.deviceInitializerProvider = deviceInitializerProvider;
-        this.convertorExecutor = convertorExecutor;
+        this.converterExecutor = converterExecutor;
         this.hashedWheelTimer = hashedWheelTimer;
         this.spyPool = new ScheduledThreadPoolExecutor(1);
         this.notificationPublishService = notificationPublishService;
@@ -159,7 +156,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 dataBroker,
                 messageSpy,
                 translatorLibrary,
-                convertorExecutor,
+                converterExecutor,
                 config.isSkipTableFeatures(),
                 hashedWheelTimer,
                 config.isUseSingleLayerSerialization(),
