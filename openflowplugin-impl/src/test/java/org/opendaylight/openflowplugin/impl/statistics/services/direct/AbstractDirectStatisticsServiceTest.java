@@ -27,12 +27,13 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
+import org.opendaylight.openflowplugin.common.util.InventoryDataServiceUtil;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
-import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
+import org.opendaylight.openflowplugin.protocol.converter.ConverterManagerFactory;
+import org.opendaylight.openflowplugin.protocol.extension.ExtensionConverterManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
@@ -76,7 +77,7 @@ public abstract class AbstractDirectStatisticsServiceTest {
 
     protected NodeConnectorId nodeConnectorId;
     protected KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
-    protected ConvertorManager convertorManager;
+    protected ConverterManager converterManager;
     protected MultipartWriterProvider multipartWriterProvider;
     protected static NodeRef createNodeRef(String nodeIdValue) {
         InstanceIdentifier<Node> nodePath = InstanceIdentifier.create(Nodes.class)
@@ -94,7 +95,7 @@ public abstract class AbstractDirectStatisticsServiceTest {
                 .create(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId(NODE_ID)));
 
-        convertorManager = ConvertorManagerFactory.createDefaultManager();
+        converterManager = new ConverterManagerFactory().newInstance(new ExtensionConverterManagerImpl());
         when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
         when(deviceContext.getMultiMsgCollector(any())).thenReturn(multiMsgCollector);

@@ -17,8 +17,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.util.RequestInputUtils;
 import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
+import org.opendaylight.openflowplugin.protocol.converter.data.VersionConverterData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupDescriptionInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupDescriptionOutput;
@@ -38,11 +38,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 final class GroupDescriptionService
         extends AbstractCompatibleStatService<GetGroupDescriptionInput, GetGroupDescriptionOutput, GroupDescStatsUpdated> {
     private static final MultipartRequestGroupDescCase GROUP_DESC_CASE = new MultipartRequestGroupDescCaseBuilder().build();
-    private final ConvertorExecutor convertorExecutor;
+    private final ConverterExecutor converterExecutor;
 
-    public GroupDescriptionService(RequestContextStack requestContextStack, DeviceContext deviceContext, AtomicLong compatibilityXidSeed, ConvertorExecutor convertorExecutor) {
+    public GroupDescriptionService(RequestContextStack requestContextStack, DeviceContext deviceContext, AtomicLong compatibilityXidSeed, ConverterExecutor converterExecutor) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
-        this.convertorExecutor = convertorExecutor;
+        this.converterExecutor = converterExecutor;
     }
 
     @Override
@@ -66,12 +66,12 @@ final class GroupDescriptionService
         notification.setTransactionId(emulatedTxId);
 
         notification.setGroupDescStats(new ArrayList<GroupDescStats>());
-        final VersionConvertorData data = new VersionConvertorData(getVersion());
+        final VersionConverterData data = new VersionConverterData(getVersion());
 
         for (MultipartReply mpReply : result) {
             MultipartReplyGroupDescCase caseBody = (MultipartReplyGroupDescCase) mpReply.getMultipartReplyBody();
             MultipartReplyGroupDesc replyBody = caseBody.getMultipartReplyGroupDesc();
-            final Optional<List<GroupDescStats>> groupDescStatsList = convertorExecutor.convert(
+            final Optional<List<GroupDescStats>> groupDescStatsList = converterExecutor.convert(
                     replyBody.getGroupDesc(), data);
 
             if (groupDescStatsList.isPresent()) {

@@ -20,13 +20,13 @@ import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
+import org.opendaylight.openflowplugin.common.util.InventoryDataServiceUtil;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.impl.util.GroupUtil;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.FlowStatsResponseConvertorData;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
-import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
+import org.opendaylight.openflowplugin.protocol.converter.data.FlowStatsResponseConverterData;
+import org.opendaylight.openflowplugin.protocol.converter.data.VersionConverterData;
+import org.opendaylight.openflowplugin.protocol.converter.data.VersionDatapathIdConverterData;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter64;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -133,15 +133,15 @@ public class MultipartReplyTranslatorUtil {
     public static Optional<? extends MultipartReplyBody> translate(
             final OfHeader message,
             final DeviceInfo deviceInfo,
-            @Nullable final ConvertorExecutor convertorExecutor,
+            @Nullable final ConverterExecutor converterExecutor,
             @Nullable final TranslatorLibrary translatorLibrary) {
 
         if (message instanceof MultipartReply) {
-            final Optional<ConvertorExecutor> convertor = Optional.ofNullable(convertorExecutor);
+            final Optional<ConverterExecutor> convertor = Optional.ofNullable(converterExecutor);
             final Optional<TranslatorLibrary> translator = Optional.ofNullable(translatorLibrary);
             final MultipartReply msg = MultipartReply.class.cast(message);
             final OpenflowVersion ofVersion = OpenflowVersion.get(deviceInfo.getVersion());
-            final VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(deviceInfo.getVersion());
+            final VersionDatapathIdConverterData data = new VersionDatapathIdConverterData(deviceInfo.getVersion());
             data.setDatapathId(deviceInfo.getDatapathId());
 
             switch (msg.getType()) {
@@ -213,12 +213,12 @@ public class MultipartReplyTranslatorUtil {
             .reply.body.MultipartReplyTableFeatures translateTableFeatures(
                     final MultipartReply msg,
                     final short version,
-                    final ConvertorExecutor convertorExecutor) {
+                    final ConverterExecutor converterExecutor) {
         MultipartReplyTableFeaturesCase caseBody = (MultipartReplyTableFeaturesCase) msg.getMultipartReplyBody();
         final MultipartReplyTableFeatures multipartReplyTableFeatures = caseBody.getMultipartReplyTableFeatures();
         final Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features
-            .TableFeatures>> tableFeaturesList = convertorExecutor
-            .convert(multipartReplyTableFeatures, new VersionConvertorData(version));
+            .TableFeatures>> tableFeaturesList = converterExecutor
+            .convert(multipartReplyTableFeatures, new VersionConverterData(version));
 
         return new MultipartReplyTableFeaturesBuilder()
             .setTableFeatures(tableFeaturesList.orElse(Collections.emptyList()))
@@ -239,16 +239,16 @@ public class MultipartReplyTranslatorUtil {
     }
 
     private static MultipartReplyFlowStats translateFlow(final MultipartReply msg,
-                                                         final VersionDatapathIdConvertorData data,
-                                                         final ConvertorExecutor convertorExecutor) {
-        FlowStatsResponseConvertorData flowData = new FlowStatsResponseConvertorData(data.getVersion());
+                                                         final VersionDatapathIdConverterData data,
+                                                         final ConverterExecutor converterExecutor) {
+        FlowStatsResponseConverterData flowData = new FlowStatsResponseConverterData(data.getVersion());
         flowData.setDatapathId(data.getDatapathId());
         flowData.setMatchPath(MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
         MultipartReplyFlowStatsBuilder message = new MultipartReplyFlowStatsBuilder();
         MultipartReplyFlowCase caseBody = (MultipartReplyFlowCase) msg.getMultipartReplyBody();
         MultipartReplyFlow replyBody = caseBody.getMultipartReplyFlow();
         final Optional<List<FlowAndStatisticsMapList>> flowAndStatisticsMapLists =
-            convertorExecutor.convert(replyBody.getFlowStats(), flowData);
+            converterExecutor.convert(replyBody.getFlowStats(), flowData);
 
         message.setFlowAndStatisticsMapList(flowAndStatisticsMapLists.orElse(Collections.emptyList()));
         return message.build();
@@ -320,12 +320,12 @@ public class MultipartReplyTranslatorUtil {
     }
 
     private static MultipartReplyGroupStats translateGroup(final MultipartReply msg,
-                                                           final VersionDatapathIdConvertorData data,
-                                                           final ConvertorExecutor convertorExecutor) {
+                                                           final VersionDatapathIdConverterData data,
+                                                           final ConverterExecutor converterExecutor) {
         MultipartReplyGroupStatsBuilder message = new MultipartReplyGroupStatsBuilder();
         MultipartReplyGroupCase caseBody = (MultipartReplyGroupCase) msg.getMultipartReplyBody();
         MultipartReplyGroup replyBody = caseBody.getMultipartReplyGroup();
-        final Optional<List<GroupStats>> groupStatsList = convertorExecutor.convert(
+        final Optional<List<GroupStats>> groupStatsList = converterExecutor.convert(
             replyBody.getGroupStats(), data);
 
         message.setGroupStats(groupStatsList.orElse(Collections.emptyList()));
@@ -336,13 +336,13 @@ public class MultipartReplyTranslatorUtil {
     private static org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.multipart.reply.multipart
             .reply.body.MultipartReplyGroupDesc translateGroupDesc(
                     final MultipartReply msg,
-                    final VersionDatapathIdConvertorData data,
-                    final ConvertorExecutor convertorExecutor) {
+                    final VersionDatapathIdConverterData data,
+                    final ConverterExecutor converterExecutor) {
         MultipartReplyGroupDescBuilder message = new MultipartReplyGroupDescBuilder();
         MultipartReplyGroupDescCase caseBody = (MultipartReplyGroupDescCase) msg.getMultipartReplyBody();
         MultipartReplyGroupDesc replyBody = caseBody.getMultipartReplyGroupDesc();
 
-        final Optional<List<GroupDescStats>> groupDescStatsList = convertorExecutor.convert(
+        final Optional<List<GroupDescStats>> groupDescStatsList = converterExecutor.convert(
             replyBody.getGroupDesc(), data);
 
         message.setGroupDescStats(groupDescStatsList.orElse(Collections.emptyList()));
@@ -396,15 +396,15 @@ public class MultipartReplyTranslatorUtil {
     }
 
     private static MultipartReplyMeterStats translateMeter(final MultipartReply msg,
-                                                           final VersionDatapathIdConvertorData data,
-                                                           final ConvertorExecutor convertorExecutor) {
+                                                           final VersionDatapathIdConverterData data,
+                                                           final ConverterExecutor converterExecutor) {
         MultipartReplyMeterStatsBuilder message = new MultipartReplyMeterStatsBuilder();
         MultipartReplyMeterCase caseBody = (MultipartReplyMeterCase) msg.getMultipartReplyBody();
         MultipartReplyMeter replyBody = caseBody.getMultipartReplyMeter();
         final Optional<List<
                 org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats
                 >>
-                meterStatsList = convertorExecutor.convert(replyBody.getMeterStats(), data);
+                meterStatsList = converterExecutor.convert(replyBody.getMeterStats(), data);
 
         message.setMeterStats(meterStatsList.orElse(Collections.emptyList()));
 
@@ -414,13 +414,13 @@ public class MultipartReplyTranslatorUtil {
     private static org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.multipart.reply.multipart
             .reply.body.MultipartReplyMeterConfig translateMeterConfig(
                     final MultipartReply msg,
-                    final VersionDatapathIdConvertorData data,
-                    final ConvertorExecutor convertorExecutor) {
+                    final VersionDatapathIdConverterData data,
+                    final ConverterExecutor converterExecutor) {
         MultipartReplyMeterConfigBuilder message = new MultipartReplyMeterConfigBuilder();
         MultipartReplyMeterConfigCase caseBody = (MultipartReplyMeterConfigCase) msg.getMultipartReplyBody();
         MultipartReplyMeterConfig replyBody = caseBody.getMultipartReplyMeterConfig();
         final Optional<List<MeterConfigStats>> meterConfigStatsList
-                = convertorExecutor.convert(replyBody.getMeterConfig(), data);
+                = converterExecutor.convert(replyBody.getMeterConfig(), data);
 
         message.setMeterConfigStats(meterConfigStatsList.orElse(Collections.emptyList()));
 

@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
+import org.opendaylight.openflowplugin.protocol.converter.data.VersionConverterData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupStatisticsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupStatisticsUpdatedBuilder;
@@ -33,15 +33,15 @@ public class GroupStatisticsToNotificationTransformer {
      * @param mpReplyList   raw multipart response from device
      * @param deviceInfo   device state
      * @param emulatedTxId
-     * @param convertorExecutor
+     * @param converterExecutor
      * @return notification containing flow stats
      */
     public static GroupStatisticsUpdated transformToNotification(final List<MultipartReply> mpReplyList,
                                                                  final DeviceInfo deviceInfo,
                                                                  final TransactionId emulatedTxId,
-                                                                 final ConvertorExecutor convertorExecutor) {
+                                                                 final ConverterExecutor converterExecutor) {
 
-        VersionConvertorData data = new VersionConvertorData(deviceInfo.getVersion());
+        VersionConverterData data = new VersionConverterData(deviceInfo.getVersion());
         GroupStatisticsUpdatedBuilder notification = new GroupStatisticsUpdatedBuilder();
         notification.setId(deviceInfo.getNodeId());
         notification.setMoreReplies(Boolean.FALSE);
@@ -52,7 +52,7 @@ public class GroupStatisticsToNotificationTransformer {
         for (MultipartReply mpReply : mpReplyList) {
             MultipartReplyGroupCase caseBody = (MultipartReplyGroupCase) mpReply.getMultipartReplyBody();
             MultipartReplyGroup replyBody = caseBody.getMultipartReplyGroup();
-            final Optional<List<GroupStats>> groupStatsList = convertorExecutor.convert(
+            final Optional<List<GroupStats>> groupStatsList = converterExecutor.convert(
                     replyBody.getGroupStats(), data);
 
             if (groupStatsList.isPresent()) {

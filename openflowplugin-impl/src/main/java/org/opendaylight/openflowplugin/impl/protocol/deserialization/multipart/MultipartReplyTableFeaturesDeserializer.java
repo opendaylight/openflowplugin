@@ -18,6 +18,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowjava.util.ExperimenterDeserializerKeyFactory;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.util.ActionUtil;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.util.InstructionUtil;
@@ -68,8 +69,13 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
     private static final byte COMMON_PROPERTY_LENGTH = 4;
     private static final TableFeaturesMatchFieldDeserializer MATCH_FIELD_DESERIALIZER =
         new TableFeaturesMatchFieldDeserializer();
+    private final ExtensionConverterProvider extensionConverterProvider;
 
     private DeserializerRegistry registry;
+
+    public MultipartReplyTableFeaturesDeserializer(final ExtensionConverterProvider extensionConverterProvider) {
+        this.extensionConverterProvider = extensionConverterProvider;
+    }
 
     @Override
     public MultipartReplyBody deserialize(ByteBuf message) {
@@ -342,7 +348,8 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
                         .setKey(new ActionKey(offset))
                         .setOrder(offset)
                         .setAction(ActionUtil.readActionHeader(EncodeConstants.OF13_VERSION_ID, message, registry,
-                                ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION))
+                                ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION,
+                                extensionConverterProvider))
                         .build());
 
                 offset++;

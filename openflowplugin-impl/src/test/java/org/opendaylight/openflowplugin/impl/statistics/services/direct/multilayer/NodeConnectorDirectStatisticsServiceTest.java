@@ -39,7 +39,7 @@ public class NodeConnectorDirectStatisticsServiceTest extends AbstractDirectStat
 
     @Override
     public void setUp() throws Exception {
-        service = new PortDirectStatisticsService(requestContextStack, deviceContext, convertorManager, multipartWriterProvider);
+        service = new PortDirectStatisticsService(requestContextStack, deviceContext, converterManager, multipartWriterProvider);
     }
 
     @Override

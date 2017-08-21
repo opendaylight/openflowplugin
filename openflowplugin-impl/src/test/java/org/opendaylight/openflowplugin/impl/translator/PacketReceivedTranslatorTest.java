@@ -24,8 +24,9 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterManager;
+import org.opendaylight.openflowplugin.protocol.converter.ConverterManagerFactory;
+import org.opendaylight.openflowplugin.protocol.extension.ExtensionConverterManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
@@ -77,7 +78,7 @@ public class PacketReceivedTranslatorTest {
     @Mock
     PhyPort phyPort;
 
-    ConvertorManager convertorManager;
+    ConverterManager converterManager;
 
     static final Long PORT_NO = 5l;
     static final Long PORT_NO_DS = 6l;
@@ -87,7 +88,7 @@ public class PacketReceivedTranslatorTest {
     @Before
     public void setUp() throws Exception {
         final List<PhyPort> phyPorts = Arrays.asList(phyPort);
-        convertorManager = ConvertorManagerFactory.createDefaultManager();
+        converterManager = new ConverterManagerFactory().newInstance(new ExtensionConverterManagerImpl());
 
         Mockito.when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         Mockito.when(connectionContext.getFeatures()).thenReturn(featuresReply);
@@ -105,7 +106,7 @@ public class PacketReceivedTranslatorTest {
         final KeyedInstanceIdentifier<Node, NodeKey> nodePath = KeyedInstanceIdentifier
                 .create(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId("openflow:10")));
-        final PacketReceivedTranslator packetReceivedTranslator = new PacketReceivedTranslator(convertorManager);
+        final PacketReceivedTranslator packetReceivedTranslator = new PacketReceivedTranslator(converterManager, new ExtensionConverterManagerImpl());
         final PacketInMessage packetInMessage = createPacketInMessage(DATA.getBytes(), PORT_NO);
         Mockito.when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodePath);
 
@@ -150,7 +151,7 @@ public class PacketReceivedTranslatorTest {
                 .setVersion(OFConstants.OFP_VERSION_1_3);
         BigInteger dpid = BigInteger.TEN;
 
-        final PacketReceivedTranslator packetReceivedTranslator = new PacketReceivedTranslator(convertorManager);
+        final PacketReceivedTranslator packetReceivedTranslator = new PacketReceivedTranslator(converterManager, new ExtensionConverterManagerImpl());
         final Match packetInMatch = packetReceivedTranslator.getPacketInMatch(inputBld.build(), dpid);
 
         Assert.assertNotNull(packetInMatch.getInPort());

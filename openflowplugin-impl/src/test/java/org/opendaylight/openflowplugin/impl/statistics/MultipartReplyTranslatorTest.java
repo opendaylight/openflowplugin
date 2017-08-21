@@ -22,9 +22,10 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterManager;
 import org.opendaylight.openflowplugin.impl.common.MultipartReplyTranslatorUtil;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
+import org.opendaylight.openflowplugin.protocol.converter.ConverterManagerFactory;
+import org.opendaylight.openflowplugin.protocol.extension.ExtensionConverterManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowAndStatisticsMapList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupDescStatsReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupStatisticsReply;
@@ -83,7 +84,7 @@ public class MultipartReplyTranslatorTest {
     private static final Long DUMMY_REF_COUNT = 1234L;
     private static final GroupTypes DUMMY_GROUPS_TYPE = GroupTypes.GroupAll;
     private static final GroupType DUMMY_GROUP_TYPE = GroupType.OFPGTALL;
-    private static final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
+    private static final ConverterManager converterManager = new ConverterManagerFactory().newInstance(new ExtensionConverterManagerImpl());
 
     @Before
     public void setUp() {
@@ -98,7 +99,7 @@ public class MultipartReplyTranslatorTest {
         DataContainer result = MultipartReplyTranslatorUtil.translate(
             multipartReplyMessage,
             mockedDeviceContext.getDeviceInfo(),
-            convertorManager,
+            converterManager,
             mockedDeviceContext.oook()).get();
 
         DataContainer dataObject = validateOutput(result);
@@ -114,7 +115,7 @@ public class MultipartReplyTranslatorTest {
         DataContainer result = MultipartReplyTranslatorUtil.translate(
             multipartReplyMessage,
             mockedDeviceContext.getDeviceInfo(),
-            convertorManager,
+            converterManager,
             mockedDeviceContext.oook()).get();
 
         DataContainer dataObject = validateOutput(result);
@@ -134,7 +135,7 @@ public class MultipartReplyTranslatorTest {
         DataContainer result = MultipartReplyTranslatorUtil.translate(
             multipartReplyMessage,
             mockedDeviceContext.getDeviceInfo(),
-            convertorManager,
+            converterManager,
             mockedDeviceContext.oook()).get();
 
         DataContainer dataObject = validateOutput(result);
@@ -167,7 +168,7 @@ public class MultipartReplyTranslatorTest {
         DataContainer result = MultipartReplyTranslatorUtil.translate(
             multipartReplyMessage,
             mockedDeviceContext.getDeviceInfo(),
-            convertorManager,
+            converterManager,
             mockedDeviceContext.oook()).get();
 
         DataContainer dataObject = validateOutput(result);
@@ -194,7 +195,7 @@ public class MultipartReplyTranslatorTest {
         DataContainer result = MultipartReplyTranslatorUtil.translate(
             multipartReplyMessage,
             mockedDeviceContext.getDeviceInfo(),
-            convertorManager,
+            converterManager,
             mockedDeviceContext.oook()).get();
 
         DataContainer dataObject = validateOutput(result);

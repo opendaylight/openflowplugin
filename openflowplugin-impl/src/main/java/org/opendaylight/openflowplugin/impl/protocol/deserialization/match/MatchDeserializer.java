@@ -9,11 +9,9 @@
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderDeserializer;
@@ -22,8 +20,9 @@ import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.openflow.protocol.deserialization.MatchEntryDeserializer;
 import org.opendaylight.openflowplugin.api.openflow.protocol.deserialization.MatchEntryDeserializerRegistry;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
-import org.opendaylight.openflowplugin.openflow.md.core.extension.MatchExtensionHelper;
+import org.opendaylight.openflowplugin.protocol.extension.MatchExtensionHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
@@ -36,10 +35,12 @@ public class MatchDeserializer implements OFDeserializer<Match>, HeaderDeseriali
     private static final Logger LOG = LoggerFactory.getLogger(MatchDeserializer.class);
     private final Map<MatchEntryDeserializerKey, MatchEntryDeserializer> entryRegistry = new HashMap<>();
     private final MatchPath matchPath;
+    private final ExtensionConverterProvider extensionConverterProvider;
     private DeserializerRegistry registry;
 
-    public MatchDeserializer(final MatchPath matchPath) {
+    public MatchDeserializer(final MatchPath matchPath, final ExtensionConverterProvider extensionConverterProvider) {
         this.matchPath = matchPath;
+        this.extensionConverterProvider = extensionConverterProvider;
     }
 
     @Override
@@ -100,7 +101,7 @@ public class MatchDeserializer implements OFDeserializer<Match>, HeaderDeseriali
         } else {
             final OFDeserializer<MatchEntry> deserializer = registry.getDeserializer(key);
             MatchExtensionHelper.injectExtension(EncodeConstants.OF13_VERSION_ID,
-                    deserializer.deserialize(inBuffer), builder, matchPath);
+                    deserializer.deserialize(inBuffer), builder, matchPath, extensionConverterProvider);
         }
     }
 

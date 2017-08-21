@@ -15,6 +15,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.messages.FlowMessageSerializer;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.messages.GroupMessageSerializer;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.messages.MeterMessageSerializer;
@@ -36,7 +37,7 @@ class MessageSerializerInjector {
      * Injects message serializers into provided {@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}
      * @param provider OpenflowJava serializer extension provider
      */
-    static void injectSerializers(final SerializerExtensionProvider provider) {
+    static void injectSerializers(final SerializerExtensionProvider provider, final ExtensionConverterProvider extensionConverterProvider) {
         // Inject new message serializers here using injector created by createInjector method
         final Function<Class<?>, Consumer<OFSerializer<? extends OfHeader>>> injector =
                 createInjector(provider, EncodeConstants.OF13_VERSION_ID);
@@ -44,7 +45,7 @@ class MessageSerializerInjector {
         injector.apply(FlowMessage.class).accept(new FlowMessageSerializer());
         injector.apply(MeterMessage.class).accept(new MeterMessageSerializer());
         injector.apply(PortMessage.class).accept(new PortMessageSerializer());
-        injector.apply(GroupMessage.class).accept(new GroupMessageSerializer());
+        injector.apply(GroupMessage.class).accept(new GroupMessageSerializer(extensionConverterProvider));
         injector.apply(MultipartRequest.class).accept(new MultipartRequestMessageSerializer());
     }
 

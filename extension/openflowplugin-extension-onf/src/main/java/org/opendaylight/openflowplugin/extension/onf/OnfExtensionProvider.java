@@ -14,8 +14,8 @@ import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterIdTypeDeseria
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterIdTypeSerializerKey;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterRegistrator;
-import org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.onf.converter.BundleAddMessageConverter;
 import org.opendaylight.openflowplugin.extension.onf.converter.BundleControlConverter;
@@ -38,16 +38,15 @@ public class OnfExtensionProvider {
 
     private final SwitchConnectionProvider switchConnectionProvider;
     private final ExtensionConverterRegistrator converterRegistrator;
-
-    private static final BundleControlConverter bundleControlConverter = new BundleControlConverter();
-    private static final BundleAddMessageConverter bundleAddMessageConverter = new BundleAddMessageConverter();
+    private final ConverterExecutor converterExecutor;
 
     public OnfExtensionProvider(final SwitchConnectionProvider switchConnectionProvider,
-                                final OpenFlowPluginExtensionRegistratorProvider converterRegistrator) {
+                                final ExtensionConverterRegistrator extensionConverterRegistrator,
+                                final ConverterExecutor converterExecutor) {
         this.switchConnectionProvider = Preconditions.checkNotNull(switchConnectionProvider,
                 "SwitchConnectionProvider can not be null!");
-        this.converterRegistrator = Preconditions.checkNotNull(converterRegistrator.getExtensionConverterRegistrator(),
-                "ExtensionConverterRegistrator can not be null!");
+        this.converterRegistrator = extensionConverterRegistrator;
+        this.converterExecutor = converterExecutor;
     }
 
     /**
@@ -92,9 +91,11 @@ public class OnfExtensionProvider {
 
     private void registerConverters() {
         converterRegistrator.registerMessageConvertor(
-                new TypeVersionKey<>(BundleControlSal.class, OFConstants.OFP_VERSION_1_3), bundleControlConverter);
+                new TypeVersionKey<>(BundleControlSal.class, OFConstants.OFP_VERSION_1_3), new BundleControlConverter());
         converterRegistrator.registerMessageConvertor(
-                new TypeVersionKey<>(BundleAddMessageSal.class, OFConstants.OFP_VERSION_1_3), bundleAddMessageConverter);
+                new TypeVersionKey<>(BundleAddMessageSal.class, OFConstants.OFP_VERSION_1_3),
+                new BundleAddMessageConverter(converterExecutor));
+
     }
 
 }

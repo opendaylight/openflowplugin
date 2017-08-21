@@ -14,8 +14,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterRegistrator;
-import org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.experimenter.core.message.ExperimenterMessageOfChoice;
 
@@ -25,7 +25,7 @@ public class OnfExtensionProviderTest {
     @Mock
     private SwitchConnectionProvider switchConnectionProvider;
     @Mock
-    private OpenFlowPluginExtensionRegistratorProvider openFlowPluginExtensionRegistratorProvider;
+    private ConverterExecutor converterExecutor;
     @Mock
     private ExtensionConverterRegistrator extensionConverterRegistrator;
 
@@ -33,12 +33,8 @@ public class OnfExtensionProviderTest {
 
     @Before
     public void setUp() throws Exception {
-        Mockito
-                .when(openFlowPluginExtensionRegistratorProvider.getExtensionConverterRegistrator())
-                .thenReturn(extensionConverterRegistrator);
-
         onfExtensionProvider =
-                new OnfExtensionProvider(switchConnectionProvider, openFlowPluginExtensionRegistratorProvider);
+                new OnfExtensionProvider(switchConnectionProvider, extensionConverterRegistrator, converterExecutor);
     }
 
     @Test

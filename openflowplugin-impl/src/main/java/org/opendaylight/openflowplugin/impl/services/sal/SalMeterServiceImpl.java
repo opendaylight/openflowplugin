@@ -19,7 +19,7 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleLi
 import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerMeterService;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerMeterService;
 import org.opendaylight.openflowplugin.impl.util.ErrorUtil;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterKey;
@@ -51,11 +51,11 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
     private ItemLifecycleListener itemLifecycleListener;
     private final DeviceContext deviceContext;
 
-    public SalMeterServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConvertorExecutor convertorExecutor) {
+    public SalMeterServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConverterExecutor converterExecutor) {
         this.deviceContext = deviceContext;
-        addMeter = new MultiLayerMeterService<>(requestContextStack, deviceContext, AddMeterOutput.class, convertorExecutor);
-        updateMeter = new MultiLayerMeterService<>(requestContextStack, deviceContext, UpdateMeterOutput.class, convertorExecutor);
-        removeMeter = new MultiLayerMeterService<>(requestContextStack, deviceContext, RemoveMeterOutput.class, convertorExecutor);
+        addMeter = new MultiLayerMeterService<>(requestContextStack, deviceContext, AddMeterOutput.class, converterExecutor);
+        updateMeter = new MultiLayerMeterService<>(requestContextStack, deviceContext, UpdateMeterOutput.class, converterExecutor);
+        removeMeter = new MultiLayerMeterService<>(requestContextStack, deviceContext, RemoveMeterOutput.class, converterExecutor);
 
         addMeterMessage = new SingleLayerMeterService<>(requestContextStack, deviceContext, AddMeterOutput.class);
         updateMeterMessage = new SingleLayerMeterService<>(requestContextStack, deviceContext, UpdateMeterOutput.class);

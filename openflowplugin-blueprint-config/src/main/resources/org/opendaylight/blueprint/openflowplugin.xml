@@ -25,6 +25,12 @@
     <reference id="mastershipChangeServiceManager"
                interface="org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager"/>
 
+    <reference id="extensionConverterManager"
+               interface="org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterManager"/>
+
+    <reference id="converterManager"
+               interface="org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterManager"/>
+
     <odl:clustered-app-config id="openflowProviderConfig"
                               binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig"/>
 
@@ -38,8 +44,6 @@
                                update-strategy="component-managed"
                                update-method="update"/>
     </bean>
-
-    <service ref="configurationService" interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService"/>
 
     <bean id="openflowPluginProvider"
           factory-ref="openflowPluginProviderFactory"
@@ -58,8 +62,11 @@
         </argument>
         <argument ref="clusterSingletonServiceProvider"/>
         <argument ref="mastershipChangeServiceManager"/>
+        <argument ref="converterManager"/>
+        <property name="extensionConverterManager" ref="extensionConverterManager"/>
     </bean>
 
+    <service ref="configurationService" interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService"/>
     <service ref="openflowPluginProvider" odl:type="openflow-plugin-provider-impl">
         <interfaces>
             <value>org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider</value>
