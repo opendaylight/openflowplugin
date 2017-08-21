@@ -90,7 +90,4 @@ public class StatisticsContextImplParamTest extends StatisticsContextImpMockInit
             fail("Exception wasn't expected.");
         }
     }
-
-    }
-
 }
