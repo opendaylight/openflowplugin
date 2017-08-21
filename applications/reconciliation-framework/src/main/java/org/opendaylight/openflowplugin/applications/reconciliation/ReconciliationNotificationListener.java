@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.applications.reconciliation;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
 
