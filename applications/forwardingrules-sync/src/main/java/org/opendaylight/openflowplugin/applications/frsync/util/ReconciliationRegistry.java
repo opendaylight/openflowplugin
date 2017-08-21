@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Holder of registration request for reconciliation (fresh operational).
+ * Holder of registration request for tasks (fresh operational).
  */
 public class ReconciliationRegistry {
     private static final Logger LOG = LoggerFactory.getLogger(ReconciliationRegistry.class);
@@ -25,7 +25,7 @@ public class ReconciliationRegistry {
     public Date register(NodeId nodeId) {
         Date timestamp = new Date();
         registration.put(nodeId, timestamp);
-        LOG.debug("Registered for reconciliation: {}", nodeId.getValue());
+        LOG.debug("Registered for tasks: {}", nodeId.getValue());
         // TODO  elicit statistics gathering if not running actually
         return timestamp;
     }
@@ -33,7 +33,7 @@ public class ReconciliationRegistry {
     public Date unregisterIfRegistered(NodeId nodeId) {
         Date timestamp = registration.remove(nodeId);
         if (timestamp != null) {
-            LOG.debug("Unregistered for reconciliation: {}", nodeId.getValue());
+            LOG.debug("Unregistered for tasks: {}", nodeId.getValue());
         }
         return timestamp;
     }

@@ -6,26 +6,26 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.applications.frm.impl;
+package org.opendaylight.openflowplugin.applications.frm.impl.commiters;
 
 import com.google.common.base.Preconditions;
 import java.util.Collection;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frm.FlowCapableNodeConnectorCommitter;
-import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public abstract class AbstractNodeConnectorCommitter <T extends DataObject> implements FlowCapableNodeConnectorCommitter<T> {
-    private ForwardingRulesManager provider;
+    private final AutoCloseable registration;
 
-    private final Class<T> clazz;
-
-    public AbstractNodeConnectorCommitter (ForwardingRulesManager provider, Class<T> clazz) {
-        this.provider = Preconditions.checkNotNull(provider, "ForwardingRulesManager can not be null!");
-        this.clazz = Preconditions.checkNotNull(clazz, "Class can not be null!");
+    public AbstractNodeConnectorCommitter(DataBroker dataBroker) {
+        final DataTreeIdentifier<T> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, getWildCardPath());
+        registration = dataBroker.registerDataTreeChangeListener(treeId, this);
     }
 
     @Override
@@ -58,6 +58,11 @@ public abstract class AbstractNodeConnectorCommitter <T extends DataObject> impl
                 }
             }
         }
+    }
+
+    @Override
+    public void close() throws Exception {
+        registration.close();
     }
 
     /**

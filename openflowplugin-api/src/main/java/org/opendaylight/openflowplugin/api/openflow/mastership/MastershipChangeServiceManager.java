@@ -12,14 +12,14 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.OwnershipChangeLis
 
 /**
  * Provider to register mastership change listener.
- * Provider to set mastership reconciliation framework.
+ * Provider to set mastership tasks framework.
  * @since 0.5.0 Nitrogen
  */
 public interface MastershipChangeServiceManager extends OwnershipChangeListener, AutoCloseable {
 
     /**
      * Register of mastership change listener. Returned registration need to be closed by client.
-     * It doesn't contain event for reconciliation framework event.
+     * It doesn't contain event for tasks framework event.
      * @param service implementation of {@link MastershipChangeService}
      * @return registration
      * @see ReconciliationFrameworkEvent
@@ -28,11 +28,11 @@ public interface MastershipChangeServiceManager extends OwnershipChangeListener,
     MastershipChangeRegistration register(@Nonnull MastershipChangeService service);
 
     /**
-     * Setter for reconciliation framework event listener. It can be registered only once.
+     * Setter for tasks framework event listener. It can be registered only once.
      * Another registrations will throw an exception
-     * @param mastershipRFRegistration reconciliation framework
+     * @param mastershipRFRegistration tasks framework
      * @return registration object, which can be closed to unregister
-     * @throws MastershipChangeException if already reconciliation framework registered
+     * @throws MastershipChangeException if already tasks framework registered
      */
     ReconciliationFrameworkRegistration reconciliationFrameworkRegistration(
             @Nonnull ReconciliationFrameworkEvent mastershipRFRegistration) throws MastershipChangeException;

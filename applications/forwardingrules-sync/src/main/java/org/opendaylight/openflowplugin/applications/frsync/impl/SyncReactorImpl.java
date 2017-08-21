@@ -43,7 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Synchronization reactor implementation, applicable for both - syncup and reconciliation.
+ * Synchronization reactor implementation, applicable for both - syncup and tasks.
  */
 public class SyncReactorImpl implements SyncReactor {
 
@@ -68,9 +68,9 @@ public class SyncReactorImpl implements SyncReactor {
          *    - optimization: decide if updates needed
          *  - execute chosen implementation (e.g. conventional API, bulk API, flat bulk API)
          *  - recommended order follows:
-         * reconciliation strategy - phase 1: - add/update missing objects in following order:
+         * tasks strategy - phase 1: - add/update missing objects in following order:
          *  - table features - groups (reordered) - meters - flows
-         * reconciliation strategy - phase 2: - remove redundant objects in following order:
+         * tasks strategy - phase 2: - remove redundant objects in following order:
          *  - flows - meters - groups (reordered)
          **/
 

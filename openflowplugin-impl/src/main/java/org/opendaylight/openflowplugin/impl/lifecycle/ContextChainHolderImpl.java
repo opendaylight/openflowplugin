@@ -196,7 +196,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(contextChain -> {
             if (ownershipChangeListener.isReconciliationFrameworkRegistered()) {
                 if (mastershipState == ContextChainMastershipState.INITIAL_SUBMIT) {
-                    LOG.error("Initial submit is not allowed here if using reconciliation framework.");
+                    LOG.error("Initial submit is not allowed here if using tasks framework.");
                 } else {
                     contextChain.isMastered(mastershipState);
                     if (contextChain.isPrepared()) {
@@ -345,9 +345,9 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
             @Override
             public void onSuccess(@Nullable ResultState result) {
                 if (ResultState.DONOTHING == result) {
-                    LOG.info("Device {} connection is enabled by reconciliation framework.", deviceInfo);
+                    LOG.info("Device {} connection is enabled by tasks framework.", deviceInfo);
                     if (!contextChain.continueInitializationAfterReconciliation()) {
-                        LOG.warn("Initialization submit after reconciliation failed for device {}", deviceInfo);
+                        LOG.warn("Initialization submit after tasks failed for device {}", deviceInfo);
                         destroyContextChain(deviceInfo);
                     } else {
                         ownershipChangeListener.becomeMaster(deviceInfo);

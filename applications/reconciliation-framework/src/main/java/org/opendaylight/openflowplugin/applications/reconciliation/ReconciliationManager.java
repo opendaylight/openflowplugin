@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.Map;
 
 /*
- * Provider to register the service to reconciliation framework
+ * Provider to register the service to tasks framework
  *
  */
 public interface ReconciliationManager {
     /*
-     * Application who are interested in reconciliation should use this API to
+     * Application who are interested in tasks should use this API to
      * register their services to the Reconciliation Framework
      *
      * @param object - the reference to the ReconciliationNotificationListener

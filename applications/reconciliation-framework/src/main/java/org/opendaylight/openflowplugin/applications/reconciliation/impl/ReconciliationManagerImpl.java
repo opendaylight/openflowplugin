@@ -93,13 +93,13 @@ public class ReconciliationManagerImpl implements ReconciliationManager, Reconci
 
     @Override
     public ListenableFuture<ResultState> onDevicePrepared(@Nonnull DeviceInfo node) {
-        LOG.debug("Triggering reconciliation for node : {}", node.getNodeId());
+        LOG.debug("Triggering tasks for node : {}", node.getNodeId());
         return futureMap.computeIfAbsent(node, value -> reconcileNode(node));
     }
 
     @Override
     public ListenableFuture<Void> onDeviceDisconnected(@Nonnull DeviceInfo node) {
-        LOG.info("Stopping reconciliation for node {}", node.getNodeId());
+        LOG.info("Stopping tasks for node {}", node.getNodeId());
         if (futureMap.containsKey(node)) {
             return cancelNodeReconciliation(node);
         }

@@ -5,7 +5,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package test.mock;
+package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import static org.junit.Assert.assertEquals;
 
@@ -20,11 +20,11 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.openflowplugin.applications.frm.impl.DeviceMastershipManager;
-import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
+import org.opendaylight.openflowplugin.applications.frm.impl.util.FRMTest;
+import org.opendaylight.openflowplugin.applications.frm.impl.util.RpcProviderRegistryMock;
+import org.opendaylight.openflowplugin.applications.frm.impl.util.SalFlowServiceMock;
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Dscp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -50,9 +50,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import test.mock.util.FRMTest;
-import test.mock.util.RpcProviderRegistryMock;
-import test.mock.util.SalFlowServiceMock;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FlowListenerTest extends FRMTest {
@@ -62,11 +59,9 @@ public class FlowListenerTest extends FRMTest {
     RpcProviderRegistry rpcProviderRegistryMock = new RpcProviderRegistryMock();
     TableKey tableKey = new TableKey((short) 2);
     @Mock
-    ClusterSingletonServiceProvider clusterSingletonService;
+    MastershipChangeServiceManager mastershipChangeServiceManager;
     @Mock
-    DeviceMastershipManager deviceMastershipManager;
-    @Mock
-    private NotificationProviderService notificationService;
+    DeviceMastershipManagerImpl deviceMastershipManager;
     @Mock
     private ReconciliationManager reconciliationManager;
 
@@ -76,8 +71,7 @@ public class FlowListenerTest extends FRMTest {
                 getDataBroker(),
                 rpcProviderRegistryMock,
                 getConfig(),
-                clusterSingletonService,
-                notificationService,
+                mastershipChangeServiceManager,
                 getConfigurationService(),
                 reconciliationManager);
 

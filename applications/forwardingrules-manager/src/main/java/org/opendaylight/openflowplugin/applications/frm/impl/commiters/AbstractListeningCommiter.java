@@ -5,12 +5,15 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowplugin.applications.frm.impl;
+package org.opendaylight.openflowplugin.applications.frm.impl.commiters;
 
 import com.google.common.base.Preconditions;
 import java.util.Collection;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -26,12 +29,13 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractListeningCommiter <T extends DataObject> implements ForwardingRulesCommiter<T> {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractListeningCommiter.class);
-    ForwardingRulesManager provider;
-    private final Class<T> clazz;
+    private final AutoCloseable registration;
+    private final ForwardingRulesManager provider;
 
-    public AbstractListeningCommiter (ForwardingRulesManager provider, Class<T> clazz) {
-        this.provider = Preconditions.checkNotNull(provider, "ForwardingRulesManager can not be null!");
-        this.clazz = Preconditions.checkNotNull(clazz, "Class can not be null!");
+    public AbstractListeningCommiter (ForwardingRulesManager provider, DataBroker dataBroker) {
+        this.provider = provider;
+        final DataTreeIdentifier<T> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, getWildCardPath());
+        registration = dataBroker.registerDataTreeChangeListener(treeId, this);
     }
 
     @Override
@@ -84,6 +88,15 @@ public abstract class AbstractListeningCommiter <T extends DataObject> implement
         }
     }
 
+    @Override
+    public void close() throws Exception {
+        registration.close();
+    }
+
+    ForwardingRulesManager getProvider() {
+        return provider;
+    }
+
     /**
      * Method return wildCardPath for Listener registration
      * and for identify the correct KeyInstanceIdentifier from data;
@@ -101,17 +114,6 @@ public abstract class AbstractListeningCommiter <T extends DataObject> implement
         // skip the flow/group/meter operational. This requires an addition check, where it reads
         // node from operational data store and if it's present it calls flowNodeConnected to explicitly
         // trigger the event of new node connected.
-
-        if(!provider.isNodeOwner(nodeIdent)) { return false; }
-
-        if (!provider.isNodeActive(nodeIdent)) {
-            if (provider.checkNodeInOperationalDataStore(nodeIdent)) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        return true;
+        return provider.isNodeOwner(nodeIdent) && provider.checkNodeInOperationalDataStore(nodeIdent);
     }
 }
-
