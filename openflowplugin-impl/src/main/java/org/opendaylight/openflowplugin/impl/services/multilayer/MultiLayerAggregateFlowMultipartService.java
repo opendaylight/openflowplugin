@@ -58,8 +58,11 @@ public class MultiLayerAggregateFlowMultipartService extends AbstractAggregateFl
 
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) throws ServiceException {
-        final MultipartRequestAggregateCaseBuilder multipartRequestAggregateCaseBuilder = new MultipartRequestAggregateCaseBuilder();
+    protected OfHeader buildRequest(final Xid xid,
+                                    final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input)
+                                                                                            throws ServiceException {
+        final MultipartRequestAggregateCaseBuilder multipartRequestAggregateCaseBuilder =
+                new MultipartRequestAggregateCaseBuilder();
         final MultipartRequestAggregateBuilder mprAggregateRequestBuilder = new MultipartRequestAggregateBuilder();
         final short tableId = MoreObjects.firstNonNull(input.getTableId(), OFConstants.OFPTT_ALL);
         mprAggregateRequestBuilder.setTableId(tableId);
@@ -72,13 +75,15 @@ public class MultiLayerAggregateFlowMultipartService extends AbstractAggregateFl
             if (input.getCookie() == null) {
                 mprAggregateRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
             } else {
-                mprAggregateRequestBuilder.setCookie(MoreObjects.firstNonNull(input.getCookie().getValue(), OFConstants.DEFAULT_COOKIE));
+                mprAggregateRequestBuilder
+                        .setCookie(MoreObjects.firstNonNull(input.getCookie().getValue(), OFConstants.DEFAULT_COOKIE));
             }
 
             if (input.getCookieMask() == null) {
                 mprAggregateRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
             } else {
-                mprAggregateRequestBuilder.setCookieMask(MoreObjects.firstNonNull(input.getCookieMask().getValue(), OFConstants.DEFAULT_COOKIE_MASK));
+                mprAggregateRequestBuilder.setCookieMask(MoreObjects.firstNonNull(input.getCookieMask().getValue(),
+                                                                                  OFConstants.DEFAULT_COOKIE_MASK));
             }
             long outGroup = MoreObjects.firstNonNull(input.getOutGroup(), OFConstants.OFPG_ANY);
             mprAggregateRequestBuilder.setOutGroup(outGroup);
@@ -105,11 +110,14 @@ public class MultiLayerAggregateFlowMultipartService extends AbstractAggregateFl
     }
 
     @Override
-    public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> handleAndReply(final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) {
+    public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>>
+        handleAndReply(final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) {
         return Futures.transform(handleServiceCall(input),
-            (Function<RpcResult<List<MultipartReply>>, RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>>) result -> {
+            (Function<RpcResult<List<MultipartReply>>,
+             RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>>) result -> {
                 if (Preconditions.checkNotNull(result).isSuccessful()) {
-                    final MessageTranslator<MultipartReply, AggregatedFlowStatistics> messageTranslator = translatorLibrary
+                    final MessageTranslator<MultipartReply, AggregatedFlowStatistics> messageTranslator =
+                        translatorLibrary
                         .lookupTranslator(new TranslatorKey(getVersion(), MultipartReplyAggregateCase.class.getName()));
 
                     return RpcResultBuilder
@@ -129,5 +137,4 @@ public class MultiLayerAggregateFlowMultipartService extends AbstractAggregateFl
                     .build();
             });
     }
-
 }

@@ -133,8 +133,10 @@ public abstract class AbstractService<I, O> {
         }
 
         if (Objects.isNull(requestContext.getXid())) {
-            getMessageSpy().spyMessage(requestContext.getClass(), MessageSpy.StatisticsGroup.TO_SWITCH_RESERVATION_REJECTED);
-            return RequestContextUtil.closeRequestContextWithRpcError(requestContext, "Outbound queue wasn't able to reserve XID.");
+            getMessageSpy().spyMessage(requestContext.getClass(),
+                                       MessageSpy.StatisticsGroup.TO_SWITCH_RESERVATION_REJECTED);
+            return RequestContextUtil
+                    .closeRequestContextWithRpcError(requestContext, "Outbound queue wasn't able to reserve XID.");
         }
 
         getMessageSpy().spyMessage(requestContext.getClass(), MessageSpy.StatisticsGroup.TO_SWITCH_READY_FOR_SUBMIT);
@@ -143,15 +145,22 @@ public abstract class AbstractService<I, O> {
         OfHeader request = null;
         try {
             request = buildRequest(xid, input);
-            Verify.verify(xid.getValue().equals(request.getXid()), "Expected XID %s got %s", xid.getValue(), request.getXid());
-        } catch (Exception ex) {
+            Verify.verify(xid.getValue().equals(request.getXid()),
+                          "Expected XID %s got %s",
+                          xid.getValue(),
+                          request.getXid());
+        } catch (ServiceException ex) {
             LOG.error("Failed to build request for {}, forfeiting request {}", input, xid.getValue(), ex);
-            RequestContextUtil.closeRequestContextWithRpcError(requestContext, "failed to build request input: " + ex.getMessage());
+            RequestContextUtil.closeRequestContextWithRpcError(requestContext,
+                                                               "failed to build request input: " + ex.getMessage());
         } finally {
-            final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
+            final OutboundQueue outboundQueue =
+                    getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
 
             if (Objects.nonNull(isComplete)) {
-                outboundQueue.commitEntry(xid.getValue(), request, createCallback(requestContext, requestType), isComplete);
+                outboundQueue.commitEntry(xid.getValue(),
+                                          request,
+                                          createCallback(requestContext, requestType), isComplete);
             } else {
                 outboundQueue.commitEntry(xid.getValue(), request, createCallback(requestContext, requestType));
             }

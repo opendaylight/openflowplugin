@@ -15,7 +15,6 @@ import static org.mockito.Mockito.verify;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.ServiceMocking;
-import org.opendaylight.openflowplugin.impl.services.sal.NodeConfigServiceImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.SwitchConfigFlag;
@@ -41,7 +40,8 @@ public class NodeConfigServiceImplTest extends ServiceMocking {
         nodeConfigService = new NodeConfigServiceImpl(mockedRequestContextStack, mockedDeviceContext);
         final OfHeader request = nodeConfigService.buildRequest(new Xid(DUMMY_XID_VALUE), dummyConfigInput());
 
-        assertTrue(request instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInput);
+        assertTrue(request instanceof org.opendaylight.yang.gen.v1.urn
+                .opendaylight.openflow.protocol.rev130731.SetConfigInput);
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInput setConfigInput
                 = (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInput) request;
         assertEquals(DUMMY_FLAG,setConfigInput.getFlags());
@@ -49,7 +49,7 @@ public class NodeConfigServiceImplTest extends ServiceMocking {
         assertEquals(DUMMY_XID_VALUE, setConfigInput.getXid());
     }
 
-    private SetConfigInput dummyConfigInput(){
+    private SetConfigInput dummyConfigInput() {
         SetConfigInputBuilder setConfigInputBuilder = new SetConfigInputBuilder();
         setConfigInputBuilder.setFlag(DUMMY_FLAG_STR);
         setConfigInputBuilder.setMissSearchLength(DUMMY_MISS_SEARCH_LENGTH);

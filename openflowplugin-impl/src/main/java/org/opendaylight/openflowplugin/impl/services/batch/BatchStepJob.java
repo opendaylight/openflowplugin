@@ -21,7 +21,8 @@ public class BatchStepJob {
     private final AsyncFunction<RpcResult<ProcessFlatBatchOutput>, RpcResult<ProcessFlatBatchOutput>> stepFunction;
 
     public BatchStepJob(final BatchPlanStep planStep,
-                        final AsyncFunction<RpcResult<ProcessFlatBatchOutput>, RpcResult<ProcessFlatBatchOutput>> stepFunction) {
+                        final AsyncFunction<RpcResult<ProcessFlatBatchOutput>,
+                        RpcResult<ProcessFlatBatchOutput>> stepFunction) {
         this.planStep = planStep;
         this.stepFunction = stepFunction;
     }
@@ -33,5 +34,4 @@ public class BatchStepJob {
     public AsyncFunction<RpcResult<ProcessFlatBatchOutput>, RpcResult<ProcessFlatBatchOutput>> getStepFunction() {
         return stepFunction;
     }
-
 }

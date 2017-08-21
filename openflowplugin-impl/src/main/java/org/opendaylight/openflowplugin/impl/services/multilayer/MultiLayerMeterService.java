@@ -26,7 +26,10 @@ public final class MultiLayerMeterService<I extends Meter, O extends DataObject>
     private final ConvertorExecutor convertorExecutor;
     private final VersionConvertorData data;
 
-    public MultiLayerMeterService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final Class<O> clazz, final ConvertorExecutor convertorExecutor) {
+    public MultiLayerMeterService(final RequestContextStack requestContextStack,
+                                  final DeviceContext deviceContext,
+                                  final Class<O> clazz,
+                                  final ConvertorExecutor convertorExecutor) {
         super(requestContextStack, deviceContext, clazz);
         this.convertorExecutor = convertorExecutor;
         data = new VersionConvertorData(getVersion());

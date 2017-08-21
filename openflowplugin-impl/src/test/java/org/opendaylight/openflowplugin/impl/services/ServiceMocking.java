@@ -118,7 +118,8 @@ public abstract class ServiceMocking {
 
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimConnectionContext);
         when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessagSpy);
-        when(mockedDeviceContext.getDeviceFlowRegistry()).thenReturn(new DeviceFlowRegistryImpl(DUMMY_VERSION, dataBroker, DUMMY_NODE_II));
+        when(mockedDeviceContext.getDeviceFlowRegistry())
+                .thenReturn(new DeviceFlowRegistryImpl(DUMMY_VERSION, dataBroker, DUMMY_NODE_II));
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
         when(mockedDeviceContext.getMultiMsgCollector(Matchers.any())).thenReturn(multiMessageCollector);
@@ -131,7 +132,8 @@ public abstract class ServiceMocking {
     }
 
     protected  <T> void mockSuccessfulFuture() {
-        ListenableFuture<RpcResult<T>> dummySuccessfulFuture = Futures.immediateFuture(RpcResultBuilder.success((T) null).build());
+        ListenableFuture<RpcResult<T>> dummySuccessfulFuture =
+                Futures.immediateFuture(RpcResultBuilder.success((T) null).build());
         when(mockedRequestContext.getFuture()).thenReturn(dummySuccessfulFuture);
     }
 

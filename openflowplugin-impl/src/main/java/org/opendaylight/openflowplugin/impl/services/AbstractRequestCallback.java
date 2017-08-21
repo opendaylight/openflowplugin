@@ -54,19 +54,22 @@ public abstract class AbstractRequestCallback<T> implements FutureCallback<OfHea
     }
 
     @Override
-    public final void onFailure(@Nonnull final Throwable t) {
+    public final void onFailure(@Nonnull final Throwable throwable) {
         final RpcResultBuilder<T> builder;
         if (null != eventIdentifier) {
             EventsTimeCounter.markEnd(eventIdentifier);
         }
-        if (t instanceof DeviceRequestFailedException) {
-            final Error err = ((DeviceRequestFailedException) t).getError();
-            final String errorString = String.format("Device reported error type %s code %s", err.getTypeString(), err.getCodeString());
+        if (throwable instanceof DeviceRequestFailedException) {
+            final Error err = ((DeviceRequestFailedException) throwable).getError();
+            final String errorString = String.format("Device reported error type %s code %s",
+                                                     err.getTypeString(),
+                                                     err.getCodeString());
 
-            builder = RpcResultBuilder.<T>failed().withError(RpcError.ErrorType.APPLICATION, errorString, t);
+            builder = RpcResultBuilder.<T>failed().withError(RpcError.ErrorType.APPLICATION, errorString, throwable);
             spyMessage(StatisticsGroup.TO_SWITCH_SUBMIT_FAILURE);
         } else {
-            builder = RpcResultBuilder.<T>failed().withError(RpcError.ErrorType.APPLICATION, t.getMessage(), t);
+            builder = RpcResultBuilder.<T>failed()
+                    .withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
             spyMessage(StatisticsGroup.TO_SWITCH_SUBMIT_ERROR);
         }
 

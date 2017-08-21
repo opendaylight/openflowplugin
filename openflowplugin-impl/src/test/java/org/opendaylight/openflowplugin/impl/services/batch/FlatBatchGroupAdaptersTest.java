@@ -60,7 +60,8 @@ public class FlatBatchGroupAdaptersTest {
                 createAddGroupBatch(1L),
                 createAddGroupBatch(2L)));
 
-        final AddGroupsBatchInput addGroupsBatchInput = FlatBatchGroupAdapters.adaptFlatBatchAddGroup(planStep, NODE_REF);
+        final AddGroupsBatchInput addGroupsBatchInput =
+                FlatBatchGroupAdapters.adaptFlatBatchAddGroup(planStep, NODE_REF);
 
         Assert.assertTrue(addGroupsBatchInput.isBarrierAfter());
         Assert.assertEquals(2, addGroupsBatchInput.getBatchAddGroups().size());
@@ -99,12 +100,15 @@ public class FlatBatchGroupAdaptersTest {
                 createRemoveGroupBatch(1L),
                 createRemoveGroupBatch(2L)));
 
-        final RemoveGroupsBatchInput removeGroupsBatchInput = FlatBatchGroupAdapters.adaptFlatBatchRemoveGroup(planStep, NODE_REF);
+        final RemoveGroupsBatchInput removeGroupsBatchInput =
+                FlatBatchGroupAdapters.adaptFlatBatchRemoveGroup(planStep, NODE_REF);
 
         Assert.assertTrue(removeGroupsBatchInput.isBarrierAfter());
         Assert.assertEquals(2, removeGroupsBatchInput.getBatchRemoveGroups().size());
-        Assert.assertEquals(1L, removeGroupsBatchInput.getBatchRemoveGroups().get(0).getGroupId().getValue().longValue());
-        Assert.assertEquals(2L, removeGroupsBatchInput.getBatchRemoveGroups().get(1).getGroupId().getValue().longValue());
+        Assert.assertEquals(1L,
+                removeGroupsBatchInput.getBatchRemoveGroups().get(0).getGroupId().getValue().longValue());
+        Assert.assertEquals(2L,
+                removeGroupsBatchInput.getBatchRemoveGroups().get(1).getGroupId().getValue().longValue());
     }
 
     @Test
@@ -115,12 +119,15 @@ public class FlatBatchGroupAdaptersTest {
                 createUpdateGroupBatch(1L),
                 createUpdateGroupBatch(2L)));
 
-        final UpdateGroupsBatchInput updateGroupsBatchInput = FlatBatchGroupAdapters.adaptFlatBatchUpdateGroup(planStep, NODE_REF);
+        final UpdateGroupsBatchInput updateGroupsBatchInput =
+                FlatBatchGroupAdapters.adaptFlatBatchUpdateGroup(planStep, NODE_REF);
 
         Assert.assertTrue(updateGroupsBatchInput.isBarrierAfter());
         Assert.assertEquals(2, updateGroupsBatchInput.getBatchUpdateGroups().size());
-        Assert.assertEquals(1L, updateGroupsBatchInput.getBatchUpdateGroups().get(0).getUpdatedBatchedGroup().getGroupId().getValue().longValue());
-        Assert.assertEquals(2L, updateGroupsBatchInput.getBatchUpdateGroups().get(1).getUpdatedBatchedGroup().getGroupId().getValue().longValue());
+        Assert.assertEquals(1L, updateGroupsBatchInput.getBatchUpdateGroups().get(0)
+                .getUpdatedBatchedGroup().getGroupId().getValue().longValue());
+        Assert.assertEquals(2L, updateGroupsBatchInput.getBatchUpdateGroups().get(1)
+                .getUpdatedBatchedGroup().getGroupId().getValue().longValue());
     }
 
     @Test
@@ -143,7 +150,8 @@ public class FlatBatchGroupAdaptersTest {
         Assert.assertEquals(2, rpcResult.getResult().getBatchFailure().size());
         Assert.assertEquals(3, rpcResult.getResult().getBatchFailure().get(0).getBatchOrder().intValue());
         Assert.assertEquals(4, rpcResult.getResult().getBatchFailure().get(1).getBatchOrder().intValue());
-        Assert.assertEquals(2L, ((FlatBatchFailureGroupIdCase) rpcResult.getResult().getBatchFailure().get(1).getBatchItemIdChoice()).getGroupId().getValue().longValue());
+        Assert.assertEquals(2L, ((FlatBatchFailureGroupIdCase) rpcResult.getResult().getBatchFailure().get(1)
+                .getBatchItemIdChoice()).getGroupId().getValue().longValue());
     }
 
     @Test

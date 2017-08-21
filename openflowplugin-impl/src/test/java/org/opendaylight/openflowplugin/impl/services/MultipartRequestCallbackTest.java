@@ -60,13 +60,14 @@ public class MultipartRequestCallbackTest {
         final OngoingStubbing<MultiMsgCollector<MultipartReply>> when =
             Mockito.when(deviceContext.getMultiMsgCollector(Matchers.any()));
         when.thenReturn(multiMsgCollector);
-        multipartRequestCallback = new MultiLayerMultipartRequestCallback<>(requestContext, MultipartRequestInput.class, deviceContext, null);
+        multipartRequestCallback = new MultiLayerMultipartRequestCallback<>(requestContext,
+                                                                            MultipartRequestInput.class,
+                                                                            deviceContext,
+                                                                            null);
     }
 
     /**
-     * end collecting
-     *
-     * @throws Exception
+     * End collecting.
      */
     @Test
     public void testOnSuccess1() throws Exception {
@@ -75,9 +76,7 @@ public class MultipartRequestCallbackTest {
     }
 
     /**
-     * fail adding to collection
-     *
-     * @throws Exception
+     * Fail adding to collection.
      */
     @Test
     public void testOnSuccess2() throws Exception {
@@ -88,14 +87,13 @@ public class MultipartRequestCallbackTest {
     }
 
     /**
-     * successfully added to collection
-     *
-     * @throws Exception
+     * Successfully added to collection.
      */
     @Test
     public void testOnSuccess3() throws Exception {
         final MultipartReplyMessage replyMessage = new MultipartReplyMessageBuilder().build();
         multipartRequestCallback.onSuccess(replyMessage);
-        Mockito.verify(multiMsgCollector).addMultipartMsg(Matchers.eq(replyMessage), Matchers.eq(false), Matchers.any());
+        Mockito.verify(multiMsgCollector)
+                .addMultipartMsg(Matchers.eq(replyMessage), Matchers.eq(false), Matchers.any());
     }
 }

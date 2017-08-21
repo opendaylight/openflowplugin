@@ -19,7 +19,8 @@ public abstract class AbstractVoidService<T> extends AbstractService<T, Void> {
     }
 
     @Override
-    protected final FutureCallback<OfHeader> createCallback(final RequestContext<Void> context, final Class<?> requestType) {
+    protected final FutureCallback<OfHeader> createCallback(final RequestContext<Void> context,
+                                                            final Class<?> requestType) {
         return new VoidRequestCallback(context, requestType, getMessageSpy());
     }
 }

@@ -92,7 +92,8 @@ public class FlatBatchFlowAdaptersTest {
                 createRemoveFlowBatch("1"),
                 createRemoveFlowBatch("2")));
 
-        final RemoveFlowsBatchInput removeFlowsBatchInput = FlatBatchFlowAdapters.adaptFlatBatchRemoveFlow(planStep, NODE_REF);
+        final RemoveFlowsBatchInput removeFlowsBatchInput =
+                FlatBatchFlowAdapters.adaptFlatBatchRemoveFlow(planStep, NODE_REF);
 
         Assert.assertTrue(removeFlowsBatchInput.isBarrierAfter());
         Assert.assertEquals(2, removeFlowsBatchInput.getBatchRemoveFlows().size());
@@ -108,7 +109,8 @@ public class FlatBatchFlowAdaptersTest {
                 createUpdateFlowBatch("1"),
                 createUpdateFlowBatch("2")));
 
-        final UpdateFlowsBatchInput updateFlowsBatchInput = FlatBatchFlowAdapters.adaptFlatBatchUpdateFlow(planStep, NODE_REF);
+        final UpdateFlowsBatchInput updateFlowsBatchInput =
+                FlatBatchFlowAdapters.adaptFlatBatchUpdateFlow(planStep, NODE_REF);
 
         Assert.assertTrue(updateFlowsBatchInput.isBarrierAfter());
         Assert.assertEquals(2, updateFlowsBatchInput.getBatchUpdateFlows().size());
@@ -136,7 +138,9 @@ public class FlatBatchFlowAdaptersTest {
         Assert.assertEquals(2, rpcResult.getResult().getBatchFailure().size());
         Assert.assertEquals(3, rpcResult.getResult().getBatchFailure().get(0).getBatchOrder().intValue());
         Assert.assertEquals(4, rpcResult.getResult().getBatchFailure().get(1).getBatchOrder().intValue());
-        Assert.assertEquals("f2", ((FlatBatchFailureFlowIdCase) rpcResult.getResult().getBatchFailure().get(1).getBatchItemIdChoice()).getFlowId().getValue());
+        Assert.assertEquals("f2",
+                ((FlatBatchFailureFlowIdCase) rpcResult.getResult().getBatchFailure().get(1).getBatchItemIdChoice())
+                        .getFlowId().getValue());
     }
 
     @Test
