@@ -13,10 +13,11 @@ import java.util.Collections;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.opendaylight.openflowplugin.extension.onf.BundleTestUtils;
+import org.opendaylight.openflowplugin.protocol.converter.ConverterManagerFactory;
+import org.opendaylight.openflowplugin.protocol.extension.ExtensionConverterManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures;
@@ -63,7 +64,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  */
 public class BundleAddMessageConverterTest {
 
-    private final BundleAddMessageConverter converter = new BundleAddMessageConverter();
+    private final BundleAddMessageConverter converter = new BundleAddMessageConverter(new ConverterManagerFactory()
+            .newInstance(new ExtensionConverterManagerImpl()));
     private static final NodeRef NODE_REF = new NodeRef(InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(new NodeId("openflow:1"))));
     private static final GroupId GROUP_ID = new GroupId(1L);

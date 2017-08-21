@@ -23,6 +23,7 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.keys.TypeToClassKey;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializationFactory;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializerRegistryImpl;
+import org.opendaylight.openflowplugin.protocol.extension.ExtensionConverterManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandExperimenterCase;
@@ -40,8 +41,8 @@ public abstract class AbstractDeserializerTest {
         factory = new DeserializationFactory();
         factory.setRegistry(registry);
         provider = new DeserializerExtensionProviderImpl(registry, factory);
-        DeserializerInjector.injectDeserializers(provider);
-        MessageDeserializerInjector.injectLegacyDeserializers(provider);
+        DeserializerInjector.injectDeserializers(provider, new ExtensionConverterManagerImpl());
+        MessageDeserializerInjector.injectLegacyDeserializers(provider, new ExtensionConverterManagerImpl());
         init();
     }
 

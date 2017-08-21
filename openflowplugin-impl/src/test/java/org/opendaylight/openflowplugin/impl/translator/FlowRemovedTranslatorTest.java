@@ -21,8 +21,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterManager;
+import org.opendaylight.openflowplugin.protocol.converter.ConverterManagerFactory;
+import org.opendaylight.openflowplugin.protocol.extension.ExtensionConverterManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -71,9 +72,9 @@ public class FlowRemovedTranslatorTest {
         nodeId = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId("dummyNodeId")));
 
-        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        translator = new FlowRemovedTranslator(convertorManager);
-        translatorV10 = new FlowRemovedV10Translator(convertorManager);
+        final ConverterManager converterManager = new ConverterManagerFactory().newInstance(new ExtensionConverterManagerImpl());
+        translator = new FlowRemovedTranslator(converterManager);
+        translatorV10 = new FlowRemovedV10Translator(converterManager);
 
         when(deviceContext.getDeviceState()).thenReturn(deviceState);
         when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeId);

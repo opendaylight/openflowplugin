@@ -68,7 +68,7 @@ import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitiali
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowDescriptorFactory;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.ExperimenterMessageFromDev;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -159,7 +159,7 @@ public class DeviceContextImplTest {
     @Mock
     private DeviceInfo deviceInfo;
     @Mock
-    private ConvertorExecutor convertorExecutor;
+    private ConverterExecutor converterExecutor;
     @Mock
     private MessageSpy messageSpy;
     @Mock
@@ -236,7 +236,7 @@ public class DeviceContextImplTest {
                 dataBroker,
                 messageSpy,
                 translatorLibrary,
-                convertorExecutor,
+                converterExecutor,
                 false, timer, false,
                 deviceInitializerProvider,
                 true, false);

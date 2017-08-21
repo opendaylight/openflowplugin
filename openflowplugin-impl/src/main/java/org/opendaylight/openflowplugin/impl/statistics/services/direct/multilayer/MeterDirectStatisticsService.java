@@ -18,8 +18,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.services.util.RequestInputUtils;
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.AbstractMeterDirectStatisticsService;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
+import org.opendaylight.openflowplugin.protocol.converter.data.VersionConverterData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetMeterStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetMeterStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetMeterStatisticsOutputBuilder;
@@ -34,14 +34,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 
 public class MeterDirectStatisticsService extends AbstractMeterDirectStatisticsService<MultipartReply> {
 
-    private final VersionConvertorData data;
+    private final VersionConverterData data;
 
     public MeterDirectStatisticsService(final RequestContextStack requestContextStack,
                                         final DeviceContext deviceContext,
-                                        final ConvertorExecutor convertorExecutor,
+                                        final ConverterExecutor converterExecutor,
                                         final MultipartWriterProvider statisticsWriterProvider) {
-        super(requestContextStack, deviceContext, convertorExecutor, statisticsWriterProvider);
-        data = new VersionConvertorData(getVersion());
+        super(requestContextStack, deviceContext, converterExecutor, statisticsWriterProvider);
+        data = new VersionConverterData(getVersion());
     }
 
     @Override
@@ -52,8 +52,8 @@ public class MeterDirectStatisticsService extends AbstractMeterDirectStatisticsS
             for (final MultipartReply mpReply : input) {
                 final MultipartReplyMeterCase caseBody = (MultipartReplyMeterCase) mpReply.getMultipartReplyBody();
                 final MultipartReplyMeter replyBody = caseBody.getMultipartReplyMeter();
-                final Optional<List<MeterStats>> meterStatsList =
-                        getConvertorExecutor().convert(replyBody.getMeterStats(), data);
+                final Optional<List<MeterStats>> meterStatsList = getConverterExecutor()
+                    .convert(replyBody.getMeterStats(), data);
                 meterStatsList.ifPresent(meterStats::addAll);
             }
         }

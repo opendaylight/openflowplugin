@@ -14,13 +14,14 @@ import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.openflowplugin.extension.api.AugmentTuple;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.impl.util.NodeConnectorRefToPortTranslator;
-import org.opendaylight.openflowplugin.openflow.md.core.extension.MatchExtensionHelper;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.PacketInUtil;
+import org.opendaylight.openflowplugin.protocol.converter.data.VersionDatapathIdConverterData;
+import org.opendaylight.openflowplugin.protocol.extension.MatchExtensionHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
@@ -30,10 +31,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.pa
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId;
 
 public class PacketReceivedTranslator implements MessageTranslator<PacketInMessage, PacketReceived> {
-    private final ConvertorExecutor convertorExecutor;
+    private final ConverterExecutor converterExecutor;
+    private final ExtensionConverterProvider extensionConverterProvider;
 
-    public PacketReceivedTranslator(ConvertorExecutor convertorExecutor) {
-        this.convertorExecutor = convertorExecutor;
+    public PacketReceivedTranslator(ConverterExecutor converterExecutor, ExtensionConverterProvider extensionConverterProvider) {
+        this.converterExecutor = converterExecutor;
+        this.extensionConverterProvider = extensionConverterProvider;
     }
 
     @Override
@@ -77,24 +80,25 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
     }
 
     @VisibleForTesting
-    org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match
-            getPacketInMatch(final PacketInMessage input, final BigInteger datapathId) {
+    org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match getPacketInMatch(
+            final PacketInMessage input,
+            final BigInteger datapathId) {
+        final VersionDatapathIdConverterData datapathIdConverterData =
+            new VersionDatapathIdConverterData(input.getVersion());
+        datapathIdConverterData.setDatapathId(datapathId);
 
-        final VersionDatapathIdConvertorData datapathIdConvertorData =
-                new VersionDatapathIdConvertorData(input.getVersion());
-        datapathIdConvertorData.setDatapathId(datapathId);
+        final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
+            .MatchBuilder> matchOptional = converterExecutor.convert(input.getMatch(), datapathIdConverterData);
+        final MatchBuilder matchBuilder = matchOptional.isPresent() ?
+                new MatchBuilder(matchOptional.get().build()) :
+                new MatchBuilder();
 
-        final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder>
-                matchOptional = convertorExecutor.convert(input.getMatch(), datapathIdConvertorData);
-        final MatchBuilder matchBuilder = matchOptional.isPresent()
-                ? new MatchBuilder(matchOptional.get().build())
-                : new MatchBuilder();
-
-        final AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match>
-                matchExtensionWrap = MatchExtensionHelper.processAllExtensions(
+        final AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received
+            .Match> matchExtensionWrap = MatchExtensionHelper.processAllExtensions(
                         input.getMatch().getMatchEntry(),
                         OpenflowVersion.get(input.getVersion()),
-                        MatchPath.PACKETRECEIVED_MATCH);
+                        MatchPath.PACKETRECEIVED_MATCH,
+                        extensionConverterProvider);
 
         if (matchExtensionWrap != null) {
             matchBuilder.addAugmentation(matchExtensionWrap.getAugmentationClass(),

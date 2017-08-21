@@ -28,8 +28,9 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightFlowStatisticsServiceImpl;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterManager;
+import org.opendaylight.openflowplugin.protocol.converter.ConverterManagerFactory;
+import org.opendaylight.openflowplugin.protocol.extension.ExtensionConverterManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yangtools.yang.binding.RpcService;
@@ -63,11 +64,11 @@ public class MdSalRegistrationUtilsTest {
     @Mock
     private NotificationPublishService notificationPublishService;
 
-    private ConvertorManager convertorManager;
+    private ConverterManager converterManager;
 
     @Before
     public void setUp() throws Exception {
-        convertorManager = ConvertorManagerFactory.createDefaultManager();
+        converterManager = new ConverterManagerFactory().newInstance(new ExtensionConverterManagerImpl());
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
         when(mockedConnectionContext.getFeatures()).thenReturn(mockedFeatures);
@@ -78,10 +79,8 @@ public class MdSalRegistrationUtilsTest {
 
     @Test
     public void registerServiceTest() {
-        MdSalRegistrationUtils.registerServices(mockedRpcContext,
-                                                mockedDeviceContext,
-                                                extensionConverterProvider,
-                                                convertorManager);
+        MdSalRegistrationUtils.registerServices(mockedRpcContext, mockedDeviceContext,
+                extensionConverterProvider, converterManager);
         verify(mockedRpcContext, times(NUMBER_OF_RPC_SERVICE_REGISTRATION)).registerRpcServiceImplementation(
                 Matchers.any(), any(RpcService.class));
     }
@@ -89,16 +88,14 @@ public class MdSalRegistrationUtilsTest {
     @Test
     public void registerStatCompatibilityServices() throws Exception {
         final OpendaylightFlowStatisticsService flowStatService = OpendaylightFlowStatisticsServiceImpl
-                .createWithOook(mockedRpcContext, mockedDeviceContext, convertorManager);
+                .createWithOook(mockedRpcContext, mockedDeviceContext, converterManager);
 
         when(mockedRpcContext.lookupRpcService(OpendaylightFlowStatisticsService.class)).thenReturn(
                 flowStatService);
-        MdSalRegistrationUtils.registerStatCompatibilityServices(mockedRpcContext,
-                                                                 mockedDeviceContext,
-                                                                 notificationPublishService,
-                                                                 convertorManager);
+        MdSalRegistrationUtils.registerStatCompatibilityServices(mockedRpcContext, mockedDeviceContext,
+                notificationPublishService, converterManager);
         verify(mockedRpcContext, times(NUMBER_OF_STAT_COMPAT_RPC_SERVICE_REGISTRATION))
-                .registerRpcServiceImplementation(Matchers.any(), any(RpcService.class));
+            .registerRpcServiceImplementation(Matchers.any(), any(RpcService.class));
     }
 
 }
