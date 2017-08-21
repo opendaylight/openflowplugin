@@ -16,7 +16,7 @@ import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
-import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
+import org.opendaylight.openflowplugin.common.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetFieldCase;
 

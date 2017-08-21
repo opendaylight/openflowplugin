@@ -17,6 +17,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
 import org.opendaylight.openflowplugin.api.openflow.protocol.deserialization.MessageCodeExperimenterKey;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.key.MessageCodeActionExperimenterKey;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.instruction.ApplyActionsInstructionDeserializer;
@@ -35,7 +36,7 @@ class InstructionDeserializerInjector {
      * Injects instruction deserializers into provided {@link org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider}
      * @param provider OpenflowJava deserializer extension provider
      */
-    static void injectDeserializers(final DeserializerExtensionProvider provider) {
+    static void injectDeserializers(final DeserializerExtensionProvider provider, final ExtensionConverterProvider extensionConverterProvider) {
         // Inject new instruction deserializers here using injector created by createInjector method
         final Function<Byte, Function<ActionPath, Consumer<OFDeserializer<Instruction>>>> injector =
                 createInjector(provider, EncodeConstants.OF13_VERSION_ID);
@@ -46,8 +47,8 @@ class InstructionDeserializerInjector {
         injector.apply(InstructionConstants.METER_TYPE).apply(null).accept(new MeterInstructionDeserializer());
 
         for (ActionPath path : ActionPath.values()) {
-            injector.apply(InstructionConstants.WRITE_ACTIONS_TYPE).apply(path).accept(new WriteActionsInstructionDeserializer(path));
-            injector.apply(InstructionConstants.APPLY_ACTIONS_TYPE).apply(path).accept(new ApplyActionsInstructionDeserializer(path));
+            injector.apply(InstructionConstants.WRITE_ACTIONS_TYPE).apply(path).accept(new WriteActionsInstructionDeserializer(path, extensionConverterProvider));
+            injector.apply(InstructionConstants.APPLY_ACTIONS_TYPE).apply(path).accept(new ApplyActionsInstructionDeserializer(path, extensionConverterProvider));
         }
     }
 

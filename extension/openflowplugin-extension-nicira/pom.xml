@@ -18,7 +18,6 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
             </plugin>
-
             <plugin>
                 <groupId>org.opendaylight.yangtools</groupId>
                 <artifactId>yang-maven-plugin</artifactId>
@@ -73,6 +72,10 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>openflowjava-extension-nicira-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>openflowplugin-protocol</artifactId>
         </dependency>
         <!-- MD-SAL models -->
         <dependency>

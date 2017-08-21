@@ -16,9 +16,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
-import org.opendaylight.openflowplugin.extension.api.ExtensionConverterRegistrator;
-import org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 
 /**
@@ -28,22 +27,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 public class NiciraExtensionProviderTest {
 
     @Mock
-    private OpenFlowPluginExtensionRegistratorProvider openFlowPluginExtensionRegistratorProvider;
-
-    @Mock
-    private ExtensionConverterRegistrator extensionConverterRegistrator;
+    private ExtensionConverterManager extensionConverterManager;
 
     private NiciraExtensionProvider niciraExtensionProvider;
 
     @Before
     public void setUp() throws Exception {
-        Mockito.when(openFlowPluginExtensionRegistratorProvider.getExtensionConverterRegistrator())
-                .thenReturn(extensionConverterRegistrator);
-        niciraExtensionProvider = new NiciraExtensionProvider(openFlowPluginExtensionRegistratorProvider);
+        niciraExtensionProvider = new NiciraExtensionProvider(extensionConverterManager);
     }
 
     @Test
     public void testRegisterConverters() throws Exception {
-        Mockito.verify(extensionConverterRegistrator, Mockito.atLeastOnce()).registerActionConvertor(Matchers.<TypeVersionKey<? extends Action>>any(), Matchers.<ConvertorActionToOFJava<Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action>>any());
+        Mockito.verify(extensionConverterManager, Mockito.atLeastOnce()).registerActionConvertor(Matchers.<TypeVersionKey<? extends Action>>any(), Matchers.<ConvertorActionToOFJava<Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action>>any());
     }
 }

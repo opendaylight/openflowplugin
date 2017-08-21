@@ -84,4 +84,41 @@ public final class OFConstants {
             .<Short>builder()
             .add((short) 0x04, (short) 0x01)
             .build();
+
+    /**
+     * Default idle timeout.
+     */
+    public static final Integer DEFAULT_IDLE_TIMEOUT = 0;
+    /**
+     * Default hard timeout.
+     */
+    public static final Integer DEFAULT_HARD_TIMEOUT = 0;
+    /**
+     * Default priority.
+     */
+    public static final Integer DEFAULT_PRIORITY = Integer.parseInt("8000", 16);
+    /**
+     * flow flag: remove.
+     */
+    public static final boolean DEFAULT_OFPFF_FLOW_REM = false;
+    /**
+     * flow flag: check overlap.
+     */
+    public static final boolean DEFAULT_OFPFF_CHECK_OVERLAP = false;
+    /**
+     * flow flag: reset counts.
+     */
+    public static final boolean DEFAULT_OFPFF_RESET_COUNTS = false;
+    /**
+     * flow flag: don't keep track of packet counts.
+     */
+    public static final boolean DEFAULT_OFPFF_NO_PKT_COUNTS = false;
+    /**
+     * flow flag: don't keep track of byte counts.
+     */
+    public static final boolean DEFAULT_OFPFF_NO_BYT_COUNTS = false;
+    /**
+     * flow flag: emergency [OFP-1.0].
+     */
+    public static final boolean DEFAULT_OFPFF_EMERGENCY = false;
 }

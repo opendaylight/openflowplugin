@@ -14,9 +14,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
-import org.opendaylight.openflowplugin.extension.api.ExtensionConverterRegistrator;
-import org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.experimenter.core.message.ExperimenterMessageOfChoice;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -25,20 +25,16 @@ public class OnfExtensionProviderTest {
     @Mock
     private SwitchConnectionProvider switchConnectionProvider;
     @Mock
-    private OpenFlowPluginExtensionRegistratorProvider openFlowPluginExtensionRegistratorProvider;
+    private ConverterExecutor converterExecutor;
     @Mock
-    private ExtensionConverterRegistrator extensionConverterRegistrator;
+    private ExtensionConverterManager extensionConverterManager;
 
     private OnfExtensionProvider onfExtensionProvider;
 
     @Before
     public void setUp() throws Exception {
-        Mockito
-                .when(openFlowPluginExtensionRegistratorProvider.getExtensionConverterRegistrator())
-                .thenReturn(extensionConverterRegistrator);
-
         onfExtensionProvider =
-                new OnfExtensionProvider(switchConnectionProvider, openFlowPluginExtensionRegistratorProvider);
+                new OnfExtensionProvider(switchConnectionProvider, extensionConverterManager, converterExecutor);
     }
 
     @Test
@@ -50,7 +46,7 @@ public class OnfExtensionProviderTest {
                 .registerExperimenterMessageDeserializer(Mockito.any(), Mockito.any());
         Mockito.verify(switchConnectionProvider)
                 .registerErrorDeserializer(Mockito.any(), Mockito.any());
-        Mockito.verify(extensionConverterRegistrator, Mockito.times(2))
+        Mockito.verify(extensionConverterManager, Mockito.times(2))
                 .registerMessageConvertor(Mockito.<TypeVersionKey<? extends ExperimenterMessageOfChoice>>any(),
                         Mockito.any());
     }
