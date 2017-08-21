@@ -9,8 +9,11 @@
 package org.opendaylight.openflowplugin.extension.api;
 
 /**
- * Created by mirehak on 4/25/15.
+ * Provides registrator for openflowplugin extension converters.
+ * This method of getting the registrator is deprecated, rather use blueprint for getting following service:
+ * @see org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterManager
  */
+@Deprecated
 public interface OpenFlowPluginExtensionRegistratorProvider {
     /**
      * @return the extensionConverterRegistry - here extension converters can be registered in order to support

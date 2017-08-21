@@ -8,17 +8,19 @@
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.openflowplugin.impl.services.util.RequestInputUtils;
 import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.FlowStatisticsToNotificationTransformer;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
+import org.opendaylight.openflowplugin.protocol.converter.data.VersionConverterData;
+import org.opendaylight.openflowplugin.protocol.converter.match.MatchInjector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowStatisticsFromFlowTableInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowStatisticsFromFlowTableOutput;
@@ -34,14 +36,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public final class FlowsInTableService extends AbstractCompatibleStatService<GetFlowStatisticsFromFlowTableInput,
         GetFlowStatisticsFromFlowTableOutput, FlowsStatisticsUpdate> {
 
-    private final ConvertorExecutor convertorExecutor;
+    private final ConverterExecutor converterExecutor;
+    private final VersionConverterData data;
 
-    public FlowsInTableService(final RequestContextStack requestContextStack,
-                               final DeviceContext deviceContext,
-                               AtomicLong compatibilityXidSeed,
-                               ConvertorExecutor convertorExecutor) {
+    public FlowsInTableService(final RequestContextStack requestContextStack, final DeviceContext deviceContext,
+                               AtomicLong compatibilityXidSeed, ConverterExecutor converterExecutor) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
-        this.convertorExecutor = convertorExecutor;
+        this.converterExecutor = converterExecutor;
+        this.data = new VersionConverterData(getVersion());
     }
 
     @Override
@@ -81,13 +83,13 @@ public final class FlowsInTableService extends AbstractCompatibleStatService<Get
         }
 
         // convert and inject match
-        final short version = getVersion();
-        MatchReactor.getInstance().convert(input.getMatch(), version, mprFlowRequestBuilder, convertorExecutor);
+        final Optional<Object> conversion = converterExecutor.convert(input.getMatch(), data);
+        MatchInjector.inject(conversion, mprFlowRequestBuilder, getVersion());
 
         // Set request body to main multipart request
         multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
         final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
-                MultipartType.OFPMPFLOW, xid.getValue(), version);
+                MultipartType.OFPMPFLOW, xid.getValue(), getVersion());
         mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());
 
         return mprInput.build();
@@ -100,10 +102,7 @@ public final class FlowsInTableService extends AbstractCompatibleStatService<Get
 
     @Override
     public FlowsStatisticsUpdate transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
-        return FlowStatisticsToNotificationTransformer.transformToNotification(result,
-                                                                               getDeviceInfo(),
-                                                                               getOfVersion(),
-                                                                               emulatedTxId,
-                                                                               convertorExecutor);
+        return FlowStatisticsToNotificationTransformer.transformToNotification(result, getDeviceInfo(),
+                getOfVersion(), emulatedTxId, converterExecutor);
     }
 }

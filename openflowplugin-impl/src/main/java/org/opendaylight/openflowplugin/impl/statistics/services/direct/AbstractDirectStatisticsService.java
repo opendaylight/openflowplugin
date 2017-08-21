@@ -16,9 +16,9 @@ import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.services.AbstractMultipartService;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.StoreStatsGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -40,7 +40,7 @@ abstract class AbstractDirectStatisticsService<I extends StoreStatsGrouping,
 
     private final MultipartType multipartType;
     private final OpenflowVersion ofVersion = OpenflowVersion.get(getVersion());
-    private final ConvertorExecutor convertorExecutor;
+    private final ConverterExecutor converterExecutor;
     private final MultipartWriterProvider multipartWriterProvider;
 
     /**
@@ -48,17 +48,17 @@ abstract class AbstractDirectStatisticsService<I extends StoreStatsGrouping,
      * @param multipartType           the multipart type
      * @param requestContextStack      the request context stack
      * @param deviceContext            the device context
-     * @param convertorExecutor        convertor executor
+     * @param converterExecutor        converter executor
      * @param multipartWriterProvider statistics writer provider
      */
     AbstractDirectStatisticsService(final MultipartType multipartType,
                                     final RequestContextStack requestContextStack,
                                     final DeviceContext deviceContext,
-                                    final ConvertorExecutor convertorExecutor,
+                                    final ConverterExecutor converterExecutor,
                                     final MultipartWriterProvider multipartWriterProvider) {
         super(requestContextStack, deviceContext);
         this.multipartType = multipartType;
-        this.convertorExecutor = convertorExecutor;
+        this.converterExecutor = converterExecutor;
         this.multipartWriterProvider = multipartWriterProvider;
     }
 
@@ -107,11 +107,11 @@ abstract class AbstractDirectStatisticsService<I extends StoreStatsGrouping,
     }
 
     /**
-     * Get convertor executor.
-     * @return convertor executor
+     * Get converter executor.
+     * @return converter executor
      */
-    protected ConvertorExecutor getConvertorExecutor() {
-        return convertorExecutor;
+    protected ConverterExecutor getConverterExecutor() {
+        return converterExecutor;
     }
 
     /**
