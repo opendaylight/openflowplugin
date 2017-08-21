@@ -15,6 +15,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.multipart.tablefeatures.ApplyActionsMissTablePropertySerializer;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.multipart.tablefeatures.ApplyActionsTablePropertySerializer;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.multipart.tablefeatures.ApplySetfieldMissTablePropertySerializer;
@@ -54,7 +55,7 @@ class MultipartTableFeaturesSerializerInjector {
      * Injects multipart table features serializers into provided {@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}
      * @param provider OpenflowJava serializer extension provider
      */
-    static void injectSerializers(final SerializerExtensionProvider provider) {
+    static void injectSerializers(final SerializerExtensionProvider provider, final ExtensionConverterProvider extensionConverterProvider) {
         // Inject new message serializers here using injector created by createInjector method
         final Function<Class<? extends TableFeaturePropType>, Consumer<OFSerializer<TableFeaturePropType>>> injector =
             createInjector(provider, EncodeConstants.OF13_VERSION_ID);
@@ -63,10 +64,10 @@ class MultipartTableFeaturesSerializerInjector {
         injector.apply(InstructionsMiss.class).accept(new InstructionsMissTablePropertySerializer());
         injector.apply(NextTable.class).accept(new NextTableTablePropertySerializer());
         injector.apply(NextTableMiss.class).accept(new NextTableMissTablePropertySerializer());
-        injector.apply(ApplyActions.class).accept(new ApplyActionsTablePropertySerializer());
-        injector.apply(ApplyActionsMiss.class).accept(new ApplyActionsMissTablePropertySerializer());
-        injector.apply(WriteActions.class).accept(new WriteActionsTablePropertySerializer());
-        injector.apply(WriteActionsMiss.class).accept(new WriteActionsMissTablePropertySerializer());
+        injector.apply(ApplyActions.class).accept(new ApplyActionsTablePropertySerializer(extensionConverterProvider));
+        injector.apply(ApplyActionsMiss.class).accept(new ApplyActionsMissTablePropertySerializer(extensionConverterProvider));
+        injector.apply(WriteActions.class).accept(new WriteActionsTablePropertySerializer(extensionConverterProvider));
+        injector.apply(WriteActionsMiss.class).accept(new WriteActionsMissTablePropertySerializer(extensionConverterProvider));
         injector.apply(Match.class).accept(new MatchTablePropertySerializer());
         injector.apply(Wildcards.class).accept(new WildcardsTablePropertySerializer());
         injector.apply(WriteSetfield.class).accept(new WriteSetfieldTablePropertySerializer());

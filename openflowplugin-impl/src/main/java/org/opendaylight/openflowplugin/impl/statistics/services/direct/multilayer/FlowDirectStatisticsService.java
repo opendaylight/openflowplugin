@@ -15,13 +15,13 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.services.util.RequestInputUtils;
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.AbstractFlowDirectStatisticsService;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.FlowStatsResponseConvertorData;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
+import org.opendaylight.openflowplugin.protocol.converter.data.FlowStatsResponseConverterData;
+import org.opendaylight.openflowplugin.protocol.converter.match.MatchInjector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsOutputBuilder;
@@ -38,14 +38,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 
 public class FlowDirectStatisticsService extends AbstractFlowDirectStatisticsService<MultipartReply> {
 
-    private final FlowStatsResponseConvertorData data;
+    private final FlowStatsResponseConverterData data;
 
     public FlowDirectStatisticsService(final RequestContextStack requestContextStack,
                                        final DeviceContext deviceContext,
-                                       final ConvertorExecutor convertorExecutor,
+                                       final ConverterExecutor converterExecutor,
                                        final MultipartWriterProvider statisticsWriterProvider) {
-        super(requestContextStack, deviceContext, convertorExecutor, statisticsWriterProvider);
-        data = new FlowStatsResponseConvertorData(getVersion());
+        super(requestContextStack, deviceContext, converterExecutor, statisticsWriterProvider);
+        data = new FlowStatsResponseConverterData(getVersion());
         data.setDatapathId(getDatapathId());
         data.setMatchPath(MatchPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH);
     }
@@ -58,7 +58,7 @@ public class FlowDirectStatisticsService extends AbstractFlowDirectStatisticsSer
             for (final MultipartReply mpReply : input) {
                 final MultipartReplyFlowCase caseBody = (MultipartReplyFlowCase) mpReply.getMultipartReplyBody();
                 final MultipartReplyFlow replyBody = caseBody.getMultipartReplyFlow();
-                final Optional<List<FlowAndStatisticsMapList>> statsListPart = getConvertorExecutor().convert(
+                final Optional<List<FlowAndStatisticsMapList>> statsListPart = getConverterExecutor().convert(
                     replyBody.getFlowStats(), data);
 
                 if (statsListPart.isPresent()) {
@@ -112,10 +112,8 @@ public class FlowDirectStatisticsService extends AbstractFlowDirectStatisticsSer
             mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
         }
 
-        MatchReactor.getInstance().convert(input.getMatch(),
-                                           getVersion(),
-                                           mprFlowRequestBuilder,
-                                           getConvertorExecutor());
+        final Optional<Object> conversion = getConverterExecutor().convert(input.getMatch(), data);
+        MatchInjector.inject(conversion, mprFlowRequestBuilder, getVersion());
 
         return RequestInputUtils.createMultipartHeader(getMultipartType(), xid.getValue(), getVersion())
             .setMultipartRequestBody(new MultipartRequestFlowCaseBuilder()

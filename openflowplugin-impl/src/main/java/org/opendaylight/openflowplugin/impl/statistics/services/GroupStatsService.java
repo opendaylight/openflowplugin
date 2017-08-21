@@ -16,7 +16,7 @@ import org.opendaylight.openflowplugin.impl.services.util.RequestInputUtils;
 import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.GroupStatisticsToNotificationTransformer;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupStatisticsOutput;
@@ -30,18 +30,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.group._case.MultipartRequestGroupBuilder;
 
-final class GroupStatsService extends AbstractCompatibleStatService<GetGroupStatisticsInput,
-                                                                    GetGroupStatisticsOutput,
-                                                                    GroupStatisticsUpdated> {
+final class GroupStatsService
+        extends AbstractCompatibleStatService<GetGroupStatisticsInput, GetGroupStatisticsOutput, GroupStatisticsUpdated> {
 
-    private final ConvertorExecutor convertorExecutor;
+    private final ConverterExecutor converterExecutor;
 
-    GroupStatsService(RequestContextStack requestContextStack,
-                             DeviceContext deviceContext,
-                             AtomicLong compatibilityXidSeed,
-                             ConvertorExecutor convertorExecutor) {
+    public GroupStatsService(RequestContextStack requestContextStack, DeviceContext deviceContext,
+                             AtomicLong compatibilityXidSeed, ConverterExecutor converterExecutor) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
-        this.convertorExecutor = convertorExecutor;
+        this.converterExecutor = converterExecutor;
     }
 
     @Override
@@ -65,9 +62,7 @@ final class GroupStatsService extends AbstractCompatibleStatService<GetGroupStat
 
     @Override
     public GroupStatisticsUpdated transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
-        return GroupStatisticsToNotificationTransformer.transformToNotification(result,
-                                                                                getDeviceInfo(),
-                                                                                emulatedTxId,
-                                                                                convertorExecutor);
+        return GroupStatisticsToNotificationTransformer.transformToNotification(result, getDeviceInfo(),
+                emulatedTxId, converterExecutor);
     }
 }

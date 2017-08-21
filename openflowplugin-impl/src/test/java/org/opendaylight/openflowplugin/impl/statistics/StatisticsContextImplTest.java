@@ -27,10 +27,11 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
+import org.opendaylight.openflowplugin.protocol.converter.ConverterManagerFactory;
+import org.opendaylight.openflowplugin.protocol.extension.ExtensionConverterManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -45,11 +46,11 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
 
     private static final Long TEST_XID = 55L;
     private StatisticsContextImpl<MultipartReply> statisticsContext;
-    private ConvertorManager convertorManager;
+    private ConverterManager converterManager;
 
     @Before
     public void setUp() throws Exception {
-        convertorManager = ConvertorManagerFactory.createDefaultManager();
+        converterManager = new ConverterManagerFactory().newInstance(new ExtensionConverterManagerImpl());
         when(mockedDeviceInfo.reserveXidForDeviceMessage()).thenReturn(TEST_XID);
         Mockito.when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         initStatisticsContext();
@@ -57,7 +58,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
 
     private void initStatisticsContext() {
         statisticsContext = new StatisticsContextImpl<MultipartReply>(
-                true, mockedDeviceContext, convertorManager, mockedStatisticsManager,
+                true, mockedDeviceContext, converterManager, mockedStatisticsManager,
                 MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext),
                 false);
 
@@ -79,7 +80,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
     @Test
     public void testClose() throws Exception {
         final StatisticsContextImpl<MultipartReply> statisticsContext = new StatisticsContextImpl<MultipartReply>(
-                true, mockedDeviceContext, convertorManager, mockedStatisticsManager,
+                true, mockedDeviceContext, converterManager, mockedStatisticsManager,
                 MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext),
                 false);
 

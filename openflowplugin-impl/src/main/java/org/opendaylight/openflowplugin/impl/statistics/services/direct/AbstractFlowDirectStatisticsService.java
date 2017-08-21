@@ -11,9 +11,10 @@ package org.opendaylight.openflowplugin.impl.statistics.services.direct;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
@@ -33,9 +34,9 @@ public abstract class AbstractFlowDirectStatisticsService<T extends OfHeader>
 
     protected AbstractFlowDirectStatisticsService(final RequestContextStack requestContextStack,
                                                   final DeviceContext deviceContext,
-                                                  final ConvertorExecutor convertorExecutor,
+                                                  final ConverterExecutor converterExecutor,
                                                   final MultipartWriterProvider statisticsWriterProvider) {
-        super(MultipartType.OFPMPFLOW, requestContextStack, deviceContext, convertorExecutor, statisticsWriterProvider);
+        super(MultipartType.OFPMPFLOW, requestContextStack, deviceContext, converterExecutor, statisticsWriterProvider);
     }
 
     /**

@@ -16,6 +16,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegist
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.util.ActionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
@@ -33,8 +34,13 @@ public class GroupMessageSerializer extends AbstractMessageSerializer<GroupMessa
         if (bucket1.getBucketId() == null || bucket2.getBucketId() == null) return 0;
         return bucket1.getBucketId().getValue().compareTo(bucket2.getBucketId().getValue());
     };
+    private final ExtensionConverterProvider extensionConverterProvider;
 
     private SerializerRegistry registry;
+
+    public GroupMessageSerializer(final ExtensionConverterProvider extensionConverterProvider) {
+        this.extensionConverterProvider = extensionConverterProvider;
+    }
 
     @Override
     public void serialize(GroupMessage message, ByteBuf outBuffer) {
@@ -46,27 +52,28 @@ public class GroupMessageSerializer extends AbstractMessageSerializer<GroupMessa
         outBuffer.writeInt(message.getGroupId().getValue().intValue());
 
         Optional.ofNullable(message.getBuckets())
-            .filter(b -> !GroupModCommand.OFPGCDELETE.equals(message.getCommand()))
-            .flatMap(b -> Optional.ofNullable(b.getBucket()))
-            .ifPresent(b -> b.stream()
-                .sorted(COMPARATOR)
-                .forEach(bucket -> {
-                    int bucketIndex = outBuffer.writerIndex();
-                    outBuffer.writeShort(EncodeConstants.EMPTY_LENGTH);
-                    outBuffer.writeShort(MoreObjects.firstNonNull(bucket.getWeight(), 0));
-                    outBuffer.writeInt(MoreObjects.firstNonNull(bucket.getWatchPort(), OFConstants.OFPG_ANY).intValue());
-                    outBuffer.writeInt(MoreObjects.firstNonNull(bucket.getWatchGroup(), OFConstants.OFPG_ANY).intValue());
-                    outBuffer.writeZero(PADDING_IN_BUCKET);
+                .filter(b -> !GroupModCommand.OFPGCDELETE.equals(message.getCommand()))
+                .flatMap(b -> Optional.ofNullable(b.getBucket()))
+                .ifPresent(b -> b.stream()
+                        .sorted(COMPARATOR)
+                        .forEach(bucket -> {
+                            int bucketIndex = outBuffer.writerIndex();
+                            outBuffer.writeShort(EncodeConstants.EMPTY_LENGTH);
+                            outBuffer.writeShort(MoreObjects.firstNonNull(bucket.getWeight(), 0));
+                            outBuffer.writeInt(MoreObjects.firstNonNull(bucket.getWatchPort(), OFConstants.OFPG_ANY).intValue());
+                            outBuffer.writeInt(MoreObjects.firstNonNull(bucket.getWatchGroup(), OFConstants.OFPG_ANY).intValue());
+                            outBuffer.writeZero(PADDING_IN_BUCKET);
 
-                    Optional.ofNullable(bucket.getAction()).ifPresent(as -> as.forEach(a ->
-                        ActionUtil.writeAction(
-                            a.getAction(),
-                            OFConstants.OFP_VERSION_1_3,
-                            registry,
-                            outBuffer)));
+                            Optional.ofNullable(bucket.getAction()).ifPresent(as -> as.forEach(a ->
+                                    ActionUtil.writeAction(
+                                            a.getAction(),
+                                            OFConstants.OFP_VERSION_1_3,
+                                            registry,
+                                            outBuffer,
+                                            extensionConverterProvider)));
 
-                    outBuffer.setShort(bucketIndex, outBuffer.writerIndex() - bucketIndex);
-                }));
+                            outBuffer.setShort(bucketIndex, outBuffer.writerIndex() - bucketIndex);
+                        }));
 
         outBuffer.setShort(index + 2, outBuffer.writerIndex() - index);
     }

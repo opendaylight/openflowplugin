@@ -16,13 +16,13 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.common.MultipartReplyTranslatorUtil;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.statistics.StatisticsGatheringUtils;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -41,13 +41,13 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
     private final MultipartWriterProvider statisticsWriterProvider;
     private final DeviceRegistry deviceRegistry;
     private volatile Service.State gatheringState = Service.State.NEW;
-    private ConvertorExecutor convertorExecutor;
+    private ConverterExecutor converterExecutor;
 
     public AbstractMultipartRequestOnTheFlyCallback(final RequestContext<List<T>> context, Class<?> requestType,
                                                     final DeviceContext deviceContext,
                                                     final EventIdentifier eventIdentifier,
                                                     final MultipartWriterProvider statisticsWriterProvider,
-                                                    final ConvertorExecutor convertorExecutor) {
+                                                    final ConverterExecutor converterExecutor) {
         super(context, requestType, deviceContext, eventIdentifier);
         deviceInfo = deviceContext.getDeviceInfo();
         doneEventIdentifier =
@@ -55,7 +55,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
         txFacade = deviceContext;
         deviceRegistry = deviceContext;
         this.statisticsWriterProvider = statisticsWriterProvider;
-        this.convertorExecutor = convertorExecutor;
+        this.converterExecutor = converterExecutor;
     }
 
     @Override
@@ -88,7 +88,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
 
             try {
                 MultipartReplyTranslatorUtil
-                        .translate(resultCast, deviceInfo, convertorExecutor, null)
+                        .translate(resultCast, deviceInfo, converterExecutor, null)
                         .ifPresent(reply -> {
                             try {
                                 statisticsWriterProvider

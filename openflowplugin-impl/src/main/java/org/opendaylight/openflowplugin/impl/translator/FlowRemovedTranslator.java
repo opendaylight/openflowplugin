@@ -11,8 +11,8 @@ import java.util.Objects;
 import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
+import org.opendaylight.openflowplugin.protocol.converter.data.VersionDatapathIdConverterData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemovedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.RemovedFlowReason;
@@ -25,17 +25,18 @@ import org.slf4j.LoggerFactory;
 /**
  * Translate {@link FlowRemoved} message to FlowRemoved notification (omit instructions).
  */
-public class FlowRemovedTranslator implements MessageTranslator
-        <FlowRemoved, org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved> {
-    private final ConvertorExecutor convertorExecutor;
+public class FlowRemovedTranslator implements MessageTranslator<
+        FlowRemoved,
+        org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved> {
     private static final Logger LOG = LoggerFactory.getLogger(FlowRemovedTranslator.class);
+    private final ConverterExecutor converterExecutor;
 
-    public FlowRemovedTranslator(ConvertorExecutor convertorExecutor) {
-        this.convertorExecutor = convertorExecutor;
+    public FlowRemovedTranslator(ConverterExecutor converterExecutor) {
+        this.converterExecutor = converterExecutor;
     }
 
-    protected ConvertorExecutor getConvertorExecutor() {
-        return convertorExecutor;
+    protected ConverterExecutor getConverterExecutor() {
+        return converterExecutor;
     }
 
     @Override
@@ -56,13 +57,13 @@ public class FlowRemovedTranslator implements MessageTranslator
     }
 
     protected MatchBuilder translateMatch(FlowRemoved flowRemoved, DeviceInfo deviceInfo) {
-        final VersionDatapathIdConvertorData datapathIdConvertorData =
-                new VersionDatapathIdConvertorData(deviceInfo.getVersion());
-        datapathIdConvertorData.setDatapathId(deviceInfo.getDatapathId());
+        final VersionDatapathIdConverterData datapathIdConverterData =
+            new VersionDatapathIdConverterData(deviceInfo.getVersion());
+        datapathIdConverterData.setDatapathId(deviceInfo.getDatapathId());
 
-        final Optional<MatchBuilder> matchBuilderOptional = getConvertorExecutor().convert(
+        final Optional<MatchBuilder> matchBuilderOptional = getConverterExecutor().convert(
                 flowRemoved.getMatch(),
-                datapathIdConvertorData);
+                datapathIdConverterData);
 
         return matchBuilderOptional.orElse(new MatchBuilder());
     }
