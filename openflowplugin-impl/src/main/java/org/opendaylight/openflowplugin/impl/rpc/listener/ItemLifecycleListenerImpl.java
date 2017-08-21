@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * General implementation of {@link ItemLifecycleListener} - keeping of DS/operational reflection up-to-date
+ * General implementation of {@link ItemLifecycleListener} - keeping of DS/operational reflection up-to-date.
  */
 public class ItemLifecycleListenerImpl implements ItemLifecycleListener {
 
@@ -33,7 +33,9 @@ public class ItemLifecycleListenerImpl implements ItemLifecycleListener {
     }
 
     @Override
-    public <I extends Identifiable<K> & DataObject, K extends Identifier<I>> void onAdded(KeyedInstanceIdentifier<I, K> itemPath, I itemBody) {
+    @SuppressWarnings("checkstyle:IllegalCatch")
+    public <I extends Identifiable<K> & DataObject, K extends Identifier<I>>
+            void onAdded(KeyedInstanceIdentifier<I, K> itemPath, I itemBody) {
         try {
             txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, itemPath, itemBody);
             txFacade.submitTransaction();
@@ -43,7 +45,9 @@ public class ItemLifecycleListenerImpl implements ItemLifecycleListener {
     }
 
     @Override
-    public <I extends Identifiable<K> & DataObject, K extends Identifier<I>> void onRemoved(KeyedInstanceIdentifier<I, K> itemPath) {
+    @SuppressWarnings("checkstyle:IllegalCatch")
+    public <I extends Identifiable<K> & DataObject, K extends Identifier<I>>
+            void onRemoved(KeyedInstanceIdentifier<I, K> itemPath) {
         try {
             txFacade.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, itemPath);
             txFacade.submitTransaction();
@@ -53,7 +57,9 @@ public class ItemLifecycleListenerImpl implements ItemLifecycleListener {
     }
 
     @Override
-    public <I extends Identifiable<K> & DataObject, K extends Identifier<I>> void onUpdated(KeyedInstanceIdentifier<I, K> itemPath, I itemBody) {
+    @SuppressWarnings("checkstyle:IllegalCatch")
+    public <I extends Identifiable<K> & DataObject, K extends Identifier<I>>
+            void onUpdated(KeyedInstanceIdentifier<I, K> itemPath, I itemBody) {
         try {
             txFacade.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, itemPath);
             txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, itemPath, itemBody);
