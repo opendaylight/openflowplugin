@@ -26,13 +26,13 @@ import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
+import org.opendaylight.openflowplugin.common.util.InventoryDataServiceUtil;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerMultipartCollectorService;
 import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerMultipartCollectorService;
 import org.opendaylight.openflowplugin.impl.util.DeviceInitializationUtil;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -59,7 +59,7 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
                                                      final boolean switchFeaturesMandatory,
                                                      final boolean skipTableFeatures,
                                                      @Nullable final MultipartWriterProvider multipartWriterProvider,
-                                                     @Nullable final ConvertorExecutor convertorExecutor) {
+                                                     @Nullable final ConverterExecutor converterExecutor) {
         final ConnectionContext connectionContext = Preconditions.checkNotNull(deviceContext.getPrimaryConnectionContext());
         final DeviceState deviceState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         final DeviceInfo deviceInfo = Preconditions.checkNotNull(deviceContext.getDeviceInfo());

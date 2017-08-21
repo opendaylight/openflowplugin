@@ -18,8 +18,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.util.RequestInputUtils;
 import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
+import org.opendaylight.openflowplugin.protocol.converter.data.VersionConverterData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetAllMeterConfigStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetAllMeterConfigStatisticsOutput;
@@ -56,13 +56,13 @@ final class AllMeterConfigStatsService
         METER_CONFIG_CASE = caseBuilder.build();
     }
 
-    private final ConvertorExecutor convertorExecutor;
-    private final VersionConvertorData data;
+    private final ConverterExecutor converterExecutor;
+    private final VersionConverterData data;
 
-    public AllMeterConfigStatsService(RequestContextStack requestContextStack, DeviceContext deviceContext, AtomicLong compatibilityXidSeed, ConvertorExecutor convertorExecutor) {
+    public AllMeterConfigStatsService(RequestContextStack requestContextStack, DeviceContext deviceContext, AtomicLong compatibilityXidSeed, ConverterExecutor converterExecutor) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
-        this.convertorExecutor = convertorExecutor;
-        data = new VersionConvertorData(getVersion());
+        this.converterExecutor = converterExecutor;
+        data = new VersionConverterData(getVersion());
     }
 
     @Override
@@ -89,7 +89,7 @@ final class AllMeterConfigStatsService
             MultipartReplyMeterConfigCase caseBody = (MultipartReplyMeterConfigCase) mpReply.getMultipartReplyBody();
             MultipartReplyMeterConfig replyBody = caseBody.getMultipartReplyMeterConfig();
 
-            final Optional<List<MeterConfigStats>> meterConfigStatsList = convertorExecutor.convert(replyBody.getMeterConfig(), data);
+            final Optional<List<MeterConfigStats>> meterConfigStatsList = converterExecutor.convert(replyBody.getMeterConfig(), data);
 
             if (meterConfigStatsList.isPresent()) {
                 message.getMeterConfigStats().addAll(meterConfigStatsList.get());

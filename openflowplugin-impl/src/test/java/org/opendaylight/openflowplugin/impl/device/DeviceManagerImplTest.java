@@ -46,7 +46,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProviderFactory;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemovedBuilder;
@@ -60,7 +60,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint32Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfigBuilder;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcError;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeviceManagerImplTest {
@@ -87,7 +86,7 @@ public class DeviceManagerImplTest {
     @Mock
     private DeviceInfo deviceInfo;
     @Mock
-    private ConvertorExecutor convertorExecutor;
+    private ConverterExecutor converterExecutor;
     @Mock
     private DataBroker dataBroker;
     @Mock
@@ -139,7 +138,7 @@ public class DeviceManagerImplTest {
                 messageIntelligenceAgency,
                 notificationPublishService,
                 new HashedWheelTimer(),
-                convertorExecutor,
+                converterExecutor,
                 DeviceInitializerProviderFactory.createDefaultProvider());
 
         deviceManager.setTranslatorLibrary(translatorLibrary);

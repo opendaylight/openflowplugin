@@ -30,7 +30,7 @@ import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory
 import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerFlowService;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerFlowService;
 import org.opendaylight.openflowplugin.impl.util.ErrorUtil;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
@@ -70,11 +70,11 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
     private final DeviceContext deviceContext;
     private ItemLifecycleListener itemLifecycleListener;
 
-    public SalFlowServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConvertorExecutor convertorExecutor) {
+    public SalFlowServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConverterExecutor converterExecutor) {
         this.deviceContext = deviceContext;
-        flowRemove = new MultiLayerFlowService<>(requestContextStack, deviceContext, RemoveFlowOutput.class, convertorExecutor);
-        flowAdd = new MultiLayerFlowService<>(requestContextStack, deviceContext, AddFlowOutput.class, convertorExecutor);
-        flowUpdate = new MultiLayerFlowService<>(requestContextStack, deviceContext, UpdateFlowOutput.class, convertorExecutor);
+        flowRemove = new MultiLayerFlowService<>(requestContextStack, deviceContext, RemoveFlowOutput.class, converterExecutor);
+        flowAdd = new MultiLayerFlowService<>(requestContextStack, deviceContext, AddFlowOutput.class, converterExecutor);
+        flowUpdate = new MultiLayerFlowService<>(requestContextStack, deviceContext, UpdateFlowOutput.class, converterExecutor);
         flowAddMessage = new SingleLayerFlowService<>(requestContextStack, deviceContext, AddFlowOutput.class);
         flowUpdateMessage = new SingleLayerFlowService<>(requestContextStack, deviceContext, UpdateFlowOutput.class);
         flowRemoveMessage= new SingleLayerFlowService<>(requestContextStack, deviceContext, RemoveFlowOutput.class);

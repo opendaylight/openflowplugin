@@ -32,7 +32,7 @@ import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerMultip
 import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerMultipartCollectorService;
 import org.opendaylight.openflowplugin.impl.util.DeviceInitializationUtil;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
@@ -52,7 +52,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                                                      final boolean switchFeaturesMandatory,
                                                      final boolean skipTableFeatures,
                                                      @Nullable final MultipartWriterProvider multipartWriterProvider,
-                                                     @Nullable final ConvertorExecutor convertorExecutor) {
+                                                     @Nullable final ConverterExecutor converterExecutor) {
         final ConnectionContext connectionContext = Preconditions.checkNotNull(deviceContext.getPrimaryConnectionContext());
         final DeviceState deviceState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         final DeviceInfo deviceInfo = Preconditions.checkNotNull(deviceContext.getDeviceInfo());
@@ -69,13 +69,13 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                     input.getResult(),
                     deviceContext,
                     multipartWriterProvider,
-                    convertorExecutor);
+                    converterExecutor);
 
                 final List<ListenableFuture<RpcResult<List<OfHeader>>>> futures = new ArrayList<>();
-                futures.add(requestAndProcessMultipart(MultipartType.OFPMPMETERFEATURES, deviceContext, skipTableFeatures, multipartWriterProvider, convertorExecutor));
-                futures.add(requestAndProcessMultipart(MultipartType.OFPMPGROUPFEATURES, deviceContext, skipTableFeatures, multipartWriterProvider, convertorExecutor));
-                futures.add(requestAndProcessMultipart(MultipartType.OFPMPTABLEFEATURES, deviceContext, skipTableFeatures, multipartWriterProvider, convertorExecutor));
-                futures.add(requestAndProcessMultipart(MultipartType.OFPMPPORTDESC, deviceContext, skipTableFeatures, multipartWriterProvider, convertorExecutor));
+                futures.add(requestAndProcessMultipart(MultipartType.OFPMPMETERFEATURES, deviceContext, skipTableFeatures, multipartWriterProvider, converterExecutor));
+                futures.add(requestAndProcessMultipart(MultipartType.OFPMPGROUPFEATURES, deviceContext, skipTableFeatures, multipartWriterProvider, converterExecutor));
+                futures.add(requestAndProcessMultipart(MultipartType.OFPMPTABLEFEATURES, deviceContext, skipTableFeatures, multipartWriterProvider, converterExecutor));
+                futures.add(requestAndProcessMultipart(MultipartType.OFPMPPORTDESC, deviceContext, skipTableFeatures, multipartWriterProvider, converterExecutor));
 
                 return Futures.transform(
                     (switchFeaturesMandatory ? Futures.allAsList(futures) : Futures.successfulAsList(futures)),
@@ -97,20 +97,20 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
      * @param deviceContext device context
      * @param skipTableFeatures skip collecting of table features
      * @param multipartWriterProvider multipart writer provider
-     * @param convertorExecutor convertor executor
+     * @param converterExecutor converter executor
      * @return list of multipart messages unified to parent interface
      */
     private static ListenableFuture<RpcResult<List<OfHeader>>> requestAndProcessMultipart(final MultipartType type,
                                                                                           final DeviceContext deviceContext,
                                                                                           final boolean skipTableFeatures,
                                                                                           final MultipartWriterProvider multipartWriterProvider,
-                                                                                          @Nullable final ConvertorExecutor convertorExecutor) {
+                                                                                          @Nullable final ConverterExecutor converterExecutor) {
         final ListenableFuture<RpcResult<List<OfHeader>>> rpcResultListenableFuture =
             MultipartType.OFPMPTABLEFEATURES.equals(type) && skipTableFeatures
                 ? RpcResultBuilder.<List<OfHeader>>success().buildFuture()
                 : requestMultipart(type, deviceContext);
 
-        createCallback(type, rpcResultListenableFuture, deviceContext, multipartWriterProvider, convertorExecutor);
+        createCallback(type, rpcResultListenableFuture, deviceContext, multipartWriterProvider, converterExecutor);
         return rpcResultListenableFuture;
     }
 
@@ -121,13 +121,13 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
      * @param future multipart collection future
      * @param deviceContext device context
      * @param multipartWriterProvider multipart writer provider
-     * @param convertorExecutor convertor executor
+     * @param converterExecutor converter executor
      */
     private static void createCallback(final MultipartType type,
                                        final ListenableFuture<RpcResult<List<OfHeader>>> future,
                                        final DeviceContext deviceContext,
                                        @Nullable final MultipartWriterProvider multipartWriterProvider,
-                                       @Nullable final ConvertorExecutor convertorExecutor) {
+                                       @Nullable final ConverterExecutor converterExecutor) {
         Futures.addCallback(future, new FutureCallback<RpcResult<List<OfHeader>>>() {
             @Override
             public void onSuccess(final RpcResult<List<OfHeader>> result) {
@@ -138,7 +138,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                         result.getResult(),
                         deviceContext,
                         multipartWriterProvider,
-                        convertorExecutor);
+                        converterExecutor);
                 } else {
                     result.getErrors().forEach(rpcError -> {
                         LOG.warn("Failed to retrieve static node {} info: {}", type, rpcError.getMessage());
@@ -171,13 +171,13 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
      * @param result multipart messages
      * @param deviceContext device context
      * @param multipartWriterProvider multipart writer provider
-     * @param convertorExecutor convertor executor
+     * @param converterExecutor converter executor
      */
     private static void translateAndWriteResult(final MultipartType type,
                                                 final List<OfHeader> result,
                                                 final DeviceContext deviceContext,
                                                 @Nullable final MultipartWriterProvider multipartWriterProvider,
-                                                @Nullable final ConvertorExecutor convertorExecutor) {
+                                                @Nullable final ConverterExecutor converterExecutor) {
         if (Objects.nonNull(result)) {
             try {
                 result.forEach(reply -> {
@@ -186,7 +186,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                         .translate(
                             reply,
                             deviceContext.getDeviceInfo(),
-                            convertorExecutor,
+                            converterExecutor,
                             deviceContext.oook())
                         .ifPresent(translatedReply -> {
                             // If we collected meter features, check if we have support for meters

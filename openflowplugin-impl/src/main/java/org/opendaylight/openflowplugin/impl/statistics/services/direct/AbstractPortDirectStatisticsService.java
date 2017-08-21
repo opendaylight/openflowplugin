@@ -10,8 +10,8 @@ package org.opendaylight.openflowplugin.impl.statistics.services.direct;
 
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetNodeConnectorStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetNodeConnectorStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
@@ -25,9 +25,9 @@ public abstract class AbstractPortDirectStatisticsService<T extends OfHeader>
 
     public AbstractPortDirectStatisticsService(final RequestContextStack requestContextStack,
                                                final DeviceContext deviceContext,
-                                               final ConvertorExecutor convertorExecutor,
+                                               final ConverterExecutor converterExecutor,
                                                final MultipartWriterProvider statisticsWriterProvider) {
-        super(MultipartType.OFPMPPORTSTATS, requestContextStack, deviceContext, convertorExecutor, statisticsWriterProvider);
+        super(MultipartType.OFPMPPORTSTATS, requestContextStack, deviceContext, converterExecutor, statisticsWriterProvider);
     }
 
 }

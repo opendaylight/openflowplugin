@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
+           odl:use-default-for-reference-types="true">
+  <!-- extension converter manager -->
+  <bean id="extensionConverterManager" class="org.opendaylight.openflowplugin.protocol.extension.ExtensionConverterManagerImpl"/>
+  <service ref="extensionConverterManager" interface="org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterManager"/>
+
+  <!-- converter manager -->
+  <bean id="converterManagerFactory" class="org.opendaylight.openflowplugin.protocol.converter.ConverterManagerFactory"/>
+  <bean id="converterManager"
+        factory-ref="converterManagerFactory"
+        factory-method="newInstance">
+    <argument ref="extensionConverterManager" />
+  </bean>
+  <service ref="converterManager" interface="org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterManager"/>
+</blueprint>

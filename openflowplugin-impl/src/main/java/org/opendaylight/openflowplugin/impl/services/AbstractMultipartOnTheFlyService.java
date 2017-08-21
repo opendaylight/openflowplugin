@@ -16,20 +16,20 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerFlowMultipartRequestOnTheFlyCallback;
 import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerFlowMultipartRequestOnTheFlyCallback;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 
 public abstract class AbstractMultipartOnTheFlyService<I, T extends OfHeader> extends AbstractMultipartService<I, T> {
 
-    private final ConvertorExecutor convertorExecutor;
+    private final ConverterExecutor converterExecutor;
     private final MultipartWriterProvider statisticsWriterProvider;
 
     protected AbstractMultipartOnTheFlyService(final RequestContextStack requestContextStack,
                                                final DeviceContext deviceContext,
-                                               final ConvertorExecutor convertorExecutor,
+                                               final ConverterExecutor converterExecutor,
                                                final MultipartWriterProvider statisticsWriterProvider) {
         super(requestContextStack, deviceContext);
-        this.convertorExecutor = convertorExecutor;
+        this.converterExecutor = converterExecutor;
         this.statisticsWriterProvider = statisticsWriterProvider;
     }
 
@@ -37,7 +37,7 @@ public abstract class AbstractMultipartOnTheFlyService<I, T extends OfHeader> ex
     protected final FutureCallback<OfHeader> createCallback(final RequestContext<List<T>> context, final Class<?> requestType) {
         return canUseSingleLayerSerialization()
             ? new SingleLayerFlowMultipartRequestOnTheFlyCallback<>(context, requestType, getDeviceContext(), getEventIdentifier(), statisticsWriterProvider)
-            : new MultiLayerFlowMultipartRequestOnTheFlyCallback<>(context, requestType, getDeviceContext(), getEventIdentifier(), statisticsWriterProvider, convertorExecutor);
+            : new MultiLayerFlowMultipartRequestOnTheFlyCallback<>(context, requestType, getDeviceContext(), getEventIdentifier(), statisticsWriterProvider, converterExecutor);
     }
 
 }

@@ -38,6 +38,11 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>openflowplugin-protocol</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>openflowplugin-impl</artifactId>
                 <version>${project.version}</version>
             </dependency>

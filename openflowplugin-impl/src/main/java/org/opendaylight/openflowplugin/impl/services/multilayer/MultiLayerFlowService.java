@@ -21,8 +21,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.AbstractSimpleService;
 import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
+import org.opendaylight.openflowplugin.protocol.converter.data.VersionDatapathIdConverterData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -33,13 +33,13 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 public final class MultiLayerFlowService<O extends DataObject> extends AbstractSimpleService<FlowModInputBuilder, O> {
 
-    private final ConvertorExecutor convertorExecutor;
-    private final VersionDatapathIdConvertorData data;
+    private final ConverterExecutor converterExecutor;
+    private final VersionDatapathIdConverterData data;
 
-    public MultiLayerFlowService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final Class<O> clazz, final ConvertorExecutor convertorExecutor) {
+    public MultiLayerFlowService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final Class<O> clazz, final ConverterExecutor converterExecutor) {
         super(requestContextStack, deviceContext, clazz);
-        this.convertorExecutor = convertorExecutor;
-        data = new VersionDatapathIdConvertorData(getVersion());
+        this.converterExecutor = converterExecutor;
+        data = new VersionDatapathIdConverterData(getVersion());
         data.setDatapathId(getDatapathId());
     }
 
@@ -50,7 +50,7 @@ public final class MultiLayerFlowService<O extends DataObject> extends AbstractS
     }
 
     public List<FlowModInputBuilder> toFlowModInputs(final Flow input) {
-        final Optional<List<FlowModInputBuilder>> flowModInputBuilders = convertorExecutor.convert(input, data);
+        final Optional<List<FlowModInputBuilder>> flowModInputBuilders = converterExecutor.convert(input, data);
         return flowModInputBuilders.orElse(Collections.emptyList());
     }
 

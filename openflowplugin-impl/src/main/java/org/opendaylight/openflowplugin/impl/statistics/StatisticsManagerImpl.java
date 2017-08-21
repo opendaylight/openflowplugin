@@ -38,7 +38,7 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.ChangeStatisticsWorkModeInput;
@@ -59,7 +59,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     private static final long DEFAULT_STATS_TIMEOUT_SEC = 50L;
     @Nonnull
     private final OpenflowProviderConfig config;
-    private final ConvertorExecutor converterExecutor;
+    private final ConverterExecutor converterExecutor;
 
     private final ConcurrentMap<DeviceInfo, StatisticsContext> contexts = new ConcurrentHashMap<>();
 
@@ -74,10 +74,10 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     public StatisticsManagerImpl(@Nonnull final OpenflowProviderConfig config,
                                  @Nonnull final RpcProviderRegistry rpcProviderRegistry,
                                  final HashedWheelTimer hashedWheelTimer,
-                                 final ConvertorExecutor convertorExecutor) {
+                                 final ConverterExecutor converterExecutor) {
         this.config = config;
         currentTimerDelay = config.getBasicTimerDelay().getValue();
-        this.converterExecutor = convertorExecutor;
+        this.converterExecutor = converterExecutor;
         this.controlServiceRegistration = Preconditions.checkNotNull(rpcProviderRegistry
                 .addRpcImplementation(StatisticsManagerControlService.class, this));
 
