@@ -11,10 +11,10 @@ import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.openflowplugin.api.openflow.statistics.compatibility.Delegator;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerAggregateFlowMultipartService;
 import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerAggregateFlowMultipartService;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput;
@@ -37,20 +37,18 @@ public class OpendaylightFlowStatisticsServiceImpl implements OpendaylightFlowSt
 
     public static OpendaylightFlowStatisticsServiceImpl createWithOook(final RequestContextStack requestContextStack,
                                                                        final DeviceContext deviceContext,
-                                                                       final ConvertorExecutor convertorExecutor) {
-        return new OpendaylightFlowStatisticsServiceImpl(requestContextStack,
-                                                         deviceContext,
-                                                         deviceContext.oook(),
-                                                         convertorExecutor);
+                                                                       final ConverterExecutor converterExecutor) {
+        return new OpendaylightFlowStatisticsServiceImpl(requestContextStack, deviceContext, deviceContext.oook(),
+                converterExecutor);
     }
 
     public OpendaylightFlowStatisticsServiceImpl(final RequestContextStack requestContextStack,
                                                  final DeviceContext deviceContext,
                                                  final TranslatorLibrary translatorLibrary,
-                                                 final ConvertorExecutor convertorExecutor) {
+                                                 final ConverterExecutor converterExecutor) {
         singleLayerService = new SingleLayerAggregateFlowMultipartService(requestContextStack, deviceContext);
         multiLayerService = new MultiLayerAggregateFlowMultipartService(requestContextStack, deviceContext,
-            convertorExecutor, translatorLibrary);
+                converterExecutor, translatorLibrary);
     }
 
     @Override
@@ -80,8 +78,8 @@ public class OpendaylightFlowStatisticsServiceImpl implements OpendaylightFlowSt
         getAggregateFlowStatisticsFromFlowTableForGivenMatch(
                 final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) {
         return singleLayerService.canUseSingleLayerSerialization()
-            ? singleLayerService.handleAndReply(input)
-            : multiLayerService.handleAndReply(input);
+                ? singleLayerService.handleAndReply(input)
+                : multiLayerService.handleAndReply(input);
     }
 
     /**

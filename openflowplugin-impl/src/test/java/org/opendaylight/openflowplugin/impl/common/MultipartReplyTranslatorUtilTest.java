@@ -24,8 +24,9 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
 import org.opendaylight.openflowplugin.impl.util.TranslatorLibraryUtil;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
+import org.opendaylight.openflowplugin.protocol.converter.ConverterManagerFactory;
+import org.opendaylight.openflowplugin.protocol.extension.ExtensionConverterManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupCapabilities;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupTypes;
@@ -72,7 +73,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public class MultipartReplyTranslatorUtilTest {
     @Mock
     private DeviceInfo deviceInfo;
-    private ConvertorExecutor convertorExecutor = ConvertorManagerFactory.createDefaultManager();
+    private ConverterExecutor converterExecutor = new ConverterManagerFactory().newInstance(new ExtensionConverterManagerImpl());
     private TranslatorLibrarian translatorLibrarian;
 
     @Before
@@ -93,7 +94,7 @@ public class MultipartReplyTranslatorUtilTest {
             }
         };
 
-        TranslatorLibraryUtil.injectBasicTranslatorLibrary(translatorLibrarian, convertorExecutor);
+        TranslatorLibraryUtil.injectBasicTranslatorLibrary(translatorLibrarian, converterExecutor, new ExtensionConverterManagerImpl());
     }
 
     private static MultipartReply buildReply(final MultipartType multipartType,
@@ -107,7 +108,7 @@ public class MultipartReplyTranslatorUtilTest {
     private void dummyAssertReply(final MultipartReply multipartReply) {
         final Optional<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart
                 .reply.MultipartReplyBody> translatedReply = MultipartReplyTranslatorUtil
-                .translate(multipartReply, deviceInfo, convertorExecutor, translatorLibrarian.oook());
+                .translate(multipartReply, deviceInfo, converterExecutor, translatorLibrarian.oook());
 
         assertTrue(translatedReply.isPresent());
     }

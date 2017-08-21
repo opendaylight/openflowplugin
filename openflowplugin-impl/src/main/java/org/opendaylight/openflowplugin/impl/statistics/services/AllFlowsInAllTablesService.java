@@ -17,7 +17,7 @@ import org.opendaylight.openflowplugin.impl.services.util.RequestInputUtils;
 import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.FlowStatisticsToNotificationTransformer;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowsStatisticsFromAllFlowTablesInput;
@@ -37,14 +37,14 @@ public final class AllFlowsInAllTablesService extends
                                       GetAllFlowsStatisticsFromAllFlowTablesOutput,
                                       FlowsStatisticsUpdate> {
     private final MultipartRequestFlowCase flowCase;
-    private final ConvertorExecutor convertorExecutor;
+    private final ConverterExecutor converterExecutor;
 
     public AllFlowsInAllTablesService(final RequestContextStack requestContextStack,
                                       final DeviceContext deviceContext,
                                       final AtomicLong compatibilityXidSeed,
-                                      final ConvertorExecutor convertorExecutor) {
+                                      final ConverterExecutor converterExecutor) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
-        this.convertorExecutor = convertorExecutor;
+        this.converterExecutor = converterExecutor;
 
         final MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
         final MultipartRequestFlowBuilder mprFlowRequestBuilder = new MultipartRequestFlowBuilder();
@@ -76,10 +76,7 @@ public final class AllFlowsInAllTablesService extends
 
     @Override
     public FlowsStatisticsUpdate transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
-        return FlowStatisticsToNotificationTransformer.transformToNotification(result,
-                                                                               getDeviceInfo(),
-                                                                               getOfVersion(),
-                                                                               emulatedTxId,
-                                                                               convertorExecutor);
+        return FlowStatisticsToNotificationTransformer.transformToNotification(result, getDeviceInfo(), getOfVersion(),
+                emulatedTxId, converterExecutor);
     }
 }

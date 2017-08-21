@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.serialization.actions;
 
-import org.opendaylight.openflowplugin.openflow.md.util.ActionUtil;
+import org.opendaylight.openflowplugin.common.util.ActionUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Dscp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetFieldCase;

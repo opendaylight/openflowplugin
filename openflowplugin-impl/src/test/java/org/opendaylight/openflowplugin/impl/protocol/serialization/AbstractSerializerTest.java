@@ -21,6 +21,7 @@ import org.opendaylight.openflowjava.protocol.api.keys.InstructionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializerRegistryImpl;
+import org.opendaylight.openflowplugin.protocol.extension.ExtensionConverterManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
@@ -36,7 +37,7 @@ public abstract class AbstractSerializerTest {
         registry = new SerializerRegistryImpl();
         registry.init();
         provider = new SerializerExtensionProviderImpl(registry);
-        SerializerInjector.injectSerializers(provider);
+        SerializerInjector.injectSerializers(provider, new ExtensionConverterManagerImpl());
         init();
     }
 

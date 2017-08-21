@@ -15,7 +15,7 @@ import java.math.BigInteger;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
-import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
+import org.opendaylight.openflowplugin.common.util.ByteUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Tunnel;
 
 import io.netty.buffer.ByteBuf;

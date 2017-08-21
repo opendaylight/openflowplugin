@@ -17,8 +17,8 @@ import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.ConnectionException;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,13 +33,13 @@ public abstract class AbstractDeviceInitializer {
      * @param switchFeaturesMandatory is switch features mandatory
      * @param skipTableFeatures skip collecting of table features
      * @param multipartWriterProvider multipart writer provider
-     * @param convertorExecutor convertor executor
+     * @param converterExecutor converter executor
      */
     public Future<Void> initialize(@Nonnull final DeviceContext deviceContext,
                                    final boolean switchFeaturesMandatory,
                                    final boolean skipTableFeatures,
                                    @Nullable final MultipartWriterProvider multipartWriterProvider,
-                                   @Nullable final ConvertorExecutor convertorExecutor) {
+                                   @Nullable final ConverterExecutor converterExecutor) {
         Preconditions.checkNotNull(deviceContext);
 
         // Write node to datastore
@@ -60,12 +60,12 @@ public abstract class AbstractDeviceInitializer {
 
         // Get information about device
         return initializeNodeInformation(deviceContext, switchFeaturesMandatory, skipTableFeatures,
-                multipartWriterProvider, convertorExecutor);
+                multipartWriterProvider, converterExecutor);
     }
 
     protected abstract Future<Void> initializeNodeInformation(@Nonnull final DeviceContext deviceContext,
                                                               final boolean switchFeaturesMandatory,
                                                               final boolean skipTableFeatures,
                                                               @Nullable final MultipartWriterProvider multipartWriterProvider,
-                                                              @Nullable final ConvertorExecutor convertorExecutor);
+                                                              @Nullable final ConverterExecutor converterExecutor);
 }

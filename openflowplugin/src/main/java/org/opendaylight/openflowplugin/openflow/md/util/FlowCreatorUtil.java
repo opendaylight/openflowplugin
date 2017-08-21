@@ -13,7 +13,6 @@ import java.util.Objects;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.FlowConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
@@ -32,11 +31,11 @@ public final class FlowCreatorUtil {
      * Default FLOW_MOD flags.
      */
     public static final FlowModFlags  DEFAULT_FLOW_MOD_FLAGS =
-        new FlowModFlags(FlowConvertor.DEFAULT_OFPFF_CHECK_OVERLAP,
-                         FlowConvertor.DEFAULT_OFPFF_NO_BYT_COUNTS,
-                         FlowConvertor.DEFAULT_OFPFF_NO_PKT_COUNTS,
-                         FlowConvertor.DEFAULT_OFPFF_RESET_COUNTS,
-                         FlowConvertor.DEFAULT_OFPFF_FLOW_REM);
+        new FlowModFlags(OFConstants.DEFAULT_OFPFF_CHECK_OVERLAP,
+                         OFConstants.DEFAULT_OFPFF_NO_BYT_COUNTS,
+                         OFConstants.DEFAULT_OFPFF_NO_PKT_COUNTS,
+                         OFConstants.DEFAULT_OFPFF_RESET_COUNTS,
+                         OFConstants.DEFAULT_OFPFF_FLOW_REM);
 
     private FlowCreatorUtil() {
         throw new AssertionError("FlowCreatorUtil is not expected to be instantiated.");
@@ -104,13 +103,13 @@ public final class FlowCreatorUtil {
         // flags, and cookie.
         if (!Objects.equals(original.getMatch(), updated.getMatch()) ||
             !equalsWithDefault(original.getPriority(), updated.getPriority(),
-                               FlowConvertor.DEFAULT_PRIORITY) ||
+                               OFConstants.DEFAULT_PRIORITY) ||
             !equalsWithDefault(original.getIdleTimeout(),
                                updated.getIdleTimeout(),
-                               FlowConvertor.DEFAULT_IDLE_TIMEOUT) ||
+                               OFConstants.DEFAULT_IDLE_TIMEOUT) ||
             !equalsWithDefault(original.getHardTimeout(),
                                updated.getHardTimeout(),
-                               FlowConvertor.DEFAULT_HARD_TIMEOUT) ||
+                               OFConstants.DEFAULT_HARD_TIMEOUT) ||
             !equalsFlowModFlags(original.getFlags(), updated.getFlags())) {
             return false;
         }

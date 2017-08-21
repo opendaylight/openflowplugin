@@ -16,7 +16,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.AbstractFlowDirectStatisticsService;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsOutputBuilder;
@@ -33,9 +33,9 @@ public class FlowDirectStatisticsService extends AbstractFlowDirectStatisticsSer
 
     public FlowDirectStatisticsService(final RequestContextStack requestContextStack,
                                        final DeviceContext deviceContext,
-                                       final ConvertorExecutor convertorExecutor,
+                                       final ConverterExecutor converterExecutor,
                                        final MultipartWriterProvider statisticsWriterProvider) {
-        super(requestContextStack, deviceContext, convertorExecutor, statisticsWriterProvider);
+        super(requestContextStack, deviceContext, converterExecutor, statisticsWriterProvider);
     }
 
     @Override
