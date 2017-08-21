@@ -15,6 +15,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.instructions.ApplyActionsInstructionSerializer;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.instructions.ClearActionsInstructionSerializer;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.instructions.GoToTableInstructionSerializer;
@@ -38,15 +39,15 @@ class InstructionSerializerInjector {
      * Injects serializers into provided {@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}
      * @param provider OpenflowJava serializer extension provider
      */
-    static void injectSerializers(final SerializerExtensionProvider provider) {
+    static void injectSerializers(final SerializerExtensionProvider provider, final ExtensionConverterProvider extensionConverterProvider) {
         // Inject new instruction serializers here using injector created by createInjector method
         final Function<Class<? extends Instruction>, Consumer<OFSerializer<? extends Instruction>>> injector =
                 createInjector(provider, EncodeConstants.OF13_VERSION_ID);
-        injector.apply(ApplyActionsCase.class).accept(new ApplyActionsInstructionSerializer());
+        injector.apply(ApplyActionsCase.class).accept(new ApplyActionsInstructionSerializer(extensionConverterProvider));
         injector.apply(ClearActionsCase.class).accept(new ClearActionsInstructionSerializer());
         injector.apply(GoToTableCase.class).accept(new GoToTableInstructionSerializer());
         injector.apply(MeterCase.class).accept(new MeterInstructionSerializer());
-        injector.apply(WriteActionsCase.class).accept(new WriteActionsInstructionSerializer());
+        injector.apply(WriteActionsCase.class).accept(new WriteActionsInstructionSerializer(extensionConverterProvider));
         injector.apply(WriteMetadataCase.class).accept(new WriteMetadataInstructionSerializer());
     }
 

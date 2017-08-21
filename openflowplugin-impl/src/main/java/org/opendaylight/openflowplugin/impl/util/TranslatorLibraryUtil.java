@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.impl.util;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.translator.AggregatedFlowStatisticsTranslator;
 import org.opendaylight.openflowplugin.impl.translator.FlowRemovedTranslator;
 import org.opendaylight.openflowplugin.impl.translator.FlowRemovedV10Translator;
@@ -18,7 +19,7 @@ import org.opendaylight.openflowplugin.impl.translator.PacketReceivedTranslator;
 import org.opendaylight.openflowplugin.impl.translator.PortUpdateTranslator;
 import org.opendaylight.openflowplugin.impl.translator.TranslatorKeyFactory;
 import org.opendaylight.openflowplugin.impl.translator.TranslatorLibraryBuilder;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
@@ -37,16 +38,18 @@ public final class TranslatorLibraryUtil {
     private static final TranslatorKeyFactory of13TranslatorKeyFactory = new TranslatorKeyFactory(OFConstants.OFP_VERSION_1_3);
     private static final TranslatorKeyFactory of10TranslatorKeyFactory = new TranslatorKeyFactory(OFConstants.OFP_VERSION_1_0);
 
-    public static void injectBasicTranslatorLibrary(final TranslatorLibrarian librarian, final ConvertorExecutor convertorExecutor) {
+    public static void injectBasicTranslatorLibrary(final TranslatorLibrarian librarian,
+                                                    final ConverterExecutor converterExecutor,
+                                                    final ExtensionConverterProvider extensionConverterProvider) {
         final TranslatorLibrary basicTranslatorLibrary = new TranslatorLibraryBuilder().
-                addTranslator(of13TranslatorKeyFactory.createTranslatorKey(PacketIn.class), new PacketReceivedTranslator(convertorExecutor)).
+                addTranslator(of13TranslatorKeyFactory.createTranslatorKey(PacketIn.class), new PacketReceivedTranslator(converterExecutor, extensionConverterProvider)).
                 addTranslator(of13TranslatorKeyFactory.createTranslatorKey(PortGrouping.class), new PortUpdateTranslator()).
                 addTranslator(of13TranslatorKeyFactory.createTranslatorKey(MultipartReplyAggregateCase.class), new AggregatedFlowStatisticsTranslator()).
-                addTranslator(of13TranslatorKeyFactory.createTranslatorKey(FlowRemoved.class), new FlowRemovedTranslator(convertorExecutor)).
-                addTranslator(of10TranslatorKeyFactory.createTranslatorKey(PacketIn.class), new PacketReceivedTranslator(convertorExecutor)).
+                addTranslator(of13TranslatorKeyFactory.createTranslatorKey(FlowRemoved.class), new FlowRemovedTranslator(converterExecutor)).
+                addTranslator(of10TranslatorKeyFactory.createTranslatorKey(PacketIn.class), new PacketReceivedTranslator(converterExecutor, extensionConverterProvider)).
                 addTranslator(of10TranslatorKeyFactory.createTranslatorKey(PortGrouping.class), new PortUpdateTranslator()).
                 addTranslator(of10TranslatorKeyFactory.createTranslatorKey(MultipartReplyAggregateCase.class), new AggregatedFlowStatisticsTranslator()).
-                addTranslator(of10TranslatorKeyFactory.createTranslatorKey(FlowRemoved.class), new FlowRemovedV10Translator(convertorExecutor)).
+                addTranslator(of10TranslatorKeyFactory.createTranslatorKey(FlowRemoved.class), new FlowRemovedV10Translator(converterExecutor)).
 
                 build();
 

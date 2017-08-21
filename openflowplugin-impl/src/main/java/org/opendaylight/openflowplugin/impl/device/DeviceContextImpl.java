@@ -74,8 +74,8 @@ import org.opendaylight.openflowplugin.impl.registry.meter.DeviceMeterRegistryIm
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.openflowplugin.impl.services.util.RequestContextUtil;
 import org.opendaylight.openflowplugin.impl.util.MatchUtil;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
+import org.opendaylight.openflowplugin.common.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.ExperimenterMessageFromDevBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -144,7 +144,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final MessageTranslator<FlowRemoved, org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved> flowRemovedTranslator;
     private final TranslatorLibrary translatorLibrary;
     private final ItemLifeCycleRegistry itemLifeCycleSourceRegistry;
-    private final ConvertorExecutor convertorExecutor;
+    private final ConverterExecutor converterExecutor;
     private final DeviceInitializerProvider deviceInitializerProvider;
     private final PacketInRateLimiter packetInLimiter;
     private final DeviceInfo deviceInfo;
@@ -169,7 +169,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                       @Nonnull final DataBroker dataBroker,
                       @Nonnull final MessageSpy messageSpy,
                       @Nonnull final TranslatorLibrary translatorLibrary,
-                      final ConvertorExecutor convertorExecutor,
+                      final ConverterExecutor converterExecutor,
                       final boolean skipTableFeatures,
                       final HashedWheelTimer hashedWheelTimer,
                       final boolean useSingleLayerSerialization,
@@ -202,7 +202,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.itemLifeCycleSourceRegistry = new ItemLifeCycleRegistryImpl();
         this.flowLifeCycleKeeper = new ItemLifeCycleSourceImpl();
         this.itemLifeCycleSourceRegistry.registerLifeCycleSource(flowLifeCycleKeeper);
-        this.convertorExecutor = convertorExecutor;
+        this.converterExecutor = converterExecutor;
         this.skipTableFeatures = skipTableFeatures;
         this.useSingleLayerSerialization = useSingleLayerSerialization;
         writerProvider = MultipartWriterProviderFactory.createDefaultProvider(this);
@@ -636,7 +636,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         if (initializer.isPresent()) {
             final Future<Void> initialize = initializer
                     .get()
-                    .initialize(this, switchFeaturesMandatory, skipTableFeatures, writerProvider, convertorExecutor);
+                    .initialize(this, switchFeaturesMandatory, skipTableFeatures, writerProvider, converterExecutor);
 
             try {
                 initialize.get(DEVICE_INIT_TIMEOUT, TimeUnit.MILLISECONDS);

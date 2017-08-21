@@ -11,10 +11,10 @@ package org.opendaylight.openflowplugin.impl.services.multilayer;
 import java.util.List;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.services.AbstractMultipartRequestOnTheFlyCallback;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -26,8 +26,8 @@ public class MultiLayerFlowMultipartRequestOnTheFlyCallback<T extends OfHeader> 
                                                           final DeviceContext deviceContext,
                                                           final EventIdentifier eventIdentifier,
                                                           final MultipartWriterProvider statisticsWriterProvider,
-                                                          final ConvertorExecutor convertorExecutor) {
-        super(context, requestType, deviceContext, eventIdentifier, statisticsWriterProvider, convertorExecutor);
+                                                          final ConverterExecutor converterExecutor) {
+        super(context, requestType, deviceContext, eventIdentifier, statisticsWriterProvider, converterExecutor);
     }
 
     @Override

@@ -20,7 +20,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,19 +32,19 @@ public class RpcManagerImpl implements RpcManager {
     private final RpcProviderRegistry rpcProviderRegistry;
     private final ConcurrentMap<DeviceInfo, RpcContext> contexts = new ConcurrentHashMap<>();
     private final ExtensionConverterProvider extensionConverterProvider;
-    private final ConvertorExecutor convertorExecutor;
+    private final ConverterExecutor converterExecutor;
     private final NotificationPublishService notificationPublishService;
 
 
     public RpcManagerImpl(final OpenflowProviderConfig config,
                           final RpcProviderRegistry rpcProviderRegistry,
                           final ExtensionConverterProvider extensionConverterProvider,
-                          final ConvertorExecutor convertorExecutor,
+                          final ConverterExecutor converterExecutor,
                           final NotificationPublishService notificationPublishService) {
         this.config = config;
         this.rpcProviderRegistry = rpcProviderRegistry;
         this.extensionConverterProvider = extensionConverterProvider;
-        this.convertorExecutor = convertorExecutor;
+        this.converterExecutor = converterExecutor;
         this.notificationPublishService = notificationPublishService;
     }
 
@@ -73,7 +73,7 @@ public class RpcManagerImpl implements RpcManager {
                 config.getRpcRequestsQuota().getValue(),
                 deviceContext,
                 extensionConverterProvider,
-                convertorExecutor,
+                converterExecutor,
                 notificationPublishService,
                 config.isIsStatisticsRpcEnabled());
 

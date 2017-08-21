@@ -12,11 +12,11 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.openflowplugin.impl.statistics.services.AggregateFlowsInTableService;
 import org.opendaylight.openflowplugin.impl.statistics.services.AllFlowsInAllTablesService;
 import org.opendaylight.openflowplugin.impl.statistics.services.AllFlowsInTableService;
 import org.opendaylight.openflowplugin.impl.statistics.services.FlowsInTableService;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput;
@@ -49,12 +49,12 @@ public class OpendaylightFlowStatisticsServiceDelegateImpl implements Opendaylig
                                                          final DeviceContext deviceContext,
                                                          final NotificationPublishService notificationService,
                                                          final AtomicLong compatibilityXidSeed,
-                                                         final ConvertorExecutor convertorExecutor) {
+                                                         final ConverterExecutor converterExecutor) {
         this.notificationService = notificationService;
         aggregateFlowsInTable = AggregateFlowsInTableService.createWithOook(requestContextStack, deviceContext, compatibilityXidSeed);
-        allFlowsInAllTables = new AllFlowsInAllTablesService(requestContextStack, deviceContext, compatibilityXidSeed, convertorExecutor);
-        allFlowsInTable = new AllFlowsInTableService(requestContextStack, deviceContext, compatibilityXidSeed, convertorExecutor);
-        flowsInTable = new FlowsInTableService(requestContextStack, deviceContext, compatibilityXidSeed, convertorExecutor);
+        allFlowsInAllTables = new AllFlowsInAllTablesService(requestContextStack, deviceContext, compatibilityXidSeed, converterExecutor);
+        allFlowsInTable = new AllFlowsInTableService(requestContextStack, deviceContext, compatibilityXidSeed, converterExecutor);
+        flowsInTable = new FlowsInTableService(requestContextStack, deviceContext, compatibilityXidSeed, converterExecutor);
     }
 
     /**
