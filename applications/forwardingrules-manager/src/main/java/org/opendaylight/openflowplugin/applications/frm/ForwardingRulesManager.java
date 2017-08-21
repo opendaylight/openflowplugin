@@ -9,8 +9,9 @@
 package org.opendaylight.openflowplugin.applications.frm;
 
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationListener;
-import org.opendaylight.openflowplugin.applications.frm.impl.FlowNodeConnectorInventoryTranslatorImpl;
+import org.opendaylight.openflowplugin.applications.frm.impl.commiters.FlowNodeConnectorInventoryTranslatorImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
@@ -36,15 +37,6 @@ public interface ForwardingRulesManager extends ConfigurationListener, AutoClose
 
     /**
      * Method returns information :
-     * "is Node with send InstanceIdentifier connected"?
-     *
-     * @param ident - the key of the node
-     * @return boolean - true if device is connected
-     */
-    boolean isNodeActive(InstanceIdentifier<FlowCapableNode> ident);
-
-    /**
-     * Method returns information :
      * "is Node with send InstanceIdentifier present in operational data store"?
      *
      * @param ident - the key of the node
@@ -61,11 +53,18 @@ public interface ForwardingRulesManager extends ConfigurationListener, AutoClose
     String getNewTransactionId();
 
     /**
-     * Method returns Read Transacion. It is need for Node reconciliation only.
+     * Method returns Read Transaction. It is need for Node reconciliation only.
      *
      * @return ReadOnlyTransaction
      */
-    ReadOnlyTransaction getReadTranaction();
+    ReadOnlyTransaction getReadTransaction();
+
+    /**
+     * Method returns Write Transaction. It is need for Node reconciliation only.
+     *
+     * @return ReadOnlyTransaction
+     */
+    WriteTransaction getWriteTransaction();
 
     /**
      * Flow RPC service
