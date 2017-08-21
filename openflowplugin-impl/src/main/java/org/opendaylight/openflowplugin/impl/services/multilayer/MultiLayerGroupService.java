@@ -25,7 +25,10 @@ public final class MultiLayerGroupService<I extends Group, O extends DataObject>
     private final ConvertorExecutor convertorExecutor;
     private final VersionDatapathIdConvertorData data;
 
-    public MultiLayerGroupService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final Class<O> clazz, final ConvertorExecutor convertorExecutor) {
+    public MultiLayerGroupService(final RequestContextStack requestContextStack,
+                                  final DeviceContext deviceContext,
+                                  final Class<O> clazz,
+                                  final ConvertorExecutor convertorExecutor) {
         super(requestContextStack, deviceContext, clazz);
         this.convertorExecutor = convertorExecutor;
         data = new VersionDatapathIdConvertorData(getVersion());

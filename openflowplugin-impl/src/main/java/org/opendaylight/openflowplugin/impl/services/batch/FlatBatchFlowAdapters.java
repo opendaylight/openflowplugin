@@ -54,9 +54,11 @@ public class FlatBatchFlowAdapters {
     }
 
     /**
+     * Adapt flat batch add flow.
      * @param planStep batch step containing changes of the same type
      * @param node     pointer for RPC routing
-     * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.SalFlowsBatchService#addFlowsBatch(AddFlowsBatchInput)}
+     * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn
+     * .opendaylight.flows.service.rev160314.SalFlowsBatchService#addFlowsBatch(AddFlowsBatchInput)}
      */
     public static AddFlowsBatchInput adaptFlatBatchAddFlow(final BatchPlanStep planStep, final NodeRef node) {
         final List<BatchAddFlows> batchFlows = new ArrayList<>();
@@ -75,9 +77,11 @@ public class FlatBatchFlowAdapters {
     }
 
     /**
+     * Adapt flat batch remove flow.
      * @param planStep batch step containing changes of the same type
      * @param node     pointer for RPC routing
-     * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.SalFlowsBatchService#removeFlowsBatch(RemoveFlowsBatchInput)}
+     * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn
+     * .opendaylight.flows.service.rev160314.SalFlowsBatchService#removeFlowsBatch(RemoveFlowsBatchInput)}
      */
     public static RemoveFlowsBatchInput adaptFlatBatchRemoveFlow(final BatchPlanStep planStep, final NodeRef node) {
         final List<BatchRemoveFlows> batchFlows = new ArrayList<>();
@@ -96,9 +100,11 @@ public class FlatBatchFlowAdapters {
     }
 
     /**
+     * Adapt flat batch update flow.
      * @param planStep batch step containing changes of the same type
      * @param node     pointer for RPC routing
-     * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.SalFlowsBatchService#updateFlowsBatch(UpdateFlowsBatchInput)}
+     * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn
+     * .opendaylight.flows.service.rev160314.SalFlowsBatchService#updateFlowsBatch(UpdateFlowsBatchInput)}
      */
     public static UpdateFlowsBatchInput adaptFlatBatchUpdateFlow(final BatchPlanStep planStep, final NodeRef node) {
         final List<BatchUpdateFlows> batchFlows = new ArrayList<>();
@@ -116,18 +122,20 @@ public class FlatBatchFlowAdapters {
     }
 
     /**
+     * Convert batch result.
      * @param stepOffset offset of current batch plan step
      * @return converted {@link ProcessFlatBatchOutput} RPC result
      */
     @VisibleForTesting
     static <T extends BatchFlowOutputListGrouping> Function<RpcResult<T>, RpcResult<ProcessFlatBatchOutput>>
-    convertBatchFlowResult(final int stepOffset) {
+        convertBatchFlowResult(final int stepOffset) {
         return new Function<RpcResult<T>, RpcResult<ProcessFlatBatchOutput>>() {
             @Nullable
             @Override
             public RpcResult<ProcessFlatBatchOutput> apply(@Nullable final RpcResult<T> input) {
                 List<BatchFailure> batchFailures = wrapBatchFlowFailuresForFlat(input, stepOffset);
-                ProcessFlatBatchOutputBuilder outputBuilder = new ProcessFlatBatchOutputBuilder().setBatchFailure(batchFailures);
+                ProcessFlatBatchOutputBuilder outputBuilder =
+                        new ProcessFlatBatchOutputBuilder().setBatchFailure(batchFailures);
                 return RpcResultBuilder.<ProcessFlatBatchOutput>status(input.isSuccessful())
                                        .withRpcErrors(input.getErrors())
                                        .withResult(outputBuilder.build())
@@ -154,7 +162,7 @@ public class FlatBatchFlowAdapters {
     }
 
     /**
-     * shortcut for {@link #convertBatchFlowResult(int)} with conversion {@link ListenableFuture}
+     * Shortcut for {@link #convertBatchFlowResult(int)} with conversion {@link ListenableFuture}.
      *
      * @param <T>                    exact type of batch flow output
      * @param resultUpdateFlowFuture batch flow rpc-result (add/remove/update)
@@ -162,7 +170,7 @@ public class FlatBatchFlowAdapters {
      * @return ListenableFuture with converted result {@link ProcessFlatBatchOutput}
      */
     public static <T extends BatchFlowOutputListGrouping> ListenableFuture<RpcResult<ProcessFlatBatchOutput>>
-    convertFlowBatchFutureForChain(final Future<RpcResult<T>> resultUpdateFlowFuture,
+        convertFlowBatchFutureForChain(final Future<RpcResult<T>> resultUpdateFlowFuture,
                                    final int currentOffset) {
         return Futures.transform(JdkFutureAdapters.listenInPoolThread(resultUpdateFlowFuture),
                 FlatBatchFlowAdapters.<T>convertBatchFlowResult(currentOffset));

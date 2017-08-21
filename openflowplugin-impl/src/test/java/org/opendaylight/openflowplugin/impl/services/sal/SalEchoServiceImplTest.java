@@ -19,7 +19,6 @@ import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.opendaylight.openflowplugin.impl.services.ServiceMocking;
-import org.opendaylight.openflowplugin.impl.services.sal.SalEchoServiceImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SendEchoInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SendEchoInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SendEchoOutput;
@@ -57,6 +56,7 @@ public class SalEchoServiceImplTest extends ServiceMocking {
         Assert.assertTrue(echoOutput.isDone());
         Assert.assertTrue(echoOutput.get().isSuccessful());
         verify(mockedRequestContextStack).createRequestContext();
-        verify(mockedOutboundQueue).commitEntry(Matchers.eq(2121L), Matchers.<OfHeader>any(), Matchers.<FutureCallback<OfHeader>>any());
+        verify(mockedOutboundQueue)
+                .commitEntry(Matchers.eq(2121L), Matchers.<OfHeader>any(), Matchers.<FutureCallback<OfHeader>>any());
     }
 }

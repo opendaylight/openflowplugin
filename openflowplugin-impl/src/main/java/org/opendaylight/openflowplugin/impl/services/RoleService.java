@@ -35,15 +35,14 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Created by kramesha on 8/24/15.
- */
 public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, RoleRequestOutput> {
     private static final Logger LOG = LoggerFactory.getLogger(RoleService.class);
 
     private final DeviceContext deviceContext;
 
-    public RoleService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final Class<RoleRequestOutput> clazz) {
+    public RoleService(final RequestContextStack requestContextStack,
+                       final DeviceContext deviceContext,
+                       final Class<RoleRequestOutput> clazz) {
         super(requestContextStack, deviceContext, clazz);
         this.deviceContext = deviceContext;
     }
@@ -64,7 +63,8 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
         roleRequestInputBuilder.setGenerationId(BigInteger.ZERO);
 
         final SettableFuture<BigInteger> finalFuture = SettableFuture.create();
-        final ListenableFuture<RpcResult<RoleRequestOutput>> genIdListenableFuture = handleServiceCall(roleRequestInputBuilder);
+        final ListenableFuture<RpcResult<RoleRequestOutput>> genIdListenableFuture =
+                handleServiceCall(roleRequestInputBuilder);
         Futures.addCallback(genIdListenableFuture, new FutureCallback<RpcResult<RoleRequestOutput>>() {
             @Override
             public void onSuccess(final RpcResult<RoleRequestOutput> roleRequestOutputRpcResult) {
@@ -75,13 +75,15 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
                         finalFuture.set(roleRequestOutput.getGenerationId());
                     } else {
                         LOG.info("roleRequestOutput is null in getGenerationIdFromDevice");
-                        finalFuture.setException(new RoleChangeException("Exception in getting generationId for device:" + getDeviceInfo().getNodeId().getValue()));
+                        finalFuture.setException(new RoleChangeException("Exception in getting generationId for device:"
+                                + getDeviceInfo().getNodeId().getValue()));
                     }
 
                 } else {
-                    LOG.error("getGenerationIdFromDevice RPC error " +
-                            roleRequestOutputRpcResult.getErrors().iterator().next().getInfo());
-                    finalFuture.setException(new RoleChangeException(ErrorUtil.errorsToString(roleRequestOutputRpcResult.getErrors())));
+                    LOG.error("getGenerationIdFromDevice RPC error "
+                            + roleRequestOutputRpcResult.getErrors().iterator().next().getInfo());
+                    finalFuture.setException(new RoleChangeException(ErrorUtil
+                            .errorsToString(roleRequestOutputRpcResult.getErrors())));
                 }
             }
 
@@ -95,7 +97,9 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
     }
 
 
-    public Future<RpcResult<SetRoleOutput>> submitRoleChange(final OfpRole ofpRole, final Short version, final BigInteger generationId) {
+    public Future<RpcResult<SetRoleOutput>> submitRoleChange(final OfpRole ofpRole,
+                                                             final Short version,
+                                                             final BigInteger generationId) {
         LOG.info("submitRoleChange called for device:{}, role:{}",
                 getDeviceInfo().getNodeId(), ofpRole);
         final RoleRequestInputBuilder roleRequestInputBuilder = new RoleRequestInputBuilder();
@@ -103,7 +107,8 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
         roleRequestInputBuilder.setVersion(version);
         roleRequestInputBuilder.setGenerationId(generationId);
 
-        final ListenableFuture<RpcResult<RoleRequestOutput>> roleListenableFuture = handleServiceCall(roleRequestInputBuilder);
+        final ListenableFuture<RpcResult<RoleRequestOutput>> roleListenableFuture =
+                handleServiceCall(roleRequestInputBuilder);
 
         final SettableFuture<RpcResult<SetRoleOutput>> finalFuture = SettableFuture.create();
         Futures.addCallback(roleListenableFuture, new FutureCallback<RpcResult<RoleRequestOutput>>() {
@@ -115,8 +120,10 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
                 final Collection<RpcError> rpcErrors = roleRequestOutputRpcResult.getErrors();
                 if (roleRequestOutput != null) {
                     final SetRoleOutputBuilder setRoleOutputBuilder = new SetRoleOutputBuilder();
-                    setRoleOutputBuilder.setTransactionId(new TransactionId(BigInteger.valueOf(roleRequestOutput.getXid())));
-                    finalFuture.set(RpcResultBuilder.<SetRoleOutput>success().withResult(setRoleOutputBuilder.build()).build());
+                    setRoleOutputBuilder
+                            .setTransactionId(new TransactionId(BigInteger.valueOf(roleRequestOutput.getXid())));
+                    finalFuture.set(RpcResultBuilder.<SetRoleOutput>success()
+                            .withResult(setRoleOutputBuilder.build()).build());
 
                 } else if (rpcErrors != null) {
                     LOG.trace("roleRequestOutput is null , rpcErrors={}", rpcErrors);
@@ -158,6 +165,4 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
         }
         return ofJavaRole;
     }
-
-
 }

@@ -20,7 +20,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.Upd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
-public abstract class AbstractTableMultipartService<T extends OfHeader> extends AbstractMultipartService<UpdateTableInput, T> {
+public abstract class AbstractTableMultipartService<T extends OfHeader>
+        extends AbstractMultipartService<UpdateTableInput, T> {
 
     private final MultipartWriterProvider multipartWriterProvider;
 
@@ -32,9 +33,10 @@ public abstract class AbstractTableMultipartService<T extends OfHeader> extends 
     }
 
     /**
-     * Stores table features to operational datastore
+     * Stores table features to operational datastore.
      */
-    protected void storeStatistics(List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures> result) {
+    protected void storeStatistics(List<org.opendaylight.yang.gen.v1.urn
+            .opendaylight.table.types.rev131026.table.features.TableFeatures> result) {
         multipartWriterProvider
             .lookup(MultipartType.OFPMPTABLEFEATURES)
             .ifPresent(writer -> {
@@ -49,7 +51,7 @@ public abstract class AbstractTableMultipartService<T extends OfHeader> extends 
     }
 
     /**
-     * Process experimenter input and result experimenter output
+     * Process experimenter input and result experimenter output.
      * @param input experimenter input
      * @return experimenter output
      */

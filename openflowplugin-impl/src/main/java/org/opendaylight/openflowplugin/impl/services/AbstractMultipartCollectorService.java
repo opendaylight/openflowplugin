@@ -20,9 +20,11 @@ import org.opendaylight.openflowplugin.impl.util.DeviceInitializationUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 
-public abstract class AbstractMultipartCollectorService<T extends OfHeader> extends AbstractMultipartService<MultipartType, T> {
+public abstract class AbstractMultipartCollectorService<T extends OfHeader>
+        extends AbstractMultipartService<MultipartType, T> {
 
-    protected AbstractMultipartCollectorService(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
+    protected AbstractMultipartCollectorService(final RequestContextStack requestContextStack,
+                                                final DeviceContext deviceContext) {
         super(requestContextStack, deviceContext);
     }
 
@@ -37,7 +39,7 @@ public abstract class AbstractMultipartCollectorService<T extends OfHeader> exte
             }
 
             @Override
-            public void onFailure(@Nonnull final Throwable t) {
+            public void onFailure(@Nonnull final Throwable throwable) {
                 // If we failed getting table features, at least create empty tables
                 if (MultipartType.OFPMPTABLEFEATURES.getClass().equals(requestType)) {
                     DeviceInitializationUtil.makeEmptyTables(
@@ -46,13 +48,16 @@ public abstract class AbstractMultipartCollectorService<T extends OfHeader> exte
                         getDeviceContext().getPrimaryConnectionContext().getFeatures().getTables());
                 }
 
-                callback.onFailure(t);
+                callback.onFailure(throwable);
             }
         };
     }
 
     @Override
     protected OfHeader buildRequest(final Xid xid, final MultipartType input) {
-        return MultipartRequestInputFactory.makeMultipartRequest(xid.getValue(), getVersion(), input, canUseSingleLayerSerialization());
+        return MultipartRequestInputFactory.makeMultipartRequest(xid.getValue(),
+                                                                 getVersion(),
+                                                                 input,
+                                                                 canUseSingleLayerSerialization());
     }
 }

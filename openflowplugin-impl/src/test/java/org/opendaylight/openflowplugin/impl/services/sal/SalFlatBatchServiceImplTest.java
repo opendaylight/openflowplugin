@@ -125,7 +125,8 @@ public class SalFlatBatchServiceImplTest {
 
     @Before
     public void setUp() throws Exception {
-        salFlatBatchService = new SalFlatBatchServiceImpl(salFlowsBatchService, salGroupsBatchService, salMetersBatchService);
+        salFlatBatchService =
+                new SalFlatBatchServiceImpl(salFlowsBatchService, salGroupsBatchService, salMetersBatchService);
 
     }
 
@@ -176,7 +177,8 @@ public class SalFlatBatchServiceImplTest {
                 .setExitOnFirstError(true)
                 .build();
 
-        final Future<RpcResult<ProcessFlatBatchOutput>> rpcResultFuture = salFlatBatchService.processFlatBatch(batchInput);
+        final Future<RpcResult<ProcessFlatBatchOutput>> rpcResultFuture =
+                salFlatBatchService.processFlatBatch(batchInput);
         Assert.assertTrue(rpcResultFuture.isDone());
         final RpcResult<ProcessFlatBatchOutput> rpcResult = rpcResultFuture.get();
         Assert.assertTrue(rpcResult.isSuccessful());
@@ -220,7 +222,8 @@ public class SalFlatBatchServiceImplTest {
                 .setExitOnFirstError(true)
                 .build();
 
-        final Future<RpcResult<ProcessFlatBatchOutput>> rpcResultFuture = salFlatBatchService.processFlatBatch(batchInput);
+        final Future<RpcResult<ProcessFlatBatchOutput>> rpcResultFuture =
+                salFlatBatchService.processFlatBatch(batchInput);
         Assert.assertTrue(rpcResultFuture.isDone());
         final RpcResult<ProcessFlatBatchOutput> rpcResult = rpcResultFuture.get();
         Assert.assertFalse(rpcResult.isSuccessful());
@@ -258,7 +261,8 @@ public class SalFlatBatchServiceImplTest {
                 .setExitOnFirstError(false)
                 .build();
 
-        final Future<RpcResult<ProcessFlatBatchOutput>> rpcResultFuture = salFlatBatchService.processFlatBatch(batchInput);
+        final Future<RpcResult<ProcessFlatBatchOutput>> rpcResultFuture =
+                salFlatBatchService.processFlatBatch(batchInput);
         Assert.assertTrue(rpcResultFuture.isDone());
         final RpcResult<ProcessFlatBatchOutput> rpcResult = rpcResultFuture.get();
         Assert.assertFalse(rpcResult.isSuccessful());
@@ -437,8 +441,10 @@ public class SalFlatBatchServiceImplTest {
     public void testExecuteBatchPlan() throws Exception {
         BatchStepJob batchStepJob1 = Mockito.mock(BatchStepJob.class);
         BatchStepJob batchStepJob2 = Mockito.mock(BatchStepJob.class);
-        AsyncFunction<RpcResult<ProcessFlatBatchOutput>, RpcResult<ProcessFlatBatchOutput>> function1 = Mockito.mock(AsyncFunction.class);
-        AsyncFunction<RpcResult<ProcessFlatBatchOutput>, RpcResult<ProcessFlatBatchOutput>> function2 = Mockito.mock(AsyncFunction.class);
+        AsyncFunction<RpcResult<ProcessFlatBatchOutput>, RpcResult<ProcessFlatBatchOutput>> function1 =
+                Mockito.mock(AsyncFunction.class);
+        AsyncFunction<RpcResult<ProcessFlatBatchOutput>, RpcResult<ProcessFlatBatchOutput>> function2 =
+                Mockito.mock(AsyncFunction.class);
         Mockito.when(batchStepJob1.getStepFunction()).thenReturn(function1);
         Mockito.when(batchStepJob2.getStepFunction()).thenReturn(function2);
         BatchPlanStep batchPlanStep1 = new BatchPlanStep(BatchStepType.GROUP_ADD);
@@ -448,11 +454,13 @@ public class SalFlatBatchServiceImplTest {
         Mockito.when(batchStepJob1.getPlanStep()).thenReturn(batchPlanStep1);
         Mockito.when(batchStepJob2.getPlanStep()).thenReturn(batchPlanStep2);
 
-        final ListenableFuture<RpcResult<ProcessFlatBatchOutput>> succeededChainOutput = FlatBatchUtil.createEmptyRpcBatchResultFuture(true);
+        final ListenableFuture<RpcResult<ProcessFlatBatchOutput>> succeededChainOutput =
+                FlatBatchUtil.createEmptyRpcBatchResultFuture(true);
         final ListenableFuture<RpcResult<ProcessFlatBatchOutput>> failedChainOutput =
                 RpcResultBuilder.<ProcessFlatBatchOutput>failed()
                         .withError(RpcError.ErrorType.APPLICATION, "ut-chainError")
-                        .withResult(createFlatBatchOutput(createFlowBatchFailure(0, "f1"), createFlowBatchFailure(1, "f2")))
+                        .withResult(createFlatBatchOutput(createFlowBatchFailure(0, "f1"),
+                                    createFlowBatchFailure(1, "f2")))
                         .buildFuture();
 
         Mockito.when(batchStepJob1.getStepFunction().apply(Matchers.<RpcResult<ProcessFlatBatchOutput>>any()))
@@ -461,14 +469,17 @@ public class SalFlatBatchServiceImplTest {
                 .thenReturn(failedChainOutput);
 
         final List<BatchStepJob> batchChainElements = Lists.newArrayList(batchStepJob1, batchStepJob2);
-        final Future<RpcResult<ProcessFlatBatchOutput>> rpcResultFuture = salFlatBatchService.executeBatchPlan(batchChainElements);
+        final Future<RpcResult<ProcessFlatBatchOutput>> rpcResultFuture =
+                salFlatBatchService.executeBatchPlan(batchChainElements);
 
         Assert.assertTrue(rpcResultFuture.isDone());
         final RpcResult<ProcessFlatBatchOutput> rpcResult = rpcResultFuture.get();
         Assert.assertFalse(rpcResult.isSuccessful());
         Assert.assertEquals(1, rpcResult.getErrors().size());
         Assert.assertEquals(2, rpcResult.getResult().getBatchFailure().size());
-        Assert.assertEquals("f2", ((FlatBatchFailureFlowIdCase) rpcResult.getResult().getBatchFailure().get(1).getBatchItemIdChoice()).getFlowId().getValue());
+        Assert.assertEquals("f2",
+                ((FlatBatchFailureFlowIdCase) rpcResult.getResult().getBatchFailure().get(1).getBatchItemIdChoice())
+                        .getFlowId().getValue());
     }
 
     private BatchFailure createFlowBatchFailure(final int batchOrder, final String flowIdValue) {
@@ -504,7 +515,8 @@ public class SalFlatBatchServiceImplTest {
                         .success(new AddFlowsBatchOutputBuilder().build())
                         .buildFuture());
 
-        final Future<RpcResult<ProcessFlatBatchOutput>> rpcResultFuture = salFlatBatchService.executeBatchPlan(batchChain);
+        final Future<RpcResult<ProcessFlatBatchOutput>> rpcResultFuture =
+                salFlatBatchService.executeBatchPlan(batchChain);
         Assert.assertTrue(rpcResultFuture.isDone());
         final RpcResult<ProcessFlatBatchOutput> rpcResult = rpcResultFuture.get();
         Assert.assertTrue(rpcResult.isSuccessful());
@@ -545,7 +557,8 @@ public class SalFlatBatchServiceImplTest {
                         .withError(RpcError.ErrorType.APPLICATION, "ut-addFlowBatchError")
                         .buildFuture());
 
-        final Future<RpcResult<ProcessFlatBatchOutput>> rpcResultFuture = salFlatBatchService.executeBatchPlan(batchChain);
+        final Future<RpcResult<ProcessFlatBatchOutput>> rpcResultFuture =
+                salFlatBatchService.executeBatchPlan(batchChain);
         Assert.assertTrue(rpcResultFuture.isDone());
         final RpcResult<ProcessFlatBatchOutput> rpcResult = rpcResultFuture.get();
         Assert.assertFalse(rpcResult.isSuccessful());

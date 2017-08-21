@@ -38,7 +38,9 @@ public class SingleLayerAggregateFlowMultipartService
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) throws ServiceException {
+    protected OfHeader buildRequest(final Xid xid,
+                                    final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input)
+                                    throws ServiceException {
         return new MultipartRequestBuilder()
                 .setXid(xid.getValue())
                 .setVersion(getVersion())
@@ -61,7 +63,8 @@ public class SingleLayerAggregateFlowMultipartService
                                         .map(MultipartReply::getMultipartReplyBody)
                                         .filter(MultipartReplyFlowAggregateStats.class::isInstance)
                                         .map(multipartReplyBody ->
-                                                new AggregatedFlowStatisticsBuilder(MultipartReplyFlowAggregateStats.class
+                                                new AggregatedFlowStatisticsBuilder(
+                                                        MultipartReplyFlowAggregateStats.class
                                                         .cast(multipartReplyBody))
                                                         .build())
                                         .collect(Collectors.toList())))
@@ -74,5 +77,4 @@ public class SingleLayerAggregateFlowMultipartService
                     .build();
         });
     }
-
 }

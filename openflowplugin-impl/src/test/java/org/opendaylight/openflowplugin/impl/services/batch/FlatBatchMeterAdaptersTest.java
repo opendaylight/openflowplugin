@@ -60,7 +60,8 @@ public class FlatBatchMeterAdaptersTest {
                 createAddMeterBatch(1L),
                 createAddMeterBatch(2L)));
 
-        final AddMetersBatchInput addMetersBatchInput = FlatBatchMeterAdapters.adaptFlatBatchAddMeter(planStep, NODE_REF);
+        final AddMetersBatchInput addMetersBatchInput =
+                FlatBatchMeterAdapters.adaptFlatBatchAddMeter(planStep, NODE_REF);
 
         Assert.assertTrue(addMetersBatchInput.isBarrierAfter());
         Assert.assertEquals(2, addMetersBatchInput.getBatchAddMeters().size());
@@ -99,12 +100,15 @@ public class FlatBatchMeterAdaptersTest {
                 createRemoveMeterBatch(1L),
                 createRemoveMeterBatch(2L)));
 
-        final RemoveMetersBatchInput removeMetersBatchInput = FlatBatchMeterAdapters.adaptFlatBatchRemoveMeter(planStep, NODE_REF);
+        final RemoveMetersBatchInput removeMetersBatchInput =
+                FlatBatchMeterAdapters.adaptFlatBatchRemoveMeter(planStep, NODE_REF);
 
         Assert.assertTrue(removeMetersBatchInput.isBarrierAfter());
         Assert.assertEquals(2, removeMetersBatchInput.getBatchRemoveMeters().size());
-        Assert.assertEquals(1L, removeMetersBatchInput.getBatchRemoveMeters().get(0).getMeterId().getValue().longValue());
-        Assert.assertEquals(2L, removeMetersBatchInput.getBatchRemoveMeters().get(1).getMeterId().getValue().longValue());
+        Assert.assertEquals(1L,
+                removeMetersBatchInput.getBatchRemoveMeters().get(0).getMeterId().getValue().longValue());
+        Assert.assertEquals(2L,
+                removeMetersBatchInput.getBatchRemoveMeters().get(1).getMeterId().getValue().longValue());
     }
 
     @Test
@@ -115,12 +119,15 @@ public class FlatBatchMeterAdaptersTest {
                 createUpdateMeterBatch(1L),
                 createUpdateMeterBatch(2L)));
 
-        final UpdateMetersBatchInput updateMetersBatchInput = FlatBatchMeterAdapters.adaptFlatBatchUpdateMeter(planStep, NODE_REF);
+        final UpdateMetersBatchInput updateMetersBatchInput =
+                FlatBatchMeterAdapters.adaptFlatBatchUpdateMeter(planStep, NODE_REF);
 
         Assert.assertTrue(updateMetersBatchInput.isBarrierAfter());
         Assert.assertEquals(2, updateMetersBatchInput.getBatchUpdateMeters().size());
-        Assert.assertEquals(1L, updateMetersBatchInput.getBatchUpdateMeters().get(0).getUpdatedBatchedMeter().getMeterId().getValue().longValue());
-        Assert.assertEquals(2L, updateMetersBatchInput.getBatchUpdateMeters().get(1).getUpdatedBatchedMeter().getMeterId().getValue().longValue());
+        Assert.assertEquals(1L, updateMetersBatchInput.getBatchUpdateMeters().get(0)
+                .getUpdatedBatchedMeter().getMeterId().getValue().longValue());
+        Assert.assertEquals(2L, updateMetersBatchInput.getBatchUpdateMeters().get(1)
+                .getUpdatedBatchedMeter().getMeterId().getValue().longValue());
     }
 
     @Test
@@ -143,7 +150,8 @@ public class FlatBatchMeterAdaptersTest {
         Assert.assertEquals(2, rpcResult.getResult().getBatchFailure().size());
         Assert.assertEquals(3, rpcResult.getResult().getBatchFailure().get(0).getBatchOrder().intValue());
         Assert.assertEquals(4, rpcResult.getResult().getBatchFailure().get(1).getBatchOrder().intValue());
-        Assert.assertEquals(2L, ((FlatBatchFailureMeterIdCase) rpcResult.getResult().getBatchFailure().get(1).getBatchItemIdChoice()).getMeterId().getValue().longValue());
+        Assert.assertEquals(2L, ((FlatBatchFailureMeterIdCase) rpcResult.getResult().getBatchFailure().get(1)
+                .getBatchItemIdChoice()).getMeterId().getValue().longValue());
     }
 
     @Test
