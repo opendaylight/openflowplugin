@@ -14,9 +14,9 @@
                interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider"
                odl:type="openflow-switch-connection-provider-default-impl"/>
 
-    <reference id="ExtensionRegistratorProvider"
-               interface="org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider"
-               odl:type="openflow-plugin-provider-impl"/>
+
+    <service ref="extensionConverterManager" interface="org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterManager"/>
+    <service ref="converterManager" interface="org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterManager"/>
 
     <odl:rpc-service id="ExperimenterService"
                      interface="org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SalExperimenterMessageService"/>
@@ -25,7 +25,8 @@
           class="org.opendaylight.openflowplugin.extension.onf.OnfExtensionProvider"
           init-method="init">
         <argument ref="SwitchConnectionProvider"/>
-        <argument ref="ExtensionRegistratorProvider"/>
+        <argument ref="extensionConverterManager"/>
+        <argument ref="converterManager"/>
     </bean>
 
     <bean id="BundleService"

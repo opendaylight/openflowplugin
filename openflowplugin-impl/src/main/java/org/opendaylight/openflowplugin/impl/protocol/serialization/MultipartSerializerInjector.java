@@ -15,6 +15,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.multipart.MultipartRequestDescSerializer;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.multipart.MultipartRequestExperimenterSerializer;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.multipart.MultipartRequestFlowAggregateStatsSerializer;
@@ -56,7 +57,8 @@ class MultipartSerializerInjector {
      * Injects multipart serializers into provided {@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}
      * @param provider OpenflowJava serializer extension provider
      */
-    static void injectSerializers(final SerializerExtensionProvider provider) {
+    static void injectSerializers(final SerializerExtensionProvider provider,
+                                  final ExtensionConverterProvider extensionConverterProvider) {
         // Inject new message serializers here using injector created by createInjector method
         final Function<Class<? extends MultipartRequestBody>, Consumer<OFSerializer<MultipartRequestBody>>> injector =
             createInjector(provider, EncodeConstants.OF13_VERSION_ID);
@@ -77,7 +79,7 @@ class MultipartSerializerInjector {
         injector.apply(MultipartRequestQueueStats.class).accept(new MultipartRequestQueueStatsSerializer());
         injector.apply(MultipartRequestFlowStats.class).accept(new MultipartRequestFlowStatsSerializer());
         injector.apply(MultipartRequestFlowAggregateStats.class).accept(new MultipartRequestFlowAggregateStatsSerializer());
-        injector.apply(MultipartRequestExperimenter.class).accept(new MultipartRequestExperimenterSerializer());
+        injector.apply(MultipartRequestExperimenter.class).accept(new MultipartRequestExperimenterSerializer(extensionConverterProvider));
         injector.apply(MultipartRequestTableFeatures.class).accept(new MultipartRequestTableFeaturesSerializer());
     }
 

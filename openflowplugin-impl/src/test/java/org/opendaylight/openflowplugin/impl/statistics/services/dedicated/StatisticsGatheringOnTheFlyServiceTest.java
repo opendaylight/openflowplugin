@@ -15,8 +15,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
 import org.opendaylight.openflowplugin.impl.services.ServiceMocking;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterManager;
+import org.opendaylight.openflowplugin.protocol.converter.ConverterManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
@@ -33,8 +33,8 @@ public class StatisticsGatheringOnTheFlyServiceTest extends ServiceMocking {
 
     @Override
     protected void setup() {
-        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        statisticsGatheringService = new StatisticsGatheringOnTheFlyService<>(mockedRequestContextStack, mockedDeviceContext, convertorManager, MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext));
+        final ConverterManager converterManager = converterManagerFactory.createDefaultManager();
+        statisticsGatheringService = new StatisticsGatheringOnTheFlyService<>(mockedRequestContextStack, mockedDeviceContext, ConverterManager, MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext));
         Mockito.doReturn(NODE_ID).when(mockedPrimConnectionContext).getNodeId();
         Mockito.when(mockedDeviceInfo.getNodeId()).thenReturn(NODE_ID);
         Mockito.when(mockedDeviceContext.getDeviceInfo().getNodeId()).thenReturn(NODE_ID);

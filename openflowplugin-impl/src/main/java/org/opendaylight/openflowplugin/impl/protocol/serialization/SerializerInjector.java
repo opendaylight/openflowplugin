@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl.protocol.serialization;
 
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 
 /**
  * Util class for injecting new serializers into OpenflowJava
@@ -18,13 +19,15 @@ public class SerializerInjector {
     /**
      * Injects serializers into provided {@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}
      * @param provider OpenflowJava serializer extension provider
+     * @param extensionConverterProvider extension converter provider
      */
-    public static void injectSerializers(final SerializerExtensionProvider provider) {
+    public static void injectSerializers(final SerializerExtensionProvider provider,
+                                         final ExtensionConverterProvider extensionConverterProvider) {
         // Inject new serializers here
-        MatchSerializerInjector.injectSerializers(provider);
+        MatchSerializerInjector.injectSerializers(provider, extensionConverterProvider);
         ActionSerializerInjector.injectSerializers(provider);
         InstructionSerializerInjector.injectSerializers(provider);
-        MultipartSerializerInjector.injectSerializers(provider);
+        MultipartSerializerInjector.injectSerializers(provider, extensionConverterProvider);
         MessageSerializerInjector.injectSerializers(provider);
     }
 }

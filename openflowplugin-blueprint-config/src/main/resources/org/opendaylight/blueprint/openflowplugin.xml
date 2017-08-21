@@ -40,6 +40,8 @@
     </bean>
 
     <service ref="configurationService" interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService"/>
+    <service ref="extensionConverterManager" interface="org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterManager"/>
+    <service ref="converterManager" interface="org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterManager"/>
 
     <bean id="openflowPluginProvider"
           factory-ref="openflowPluginProviderFactory"
@@ -58,6 +60,8 @@
         </argument>
         <argument ref="clusterSingletonServiceProvider"/>
         <argument ref="mastershipChangeServiceManager"/>
+        <argument ref="converterManager"/>
+        <property name="extensionConverterManager" ref="extensionConverterManager"/>
     </bean>
 
     <service ref="openflowPluginProvider" odl:type="openflow-plugin-provider-impl">

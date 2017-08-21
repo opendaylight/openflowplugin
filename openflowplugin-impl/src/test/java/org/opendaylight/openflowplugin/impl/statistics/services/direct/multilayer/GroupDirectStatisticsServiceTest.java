@@ -42,7 +42,7 @@ public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
 
     @Override
     public void setUp() throws Exception {
-        service = new GroupDirectStatisticsService(requestContextStack, deviceContext, convertorManager, multipartWriterProvider);
+        service = new GroupDirectStatisticsService(requestContextStack, deviceContext, ConverterManager, multipartWriterProvider);
     }
 
     @Override

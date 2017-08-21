@@ -49,7 +49,7 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.Event
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.StatisticsGatherer;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
+import org.opendaylight.openflowplugin.protocol.converter.ConverterManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -494,7 +494,7 @@ public class StatisticsGatheringUtilsTest {
             type,
             deviceContext,
             deviceContext,
-            ConvertorManagerFactory.createDefaultManager(),
+            ConverterManagerFactory.createDefaultManager(),
             provider);
 
         Assert.assertTrue(gatherStatisticsResult.get(1, TimeUnit.SECONDS));

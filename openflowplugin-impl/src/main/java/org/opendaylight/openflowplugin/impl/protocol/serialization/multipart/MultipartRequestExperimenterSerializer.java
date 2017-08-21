@@ -18,50 +18,54 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ExperimenterSerializerKeyFactory;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
-import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.request.MultipartRequestBody;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.experimenter.core.message.ExperimenterMessageOfChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.multipart.request.multipart.request.body.MultipartRequestExperimenter;
 
 public class MultipartRequestExperimenterSerializer implements OFSerializer<MultipartRequestBody>, SerializerRegistryInjector {
-
+    private final ExtensionConverterProvider extensionConverterProvider;
     private SerializerRegistry registry;
+
+    public MultipartRequestExperimenterSerializer(final ExtensionConverterProvider extensionConverterProvider) {
+        this.extensionConverterProvider = extensionConverterProvider;
+    }
 
     @Override
     @SuppressWarnings("unchecked")
     public void serialize(final MultipartRequestBody multipartRequestBody, final ByteBuf byteBuf) {
         final MultipartRequestExperimenter multipartRequestExperimenter = MultipartRequestExperimenter
-            .class
-            .cast(multipartRequestBody);
+                .class
+                .cast(multipartRequestBody);
 
         try {
             final OFSerializer<ExperimenterMessageOfChoice> serializer = registry
-                .getSerializer(new MessageTypeKey<>(
-                    EncodeConstants.OF13_VERSION_ID,
-                    multipartRequestExperimenter.getExperimenterMessageOfChoice().getImplementedInterface()));
+                    .getSerializer(new MessageTypeKey<>(
+                            EncodeConstants.OF13_VERSION_ID,
+                            multipartRequestExperimenter.getExperimenterMessageOfChoice().getImplementedInterface()));
 
             serializer.serialize(multipartRequestExperimenter.getExperimenterMessageOfChoice(), byteBuf);
         } catch (ClassCastException | IllegalStateException ex) {
             Optional
-                .ofNullable(OFSessionUtil.getExtensionConvertorProvider().<ExperimenterMessageOfChoice, ExperimenterDataOfChoice>getMessageConverter(new TypeVersionKey<>(
-                    (Class<ExperimenterMessageOfChoice>)multipartRequestExperimenter.getExperimenterMessageOfChoice().getImplementedInterface(),
-                    OFConstants.OFP_VERSION_1_3)))
-                .ifPresent(converter -> {
-                    final OFSerializer<ExperimenterDataOfChoice> serializer = registry
-                        .getSerializer(ExperimenterSerializerKeyFactory
-                            .createMultipartRequestSerializerKey(
-                                EncodeConstants.OF13_VERSION_ID,
-                                converter.getExperimenterId().getValue(),
-                                converter.getType()));
+                    .ofNullable(extensionConverterProvider.<ExperimenterMessageOfChoice, ExperimenterDataOfChoice>getMessageConverter(new TypeVersionKey<>(
+                            (Class<ExperimenterMessageOfChoice>)multipartRequestExperimenter.getExperimenterMessageOfChoice().getImplementedInterface(),
+                            OFConstants.OFP_VERSION_1_3)))
+                    .ifPresent(converter -> {
+                        final OFSerializer<ExperimenterDataOfChoice> serializer = registry
+                                .getSerializer(ExperimenterSerializerKeyFactory
+                                        .createMultipartRequestSerializerKey(
+                                                EncodeConstants.OF13_VERSION_ID,
+                                                converter.getExperimenterId().getValue(),
+                                                converter.getType()));
 
-                    try {
-                        serializer.serialize(converter.convert(multipartRequestExperimenter.getExperimenterMessageOfChoice()), byteBuf);
-                    } catch (ConversionException e) {
-                        throw new IllegalStateException(e);
-                    }
-                });
+                        try {
+                            serializer.serialize(converter.convert(multipartRequestExperimenter.getExperimenterMessageOfChoice()), byteBuf);
+                        } catch (ConversionException e) {
+                            throw new IllegalStateException(e);
+                        }
+                    });
         }
     }
 

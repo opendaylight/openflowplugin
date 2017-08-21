@@ -11,7 +11,7 @@ package org.opendaylight.openflowplugin.impl.datastore.multipart;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
-import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
+import org.opendaylight.openflowplugin.common.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;

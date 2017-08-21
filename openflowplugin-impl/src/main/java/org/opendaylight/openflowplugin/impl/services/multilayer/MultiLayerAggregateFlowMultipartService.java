@@ -22,12 +22,13 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.services.AbstractAggregateFlowMultipartService;
 import org.opendaylight.openflowplugin.impl.services.util.RequestInputUtils;
 import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
+import org.opendaylight.openflowplugin.protocol.converter.match.MatchReactor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutputBuilder;
@@ -45,15 +46,18 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 public class MultiLayerAggregateFlowMultipartService extends AbstractAggregateFlowMultipartService<MultipartReply> {
 
     private final TranslatorLibrary translatorLibrary;
-    private final ConvertorExecutor convertorExecutor;
+    private final ExtensionConverterProvider extensionConverterProvider;
+    private final ConverterExecutor converterExecutor;
 
     public MultiLayerAggregateFlowMultipartService(final RequestContextStack requestContextStack,
                                                    final DeviceContext deviceContext,
-                                                   final ConvertorExecutor convertorExecutor,
-                                                   final TranslatorLibrary translatorLibrary) {
+                                                   final ConverterExecutor converterExecutor,
+                                                   final TranslatorLibrary translatorLibrary,
+                                                   final ExtensionConverterProvider extensionConverterProvider) {
         super(requestContextStack, deviceContext);
-        this.convertorExecutor = convertorExecutor;
+        this.converterExecutor = converterExecutor;
         this.translatorLibrary = translatorLibrary;
+        this.extensionConverterProvider = extensionConverterProvider;
     }
 
 
@@ -88,7 +92,7 @@ public class MultiLayerAggregateFlowMultipartService extends AbstractAggregateFl
             mprAggregateRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
         }
 
-        MatchReactor.getInstance().convert(input.getMatch(), version, mprAggregateRequestBuilder, convertorExecutor);
+        MatchReactor.getInstance().convert(input.getMatch(), version, mprAggregateRequestBuilder, converterExecutor, extensionConverterProvider);
 
         FlowCreatorUtil.setWildcardedFlowMatch(version, mprAggregateRequestBuilder);
 

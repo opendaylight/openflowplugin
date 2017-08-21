@@ -42,7 +42,7 @@ public class MeterDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
 
     @Override
     public void setUp() throws Exception {
-        service = new MeterDirectStatisticsService(requestContextStack, deviceContext, convertorManager, multipartWriterProvider);
+        service = new MeterDirectStatisticsService(requestContextStack, deviceContext, ConverterManager, multipartWriterProvider);
     }
 
     @Override

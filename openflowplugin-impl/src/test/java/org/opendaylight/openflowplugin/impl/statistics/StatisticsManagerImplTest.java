@@ -51,8 +51,8 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleLi
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterManager;
+import org.opendaylight.openflowplugin.protocol.converter.ConverterManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -154,7 +154,7 @@ public class StatisticsManagerImplTest {
                 Matchers.eq(StatisticsManagerControlService.class),
                 Matchers.<StatisticsManagerControlService>any())).thenReturn(serviceControlRegistration);
 
-        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
+        final ConverterManager converterManager = converterManagerFactory.createDefaultManager();
         final long basicTimerDelay = 3000L;
         final long maximumTimerDelay = 900000L;
 
@@ -164,7 +164,7 @@ public class StatisticsManagerImplTest {
                         .setMaximumTimerDelay(new NonZeroUint32Type(maximumTimerDelay))
                         .setIsStatisticsPollingOn(false)
                         .build(), rpcProviderRegistry, new HashedWheelTimer(),
-                convertorManager);
+                ConverterManager);
         statisticsManager.setReconciliationFrameworkRegistrar(reconciliationFrameworkRegistrar);
     }
 

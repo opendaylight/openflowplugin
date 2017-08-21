@@ -15,6 +15,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExte
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart.MultipartReplyDescDeserializer;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart.MultipartReplyExperimenterDeserializer;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart.MultipartReplyFlowAggregateStatsDeserializer;
@@ -39,7 +40,8 @@ class MultipartDeserializerInjector {
      * Injects message deserializers into provided {@link org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider}
      * @param provider OpenflowJava deserializer extension provider
      */
-    static void injectDeserializers(final DeserializerExtensionProvider provider) {
+    static void injectDeserializers(final DeserializerExtensionProvider provider,
+                                    final ExtensionConverterProvider extensionConverterProvider) {
         final short version = EncodeConstants.OF13_VERSION_ID;
 
         // Inject new multipart body deserializers here using injector created by createInjector method
@@ -59,7 +61,7 @@ class MultipartDeserializerInjector {
         injector.apply(MultipartType.OFPMPMETERFEATURES.getIntValue()).accept(new MultipartReplyMeterFeaturesDeserializer());
         injector.apply(MultipartType.OFPMPTABLEFEATURES.getIntValue()).accept(new MultipartReplyTableFeaturesDeserializer());
         injector.apply(MultipartType.OFPMPPORTDESC.getIntValue()).accept(new MultipartReplyPortDescDeserializer());
-        injector.apply(MultipartType.OFPMPEXPERIMENTER.getIntValue()).accept(new MultipartReplyExperimenterDeserializer());
+        injector.apply(MultipartType.OFPMPEXPERIMENTER.getIntValue()).accept(new MultipartReplyExperimenterDeserializer(extensionConverterProvider));
     }
 
     /**
