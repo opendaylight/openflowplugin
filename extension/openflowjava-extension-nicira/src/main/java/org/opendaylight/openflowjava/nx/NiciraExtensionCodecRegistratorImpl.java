@@ -5,17 +5,17 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowjava.nx.api.impl;
+package org.opendaylight.openflowjava.nx;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import com.google.common.annotations.VisibleForTesting;
 import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraActionSerializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraExtensionCodecRegistrator;
 import org.opendaylight.openflowjava.nx.api.NiciraUtil;
+import org.opendaylight.openflowjava.nx.codec.action.ActionDeserializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFGeneralDeserializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFGeneralSerializer;
@@ -105,7 +105,7 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
         actionDeserializers.remove(key);
     }
 
-    static OFDeserializer<Action> getActionDeserializer(NiciraActionDeserializerKey key) {
+    public static OFDeserializer<Action> getActionDeserializer(NiciraActionDeserializerKey key) {
         return actionDeserializers.get(key);
     }
 
