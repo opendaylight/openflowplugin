@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package test.mock.util;
+package org.opendaylight.openflowplugin.applications.frm.impl.util;
 
 import java.util.ArrayList;
 import java.util.List;

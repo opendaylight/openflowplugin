@@ -41,7 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Listens to operational changes and starts reconciliation through {@link SyncReactor} when necessary.
+ * Listens to operational changes and starts tasks through {@link SyncReactor} when necessary.
  */
 public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node> {
 
@@ -71,7 +71,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
     }
 
     /**
-     * Update cache, register for device mastership when device connected and start reconciliation if device
+     * Update cache, register for device mastership when device connected and start tasks if device
      * is registered and actual modification is consistent.Skip the event otherwise.
      */
     protected Optional<ListenableFuture<Boolean>> processNodeModification(
@@ -157,14 +157,14 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
                                                             fcOperationalNode, dsType());
             return Optional.of(reactor.syncup(nodePath, syncupEntry));
         } else {
-            LOG.debug("Config not present for reconciliation: {}", nodeId.getValue());
+            LOG.debug("Config not present for tasks: {}", nodeId.getValue());
             reconciliationRegistry.unregisterIfRegistered(nodeId);
             return skipModification(modification);
         }
     }
 
     /**
-     * Check if modification is consistent for reconciliation. We need fresh data, which means that current statistics
+     * Check if modification is consistent for tasks. We need fresh data, which means that current statistics
      * were collected after registration for reconcile and whole bunch of statistics was collected successfully.
      * @param modification from DS
      * @return status of modification

@@ -9,7 +9,7 @@
 package org.opendaylight.openflowplugin.applications.reconciliation;
 
 /*
- * Interface to be returned after services registers itself with reconciliation framework
+ * Interface to be returned after services registers itself with tasks framework
  * Services call close() on NotificationRegistration for unregister
  */
 public interface NotificationRegistration extends AutoCloseable {

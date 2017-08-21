@@ -41,11 +41,11 @@ public interface OwnershipChangeListener extends ReconciliationFrameworkRegistra
     /**
      * Should be called when device is being mastered as in {@link #becomeMaster(DeviceInfo)}.
      * <p> But before: Initial DS submit</p>
-     * <b>This is special call designed only for reconciliation framework.</b>
+     * <b>This is special call designed only for tasks framework.</b>
      * @see #becomeMaster(DeviceInfo)
      * @see #isReconciliationFrameworkRegistered()
      * @param deviceInfo connected switch identification
-     * @return future to be able handle device after reconciliation
+     * @return future to be able handle device after tasks
      */
     ListenableFuture<ResultState> becomeMasterBeforeSubmittedDS(@Nonnull DeviceInfo deviceInfo);
 

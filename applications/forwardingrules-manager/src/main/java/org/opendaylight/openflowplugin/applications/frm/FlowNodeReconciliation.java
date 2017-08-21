@@ -11,9 +11,9 @@ package org.opendaylight.openflowplugin.applications.frm;
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationNotificationListener;
 
 /**
- * Implementation provider of this interface will implement reconciliation functionality for a newly connected node.
- * Implementation is not enforced to do reconciliation in any specific way, but the higher level intention is to
- * provide best effort reconciliation of  all the configuration (flow/meter/group) present in configuration data store
+ * Implementation provider of this interface will implement tasks functionality for a newly connected node.
+ * Implementation is not enforced to do tasks in any specific way, but the higher level intention is to
+ * provide best effort tasks of  all the configuration (flow/meter/group) present in configuration data store
  * for the given node.
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>

@@ -14,7 +14,7 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.OwnershipChangeLis
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
 
 /**
- * Service provide one event designed for reconciliation framework.
+ * Service provide one event designed for tasks framework.
  * <ul>
  *     <li><i>{@link #onDeviceDisconnected(DeviceInfo)}</i>
  *     is called when device is being mastered by controller but not yet submitted into data store.
@@ -23,7 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
  *     <li><i>{@link #onDevicePrepared(DeviceInfo)}</i>
  *     is called when device is disconnected or controller loses control of the switch</li>
  * </ul>
- * <b>This event <i>onDevicePrepared</i> should be used only for reconciliation framework
+ * <b>This event <i>onDevicePrepared</i> should be used only for tasks framework
  * and application can't do anything with node before the device is not stored in to data store.</b>
  * @since 0.5.0 Nitrogen
  */
@@ -41,7 +41,7 @@ public interface ReconciliationFrameworkEvent extends AutoCloseable {
     /**
      * This event occurs after device is disconnected or being slaved.
      * Event is similar to the {@link MastershipChangeService#onLoseOwnership(DeviceInfo)}. This event is used by
-     * reconciliation framework that the framework don't need to register {@link MastershipChangeService}
+     * tasks framework that the framework don't need to register {@link MastershipChangeService}
      * @param deviceInfo connected switch identification
      * @return future
      * @see MastershipChangeService
