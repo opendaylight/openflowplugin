@@ -21,17 +21,23 @@ public final class SimpleRequestCallback<T extends DataObject> extends AbstractR
     private static final Logger LOG = LoggerFactory.getLogger(SimpleRequestCallback.class);
     private final Class<T> clazz;
 
-    private SimpleRequestCallback(final RequestContext<T> context, final Class<?> requestType, final MessageSpy spy, final Class<T> clazz) {
+    private SimpleRequestCallback(final RequestContext<T> context,
+                                  final Class<?> requestType,
+                                  final MessageSpy spy,
+                                  final Class<T> clazz) {
         super(context, requestType, spy, null);
         this.clazz = Preconditions.checkNotNull(clazz);
     }
 
-    public static <T extends DataObject> FutureCallback<OfHeader> create(final RequestContext<T> context, final Class<?> requestType, final MessageSpy spy, final Class<T> clazz) {
+    public static <T extends DataObject> FutureCallback<OfHeader> create(final RequestContext<T> context,
+                                                                         final Class<?> requestType,
+                                                                         final MessageSpy spy,
+                                                                         final Class<T> clazz) {
         return new SimpleRequestCallback<>(context, requestType, spy, clazz);
     }
 
     @Override
-    public final void onSuccess(final OfHeader result) {
+    public void onSuccess(OfHeader result) {
         spyMessage(MessageSpy.StatisticsGroup.TO_SWITCH_SUBMIT_SUCCESS);
 
         if (result == null) {

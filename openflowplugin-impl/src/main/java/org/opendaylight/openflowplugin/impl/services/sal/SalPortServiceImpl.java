@@ -27,12 +27,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.Upda
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
-public final class SalPortServiceImpl extends AbstractSimpleService<UpdatePortInput, UpdatePortOutput> implements SalPortService {
+public final class SalPortServiceImpl
+        extends AbstractSimpleService<UpdatePortInput, UpdatePortOutput> implements SalPortService {
     private final ConvertorExecutor convertorExecutor;
     private final VersionConvertorData data;
     private final SingleLayerPortService<UpdatePortOutput> portMessage;
 
-    public SalPortServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConvertorExecutor convertorExecutor) {
+    public SalPortServiceImpl(final RequestContextStack requestContextStack,
+                              final DeviceContext deviceContext,
+                              final ConvertorExecutor convertorExecutor) {
         super(requestContextStack, deviceContext, UpdatePortOutput.class);
         this.convertorExecutor = convertorExecutor;
         data = new VersionConvertorData(getVersion());

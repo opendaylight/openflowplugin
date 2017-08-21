@@ -40,26 +40,28 @@ public final class SalEchoServiceImpl implements SalEchoService {
         return transform(echoService.handleServiceCall(echoInputBld));
     }
 
-    private Future<RpcResult<SendEchoOutput>> transform(final ListenableFuture<RpcResult<EchoOutput>> rpcResultListenableFuture) {
-        return Futures.transform(rpcResultListenableFuture, new Function<RpcResult<EchoOutput>, RpcResult<SendEchoOutput>>() {
-            @Nullable
-            @Override
-            public RpcResult<SendEchoOutput> apply(@Nullable final RpcResult<EchoOutput> input) {
-                Preconditions.checkNotNull(input, "echoOutput value is never expected to be NULL");
-                final RpcResult<SendEchoOutput> rpcOutput;
-                if (input.isSuccessful()) {
-                    final SendEchoOutput sendEchoOutput = new SendEchoOutputBuilder()
-                            .setData(input.getResult().getData())
-                            .build();
-                    rpcOutput = RpcResultBuilder.success(sendEchoOutput).build();
-                } else {
-                    rpcOutput = RpcResultBuilder.<SendEchoOutput>failed()
-                            .withRpcErrors(input.getErrors())
-                            .build();
+    private Future<RpcResult<SendEchoOutput>>
+            transform(final ListenableFuture<RpcResult<EchoOutput>> rpcResultListenableFuture) {
+        return Futures.transform(rpcResultListenableFuture,
+                                 new Function<RpcResult<EchoOutput>,
+                                 RpcResult<SendEchoOutput>>() {
+                @Nullable
+                @Override
+                public RpcResult<SendEchoOutput> apply(@Nullable final RpcResult<EchoOutput> input) {
+                    Preconditions.checkNotNull(input, "echoOutput value is never expected to be NULL");
+                    final RpcResult<SendEchoOutput> rpcOutput;
+                    if (input.isSuccessful()) {
+                        final SendEchoOutput sendEchoOutput = new SendEchoOutputBuilder()
+                                .setData(input.getResult().getData())
+                                .build();
+                        rpcOutput = RpcResultBuilder.success(sendEchoOutput).build();
+                    } else {
+                        rpcOutput = RpcResultBuilder.<SendEchoOutput>failed()
+                                .withRpcErrors(input.getErrors())
+                                .build();
+                    }
+                    return rpcOutput;
                 }
-                return rpcOutput;
-            }
-        });
+            });
     }
-
 }

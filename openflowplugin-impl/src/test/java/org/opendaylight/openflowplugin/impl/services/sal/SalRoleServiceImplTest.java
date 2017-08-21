@@ -20,7 +20,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -49,9 +48,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
-/**
- * Created by kramesha on 8/27/15.
- */
 public class SalRoleServiceImplTest {
 
     @Mock
@@ -59,9 +55,6 @@ public class SalRoleServiceImplTest {
 
     @Mock
     private DeviceContext mockDeviceContext;
-
-    @Mock
-    private ConnectionAdapter mockConnectionAdapter;
 
     @Mock
     private FeaturesReply mockFeaturesReply;
@@ -93,10 +86,10 @@ public class SalRoleServiceImplTest {
 
     private static long testXid = 100L;
 
-    private static final String ROLEREQUESTFAILED =
-            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ErrorType.ROLEREQUESTFAILED.name();
+    private static final String ROLEREQUESTFAILED = org.opendaylight.yang.gen.v1.urn
+            .opendaylight.openflow.common.types.rev130731.ErrorType.ROLEREQUESTFAILED.name();
 
-    private static final String ROLES_UNSUPPORTED = "Device reported error type "+ ROLEREQUESTFAILED +" code UNSUP";
+    private static final String ROLES_UNSUPPORTED = "Device reported error type " + ROLEREQUESTFAILED + " code UNSUP";
 
     private NodeRef nodeRef;
 
@@ -116,7 +109,8 @@ public class SalRoleServiceImplTest {
         Mockito.when(mockRequestContextStack.<RoleRequestOutput>createRequestContext()).thenReturn(mockRequestContext);
         Mockito.when(mockRequestContext.getXid()).thenReturn(new Xid(testXid));
         Mockito.when(mockConnectionContext.getOutboundQueueProvider()).thenReturn(mockOutboundQueue);
-        Mockito.when(mockDeviceContext.getPrimaryConnectionContext().getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
+        Mockito.when(mockDeviceContext.getPrimaryConnectionContext().getConnectionState())
+                .thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
 
         NodeKey key = new NodeKey(testNodeId);
         InstanceIdentifier<Node> path = InstanceIdentifier.<Nodes>builder(Nodes.class)

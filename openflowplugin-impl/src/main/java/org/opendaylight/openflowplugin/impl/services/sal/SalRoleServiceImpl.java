@@ -31,7 +31,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput, SetRoleOutput> implements SalRoleService  {
+public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput, SetRoleOutput>
+                                      implements SalRoleService  {
+
     private static final Logger LOG = LoggerFactory.getLogger(SalRoleServiceImpl.class);
     private static final BigInteger MAX_GENERATION_ID = new BigInteger("ffffffffffffffff", 16);
 

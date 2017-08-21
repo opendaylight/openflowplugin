@@ -27,8 +27,8 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowDescriptorFactory;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
-import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerFlowService;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerFlowService;
+import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerFlowService;
 import org.opendaylight.openflowplugin.impl.util.ErrorUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
@@ -70,14 +70,25 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
     private final DeviceContext deviceContext;
     private ItemLifecycleListener itemLifecycleListener;
 
-    public SalFlowServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConvertorExecutor convertorExecutor) {
+    public SalFlowServiceImpl(final RequestContextStack requestContextStack,
+                              final DeviceContext deviceContext,
+                              final ConvertorExecutor convertorExecutor) {
         this.deviceContext = deviceContext;
-        flowRemove = new MultiLayerFlowService<>(requestContextStack, deviceContext, RemoveFlowOutput.class, convertorExecutor);
-        flowAdd = new MultiLayerFlowService<>(requestContextStack, deviceContext, AddFlowOutput.class, convertorExecutor);
-        flowUpdate = new MultiLayerFlowService<>(requestContextStack, deviceContext, UpdateFlowOutput.class, convertorExecutor);
+        flowRemove = new MultiLayerFlowService<>(requestContextStack,
+                                                 deviceContext,
+                                                 RemoveFlowOutput.class,
+                                                 convertorExecutor);
+        flowAdd = new MultiLayerFlowService<>(requestContextStack,
+                                              deviceContext,
+                                              AddFlowOutput.class,
+                                              convertorExecutor);
+        flowUpdate = new MultiLayerFlowService<>(requestContextStack,
+                                                 deviceContext,
+                                                 UpdateFlowOutput.class,
+                                                 convertorExecutor);
         flowAddMessage = new SingleLayerFlowService<>(requestContextStack, deviceContext, AddFlowOutput.class);
         flowUpdateMessage = new SingleLayerFlowService<>(requestContextStack, deviceContext, UpdateFlowOutput.class);
-        flowRemoveMessage= new SingleLayerFlowService<>(requestContextStack, deviceContext, RemoveFlowOutput.class);
+        flowRemoveMessage = new SingleLayerFlowService<>(requestContextStack, deviceContext, RemoveFlowOutput.class);
     }
 
     @Override
@@ -87,7 +98,8 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
 
     @Override
     public Future<RpcResult<AddFlowOutput>> addFlow(final AddFlowInput input) {
-        final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), input);
+        final FlowRegistryKey flowRegistryKey =
+                FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), input);
         final ListenableFuture<RpcResult<AddFlowOutput>> future;
 
         if (flowAddMessage.canUseSingleLayerSerialization()) {
@@ -131,9 +143,9 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
             if (!FlowCreatorUtil.canModifyFlow(original, updated, flowUpdateMessage.getVersion())) {
                 final SettableFuture<RpcResult<UpdateFlowOutput>> objectSettableFuture = SettableFuture.create();
 
-                final ListenableFuture<List<RpcResult<UpdateFlowOutput>>> listListenableFuture = Futures.successfulAsList(
-                        flowUpdateMessage.handleServiceCall(input.getOriginalFlow()),
-                        flowUpdateMessage.handleServiceCall(input.getUpdatedFlow()));
+                final ListenableFuture<List<RpcResult<UpdateFlowOutput>>> listListenableFuture =
+                        Futures.successfulAsList(flowUpdateMessage.handleServiceCall(input.getOriginalFlow()),
+                                                 flowUpdateMessage.handleServiceCall(input.getUpdatedFlow()));
 
                 Futures.addCallback(listListenableFuture, new FutureCallback<List<RpcResult<UpdateFlowOutput>>>() {
                     @Override
@@ -160,7 +172,7 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
                     }
 
                     @Override
-                    public void onFailure(final Throwable t) {
+                    public void onFailure(final Throwable throwable) {
                         RpcResultBuilder<UpdateFlowOutput> rpcResultBuilder = RpcResultBuilder.failed();
                         objectSettableFuture.set(rpcResultBuilder.build());
                     }
@@ -195,8 +207,9 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
     }
 
     @VisibleForTesting
-    private static KeyedInstanceIdentifier<Flow, FlowKey> createFlowPath(FlowDescriptor flowDescriptor,
-                                                                         KeyedInstanceIdentifier<Node, NodeKey> nodePath) {
+    private static KeyedInstanceIdentifier<Flow, FlowKey> createFlowPath(
+                                                                    FlowDescriptor flowDescriptor,
+                                                                    KeyedInstanceIdentifier<Node, NodeKey> nodePath) {
         return nodePath.augmentation(FlowCapableNode.class)
                 .child(Table.class, flowDescriptor.getTableKey())
                 .child(Flow.class, new FlowKey(flowDescriptor.getFlowId()));
@@ -263,11 +276,13 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Flow remove finished without error for flow={}", input);
                 }
-                FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), input);
+                FlowRegistryKey flowRegistryKey =
+                        FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), input);
                 deviceContext.getDeviceFlowRegistry().addMark(flowRegistryKey);
 
                 if (itemLifecycleListener != null) {
-                    final FlowDescriptor flowDescriptor = deviceContext.getDeviceFlowRegistry().retrieveDescriptor(flowRegistryKey);
+                    final FlowDescriptor flowDescriptor =
+                            deviceContext.getDeviceFlowRegistry().retrieveDescriptor(flowRegistryKey);
 
                     if (flowDescriptor != null) {
                         KeyedInstanceIdentifier<Flow, FlowKey> flowPath = createFlowPath(flowDescriptor,
@@ -297,20 +312,24 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
         }
 
         @Override
-        public void onSuccess(final RpcResult<UpdateFlowOutput> o) {
+        public void onSuccess(final RpcResult<UpdateFlowOutput> updateFlowOutputRpcResult) {
             final DeviceFlowRegistry deviceFlowRegistry = deviceContext.getDeviceFlowRegistry();
 
             final UpdatedFlow updated = input.getUpdatedFlow();
             final OriginalFlow original = input.getOriginalFlow();
-            final FlowRegistryKey origFlowRegistryKey = FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), original);
-            final FlowRegistryKey updatedFlowRegistryKey = FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), updated);
+            final FlowRegistryKey origFlowRegistryKey =
+                    FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), original);
+            final FlowRegistryKey updatedFlowRegistryKey =
+                    FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), updated);
             final FlowDescriptor origFlowDescriptor = deviceFlowRegistry.retrieveDescriptor(origFlowRegistryKey);
 
             final boolean isUpdate = Objects.nonNull(origFlowDescriptor);
             final FlowDescriptor updatedFlowDescriptor;
 
             if (Objects.nonNull(input.getFlowRef())) {
-                updatedFlowDescriptor = FlowDescriptorFactory.create(updated.getTableId(), input.getFlowRef().getValue().firstKeyOf(Flow.class).getId());
+                updatedFlowDescriptor =
+                        FlowDescriptorFactory.create(updated.getTableId(),
+                                                     input.getFlowRef().getValue().firstKeyOf(Flow.class).getId());
             } else {
                 if (isUpdate) {
                     updatedFlowDescriptor = origFlowDescriptor;

@@ -12,7 +12,6 @@ import static org.mockito.Mockito.when;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.SettableFuture;
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -25,7 +24,6 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
 import org.opendaylight.openflowplugin.impl.services.ServiceMocking;
@@ -48,10 +46,6 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 public class SalTableServiceImplTest extends ServiceMocking {
-
-    private static final BigInteger DUMMY_DATAPATH_ID = new BigInteger("444");
-    private static final Short DUMMY_VERSION = OFConstants.OFP_VERSION_1_3;
-    private static final int DUMMY_MAX_REQUEST = 88;
 
     @Mock
     RpcProviderRegistry mockedRpcProviderRegistry;
@@ -84,7 +78,8 @@ public class SalTableServiceImplTest extends ServiceMocking {
         Mockito.doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
-                final RpcResult<List<MultipartReply>> rpcResult = RpcResultBuilder.<List<MultipartReply>>failed().build();
+                final RpcResult<List<MultipartReply>> rpcResult =
+                        RpcResultBuilder.<List<MultipartReply>>failed().build();
                 handleResultFuture.set(rpcResult);
                 return null;
             }
@@ -100,7 +95,8 @@ public class SalTableServiceImplTest extends ServiceMocking {
         Mockito.doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
-                final RpcResult<List<MultipartReply>> rpcResult = RpcResultBuilder.success(Collections.<MultipartReply>emptyList())
+                final RpcResult<List<MultipartReply>> rpcResult =
+                        RpcResultBuilder.success(Collections.<MultipartReply>emptyList())
                         .build();
                 handleResultFuture.set(rpcResult);
                 return null;

@@ -22,7 +22,6 @@ import com.google.common.util.concurrent.Futures;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,7 +37,6 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
-import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
@@ -91,8 +89,6 @@ public class MultipartRequestOnTheFlyCallbackTest {
     @Mock
     private DeviceContext mockedDeviceContext;
     @Mock
-    private RequestContext<List<MultipartReply>> mockedRequestContext;
-    @Mock
     private ConnectionContext mockedPrimaryConnection;
     @Mock
     private NodeId mockedNodeId;
@@ -138,13 +134,16 @@ public class MultipartRequestOnTheFlyCallbackTest {
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
         when(mockedDeviceContext.getDeviceFlowRegistry()).thenReturn(mockedFlowRegistry);
-        when(mockedFlowRegistry.retrieveDescriptor(Matchers.any(FlowRegistryKey.class))).thenReturn(mockedFlowDescriptor);
+        when(mockedFlowRegistry.retrieveDescriptor(Matchers.any(FlowRegistryKey.class)))
+                .thenReturn(mockedFlowDescriptor);
 
-        final InstanceIdentifier<FlowCapableNode> nodePath = mockedDeviceInfo.getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
+        final InstanceIdentifier<FlowCapableNode> nodePath =
+                mockedDeviceInfo.getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
         final FlowCapableNodeBuilder flowNodeBuilder = new FlowCapableNodeBuilder();
-        flowNodeBuilder.setTable(Collections.<Table> emptyList());
+        flowNodeBuilder.setTable(Collections.<Table>emptyList());
         final Optional<FlowCapableNode> flowNodeOpt = Optional.of(flowNodeBuilder.build());
-        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> flowNodeFuture = Futures.immediateCheckedFuture(flowNodeOpt);
+        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> flowNodeFuture =
+                Futures.immediateCheckedFuture(flowNodeOpt);
         when(mockedReadOnlyTx.read(LogicalDatastoreType.OPERATIONAL, nodePath)).thenReturn(flowNodeFuture);
         when(mockedDeviceContext.getReadTransaction()).thenReturn(mockedReadOnlyTx);
 
@@ -170,7 +169,8 @@ public class MultipartRequestOnTheFlyCallbackTest {
     @Test
     public void testOnSuccessWithNull() throws Exception {
         multipartRequestOnTheFlyCallback.onSuccess(null);
-        final RpcResult<List<MultipartReply>> expectedRpcResult = RpcResultBuilder.success(Collections.<MultipartReply>emptyList()).build();
+        final RpcResult<List<MultipartReply>> expectedRpcResult =
+                RpcResultBuilder.success(Collections.<MultipartReply>emptyList()).build();
         final RpcResult<List<MultipartReply>> actualResult = dummyRequestContext.getFuture().get();
         assertEquals(expectedRpcResult.getErrors(), actualResult.getErrors());
         assertEquals(expectedRpcResult.getResult(), actualResult.getResult());
@@ -190,21 +190,21 @@ public class MultipartRequestOnTheFlyCallbackTest {
         assertEquals(1, actualResult.getErrors().size());
 
         final RpcError actualError = actualResult.getErrors().iterator().next();
-        assertEquals(actualError.getMessage(), String.format("Unexpected response type received: %s.", mockedHelloMessage.getClass()));
+        assertEquals(actualError.getMessage(),
+                     String.format("Unexpected response type received: %s.",
+                     mockedHelloMessage.getClass()));
         assertEquals(actualError.getErrorType(),RpcError.ErrorType.APPLICATION);
         assertEquals(expectedRpcResult.getResult(), actualResult.getResult());
         assertEquals(expectedRpcResult.isSuccessful(), actualResult.isSuccessful());
 
-        Mockito.verify(mockedDeviceContext, Mockito.never()).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL),
+        Mockito.verify(mockedDeviceContext, Mockito.never())
+                .writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL),
                 Matchers.<InstanceIdentifier>any(), Matchers.<DataObject>any());
         Mockito.verify(mockedDeviceContext).submitTransaction();
     }
 
     /**
-     * not the last reply
-     *
-     * @throws ExecutionException
-     * @throws InterruptedException
+     * Not the last reply.
      */
     @Test
     public void testOnSuccessWithValidMultipart1() throws Exception {
@@ -251,10 +251,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
     }
 
     /**
-     * the last reply
-     *
-     * @throws ExecutionException
-     * @throws InterruptedException
+     * The last reply.
      */
     @Test
     public void testOnSuccessWithValidMultipart2() throws Exception {
@@ -270,7 +267,8 @@ public class MultipartRequestOnTheFlyCallbackTest {
         assertNotNull(actualResult.getErrors());
         assertFalse(actualResult.getErrors().isEmpty());
         Mockito.verify(mockedFlowRegistry, Mockito.never()).store(Matchers.any());
-        Mockito.verify(mockedDeviceContext, Mockito.never()).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL),
+        Mockito.verify(mockedDeviceContext, Mockito.never())
+                .writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL),
                 Matchers.<InstanceIdentifier>any(), Matchers.<DataObject>any());
     }
 }
