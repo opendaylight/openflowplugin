@@ -21,7 +21,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInputBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
-public final class NodeConfigServiceImpl extends AbstractSimpleService<SetConfigInput, SetConfigOutput> implements NodeConfigService {
+public final class NodeConfigServiceImpl extends AbstractSimpleService<SetConfigInput, SetConfigOutput>
+                                         implements NodeConfigService {
     public NodeConfigServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
         super(requestContextStack, deviceContext, SetConfigOutput.class);
     }

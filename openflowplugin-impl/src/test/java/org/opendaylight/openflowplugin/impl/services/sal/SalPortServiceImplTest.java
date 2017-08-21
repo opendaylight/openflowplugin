@@ -55,11 +55,14 @@ public class SalPortServiceImplTest extends ServiceMocking {
         final OfHeader ofHeader = salPortService.buildRequest(new Xid(DUMMY_XID), dummyUpdatePortInput());
     }
 
-    private UpdatePortInput dummyUpdatePortInput(){
-        org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.PortBuilder concretePortBuilder
-                = new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.PortBuilder();
+    private UpdatePortInput dummyUpdatePortInput() {
+        org.opendaylight.yang.gen.v1.urn
+                .opendaylight.flow.types.port.rev130925.port.mod.port.PortBuilder concretePortBuilder
+                = new org.opendaylight.yang.gen.v1.urn
+                .opendaylight.flow.types.port.rev130925.port.mod.port.PortBuilder();
         concretePortBuilder.setConfiguration(new PortConfig(true, true, true, true));
-        concretePortBuilder.setAdvertisedFeatures(new PortFeatures(true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true));
+        concretePortBuilder.setAdvertisedFeatures(new PortFeatures(true, true, true, true, true, true, true, true,
+                true, true, true, true, true, true, true, true));
         concretePortBuilder.setPortNumber(new PortNumberUni(DUMMY_PORT_NUMBER));
         concretePortBuilder.setHardwareAddress(new MacAddress(DUMMY_MAC_ADDRESS));
 

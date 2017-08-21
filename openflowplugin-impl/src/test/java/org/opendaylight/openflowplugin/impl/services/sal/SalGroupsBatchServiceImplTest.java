@@ -23,7 +23,6 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.openflowplugin.impl.services.sal.SalGroupsBatchServiceImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
@@ -72,7 +71,8 @@ public class SalGroupsBatchServiceImplTest {
 
     public static final NodeId NODE_ID = new NodeId("ut-dummy-node");
     public static final NodeKey NODE_KEY = new NodeKey(NODE_ID);
-    public static final NodeRef NODE_REF = new NodeRef(InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY));
+    public static final NodeRef NODE_REF =
+            new NodeRef(InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY));
 
     @Mock
     private SalGroupService salGroupService;
@@ -151,8 +151,10 @@ public class SalGroupsBatchServiceImplTest {
         Assert.assertTrue(resultFuture.isDone());
         Assert.assertFalse(resultFuture.get().isSuccessful());
         Assert.assertEquals(2, resultFuture.get().getResult().getBatchFailedGroupsOutput().size());
-        Assert.assertEquals(43L, resultFuture.get().getResult().getBatchFailedGroupsOutput().get(0).getGroupId().getValue().longValue());
-        Assert.assertEquals(45L, resultFuture.get().getResult().getBatchFailedGroupsOutput().get(1).getGroupId().getValue().longValue());
+        Assert.assertEquals(43L,
+                resultFuture.get().getResult().getBatchFailedGroupsOutput().get(0).getGroupId().getValue().longValue());
+        Assert.assertEquals(45L,
+                resultFuture.get().getResult().getBatchFailedGroupsOutput().get(1).getGroupId().getValue().longValue());
         Assert.assertEquals(2, resultFuture.get().getErrors().size());
 
 
@@ -200,7 +202,8 @@ public class SalGroupsBatchServiceImplTest {
     @Test
     public void testAddGroupsBatch_failure() throws Exception {
         Mockito.when(salGroupService.addGroup(Mockito.<AddGroupInput>any()))
-                .thenReturn(RpcResultBuilder.<AddGroupOutput>failed().withError(RpcError.ErrorType.APPLICATION, "ut-groupAddError")
+                .thenReturn(RpcResultBuilder.<AddGroupOutput>failed()
+                        .withError(RpcError.ErrorType.APPLICATION, "ut-groupAddError")
                         .buildFuture());
 
         final AddGroupsBatchInput input = new AddGroupsBatchInputBuilder()
@@ -216,8 +219,10 @@ public class SalGroupsBatchServiceImplTest {
         Assert.assertTrue(resultFuture.isDone());
         Assert.assertFalse(resultFuture.get().isSuccessful());
         Assert.assertEquals(2, resultFuture.get().getResult().getBatchFailedGroupsOutput().size());
-        Assert.assertEquals(42L, resultFuture.get().getResult().getBatchFailedGroupsOutput().get(0).getGroupId().getValue().longValue());
-        Assert.assertEquals(43L, resultFuture.get().getResult().getBatchFailedGroupsOutput().get(1).getGroupId().getValue().longValue());
+        Assert.assertEquals(42L,
+                resultFuture.get().getResult().getBatchFailedGroupsOutput().get(0).getGroupId().getValue().longValue());
+        Assert.assertEquals(43L,
+                resultFuture.get().getResult().getBatchFailedGroupsOutput().get(1).getGroupId().getValue().longValue());
         Assert.assertEquals(2, resultFuture.get().getErrors().size());
 
 
@@ -263,7 +268,8 @@ public class SalGroupsBatchServiceImplTest {
     @Test
     public void testRemoveGroupsBatch_failure() throws Exception {
         Mockito.when(salGroupService.removeGroup(Mockito.<RemoveGroupInput>any()))
-                .thenReturn(RpcResultBuilder.<RemoveGroupOutput>failed().withError(RpcError.ErrorType.APPLICATION, "ut-groupRemoveError")
+                .thenReturn(RpcResultBuilder.<RemoveGroupOutput>failed()
+                        .withError(RpcError.ErrorType.APPLICATION, "ut-groupRemoveError")
                         .buildFuture());
 
         final RemoveGroupsBatchInput input = new RemoveGroupsBatchInputBuilder()
@@ -279,8 +285,10 @@ public class SalGroupsBatchServiceImplTest {
         Assert.assertTrue(resultFuture.isDone());
         Assert.assertFalse(resultFuture.get().isSuccessful());
         Assert.assertEquals(2, resultFuture.get().getResult().getBatchFailedGroupsOutput().size());
-        Assert.assertEquals(42L, resultFuture.get().getResult().getBatchFailedGroupsOutput().get(0).getGroupId().getValue().longValue());
-        Assert.assertEquals(43L, resultFuture.get().getResult().getBatchFailedGroupsOutput().get(1).getGroupId().getValue().longValue());
+        Assert.assertEquals(42L,
+                resultFuture.get().getResult().getBatchFailedGroupsOutput().get(0).getGroupId().getValue().longValue());
+        Assert.assertEquals(43L,
+                resultFuture.get().getResult().getBatchFailedGroupsOutput().get(1).getGroupId().getValue().longValue());
         Assert.assertEquals(2, resultFuture.get().getErrors().size());
 
         final InOrder inOrder = Mockito.inOrder(salGroupService, transactionService);
@@ -308,8 +316,10 @@ public class SalGroupsBatchServiceImplTest {
 
     private static BatchUpdateGroups createEmptyBatchUpdateGroup(final long groupIdValue) {
         return new BatchUpdateGroupsBuilder()
-                .setOriginalBatchedGroup(new OriginalBatchedGroupBuilder(createEmptyBatchAddGroup(groupIdValue)).build())
-                .setUpdatedBatchedGroup(new UpdatedBatchedGroupBuilder(createEmptyBatchAddGroup(groupIdValue+1)).build())
+                .setOriginalBatchedGroup(
+                        new OriginalBatchedGroupBuilder(createEmptyBatchAddGroup(groupIdValue)).build())
+                .setUpdatedBatchedGroup(
+                        new UpdatedBatchedGroupBuilder(createEmptyBatchAddGroup(groupIdValue + 1)).build())
                 .build();
     }
 }

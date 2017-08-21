@@ -38,7 +38,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput, SetRoleOutput> implements SalRoleService  {
+public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput, SetRoleOutput>
+                                      implements SalRoleService  {
 
     private static final Logger LOG = LoggerFactory.getLogger(SalRoleServiceImpl.class);
 
@@ -78,9 +79,9 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
             }
 
             @Override
-            public void onFailure(final Throwable t) {
+            public void onFailure(final Throwable throwable) {
                 LOG.error("SetRoleService set Role {} for Node: {} fail . Reason {}", input.getControllerRole(),
-                        input.getNode().getValue(), t);
+                        input.getNode().getValue(), throwable);
             }
         });
         return resultFuture;
@@ -101,19 +102,19 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
         // Check current connection state
         final CONNECTION_STATE state = deviceContext.getPrimaryConnectionContext().getConnectionState();
         switch (state) {
-        case RIP:
-            LOG.info("Device {} has been disconnected", input.getNode());
-            future.setException(new Exception(String.format(
-                    "Device connection doesn't exist anymore. Primary connection status : %s", state)));
-            return;
-        case WORKING:
-            // We can proceed
-            LOG.trace("Device {} has been working", input.getNode());
-            break;
-        default:
-            LOG.warn("Device {} is in state {}, role change is not allowed", input.getNode(), state);
-            future.setException(new Exception(String.format("Unexcpected device connection status : %s", state)));
-            return;
+            case RIP:
+                LOG.info("Device {} has been disconnected", input.getNode());
+                future.setException(new Exception(String.format(
+                        "Device connection doesn't exist anymore. Primary connection status : %s", state)));
+                return;
+            case WORKING:
+                // We can proceed
+                LOG.trace("Device {} has been working", input.getNode());
+                break;
+            default:
+                LOG.warn("Device {} is in state {}, role change is not allowed", input.getNode(), state);
+                future.setException(new Exception(String.format("Unexcpected device connection status : %s", state)));
+                return;
         }
 
         LOG.info("Requesting state change to {}", input.getControllerRole());
@@ -124,7 +125,7 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
             public void onSuccess(final RpcResult<SetRoleOutput> result) {
                 if (result.isSuccessful()) {
                     LOG.debug("setRoleOutput received after roleChangeTask execution:{}", result);
-                    future.set(RpcResultBuilder.<SetRoleOutput> success().withResult(result.getResult()).build());
+                    future.set(RpcResultBuilder.<SetRoleOutput>success().withResult(result.getResult()).build());
                 } else {
                     final boolean present = result
                             .getErrors()
@@ -142,14 +143,14 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
             }
 
             @Override
-            public void onFailure(final Throwable t) {
-                if (!t.getMessage().contains(ROLE_REQUEST_UNSUPPORTED)) {
-                    LOG.warn("Exception in setRole(), will retry: {} times.", t, MAX_RETRIES - retryCounter);
+            public void onFailure(final Throwable throwable) {
+                if (!throwable.getMessage().contains(ROLE_REQUEST_UNSUPPORTED)) {
+                    LOG.warn("Exception in setRole(), will retry: {} times.", throwable, MAX_RETRIES - retryCounter);
                     repeaterForChangeRole(future, input, (retryCounter + 1));
                 } else {
-                    LOG.warn("Exception in setRole() - role request unsupported.", t);
+                    LOG.warn("Exception in setRole() - role request unsupported.", throwable);
                     future.set(RpcResultBuilder.<SetRoleOutput>failed()
-                            .withError(RpcError.ErrorType.APPLICATION, t.getMessage()).build());
+                            .withError(RpcError.ErrorType.APPLICATION, throwable.getMessage()).build());
                 }
             }
         });
@@ -160,13 +161,19 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
 
         final Future<BigInteger> generationFuture = roleService.getGenerationIdFromDevice(getVersion());
 
-        return Futures.transformAsync(JdkFutureAdapters.listenInPoolThread(generationFuture), (AsyncFunction<BigInteger, RpcResult<SetRoleOutput>>) generationId -> {
-            LOG.debug("RoleChangeTask, GenerationIdFromDevice from device {} is {}", getDeviceInfo().getNodeId().getValue(), generationId);
-            final BigInteger nextGenerationId = getNextGenerationId(generationId);
-            LOG.debug("nextGenerationId received from device:{} is {}", getDeviceInfo().getNodeId().getValue(), nextGenerationId);
-            final Future<RpcResult<SetRoleOutput>> submitRoleFuture = roleService.submitRoleChange(role, getVersion(), nextGenerationId);
-            return JdkFutureAdapters.listenInPoolThread(submitRoleFuture);
-        });
+        return Futures.transformAsync(JdkFutureAdapters.listenInPoolThread(generationFuture),
+                                      (AsyncFunction<BigInteger, RpcResult<SetRoleOutput>>) generationId -> {
+                LOG.debug("RoleChangeTask, GenerationIdFromDevice from device {} is {}",
+                          getDeviceInfo().getNodeId().getValue(),
+                          generationId);
+                final BigInteger nextGenerationId = getNextGenerationId(generationId);
+                LOG.debug("nextGenerationId received from device:{} is {}",
+                          getDeviceInfo().getNodeId().getValue(),
+                          nextGenerationId);
+                final Future<RpcResult<SetRoleOutput>> submitRoleFuture =
+                        roleService.submitRoleChange(role, getVersion(), nextGenerationId);
+                return JdkFutureAdapters.listenInPoolThread(submitRoleFuture);
+            });
     }
 
     private static BigInteger getNextGenerationId(final BigInteger generationId) {
