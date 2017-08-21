@@ -69,8 +69,8 @@ public class SingleLayerAggregateFlowMultipartServiceTest extends ServiceMocking
         final Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> rpcResultFuture = service
                 .handleAndReply(input);
 
-        final RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput> sendAggregateFlowMpRequestOutputRpcResult =
-                rpcResultFuture.get();
+        final RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>
+                sendAggregateFlowMpRequestOutputRpcResult = rpcResultFuture.get();
 
         assertEquals(BYTE_COUNT, sendAggregateFlowMpRequestOutputRpcResult
                 .getResult()

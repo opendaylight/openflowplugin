@@ -25,7 +25,9 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
 public final class SingleLayerFlowService<O extends DataObject> extends AbstractSilentErrorService<Flow, O> {
-    public SingleLayerFlowService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final Class<O> clazz) {
+    public SingleLayerFlowService(final RequestContextStack requestContextStack,
+                                  final DeviceContext deviceContext,
+                                  final Class<O> clazz) {
         super(requestContextStack, deviceContext, clazz);
     }
 
@@ -49,5 +51,4 @@ public final class SingleLayerFlowService<O extends DataObject> extends Abstract
                 .setXid(xid.getValue())
                 .build();
     }
-
 }

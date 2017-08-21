@@ -28,7 +28,8 @@ public class AbstractRequestCallbackTest {
     private static final Class<?> DUMMY_REQUEST_TYPE = String.class;
     private static final String DUMMY_DEVICE_ID = "DEVICE ID";
     private static final String DUMMY_EVENT_NAME = "EVENT NAME";
-    private static final EventIdentifier DUMMY_EVENT_IDENTIFIER = new EventIdentifier(DUMMY_EVENT_NAME, DUMMY_DEVICE_ID);
+    private static final EventIdentifier DUMMY_EVENT_IDENTIFIER =
+            new EventIdentifier(DUMMY_EVENT_NAME, DUMMY_DEVICE_ID);
     private static final String DUMMY_EXCEPTION_DESCRIPTION = "dummy exception description";
     private static final Long DUMMY_XID = 100L;
     private static final String DUMMY_MESSAGE_ILLEGAL_STATE_EXCEPTION = "dummy illegal state exception";
@@ -49,7 +50,7 @@ public class AbstractRequestCallbackTest {
                 DUMMY_REQUEST_TYPE, new MessageIntelligenceAgencyImpl(),
                 DUMMY_EVENT_IDENTIFIER) {
             @Override
-            public void onSuccess(Object o) {
+            public void onSuccess(Object object) {
 
             }
 
@@ -60,7 +61,8 @@ public class AbstractRequestCallbackTest {
     @Test
     public void testOnFailureWithDeviceRequestFailedException() throws Exception {
         ErrorMessage dummyErrorMessage = new ErrorMessageBuilder().build();
-        abstractRequestCallback.onFailure(new DeviceRequestFailedException(DUMMY_EXCEPTION_DESCRIPTION, dummyErrorMessage));
+        abstractRequestCallback
+                .onFailure(new DeviceRequestFailedException(DUMMY_EXCEPTION_DESCRIPTION, dummyErrorMessage));
         final ListenableFuture futureResult = dummyRequestContext.getFuture();
 
         RpcError rpcError = provideRpcError(futureResult);
@@ -69,16 +71,15 @@ public class AbstractRequestCallbackTest {
 
     @Test
     public void testOnFailure() throws Exception {
-        ErrorMessage dummyErrorMessage = new ErrorMessageBuilder().build();
         abstractRequestCallback.onFailure(new IllegalStateException(DUMMY_MESSAGE_ILLEGAL_STATE_EXCEPTION));
         final ListenableFuture futureResult = dummyRequestContext.getFuture();
 
         RpcError rpcError = provideRpcError(futureResult);
         assertEquals(DUMMY_MESSAGE_ILLEGAL_STATE_EXCEPTION, rpcError.getMessage());
-
     }
 
-    private RpcError provideRpcError(ListenableFuture futureResult) throws InterruptedException, java.util.concurrent.ExecutionException {
+    private RpcError provideRpcError(ListenableFuture futureResult) throws InterruptedException,
+                                                                           java.util.concurrent.ExecutionException {
         final Object result = futureResult.get();
         assertTrue(result instanceof RpcResult);
         RpcResult rpcResult = (RpcResult) result;
@@ -88,6 +89,4 @@ public class AbstractRequestCallbackTest {
         assertTrue(error instanceof RpcError);
         return (RpcError) error;
     }
-
-
 }

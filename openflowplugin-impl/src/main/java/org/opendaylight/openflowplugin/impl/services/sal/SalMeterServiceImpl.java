@@ -16,8 +16,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
-import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerMeterService;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerMeterService;
+import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerMeterService;
 import org.opendaylight.openflowplugin.impl.util.ErrorUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -51,11 +51,24 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
     private ItemLifecycleListener itemLifecycleListener;
     private final DeviceContext deviceContext;
 
-    public SalMeterServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConvertorExecutor convertorExecutor) {
+    public SalMeterServiceImpl(final RequestContextStack requestContextStack,
+                               final DeviceContext deviceContext,
+                               final ConvertorExecutor convertorExecutor) {
         this.deviceContext = deviceContext;
-        addMeter = new MultiLayerMeterService<>(requestContextStack, deviceContext, AddMeterOutput.class, convertorExecutor);
-        updateMeter = new MultiLayerMeterService<>(requestContextStack, deviceContext, UpdateMeterOutput.class, convertorExecutor);
-        removeMeter = new MultiLayerMeterService<>(requestContextStack, deviceContext, RemoveMeterOutput.class, convertorExecutor);
+        addMeter = new MultiLayerMeterService<>(requestContextStack,
+                                                deviceContext,
+                                                AddMeterOutput.class,
+                                                convertorExecutor);
+
+        updateMeter = new MultiLayerMeterService<>(requestContextStack,
+                                                   deviceContext,
+                                                   UpdateMeterOutput.class,
+                                                   convertorExecutor);
+
+        removeMeter = new MultiLayerMeterService<>(requestContextStack,
+                                                   deviceContext,
+                                                   RemoveMeterOutput.class,
+                                                   convertorExecutor);
 
         addMeterMessage = new SingleLayerMeterService<>(requestContextStack, deviceContext, AddMeterOutput.class);
         updateMeterMessage = new SingleLayerMeterService<>(requestContextStack, deviceContext, UpdateMeterOutput.class);
@@ -69,7 +82,8 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
 
     @Override
     public Future<RpcResult<AddMeterOutput>> addMeter(final AddMeterInput input) {
-        final ListenableFuture<RpcResult<AddMeterOutput>> resultFuture = addMeterMessage.canUseSingleLayerSerialization()
+        final ListenableFuture<RpcResult<AddMeterOutput>> resultFuture =
+            addMeterMessage.canUseSingleLayerSerialization()
             ? addMeterMessage.handleServiceCall(input)
             : addMeter.handleServiceCall(input);
 
@@ -91,8 +105,8 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
             }
 
             @Override
-            public void onFailure(Throwable t) {
-                 LOG.warn("Service call for adding meter={} failed, reason: {}", input.getMeterId(), t);
+            public void onFailure(Throwable throwable) {
+                LOG.warn("Service call for adding meter={} failed, reason: {}", input.getMeterId(), throwable);
             }
         });
         return resultFuture;
@@ -100,7 +114,8 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
 
     @Override
     public Future<RpcResult<UpdateMeterOutput>> updateMeter(final UpdateMeterInput input) {
-        final ListenableFuture<RpcResult<UpdateMeterOutput>> resultFuture = updateMeterMessage.canUseSingleLayerSerialization()
+        final ListenableFuture<RpcResult<UpdateMeterOutput>> resultFuture =
+            updateMeterMessage.canUseSingleLayerSerialization()
             ? updateMeterMessage.handleServiceCall(input.getUpdatedMeter())
             : updateMeter.handleServiceCall(input.getUpdatedMeter());
 
@@ -110,7 +125,8 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
             public void onSuccess(RpcResult<UpdateMeterOutput> result) {
                 if (result.isSuccessful()) {
                     if (LOG.isDebugEnabled()) {
-                        LOG.debug("Meter update with id={} finished without error", input.getOriginalMeter().getMeterId());
+                        LOG.debug("Meter update with id={} finished without error",
+                                  input.getOriginalMeter().getMeterId());
                     }
                     if (itemLifecycleListener != null) {
                         removeIfNecessaryFromDS(input.getOriginalMeter().getMeterId());
@@ -124,9 +140,9 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Throwable throwable) {
                 LOG.warn("Service call for updating meter={} failed, reason: {}",
-                        input.getOriginalMeter().getMeterId(),t);
+                        input.getOriginalMeter().getMeterId(),throwable);
             }
         });
         return resultFuture;
@@ -134,7 +150,8 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
 
     @Override
     public Future<RpcResult<RemoveMeterOutput>> removeMeter(final RemoveMeterInput input) {
-        final ListenableFuture<RpcResult<RemoveMeterOutput>> resultFuture = removeMeterMessage.canUseSingleLayerSerialization()
+        final ListenableFuture<RpcResult<RemoveMeterOutput>> resultFuture =
+            removeMeterMessage.canUseSingleLayerSerialization()
             ? removeMeterMessage.handleServiceCall(input)
             : removeMeter.handleServiceCall(input);
 
@@ -155,8 +172,8 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
             }
 
             @Override
-            public void onFailure(Throwable t) {
-                LOG.warn("Service call for removing meter={} failed, reason: {}",input.getMeterId(),t);
+            public void onFailure(Throwable throwable) {
+                LOG.warn("Service call for removing meter={} failed, reason: {}",input.getMeterId(),throwable);
             }
         });
         return resultFuture;
@@ -164,7 +181,8 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
 
     private void removeIfNecessaryFromDS(final MeterId meterId) {
         if (itemLifecycleListener != null) {
-            KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter, MeterKey> meterPath
+            KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn
+                    .opendaylight.flow.inventory.rev130819.meters.Meter, MeterKey> meterPath
                     = createMeterPath(meterId, deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
             itemLifecycleListener.onRemoved(meterPath);
         }
@@ -172,13 +190,19 @@ public class SalMeterServiceImpl implements SalMeterService, ItemLifeCycleSource
 
     private void addIfNecessaryToDS(final MeterId meterId, final Meter data) {
         if (itemLifecycleListener != null) {
-            KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter, MeterKey> groupPath
+            KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn
+                    .opendaylight.flow.inventory.rev130819.meters.Meter, MeterKey> groupPath
                     = createMeterPath(meterId, deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
             itemLifecycleListener.onAdded(groupPath, new MeterBuilder(data).build());
         }
     }
 
-    private static KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter, MeterKey> createMeterPath(final MeterId meterId, final KeyedInstanceIdentifier<Node, NodeKey> nodePath) {
-        return nodePath.augmentation(FlowCapableNode.class).child(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter.class, new MeterKey(meterId));
+    private static KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn
+            .opendaylight.flow.inventory.rev130819.meters.Meter, MeterKey> createMeterPath(
+                                                            final MeterId meterId,
+                                                            final KeyedInstanceIdentifier<Node, NodeKey> nodePath) {
+        return nodePath.augmentation(FlowCapableNode.class)
+                .child(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter.class,
+                       new MeterKey(meterId));
     }
 }

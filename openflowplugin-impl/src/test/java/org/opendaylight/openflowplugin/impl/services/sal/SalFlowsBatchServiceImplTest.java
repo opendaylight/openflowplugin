@@ -76,7 +76,8 @@ public class SalFlowsBatchServiceImplTest {
 
     public static final NodeId NODE_ID = new NodeId("ut-dummy-node");
     public static final NodeKey NODE_KEY = new NodeKey(NODE_ID);
-    public static final NodeRef NODE_REF = new NodeRef(InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY));
+    public static final NodeRef NODE_REF =
+            new NodeRef(InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY));
 
     @Mock
     private SalFlowService salFlowService;
@@ -239,7 +240,8 @@ public class SalFlowsBatchServiceImplTest {
     @Test
     public void testAddFlowsBatch_failed() throws Exception {
         Mockito.when(salFlowService.addFlow(Matchers.<AddFlowInput>any()))
-                .thenReturn(RpcResultBuilder.<AddFlowOutput>failed().withError(RpcError.ErrorType.APPLICATION, "ut-groupAddError")
+                .thenReturn(RpcResultBuilder
+                        .<AddFlowOutput>failed().withError(RpcError.ErrorType.APPLICATION, "ut-groupAddError")
                         .buildFuture());
 
         final AddFlowsBatchInput input = new AddFlowsBatchInputBuilder()
@@ -255,8 +257,10 @@ public class SalFlowsBatchServiceImplTest {
         Assert.assertTrue(resultFuture.isDone());
         Assert.assertFalse(resultFuture.get().isSuccessful());
         Assert.assertEquals(2, resultFuture.get().getResult().getBatchFailedFlowsOutput().size());
-        Assert.assertEquals(FLOW_ID_VALUE_1, resultFuture.get().getResult().getBatchFailedFlowsOutput().get(0).getFlowId().getValue());
-        Assert.assertEquals(FLOW_ID_VALUE_2, resultFuture.get().getResult().getBatchFailedFlowsOutput().get(1).getFlowId().getValue());
+        Assert.assertEquals(FLOW_ID_VALUE_1,
+                resultFuture.get().getResult().getBatchFailedFlowsOutput().get(0).getFlowId().getValue());
+        Assert.assertEquals(FLOW_ID_VALUE_2,
+                resultFuture.get().getResult().getBatchFailedFlowsOutput().get(1).getFlowId().getValue());
         Assert.assertEquals(2, resultFuture.get().getErrors().size());
 
         final InOrder inOrder = Mockito.inOrder(salFlowService, transactionService);
@@ -304,7 +308,8 @@ public class SalFlowsBatchServiceImplTest {
     @Test
     public void testUpdateFlowsBatch_failure() throws Exception {
         Mockito.when(salFlowService.updateFlow(Matchers.<UpdateFlowInput>any()))
-                .thenReturn(RpcResultBuilder.<UpdateFlowOutput>failed().withError(RpcError.ErrorType.APPLICATION, "ut-flowUpdateError")
+                .thenReturn(RpcResultBuilder.<UpdateFlowOutput>failed()
+                        .withError(RpcError.ErrorType.APPLICATION, "ut-flowUpdateError")
                         .buildFuture());
 
         final UpdateFlowsBatchInput input = new UpdateFlowsBatchInputBuilder()
@@ -321,8 +326,10 @@ public class SalFlowsBatchServiceImplTest {
         Assert.assertFalse(resultFuture.get().isSuccessful());
         Assert.assertFalse(resultFuture.get().isSuccessful());
         Assert.assertEquals(2, resultFuture.get().getResult().getBatchFailedFlowsOutput().size());
-        Assert.assertEquals(FLOW_ID_VALUE_1, resultFuture.get().getResult().getBatchFailedFlowsOutput().get(0).getFlowId().getValue());
-        Assert.assertEquals(FLOW_ID_VALUE_2, resultFuture.get().getResult().getBatchFailedFlowsOutput().get(1).getFlowId().getValue());
+        Assert.assertEquals(FLOW_ID_VALUE_1,
+                resultFuture.get().getResult().getBatchFailedFlowsOutput().get(0).getFlowId().getValue());
+        Assert.assertEquals(FLOW_ID_VALUE_2,
+                resultFuture.get().getResult().getBatchFailedFlowsOutput().get(1).getFlowId().getValue());
         Assert.assertEquals(2, resultFuture.get().getErrors().size());
 
         final InOrder inOrder = Mockito.inOrder(salFlowService, transactionService);

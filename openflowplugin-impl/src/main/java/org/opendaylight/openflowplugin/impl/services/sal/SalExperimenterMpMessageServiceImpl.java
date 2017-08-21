@@ -33,10 +33,10 @@ public class SalExperimenterMpMessageServiceImpl implements SalExperimenterMpMes
     }
 
     @Override
-    public Future<RpcResult<SendExperimenterMpRequestOutput>> sendExperimenterMpRequest(SendExperimenterMpRequestInput input) {
+    public Future<RpcResult<SendExperimenterMpRequestOutput>>
+        sendExperimenterMpRequest(SendExperimenterMpRequestInput input) {
         return singleLayerService.canUseSingleLayerSerialization()
             ? singleLayerService.handleAndReply(input)
             : multiLayerService.handleAndReply(input);
     }
-
 }
