@@ -61,12 +61,15 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
     public SalFlowsBatchServiceImpl(final SalFlowService salFlowService,
                                     final FlowCapableTransactionService transactionService) {
         this.salFlowService = Preconditions.checkNotNull(salFlowService, "delegate flow service must not be null");
-        this.transactionService = Preconditions.checkNotNull(transactionService, "delegate transaction service must not be null");
+        this.transactionService =
+                Preconditions.checkNotNull(transactionService, "delegate transaction service must not be null");
     }
 
     @Override
     public Future<RpcResult<RemoveFlowsBatchOutput>> removeFlowsBatch(final RemoveFlowsBatchInput input) {
-        LOG.trace("Removing flows @ {} : {}", PathUtil.extractNodeId(input.getNode()), input.getBatchRemoveFlows().size());
+        LOG.trace("Removing flows @ {} : {}",
+                  PathUtil.extractNodeId(input.getNode()),
+                  input.getBatchRemoveFlows().size());
         final ArrayList<ListenableFuture<RpcResult<RemoveFlowOutput>>> resultsLot = new ArrayList<>();
         for (BatchFlowInputGrouping batchFlow : input.getBatchRemoveFlows()) {
             final RemoveFlowInput removeFlowInput = new RemoveFlowInputBuilder(batchFlow)
@@ -80,7 +83,8 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
                 Futures.transform(Futures.successfulAsList(resultsLot),
                         FlowUtil.<RemoveFlowOutput>createCumulatingFunction(input.getBatchRemoveFlows()));
 
-        ListenableFuture<RpcResult<RemoveFlowsBatchOutput>> removeFlowsBulkFuture = Futures.transform(commonResult, FlowUtil.FLOW_REMOVE_TRANSFORM);
+        ListenableFuture<RpcResult<RemoveFlowsBatchOutput>> removeFlowsBulkFuture =
+                Futures.transform(commonResult, FlowUtil.FLOW_REMOVE_TRANSFORM);
 
         if (input.isBarrierAfter()) {
             removeFlowsBulkFuture = BarrierUtil.chainBarrier(removeFlowsBulkFuture, input.getNode(),
@@ -129,7 +133,9 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
 
     @Override
     public Future<RpcResult<UpdateFlowsBatchOutput>> updateFlowsBatch(final UpdateFlowsBatchInput input) {
-        LOG.trace("Updating flows @ {} : {}", PathUtil.extractNodeId(input.getNode()), input.getBatchUpdateFlows().size());
+        LOG.trace("Updating flows @ {} : {}",
+                  PathUtil.extractNodeId(input.getNode()),
+                  input.getBatchUpdateFlows().size());
         final ArrayList<ListenableFuture<RpcResult<UpdateFlowOutput>>> resultsLot = new ArrayList<>();
         for (BatchUpdateFlows batchFlow : input.getBatchUpdateFlows()) {
             final UpdateFlowInput updateFlowInput = new UpdateFlowInputBuilder(input)
@@ -142,9 +148,11 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
         }
 
         final ListenableFuture<RpcResult<List<BatchFailedFlowsOutput>>> commonResult =
-                Futures.transform(Futures.successfulAsList(resultsLot), FlowUtil.<UpdateFlowOutput>createCumulatingFunction(input.getBatchUpdateFlows()));
+                Futures.transform(Futures.successfulAsList(resultsLot),
+                                  FlowUtil.<UpdateFlowOutput>createCumulatingFunction(input.getBatchUpdateFlows()));
 
-        ListenableFuture<RpcResult<UpdateFlowsBatchOutput>> updateFlowsBulkFuture = Futures.transform(commonResult, FlowUtil.FLOW_UPDATE_TRANSFORM);
+        ListenableFuture<RpcResult<UpdateFlowsBatchOutput>> updateFlowsBulkFuture =
+                Futures.transform(commonResult, FlowUtil.FLOW_UPDATE_TRANSFORM);
 
         if (input.isBarrierAfter()) {
             updateFlowsBulkFuture = BarrierUtil.chainBarrier(updateFlowsBulkFuture, input.getNode(),
@@ -153,5 +161,4 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
 
         return updateFlowsBulkFuture;
     }
-
 }

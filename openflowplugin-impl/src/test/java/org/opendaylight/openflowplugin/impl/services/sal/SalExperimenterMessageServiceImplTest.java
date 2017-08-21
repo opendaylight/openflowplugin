@@ -44,7 +44,9 @@ public class SalExperimenterMessageServiceImplTest extends ServiceMocking {
 
     @Override
     protected void setup() {
-        salExperimenterMessageService = new SalExperimenterMessageServiceImpl(mockedRequestContextStack, mockedDeviceContext, extensionConverterProvider);
+        salExperimenterMessageService = new SalExperimenterMessageServiceImpl(mockedRequestContextStack,
+                                                                              mockedDeviceContext,
+                                                                              extensionConverterProvider);
         Mockito.when(extensionConverterProvider.getMessageConverter(Matchers.<TypeVersionKey>any()))
                 .thenReturn(extensionConverter);
         Mockito.when(extensionConverter.getExperimenterId()).thenReturn(new ExperimenterId(43L));
@@ -62,7 +64,8 @@ public class SalExperimenterMessageServiceImplTest extends ServiceMocking {
     public void testBuildRequest() throws Exception {
         SendExperimenterInput sendExperimenterInput = buildSendExperimenterInput();
 
-        final OfHeader request = salExperimenterMessageService.buildRequest(new Xid(DUMMY_XID_VALUE), sendExperimenterInput);
+        final OfHeader request =
+                salExperimenterMessageService.buildRequest(new Xid(DUMMY_XID_VALUE), sendExperimenterInput);
         assertEquals(DUMMY_XID_VALUE, request.getXid());
         assertTrue(request instanceof ExperimenterInput);
         final ExperimenterInput input = (ExperimenterInput) request;
@@ -85,5 +88,4 @@ public class SalExperimenterMessageServiceImplTest extends ServiceMocking {
             return DummyExperimenter.class;
         }
     }
-
 }

@@ -28,8 +28,13 @@ public final class SalTableServiceImpl implements SalTableService {
                                final DeviceContext deviceContext,
                                final ConvertorExecutor convertorExecutor,
                                final MultipartWriterProvider multipartWriterProvider) {
-        singleLayerService = new SingleLayerTableMultipartService(requestContextStack, deviceContext, multipartWriterProvider);
-        multiLayerService = new MultiLayerTableMultipartService(requestContextStack, deviceContext, convertorExecutor, multipartWriterProvider);
+        singleLayerService = new SingleLayerTableMultipartService(requestContextStack,
+                                                                  deviceContext,
+                                                                  multipartWriterProvider);
+        multiLayerService = new MultiLayerTableMultipartService(requestContextStack,
+                                                                deviceContext,
+                                                                convertorExecutor,
+                                                                multipartWriterProvider);
     }
 
     @Override
@@ -38,5 +43,4 @@ public final class SalTableServiceImpl implements SalTableService {
             ? singleLayerService.handleAndReply(input)
             : multiLayerService.handleAndReply(input);
     }
-
 }

@@ -18,16 +18,17 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 public abstract class AbstractAggregateFlowMultipartService<T extends OfHeader>
     extends AbstractMultipartService<GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput, T> {
 
-    public AbstractAggregateFlowMultipartService(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
+    public AbstractAggregateFlowMultipartService(final RequestContextStack requestContextStack,
+                                                 final DeviceContext deviceContext) {
         super(requestContextStack, deviceContext);
     }
 
     /**
-     * Process input and return reply
+     * Process input and return reply.
      * @param input input
      * @return reply
      */
     public abstract Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> handleAndReply(
-        final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input);
+        GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input);
 
 }
