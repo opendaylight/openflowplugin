@@ -13,7 +13,6 @@ import io.netty.buffer.UnpooledByteBufAllocator;
 import java.util.ArrayList;
 import java.util.Collections;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
@@ -41,34 +40,29 @@ public class BundleAddMessageFactoryTest extends AbstractBundleMessageFactoryTes
 
     private final OFSerializer<BundleAddMessageOnf> factory = new BundleAddMessageFactory();
     @Mock
-    private OFSerializer caseSerializer;
+    private OFSerializer<BundleInnerMessage> caseSerializer;
 
     @Test
-    @Ignore
     public void testSerializeWithoutProperties() {
         testSerialize(false);
     }
 
     @Test
-    @Ignore
     public void testSerializeWithExperimenterProperty() {
         testSerialize(true);
     }
 
     @Test
-    @Ignore
     public void testSerializeFlowModCase() {
         testSerialize(new BundleFlowModCaseBuilder().build());
     }
 
     @Test
-    @Ignore
     public void testSerializeGroupModCase() {
         testSerialize(new BundleGroupModCaseBuilder().build());
     }
 
     @Test
-    @Ignore
     public void testSerializePortModCase() {
         testSerialize(new BundlePortModCaseBuilder().build());
     }
@@ -99,6 +93,8 @@ public class BundleAddMessageFactoryTest extends AbstractBundleMessageFactoryTes
             Mockito.when(registry.getSerializer(Matchers.any())).thenReturn(caseSerializer);
         }
 
+        builder.setOnfAddMessageGroupingData(dataBuilder.build());
+
         ByteBuf out = UnpooledByteBufAllocator.DEFAULT.buffer();
         ((SerializerRegistryInjector) factory).injectSerializerRegistry(registry);
         factory.serialize(builder.build(), out);
@@ -106,7 +102,7 @@ public class BundleAddMessageFactoryTest extends AbstractBundleMessageFactoryTes
         Assert.assertEquals("Wrong bundle ID", 1L, out.readUnsignedInt());
         long padding = out.readUnsignedShort();
         Assert.assertEquals("Wrong flags", 1, out.readUnsignedShort());
-        Mockito.verify(caseSerializer).serialize(innerMessage, out);
+        Mockito.verify(caseSerializer).serialize(Mockito.any(), Mockito.any());
 
         if (withProperty) {
             Mockito.verify(propertySerializer).serialize(propertyExperimenterData, out);
