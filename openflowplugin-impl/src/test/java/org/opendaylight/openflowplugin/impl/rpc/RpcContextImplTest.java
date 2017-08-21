@@ -25,7 +25,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
-import org.opendaylight.openflowplugin.api.openflow.device.XidSequencer;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
@@ -50,8 +49,6 @@ public class RpcContextImplTest {
     private BindingAwareBroker.ProviderContext rpcProviderRegistry;
     @Mock
     private DeviceState deviceState;
-    @Mock
-    private XidSequencer xidSequencer;
     @Mock
     private MessageSpy messageSpy;
     @Mock
@@ -92,19 +89,19 @@ public class RpcContextImplTest {
                 convertorExecutor,
                 notificationPublishService, true);
 
-        when(rpcProviderRegistry.addRoutedRpcImplementation(TestRpcService.class, serviceInstance)).thenReturn(routedRpcReg);
-
+        when(rpcProviderRegistry.addRoutedRpcImplementation(TestRpcService.class, serviceInstance))
+                .thenReturn(routedRpcReg);
     }
 
     @Test
     public void testStoreOrFail() throws Exception {
-        try (final RpcContext rpcContext = new RpcContextImpl(
+        try (RpcContext rpcContext = new RpcContextImpl(
                 rpcProviderRegistry,
                 100,
                 deviceContext,
                 extensionConverterProvider,
                 convertorExecutor,
-                notificationPublishService, true)){
+                notificationPublishService, true)) {
             final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNotNull(requestContext);
         }
@@ -112,13 +109,13 @@ public class RpcContextImplTest {
 
     @Test
     public void testStoreOrFailThatFails() throws Exception {
-        try (final RpcContext rpcContext = new RpcContextImpl(
+        try (RpcContext rpcContext = new RpcContextImpl(
                 rpcProviderRegistry,
                 0,
                 deviceContext,
                 extensionConverterProvider,
                 convertorExecutor,
-                notificationPublishService, true)){
+                notificationPublishService, true)) {
             final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNull(requestContext);
         }
@@ -126,13 +123,13 @@ public class RpcContextImplTest {
 
     @Test
     public void testStoreAndCloseOrFail() throws Exception {
-        try (final RpcContext rpcContext = new RpcContextImpl(
+        try (RpcContext rpcContext = new RpcContextImpl(
                 rpcProviderRegistry,
                 100,
                 deviceContext,
                 extensionConverterProvider,
                 convertorExecutor,
-                notificationPublishService, true)){
+                notificationPublishService, true)) {
             final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNotNull(requestContext);
             requestContext.close();
@@ -146,7 +143,6 @@ public class RpcContextImplTest {
         verify(routedRpcReg,Mockito.times(1)).registerPath(NodeContext.class,nodeInstanceIdentifier);
         assertEquals(rpcContext.isEmptyRpcRegistrations(), false);
     }
-
 
     @Test
     public void testLookupRpcService() {
@@ -166,8 +162,7 @@ public class RpcContextImplTest {
     }
 
     /**
-     * When deviceContext.reserveXidForDeviceMessage returns null, null should be returned
-     * @throws InterruptedException
+     * When deviceContext.reserveXidForDeviceMessage returns null, null should be returned.
      */
     @Test
     public void testCreateRequestContext1() throws InterruptedException {
@@ -176,8 +171,7 @@ public class RpcContextImplTest {
     }
 
     /**
-     * When deviceContext.reserveXidForDeviceMessage returns value, AbstractRequestContext should be returned
-     * @throws InterruptedException
+     * When deviceContext.reserveXidForDeviceMessage returns value, AbstractRequestContext should be returned.
      */
 
     @Test
@@ -195,6 +189,6 @@ public class RpcContextImplTest {
         assertEquals(rpcContext.isEmptyRpcRegistrations(), true);
     }
 
-    //Stub for RpcService class
+    //Stub for RpcService class.
     public class TestRpcService implements RpcService {}
 }
