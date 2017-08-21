@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.opendaylight.openflowplugin.extension.onf.BundleTestUtils;
@@ -63,7 +62,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  */
 public class BundleAddMessageConverterTest {
 
-    private final BundleAddMessageConverter converter = new BundleAddMessageConverter();
+    private final BundleAddMessageConverter converter = new BundleAddMessageConverter(null);
     private static final NodeRef NODE_REF = new NodeRef(InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(new NodeId("openflow:1"))));
     private static final GroupId GROUP_ID = new GroupId(1L);

@@ -11,7 +11,7 @@ package org.opendaylight.openflowplugin.impl.protocol.serialization.actions;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.opendaylight.openflowplugin.openflow.md.util.ActionUtil;
+import org.opendaylight.openflowplugin.common.util.ActionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwTosActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwTosActionCaseBuilder;

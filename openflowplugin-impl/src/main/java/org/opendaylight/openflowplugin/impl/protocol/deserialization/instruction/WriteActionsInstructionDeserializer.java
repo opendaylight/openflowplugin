@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.instruction;
 
 import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteActionsCaseBuilder;
@@ -18,8 +19,14 @@ import io.netty.buffer.ByteBuf;
 
 public class WriteActionsInstructionDeserializer extends AbstractActionInstructionDeserializer {
 
-    public WriteActionsInstructionDeserializer(ActionPath path) {
-        super(path);
+    /**
+     * Create new instacte of action instruction deserializer
+     *
+     * @param actionPath                 action extension path
+     * @param extensionConverterProvider
+     */
+    public WriteActionsInstructionDeserializer(final ActionPath actionPath, final ExtensionConverterProvider extensionConverterProvider) {
+        super(actionPath, extensionConverterProvider);
     }
 
     @Override

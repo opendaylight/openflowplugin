@@ -34,7 +34,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
@@ -52,7 +52,7 @@ public class OF10DeviceInitializerTest {
     @Mock
     private MultipartWriterProvider multipartWriterProvider;
     @Mock
-    private ConvertorExecutor convertorExecutor;
+    private ConverterExecutor converterExecutor;
     @Mock
     private ConnectionContext connectionContext;
     @Mock
@@ -108,7 +108,7 @@ public class OF10DeviceInitializerTest {
                 true,
                 false,
                 multipartWriterProvider,
-                convertorExecutor);
+                converterExecutor);
 
         initialize.get();
         verify(messageSpy).spyMessage(eq(MultipartType.class), any());
@@ -127,7 +127,7 @@ public class OF10DeviceInitializerTest {
                 true,
                 false,
                 multipartWriterProvider,
-                convertorExecutor);
+                converterExecutor);
 
         initialize.get();
         verify(messageSpy).spyMessage(eq(MultipartType.class), any());

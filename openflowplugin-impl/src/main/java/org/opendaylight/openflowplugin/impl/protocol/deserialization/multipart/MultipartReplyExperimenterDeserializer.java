@@ -17,9 +17,9 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ExperimenterDeserializerKeyFactory;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.openflowplugin.extension.api.path.MessagePath;
-import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.experimenter.core.message.ExperimenterMessageOfChoice;
@@ -29,7 +29,12 @@ import org.slf4j.LoggerFactory;
 
 public class MultipartReplyExperimenterDeserializer implements OFDeserializer<MultipartReplyBody>, DeserializerRegistryInjector {
     private static final Logger LOG = LoggerFactory.getLogger(MultipartReplyExperimenterDeserializer.class);
+    private final ExtensionConverterProvider extensionConverterProvider;
     private DeserializerRegistry registry;
+
+    public MultipartReplyExperimenterDeserializer(final ExtensionConverterProvider extensionConverterProvider) {
+        this.extensionConverterProvider = extensionConverterProvider;
+    }
 
     @Override
     @SuppressWarnings("unchecked")
@@ -40,23 +45,22 @@ public class MultipartReplyExperimenterDeserializer implements OFDeserializer<Mu
 
         try {
             final OFDeserializer<ExperimenterMessageOfChoice> deserializer = registry
-                .getDeserializer(new ExperimenterIdTypeDeserializerKey(
+                    .getDeserializer(new ExperimenterIdTypeDeserializerKey(
                             EncodeConstants.OF13_VERSION_ID, expId, expType, ExperimenterMessageOfChoice.class));
 
             builder.setExperimenterMessageOfChoice(deserializer.deserialize(message));
         } catch (ClassCastException | IllegalStateException es) {
             final OFDeserializer<ExperimenterDataOfChoice> deserializer = registry.getDeserializer(
                     ExperimenterDeserializerKeyFactory.createMultipartReplyMessageDeserializerKey(
-                        EncodeConstants.OF13_VERSION_ID, expId, expType));
+                            EncodeConstants.OF13_VERSION_ID, expId, expType));
 
             final ExperimenterDataOfChoice data = deserializer.deserialize(message);
             final MessageTypeKey<? extends ExperimenterDataOfChoice> key = new MessageTypeKey<>(
                     EncodeConstants.OF13_VERSION_ID,
                     (Class<? extends ExperimenterDataOfChoice>) data.getImplementedInterface());
 
-            final ConvertorMessageFromOFJava<ExperimenterDataOfChoice, MessagePath> convertor = OFSessionUtil
-                .getExtensionConvertorProvider()
-                .getMessageConverter(key);
+            final ConvertorMessageFromOFJava<ExperimenterDataOfChoice, MessagePath> convertor =
+                    extensionConverterProvider.getMessageConverter(key);
 
             try {
                 builder.setExperimenterMessageOfChoice(convertor.convert(data, MessagePath.MPMESSAGE_RPC_OUTPUT));

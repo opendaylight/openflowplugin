@@ -13,7 +13,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerTableMultipartService;
 import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerTableMultipartService;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
@@ -26,15 +26,12 @@ public final class SalTableServiceImpl implements SalTableService {
 
     public SalTableServiceImpl(final RequestContextStack requestContextStack,
                                final DeviceContext deviceContext,
-                               final ConvertorExecutor convertorExecutor,
+                               final ConverterExecutor converterExecutor,
                                final MultipartWriterProvider multipartWriterProvider) {
-        singleLayerService = new SingleLayerTableMultipartService(requestContextStack,
-                                                                  deviceContext,
-                                                                  multipartWriterProvider);
-        multiLayerService = new MultiLayerTableMultipartService(requestContextStack,
-                                                                deviceContext,
-                                                                convertorExecutor,
-                                                                multipartWriterProvider);
+        singleLayerService = new SingleLayerTableMultipartService(requestContextStack, deviceContext,
+                multipartWriterProvider);
+        multiLayerService = new MultiLayerTableMultipartService(requestContextStack, deviceContext, converterExecutor,
+                multipartWriterProvider);
     }
 
     @Override

@@ -16,6 +16,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegi
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.util.ActionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
@@ -39,8 +40,13 @@ public class GroupMessageDeserializer implements OFDeserializer<GroupMessage>, D
         if (bucket1.getBucketId() == null || bucket2.getBucketId() == null) return 0;
         return bucket1.getBucketId().getValue().compareTo(bucket2.getBucketId().getValue());
     };
+    private final ExtensionConverterProvider extensionConverterProvider;
 
     private DeserializerRegistry registry;
+
+    public GroupMessageDeserializer(final ExtensionConverterProvider extensionConverterProvider) {
+        this.extensionConverterProvider = extensionConverterProvider;
+    }
 
     @Override
     public GroupMessage deserialize(ByteBuf message) {
@@ -77,7 +83,8 @@ public class GroupMessageDeserializer implements OFDeserializer<GroupMessage>, D
                         .setKey(new ActionKey(offset))
                         .setOrder(offset)
                         .setAction(ActionUtil.readAction(EncodeConstants.OF13_VERSION_ID, message, registry,
-                                ActionPath.GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION))
+                                ActionPath.GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION,
+                                extensionConverterProvider))
                         .build());
 
                     offset++;

@@ -16,7 +16,7 @@ import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
-import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
+import org.opendaylight.openflowplugin.common.util.OpenflowPortsUtil;
 
 public class InPortEntryDeserializerTest extends AbstractMatchEntryDeserializerTest {
 

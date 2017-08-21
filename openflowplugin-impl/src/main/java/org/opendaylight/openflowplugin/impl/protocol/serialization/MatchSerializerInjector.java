@@ -17,6 +17,7 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.api.openflow.protocol.serialization.MatchEntrySerializer;
 import org.opendaylight.openflowplugin.api.openflow.protocol.serialization.MatchEntrySerializerRegistry;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.match.ArpOpEntrySerializer;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.match.ArpSourceHardwareAddressEntrySerializer;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.match.ArpSourceTransportAddressEntrySerializer;
@@ -73,8 +74,9 @@ class MatchSerializerInjector {
      * Injects match serializers into provided {@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}
      * @param provider OpenflowJava serializer extension provider
      */
-    static void injectSerializers(final SerializerExtensionProvider provider) {
-        final MatchSerializer serializer = new MatchSerializer();
+    static void injectSerializers(final SerializerExtensionProvider provider,
+                                  final ExtensionConverterProvider extensionConverterProvider) {
+        final MatchSerializer serializer = new MatchSerializer(extensionConverterProvider);
         provider.registerSerializer(
                 new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, Match.class),
                 serializer);

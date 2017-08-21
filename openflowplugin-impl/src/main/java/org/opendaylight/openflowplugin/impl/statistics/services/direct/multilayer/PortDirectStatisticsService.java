@@ -17,8 +17,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.services.util.RequestInputUtils;
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.AbstractPortDirectStatisticsService;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
+import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
+import org.opendaylight.openflowplugin.common.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetNodeConnectorStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetNodeConnectorStatisticsOutput;
@@ -42,9 +42,9 @@ public class PortDirectStatisticsService extends AbstractPortDirectStatisticsSer
 
     public PortDirectStatisticsService(final RequestContextStack requestContextStack,
                                        final DeviceContext deviceContext,
-                                       final ConvertorExecutor convertorExecutor,
+                                       final ConverterExecutor converterExecutor,
                                        final MultipartWriterProvider statisticsWriterProvider) {
-        super(requestContextStack, deviceContext, convertorExecutor, statisticsWriterProvider);
+        super(requestContextStack, deviceContext, converterExecutor, statisticsWriterProvider);
     }
 
     @Override

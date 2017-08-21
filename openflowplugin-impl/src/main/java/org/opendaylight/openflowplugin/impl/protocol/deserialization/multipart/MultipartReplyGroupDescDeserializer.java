@@ -15,6 +15,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegi
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.util.ActionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
@@ -38,7 +39,13 @@ public class MultipartReplyGroupDescDeserializer implements OFDeserializer<Multi
     private static final byte PADDING_IN_BUCKETS_HEADER = 4;
     private static final byte GROUP_DESC_HEADER_LENGTH = 8;
     private static final byte BUCKETS_HEADER_LENGTH = 16;
+    private final ExtensionConverterProvider extensionConverterProvider;
     private DeserializerRegistry registry;
+
+    public MultipartReplyGroupDescDeserializer(final ExtensionConverterProvider extensionConverterProvider) {
+
+        this.extensionConverterProvider = extensionConverterProvider;
+    }
 
     @Override
     public MultipartReplyBody deserialize(ByteBuf message) {
@@ -49,7 +56,7 @@ public class MultipartReplyGroupDescDeserializer implements OFDeserializer<Multi
             final int itemLength = message.readUnsignedShort();
 
             final GroupDescStatsBuilder itemBuilder = new GroupDescStatsBuilder()
-                .setGroupType(GroupTypes.forValue(message.readUnsignedByte()));
+                    .setGroupType(GroupTypes.forValue(message.readUnsignedByte()));
 
             message.skipBytes(PADDING_IN_GROUP_DESC_HEADER);
             itemBuilder.setGroupId(new GroupId(message.readUnsignedInt()));
@@ -63,15 +70,15 @@ public class MultipartReplyGroupDescDeserializer implements OFDeserializer<Multi
                 final int bucketsLength = message.readUnsignedShort();
 
                 final BucketBuilder bucketBuilder = new BucketBuilder()
-                    .setBucketId(new BucketId(bucketKey))
-                    .setKey(new BucketKey(new BucketId(bucketKey)))
-                    .setWeight(message.readUnsignedShort())
-                    .setWatchPort(message.readUnsignedInt())
-                    .setWatchGroup(message.readUnsignedInt());
+                        .setBucketId(new BucketId(bucketKey))
+                        .setKey(new BucketKey(new BucketId(bucketKey)))
+                        .setWeight(message.readUnsignedShort())
+                        .setWatchPort(message.readUnsignedInt())
+                        .setWatchGroup(message.readUnsignedInt());
 
                 message.skipBytes(PADDING_IN_BUCKETS_HEADER);
                 final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list
-                    .Action> actions = new ArrayList<>();
+                        .Action> actions = new ArrayList<>();
                 final int startIndex = message.readerIndex();
                 final int bucketLength = bucketsLength - BUCKETS_HEADER_LENGTH;
                 int offset = 0;
@@ -81,7 +88,8 @@ public class MultipartReplyGroupDescDeserializer implements OFDeserializer<Multi
                             .setKey(new ActionKey(offset))
                             .setOrder(offset)
                             .setAction(ActionUtil.readAction(EncodeConstants.OF13_VERSION_ID, message, registry,
-                                    ActionPath.GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION))
+                                    ActionPath.GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION,
+                                    extensionConverterProvider))
                             .build());
 
                     offset++;
@@ -94,15 +102,15 @@ public class MultipartReplyGroupDescDeserializer implements OFDeserializer<Multi
             }
 
             items.add(itemBuilder
-                .setBuckets(new BucketsBuilder()
-                    .setBucket(subItems)
-                    .build())
-                .build());
+                    .setBuckets(new BucketsBuilder()
+                            .setBucket(subItems)
+                            .build())
+                    .build());
         }
 
         return builder
-            .setGroupDescStats(items)
-            .build();
+                .setGroupDescStats(items)
+                .build();
     }
 
     @Override

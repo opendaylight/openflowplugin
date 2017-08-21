@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl.protocol.deserialization;
 
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 
 /**
  * Util class for injecting new deserializers into OpenflowJava
@@ -19,12 +20,13 @@ public class DeserializerInjector {
      * Injects deserializers into provided {@link org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider}
      * @param provider OpenflowJava deserializer extension provider
      */
-    public static void injectDeserializers(final DeserializerExtensionProvider provider) {
+    public static void injectDeserializers(final DeserializerExtensionProvider provider,
+                                           final ExtensionConverterProvider extensionConverterProvider) {
         // Inject new deserializers here
-        MatchDeserializerInjector.injectDeserializers(provider);
+        MatchDeserializerInjector.injectDeserializers(provider, extensionConverterProvider);
         ActionDeserializerInjector.injectDeserializers(provider);
-        InstructionDeserializerInjector.injectDeserializers(provider);
-        MultipartDeserializerInjector.injectDeserializers(provider);
+        InstructionDeserializerInjector.injectDeserializers(provider, extensionConverterProvider);
+        MultipartDeserializerInjector.injectDeserializers(provider, extensionConverterProvider);
         MessageDeserializerInjector.injectDeserializers(provider);
     }
 

@@ -24,8 +24,8 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.protocol.serialization.MatchEntrySerializer;
 import org.opendaylight.openflowplugin.api.openflow.protocol.serialization.MatchEntrySerializerRegistry;
 import org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey;
-import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionResolvers;
-import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
+import org.opendaylight.openflowplugin.protocol.extension.ExtensionResolvers;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ExperimenterClass;
@@ -42,7 +42,12 @@ public class MatchSerializer implements OFSerializer<Match>, HeaderSerializer<Ma
     private static final byte OXM_MATCH_TYPE_CODE = 1;
     private final Map<org.opendaylight.openflowplugin.api.openflow.protocol.serialization.
             MatchEntrySerializerKey, MatchEntrySerializer> entryRegistry = new LinkedHashMap<>();
+    private final ExtensionConverterProvider extensionConverterProvider;
     private SerializerRegistry registry;
+
+    public MatchSerializer(final ExtensionConverterProvider extensionConverterProvider) {
+        this.extensionConverterProvider = extensionConverterProvider;
+    }
 
     @Override
     public void serialize(Match match, ByteBuf outBuffer) {
@@ -99,8 +104,7 @@ public class MatchSerializer implements OFSerializer<Match>, HeaderSerializer<Ma
             final ConverterExtensionKey<? extends ExtensionKey> converterExtensionKey =
                     new ConverterExtensionKey<>(extension.getExtensionKey(), OFConstants.OFP_VERSION_1_3);
 
-            Optional.ofNullable(OFSessionUtil.getExtensionConvertorProvider())
-                    .flatMap(provider -> Optional.ofNullable(provider.<MatchEntry>getConverter(converterExtensionKey)))
+            Optional.ofNullable(extensionConverterProvider.<MatchEntry>getConverter(converterExtensionKey))
                     .map(matchEntryConvertorToOFJava -> {
                         final MatchEntry entry = matchEntryConvertorToOFJava.convert(extension.getExtension());
 
