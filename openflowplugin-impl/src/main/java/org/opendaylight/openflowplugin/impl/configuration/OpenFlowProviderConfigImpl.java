@@ -132,7 +132,9 @@ public class OpenFlowProviderConfigImpl implements OpenflowProviderConfig {
     }
 
     @Override
-    public <E extends Augmentation<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig>> E getAugmentation(java.lang.Class<E> augmentationType) {
+    public <E extends Augmentation<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang
+            .openflow.provider.config.rev160510.OpenflowProviderConfig>> E getAugmentation(
+                    java.lang.Class<E> augmentationType) {
         return null;
     }
 

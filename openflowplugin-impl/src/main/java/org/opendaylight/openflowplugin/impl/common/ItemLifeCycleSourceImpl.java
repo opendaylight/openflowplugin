@@ -14,7 +14,7 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 
 /**
- * simple standalone {@link ItemLifeCycleSource} implementation
+ * simple standalone {@link ItemLifeCycleSource} implementation.
  */
 public class ItemLifeCycleSourceImpl implements ItemLifeCycleKeeper {
 
