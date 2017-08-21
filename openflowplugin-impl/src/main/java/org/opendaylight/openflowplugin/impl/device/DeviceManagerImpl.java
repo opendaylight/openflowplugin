@@ -7,10 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.device;
 
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.MoreExecutors;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.internal.ConcurrentSet;
 import java.util.Optional;

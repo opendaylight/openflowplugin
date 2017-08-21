@@ -56,17 +56,17 @@ public abstract class AbstractMultipartRequestCallback<T extends OfHeader> exten
     }
 
     /**
-     * Check if result is multipart
+     * Check if result is multipart.
      * @param result result
      * @return true if result is multipart
      */
-    protected abstract boolean isMultipart(final OfHeader result);
+    protected abstract boolean isMultipart(OfHeader result);
 
     /**
-     * Check if result requests more multiparts
+     * Check if result requests more multiparts.
      * @param result result
      * @return true if result requests more multiparts
      */
-    protected abstract boolean isReqMore(final T result);
+    protected abstract boolean isReqMore(T result);
 
 }

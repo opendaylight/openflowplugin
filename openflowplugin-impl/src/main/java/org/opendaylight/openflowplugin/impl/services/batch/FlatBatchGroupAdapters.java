@@ -53,9 +53,11 @@ public class FlatBatchGroupAdapters {
     }
 
     /**
+     * Adapt flat batch add group.
      * @param planStep batch step containing changes of the same type
      * @param node     pointer for RPC routing
-     * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.SalGroupsBatchService#addGroupsBatch(AddGroupsBatchInput)}
+     * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn
+     * .opendaylight.groups.service.rev160315.SalGroupsBatchService#addGroupsBatch(AddGroupsBatchInput)}
      */
     public static AddGroupsBatchInput adaptFlatBatchAddGroup(final BatchPlanStep planStep, final NodeRef node) {
         final List<BatchAddGroups> batchGroups = new ArrayList<>();
@@ -74,9 +76,11 @@ public class FlatBatchGroupAdapters {
     }
 
     /**
+     * Adapt flat batch remove group.
      * @param planStep batch step containing changes of the same type
      * @param node     pointer for RPC routing
-     * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.SalGroupsBatchService#removeGroupsBatch(RemoveGroupsBatchInput)}
+     * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn
+     * .opendaylight.groups.service.rev160315.SalGroupsBatchService#removeGroupsBatch(RemoveGroupsBatchInput)}
      */
     public static RemoveGroupsBatchInput adaptFlatBatchRemoveGroup(final BatchPlanStep planStep, final NodeRef node) {
         final List<BatchRemoveGroups> batchGroups = new ArrayList<>();
@@ -95,9 +99,11 @@ public class FlatBatchGroupAdapters {
     }
 
     /**
+     * Adapt flat batch update group.
      * @param planStep batch step containing changes of the same type
      * @param node     pointer for RPC routing
-     * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.SalGroupsBatchService#updateGroupsBatch(UpdateGroupsBatchInput)}
+     * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn
+     * .opendaylight.groups.service.rev160315.SalGroupsBatchService#updateGroupsBatch(UpdateGroupsBatchInput)}
      */
     public static UpdateGroupsBatchInput adaptFlatBatchUpdateGroup(final BatchPlanStep planStep, final NodeRef node) {
         final List<BatchUpdateGroups> batchGroups = new ArrayList<>();
@@ -115,18 +121,20 @@ public class FlatBatchGroupAdapters {
     }
 
     /**
+     * Convert batch group result.
      * @param stepOffset offset of current batch plan step
      * @return converted {@link ProcessFlatBatchOutput} RPC result
      */
     @VisibleForTesting
     static <T extends BatchGroupOutputListGrouping> Function<RpcResult<T>, RpcResult<ProcessFlatBatchOutput>>
-    convertBatchGroupResult(final int stepOffset) {
+        convertBatchGroupResult(final int stepOffset) {
         return new Function<RpcResult<T>, RpcResult<ProcessFlatBatchOutput>>() {
             @Nullable
             @Override
             public RpcResult<ProcessFlatBatchOutput> apply(@Nullable final RpcResult<T> input) {
                 List<BatchFailure> batchFailures = wrapBatchGroupFailuresForFlat(input, stepOffset);
-                ProcessFlatBatchOutputBuilder outputBuilder = new ProcessFlatBatchOutputBuilder().setBatchFailure(batchFailures);
+                ProcessFlatBatchOutputBuilder outputBuilder =
+                        new ProcessFlatBatchOutputBuilder().setBatchFailure(batchFailures);
                 return RpcResultBuilder.<ProcessFlatBatchOutput>status(input.isSuccessful())
                                        .withRpcErrors(input.getErrors())
                                        .withResult(outputBuilder.build())
@@ -153,7 +161,7 @@ public class FlatBatchGroupAdapters {
     }
 
     /**
-     * shortcut for {@link #convertBatchGroupResult(int)} with conversion {@link ListenableFuture}
+     * Shortcut for {@link #convertBatchGroupResult(int)} with conversion {@link ListenableFuture}.
      *
      * @param <T>                     exact type of batch flow output
      * @param resultUpdateGroupFuture batch group rpc-result (add/remove/update)
@@ -161,7 +169,7 @@ public class FlatBatchGroupAdapters {
      * @return ListenableFuture with converted result {@link ProcessFlatBatchOutput}
      */
     public static <T extends BatchGroupOutputListGrouping> ListenableFuture<RpcResult<ProcessFlatBatchOutput>>
-    convertGroupBatchFutureForChain(final Future<RpcResult<T>> resultUpdateGroupFuture,
+        convertGroupBatchFutureForChain(final Future<RpcResult<T>> resultUpdateGroupFuture,
                                     final int currentOffset) {
         return Futures.transform(JdkFutureAdapters.listenInPoolThread(resultUpdateGroupFuture),
                 FlatBatchGroupAdapters.<T>convertBatchGroupResult(currentOffset));
