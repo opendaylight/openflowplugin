@@ -81,7 +81,8 @@ class RpcContextImpl implements RpcContext {
     public <S extends RpcService> void registerRpcServiceImplementation(final Class<S> serviceClass,
                                                                         final S serviceInstance) {
         if (!rpcRegistrations.containsKey(serviceClass)) {
-            final RoutedRpcRegistration<S> routedRpcReg = rpcProviderRegistry.addRoutedRpcImplementation(serviceClass, serviceInstance);
+            final RoutedRpcRegistration<S> routedRpcReg =
+                    rpcProviderRegistry.addRoutedRpcImplementation(serviceClass, serviceInstance);
             routedRpcReg.registerPath(NodeContext.class, nodeInstanceIdentifier);
             rpcRegistrations.put(serviceClass, routedRpcReg);
             if (LOG.isDebugEnabled()) {
@@ -112,7 +113,8 @@ class RpcContextImpl implements RpcContext {
             rpcRegistration.close();
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Closing RPC Registration of service {} for device {}.", rpcRegistration.getServiceType().getSimpleName(),
+                LOG.debug("Closing RPC Registration of service {} for device {}.",
+                        rpcRegistration.getServiceType().getSimpleName(),
                         nodeInstanceIdentifier.getKey().getId().getValue());
             }
         }
@@ -124,12 +126,14 @@ class RpcContextImpl implements RpcContext {
             LOG.trace("Device queue {} at capacity", this);
             return null;
         } else {
-            LOG.trace("Acquired semaphore for {}, available permits:{} ", nodeInstanceIdentifier.getKey().getId().getValue(), tracker.availablePermits());
+            LOG.trace("Acquired semaphore for {}, available permits:{} ",
+                    nodeInstanceIdentifier.getKey().getId().getValue(), tracker.availablePermits());
         }
 
         final Long xid = deviceInfo.reserveXidForDeviceMessage();
         if (xid == null) {
-            LOG.warn("Xid cannot be reserved for new RequestContext, node:{}", nodeInstanceIdentifier.getKey().getId().getValue());
+            LOG.warn("Xid cannot be reserved for new RequestContext, node:{}",
+                    nodeInstanceIdentifier.getKey().getId().getValue());
             tracker.release();
             return null;
         }
@@ -147,12 +151,14 @@ class RpcContextImpl implements RpcContext {
 
     @Override
     public <S extends RpcService> void unregisterRpcServiceImplementation(final Class<S> serviceClass) {
-        LOG.trace("Try to unregister serviceClass {} for Node {}", serviceClass, nodeInstanceIdentifier.getKey().getId());
+        LOG.trace("Try to unregister serviceClass {} for Node {}",
+                serviceClass, nodeInstanceIdentifier.getKey().getId());
         final RoutedRpcRegistration<?> rpcRegistration = rpcRegistrations.remove(serviceClass);
         if (rpcRegistration != null) {
             rpcRegistration.unregisterPath(NodeContext.class, nodeInstanceIdentifier);
             rpcRegistration.close();
-            LOG.debug("Un-registration serviceClass {} for Node {}", serviceClass.getSimpleName(), nodeInstanceIdentifier.getKey().getId().getValue());
+            LOG.debug("Un-registration serviceClass {} for Node {}", serviceClass.getSimpleName(),
+                    nodeInstanceIdentifier.getKey().getId().getValue());
         }
     }
 
