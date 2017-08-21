@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015 Ericsson India Global Services Pvt Ltd. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -6,27 +6,29 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.applications.frm.impl;
+package org.opendaylight.openflowplugin.applications.frm.impl.commiters;
 
 import com.google.common.base.Preconditions;
 import java.util.Collection;
+import java.util.Objects;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frm.FlowCapableNodeConnectorCommitter;
-import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-public abstract class AbstractNodeConnectorCommitter<T extends DataObject>
-        implements FlowCapableNodeConnectorCommitter<T> {
-    private final ForwardingRulesManager provider;
+public abstract class AbstractNodeConnectorCommitter<T extends DataObject> implements
+        FlowCapableNodeConnectorCommitter<T> {
+    private final AutoCloseable registration;
 
-    private final Class<T> clazz;
-
-    public AbstractNodeConnectorCommitter(ForwardingRulesManager provider, Class<T> clazz) {
-        this.provider = Preconditions.checkNotNull(provider, "ForwardingRulesManager can not be null!");
-        this.clazz = Preconditions.checkNotNull(clazz, "Class can not be null!");
+    public AbstractNodeConnectorCommitter(DataBroker dataBroker) {
+        final DataTreeIdentifier<T> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION,
+                getWildCardPath());
+        registration = dataBroker.registerDataTreeChangeListener(treeId, this);
     }
 
     @Override
@@ -61,14 +63,18 @@ public abstract class AbstractNodeConnectorCommitter<T extends DataObject>
         }
     }
 
+    @Override
+    public void close() throws Exception {
+        registration.close();
+    }
+
     /**
      * Method return wildCardPath for Listener registration
-     * and for identify the correct KeyInstanceIdentifier from data.
+     * and for identify the correct KeyInstanceIdentifier from data;
      */
     protected abstract InstanceIdentifier<T> getWildCardPath();
 
     private boolean preConfigurationCheck(final InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent) {
-        Preconditions.checkNotNull(nodeConnIdent, "FlowCapableNodeConnector ident can not be null!");
-        return true;
+        return Objects.nonNull(nodeConnIdent);
     }
 }

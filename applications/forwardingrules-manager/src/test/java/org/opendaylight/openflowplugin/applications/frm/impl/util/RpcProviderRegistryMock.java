@@ -5,7 +5,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package test.mock.util;
+package org.opendaylight.openflowplugin.applications.frm.impl.util;
 
 import org.opendaylight.controller.md.sal.common.api.routing.RouteChangeListener;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
@@ -23,7 +23,7 @@ import org.opendaylight.yangtools.yang.binding.RpcService;
 public class RpcProviderRegistryMock implements RpcProviderRegistry {
     @Override
     public <T extends RpcService> BindingAwareBroker.RpcRegistration<T> addRpcImplementation(Class<T> serviceInterface,
-            T implementation) throws IllegalStateException {
+                                                                                             T implementation) throws IllegalStateException {
         return null;
     }
 
@@ -35,7 +35,7 @@ public class RpcProviderRegistryMock implements RpcProviderRegistry {
 
     @Override
     public <L extends RouteChangeListener<RpcContextIdentifier,
-        InstanceIdentifier<?>>> ListenerRegistration<L> registerRouteChangeListener(
+            InstanceIdentifier<?>>> ListenerRegistration<L> registerRouteChangeListener(
             L listener) {
         return null;
     }
