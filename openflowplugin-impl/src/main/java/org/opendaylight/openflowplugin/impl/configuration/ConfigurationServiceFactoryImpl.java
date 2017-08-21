@@ -36,7 +36,9 @@ public class ConfigurationServiceFactoryImpl implements ConfigurationServiceFact
     private static final Logger LOG = LoggerFactory.getLogger(ConfigurationServiceFactory.class);
 
     @Override
-    public ConfigurationService newInstance(final OpenflowProviderConfig providerConfig, final BundleContext bundleContext) {
+    public ConfigurationService newInstance(
+            final OpenflowProviderConfig providerConfig,
+            final BundleContext bundleContext) {
         return new ConfigurationServiceImpl(providerConfig, bundleContext);
     }
 
@@ -83,28 +85,30 @@ public class ConfigurationServiceFactoryImpl implements ConfigurationServiceFact
                     .build());
 
             LOG.info("Loading configuration from '{}' configuration file", OFConstants.CONFIG_FILE_ID);
-            Optional.ofNullable(bundleContext.getServiceReference(ConfigurationAdmin.class)).ifPresent(serviceReference -> {
-                final ConfigurationAdmin configurationAdmin = bundleContext.getService(serviceReference);
+            Optional.ofNullable(bundleContext.getServiceReference(ConfigurationAdmin.class))
+                    .ifPresent(serviceReference -> {
+                        final ConfigurationAdmin configurationAdmin = bundleContext.getService(serviceReference);
 
-                try {
-                    final Configuration configuration = configurationAdmin.getConfiguration(OFConstants.CONFIG_FILE_ID);
+                        try {
+                            final Configuration configuration
+                                    = configurationAdmin.getConfiguration(OFConstants.CONFIG_FILE_ID);
 
-                    Optional.ofNullable(configuration.getProperties()).ifPresent(properties -> {
-                        final Enumeration<String> keys = properties.keys();
-                        final Map<String, String> mapProperties = new HashMap<>(properties.size());
+                            Optional.ofNullable(configuration.getProperties()).ifPresent(properties -> {
+                                final Enumeration<String> keys = properties.keys();
+                                final Map<String, String> mapProperties = new HashMap<>(properties.size());
 
-                        while (keys.hasMoreElements()) {
-                            final String key = keys.nextElement();
-                            final String value = properties.get(key).toString();
-                            mapProperties.put(key, value);
+                                while (keys.hasMoreElements()) {
+                                    final String key = keys.nextElement();
+                                    final String value = properties.get(key).toString();
+                                    mapProperties.put(key, value);
+                                }
+
+                                update(mapProperties);
+                            });
+                        } catch (IOException e) {
+                            LOG.debug("Failed to load {} configuration file. Error {}", OFConstants.CONFIG_FILE_ID, e);
                         }
-
-                        update(mapProperties);
                     });
-                } catch (IOException e) {
-                    LOG.debug("Failed to load {} configuration file. Error {}", OFConstants.CONFIG_FILE_ID, e);
-                }
-            });
         }
 
         @Override
@@ -117,7 +121,10 @@ public class ConfigurationServiceFactoryImpl implements ConfigurationServiceFact
                         return;
                     }
 
-                    LOG.info("{} configuration property was changed from '{}' to '{}'", propertyName, originalValue, newValue);
+                    LOG.info("{} configuration property was changed from '{}' to '{}'",
+                            propertyName,
+                            originalValue,
+                            newValue);
                 } else {
                     if (Objects.isNull(newValue)) {
                         return;

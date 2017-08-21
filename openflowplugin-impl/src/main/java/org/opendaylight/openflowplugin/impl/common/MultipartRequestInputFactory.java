@@ -61,15 +61,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.
 /**
  * openflowplugin-impl
  * org.opendaylight.openflowplugin.impl.common
- * <p>
  * Factory class is designed for easy producing a MultipartRequestInput. Class should help
  * to understand a relationship between {@link MultipartType} and {@link MultipartRequestInput}
  * without touch OF specification 1.3.2  - a section 7.3.5. Multipart Messages
- * see also <a href="https://www.opennetworking.org/images/stories/downloads/sdn-resources/onf-specifications/openflow/openflow-spec-v1.3.2.pdf">OpenFlow 1.3.2</a>
- *
- * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
- *         <p>
- *         Created: Mar 27, 2015
  */
 public final class MultipartRequestInputFactory {
 
@@ -78,7 +72,8 @@ public final class MultipartRequestInputFactory {
     }
 
     /**
-     * Method validate input and makes {@link org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader}
+     * Method validate input and makes
+     * {@link org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader}
      * from input values. Method set a moreRequest marker to false and it creates default empty multipart request body
      * by {@link MultipartType}
      *
@@ -92,20 +87,20 @@ public final class MultipartRequestInputFactory {
                                                 final short version,
                                                 @Nonnull final MultipartType type,
                                                 final boolean canUseSingleLayer) {
-        return canUseSingleLayer ?
-            new MultipartRequestBuilder()
-                .setRequestMore(false)
-                .setVersion(version)
-                .setXid(xid)
-                .setMultipartRequestBody(makeDefaultSingleLayerBody(type))
-                .build() :
-            new MultipartRequestInputBuilder()
-                .setFlags(new MultipartRequestFlags(false))
-                .setMultipartRequestBody(makeDefaultMultiLayerBody(type, version))
-                .setVersion(version)
-                .setType(type)
-                .setXid(xid)
-                .build();
+        return canUseSingleLayer
+                ? new MultipartRequestBuilder()
+                    .setRequestMore(false)
+                    .setVersion(version)
+                    .setXid(xid)
+                    .setMultipartRequestBody(makeDefaultSingleLayerBody(type))
+                    .build()
+                : new MultipartRequestInputBuilder()
+                    .setFlags(new MultipartRequestFlags(false))
+                    .setMultipartRequestBody(makeDefaultMultiLayerBody(type, version))
+                    .setVersion(version)
+                    .setType(type)
+                    .setXid(xid)
+                    .build();
     }
 
     private static org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.request
@@ -118,18 +113,18 @@ public final class MultipartRequestInputFactory {
                 .build();
             case OFPMPAGGREGATE: return new MultipartRequestFlowAggregateStatsBuilder().build();
             case OFPMPTABLE: return new MultipartRequestFlowTableStatsBuilder().build();
-            case OFPMPPORTSTATS: return new org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.multipart.request.multipart.request.body
-                .MultipartRequestPortStatsBuilder().build();
+            case OFPMPPORTSTATS: return new org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics
+                    .rev131214.multipart.request.multipart.request.body.MultipartRequestPortStatsBuilder().build();
             case OFPMPQUEUE: return new MultipartRequestQueueStatsBuilder().build();
             case OFPMPGROUP: return new MultipartRequestGroupStatsBuilder().build();
             case OFPMPGROUPDESC: return new MultipartRequestGroupDescBuilder().build();
             case OFPMPGROUPFEATURES: return new MultipartRequestGroupFeaturesBuilder().build();
             case OFPMPMETER: return new MultipartRequestMeterStatsBuilder().build();
-            case OFPMPMETERCONFIG: return new org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.multipart.request.multipart.request.body
-                .MultipartRequestMeterConfigBuilder().build();
+            case OFPMPMETERCONFIG: return new org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics
+                    .rev131111.multipart.request.multipart.request.body.MultipartRequestMeterConfigBuilder().build();
             case OFPMPMETERFEATURES: return new MultipartRequestMeterFeaturesBuilder().build();
-            case OFPMPTABLEFEATURES: return new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.multipart.request.multipart.request.body
-                .MultipartRequestTableFeaturesBuilder().build();
+            case OFPMPTABLEFEATURES: return new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types
+                    .rev131026.multipart.request.multipart.request.body.MultipartRequestTableFeaturesBuilder().build();
             case OFPMPPORTDESC: return new MultipartRequestPortDescBuilder().build();
             case OFPMPEXPERIMENTER: return new MultipartRequestExperimenterBuilder().build();
             default:throw new IllegalArgumentException("Unknown MultipartType " + type);
@@ -142,7 +137,8 @@ public final class MultipartRequestInputFactory {
             case OFPMPDESC:
                 return new MultipartRequestDescCaseBuilder().build();
             case OFPMPFLOW:
-                MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
+                final MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder
+                        = new MultipartRequestFlowCaseBuilder();
                 MultipartRequestFlowBuilder multipartRequestFlowBuilder = new MultipartRequestFlowBuilder();
                 multipartRequestFlowBuilder.setTableId(OFConstants.OFPTT_ALL);
                 multipartRequestFlowBuilder.setOutPort(OFConstants.OFPP_ANY);
@@ -169,20 +165,25 @@ public final class MultipartRequestInputFactory {
             case OFPMPTABLE:
                 return new MultipartRequestTableCaseBuilder().build();
             case OFPMPPORTSTATS:
-                MultipartRequestPortStatsCaseBuilder multipartRequestPortStatsCaseBuilder = new MultipartRequestPortStatsCaseBuilder();
-                MultipartRequestPortStatsBuilder multipartRequestPortStatsBuilder = new MultipartRequestPortStatsBuilder();
+                MultipartRequestPortStatsCaseBuilder multipartRequestPortStatsCaseBuilder
+                        = new MultipartRequestPortStatsCaseBuilder();
+                MultipartRequestPortStatsBuilder multipartRequestPortStatsBuilder
+                        = new MultipartRequestPortStatsBuilder();
                 multipartRequestPortStatsBuilder.setPortNo(OFConstants.OFPP_ANY);
-                multipartRequestPortStatsCaseBuilder.setMultipartRequestPortStats(multipartRequestPortStatsBuilder.build());
+                multipartRequestPortStatsCaseBuilder
+                        .setMultipartRequestPortStats(multipartRequestPortStatsBuilder.build());
                 return multipartRequestPortStatsCaseBuilder.build();
             case OFPMPQUEUE:
-                MultipartRequestQueueCaseBuilder multipartRequestQueueCaseBuilder = new MultipartRequestQueueCaseBuilder();
+                MultipartRequestQueueCaseBuilder multipartRequestQueueCaseBuilder
+                        = new MultipartRequestQueueCaseBuilder();
                 MultipartRequestQueueBuilder multipartRequestQueueBuilder = new MultipartRequestQueueBuilder();
                 multipartRequestQueueBuilder.setPortNo(OFConstants.OFPP_ANY);
                 multipartRequestQueueBuilder.setQueueId(OFConstants.OFPQ_ALL);
                 multipartRequestQueueCaseBuilder.setMultipartRequestQueue(multipartRequestQueueBuilder.build());
                 return multipartRequestQueueCaseBuilder.build();
             case OFPMPGROUP:
-                MultipartRequestGroupCaseBuilder multipartRequestGroupCaseBuilder = new MultipartRequestGroupCaseBuilder();
+                MultipartRequestGroupCaseBuilder multipartRequestGroupCaseBuilder
+                        = new MultipartRequestGroupCaseBuilder();
                 MultipartRequestGroupBuilder multipartRequestGroupBuilder = new MultipartRequestGroupBuilder();
                 GroupId groupId = new GroupId(OFConstants.OFPG_ALL);
                 multipartRequestGroupBuilder.setGroupId(groupId);
@@ -193,24 +194,31 @@ public final class MultipartRequestInputFactory {
             case OFPMPGROUPFEATURES:
                 return new MultipartRequestGroupFeaturesCaseBuilder().build();
             case OFPMPMETER:
-                MultipartRequestMeterCaseBuilder multipartRequestMeterCaseBuilder = new MultipartRequestMeterCaseBuilder();
+                MultipartRequestMeterCaseBuilder multipartRequestMeterCaseBuilder
+                        = new MultipartRequestMeterCaseBuilder();
                 MultipartRequestMeterBuilder multipartRequestMeterBuilder = new MultipartRequestMeterBuilder();
                 MeterId meterId = new MeterId(OFConstants.OFPM_ALL);
                 multipartRequestMeterBuilder.setMeterId(meterId);
                 multipartRequestMeterCaseBuilder.setMultipartRequestMeter(multipartRequestMeterBuilder.build());
                 return multipartRequestMeterCaseBuilder.build();
             case OFPMPMETERCONFIG:
-                MultipartRequestMeterConfigCaseBuilder multipartRequestMeterConfigCaseBuilder = new MultipartRequestMeterConfigCaseBuilder();
-                MultipartRequestMeterConfigBuilder multipartRequestMeterConfigBuilder = new MultipartRequestMeterConfigBuilder();
+                MultipartRequestMeterConfigCaseBuilder multipartRequestMeterConfigCaseBuilder
+                        = new MultipartRequestMeterConfigCaseBuilder();
+                MultipartRequestMeterConfigBuilder multipartRequestMeterConfigBuilder
+                        = new MultipartRequestMeterConfigBuilder();
                 MeterId configMeterId = new MeterId(OFConstants.OFPM_ALL);
                 multipartRequestMeterConfigBuilder.setMeterId(configMeterId);
-                multipartRequestMeterConfigCaseBuilder.setMultipartRequestMeterConfig(multipartRequestMeterConfigBuilder.build());
+                multipartRequestMeterConfigCaseBuilder
+                        .setMultipartRequestMeterConfig(multipartRequestMeterConfigBuilder.build());
                 return multipartRequestMeterConfigCaseBuilder.build();
             case OFPMPMETERFEATURES:
                 return new MultipartRequestMeterFeaturesCaseBuilder().build();
             case OFPMPTABLEFEATURES:
-                MultipartRequestTableFeaturesCaseBuilder tableFeaturesCaseBuilder = new MultipartRequestTableFeaturesCaseBuilder();
-                tableFeaturesCaseBuilder.setMultipartRequestTableFeatures(new MultipartRequestTableFeaturesBuilder().build());
+                MultipartRequestTableFeaturesCaseBuilder tableFeaturesCaseBuilder
+                        = new MultipartRequestTableFeaturesCaseBuilder();
+                tableFeaturesCaseBuilder.setMultipartRequestTableFeatures(
+                        new MultipartRequestTableFeaturesBuilder().build()
+                );
                 return tableFeaturesCaseBuilder.build();
             case OFPMPPORTDESC:
                 return new MultipartRequestPortDescCaseBuilder().build();

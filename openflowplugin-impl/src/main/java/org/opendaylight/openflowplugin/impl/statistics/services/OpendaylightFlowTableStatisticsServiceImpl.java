@@ -97,6 +97,7 @@ public final class OpendaylightFlowTableStatisticsServiceImpl extends
             MultipartReplyTable replyBody = caseBody.getMultipartReplyTable();
             List<TableStats> swTablesStats = replyBody.getTableStats();
 
+            //TODO: Duplicate code: look at MultiReplyTranslatorUtil method translateTable
             for (TableStats swTableStats : swTablesStats) {
                 FlowTableAndStatisticsMapBuilder statisticsBuilder = new FlowTableAndStatisticsMapBuilder();
                 statisticsBuilder.setActiveFlows(new Counter32(swTableStats.getActiveCount()));
