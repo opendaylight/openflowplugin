@@ -17,15 +17,19 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -56,6 +60,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint32Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfigBuilder;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcError;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeviceManagerImplTest {
@@ -152,9 +157,22 @@ public class DeviceManagerImplTest {
 
     @Test
     public void removeDeviceFromOperationalDS() throws Exception {
-        final CheckedFuture<Void, TransactionCommitFailedException> future = deviceManager
+        final ListenableFuture<Void> future = deviceManager
                 .removeDeviceFromOperationalDS(DUMMY_IDENTIFIER);
 
+        future.get();
+        assertTrue(future.isDone());
+        verify(writeTransaction).delete(LogicalDatastoreType.OPERATIONAL, DUMMY_IDENTIFIER);
+    }
+
+    @Test(expected = ExecutionException.class)
+    public void removeDeviceFromOperationalDSException() throws Exception {
+        final CheckedFuture<Void, TransactionCommitFailedException> failedFuture =
+                Futures.immediateFailedCheckedFuture(
+                        new TransactionCommitFailedException("Test failed transaction", null, null));
+        Mockito.when(writeTransaction.submit()).thenReturn(failedFuture);
+        final ListenableFuture<Void> future = deviceManager
+                .removeDeviceFromOperationalDS(DUMMY_IDENTIFIER);
         future.get();
         assertTrue(future.isDone());
         verify(writeTransaction).delete(LogicalDatastoreType.OPERATIONAL, DUMMY_IDENTIFIER);
