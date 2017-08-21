@@ -17,7 +17,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.mp.message.ser
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
-public abstract class AbstractExperimenterMultipartService<T extends OfHeader> extends AbstractMultipartService<SendExperimenterMpRequestInput, T> {
+public abstract class AbstractExperimenterMultipartService<T extends OfHeader>
+        extends AbstractMultipartService<SendExperimenterMpRequestInput, T> {
 
     private final ExtensionConverterProvider extensionConverterProvider;
 
@@ -28,7 +29,7 @@ public abstract class AbstractExperimenterMultipartService<T extends OfHeader> e
     }
 
     /**
-     * Get extension converter provider
+     * Get extension converter provider.
      * @return extension converter provider
      */
     protected ExtensionConverterProvider getExtensionConverterProvider() {
@@ -36,10 +37,10 @@ public abstract class AbstractExperimenterMultipartService<T extends OfHeader> e
     }
 
     /**
-     * Process experimenter input and result experimenter output
+     * Process experimenter input and result experimenter output.
      * @param input experimenter input
      * @return experimenter output
      */
-    public abstract Future<RpcResult<SendExperimenterMpRequestOutput>> handleAndReply(SendExperimenterMpRequestInput input);
-
+    public abstract Future<RpcResult<SendExperimenterMpRequestOutput>>
+        handleAndReply(SendExperimenterMpRequestInput input);
 }

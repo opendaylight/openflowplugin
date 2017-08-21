@@ -65,7 +65,8 @@ public class MultiLayerTableMultipartService extends AbstractTableMultipartServi
     protected OfHeader buildRequest(final Xid xid, final UpdateTableInput input) throws ServiceException {
         final Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart
                 .request.multipart.request.body.multipart.request.table.features._case.multipart.request
-                .table.features.TableFeatures>> tableFeatures = convertorExecutor.convert(input.getUpdatedTable(), data);
+                .table.features.TableFeatures>> tableFeatures =
+                convertorExecutor.convert(input.getUpdatedTable(), data);
 
         return RequestInputUtils.createMultipartHeader(MultipartType.OFPMPTABLEFEATURES, xid.getValue(), getVersion())
                 .setMultipartRequestBody(new MultipartRequestTableFeaturesCaseBuilder()
@@ -78,12 +79,14 @@ public class MultiLayerTableMultipartService extends AbstractTableMultipartServi
     }
 
     @Override
+
     public Future<RpcResult<UpdateTableOutput>> handleAndReply(UpdateTableInput input) {
         final ListenableFuture<RpcResult<List<MultipartReply>>> multipartFuture = handleServiceCall(input);
         final SettableFuture<RpcResult<UpdateTableOutput>> finalFuture = SettableFuture.create();
 
         class CallBackImpl implements FutureCallback<RpcResult<List<MultipartReply>>> {
             @Override
+            @SuppressWarnings("checkstyle:IllegalCatch")
             public void onSuccess(final RpcResult<List<MultipartReply>> result) {
 
                 if (result.isSuccessful()) {
@@ -95,7 +98,8 @@ public class MultiLayerTableMultipartService extends AbstractTableMultipartServi
                     } else {
                         final Long xid = multipartReplies.get(0).getXid();
                         LOG.debug(
-                            "OnSuccess, rpc result successful, multipart response for rpc update-table with xid {} obtained.",
+                            "OnSuccess, rpc result successful,"
+                                    + " multipart response for rpc update-table with xid {} obtained.",
                             xid);
                         final UpdateTableOutputBuilder updateTableOutputBuilder = new UpdateTableOutputBuilder();
                         updateTableOutputBuilder.setTransactionId(new TransactionId(BigInteger.valueOf(xid)));
@@ -107,17 +111,18 @@ public class MultiLayerTableMultipartService extends AbstractTableMultipartServi
                         }
                     }
                 } else {
-                    LOG.debug("OnSuccess, rpc result unsuccessful, multipart response for rpc update-table was unsuccessful.");
+                    LOG.debug("OnSuccess, rpc result unsuccessful,"
+                            + " multipart response for rpc update-table was unsuccessful.");
                     finalFuture.set(RpcResultBuilder.<UpdateTableOutput>failed().withRpcErrors(result.getErrors())
                         .build());
                 }
             }
 
             @Override
-            public void onFailure(final Throwable t) {
-                LOG.error("Failure multipart response for table features request. Exception: {}", t);
+            public void onFailure(final Throwable throwable) {
+                LOG.error("Failure multipart response for table features request. Exception: {}", throwable);
                 finalFuture.set(RpcResultBuilder.<UpdateTableOutput>failed()
-                    .withError(ErrorType.RPC, "Future error", t).build());
+                    .withError(ErrorType.RPC, "Future error", throwable).build());
             }
         }
 
@@ -126,14 +131,18 @@ public class MultiLayerTableMultipartService extends AbstractTableMultipartServi
         return finalFuture;
     }
 
-    protected List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures> convertToSalTableFeatures(
+    protected List<org.opendaylight.yang.gen.v1.urn
+            .opendaylight.table.types.rev131026.table.features.TableFeatures> convertToSalTableFeatures(
             final List<MultipartReply> multipartReplies) {
-        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures> salTableFeaturesAll = new ArrayList<>();
+        final List<org.opendaylight.yang.gen.v1.urn
+                .opendaylight.table.types.rev131026.table.features.TableFeatures> salTableFeaturesAll =
+                new ArrayList<>();
         for (final MultipartReply multipartReply : multipartReplies) {
             if (multipartReply.getType().equals(MultipartType.OFPMPTABLEFEATURES)) {
                 final MultipartReplyBody multipartReplyBody = multipartReply.getMultipartReplyBody();
                 if (multipartReplyBody instanceof MultipartReplyTableFeaturesCase) {
-                    final MultipartReplyTableFeaturesCase tableFeaturesCase = ((MultipartReplyTableFeaturesCase) multipartReplyBody);
+                    final MultipartReplyTableFeaturesCase tableFeaturesCase =
+                            ((MultipartReplyTableFeaturesCase) multipartReplyBody);
                     final MultipartReplyTableFeatures salTableFeatures = tableFeaturesCase
                             .getMultipartReplyTableFeatures();
 

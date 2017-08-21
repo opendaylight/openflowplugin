@@ -64,7 +64,8 @@ public class SalMetersBatchServiceImpl implements SalMetersBatchService {
     private final SalMeterService salMeterService;
     private final FlowCapableTransactionService transactionService;
 
-    public SalMetersBatchServiceImpl(final SalMeterService salMeterService, final FlowCapableTransactionService transactionService) {
+    public SalMetersBatchServiceImpl(final SalMeterService salMeterService,
+                                     final FlowCapableTransactionService transactionService) {
         this.salMeterService = Preconditions.checkNotNull(salMeterService);
         this.transactionService = Preconditions.checkNotNull(transactionService);
     }
@@ -86,12 +87,12 @@ public class SalMetersBatchServiceImpl implements SalMetersBatchService {
         }
 
         final Iterable<Meter> meters = Iterables.transform(batchUpdateMeters, new Function<BatchUpdateMeters, Meter>() {
-                    @Nullable
-                    @Override
-                    public Meter apply(@Nullable final BatchUpdateMeters input) {
-                        return input.getUpdatedBatchedMeter();
-                    }
+                @Nullable
+                @Override
+                public Meter apply(@Nullable final BatchUpdateMeters input) {
+                    return input.getUpdatedBatchedMeter();
                 }
+            }
         );
 
         final ListenableFuture<RpcResult<List<BatchFailedMetersOutput>>> commonResult =
@@ -138,7 +139,9 @@ public class SalMetersBatchServiceImpl implements SalMetersBatchService {
 
     @Override
     public Future<RpcResult<RemoveMetersBatchOutput>> removeMetersBatch(final RemoveMetersBatchInput input) {
-        LOG.trace("Removing meters @ {} : {}", PathUtil.extractNodeId(input.getNode()), input.getBatchRemoveMeters().size());
+        LOG.trace("Removing meters @ {} : {}",
+                  PathUtil.extractNodeId(input.getNode()),
+                  input.getBatchRemoveMeters().size());
         final ArrayList<ListenableFuture<RpcResult<RemoveMeterOutput>>> resultsLot = new ArrayList<>();
         for (BatchRemoveMeters addMeter : input.getBatchRemoveMeters()) {
             final RemoveMeterInput removeMeterInput = new RemoveMeterInputBuilder(addMeter)

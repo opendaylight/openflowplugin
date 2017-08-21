@@ -9,7 +9,8 @@
 package org.opendaylight.openflowplugin.impl.services.util;
 
 /**
- * Exception thrown by {@link org.opendaylight.openflowplugin.impl.services.AbstractService#buildRequest(org.opendaylight.openflowplugin.api.openflow.device.Xid, Object)}
+ * Exception thrown by {@link org.opendaylight.openflowplugin.impl.services.AbstractService#buildRequest(
+ * org.opendaylight.openflowplugin.api.openflow.device.Xid, Object)}.
  */
 public class ServiceException extends Exception {
     public ServiceException(Throwable cause) {

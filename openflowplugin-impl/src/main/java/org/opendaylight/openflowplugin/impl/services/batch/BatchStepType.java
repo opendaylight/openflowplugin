@@ -13,15 +13,15 @@ package org.opendaylight.openflowplugin.impl.services.batch;
  */
 public enum BatchStepType {
 
-    /** flow add operation */FLOW_ADD,
-    /** flow remove operation */FLOW_REMOVE,
-    /** flow update operation */FLOW_UPDATE,
+    /** Flow add operation. */FLOW_ADD,
+    /** Flow remove operation. */FLOW_REMOVE,
+    /** Flow update operation. */FLOW_UPDATE,
 
-    /** group add operation */GROUP_ADD,
-    /** group remove operation */GROUP_REMOVE,
-    /** group update operation */GROUP_UPDATE,
+    /** Group add operation. */GROUP_ADD,
+    /** Group remove operation. */GROUP_REMOVE,
+    /** Group update operation. */GROUP_UPDATE,
 
-    /** meter add operation */METER_ADD,
-    /** meter remove operation */METER_REMOVE,
-    /** meter update operation */METER_UPDATE
+    /** Meter add operation. */METER_ADD,
+    /** Meter remove operation. */METER_REMOVE,
+    /** Meter update operation. */METER_UPDATE
 }

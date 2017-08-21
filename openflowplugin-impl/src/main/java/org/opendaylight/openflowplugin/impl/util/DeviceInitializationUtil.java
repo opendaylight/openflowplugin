@@ -71,28 +71,23 @@ public class DeviceInitializationUtil {
      * @param deviceInfo device info
      * @param nrOfTables number of tables
      */
-    @SuppressWarnings("checkstyle:IllegalCatch")
     public static void makeEmptyTables(final TxFacade txFacade, final DeviceInfo deviceInfo, final short nrOfTables) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("About to create {} empty tables for node {}.", nrOfTables, deviceInfo.getLOGValue());
         }
 
         for (int i = 0; i < nrOfTables; i++) {
-            try {
-                txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL,
-                        deviceInfo
-                                .getNodeInstanceIdentifier()
-                                .augmentation(FlowCapableNode.class)
-                                .child(Table.class, new TableKey((short) i)),
-                        new TableBuilder()
-                                .setId((short) i)
-                                .addAugmentation(
-                                        FlowTableStatisticsData.class,
-                                        new FlowTableStatisticsDataBuilder().build())
-                                .build());
-            } catch (final Exception e) {
-                LOG.debug("makeEmptyTables: Failed to write node {} to DS ", deviceInfo.getLOGValue(), e);
-            }
+            txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL,
+                    deviceInfo
+                            .getNodeInstanceIdentifier()
+                            .augmentation(FlowCapableNode.class)
+                            .child(Table.class, new TableKey((short) i)),
+                    new TableBuilder()
+                            .setId((short) i)
+                            .addAugmentation(
+                                    FlowTableStatisticsData.class,
+                                    new FlowTableStatisticsDataBuilder().build())
+                            .build());
         }
     }
 
