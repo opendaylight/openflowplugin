@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -9,16 +9,17 @@
 package org.opendaylight.openflowplugin.applications.frm;
 
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationListener;
-import org.opendaylight.openflowplugin.applications.frm.impl.FlowNodeConnectorInventoryTranslatorImpl;
+import org.opendaylight.openflowplugin.applications.frm.impl.commiters.FlowNodeConnectorInventoryTranslatorImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -38,18 +39,7 @@ public interface ForwardingRulesManager extends ConfigurationListener, AutoClose
      * Method returns information : "is Node with send InstanceIdentifier
      * connected"?.
      *
-     * @param ident
-     *            - the key of the node
-     * @return boolean - true if device is connected
-     */
-    boolean isNodeActive(InstanceIdentifier<FlowCapableNode> ident);
-
-    /**
-     * Method returns information : "is Node with send InstanceIdentifier present in
-     * operational data store"?.
-     *
-     * @param ident
-     *            - the key of the node
+     * @param ident - the key of the node
      * @return boolean - true if device is present in operational data store
      */
     boolean checkNodeInOperationalDataStore(InstanceIdentifier<FlowCapableNode> ident);
@@ -67,7 +57,14 @@ public interface ForwardingRulesManager extends ConfigurationListener, AutoClose
      *
      * @return ReadOnlyTransaction
      */
-    ReadOnlyTransaction getReadTranaction();
+    ReadOnlyTransaction getReadTransaction();
+
+    /**
+     * Method returns Write Transaction. It is need for Node reconciliation only.
+     *
+     * @return ReadOnlyTransaction
+     */
+    WriteTransaction getWriteTransaction();
 
     /**
      * Flow RPC service.

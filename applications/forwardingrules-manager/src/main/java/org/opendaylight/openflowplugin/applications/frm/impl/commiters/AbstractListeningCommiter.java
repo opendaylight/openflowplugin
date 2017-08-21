@@ -1,16 +1,20 @@
-/**
+/*
  * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others.  All rights reserved.
- *
+ * <p>
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowplugin.applications.frm.impl;
+package org.opendaylight.openflowplugin.applications.frm.impl.commiters;
 
 import com.google.common.base.Preconditions;
 import java.util.Collection;
+import java.util.Objects;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -26,12 +30,14 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractListeningCommiter<T extends DataObject> implements ForwardingRulesCommiter<T> {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractListeningCommiter.class);
-    ForwardingRulesManager provider;
-    private final Class<T> clazz;
+    private final AutoCloseable registration;
+    private final ForwardingRulesManager provider;
 
-    public AbstractListeningCommiter(ForwardingRulesManager provider, Class<T> clazz) {
-        this.provider = Preconditions.checkNotNull(provider, "ForwardingRulesManager can not be null!");
-        this.clazz = Preconditions.checkNotNull(clazz, "Class can not be null!");
+    public AbstractListeningCommiter(ForwardingRulesManager provider, DataBroker dataBroker) {
+        this.provider = provider;
+        final DataTreeIdentifier<T> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION,
+                getWildCardPath());
+        registration = dataBroker.registerDataTreeChangeListener(treeId, this);
     }
 
     @Override
@@ -42,8 +48,8 @@ public abstract class AbstractListeningCommiter<T extends DataObject> implements
         for (DataTreeModification<T> change : changes) {
             final InstanceIdentifier<T> key = change.getRootPath().getRootIdentifier();
             final DataObjectModification<T> mod = change.getRootNode();
-            final InstanceIdentifier<FlowCapableNode> nodeIdent =
-                    key.firstIdentifierOf(FlowCapableNode.class);
+            final InstanceIdentifier<FlowCapableNode> nodeIdent = key.firstIdentifierOf(FlowCapableNode.class);
+
             if (preConfigurationCheck(nodeIdent)) {
                 switch (mod.getModificationType()) {
                     case DELETE:
@@ -62,36 +68,41 @@ public abstract class AbstractListeningCommiter<T extends DataObject> implements
                     default:
                         throw new IllegalArgumentException("Unhandled modification type " + mod.getModificationType());
                 }
-            } else {
-                if (provider.isStaleMarkingEnabled()) {
-                    LOG.info("Stale-Marking ENABLED and switch {} is NOT connected, storing stale entities",
-                            nodeIdent.toString());
-                    // Switch is NOT connected
-                    switch (mod.getModificationType()) {
-                        case DELETE:
-                            createStaleMarkEntity(key, mod.getDataBefore(), nodeIdent);
-                            break;
-                        case SUBTREE_MODIFIED:
-                            break;
-                        case WRITE:
-                            break;
-                        default:
-                            throw new
-                            IllegalArgumentException("Unhandled modification type " + mod.getModificationType());
-                    }
+            } else if (provider.isStaleMarkingEnabled()) {
+                LOG.info("Stale-Marking ENABLED and switch {} is NOT connected, storing stale entities",
+                        nodeIdent.toString());
+                // Switch is NOT connected
+                switch (mod.getModificationType()) {
+                    case DELETE:
+                        createStaleMarkEntity(key, mod.getDataBefore(), nodeIdent);
+                        break;
+                    case SUBTREE_MODIFIED:
+                        break;
+                    case WRITE:
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Unhandled modification type " + mod.getModificationType());
                 }
             }
         }
     }
 
+    @Override
+    public void close() throws Exception {
+        registration.close();
+    }
+
+    ForwardingRulesManager getProvider() {
+        return provider;
+    }
+
     /**
      * Method return wildCardPath for Listener registration
-     * and for identify the correct KeyInstanceIdentifier from data.
+     * and for identify the correct KeyInstanceIdentifier from data;
      */
     protected abstract InstanceIdentifier<T> getWildCardPath();
 
     private boolean preConfigurationCheck(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        Preconditions.checkNotNull(nodeIdent, "FlowCapableNode identifier can not be null!");
         // In single node cluster, node should be in local cache before we get any flow/group/meter
         // data change event from data store. So first check should pass.
         // In case of 3-node cluster, when shard leader changes, clustering will send blob of data
@@ -101,19 +112,8 @@ public abstract class AbstractListeningCommiter<T extends DataObject> implements
         // skip the flow/group/meter operational. This requires an addition check, where it reads
         // node from operational data store and if it's present it calls flowNodeConnected to explicitly
         // trigger the event of new node connected.
-
-        if (!provider.isNodeOwner(nodeIdent)) {
-            return false;
-        }
-
-        if (!provider.isNodeActive(nodeIdent)) {
-            if (provider.checkNodeInOperationalDataStore(nodeIdent)) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        return true;
+        return Objects.nonNull(nodeIdent) &&
+                provider.isNodeOwner(nodeIdent) &&
+                provider.checkNodeInOperationalDataStore(nodeIdent);
     }
 }
-

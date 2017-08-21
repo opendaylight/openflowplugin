@@ -1,12 +1,12 @@
 /**
  * Copyright (c) 2017 Ericsson India Global Services Pvt Ltd. and others.  All rights reserved.
- *
+ * <p>
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package test.mock.util;
+package org.opendaylight.openflowplugin.applications.frm.impl.util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 public class SalBundleServiceMock implements SalBundleService {
 
     private final List<ControlBundleInput> controlBundleInput = new ArrayList<>();
-    private final List<AddBundleMessagesInput>  addBundleMessagesInput = new ArrayList<>();
+    private final List<AddBundleMessagesInput> addBundleMessagesInput = new ArrayList<>();
 
     @Override
     public Future<RpcResult<java.lang.Void>> controlBundle(ControlBundleInput input) {
