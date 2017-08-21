@@ -53,9 +53,11 @@ public class FlatBatchMeterAdapters {
     }
 
     /**
+     * Adapt flat batch add meter.
      * @param planStep batch step containing changes of the same type
      * @param node     pointer for RPC routing
-     * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.SalMetersBatchService#addMetersBatch(AddMetersBatchInput)}
+     * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn
+     * .opendaylight.meters.service.rev160316.SalMetersBatchService#addMetersBatch(AddMetersBatchInput)}
      */
     public static AddMetersBatchInput adaptFlatBatchAddMeter(final BatchPlanStep planStep, final NodeRef node) {
         final List<BatchAddMeters> batchMeters = new ArrayList<>();
@@ -74,9 +76,11 @@ public class FlatBatchMeterAdapters {
     }
 
     /**
+     * Adapt flat batch remove meter.
      * @param planStep batch step containing changes of the same type
      * @param node     pointer for RPC routing
-     * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.SalMetersBatchService#removeMetersBatch(RemoveMetersBatchInput)}
+     * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn
+     * .opendaylight.meters.service.rev160316.SalMetersBatchService#removeMetersBatch(RemoveMetersBatchInput)}
      */
     public static RemoveMetersBatchInput adaptFlatBatchRemoveMeter(final BatchPlanStep planStep, final NodeRef node) {
         final List<BatchRemoveMeters> batchMeters = new ArrayList<>();
@@ -95,9 +99,11 @@ public class FlatBatchMeterAdapters {
     }
 
     /**
+     * Adapt flat batch update meter.
      * @param planStep batch step containing changes of the same type
      * @param node     pointer for RPC routing
-     * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.SalMetersBatchService#updateMetersBatch(UpdateMetersBatchInput)}
+     * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn
+     * .opendaylight.meters.service.rev160316.SalMetersBatchService#updateMetersBatch(UpdateMetersBatchInput)}
      */
     public static UpdateMetersBatchInput adaptFlatBatchUpdateMeter(final BatchPlanStep planStep, final NodeRef node) {
         final List<BatchUpdateMeters> batchMeters = new ArrayList<>();
@@ -115,18 +121,20 @@ public class FlatBatchMeterAdapters {
     }
 
     /**
+     * Convert meter batch result.
      * @param stepOffset offset of current batch plan step
      * @return converted {@link ProcessFlatBatchOutput} RPC result
      */
     @VisibleForTesting
     static <T extends BatchMeterOutputListGrouping> Function<RpcResult<T>, RpcResult<ProcessFlatBatchOutput>>
-    convertBatchMeterResult(final int stepOffset) {
+        convertBatchMeterResult(final int stepOffset) {
         return new Function<RpcResult<T>, RpcResult<ProcessFlatBatchOutput>>() {
             @Nullable
             @Override
             public RpcResult<ProcessFlatBatchOutput> apply(@Nullable final RpcResult<T> input) {
                 List<BatchFailure> batchFailures = wrapBatchMeterFailuresForFlat(input, stepOffset);
-                ProcessFlatBatchOutputBuilder outputBuilder = new ProcessFlatBatchOutputBuilder().setBatchFailure(batchFailures);
+                ProcessFlatBatchOutputBuilder outputBuilder =
+                        new ProcessFlatBatchOutputBuilder().setBatchFailure(batchFailures);
                 return RpcResultBuilder.<ProcessFlatBatchOutput>status(input.isSuccessful())
                         .withRpcErrors(input.getErrors())
                         .withResult(outputBuilder.build())
@@ -153,7 +161,7 @@ public class FlatBatchMeterAdapters {
     }
 
     /**
-     * shortcut for {@link #convertBatchMeterResult(int)} with conversion {@link ListenableFuture}
+     * Shortcut for {@link #convertBatchMeterResult(int)} with conversion {@link ListenableFuture}.
      *
      * @param <T>                     exact type of batch flow output
      * @param resultUpdateMeterFuture batch group rpc-result (add/remove/update)
@@ -161,7 +169,7 @@ public class FlatBatchMeterAdapters {
      * @return ListenableFuture with converted result {@link ProcessFlatBatchOutput}
      */
     public static <T extends BatchMeterOutputListGrouping> ListenableFuture<RpcResult<ProcessFlatBatchOutput>>
-    convertMeterBatchFutureForChain(final Future<RpcResult<T>> resultUpdateMeterFuture,
+        convertMeterBatchFutureForChain(final Future<RpcResult<T>> resultUpdateMeterFuture,
                                     final int currentOffset) {
         return Futures.transform(JdkFutureAdapters.listenInPoolThread(resultUpdateMeterFuture),
                 FlatBatchMeterAdapters.<T>convertBatchMeterResult(currentOffset));

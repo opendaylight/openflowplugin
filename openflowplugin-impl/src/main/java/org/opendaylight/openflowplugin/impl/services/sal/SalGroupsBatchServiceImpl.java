@@ -64,7 +64,8 @@ public class SalGroupsBatchServiceImpl implements SalGroupsBatchService {
     private final SalGroupService salGroupService;
     private final FlowCapableTransactionService transactionService;
 
-    public SalGroupsBatchServiceImpl(final SalGroupService salGroupService, final FlowCapableTransactionService transactionService) {
+    public SalGroupsBatchServiceImpl(final SalGroupService salGroupService,
+                                     final FlowCapableTransactionService transactionService) {
         this.salGroupService = Preconditions.checkNotNull(salGroupService);
         this.transactionService = Preconditions.checkNotNull(transactionService);
     }
@@ -86,12 +87,12 @@ public class SalGroupsBatchServiceImpl implements SalGroupsBatchService {
         }
 
         final Iterable<Group> groups = Iterables.transform(batchUpdateGroups, new Function<BatchUpdateGroups, Group>() {
-                    @Nullable
-                    @Override
-                    public Group apply(@Nullable final BatchUpdateGroups input) {
-                        return input.getUpdatedBatchedGroup();
-                    }
+                @Nullable
+                @Override
+                public Group apply(@Nullable final BatchUpdateGroups input) {
+                    return input.getUpdatedBatchedGroup();
                 }
+            }
         );
 
         final ListenableFuture<RpcResult<List<BatchFailedGroupsOutput>>> commonResult =
@@ -138,7 +139,9 @@ public class SalGroupsBatchServiceImpl implements SalGroupsBatchService {
 
     @Override
     public Future<RpcResult<RemoveGroupsBatchOutput>> removeGroupsBatch(final RemoveGroupsBatchInput input) {
-        LOG.trace("Removing groups @ {} : {}", PathUtil.extractNodeId(input.getNode()), input.getBatchRemoveGroups().size());
+        LOG.trace("Removing groups @ {} : {}",
+                  PathUtil.extractNodeId(input.getNode()),
+                  input.getBatchRemoveGroups().size());
         final ArrayList<ListenableFuture<RpcResult<RemoveGroupOutput>>> resultsLot = new ArrayList<>();
         for (BatchRemoveGroups addGroup : input.getBatchRemoveGroups()) {
             final RemoveGroupInput removeGroupInput = new RemoveGroupInputBuilder(addGroup)

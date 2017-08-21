@@ -31,7 +31,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput, SetRoleOutput> implements SalRoleService  {
+public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput, SetRoleOutput>
+                                      implements SalRoleService  {
+
     private static final Logger LOG = LoggerFactory.getLogger(SalRoleServiceImpl.class);
     private static final BigInteger MAX_GENERATION_ID = new BigInteger("ffffffffffffffff", 16);
 
@@ -81,10 +83,13 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
         final Future<BigInteger> generationFuture = roleService.getGenerationIdFromDevice(getVersion());
 
         return Futures.transformAsync(JdkFutureAdapters.listenInPoolThread(generationFuture), generationId -> {
-            LOG.debug("RoleChangeTask, GenerationIdFromDevice from device {} is {}", getDeviceInfo().getNodeId().getValue(), generationId);
+            LOG.debug("RoleChangeTask, GenerationIdFromDevice from device {} is {}",
+                    getDeviceInfo().getNodeId().getValue(), generationId);
             final BigInteger nextGenerationId = getNextGenerationId(generationId);
-            LOG.debug("nextGenerationId received from device:{} is {}", getDeviceInfo().getNodeId().getValue(), nextGenerationId);
-            final Future<RpcResult<SetRoleOutput>> submitRoleFuture = roleService.submitRoleChange(role, getVersion(), nextGenerationId);
+            LOG.debug("nextGenerationId received from device:{} is {}",
+                    getDeviceInfo().getNodeId().getValue(), nextGenerationId);
+            final Future<RpcResult<SetRoleOutput>> submitRoleFuture =
+                    roleService.submitRoleChange(role, getVersion(), nextGenerationId);
             return JdkFutureAdapters.listenInPoolThread(submitRoleFuture);
         });
     }

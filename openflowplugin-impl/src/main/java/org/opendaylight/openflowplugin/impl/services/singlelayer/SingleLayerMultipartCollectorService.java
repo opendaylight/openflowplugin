@@ -15,8 +15,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.M
 
 public class SingleLayerMultipartCollectorService extends AbstractMultipartCollectorService<MultipartReply> {
 
-    public SingleLayerMultipartCollectorService(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
+    public SingleLayerMultipartCollectorService(final RequestContextStack requestContextStack,
+                                                final DeviceContext deviceContext) {
         super(requestContextStack, deviceContext);
     }
-
 }

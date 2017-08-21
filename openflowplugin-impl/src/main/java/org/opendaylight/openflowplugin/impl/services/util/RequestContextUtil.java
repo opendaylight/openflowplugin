@@ -23,8 +23,9 @@ public final class RequestContextUtil {
     }
 
 
-    public static <T> ListenableFuture<RpcResult<T>> closeRequestContextWithRpcError(final RequestContext<T> requestContext,
-                                                                                     final String errorMessage) {
+    public static <T> ListenableFuture<RpcResult<T>> closeRequestContextWithRpcError(
+                                                                                final RequestContext<T> requestContext,
+                                                                                final String errorMessage) {
         RpcResultBuilder<T> rpcResultBuilder = RpcResultBuilder.<T>failed().withRpcError(RpcResultBuilder
                 .newError(RpcError.ErrorType.APPLICATION, "", errorMessage));
         requestContext.setResult(rpcResultBuilder.build());
@@ -32,6 +33,7 @@ public final class RequestContextUtil {
         return requestContext.getFuture();
     }
 
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public static void closeRequestContext(final RequestContext<?> requestContext) {
         try {
             requestContext.close();

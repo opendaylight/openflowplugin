@@ -36,7 +36,10 @@ public final class MultiLayerFlowService<O extends DataObject> extends AbstractS
     private final ConvertorExecutor convertorExecutor;
     private final VersionDatapathIdConvertorData data;
 
-    public MultiLayerFlowService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final Class<O> clazz, final ConvertorExecutor convertorExecutor) {
+    public MultiLayerFlowService(final RequestContextStack requestContextStack,
+                                 final DeviceContext deviceContext,
+                                 final Class<O> clazz,
+                                 final ConvertorExecutor convertorExecutor) {
         super(requestContextStack, deviceContext, clazz);
         this.convertorExecutor = convertorExecutor;
         data = new VersionDatapathIdConvertorData(getVersion());
@@ -88,7 +91,7 @@ public final class MultiLayerFlowService<O extends DataObject> extends AbstractS
             }
 
             @Override
-            public void onFailure(final Throwable t) {
+            public void onFailure(final Throwable throwable) {
                 RpcResultBuilder<O> rpcResultBuilder = RpcResultBuilder.failed();
                 finalFuture.set(rpcResultBuilder.build());
             }
@@ -96,5 +99,4 @@ public final class MultiLayerFlowService<O extends DataObject> extends AbstractS
 
         return finalFuture;
     }
-
 }

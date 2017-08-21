@@ -77,7 +77,8 @@ public class SalMeterServiceImplTest extends ServiceMocking {
         verify(mockedDeviceMeterRegistry).store(eq(dummyMeterId));
 
         if (itemLifecycleListener != null) {
-            verify(itemLifecycleListener).onAdded(Matchers.<KeyedInstanceIdentifier<Meter, MeterKey>>any(),Matchers.<Meter>any());
+            verify(itemLifecycleListener)
+                    .onAdded(Matchers.<KeyedInstanceIdentifier<Meter, MeterKey>>any(),Matchers.<Meter>any());
         }
     }
 
@@ -92,10 +93,13 @@ public class SalMeterServiceImplTest extends ServiceMocking {
     }
 
     private void updateMeter(final ItemLifecycleListener itemLifecycleListener) throws Exception {
-        final UpdatedMeter dummyUpdatedMeter = new UpdatedMeterBuilder().setMeterId(new MeterId(DUMMY_METTER_ID)).build();
-        final OriginalMeter dummyOriginalMeter = new OriginalMeterBuilder().setMeterId(new MeterId(DUMMY_METTER_ID)).build();
+        final UpdatedMeter dummyUpdatedMeter =
+                new UpdatedMeterBuilder().setMeterId(new MeterId(DUMMY_METTER_ID)).build();
+        final OriginalMeter dummyOriginalMeter =
+                new OriginalMeterBuilder().setMeterId(new MeterId(DUMMY_METTER_ID)).build();
 
-        final UpdateMeterInput updateMeterInput = new UpdateMeterInputBuilder().setUpdatedMeter(dummyUpdatedMeter).setOriginalMeter(dummyOriginalMeter).build();
+        final UpdateMeterInput updateMeterInput = new UpdateMeterInputBuilder()
+                .setUpdatedMeter(dummyUpdatedMeter).setOriginalMeter(dummyOriginalMeter).build();
 
         this.<AddMeterOutput>mockSuccessfulFuture();
 
@@ -105,7 +109,8 @@ public class SalMeterServiceImplTest extends ServiceMocking {
         verify(mockedRequestContextStack).createRequestContext();
 
         if (itemLifecycleListener != null) {
-            verify(itemLifecycleListener).onAdded(Matchers.<KeyedInstanceIdentifier<Meter, MeterKey>>any(),Matchers.<Meter>any());
+            verify(itemLifecycleListener)
+                    .onAdded(Matchers.<KeyedInstanceIdentifier<Meter, MeterKey>>any(),Matchers.<Meter>any());
             verify(itemLifecycleListener).onRemoved(Matchers.<KeyedInstanceIdentifier<Meter, MeterKey>>any());
         }
     }

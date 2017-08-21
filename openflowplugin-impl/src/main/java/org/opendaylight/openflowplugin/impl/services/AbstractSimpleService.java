@@ -18,13 +18,16 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 public abstract class AbstractSimpleService<I, O extends DataObject> extends AbstractService<I, O> {
     private final Class<O> clazz;
 
-    protected AbstractSimpleService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final Class<O> clazz) {
+    protected AbstractSimpleService(final RequestContextStack requestContextStack,
+                                    final DeviceContext deviceContext,
+                                    final Class<O> clazz) {
         super(requestContextStack, deviceContext);
         this.clazz = Preconditions.checkNotNull(clazz);
     }
 
     @Override
-    protected final FutureCallback<OfHeader> createCallback(final RequestContext<O> context, final Class<?> requestType) {
+    protected final FutureCallback<OfHeader> createCallback(final RequestContext<O> context,
+                                                            final Class<?> requestType) {
         return SimpleRequestCallback.create(context, requestType, getMessageSpy(), clazz);
     }
 }

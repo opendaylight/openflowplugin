@@ -16,8 +16,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
-import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerGroupService;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerGroupService;
+import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerGroupService;
 import org.opendaylight.openflowplugin.impl.util.ErrorUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -51,11 +51,24 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
     private final DeviceContext deviceContext;
     private ItemLifecycleListener itemLifecycleListener;
 
-    public SalGroupServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConvertorExecutor convertorExecutor) {
+    public SalGroupServiceImpl(final RequestContextStack requestContextStack,
+                               final DeviceContext deviceContext,
+                               final ConvertorExecutor convertorExecutor) {
         this.deviceContext = deviceContext;
-        addGroup = new MultiLayerGroupService<>(requestContextStack, deviceContext, AddGroupOutput.class, convertorExecutor);
-        updateGroup = new MultiLayerGroupService<>(requestContextStack, deviceContext, UpdateGroupOutput.class, convertorExecutor);
-        removeGroup = new MultiLayerGroupService<>(requestContextStack, deviceContext, RemoveGroupOutput.class, convertorExecutor);
+        addGroup = new MultiLayerGroupService<>(requestContextStack,
+                                                deviceContext,
+                                                AddGroupOutput.class,
+                                                convertorExecutor);
+
+        updateGroup = new MultiLayerGroupService<>(requestContextStack,
+                                                   deviceContext,
+                                                   UpdateGroupOutput.class,
+                                                   convertorExecutor);
+
+        removeGroup = new MultiLayerGroupService<>(requestContextStack,
+                                                   deviceContext,
+                                                   RemoveGroupOutput.class,
+                                                   convertorExecutor);
 
         addGroupMessage = new SingleLayerGroupService<>(requestContextStack, deviceContext, AddGroupOutput.class);
         updateGroupMessage = new SingleLayerGroupService<>(requestContextStack, deviceContext, UpdateGroupOutput.class);
@@ -69,7 +82,8 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
 
     @Override
     public Future<RpcResult<AddGroupOutput>> addGroup(final AddGroupInput input) {
-        final ListenableFuture<RpcResult<AddGroupOutput>> resultFuture = addGroupMessage.canUseSingleLayerSerialization()
+        final ListenableFuture<RpcResult<AddGroupOutput>> resultFuture =
+            addGroupMessage.canUseSingleLayerSerialization()
             ? addGroupMessage.handleServiceCall(input)
             : addGroup.handleServiceCall(input);
 
@@ -91,8 +105,10 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
             }
 
             @Override
-            public void onFailure(Throwable t) {
-                LOG.warn("Service call for adding group={} failed, reason: {}", input.getGroupId().getValue(), t);
+            public void onFailure(Throwable throwable) {
+                LOG.warn("Service call for adding group={} failed, reason: {}",
+                          input.getGroupId().getValue(),
+                          throwable);
             }
         });
         return resultFuture;
@@ -101,7 +117,8 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
 
     @Override
     public Future<RpcResult<UpdateGroupOutput>> updateGroup(final UpdateGroupInput input) {
-        final ListenableFuture<RpcResult<UpdateGroupOutput>> resultFuture = updateGroupMessage.canUseSingleLayerSerialization()
+        final ListenableFuture<RpcResult<UpdateGroupOutput>> resultFuture =
+            updateGroupMessage.canUseSingleLayerSerialization()
             ? updateGroupMessage.handleServiceCall(input.getUpdatedGroup())
             : updateGroup.handleServiceCall(input.getUpdatedGroup());
 
@@ -123,9 +140,9 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Throwable throwable) {
                 LOG.warn("Service call for updating group={} failed, reason: {}",
-                        input.getOriginalGroup().getGroupId(), t);
+                        input.getOriginalGroup().getGroupId(), throwable);
             }
         });
         return resultFuture;
@@ -133,7 +150,8 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
 
     @Override
     public Future<RpcResult<RemoveGroupOutput>> removeGroup(final RemoveGroupInput input) {
-        final ListenableFuture<RpcResult<RemoveGroupOutput>> resultFuture = removeGroupMessage.canUseSingleLayerSerialization()
+        final ListenableFuture<RpcResult<RemoveGroupOutput>> resultFuture =
+            removeGroupMessage.canUseSingleLayerSerialization()
             ? removeGroupMessage.handleServiceCall(input)
             : removeGroup.handleServiceCall(input);
 
@@ -154,9 +172,9 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Throwable throwable) {
                 LOG.warn("Service call for removing group={} failed, reason: {}",
-                        input.getGroupId().getValue(), t);
+                        input.getGroupId().getValue(), throwable);
             }
         });
         return resultFuture;
@@ -164,25 +182,28 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
 
     private void removeIfNecessaryFromDS(final GroupId groupId) {
         if (itemLifecycleListener != null) {
-            KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group, GroupKey> groupPath
+            KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn
+                    .opendaylight.group.types.rev131018.groups.Group, GroupKey> groupPath
                     = createGroupPath(groupId,
-                    deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
+                                      deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
             itemLifecycleListener.onRemoved(groupPath);
         }
     }
 
     private void addIfNecessaryToDS(final GroupId groupId, final Group data) {
         if (itemLifecycleListener != null) {
-            KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group, GroupKey> groupPath
+            KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn
+                    .opendaylight.group.types.rev131018.groups.Group, GroupKey> groupPath
                     = createGroupPath(groupId,
-                    deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
+                                      deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
             itemLifecycleListener.onAdded(groupPath, new GroupBuilder(data).build());
         }
     }
 
-    private static KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group, GroupKey>
-    createGroupPath(final GroupId groupId, final KeyedInstanceIdentifier<Node, NodeKey> nodePath) {
-        return nodePath.augmentation(FlowCapableNode.class).
-                child(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group.class, new GroupKey(groupId));
+    private static KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn
+            .opendaylight.group.types.rev131018.groups.Group, GroupKey>
+        createGroupPath(final GroupId groupId, final KeyedInstanceIdentifier<Node, NodeKey> nodePath) {
+        return nodePath.augmentation(FlowCapableNode.class).child(org.opendaylight.yang.gen.v1.urn
+                .opendaylight.group.types.rev131018.groups.Group.class, new GroupKey(groupId));
     }
 }
