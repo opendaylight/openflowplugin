@@ -6,17 +6,13 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.applications.frm.impl;
+package org.opendaylight.openflowplugin.applications.frm.impl.commiters;
 
-import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
 import java.util.Collections;
 import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
-import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
@@ -38,33 +34,8 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
     private static final Logger LOG = LoggerFactory.getLogger(TableForwarder.class);
     private ListenerRegistration<TableForwarder> listenerRegistration;
 
-    public TableForwarder(final ForwardingRulesManager manager, final DataBroker db) {
-        super(manager, TableFeatures.class);
-        Preconditions.checkNotNull(db, "DataBroker can not be null!");
-        final DataTreeIdentifier<TableFeatures> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, getWildCardPath());
-
-        try {
-            SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(ForwardingRulesManagerImpl.STARTUP_LOOP_TICK,
-                    ForwardingRulesManagerImpl.STARTUP_LOOP_MAX_RETRIES);
-            listenerRegistration = looper.loopUntilNoException(() -> db.registerDataTreeChangeListener(treeId, TableForwarder.this));
-        } catch (final Exception e) {
-            LOG.warn("FRM Table DataTreeChangeListener registration fail!");
-            LOG.debug("FRM Table DataTreeChangeListener registration fail ..", e);
-            throw new IllegalStateException("TableForwarder startup fail! System needs restart.", e);
-        }
-    }
-
-    @Override
-    public void close() {
-        if (listenerRegistration != null) {
-            try {
-                listenerRegistration.close();
-            } catch (Exception e) {
-                LOG.warn("Error by stop FRM TableChangeListener: {}", e.getMessage());
-                LOG.debug("Error by stop FRM TableChangeListener..", e);
-            }
-            listenerRegistration = null;
-        }
+    public TableForwarder(final ForwardingRulesManager manager, final DataBroker dataBroker) {
+        super(manager, dataBroker);
     }
 
     @Override
@@ -101,7 +72,7 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
         // TODO: reconsider model - this particular field is not used in service implementation
         builder.setTableRef(new TableRef(identifier));
 
-        builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
+        builder.setTransactionUri(new Uri(getProvider().getNewTransactionId()));
 
         builder.setUpdatedTable(new UpdatedTableBuilder().setTableFeatures(
                 Collections.singletonList(updatedTableFeatures)).build());
@@ -110,9 +81,9 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
                 Collections.singletonList(originalTableFeatures)).build());
         LOG.debug("Invoking SalTableService ");
 
-        if (this.provider.getSalTableService() != null)
-            LOG.debug(" Handle to SalTableServices" + this.provider.getSalTableService());
-        this.provider.getSalTableService().updateTable(builder.build());
+        if (this.getProvider().getSalTableService() != null)
+            LOG.debug(" Handle to SalTableServices" + this.getProvider().getSalTableService());
+        this.getProvider().getSalTableService().updateTable(builder.build());
 
     }
 
@@ -136,6 +107,4 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
             TableFeatures del, InstanceIdentifier<FlowCapableNode> nodeIdent) {
         return null;
     }
-
-
 }

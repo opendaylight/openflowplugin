@@ -8,7 +8,7 @@
 package org.opendaylight.openflowplugin.api.openflow.mastership;
 
 /**
- * API provided for reconciliation framework registration.
+ * API provided for tasks framework registration.
  * Service provides three events.
  * <ul>
  *     <li><i>onDevicePrepared</i>

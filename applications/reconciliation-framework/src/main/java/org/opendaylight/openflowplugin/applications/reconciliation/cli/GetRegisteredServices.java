@@ -17,7 +17,7 @@ import org.opendaylight.openflowplugin.applications.reconciliation.Reconciliatio
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Command(scope = "reconciliation", name = "getRegisteredServices", description = "displaying services registered to "
+@Command(scope = "tasks", name = "getRegisteredServices", description = "displaying services registered to "
         + "Reconciliation Framework")
 /*
  * CLI to display the service priority, service name and service status TODO
