@@ -16,6 +16,7 @@ import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvid
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
+import org.opendaylight.openflowplugin.api.openflow.protocol.SerializationService;
 import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterManager;
 
 /**
@@ -30,5 +31,6 @@ public interface OpenFlowPluginProviderFactory {
                                        List<SwitchConnectionProvider> switchConnectionProviders,
                                        ClusterSingletonServiceProvider singletonServiceProvider,
                                        MastershipChangeServiceManager mastershipChangeServiceManager,
-                                       ConverterManager converterManager);
+                                       ConverterManager converterManager,
+                                       SerializationService serializationService);
 }

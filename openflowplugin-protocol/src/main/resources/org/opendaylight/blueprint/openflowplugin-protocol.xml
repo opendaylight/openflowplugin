@@ -14,4 +14,10 @@
     <argument ref="extensionConverterManager" />
   </bean>
   <service ref="converterManager" interface="org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterManager"/>
+
+  <!-- serialization service -->
+  <bean id ="serializationService" class="org.opendaylight.openflowplugin.protocol.SerializationServiceImpl">
+    <argument ref="extensionConverterManager" />
+  </bean>
+  <service ref="serializationService" interface="org.opendaylight.openflowplugin.api.openflow.protocol.SerializationService"/>
 </blueprint>
