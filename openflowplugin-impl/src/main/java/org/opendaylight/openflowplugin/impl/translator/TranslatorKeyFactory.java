@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.translator;
 
-import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
+import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorKey;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 3.4.2015.

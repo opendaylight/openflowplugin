@@ -26,7 +26,6 @@
         <module>openflowjava</module>
         <module>openflowplugin-api</module>
         <module>openflowplugin-protocol</module>
-        <module>openflowplugin</module>
         <module>openflowplugin-impl</module>
         <module>openflowplugin-common</module>
         <module>extension</module>
