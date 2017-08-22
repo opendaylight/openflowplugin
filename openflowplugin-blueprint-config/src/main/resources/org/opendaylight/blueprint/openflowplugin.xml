@@ -31,6 +31,9 @@
     <reference id="converterManager"
                interface="org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterManager"/>
 
+    <reference id="serializationService"
+               interface="org.opendaylight.openflowplugin.api.openflow.protocol.SerializationService"/>
+
     <odl:clustered-app-config id="openflowProviderConfig"
                               binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig"/>
 
@@ -63,6 +66,7 @@
         <argument ref="clusterSingletonServiceProvider"/>
         <argument ref="mastershipChangeServiceManager"/>
         <argument ref="converterManager"/>
+        <argument ref="serializationService"/>
         <property name="extensionConverterManager" ref="extensionConverterManager"/>
     </bean>
 
