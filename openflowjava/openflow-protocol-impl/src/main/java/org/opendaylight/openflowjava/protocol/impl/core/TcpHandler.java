@@ -12,6 +12,7 @@ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
+import io.netty.channel.WriteBufferWaterMark;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.ServerSocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -41,10 +42,10 @@ import com.google.common.util.concurrent.SettableFuture;
  */
 public class TcpHandler implements ServerFacade {
     /*
-     * High/low write watermarks, in KiB.
+     * High/low write watermarks
      */
-    private static final int DEFAULT_WRITE_HIGH_WATERMARK = 64;
-    private static final int DEFAULT_WRITE_LOW_WATERMARK = 32;
+    private static final int DEFAULT_WRITE_HIGH_WATERMARK = 64 * 1024;
+    private static final int DEFAULT_WRITE_LOW_WATERMARK = 32 * 1024;
     /*
      * Write spin count. This tells netty to immediately retry a non-blocking
      * write this many times before moving on to selecting.
@@ -112,8 +113,8 @@ public class TcpHandler implements ServerFacade {
                     .childOption(ChannelOption.SO_KEEPALIVE, true)
                     .childOption(ChannelOption.TCP_NODELAY , true)
                     .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                    .childOption(ChannelOption.WRITE_BUFFER_HIGH_WATER_MARK, DEFAULT_WRITE_HIGH_WATERMARK * 1024)
-                    .childOption(ChannelOption.WRITE_BUFFER_LOW_WATER_MARK, DEFAULT_WRITE_LOW_WATERMARK * 1024)
+                    .childOption(ChannelOption.WRITE_BUFFER_WATER_MARK,
+                            new WriteBufferWaterMark(DEFAULT_WRITE_LOW_WATERMARK, DEFAULT_WRITE_HIGH_WATERMARK))
                     .childOption(ChannelOption.WRITE_SPIN_COUNT, DEFAULT_WRITE_SPIN_COUNT);
 
             if (startupAddress != null) {
