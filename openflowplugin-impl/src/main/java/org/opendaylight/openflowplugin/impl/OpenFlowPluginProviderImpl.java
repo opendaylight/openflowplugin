@@ -42,8 +42,9 @@ import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationS
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
-import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
+import org.opendaylight.openflowplugin.api.openflow.protocol.SerializationService;
 import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterManager;
+import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
@@ -57,15 +58,13 @@ import org.opendaylight.openflowplugin.impl.device.DeviceManagerImpl;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProvider;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProviderFactory;
 import org.opendaylight.openflowplugin.impl.lifecycle.ContextChainHolderImpl;
-import org.opendaylight.openflowplugin.impl.protocol.deserialization.DeserializerInjector;
-import org.opendaylight.openflowplugin.impl.protocol.serialization.SerializerInjector;
 import org.opendaylight.openflowplugin.impl.role.RoleManagerImpl;
 import org.opendaylight.openflowplugin.impl.rpc.RpcManagerImpl;
 import org.opendaylight.openflowplugin.impl.statistics.StatisticsManagerImpl;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.MessageIntelligenceAgencyImpl;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.MessageIntelligenceAgencyMXBean;
-import org.opendaylight.openflowplugin.impl.util.TranslatorLibraryUtil;
 import org.opendaylight.openflowplugin.impl.util.ThreadPoolLoggingExecutor;
+import org.opendaylight.openflowplugin.impl.util.TranslatorLibraryUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,6 +91,7 @@ public class OpenFlowPluginProviderImpl implements
     private final Collection<SwitchConnectionProvider> switchConnectionProviders;
     private final DeviceInitializerProvider deviceInitializerProvider;
     private final ConverterManager converterManager;
+    private final SerializationService serializationService;
     private final RpcProviderRegistry rpcProviderRegistry;
     private final ClusterSingletonServiceProvider singletonServicesProvider;
     private final OpenflowProviderConfig config;
@@ -118,7 +118,8 @@ public class OpenFlowPluginProviderImpl implements
                                final ClusterSingletonServiceProvider singletonServiceProvider,
                                final EntityOwnershipService entityOwnershipService,
                                final MastershipChangeServiceManager mastershipChangeServiceManager,
-                               final ConverterManager converterManager) {
+                               final ConverterManager converterManager,
+                               final SerializationService serializationService) {
         this.switchConnectionProviders = switchConnectionProviders;
         this.dataBroker = dataBroker;
         this.rpcProviderRegistry = rpcProviderRegistry;
@@ -126,6 +127,7 @@ public class OpenFlowPluginProviderImpl implements
         this.singletonServicesProvider = singletonServiceProvider;
         this.entityOwnershipService = entityOwnershipService;
         this.converterManager = converterManager;
+        this.serializationService = serializationService;
         deviceInitializerProvider = DeviceInitializerProviderFactory.createDefaultProvider();
         config = new OpenFlowProviderConfigImpl(configurationService);
         this.mastershipChangeServiceManager = mastershipChangeServiceManager;
@@ -135,10 +137,9 @@ public class OpenFlowPluginProviderImpl implements
         Futures.addCallback(Futures.allAsList(switchConnectionProviders.stream().map(switchConnectionProvider -> {
             // Inject OpenFlowPlugin custom serializers and deserializers into OpenFlowJava
             if (config.isUseSingleLayerSerialization()) {
-                SerializerInjector.injectSerializers(switchConnectionProvider, extensionConverterManager);
-                DeserializerInjector.injectDeserializers(switchConnectionProvider, extensionConverterManager);
+                serializationService.injectSerializers(switchConnectionProvider);
             } else {
-                DeserializerInjector.revertDeserializers(switchConnectionProvider);
+                serializationService.revertSerializers(switchConnectionProvider);
             }
 
             // Set handler of incoming connections and start switch connection provider
@@ -161,7 +162,7 @@ public class OpenFlowPluginProviderImpl implements
         final ListenableFuture<List<Boolean>> listListenableFuture = Futures.allAsList(switchConnectionProviders.stream().map(switchConnectionProvider -> {
             // Revert deserializers to their original state
             if (config.isUseSingleLayerSerialization()) {
-                DeserializerInjector.revertDeserializers(switchConnectionProvider);
+                serializationService.revertSerializers(switchConnectionProvider);
             }
 
             // Shutdown switch connection provider
