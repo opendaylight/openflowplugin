@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.openflow.md.util;
+package org.opendaylight.openflowplugin.impl.util;
 
 import java.math.BigInteger;
 import java.util.Objects;
