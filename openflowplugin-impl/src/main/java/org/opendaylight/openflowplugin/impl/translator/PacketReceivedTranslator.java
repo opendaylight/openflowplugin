@@ -19,7 +19,7 @@ import org.opendaylight.openflowplugin.extension.api.AugmentTuple;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.impl.util.NodeConnectorRefToPortTranslator;
-import org.opendaylight.openflowplugin.openflow.md.util.PacketInUtil;
+import org.opendaylight.openflowplugin.impl.util.PacketInUtil;
 import org.opendaylight.openflowplugin.protocol.converter.data.VersionDatapathIdConverterData;
 import org.opendaylight.openflowplugin.protocol.extension.MatchExtensionHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;

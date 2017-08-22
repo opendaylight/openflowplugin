@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.impl.connection.listener;
 import com.google.common.base.Objects;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
-import org.opendaylight.openflowplugin.openflow.md.core.HandshakeStepWrapper;
+import org.opendaylight.openflowplugin.impl.connection.HandshakeStepWrapper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
