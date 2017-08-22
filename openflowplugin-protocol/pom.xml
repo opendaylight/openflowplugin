@@ -61,6 +61,10 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}.openflowjava</groupId>
+      <artifactId>openflow-protocol-impl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}.openflowjava</groupId>
       <artifactId>openflowjava-util</artifactId>
     </dependency>
     <dependency>

@@ -37,7 +37,7 @@ import org.opendaylight.openflowplugin.protocol.converter.match.cases.SalToOfSct
 import org.opendaylight.openflowplugin.protocol.converter.match.cases.SalToOfTcpMatchCase;
 import org.opendaylight.openflowplugin.protocol.converter.match.cases.SalToOfTunnelIpv4MatchCase;
 import org.opendaylight.openflowplugin.protocol.converter.match.cases.SalToOfUdpMatchCase;
-import org.opendaylight.openflowplugin.protocol.extension.ExtensionResolvers;
+import org.opendaylight.openflowplugin.common.util.ExtensionResolvers;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;

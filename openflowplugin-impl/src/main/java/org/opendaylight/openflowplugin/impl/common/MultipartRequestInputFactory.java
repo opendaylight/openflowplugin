@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.impl.common;
 
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.impl.util.MatchUtil;
+import org.opendaylight.openflowplugin.common.util.MatchUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.multipart.request.multipart.request.body.MultipartRequestDescBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.multipart.request.multipart.request.body.MultipartRequestFlowTableStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.multipart.request.multipart.request.body.MultipartRequestPortDescBuilder;
