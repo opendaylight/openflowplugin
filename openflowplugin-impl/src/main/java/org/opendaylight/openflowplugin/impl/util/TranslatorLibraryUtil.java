@@ -9,7 +9,7 @@
 package org.opendaylight.openflowplugin.impl.util;
 
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
+import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.translator.AggregatedFlowStatisticsTranslator;

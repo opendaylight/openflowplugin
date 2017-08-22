@@ -11,7 +11,7 @@ import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
-import org.opendaylight.openflowplugin.openflow.md.core.HandshakeStepWrapper;
+import org.opendaylight.openflowplugin.impl.connection.HandshakeStepWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

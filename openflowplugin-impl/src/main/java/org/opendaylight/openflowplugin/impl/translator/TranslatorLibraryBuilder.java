@@ -12,8 +12,8 @@ import com.google.common.collect.ImmutableMap;
 import java.util.HashMap;
 import java.util.Map;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
-import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
-import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
+import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrary;
+import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorKey;
 
 public class TranslatorLibraryBuilder {
 

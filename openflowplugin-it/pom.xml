@@ -88,11 +88,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>openflowplugin</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>openflowplugin-common</artifactId>
             <scope>test</scope>
         </dependency>
