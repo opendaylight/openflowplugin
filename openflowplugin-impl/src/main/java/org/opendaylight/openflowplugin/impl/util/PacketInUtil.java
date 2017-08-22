@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.openflow.md.util;
+package org.opendaylight.openflowplugin.impl.util;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.InvalidTtl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.NoMatch;

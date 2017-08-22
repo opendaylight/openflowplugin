@@ -26,12 +26,6 @@
         <dependencies>
             <!-- core -->
             <dependency>
-                <!-- to be deprecated -->
-                <groupId>${project.groupId}</groupId>
-                <artifactId>openflowplugin</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>openflowplugin-api</artifactId>
                 <version>${project.version}</version>
