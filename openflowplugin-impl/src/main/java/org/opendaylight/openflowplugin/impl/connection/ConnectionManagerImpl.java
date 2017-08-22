@@ -24,8 +24,7 @@ import org.opendaylight.openflowplugin.impl.connection.listener.ConnectionReadyL
 import org.opendaylight.openflowplugin.impl.connection.listener.HandshakeListenerImpl;
 import org.opendaylight.openflowplugin.impl.connection.listener.OpenflowProtocolListenerInitialImpl;
 import org.opendaylight.openflowplugin.impl.connection.listener.SystemNotificationsListenerImpl;
-import org.opendaylight.openflowplugin.openflow.md.core.ErrorHandlerSimpleImpl;
-import org.opendaylight.openflowplugin.openflow.md.core.HandshakeManagerImpl;
+import org.opendaylight.openflowplugin.impl.util.ErrorHandlerSimpleImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
