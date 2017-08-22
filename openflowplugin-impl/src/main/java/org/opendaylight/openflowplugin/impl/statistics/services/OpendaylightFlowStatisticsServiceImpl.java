@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.impl.statistics.services;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
-import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
+import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.openflowplugin.api.openflow.statistics.compatibility.Delegator;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerAggregateFlowMultipartService;

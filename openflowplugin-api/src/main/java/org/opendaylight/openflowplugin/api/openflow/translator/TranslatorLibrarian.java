@@ -8,8 +8,6 @@
 
 package org.opendaylight.openflowplugin.api.openflow.translator;
 
-import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
-
 public interface TranslatorLibrarian {
 
     /**

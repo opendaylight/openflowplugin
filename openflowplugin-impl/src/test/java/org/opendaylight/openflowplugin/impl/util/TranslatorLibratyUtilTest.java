@@ -15,7 +15,7 @@ import static org.opendaylight.openflowplugin.api.OFConstants.OFP_VERSION_1_3;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
-import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
+import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterManager;
 import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
 import org.opendaylight.openflowplugin.impl.translator.TranslatorKeyFactory;

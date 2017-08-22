@@ -21,7 +21,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
-import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
+import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
 import org.opendaylight.openflowplugin.impl.util.TranslatorLibraryUtil;
 import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
