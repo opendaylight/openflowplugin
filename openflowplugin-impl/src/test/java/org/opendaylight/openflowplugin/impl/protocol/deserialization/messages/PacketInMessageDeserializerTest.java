@@ -17,7 +17,7 @@ import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.AbstractDeserializerTest;
-import org.opendaylight.openflowplugin.openflow.md.util.PacketInUtil;
+import org.opendaylight.openflowplugin.impl.util.PacketInUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketInMessage;
 
 public class PacketInMessageDeserializerTest extends AbstractDeserializerTest {

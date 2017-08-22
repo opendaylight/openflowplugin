@@ -31,7 +31,7 @@ import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerFlow
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerFlowService;
 import org.opendaylight.openflowplugin.impl.util.ErrorUtil;
 import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
-import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
+import org.opendaylight.openflowplugin.impl.util.FlowCreatorUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
