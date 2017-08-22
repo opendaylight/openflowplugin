@@ -73,7 +73,7 @@ import org.opendaylight.openflowplugin.impl.registry.group.DeviceGroupRegistryIm
 import org.opendaylight.openflowplugin.impl.registry.meter.DeviceMeterRegistryImpl;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.openflowplugin.impl.services.util.RequestContextUtil;
-import org.opendaylight.openflowplugin.impl.util.MatchUtil;
+import org.opendaylight.openflowplugin.common.util.MatchUtil;
 import org.opendaylight.openflowplugin.api.openflow.protocol.converter.ConverterExecutor;
 import org.opendaylight.openflowplugin.common.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.ExperimenterMessageFromDevBuilder;
