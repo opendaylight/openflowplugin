@@ -20,17 +20,18 @@ import org.opendaylight.openflowplugin.impl.protocol.deserialization.key.Message
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 
 /**
- * Utility class for action deserialization
+ * Utility class for action deserialization.
  */
 public class InstructionUtil {
 
     /**
-     * Deserialize OpenFlow instruction
+     * Deserialize OpenFlow instruction.
      *
-     * @param version OpenFlow version
-     * @param message OpenFlow buffered message
+     * @param version  OpenFlow version
+     * @param message  OpenFlow buffered message
      * @param registry deserializer registry
      */
+    @SuppressWarnings("checkstyle:LineLength")
     public static Instruction readInstruction(final short version,
                                               final ByteBuf message,
                                               final DeserializerRegistry registry) {
@@ -39,16 +40,18 @@ public class InstructionUtil {
 
         if (InstructionConstants.APPLY_ACTIONS_TYPE == type) {
             deserializer = registry.getDeserializer(
-                new MessageCodeActionExperimenterKey(
-                    version, type, Instruction.class,
-                    ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION,
-                    null));
+                    new MessageCodeActionExperimenterKey(
+                            version, type, Instruction.class,
+                            ActionPath
+                                    .FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION,
+                            null));
         } else if (InstructionConstants.WRITE_ACTIONS_TYPE == type) {
             deserializer = registry.getDeserializer(
-                new MessageCodeActionExperimenterKey(
-                    version, type, Instruction.class,
-                    ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION,
-                    null));
+                    new MessageCodeActionExperimenterKey(
+                            version, type, Instruction.class,
+                            ActionPath
+                                    .FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION,
+                            null));
         } else {
             Long expId = null;
 
@@ -57,20 +60,21 @@ public class InstructionUtil {
             }
 
             deserializer = registry.getDeserializer(
-                new MessageCodeExperimenterKey(
-                    version, type, Instruction.class, expId));
+                    new MessageCodeExperimenterKey(
+                            version, type, Instruction.class, expId));
         }
 
         return deserializer.deserialize(message);
     }
 
     /**
-     * Deserialize OpenFlow instruction header
+     * Deserialize OpenFlow instruction header.
      *
-     * @param version OpenFlow version
-     * @param message OpenFlow buffered message
+     * @param version  OpenFlow version
+     * @param message  OpenFlow buffered message
      * @param registry deserializer registry
      */
+    @SuppressWarnings("checkstyle:LineLength")
     public static Instruction readInstructionHeader(final short version,
                                                     final ByteBuf message,
                                                     final DeserializerRegistry registry) {
@@ -79,16 +83,18 @@ public class InstructionUtil {
 
         if (InstructionConstants.APPLY_ACTIONS_TYPE == type) {
             deserializer = registry.getDeserializer(
-                new MessageCodeActionExperimenterKey(
-                    version, type, Instruction.class,
-                    ActionPath.NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION,
-                    null));
+                    new MessageCodeActionExperimenterKey(
+                            version, type, Instruction.class,
+                            ActionPath
+                                    .NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION,
+                            null));
         } else if (InstructionConstants.WRITE_ACTIONS_TYPE == type) {
             deserializer = registry.getDeserializer(
-                new MessageCodeActionExperimenterKey(
-                    version, type, Instruction.class,
-                    ActionPath.NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION,
-                    null));
+                    new MessageCodeActionExperimenterKey(
+                            version, type, Instruction.class,
+                            ActionPath
+                                    .NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION,
+                            null));
         } else {
             Long expId = null;
 
@@ -97,8 +103,8 @@ public class InstructionUtil {
             }
 
             deserializer = registry.getDeserializer(
-                new MessageCodeExperimenterKey(
-                    version, type, Instruction.class, expId));
+                    new MessageCodeExperimenterKey(
+                            version, type, Instruction.class, expId));
         }
 
         return deserializer.deserializeHeader(message);

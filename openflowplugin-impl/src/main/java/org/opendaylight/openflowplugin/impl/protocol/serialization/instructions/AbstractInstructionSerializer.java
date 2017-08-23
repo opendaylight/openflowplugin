@@ -14,7 +14,8 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 
-public abstract class AbstractInstructionSerializer implements OFSerializer<Instruction>, HeaderSerializer<Instruction> {
+public abstract class AbstractInstructionSerializer implements OFSerializer<Instruction>,
+        HeaderSerializer<Instruction> {
 
     @Override
     public void serialize(Instruction input, ByteBuf outBuffer) {
@@ -29,12 +30,16 @@ public abstract class AbstractInstructionSerializer implements OFSerializer<Inst
     }
 
     /**
-     * @return numeric representation of instruction type
+     * Get type.
+     *
+     * @return numeric representation of instruction type.
      */
     protected abstract int getType();
 
     /**
-     * @return instruction length
+     * Get length.
+     *
+     * @return instruction length.
      */
     protected abstract int getLength();
 

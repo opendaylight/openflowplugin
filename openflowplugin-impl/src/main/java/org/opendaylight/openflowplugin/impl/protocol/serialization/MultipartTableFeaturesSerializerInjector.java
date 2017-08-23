@@ -46,18 +46,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.WriteSetfieldMiss;
 
 /**
- * Util class for injecting new multipart table features serializers into OpenflowJava
+ * Util class for injecting new multipart table features serializers into OpenflowJava.
  */
 class MultipartTableFeaturesSerializerInjector {
 
     /**
-     * Injects multipart table features serializers into provided {@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}
+     * Injects multipart table features serializers into provided
+     * {@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}.
+     *
      * @param provider OpenflowJava serializer extension provider
      */
     static void injectSerializers(final SerializerExtensionProvider provider) {
         // Inject new message serializers here using injector created by createInjector method
         final Function<Class<? extends TableFeaturePropType>, Consumer<OFSerializer<TableFeaturePropType>>> injector =
-            createInjector(provider, EncodeConstants.OF13_VERSION_ID);
+                createInjector(provider, EncodeConstants.OF13_VERSION_ID);
 
         injector.apply(Instructions.class).accept(new InstructionsTablePropertySerializer());
         injector.apply(InstructionsMiss.class).accept(new InstructionsMissTablePropertySerializer());
@@ -77,19 +79,21 @@ class MultipartTableFeaturesSerializerInjector {
     }
 
     /**
-     * Create injector that will inject new multipart table features serializers into #{@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}
+     * Create injector that will inject new multipart table features serializers into
+     * #{@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}.
+     *
      * @param provider OpenflowJava serializer extension provider
-     * @param version Openflow version
+     * @param version  Openflow version
      * @return injector
      */
     @VisibleForTesting
     static Function<Class<? extends TableFeaturePropType>, Consumer<OFSerializer<TableFeaturePropType>>> createInjector(
-        final SerializerExtensionProvider provider,
-        final byte version) {
+            final SerializerExtensionProvider provider,
+            final byte version) {
         return type -> serializer ->
-            provider.registerSerializer(
-                new MessageTypeKey<>(version, type),
-                serializer);
+                provider.registerSerializer(
+                        new MessageTypeKey<>(version, type),
+                        serializer);
     }
 
 }

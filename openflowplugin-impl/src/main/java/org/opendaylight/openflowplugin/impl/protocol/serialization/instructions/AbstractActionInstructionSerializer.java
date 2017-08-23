@@ -19,7 +19,8 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Ord
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.ActionList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 
-public abstract class AbstractActionInstructionSerializer extends AbstractInstructionSerializer implements SerializerRegistryInjector {
+public abstract class AbstractActionInstructionSerializer extends AbstractInstructionSerializer implements
+        SerializerRegistryInjector {
 
     private SerializerRegistry registry;
 
@@ -29,14 +30,15 @@ public abstract class AbstractActionInstructionSerializer extends AbstractInstru
     }
 
     /**
-     * Try to write list of OpenFlowPlugin actions to output buffer
+     * Try to write list of OpenFlowPlugin actions to output buffer.
+     *
      * @param actions List of OpenFlowPlugin actions
      * @param outBuffer output buffer
      * @param startIndex start index of byte buffer
      */
     protected void writeActions(ActionList actions, short version, ByteBuf outBuffer, int startIndex) {
         Optional.ofNullable(actions).flatMap(as -> Optional.ofNullable(as.getAction())).map(as -> {
-            int lengthIndex = outBuffer.writerIndex();
+            final int lengthIndex = outBuffer.writerIndex();
             outBuffer.writeShort(EncodeConstants.EMPTY_LENGTH);
             outBuffer.writeZero(InstructionConstants.PADDING_IN_ACTIONS_INSTRUCTION);
             as.stream().sorted(OrderComparator.build()).forEach(a -> ActionUtil

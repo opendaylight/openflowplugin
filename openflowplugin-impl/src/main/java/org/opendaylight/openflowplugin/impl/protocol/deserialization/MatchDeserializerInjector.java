@@ -64,12 +64,14 @@ import org.opendaylight.openflowplugin.impl.protocol.deserialization.match.VlanV
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 
 /**
- * Util class for injecting new match entry deserializers into OpenflowJava
+ * Util class for injecting new match entry deserializers into OpenflowJava.
  */
 public class MatchDeserializerInjector {
 
     /**
-     * Injects deserializers into provided {@link org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider}
+     * Injects deserializers into provided
+     * {@link org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider}.
+     *
      * @param provider OpenflowJava deserializer extension provider
      */
     static void injectDeserializers(final DeserializerExtensionProvider provider) {
@@ -77,24 +79,23 @@ public class MatchDeserializerInjector {
             final MatchDeserializer deserializer = new MatchDeserializer(path);
             provider.registerDeserializer(
                     new MessageCodeMatchKey(
-                        EncodeConstants.OF13_VERSION_ID,
-                        EncodeConstants.EMPTY_LENGTH,
-                        Match.class,
-                        path),
+                            EncodeConstants.OF13_VERSION_ID,
+                            EncodeConstants.EMPTY_LENGTH,
+                            Match.class,
+                            path),
                     deserializer);
 
             // Inject new match entry serializers here using injector created by createInjector method
             final Function<Integer, Function<Long, Function<Integer, Consumer<MatchEntryDeserializer>>>> injector =
-                createInjector(deserializer, EncodeConstants.OF13_VERSION_ID);
-
+                    createInjector(deserializer, EncodeConstants.OF13_VERSION_ID);
 
             // Wrapped injector that uses OPENFLOW_BASIC_CLASS
             final Function<Integer, Consumer<MatchEntryDeserializer>> basicInjector =
-                injector.apply(OxmMatchConstants.OPENFLOW_BASIC_CLASS).apply(null);
+                    injector.apply(OxmMatchConstants.OPENFLOW_BASIC_CLASS).apply(null);
 
             // Wrapped injector that uses EXPERIMENTER_CLASS
             final Function<Long, Function<Integer, Consumer<MatchEntryDeserializer>>> experInjector =
-                injector.apply(OxmMatchConstants.EXPERIMENTER_CLASS);
+                    injector.apply(OxmMatchConstants.EXPERIMENTER_CLASS);
 
             basicInjector.apply(OxmMatchConstants.ARP_OP).accept(new ArpOpEntryDeserializer());
             basicInjector.apply(OxmMatchConstants.ARP_SHA).accept(new ArpSourceHardwareAddressEntryDeserializer());
@@ -137,21 +138,23 @@ public class MatchDeserializerInjector {
             basicInjector.apply(OxmMatchConstants.MPLS_TC).accept(new MplsTcEntryDeserializer());
             basicInjector.apply(OxmMatchConstants.PBB_ISID).accept(new PbbEntryDeserializer());
             basicInjector.apply(OxmMatchConstants.TUNNEL_ID).accept(new TunnelIdEntryDeserializer());
-            experInjector.apply(EncodeConstants.ONF_EXPERIMENTER_ID).apply(EncodeConstants.ONFOXM_ET_TCP_FLAGS).accept(new TcpFlagsEntryDeserializer());
+            experInjector.apply(EncodeConstants.ONF_EXPERIMENTER_ID).apply(EncodeConstants.ONFOXM_ET_TCP_FLAGS)
+                    .accept(new TcpFlagsEntryDeserializer());
         }
     }
 
     /**
-     * Create injector that will inject new serializers into {@link org.opendaylight.openflowplugin.api.openflow.protocol.deserialization.MatchEntryDeserializerRegistry}
+     * Create injector that will inject new serializers into
+     * {@link org.opendaylight.openflowplugin.api.openflow.protocol.deserialization.MatchEntryDeserializerRegistry}.
+     *
      * @param registry Match entry deserializer registry
-     * @param version Openflow version
+     * @param version  Openflow version
      * @return injector
      */
     @VisibleForTesting
     static Function<Integer, Function<Long, Function<Integer, Consumer<MatchEntryDeserializer>>>> createInjector(
             final MatchEntryDeserializerRegistry registry,
-            final short version
-            ) {
+            final short version) {
         return oxmClass -> expId -> oxmField -> deserializer -> {
             final MatchEntryDeserializerKey key = new MatchEntryDeserializerKey(version, oxmClass, oxmField);
             key.setExperimenterId(expId);

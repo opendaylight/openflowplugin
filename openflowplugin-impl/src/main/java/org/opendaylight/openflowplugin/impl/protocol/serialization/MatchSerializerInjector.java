@@ -65,12 +65,14 @@ import org.opendaylight.openflowplugin.impl.protocol.serialization.match.VlanVid
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 
 /**
- * Util class for injecting new match serializers into OpenflowJava
+ * Util class for injecting new match serializers into OpenflowJava.
  */
 class MatchSerializerInjector {
 
     /**
-     * Injects match serializers into provided {@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}
+     * Injects match serializers into provided
+     * {@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}.
+     *
      * @param provider OpenflowJava serializer extension provider
      */
     static void injectSerializers(final SerializerExtensionProvider provider) {
@@ -135,9 +137,11 @@ class MatchSerializerInjector {
     }
 
     /**
-     * Create injector that will inject new match entry serializers into #{@link org.opendaylight.openflowplugin.api.openflow.protocol.serialization.MatchEntrySerializerRegistry}
+     * Create injector that will inject new match entry serializers into
+     * #{@link org.opendaylight.openflowplugin.api.openflow.protocol.serialization.MatchEntrySerializerRegistry}.
+     *
      * @param registry Match entry serializer registry
-     * @param version Openflow version
+     * @param version  Openflow version
      * @return injector
      */
     @VisibleForTesting

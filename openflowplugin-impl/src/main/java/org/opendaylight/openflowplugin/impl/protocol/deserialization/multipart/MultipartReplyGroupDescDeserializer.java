@@ -32,7 +32,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.desc.stats.reply.GroupDescStatsKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
 
-public class MultipartReplyGroupDescDeserializer implements OFDeserializer<MultipartReplyBody>, DeserializerRegistryInjector {
+public class MultipartReplyGroupDescDeserializer implements OFDeserializer<MultipartReplyBody>,
+        DeserializerRegistryInjector {
 
     private static final byte PADDING_IN_GROUP_DESC_HEADER = 1;
     private static final byte PADDING_IN_BUCKETS_HEADER = 4;
@@ -49,7 +50,7 @@ public class MultipartReplyGroupDescDeserializer implements OFDeserializer<Multi
             final int itemLength = message.readUnsignedShort();
 
             final GroupDescStatsBuilder itemBuilder = new GroupDescStatsBuilder()
-                .setGroupType(GroupTypes.forValue(message.readUnsignedByte()));
+                    .setGroupType(GroupTypes.forValue(message.readUnsignedByte()));
 
             message.skipBytes(PADDING_IN_GROUP_DESC_HEADER);
             itemBuilder.setGroupId(new GroupId(message.readUnsignedInt()));
@@ -63,15 +64,15 @@ public class MultipartReplyGroupDescDeserializer implements OFDeserializer<Multi
                 final int bucketsLength = message.readUnsignedShort();
 
                 final BucketBuilder bucketBuilder = new BucketBuilder()
-                    .setBucketId(new BucketId(bucketKey))
-                    .setKey(new BucketKey(new BucketId(bucketKey)))
-                    .setWeight(message.readUnsignedShort())
-                    .setWatchPort(message.readUnsignedInt())
-                    .setWatchGroup(message.readUnsignedInt());
+                        .setBucketId(new BucketId(bucketKey))
+                        .setKey(new BucketKey(new BucketId(bucketKey)))
+                        .setWeight(message.readUnsignedShort())
+                        .setWatchPort(message.readUnsignedInt())
+                        .setWatchGroup(message.readUnsignedInt());
 
                 message.skipBytes(PADDING_IN_BUCKETS_HEADER);
                 final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list
-                    .Action> actions = new ArrayList<>();
+                        .Action> actions = new ArrayList<>();
                 final int startIndex = message.readerIndex();
                 final int bucketLength = bucketsLength - BUCKETS_HEADER_LENGTH;
                 int offset = 0;
@@ -94,15 +95,15 @@ public class MultipartReplyGroupDescDeserializer implements OFDeserializer<Multi
             }
 
             items.add(itemBuilder
-                .setBuckets(new BucketsBuilder()
-                    .setBucket(subItems)
-                    .build())
-                .build());
+                    .setBuckets(new BucketsBuilder()
+                            .setBucket(subItems)
+                            .build())
+                    .build());
         }
 
         return builder
-            .setGroupDescStats(items)
-            .build();
+                .setGroupDescStats(items)
+                .build();
     }
 
     @Override

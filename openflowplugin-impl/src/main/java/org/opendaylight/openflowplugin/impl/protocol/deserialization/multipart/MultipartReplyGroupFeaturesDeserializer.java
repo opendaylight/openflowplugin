@@ -58,10 +58,18 @@ public class MultipartReplyGroupFeaturesDeserializer implements OFDeserializer<M
         final boolean gcChaining = ((capabilitiesMask) & (1 << 2)) != 0;
         final boolean gcChainingChecks = ((capabilitiesMask) & (1 << 3)) != 0;
 
-        if (gcSelectWeight) groupCapabilities.add(SelectWeight.class);
-        if (gcSelectLiveness) groupCapabilities.add(SelectLiveness.class);
-        if (gcChaining) groupCapabilities.add(Chaining.class);
-        if (gcChainingChecks) groupCapabilities.add(ChainingChecks.class);
+        if (gcSelectWeight) {
+            groupCapabilities.add(SelectWeight.class);
+        }
+        if (gcSelectLiveness) {
+            groupCapabilities.add(SelectLiveness.class);
+        }
+        if (gcChaining) {
+            groupCapabilities.add(Chaining.class);
+        }
+        if (gcChainingChecks) {
+            groupCapabilities.add(ChainingChecks.class);
+        }
 
         return groupCapabilities;
     }
@@ -75,10 +83,18 @@ public class MultipartReplyGroupFeaturesDeserializer implements OFDeserializer<M
         final boolean gtIndirect = ((typesMask) & (1 << 2)) != 0;
         final boolean gtFF = ((typesMask) & (1 << 3)) != 0;
 
-        if (gtAll) groupTypes.add(GroupAll.class);
-        if (gtSelect) groupTypes.add(GroupSelect.class);
-        if (gtIndirect) groupTypes.add(GroupIndirect.class);
-        if (gtFF) groupTypes.add(GroupFf.class);
+        if (gtAll) {
+            groupTypes.add(GroupAll.class);
+        }
+        if (gtSelect) {
+            groupTypes.add(GroupSelect.class);
+        }
+        if (gtIndirect) {
+            groupTypes.add(GroupIndirect.class);
+        }
+        if (gtFF) {
+            groupTypes.add(GroupFf.class);
+        }
 
         return groupTypes;
     }

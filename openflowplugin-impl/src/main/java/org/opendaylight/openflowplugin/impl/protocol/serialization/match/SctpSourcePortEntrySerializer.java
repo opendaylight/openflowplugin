@@ -25,9 +25,9 @@ public class SctpSourcePortEntrySerializer extends AbstractMatchEntrySerializer 
 
     @Override
     public boolean matchTypeCheck(Match match) {
-        return Objects.nonNull(match.getLayer4Match()) &&
-                SctpMatch.class.isInstance(match.getLayer4Match()) &&
-                Objects.nonNull(SctpMatch.class.cast(match.getLayer4Match()).getSctpSourcePort());
+        return Objects.nonNull(match.getLayer4Match())
+                && SctpMatch.class.isInstance(match.getLayer4Match())
+                && Objects.nonNull(SctpMatch.class.cast(match.getLayer4Match()).getSctpSourcePort());
     }
 
     @Override

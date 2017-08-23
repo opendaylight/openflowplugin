@@ -24,8 +24,8 @@ public class Icmpv4CodeEntrySerializer extends AbstractMatchEntrySerializer {
 
     @Override
     public boolean matchTypeCheck(Match match) {
-        return Objects.nonNull(match.getIcmpv4Match()) &&
-                Objects.nonNull(match.getIcmpv4Match().getIcmpv4Code());
+        return Objects.nonNull(match.getIcmpv4Match())
+                && Objects.nonNull(match.getIcmpv4Match().getIcmpv4Code());
     }
 
     @Override

@@ -40,14 +40,14 @@ public class MatchSerializer implements OFSerializer<Match>, HeaderSerializer<Ma
 
     private static final Logger LOG = LoggerFactory.getLogger(MatchSerializer.class);
     private static final byte OXM_MATCH_TYPE_CODE = 1;
-    private final Map<org.opendaylight.openflowplugin.api.openflow.protocol.serialization.
-            MatchEntrySerializerKey, MatchEntrySerializer> entryRegistry = new LinkedHashMap<>();
+    private final Map<org.opendaylight.openflowplugin.api.openflow.protocol.serialization.MatchEntrySerializerKey,
+            MatchEntrySerializer> entryRegistry = new LinkedHashMap<>();
     private SerializerRegistry registry;
 
     @Override
     public void serialize(Match match, ByteBuf outBuffer) {
         // Save start index in buffer
-        int matchStartIndex = outBuffer.writerIndex();
+        final int matchStartIndex = outBuffer.writerIndex();
 
         // With OpenflowPlugin models, we cannot check difference between OXM and Standard match type
         // so all matches will be OXM
@@ -132,7 +132,8 @@ public class MatchSerializer implements OFSerializer<Match>, HeaderSerializer<Ma
     }
 
     @Override
-    public void registerEntrySerializer(org.opendaylight.openflowplugin.api.openflow.protocol.serialization.MatchEntrySerializerKey key, MatchEntrySerializer serializer) {
+    public void registerEntrySerializer(org.opendaylight.openflowplugin.api.openflow.protocol.serialization
+                                                    .MatchEntrySerializerKey key, MatchEntrySerializer serializer) {
         if (Objects.isNull(key) || Objects.isNull(serializer)) {
             throw new IllegalArgumentException("MatchEntrySerializerKey or Serializer is null");
         }
@@ -145,7 +146,8 @@ public class MatchSerializer implements OFSerializer<Match>, HeaderSerializer<Ma
     }
 
     @Override
-    public boolean unregisterEntrySerializer(org.opendaylight.openflowplugin.api.openflow.protocol.serialization.MatchEntrySerializerKey key) {
+    public boolean unregisterEntrySerializer(org.opendaylight.openflowplugin.api.openflow.protocol.serialization
+                                                         .MatchEntrySerializerKey key) {
         return Objects.nonNull(entryRegistry.remove(key));
     }
 }

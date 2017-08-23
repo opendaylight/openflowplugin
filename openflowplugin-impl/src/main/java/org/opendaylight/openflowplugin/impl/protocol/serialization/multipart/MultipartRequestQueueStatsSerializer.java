@@ -37,7 +37,8 @@ public class MultipartRequestQueueStatsSerializer implements OFSerializer<Multip
         }
 
         byteBuf.writeInt(MoreObjects
-            .firstNonNull(multipartRequestQueueStats.getQueueId(), new QueueId(OFConstants.OFPQ_ALL)).getValue().intValue());
+            .firstNonNull(multipartRequestQueueStats.getQueueId(), new QueueId(OFConstants.OFPQ_ALL))
+                .getValue().intValue());
     }
 
 }

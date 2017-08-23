@@ -32,7 +32,8 @@ import org.slf4j.LoggerFactory;
  * Translates MeterMod messages
  * OF protocol versions: 1.3.
  */
-public class MeterMessageSerializer extends AbstractMessageSerializer<MeterMessage> implements SerializerRegistryInjector {
+public class MeterMessageSerializer extends AbstractMessageSerializer<MeterMessage> implements
+        SerializerRegistryInjector {
     private static final Logger LOG = LoggerFactory.getLogger(MeterMessageSerializer.class);
     private static final short LENGTH_OF_METER_BANDS = 16;
     private static final short PADDING_IN_METER_BAND_DROP = 4;
@@ -42,7 +43,7 @@ public class MeterMessageSerializer extends AbstractMessageSerializer<MeterMessa
 
     @Override
     public void serialize(final MeterMessage message, final ByteBuf outBuffer) {
-        int index = outBuffer.writerIndex();
+        final int index = outBuffer.writerIndex();
         super.serialize(message, outBuffer);
         outBuffer.writeShort(message.getCommand().getIntValue());
         outBuffer.writeShort(createMeterFlagsBitMask(

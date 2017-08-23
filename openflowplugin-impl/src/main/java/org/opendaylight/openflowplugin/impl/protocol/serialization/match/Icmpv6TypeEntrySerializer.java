@@ -24,8 +24,8 @@ public class Icmpv6TypeEntrySerializer extends AbstractMatchEntrySerializer {
 
     @Override
     public boolean matchTypeCheck(Match match) {
-        return Objects.nonNull(match.getIcmpv6Match()) &&
-                Objects.nonNull(match.getIcmpv6Match().getIcmpv6Type());
+        return Objects.nonNull(match.getIcmpv6Match())
+                && Objects.nonNull(match.getIcmpv6Match().getIcmpv6Type());
     }
 
     @Override
