@@ -165,7 +165,7 @@ public final class StatisticsGatheringUtils {
                 deleteAllKnownGroups(txFacade, instanceIdentifier, deviceRegistry.getDeviceGroupRegistry());
                 break;
             default:
-                LOG.warn("Unsupported statistics type {}", type);
+                LOG.trace("Unsupported statistics registry type {}", type);
         }
 
         if (writeStatistics(type, statistics, deviceInfo, statisticsWriterProvider)) {
@@ -182,7 +182,7 @@ public final class StatisticsGatheringUtils {
                     deviceRegistry.getDeviceGroupRegistry().processMarks();
                     break;
                 default:
-                    LOG.warn("Unsupported statistics type {}", type);
+                    LOG.trace("Unsupported statistics registry type {}", type);
             }
 
             LOG.debug("Stats reply added to transaction for node {} of type {}", deviceInfo.getNodeId(), type);
