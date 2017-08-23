@@ -62,7 +62,7 @@ public class RoleContextImpl implements RoleContext {
                     final long checkRoleMasterTimeout) {
         this.deviceInfo = deviceInfo;
         this.timer = timer;
-        slaveTask = timer.newTimeout((t) -> makeDeviceSlave(), checkRoleMasterTimeout, TimeUnit.MILLISECONDS);
+        slaveTask = timer.newTimeout((timerTask) -> makeDeviceSlave(), checkRoleMasterTimeout, TimeUnit.MILLISECONDS);
 
         LOG.info("Started timer for setting SLAVE role on device {} if no role will be set in {}s.",
                 deviceInfo,

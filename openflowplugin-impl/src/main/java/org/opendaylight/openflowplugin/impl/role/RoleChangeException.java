@@ -7,24 +7,23 @@
  */
 package org.opendaylight.openflowplugin.impl.role;
 
-/**
- * Created by kramesha on 8/21/15.
- */
 public class RoleChangeException extends Exception {
     private static final long serialVersionUID = -615991366447313972L;
 
     /**
-     * default ctor
+     * Default constructor.
      *
-     * @param message
+     * @param message - message
      */
     public RoleChangeException(String message) {
         super(message);
     }
 
     /**
-     * @param message
-     * @param cause
+     * Constructor.
+     *
+     * @param message - message
+     * @param cause - cause
      */
     public RoleChangeException(String message, Throwable cause) {
         super(message, cause);
