@@ -32,8 +32,8 @@ public class EthernetSourceEntrySerializer extends AbstractMatchEntrySerializer 
 
     @Override
     public boolean matchTypeCheck(Match match) {
-        return Objects.nonNull(match.getEthernetMatch()) &&
-                Objects.nonNull(match.getEthernetMatch().getEthernetSource());
+        return Objects.nonNull(match.getEthernetMatch())
+                && Objects.nonNull(match.getEthernetMatch().getEthernetSource());
     }
 
     @Override

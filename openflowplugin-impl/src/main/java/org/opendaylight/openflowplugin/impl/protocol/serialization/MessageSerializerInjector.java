@@ -28,12 +28,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 
 /**
- * Util class for injecting new message serializers into OpenflowJava
+ * Util class for injecting new message serializers into OpenflowJava.
  */
 class MessageSerializerInjector {
 
     /**
-     * Injects message serializers into provided {@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}
+     * Injects message serializers into provided
+     * {@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}.
+     *
      * @param provider OpenflowJava serializer extension provider
      */
     static void injectSerializers(final SerializerExtensionProvider provider) {
@@ -49,14 +51,17 @@ class MessageSerializerInjector {
     }
 
     /**
-     * Create injector that will inject new serializers into #{@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}
+     * Create injector that will inject new serializers into
+     * #{@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}.
+     *
      * @param provider OpenflowJava serializer extension provider
-     * @param version Openflow version
+     * @param version  Openflow version
      * @return injector
      */
     @VisibleForTesting
-    static Function<Class<?>, Consumer<OFSerializer<? extends OfHeader>>> createInjector(final SerializerExtensionProvider provider,
-                                                                                                 final byte version) {
+    static Function<Class<?>, Consumer<OFSerializer<? extends OfHeader>>> createInjector(
+            final SerializerExtensionProvider provider,
+            final byte version) {
         return type -> serializer ->
                 provider.registerSerializer(
                         new MessageTypeKey<>(version, type),

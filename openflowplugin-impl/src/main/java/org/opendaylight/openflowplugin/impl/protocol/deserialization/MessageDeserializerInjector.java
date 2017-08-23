@@ -38,13 +38,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 class MessageDeserializerInjector {
 
     /**
-     * Injects message deserializers into provided {@link org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider}
+     * Injects message deserializers into provided.
+     * {@link org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider}
+     *
      * @param provider OpenflowJava deserializer extension provider
      */
     static void injectDeserializers(final DeserializerExtensionProvider provider) {
         // Inject new message deserializers here using injector created by createInjector method
-        final Function<Integer, Function<Class<? extends OfHeader>, Consumer<OFDeserializer<? extends OfHeader>>>> injector =
-                createInjector(provider, EncodeConstants.OF13_VERSION_ID);
+        final Function<Integer, Function<Class<? extends OfHeader>, Consumer<OFDeserializer<? extends OfHeader>>>>
+                injector = createInjector(provider, EncodeConstants.OF13_VERSION_ID);
 
         injector.apply(10).apply(org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709
                 .PacketInMessage.class).accept(new PacketInMessageDeserializer());
@@ -52,24 +54,31 @@ class MessageDeserializerInjector {
     }
 
     /**
-     * Reverts original message deserializers in provided {@link org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider}
+     * Reverts original message deserializers in provided.
+     * {@link org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider}
+     *
      * @param provider OpenflowJava deserializer extension provider
      */
     static void revertDeserializers(final DeserializerExtensionProvider provider) {
         provider.unregisterDeserializerMapping(new TypeToClassKey(EncodeConstants.OF13_VERSION_ID, 10));
-        provider.registerDeserializerMapping(new TypeToClassKey(EncodeConstants.OF13_VERSION_ID, 10), PacketInMessage.class);
+        provider.registerDeserializerMapping(new TypeToClassKey(EncodeConstants.OF13_VERSION_ID, 10),
+                PacketInMessage.class);
         provider.unregisterDeserializerMapping(new TypeToClassKey(EncodeConstants.OF13_VERSION_ID, 19));
-        provider.registerDeserializerMapping(new TypeToClassKey(EncodeConstants.OF13_VERSION_ID, 19), MultipartReplyMessage.class);
+        provider.registerDeserializerMapping(new TypeToClassKey(EncodeConstants.OF13_VERSION_ID, 19),
+                MultipartReplyMessage.class);
     }
 
     /**
-     * Create injector that will inject new deserializers into #{@link org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider}
+     * Create injector that will inject new deserializers into.
+     * #{@link org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider}
+     *
      * @param provider OpenflowJava deserializer extension provider
-     * @param version Openflow version
+     * @param version  Openflow version
      * @return injector
      */
     @VisibleForTesting
-    static Function<Integer, Function<Class<? extends OfHeader>, Consumer<OFDeserializer<? extends OfHeader>>>> createInjector(
+    static Function<Integer, Function<Class<? extends OfHeader>, Consumer<OFDeserializer<? extends OfHeader>>>>
+        createInjector(
             final DeserializerExtensionProvider provider,
             final short version) {
         return code -> retType -> deserializer -> {
@@ -83,25 +92,29 @@ class MessageDeserializerInjector {
 
     @VisibleForTesting
     static void injectLegacyDeserializers(final DeserializerExtensionProvider provider) {
-        final Function<Integer, Function<Class<? extends OfHeader>, Consumer<OFDeserializer<? extends OfHeader>>>> injector =
-            createInjector(provider, EncodeConstants.OF13_VERSION_ID);
+        final Function<Integer, Function<Class<? extends OfHeader>, Consumer<OFDeserializer<? extends OfHeader>>>>
+                injector = createInjector(provider, EncodeConstants.OF13_VERSION_ID);
 
-         injector.apply(14).apply(FlowMessage.class).accept(new FlowMessageDeserializer());
-         injector.apply(15).apply(GroupMessage.class).accept(new GroupMessageDeserializer());
-         injector.apply(29).apply(MeterMessage.class).accept(new MeterMessageDeserializer());
-         injector.apply(16).apply(PortMessage.class).accept(new PortMessageDeserializer());
+        injector.apply(14).apply(FlowMessage.class).accept(new FlowMessageDeserializer());
+        injector.apply(15).apply(GroupMessage.class).accept(new GroupMessageDeserializer());
+        injector.apply(29).apply(MeterMessage.class).accept(new MeterMessageDeserializer());
+        injector.apply(16).apply(PortMessage.class).accept(new PortMessageDeserializer());
     }
 
     @VisibleForTesting
     static void revertLegacyDeserializers(final DeserializerExtensionProvider provider) {
         provider.unregisterDeserializerMapping(new TypeToClassKey(EncodeConstants.OF13_VERSION_ID, 14));
-        provider.registerDeserializerMapping(new TypeToClassKey(EncodeConstants.OF13_VERSION_ID, 14), FlowModInput.class);
+        provider.registerDeserializerMapping(new TypeToClassKey(EncodeConstants.OF13_VERSION_ID, 14),
+                FlowModInput.class);
         provider.unregisterDeserializerMapping(new TypeToClassKey(EncodeConstants.OF13_VERSION_ID, 15));
-        provider.registerDeserializerMapping(new TypeToClassKey(EncodeConstants.OF13_VERSION_ID, 15), GroupModInput.class);
+        provider.registerDeserializerMapping(new TypeToClassKey(EncodeConstants.OF13_VERSION_ID, 15),
+                GroupModInput.class);
         provider.unregisterDeserializerMapping(new TypeToClassKey(EncodeConstants.OF13_VERSION_ID, 29));
-        provider.registerDeserializerMapping(new TypeToClassKey(EncodeConstants.OF13_VERSION_ID, 29), MeterModInput.class);
+        provider.registerDeserializerMapping(new TypeToClassKey(EncodeConstants.OF13_VERSION_ID, 29),
+                MeterModInput.class);
         provider.unregisterDeserializerMapping(new TypeToClassKey(EncodeConstants.OF13_VERSION_ID, 16));
-        provider.registerDeserializerMapping(new TypeToClassKey(EncodeConstants.OF13_VERSION_ID, 16), PortModInput.class);
+        provider.registerDeserializerMapping(new TypeToClassKey(EncodeConstants.OF13_VERSION_ID, 16),
+                PortModInput.class);
         provider.unregisterDeserializerMapping(new TypeToClassKey(EncodeConstants.OF13_VERSION_ID, 19));
     }
 

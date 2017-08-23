@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.key;
 
 import java.util.Objects;
-
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 
@@ -17,10 +16,11 @@ public class MessageCodeMatchKey extends MessageCodeKey {
     private MatchPath matchPath;
 
     /**
-     * Constructor
-     * @param version wire protocol version
-     * @param value used as distinguisher (read from binary data / buffer)
-     * @param clazz class of object that is going to be deserialized
+     * Constructor.
+     *
+     * @param version   wire protocol version
+     * @param value     used as distinguisher (read from binary data / buffer)
+     * @param clazz     class of object that is going to be deserialized
      * @param matchPath match extension path
      */
     public MessageCodeMatchKey(short version, int value, Class<?> clazz, MatchPath matchPath) {

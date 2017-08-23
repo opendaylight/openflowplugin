@@ -60,14 +60,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<MultipartReplyBody>, DeserializerRegistryInjector {
+public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<MultipartReplyBody>,
+        DeserializerRegistryInjector {
     private static final Logger LOG = LoggerFactory.getLogger(MultipartReplyTableFeaturesDeserializer.class);
     private static final byte PADDING_IN_MULTIPART_REPLY_TABLE_FEATURES = 5;
     private static final byte MAX_TABLE_NAME_LENGTH = 32;
     private static final byte MULTIPART_REPLY_TABLE_FEATURES_STRUCTURE_LENGTH = 64;
     private static final byte COMMON_PROPERTY_LENGTH = 4;
     private static final TableFeaturesMatchFieldDeserializer MATCH_FIELD_DESERIALIZER =
-        new TableFeaturesMatchFieldDeserializer();
+            new TableFeaturesMatchFieldDeserializer();
 
     private DeserializerRegistry registry;
 
@@ -79,7 +80,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
         while (message.readableBytes() > 0) {
             final int itemLength = message.readUnsignedShort();
             final TableFeaturesBuilder itemBuilder = new TableFeaturesBuilder()
-                .setTableId(message.readUnsignedByte());
+                    .setTableId(message.readUnsignedByte());
 
             message.skipBytes(PADDING_IN_MULTIPART_REPLY_TABLE_FEATURES);
 
@@ -90,30 +91,30 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
             message.readBytes(write);
 
             items.add(itemBuilder
-                .setKey(new TableFeaturesKey(itemBuilder.getTableId()))
-                .setName(name)
-                .setMetadataMatch(new BigInteger(1, match))
-                .setMetadataWrite(new BigInteger(1, write))
-                .setConfig(readTableConfig(message))
-                .setMaxEntries(message.readUnsignedInt())
-                .setTableProperties(readTableProperties(message,
-                    itemLength - MULTIPART_REPLY_TABLE_FEATURES_STRUCTURE_LENGTH))
-                .build());
+                    .setKey(new TableFeaturesKey(itemBuilder.getTableId()))
+                    .setName(name)
+                    .setMetadataMatch(new BigInteger(1, match))
+                    .setMetadataWrite(new BigInteger(1, write))
+                    .setConfig(readTableConfig(message))
+                    .setMaxEntries(message.readUnsignedInt())
+                    .setTableProperties(readTableProperties(message,
+                            itemLength - MULTIPART_REPLY_TABLE_FEATURES_STRUCTURE_LENGTH))
+                    .build());
         }
 
         return builder
-            .setTableFeatures(items)
-            .build();
+                .setTableFeatures(items)
+                .build();
     }
 
-    private final TableConfig readTableConfig(ByteBuf message) {
+    private TableConfig readTableConfig(ByteBuf message) {
         final long input = message.readUnsignedInt();
         final boolean deprecated = (input & 3) != 0;
 
         return new TableConfig(deprecated);
     }
 
-    private final TableProperties readTableProperties(ByteBuf message, int length) {
+    private TableProperties readTableProperties(ByteBuf message, int length) {
         final List<TableFeatureProperties> items = new ArrayList<>();
         int tableFeaturesLength = length;
         int order = 0;
@@ -257,6 +258,9 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
                     propDeserializer.deserialize(message);
                     LOG.debug("Table feature property type {} is not handled yet.", propType);
                     break;
+
+                default:
+                    LOG.trace("Unsupported property type {}", propType);
             }
 
 
@@ -282,12 +286,12 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
 
         while ((message.readerIndex() - startIndex) < length) {
             MATCH_FIELD_DESERIALIZER
-                .deserialize(message)
-                .map(matchFields::add)
-                .orElseGet(() -> {
-                    message.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
-                    return Boolean.FALSE;
-                });
+                    .deserialize(message)
+                    .map(matchFields::add)
+                    .orElseGet(() -> {
+                        message.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+                        return Boolean.FALSE;
+                    });
         }
 
         return matchFields;
@@ -309,18 +313,18 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
             .Instruction> readInstructions(ByteBuf message, int length) {
 
         final List<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list
-            .Instruction> instructions = new ArrayList<>();
+                .Instruction> instructions = new ArrayList<>();
         final int startIndex = message.readerIndex();
         int offset = 0;
 
         while ((message.readerIndex() - startIndex) < length) {
             try {
                 instructions.add(new InstructionBuilder()
-                    .setKey(new InstructionKey(offset))
-                    .setOrder(offset)
-                    .setInstruction(InstructionUtil
-                        .readInstructionHeader(EncodeConstants.OF13_VERSION_ID, message, registry))
-                    .build());
+                        .setKey(new InstructionKey(offset))
+                        .setOrder(offset)
+                        .setInstruction(InstructionUtil
+                                .readInstructionHeader(EncodeConstants.OF13_VERSION_ID, message, registry))
+                        .build());
 
                 offset++;
             } catch (ClassCastException | IllegalStateException e) {
@@ -331,6 +335,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
         return instructions;
     }
 
+    @SuppressWarnings("checkstyle:LineLength")
     private List<Action> readActions(ByteBuf message, int length) {
         final List<Action> actions = new ArrayList<>();
         final int startIndex = message.readerIndex();
@@ -342,7 +347,8 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
                         .setKey(new ActionKey(offset))
                         .setOrder(offset)
                         .setAction(ActionUtil.readActionHeader(EncodeConstants.OF13_VERSION_ID, message, registry,
-                                ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION))
+                                ActionPath
+                                        .FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION))
                         .build());
 
                 offset++;

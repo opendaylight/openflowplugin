@@ -7,12 +7,11 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.action;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetMplsTtlActionCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.mpls.ttl.action._case.SetMplsTtlActionBuilder;
+import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
-
-import io.netty.buffer.ByteBuf;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetMplsTtlActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.mpls.ttl.action._case.SetMplsTtlActionBuilder;
 
 public class SetMplsTtlActionDeserializer extends AbstractActionDeserializer {
 
@@ -23,10 +22,10 @@ public class SetMplsTtlActionDeserializer extends AbstractActionDeserializer {
         message.skipBytes(ActionConstants.SET_MPLS_TTL_PADDING);
 
         return new SetMplsTtlActionCaseBuilder()
-            .setSetMplsTtlAction(new SetMplsTtlActionBuilder()
-                    .setMplsTtl(mplsTtl)
-                    .build())
-            .build();
+                .setSetMplsTtlAction(new SetMplsTtlActionBuilder()
+                        .setMplsTtl(mplsTtl)
+                        .build())
+                .build();
     }
 
     @Override

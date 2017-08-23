@@ -37,10 +37,11 @@ public class MultipartReplyPortStatsDeserializer implements OFDeserializer<Multi
 
         while (message.readableBytes() > 0) {
             final NodeConnectorStatisticsAndPortNumberMapBuilder itemBuilder =
-                new NodeConnectorStatisticsAndPortNumberMapBuilder();
+                    new NodeConnectorStatisticsAndPortNumberMapBuilder();
 
             final long port = message.readUnsignedInt();
-            itemBuilder.setNodeConnectorId(new NodeConnectorId(OpenflowPortsUtil.getProtocolAgnosticPortUri(EncodeConstants.OF13_VERSION_ID, port)));
+            itemBuilder.setNodeConnectorId(new NodeConnectorId(OpenflowPortsUtil
+                    .getProtocolAgnosticPortUri(EncodeConstants.OF13_VERSION_ID, port)));
 
             message.skipBytes(PADDING_IN_PORT_STATS_HEADER);
 
@@ -70,33 +71,33 @@ public class MultipartReplyPortStatsDeserializer implements OFDeserializer<Multi
             message.readBytes(collisionCount);
 
             items.add(itemBuilder
-                .setKey(new NodeConnectorStatisticsAndPortNumberMapKey(itemBuilder.getNodeConnectorId()))
-                .setPackets(new PacketsBuilder()
-                    .setReceived(new BigInteger(1, recPack))
-                    .setTransmitted(new BigInteger(1, txPack))
-                    .build())
-                .setBytes(new BytesBuilder()
-                    .setReceived(new BigInteger(1, recByt))
-                    .setTransmitted(new BigInteger(1, txByt))
-                    .build())
-                .setReceiveDrops(new BigInteger(1, recDrop))
-                .setTransmitDrops(new BigInteger(1, txDrop))
-                .setReceiveErrors(new BigInteger(1, recError))
-                .setTransmitErrors(new BigInteger(1, txError))
-                .setReceiveFrameError(new BigInteger(1, recFrameError))
-                .setReceiveOverRunError(new BigInteger(1, recOverRunError))
-                .setReceiveCrcError(new BigInteger(1, recCrcError))
-                .setCollisionCount(new BigInteger(1, collisionCount))
-                .setDuration(new DurationBuilder()
-                    .setSecond(new Counter32(message.readUnsignedInt()))
-                    .setNanosecond(new Counter32(message.readUnsignedInt()))
-                    .build())
-                .build());
+                    .setKey(new NodeConnectorStatisticsAndPortNumberMapKey(itemBuilder.getNodeConnectorId()))
+                    .setPackets(new PacketsBuilder()
+                            .setReceived(new BigInteger(1, recPack))
+                            .setTransmitted(new BigInteger(1, txPack))
+                            .build())
+                    .setBytes(new BytesBuilder()
+                            .setReceived(new BigInteger(1, recByt))
+                            .setTransmitted(new BigInteger(1, txByt))
+                            .build())
+                    .setReceiveDrops(new BigInteger(1, recDrop))
+                    .setTransmitDrops(new BigInteger(1, txDrop))
+                    .setReceiveErrors(new BigInteger(1, recError))
+                    .setTransmitErrors(new BigInteger(1, txError))
+                    .setReceiveFrameError(new BigInteger(1, recFrameError))
+                    .setReceiveOverRunError(new BigInteger(1, recOverRunError))
+                    .setReceiveCrcError(new BigInteger(1, recCrcError))
+                    .setCollisionCount(new BigInteger(1, collisionCount))
+                    .setDuration(new DurationBuilder()
+                            .setSecond(new Counter32(message.readUnsignedInt()))
+                            .setNanosecond(new Counter32(message.readUnsignedInt()))
+                            .build())
+                    .build());
         }
 
         return builder
-            .setNodeConnectorStatisticsAndPortNumberMap(items)
-            .build();
+                .setNodeConnectorStatisticsAndPortNumberMap(items)
+                .build();
     }
 
 }

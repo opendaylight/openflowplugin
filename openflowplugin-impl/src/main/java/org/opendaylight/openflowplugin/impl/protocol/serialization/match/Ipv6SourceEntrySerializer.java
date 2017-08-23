@@ -40,12 +40,13 @@ public class Ipv6SourceEntrySerializer extends AbstractMatchEntrySerializer {
     @Override
     public boolean matchTypeCheck(Match match) {
         if (isPrefix(match)) {
-            return Objects.nonNull(match.getLayer3Match()) &&
-                    Objects.nonNull(Ipv6Match.class.cast(match.getLayer3Match()).getIpv6Source());
+            return Objects.nonNull(match.getLayer3Match())
+                    && Objects.nonNull(Ipv6Match.class.cast(match.getLayer3Match()).getIpv6Source());
         } else if (isArbitrary(match)) {
 
-            return Objects.nonNull(match.getLayer3Match()) &&
-                    Objects.nonNull(Ipv6MatchArbitraryBitMask.class.cast(match.getLayer3Match()).getIpv6SourceAddressNoMask());
+            return Objects.nonNull(match.getLayer3Match())
+                    && Objects.nonNull(Ipv6MatchArbitraryBitMask.class.cast(match.getLayer3Match())
+                    .getIpv6SourceAddressNoMask());
         }
 
         return false;
@@ -59,7 +60,8 @@ public class Ipv6SourceEntrySerializer extends AbstractMatchEntrySerializer {
                         .extractIpv6Prefix(Ipv6Match.class.cast(match.getLayer3Match()).getIpv6Source()));
             }
         } else if (isArbitrary(match)) {
-            return Objects.nonNull(Ipv6MatchArbitraryBitMask.class.cast(match.getLayer3Match()).getIpv6SourceArbitraryBitmask());
+            return Objects.nonNull(Ipv6MatchArbitraryBitMask.class.cast(match.getLayer3Match())
+                    .getIpv6SourceArbitraryBitmask());
         }
 
         return false;

@@ -24,8 +24,8 @@ public class EthernetTypeEntrySerializer extends AbstractMatchEntrySerializer {
 
     @Override
     public boolean matchTypeCheck(Match match) {
-        return Objects.nonNull(match.getEthernetMatch()) &&
-                Objects.nonNull(match.getEthernetMatch().getEthernetType());
+        return Objects.nonNull(match.getEthernetMatch())
+                && Objects.nonNull(match.getEthernetMatch().getEthernetType());
     }
 
     @Override

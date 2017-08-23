@@ -8,8 +8,8 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
+import io.netty.buffer.ByteBuf;
 import java.util.Objects;
-
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.match.OxmDeserializerHelper;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
@@ -21,8 +21,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchArbitraryBitMaskBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchBuilder;
 
-import io.netty.buffer.ByteBuf;
-
 public class Ipv6SourceEntryDeserializer extends AbstractMatchEntryDeserializer {
 
     @Override
@@ -31,7 +29,8 @@ public class Ipv6SourceEntryDeserializer extends AbstractMatchEntryDeserializer 
         final Ipv6Address address = ByteBufUtils.readIetfIpv6Address(message);
 
         if (hasMask) {
-            final byte[] mask = OxmDeserializerHelper.convertMask(message, EncodeConstants.SIZE_OF_IPV6_ADDRESS_IN_BYTES);
+            final byte[] mask = OxmDeserializerHelper.convertMask(message, EncodeConstants
+                    .SIZE_OF_IPV6_ADDRESS_IN_BYTES);
 
             if (IpConversionUtil.isIpv6ArbitraryBitMask(mask)) {
                 setArbitraryMatch(builder, address, mask);
@@ -46,27 +45,28 @@ public class Ipv6SourceEntryDeserializer extends AbstractMatchEntryDeserializer 
     private static void setPrefixMatch(final MatchBuilder builder, final Ipv6Address address, final byte[] mask) {
         if (Objects.isNull(builder.getLayer3Match())) {
             builder.setLayer3Match(new Ipv6MatchBuilder()
-                .setIpv6Source(IpConversionUtil.createPrefix(address, mask))
-                .build());
+                    .setIpv6Source(IpConversionUtil.createPrefix(address, mask))
+                    .build());
         } else if (Ipv6Match.class.isInstance(builder.getLayer3Match())
-            && Objects.isNull(Ipv6Match.class.cast(builder.getLayer3Match()).getIpv6Source())) {
+                && Objects.isNull(Ipv6Match.class.cast(builder.getLayer3Match()).getIpv6Source())) {
             builder.setLayer3Match(new Ipv6MatchBuilder(Ipv6Match.class.cast(builder.getLayer3Match()))
-                .setIpv6Source(IpConversionUtil.createPrefix(address, mask))
-                .build());
+                    .setIpv6Source(IpConversionUtil.createPrefix(address, mask))
+                    .build());
         } else {
             throwErrorOnMalformed(builder, "layer3Match", "ipv6Source");
         }
     }
 
     private static void setArbitraryMatch(final MatchBuilder builder, final Ipv6Address address,
-            final byte[] mask) {
+                                          final byte[] mask) {
         if (Objects.isNull(builder.getLayer3Match())) {
             builder.setLayer3Match(new Ipv6MatchArbitraryBitMaskBuilder()
                     .setIpv6SourceAddressNoMask(address)
                     .setIpv6SourceArbitraryBitmask(IpConversionUtil.createIpv6ArbitraryBitMask(mask))
                     .build());
         } else if (Ipv6MatchArbitraryBitMask.class.isInstance(builder.getLayer3Match())
-            && Objects.isNull(Ipv6MatchArbitraryBitMask.class.cast(builder.getLayer3Match()).getIpv6SourceAddressNoMask())) {
+                && Objects.isNull(Ipv6MatchArbitraryBitMask.class.cast(builder.getLayer3Match())
+                .getIpv6SourceAddressNoMask())) {
             final Ipv6MatchArbitraryBitMask match = Ipv6MatchArbitraryBitMask.class.cast(builder.getLayer3Match());
             builder.setLayer3Match(new Ipv6MatchArbitraryBitMaskBuilder(match)
                     .setIpv6SourceAddressNoMask(address)

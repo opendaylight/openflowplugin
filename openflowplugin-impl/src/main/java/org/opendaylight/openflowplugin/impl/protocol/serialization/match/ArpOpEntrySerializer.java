@@ -25,9 +25,9 @@ public class ArpOpEntrySerializer extends AbstractMatchEntrySerializer {
 
     @Override
     public boolean matchTypeCheck(Match match) {
-        return Objects.nonNull(match.getLayer3Match()) &&
-                ArpMatch.class.isInstance(match.getLayer3Match()) &&
-                Objects.nonNull(ArpMatch.class.cast(match.getLayer3Match()).getArpOp());
+        return Objects.nonNull(match.getLayer3Match())
+                && ArpMatch.class.isInstance(match.getLayer3Match())
+                && Objects.nonNull(ArpMatch.class.cast(match.getLayer3Match()).getArpOp());
     }
 
     @Override

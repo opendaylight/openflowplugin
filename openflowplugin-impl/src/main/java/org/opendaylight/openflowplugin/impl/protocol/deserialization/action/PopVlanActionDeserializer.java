@@ -7,12 +7,11 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.action;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopVlanActionCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.pop.vlan.action._case.PopVlanActionBuilder;
+import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
-
-import io.netty.buffer.ByteBuf;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopVlanActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.pop.vlan.action._case.PopVlanActionBuilder;
 
 public class PopVlanActionDeserializer extends AbstractActionDeserializer {
 
@@ -22,8 +21,8 @@ public class PopVlanActionDeserializer extends AbstractActionDeserializer {
         message.skipBytes(ActionConstants.PADDING_IN_ACTION_HEADER);
 
         return new PopVlanActionCaseBuilder()
-            .setPopVlanAction(new PopVlanActionBuilder().build())
-            .build();
+                .setPopVlanAction(new PopVlanActionBuilder().build())
+                .build();
     }
 
     @Override

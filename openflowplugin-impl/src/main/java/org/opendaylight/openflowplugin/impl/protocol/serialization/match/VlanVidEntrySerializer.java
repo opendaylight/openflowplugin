@@ -40,15 +40,15 @@ public class VlanVidEntrySerializer extends AbstractMatchEntrySerializer {
 
     @Override
     public boolean matchTypeCheck(Match match) {
-        return Objects.nonNull(match.getVlanMatch()) &&
-                Objects.nonNull(match.getVlanMatch().getVlanId());
+        return Objects.nonNull(match.getVlanMatch())
+                && Objects.nonNull(match.getVlanMatch().getVlanId());
     }
 
     @Override
     protected boolean getHasMask(Match match) {
         final VlanId vlanId = match.getVlanMatch().getVlanId();
-        return Boolean.TRUE.equals(vlanId.isVlanIdPresent()) &&
-                (Objects.isNull(vlanId.getVlanId()) || vlanId.getVlanId().getValue() == 0);
+        return Boolean.TRUE.equals(vlanId.isVlanIdPresent())
+                && (Objects.isNull(vlanId.getVlanId()) || vlanId.getVlanId().getValue() == 0);
     }
 
     @Override

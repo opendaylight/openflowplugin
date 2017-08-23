@@ -8,17 +8,18 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.instruction;
 
+import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderDeserializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 
-import io.netty.buffer.ByteBuf;
-
-public abstract class AbstractInstructionDeserializer implements OFDeserializer<Instruction>, HeaderDeserializer<Instruction> {
+public abstract class AbstractInstructionDeserializer implements OFDeserializer<Instruction>,
+        HeaderDeserializer<Instruction> {
 
     /**
-     * Skip first few bytes of instruction message because they are irrelevant
+     * Skip first few bytes of instruction message because they are irrelevant.
+     *
      * @param message Openflow buffered message
      **/
     protected static void processHeader(ByteBuf message) {

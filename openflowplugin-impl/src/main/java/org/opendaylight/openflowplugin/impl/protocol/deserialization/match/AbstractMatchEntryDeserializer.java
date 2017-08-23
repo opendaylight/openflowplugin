@@ -21,7 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 public abstract class AbstractMatchEntryDeserializer implements MatchEntryDeserializer {
 
     /**
-     * Processes match entry header and returns if it have mask, or not
+     * Processes match entry header and returns if it have mask, or not.
      * @param in input buffer
      * @return true if match entry has mask, false otherwise
      */
@@ -33,7 +33,7 @@ public abstract class AbstractMatchEntryDeserializer implements MatchEntryDeseri
     }
 
     /**
-     * Read Ipv4Prefix from message
+     * Read Ipv4Prefix from message.
      * @param message buffered message
      * @param hasMask determines if prefix has mask or not
      * @return IPv4 prefix
@@ -51,7 +51,7 @@ public abstract class AbstractMatchEntryDeserializer implements MatchEntryDeseri
     }
 
     /**
-     * Throw error on malformed match builder input
+     * Throw error on malformed match builder input.
      * @param builder match builder
      * @param propertyName name of property that already containsData
      */
@@ -61,7 +61,7 @@ public abstract class AbstractMatchEntryDeserializer implements MatchEntryDeseri
     }
 
     /**
-     * Throw error on malformed match builder input
+     * Throw error on malformed match builder input.
      * @param builder match builder
      * @param propertyName name of property that already containsData
      */

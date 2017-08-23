@@ -23,7 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 
 public class SetFieldActionDeserializer extends AbstractActionDeserializer
-    implements DeserializerRegistryInjector {
+        implements DeserializerRegistryInjector {
 
     private static final MessageCodeKey MATCH_KEY = new MessageCodeMatchKey(
             EncodeConstants.OF13_VERSION_ID,
@@ -48,8 +48,8 @@ public class SetFieldActionDeserializer extends AbstractActionDeserializer
         }
 
         return new SetFieldCaseBuilder()
-            .setSetField(MatchUtil.transformMatch(builder.build(), SetField.class))
-            .build();
+                .setSetField(MatchUtil.transformMatch(builder.build(), SetField.class))
+                .build();
     }
 
     @Override
