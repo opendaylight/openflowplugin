@@ -35,9 +35,9 @@ public class Ipv6ExtHeaderEntrySerializer extends AbstractMatchEntrySerializer {
 
     @Override
     public boolean matchTypeCheck(Match match) {
-        return Objects.nonNull(match.getLayer3Match()) &&
-                Ipv6Match.class.isInstance(match.getLayer3Match()) &&
-                Objects.nonNull(Ipv6Match.class.cast(match.getLayer3Match()).getIpv6ExtHeader());
+        return Objects.nonNull(match.getLayer3Match())
+                && Ipv6Match.class.isInstance(match.getLayer3Match())
+                && Objects.nonNull(Ipv6Match.class.cast(match.getLayer3Match()).getIpv6ExtHeader());
     }
 
     @Override

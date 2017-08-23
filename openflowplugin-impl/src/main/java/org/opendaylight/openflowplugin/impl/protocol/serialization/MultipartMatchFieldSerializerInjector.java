@@ -103,18 +103,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanV
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch;
 
 /**
- * Util class for injecting new multipart match field serializers into OpenflowJava
+ * Util class for injecting new multipart match field serializers into OpenflowJava.
  */
 class MultipartMatchFieldSerializerInjector {
 
     /**
-     * Injects multipart match field serializers into provided {@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}
+     * Injects multipart match field serializers into provided
+     * {@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}.
+     *
      * @param provider OpenflowJava serializer extension provider
      */
     static void injectSerializers(final SerializerExtensionProvider provider) {
         // Inject new message serializers here using injector created by createInjector method
         final Function<Class<? extends MatchField>, Consumer<OFSerializer<SetFieldMatch>>> injector =
-            createInjector(provider, EncodeConstants.OF13_VERSION_ID);
+                createInjector(provider, EncodeConstants.OF13_VERSION_ID);
 
         injector.apply(ArpOp.class).accept(new ArpOpMatchFieldSerializer());
         injector.apply(ArpSha.class).accept(new ArpShaMatchFieldSerializer());
@@ -163,19 +165,21 @@ class MultipartMatchFieldSerializerInjector {
     }
 
     /**
-     * Create injector that will inject new multipart match field features serializers into #{@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}
+     * Create injector that will inject new multipart match field features serializers into
+     * #{@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}.
+     *
      * @param provider OpenflowJava serializer extension provider
-     * @param version Openflow version
+     * @param version  Openflow version
      * @return injector
      */
     @VisibleForTesting
     static Function<Class<? extends MatchField>, Consumer<OFSerializer<SetFieldMatch>>> createInjector(
-        final SerializerExtensionProvider provider,
-        final byte version) {
+            final SerializerExtensionProvider provider,
+            final byte version) {
         return type -> serializer ->
-            provider.registerSerializer(
-                new MessageTypeKey<>(version, type),
-                serializer);
+                provider.registerSerializer(
+                        new MessageTypeKey<>(version, type),
+                        serializer);
     }
 
 }

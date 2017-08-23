@@ -39,6 +39,8 @@ public abstract class AbstractExperimenterMatchEntrySerializer extends AbstractM
     }
 
     /**
+     * Get experimenter id.
+     *
      * @return experimenter match entry id
      */
     protected abstract long getExperimenterId();

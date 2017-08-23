@@ -32,8 +32,8 @@ public class PbbEntrySerializer extends AbstractMatchEntrySerializer {
 
     @Override
     public boolean matchTypeCheck(Match match) {
-        return Objects.nonNull(match.getProtocolMatchFields()) &&
-                Objects.nonNull(match.getProtocolMatchFields().getPbb());
+        return Objects.nonNull(match.getProtocolMatchFields())
+                && Objects.nonNull(match.getProtocolMatchFields().getPbb());
     }
 
     @Override

@@ -8,32 +8,27 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.instruction;
 
+import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.util.ActionUtil;
-import org.opendaylight.openflowplugin.api.openflow.protocol.deserialization.MessageCodeExperimenterKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
-import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
-import org.opendaylight.openflowplugin.api.openflow.protocol.deserialization.MessageCodeExperimenterKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 
-import io.netty.buffer.ByteBuf;
-
 public abstract class AbstractActionInstructionDeserializer extends AbstractInstructionDeserializer
-    implements DeserializerRegistryInjector {
+        implements DeserializerRegistryInjector {
 
     private DeserializerRegistry registry;
     private final ActionPath actionPath;
 
     /**
-     * Create new instacte of action instruction deserializer
+     * Create new instacte of action instruction deserializer.
+     *
      * @param actionPath action extension path
      */
     public AbstractActionInstructionDeserializer(final ActionPath actionPath) {
@@ -41,7 +36,8 @@ public abstract class AbstractActionInstructionDeserializer extends AbstractInst
     }
 
     /**
-     * Skip first few bytes of instruction message because they are irrelevant and then return length
+     * Skip first few bytes of instruction message because they are irrelevant and then return length.
+     *
      * @param message Openflow buffered message
      * @return instruction length
      **/
@@ -51,18 +47,19 @@ public abstract class AbstractActionInstructionDeserializer extends AbstractInst
     }
 
     /**
-     * Read list of actions from message
+     * Read list of actions from message.
+     *
      * @param message Openflow buffered message
-     * @param length instruction length
+     * @param length  instruction length
      * @return list of actions
      **/
     protected List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list
-        .Action> readActions(ByteBuf message, int length) {
+            .Action> readActions(ByteBuf message, int length) {
 
         final int instrLength = length - InstructionConstants.STANDARD_INSTRUCTION_LENGTH;
 
         final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list
-            .Action> actions = new ArrayList<>();
+                .Action> actions = new ArrayList<>();
 
         if (message.readableBytes() > 0) {
             final int startIndex = message.readerIndex();
@@ -73,7 +70,7 @@ public abstract class AbstractActionInstructionDeserializer extends AbstractInst
                         .setKey(new ActionKey(offset))
                         .setOrder(offset)
                         .setAction(ActionUtil
-                            .readAction(EncodeConstants.OF13_VERSION_ID, message, registry, actionPath))
+                                .readAction(EncodeConstants.OF13_VERSION_ID, message, registry, actionPath))
                         .build());
 
                 offset++;

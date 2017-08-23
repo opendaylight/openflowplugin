@@ -32,8 +32,8 @@ public class TcpFlagsEntrySerializer extends AbstractExperimenterMatchEntrySeria
 
     @Override
     public boolean matchTypeCheck(Match match) {
-        return Objects.nonNull(match.getTcpFlagsMatch()) &&
-                Objects.nonNull(match.getTcpFlagsMatch().getTcpFlags());
+        return Objects.nonNull(match.getTcpFlagsMatch())
+                && Objects.nonNull(match.getTcpFlagsMatch().getTcpFlags());
     }
 
     @Override

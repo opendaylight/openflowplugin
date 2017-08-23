@@ -23,8 +23,10 @@ public class WriteMetadataInstructionSerializer extends AbstractInstructionSeria
         super.serialize(input, outBuffer);
         final WriteMetadata writeMetadata = WriteMetadataCase.class.cast(input).getWriteMetadata();
         outBuffer.writeZero(InstructionConstants.PADDING_IN_WRITE_METADATA);
-        outBuffer.writeBytes(ByteUtil.convertBigIntegerToNBytes(writeMetadata.getMetadata(), EncodeConstants.SIZE_OF_LONG_IN_BYTES));
-        outBuffer.writeBytes(ByteUtil.convertBigIntegerToNBytes(writeMetadata.getMetadataMask(), EncodeConstants.SIZE_OF_LONG_IN_BYTES));
+        outBuffer.writeBytes(ByteUtil
+                .convertBigIntegerToNBytes(writeMetadata.getMetadata(), EncodeConstants.SIZE_OF_LONG_IN_BYTES));
+        outBuffer.writeBytes(ByteUtil
+                .convertBigIntegerToNBytes(writeMetadata.getMetadataMask(), EncodeConstants.SIZE_OF_LONG_IN_BYTES));
     }
 
     @Override

@@ -7,12 +7,11 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.action;
 
+import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecMplsTtlCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.mpls.ttl._case.DecMplsTtlBuilder;
-
-import io.netty.buffer.ByteBuf;
 
 public class DecMplsTtlActionDeserializer extends AbstractActionDeserializer {
 
@@ -22,8 +21,8 @@ public class DecMplsTtlActionDeserializer extends AbstractActionDeserializer {
         message.skipBytes(ActionConstants.PADDING_IN_ACTION_HEADER);
 
         return new DecMplsTtlCaseBuilder()
-            .setDecMplsTtl(new DecMplsTtlBuilder().build())
-            .build();
+                .setDecMplsTtl(new DecMplsTtlBuilder().build())
+                .build();
     }
 
     @Override

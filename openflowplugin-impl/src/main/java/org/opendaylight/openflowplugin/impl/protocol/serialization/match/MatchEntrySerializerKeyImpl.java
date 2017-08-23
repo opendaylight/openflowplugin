@@ -17,7 +17,8 @@ public class MatchEntrySerializerKeyImpl implements MatchEntrySerializerKey {
     private final int oxmField;
 
     /**
-     * Create new instance of MatchEntrySerializerKeyImpl
+     * Create new instance of MatchEntrySerializerKeyImpl.
+     *
      * @param version openflow version
      * @param oxmClass match entry oxm class
      * @param oxmField match entry field code

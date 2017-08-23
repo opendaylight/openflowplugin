@@ -8,9 +8,9 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.deserialization;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.util.function.Consumer;
 import java.util.function.Function;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -34,12 +34,12 @@ import org.opendaylight.openflowplugin.impl.protocol.deserialization.action.SetN
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.action.SetQueueActionDeserializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 
-import com.google.common.annotations.VisibleForTesting;
-
 class ActionDeserializerInjector {
 
     /**
-     * Injects action deserializers into provided {@link org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider}
+     * Injects action deserializers into provided
+     * {@link org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider}.
+     *
      * @param provider OpenflowJava deserializer extension provider
      */
     static void injectDeserializers(final DeserializerExtensionProvider provider) {
@@ -66,9 +66,11 @@ class ActionDeserializerInjector {
     }
 
     /**
-     * Create injector that will inject new deserializers into #{@link org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider}
+     * Create injector that will inject new deserializers into
+     * #{@link org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider}.
+     *
      * @param provider OpenflowJava deserializer extension provider
-     * @param version Openflow version
+     * @param version  Openflow version
      * @return injector
      */
     @VisibleForTesting

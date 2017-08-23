@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.serialization.util;
 
-
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
@@ -17,12 +16,13 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 
 /**
- * Utility class for instruction serialization
+ * Utility class for instruction serialization.
  */
 public class InstructionUtil {
 
     /**
-     * Serialize instruction
+     * Serialize instruction.
+     *
      * @param instruction OpenFlow instruction
      * @param version OpenFlow version
      * @param registry OpenFlowJava serializer registry
@@ -43,7 +43,8 @@ public class InstructionUtil {
 
 
     /**
-     * Serialize instruction header
+     * Serialize instruction header.
+     *
      * @param instruction OpenFlow instruction
      * @param version OpenFlow version
      * @param registry OpenFlowJava serializer registry

@@ -30,12 +30,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadataCase;
 
 /**
- * Util class for injecting new instruction serializers into OpenflowJava
+ * Util class for injecting new instruction serializers into OpenflowJava.
  */
 class InstructionSerializerInjector {
 
     /**
-     * Injects serializers into provided {@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}
+     * Injects serializers into provided
+     * {@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}.
+     *
      * @param provider OpenflowJava serializer extension provider
      */
     static void injectSerializers(final SerializerExtensionProvider provider) {
@@ -51,14 +53,17 @@ class InstructionSerializerInjector {
     }
 
     /**
-     * Create injector that will inject new serializers into #{@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}
+     * Create injector that will inject new serializers into
+     * #{@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}.
+     *
      * @param provider OpenflowJava serializer extension provider
-     * @param version Openflow version
+     * @param version  Openflow version
      * @return injector
      */
     @VisibleForTesting
-    static Function<Class<? extends Instruction>, Consumer<OFSerializer<? extends Instruction>>> createInjector(final SerializerExtensionProvider provider,
-                                                                                                final byte version) {
+    static Function<Class<? extends Instruction>, Consumer<OFSerializer<? extends Instruction>>> createInjector(
+            final SerializerExtensionProvider provider,
+            final byte version) {
         return type -> serializer ->
                 provider.registerSerializer(
                         new MessageTypeKey<>(version, type),

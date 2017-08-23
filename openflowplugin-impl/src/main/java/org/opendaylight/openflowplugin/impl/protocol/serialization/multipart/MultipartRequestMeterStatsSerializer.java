@@ -27,7 +27,8 @@ public class MultipartRequestMeterStatsSerializer implements OFSerializer<Multip
             .cast(multipartRequestBody);
 
         byteBuf.writeInt(MoreObjects
-            .firstNonNull(multipartRequestMeterStats.getMeterId(), new MeterId(OFConstants.OFPM_ALL)).getValue().intValue());
+            .firstNonNull(multipartRequestMeterStats.getMeterId(), new MeterId(OFConstants.OFPM_ALL))
+                .getValue().intValue());
         byteBuf.writeZero(PADDING_IN_MULTIPART_REQUEST_METER_BODY);
     }
 

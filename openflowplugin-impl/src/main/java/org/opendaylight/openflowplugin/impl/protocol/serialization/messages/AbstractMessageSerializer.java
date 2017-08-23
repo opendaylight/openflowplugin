@@ -28,6 +28,8 @@ public abstract class AbstractMessageSerializer<T extends OfHeader> implements O
     }
 
     /**
+     * Message type getter.
+     *
      * @return of message type
      */
     protected abstract byte getMessageType();

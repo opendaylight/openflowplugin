@@ -21,7 +21,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.multip
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.request.MultipartRequestBody;
 
-public class MultipartRequestFlowStatsSerializer implements OFSerializer<MultipartRequestBody>, SerializerRegistryInjector {
+public class MultipartRequestFlowStatsSerializer implements OFSerializer<MultipartRequestBody>,
+        SerializerRegistryInjector {
 
     private static final byte PADDING_IN_MULTIPART_REQUEST_FLOW_BODY_01 = 3;
     private static final byte PADDING_IN_MULTIPART_REQUEST_FLOW_BODY_02 = 4;
@@ -33,13 +34,18 @@ public class MultipartRequestFlowStatsSerializer implements OFSerializer<Multipa
             .class
             .cast(multipartRequestBody);
 
-        byteBuf.writeByte(MoreObjects.firstNonNull(multipartRequestFlowStats.getTableId(), OFConstants.OFPTT_ALL).byteValue());
+        byteBuf.writeByte(MoreObjects.firstNonNull(multipartRequestFlowStats.getTableId(),
+                OFConstants.OFPTT_ALL).byteValue());
         byteBuf.writeZero(PADDING_IN_MULTIPART_REQUEST_FLOW_BODY_01);
-        byteBuf.writeInt(MoreObjects.firstNonNull(multipartRequestFlowStats.getOutPort(), OFConstants.OFPP_ANY).intValue());
-        byteBuf.writeInt(MoreObjects.firstNonNull(multipartRequestFlowStats.getOutGroup(), OFConstants.OFPG_ANY).intValue());
+        byteBuf.writeInt(MoreObjects.firstNonNull(multipartRequestFlowStats.getOutPort(),
+                OFConstants.OFPP_ANY).intValue());
+        byteBuf.writeInt(MoreObjects.firstNonNull(multipartRequestFlowStats.getOutGroup(),
+                OFConstants.OFPG_ANY).intValue());
         byteBuf.writeZero(PADDING_IN_MULTIPART_REQUEST_FLOW_BODY_02);
-        byteBuf.writeLong(MoreObjects.firstNonNull(multipartRequestFlowStats.getCookie(), new FlowCookie(OFConstants.DEFAULT_COOKIE)).getValue().longValue());
-        byteBuf.writeLong(MoreObjects.firstNonNull(multipartRequestFlowStats.getCookieMask(), new FlowCookie(OFConstants.DEFAULT_COOKIE_MASK)).getValue().longValue());
+        byteBuf.writeLong(MoreObjects.firstNonNull(multipartRequestFlowStats.getCookie(),
+                new FlowCookie(OFConstants.DEFAULT_COOKIE)).getValue().longValue());
+        byteBuf.writeLong(MoreObjects.firstNonNull(multipartRequestFlowStats.getCookieMask(),
+                new FlowCookie(OFConstants.DEFAULT_COOKIE_MASK)).getValue().longValue());
 
         registry.<Match, OFSerializer<Match>>getSerializer(
             new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, Match.class))

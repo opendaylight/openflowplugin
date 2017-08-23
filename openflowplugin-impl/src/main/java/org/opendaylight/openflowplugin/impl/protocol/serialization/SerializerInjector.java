@@ -11,12 +11,14 @@ package org.opendaylight.openflowplugin.impl.protocol.serialization;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider;
 
 /**
- * Util class for injecting new serializers into OpenflowJava
+ * Util class for injecting new serializers into OpenflowJava.
  */
 public class SerializerInjector {
 
     /**
-     * Injects serializers into provided {@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}
+     * Injects serializers into provided
+     * {@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}.
+     *
      * @param provider OpenflowJava serializer extension provider
      */
     public static void injectSerializers(final SerializerExtensionProvider provider) {

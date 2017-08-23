@@ -22,7 +22,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.multi
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.TableFeaturePropType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.TableProperties;
 
-public class MultipartRequestTableFeaturesSerializer implements OFSerializer<MultipartRequestBody>, SerializerRegistryInjector {
+public class MultipartRequestTableFeaturesSerializer implements OFSerializer<MultipartRequestBody>,
+        SerializerRegistryInjector {
 
     private static final byte PADDING_IN_MULTIPART_REQUEST_TABLE_FEATURES_BODY = 5;
     private SerializerRegistry registry;
@@ -67,8 +68,7 @@ public class MultipartRequestTableFeaturesSerializer implements OFSerializer<Mul
                         .getTableFeaturePropType()
                         .getImplementedInterface();
 
-                    registry.
-                        <TableFeaturePropType, OFSerializer<TableFeaturePropType>>getSerializer(
+                    registry.<TableFeaturePropType, OFSerializer<TableFeaturePropType>>getSerializer(
                             new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, clazz))
                         .serialize(property.getTableFeaturePropType(), byteBuf);
                 }));

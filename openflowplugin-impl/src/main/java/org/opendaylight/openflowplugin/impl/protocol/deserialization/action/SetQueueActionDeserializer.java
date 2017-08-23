@@ -7,11 +7,10 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.action;
 
+import io.netty.buffer.ByteBuf;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetQueueActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.queue.action._case.SetQueueActionBuilder;
-
-import io.netty.buffer.ByteBuf;
 
 public class SetQueueActionDeserializer extends AbstractActionDeserializer {
 
@@ -21,10 +20,10 @@ public class SetQueueActionDeserializer extends AbstractActionDeserializer {
         final long queueId = message.readUnsignedInt();
 
         return new SetQueueActionCaseBuilder()
-            .setSetQueueAction(new SetQueueActionBuilder()
-                    .setQueueId(queueId)
-                    .build())
-            .build();
+                .setSetQueueAction(new SetQueueActionBuilder()
+                        .setQueueId(queueId)
+                        .build())
+                .build();
     }
 
     @Override

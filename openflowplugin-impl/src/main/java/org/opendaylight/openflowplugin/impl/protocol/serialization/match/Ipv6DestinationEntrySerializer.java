@@ -30,7 +30,8 @@ public class Ipv6DestinationEntrySerializer extends AbstractMatchEntrySerializer
             writeIpv6Address(ipv6.getIpv6DestinationAddressNoMask(), outBuffer);
 
             if (getHasMask(match)) {
-                writeMask(IpConversionUtil.convertIpv6ArbitraryMaskToByteArray(ipv6.getIpv6DestinationArbitraryBitmask()),
+                writeMask(IpConversionUtil
+                                .convertIpv6ArbitraryMaskToByteArray(ipv6.getIpv6DestinationArbitraryBitmask()),
                         outBuffer,
                         getValueLength());
             }
@@ -40,12 +41,13 @@ public class Ipv6DestinationEntrySerializer extends AbstractMatchEntrySerializer
     @Override
     public boolean matchTypeCheck(Match match) {
         if (isPrefix(match)) {
-            return Objects.nonNull(match.getLayer3Match()) &&
-                    Objects.nonNull(Ipv6Match.class.cast(match.getLayer3Match()).getIpv6Destination());
+            return Objects.nonNull(match.getLayer3Match())
+                    && Objects.nonNull(Ipv6Match.class.cast(match.getLayer3Match()).getIpv6Destination());
         } else if (isArbitrary(match)) {
 
-            return Objects.nonNull(match.getLayer3Match()) &&
-                    Objects.nonNull(Ipv6MatchArbitraryBitMask.class.cast(match.getLayer3Match()).getIpv6DestinationAddressNoMask());
+            return Objects.nonNull(match.getLayer3Match())
+                    && Objects.nonNull(Ipv6MatchArbitraryBitMask.class.cast(match.getLayer3Match())
+                    .getIpv6DestinationAddressNoMask());
         }
 
         return false;
@@ -54,12 +56,14 @@ public class Ipv6DestinationEntrySerializer extends AbstractMatchEntrySerializer
     @Override
     protected boolean getHasMask(Match match) {
         if (isPrefix(match)) {
-            if (null != IpConversionUtil.hasIpv6Prefix(Ipv6Match.class.cast(match.getLayer3Match()).getIpv6Destination())) {
+            if (null != IpConversionUtil.hasIpv6Prefix(Ipv6Match.class.cast(match.getLayer3Match())
+                    .getIpv6Destination())) {
                 return Objects.nonNull(IpConversionUtil
                         .extractIpv6Prefix(Ipv6Match.class.cast(match.getLayer3Match()).getIpv6Destination()));
             }
         } else if (isArbitrary(match)) {
-            return Objects.nonNull(Ipv6MatchArbitraryBitMask.class.cast(match.getLayer3Match()).getIpv6DestinationArbitraryBitmask());
+            return Objects.nonNull(Ipv6MatchArbitraryBitMask.class.cast(match.getLayer3Match())
+                    .getIpv6DestinationArbitraryBitmask());
         }
 
         return false;
