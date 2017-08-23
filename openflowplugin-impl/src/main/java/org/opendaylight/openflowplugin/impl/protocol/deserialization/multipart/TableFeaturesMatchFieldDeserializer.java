@@ -63,9 +63,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.f
 public class TableFeaturesMatchFieldDeserializer {
 
     /**
-     * Mapping of match entry code to match set field class
+     * Mapping of match entry code to match set field class.
      */
-    private final Map<MatchEntryDeserializerKey, Class<? extends MatchField>> CODE_TO_FIELD = ImmutableMap
+    private final Map<MatchEntryDeserializerKey, Class<? extends MatchField>> codeToFieldMap = ImmutableMap
         .<MatchEntryDeserializerKey, Class<? extends MatchField>>builder()
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF13_VERSION_ID,
@@ -229,8 +229,9 @@ public class TableFeaturesMatchFieldDeserializer {
                     OxmMatchConstants.NXM_NX_TCP_FLAG), TcpFlags.class)
         .build();
 
-/**
-     * Processes match entry header and returns if it have mask, or not
+    /**
+     * Processes match entry header and returns if it have mask, or not.
+     *
      * @param in input buffer
      * @return SetFieldMatchBuilder with hasMask properly set
      */
@@ -240,11 +241,12 @@ public class TableFeaturesMatchFieldDeserializer {
         in.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES); // skip match entry length
 
         return new SetFieldMatchBuilder()
-            .setHasMask(hasMask);
+                .setHasMask(hasMask);
     }
 
     /**
-     * Deserialize match field if deserializer supports it, otherwise returns empty optional
+     * Deserialize match field if deserializer supports it, otherwise returns empty optional.
+     *
      * @param message input buffer
      * @return set field match
      */
@@ -260,14 +262,15 @@ public class TableFeaturesMatchFieldDeserializer {
         }
 
         final MatchEntryDeserializerKey key =
-            new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, oxmClass, oxmField);
+                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, oxmClass, oxmField);
 
         key.setExperimenterId(expId);
 
         return Optional
-            .ofNullable(CODE_TO_FIELD.get(key))
-            .map(clazz -> processHeader(message)
-                    .setKey(new SetFieldMatchKey(clazz))
-                    .setMatchType(clazz)
-                    .build());
-    }}
+                .ofNullable(codeToFieldMap.get(key))
+                .map(clazz -> processHeader(message)
+                        .setKey(new SetFieldMatchKey(clazz))
+                        .setMatchType(clazz)
+                        .build());
+    }
+}

@@ -44,7 +44,9 @@ public class MatchDeserializer implements OFDeserializer<Match>, HeaderDeseriali
 
     @Override
     public Match deserialize(ByteBuf inBuffer) {
-        if (inBuffer.readableBytes() <= 0) return null;
+        if (inBuffer.readableBytes() <= 0) {
+            return null;
+        }
 
         final MatchBuilder builder = new MatchBuilder();
 
@@ -77,7 +79,9 @@ public class MatchDeserializer implements OFDeserializer<Match>, HeaderDeseriali
 
     @Override
     public void deserializeEntry(ByteBuf inBuffer, MatchBuilder builder) {
-        if (inBuffer.readableBytes() <= 0) return;
+        if (inBuffer.readableBytes() <= 0) {
+            return;
+        }
         int oxmClass = inBuffer.getUnsignedShort(inBuffer.readerIndex());
         int oxmField = inBuffer.getUnsignedByte(inBuffer.readerIndex()
                 + EncodeConstants.SIZE_OF_SHORT_IN_BYTES) >>> 1;

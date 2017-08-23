@@ -8,12 +8,11 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.instruction;
 
+import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTableCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.go.to.table._case.GoToTableBuilder;
-
-import io.netty.buffer.ByteBuf;
 
 public class GoToTableInstructionDeserializer extends AbstractInstructionDeserializer {
 
@@ -24,10 +23,10 @@ public class GoToTableInstructionDeserializer extends AbstractInstructionDeseria
         message.skipBytes(InstructionConstants.PADDING_IN_GOTO_TABLE);
 
         return new GoToTableCaseBuilder()
-            .setGoToTable(new GoToTableBuilder()
-                    .setTableId(tableId)
-                    .build())
-            .build();
+                .setGoToTable(new GoToTableBuilder()
+                        .setTableId(tableId)
+                        .build())
+                .build();
     }
 
     @Override

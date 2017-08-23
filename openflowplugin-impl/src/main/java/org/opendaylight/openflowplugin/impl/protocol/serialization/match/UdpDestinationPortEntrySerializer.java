@@ -25,9 +25,9 @@ public class UdpDestinationPortEntrySerializer extends AbstractMatchEntrySeriali
 
     @Override
     public boolean matchTypeCheck(Match match) {
-        return Objects.nonNull(match.getLayer4Match()) &&
-                UdpMatch.class.isInstance(match.getLayer4Match()) &&
-                Objects.nonNull(UdpMatch.class.cast(match.getLayer4Match()).getUdpDestinationPort());
+        return Objects.nonNull(match.getLayer4Match())
+                && UdpMatch.class.isInstance(match.getLayer4Match())
+                && Objects.nonNull(UdpMatch.class.cast(match.getLayer4Match()).getUdpDestinationPort());
     }
 
     @Override

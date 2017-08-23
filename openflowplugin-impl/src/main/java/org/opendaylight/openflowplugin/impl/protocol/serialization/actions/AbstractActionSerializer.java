@@ -28,11 +28,15 @@ public abstract class AbstractActionSerializer implements OFSerializer<Action>, 
     }
 
     /**
+     * Get type.
+     *
      * @return numeric representation of action type
      */
     protected abstract int getType();
 
     /**
+     * Get length.
+     *
      * @return action length
      */
     protected abstract int getLength();

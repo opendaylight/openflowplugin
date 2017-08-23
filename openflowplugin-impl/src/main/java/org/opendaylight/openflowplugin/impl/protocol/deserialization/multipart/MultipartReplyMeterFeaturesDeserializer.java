@@ -29,22 +29,26 @@ public class MultipartReplyMeterFeaturesDeserializer implements OFDeserializer<M
     @Override
     public MultipartReplyBody deserialize(ByteBuf message) {
         return new MultipartReplyMeterFeaturesBuilder()
-            .setMaxMeter(new Counter32(message.readUnsignedInt()))
-            .setMeterBandSupported(readMeterBands(message))
-            .setMeterCapabilitiesSupported(readMeterCapabilities(message))
-            .setMaxBands(message.readUnsignedByte())
-            .setMaxColor(message.readUnsignedByte())
-            .build();
+                .setMaxMeter(new Counter32(message.readUnsignedInt()))
+                .setMeterBandSupported(readMeterBands(message))
+                .setMeterCapabilitiesSupported(readMeterCapabilities(message))
+                .setMaxBands(message.readUnsignedByte())
+                .setMaxColor(message.readUnsignedByte())
+                .build();
     }
 
     private static List<Class<? extends MeterBand>> readMeterBands(ByteBuf message) {
         final List<Class<? extends MeterBand>> bandTypes = new ArrayList<>();
         final long typesMask = message.readUnsignedInt();
-        final boolean mbtDROP = (typesMask & (1)) != 0;
-        final boolean mbtDSCPREMARK = (typesMask & (1 << 1)) != 0;
+        final boolean mbtDrop = (typesMask & (1)) != 0;
+        final boolean mbtDscpRemark = (typesMask & (1 << 1)) != 0;
 
-        if (mbtDROP) bandTypes.add(MeterBandDrop.class);
-        if (mbtDSCPREMARK) bandTypes.add(MeterBandDscpRemark.class);
+        if (mbtDrop) {
+            bandTypes.add(MeterBandDrop.class);
+        }
+        if (mbtDscpRemark) {
+            bandTypes.add(MeterBandDscpRemark.class);
+        }
 
         return bandTypes;
     }
@@ -53,15 +57,23 @@ public class MultipartReplyMeterFeaturesDeserializer implements OFDeserializer<M
         final List<Class<? extends MeterCapability>> meterCapabilities = new ArrayList<>();
         final long capabilitiesMask = message.readUnsignedInt();
 
-        final boolean mfKBPS = (capabilitiesMask & (1)) != 0;
-        final boolean mfPKTPS = (capabilitiesMask & (1 << 1)) != 0;
-        final boolean mfBURST = (capabilitiesMask & (1 << 2)) != 0;
-        final boolean mfSTATS = (capabilitiesMask & (1 << 3)) != 0;
+        final boolean mfKbps = (capabilitiesMask & (1)) != 0;
+        final boolean mfPktps = (capabilitiesMask & (1 << 1)) != 0;
+        final boolean mfBurst = (capabilitiesMask & (1 << 2)) != 0;
+        final boolean mfStats = (capabilitiesMask & (1 << 3)) != 0;
 
-        if (mfKBPS) meterCapabilities.add(MeterKbps.class);
-        if (mfPKTPS) meterCapabilities.add(MeterPktps.class);
-        if (mfBURST) meterCapabilities.add(MeterBurst.class);
-        if (mfSTATS) meterCapabilities.add(MeterStats.class);
+        if (mfKbps) {
+            meterCapabilities.add(MeterKbps.class);
+        }
+        if (mfPktps) {
+            meterCapabilities.add(MeterPktps.class);
+        }
+        if (mfBurst) {
+            meterCapabilities.add(MeterBurst.class);
+        }
+        if (mfStats) {
+            meterCapabilities.add(MeterStats.class);
+        }
 
         return meterCapabilities;
     }

@@ -8,12 +8,10 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
+import io.netty.buffer.ByteBuf;
 import java.util.Objects;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.TcpFlagsMatchBuilder;
-
-import io.netty.buffer.ByteBuf;
 
 public class TcpFlagsEntryDeserializer extends AbstractMatchEntryDeserializer {
 
@@ -23,7 +21,7 @@ public class TcpFlagsEntryDeserializer extends AbstractMatchEntryDeserializer {
         message.readUnsignedInt(); // Just skip experimenter ID for now, not used
 
         final TcpFlagsMatchBuilder tcpFlagsBuilder = new TcpFlagsMatchBuilder()
-            .setTcpFlags(message.readUnsignedShort());
+                .setTcpFlags(message.readUnsignedShort());
 
         if (hasMask) {
             tcpFlagsBuilder.setTcpFlagsMask(message.readUnsignedShort());

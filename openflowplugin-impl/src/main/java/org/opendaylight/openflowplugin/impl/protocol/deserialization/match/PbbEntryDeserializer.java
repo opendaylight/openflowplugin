@@ -8,13 +8,11 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
+import io.netty.buffer.ByteBuf;
 import java.util.Objects;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.ProtocolMatchFieldsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.protocol.match.fields.PbbBuilder;
-
-import io.netty.buffer.ByteBuf;
 
 public class PbbEntryDeserializer extends AbstractMatchEntryDeserializer {
 

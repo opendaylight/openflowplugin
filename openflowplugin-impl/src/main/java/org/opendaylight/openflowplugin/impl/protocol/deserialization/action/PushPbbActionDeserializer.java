@@ -7,12 +7,11 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.action;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushPbbActionCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.push.pbb.action._case.PushPbbActionBuilder;
+import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
-
-import io.netty.buffer.ByteBuf;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushPbbActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.push.pbb.action._case.PushPbbActionBuilder;
 
 public class PushPbbActionDeserializer extends AbstractActionDeserializer {
 
@@ -23,10 +22,10 @@ public class PushPbbActionDeserializer extends AbstractActionDeserializer {
         message.skipBytes(ActionConstants.ETHERTYPE_ACTION_PADDING);
 
         return new PushPbbActionCaseBuilder()
-            .setPushPbbAction(new PushPbbActionBuilder()
-                    .setEthernetType(ethType)
-                    .build())
-            .build();
+                .setPushPbbAction(new PushPbbActionBuilder()
+                        .setEthernetType(ethType)
+                        .build())
+                .build();
     }
 
     @Override

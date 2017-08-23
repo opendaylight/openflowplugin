@@ -25,8 +25,8 @@ public class IpProtoEntrySerializer extends AbstractMatchEntrySerializer {
 
     @Override
     public boolean matchTypeCheck(Match match) {
-        return Objects.nonNull(match.getIpMatch()) &&
-                Objects.nonNull(match.getIpMatch().getIpProtocol());
+        return Objects.nonNull(match.getIpMatch())
+                && Objects.nonNull(match.getIpMatch().getIpProtocol());
     }
 
     @Override

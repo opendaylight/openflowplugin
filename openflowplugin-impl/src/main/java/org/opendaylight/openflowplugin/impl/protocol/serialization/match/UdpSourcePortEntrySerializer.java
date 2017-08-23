@@ -25,9 +25,9 @@ public class UdpSourcePortEntrySerializer extends AbstractMatchEntrySerializer {
 
     @Override
     public boolean matchTypeCheck(Match match) {
-        return Objects.nonNull(match.getLayer4Match()) &&
-                UdpMatch.class.isInstance(match.getLayer4Match()) &&
-                Objects.nonNull(UdpMatch.class.cast(match.getLayer4Match()).getUdpSourcePort());
+        return Objects.nonNull(match.getLayer4Match())
+                && UdpMatch.class.isInstance(match.getLayer4Match())
+                && Objects.nonNull(UdpMatch.class.cast(match.getLayer4Match()).getUdpSourcePort());
     }
 
     @Override

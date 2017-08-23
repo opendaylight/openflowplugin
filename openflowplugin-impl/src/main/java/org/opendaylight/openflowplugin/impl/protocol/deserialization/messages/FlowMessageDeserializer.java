@@ -8,10 +8,10 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.messages;
 
+import io.netty.buffer.ByteBuf;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -35,8 +35,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModCommand;
 
-import io.netty.buffer.ByteBuf;
-
 public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, DeserializerRegistryInjector {
 
     private static final byte PADDING = 2;
@@ -48,6 +46,7 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
     private DeserializerRegistry registry;
 
     @Override
+    @SuppressWarnings("checkstyle:LineLength")
     public FlowMessage deserialize(ByteBuf message) {
         final FlowMessageBuilder builder = new FlowMessageBuilder()
             .setVersion((short) EncodeConstants.OF13_VERSION_ID)
@@ -97,8 +96,8 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
                     Long expId = null;
 
                     if (EncodeConstants.EXPERIMENTER_VALUE == type) {
-                        expId = message.getUnsignedInt(message.readerIndex() +
-                                2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+                        expId = message.getUnsignedInt(message.readerIndex()
+                                + 2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
                     }
 
                     deserializer = registry.getDeserializer(
@@ -124,13 +123,13 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
     }
 
     private static FlowModFlags createFlowModFlagsFromBitmap(int input) {
-        final Boolean _oFPFFSENDFLOWREM = (input & (1 << 0)) > 0;
-        final Boolean _oFPFFCHECKOVERLAP = (input & (1 << 1)) > 0;
-        final Boolean _oFPFFRESETCOUNTS = (input & (1 << 2)) > 0;
-        final Boolean _oFPFFNOPKTCOUNTS = (input & (1 << 3)) > 0;
-        final Boolean _oFPFFNOBYTCOUNTS = (input & (1 << 4)) > 0;
-        return new FlowModFlags(_oFPFFCHECKOVERLAP, _oFPFFNOBYTCOUNTS, _oFPFFNOPKTCOUNTS, _oFPFFRESETCOUNTS,
-                _oFPFFSENDFLOWREM);
+        final Boolean ofp_FF_SendFlowRem = (input & (1 << 0)) > 0;
+        final Boolean ofp_FF_CheckOverlap = (input & (1 << 1)) > 0;
+        final Boolean ofp_FF_ResetCounts = (input & (1 << 2)) > 0;
+        final Boolean ofp_FF_NoPktCounts = (input & (1 << 3)) > 0;
+        final Boolean ofp_FF_NoBytCounts = (input & (1 << 4)) > 0;
+        return new FlowModFlags(ofp_FF_CheckOverlap, ofp_FF_NoBytCounts, ofp_FF_NoPktCounts, ofp_FF_ResetCounts,
+                ofp_FF_SendFlowRem);
     }
 
     @Override
