@@ -8,12 +8,10 @@
 
 package org.opendaylight.openflowplugin.impl.datastore.multipart;
 
-import java.util.Objects;
+import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
-import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
-import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
-import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
+import org.opendaylight.openflowplugin.impl.util.FlowUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
@@ -48,38 +46,29 @@ public class FlowStatsMultipartWriter extends AbstractMultipartWriter<FlowAndSta
 
     @Override
     public void storeStatistics(final FlowAndStatisticsMapList statistics, final boolean withParents) {
-        statistics.getFlowAndStatisticsMapList()
-            .forEach(stat -> {
-                final FlowBuilder flow = new FlowBuilder(stat)
-                    .addAugmentation(
-                        FlowStatisticsData.class,
-                        new FlowStatisticsDataBuilder()
-                            .setFlowStatistics(new FlowStatisticsBuilder(stat).build())
-                            .build());
-
-                final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(version, flow.build());
-                registry.getDeviceFlowRegistry().store(flowRegistryKey);
-
-                final FlowDescriptor flowDescriptor = registry
-                        .getDeviceFlowRegistry()
-                        .retrieveDescriptor(flowRegistryKey);
-
-                if (Objects.nonNull(flowDescriptor)) {
-                    final FlowKey key = new FlowKey(flowDescriptor
-                            .getFlowId());
-
-                    writeToTransaction(
-                            getInstanceIdentifier()
-                                    .augmentation(FlowCapableNode.class)
-                                    .child(Table.class, new TableKey(stat.getTableId()))
-                                    .child(Flow.class, key),
-                            flow
-                                    .setId(key.getId())
-                                    .setKey(key)
-                                    .build(),
-                            withParents);
-                }
-            });
+        statistics
+                .getFlowAndStatisticsMapList()
+                .parallelStream()
+                .map(stat -> FlowUtil.generateFlowId(stat, registry.getDeviceFlowRegistry(), version)
+                        .map(flowId -> new FlowBuilder(stat)
+                                .addAugmentation(
+                                        FlowStatisticsData.class,
+                                        new FlowStatisticsDataBuilder()
+                                                .setFlowStatistics(new FlowStatisticsBuilder(stat)
+                                                        .build())
+                                                .build())
+                                .setId(flowId)
+                                .setKey(new FlowKey(flowId))
+                                .build()))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .forEach(stat -> writeToTransaction(
+                        getInstanceIdentifier()
+                                .augmentation(FlowCapableNode.class)
+                                .child(Table.class, new TableKey(stat.getTableId()))
+                                .child(Flow.class, stat.getKey()),
+                        stat,
+                        withParents));
     }
 
 }
