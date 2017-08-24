@@ -26,7 +26,9 @@ public abstract class AbstractMatchEntrySerializerTest extends AbstractSerialize
         serializer = getRegistry().getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, Match.class));
     }
 
-    protected void assertMatch(final Match match, final boolean hasMask, final Consumer<ByteBuf> assertBody) throws Exception {
+    protected void assertMatch(final Match match,
+                               final boolean hasMask,
+                               final Consumer<ByteBuf> assertBody) throws Exception {
         final ByteBuf buffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         serializer.serialize(match, buffer);
 
@@ -63,7 +65,9 @@ public abstract class AbstractMatchEntrySerializerTest extends AbstractSerialize
     }
 
     protected abstract int getOxmFieldCode();
+
     protected abstract int getOxmClassCode();
+
     protected abstract short getLength();
 
 }

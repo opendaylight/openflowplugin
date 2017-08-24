@@ -18,8 +18,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 
 public class MultipartReplyFlowTableStatsDeserializerTest extends AbstractMultipartDeserializerTest {
     private static final byte TABLE_ID = 2;
-    private static final long PACKETS_LOOKEDUP = 1l;
-    private static final long PACKETS_MATCHED = 2l;
+    private static final long PACKETS_LOOKEDUP = 1L;
+    private static final long PACKETS_MATCHED = 2L;
     private static final int ACTIVE_FLOWS = 3;
     private static final byte PADDING_IN_TABLE_HEADER = 3;
 
@@ -35,8 +35,10 @@ public class MultipartReplyFlowTableStatsDeserializerTest extends AbstractMultip
         final MultipartReplyFlowTableStats reply = (MultipartReplyFlowTableStats) deserializeMultipart(buffer);
         assertEquals(TABLE_ID, reply.getFlowTableAndStatisticsMap().get(0).getTableId().getValue().byteValue());
         assertEquals(ACTIVE_FLOWS, reply.getFlowTableAndStatisticsMap().get(0).getActiveFlows().getValue().intValue());
-        assertEquals(PACKETS_LOOKEDUP, reply.getFlowTableAndStatisticsMap().get(0).getPacketsLookedUp().getValue().longValue());
-        assertEquals(PACKETS_MATCHED, reply.getFlowTableAndStatisticsMap().get(0).getPacketsMatched().getValue().longValue());
+        assertEquals(PACKETS_LOOKEDUP, reply.getFlowTableAndStatisticsMap().get(0).getPacketsLookedUp().getValue()
+                .longValue());
+        assertEquals(PACKETS_MATCHED, reply.getFlowTableAndStatisticsMap().get(0).getPacketsMatched().getValue()
+                .longValue());
         assertEquals(0, buffer.readableBytes());
     }
 

@@ -26,8 +26,8 @@ public class ApplyActionsMissTablePropertySerializerTest extends AbstractTablePr
     @Test
     public void testSerialize() throws Exception {
         final ApplyActionsMiss property = new ApplyActionsMissBuilder()
-                .setApplyActionsMiss(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature
-                        .prop.type.table.feature.prop.type.apply.actions.miss
+                .setApplyActionsMiss(new org.opendaylight.yang.gen.v1.urn.opendaylight
+                        .table.types.rev131026.table.feature.prop.type.table.feature.prop.type.apply.actions.miss
                         .ApplyActionsMissBuilder()
                         .setAction(Collections.singletonList(new ActionBuilder()
                                 .setOrder(0)

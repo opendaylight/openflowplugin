@@ -87,7 +87,9 @@ public abstract class AbstractMatchEntryDeserializerTest extends AbstractDeseria
     }
 
     protected abstract int getOxmClassCode();
+
     protected abstract int getOxmFieldCode();
+
     protected abstract int getValueLength();
 
 }

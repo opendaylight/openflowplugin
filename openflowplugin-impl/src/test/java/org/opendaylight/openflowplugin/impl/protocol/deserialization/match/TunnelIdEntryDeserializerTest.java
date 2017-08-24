@@ -11,15 +11,14 @@ package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.UnpooledByteBufAllocator;
 import java.math.BigInteger;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Tunnel;
-
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.UnpooledByteBufAllocator;
 
 public class TunnelIdEntryDeserializerTest extends AbstractMatchEntryDeserializerTest {
 
@@ -34,8 +33,8 @@ public class TunnelIdEntryDeserializerTest extends AbstractMatchEntryDeserialize
 
         Tunnel match = deserialize(in).getTunnel();
         assertArrayEquals(
-            ByteUtil.convertBigIntegerToNBytes(tunnelId, EncodeConstants.SIZE_OF_LONG_IN_BYTES),
-            ByteUtil.convertBigIntegerToNBytes(match.getTunnelId(), EncodeConstants.SIZE_OF_LONG_IN_BYTES));
+                ByteUtil.convertBigIntegerToNBytes(tunnelId, EncodeConstants.SIZE_OF_LONG_IN_BYTES),
+                ByteUtil.convertBigIntegerToNBytes(match.getTunnelId(), EncodeConstants.SIZE_OF_LONG_IN_BYTES));
 
         assertEquals(0, in.readableBytes());
 
@@ -45,11 +44,11 @@ public class TunnelIdEntryDeserializerTest extends AbstractMatchEntryDeserialize
 
         match = deserialize(in).getTunnel();
         assertArrayEquals(
-            ByteUtil.convertBigIntegerToNBytes(tunnelId, EncodeConstants.SIZE_OF_LONG_IN_BYTES),
-            ByteUtil.convertBigIntegerToNBytes(match.getTunnelId(), EncodeConstants.SIZE_OF_LONG_IN_BYTES));
+                ByteUtil.convertBigIntegerToNBytes(tunnelId, EncodeConstants.SIZE_OF_LONG_IN_BYTES),
+                ByteUtil.convertBigIntegerToNBytes(match.getTunnelId(), EncodeConstants.SIZE_OF_LONG_IN_BYTES));
         assertArrayEquals(
-            ByteUtil.convertBigIntegerToNBytes(tunnelIdMask, EncodeConstants.SIZE_OF_LONG_IN_BYTES),
-            ByteUtil.convertBigIntegerToNBytes(match.getTunnelMask(), EncodeConstants.SIZE_OF_LONG_IN_BYTES));
+                ByteUtil.convertBigIntegerToNBytes(tunnelIdMask, EncodeConstants.SIZE_OF_LONG_IN_BYTES),
+                ByteUtil.convertBigIntegerToNBytes(match.getTunnelMask(), EncodeConstants.SIZE_OF_LONG_IN_BYTES));
         assertEquals(0, in.readableBytes());
     }
 

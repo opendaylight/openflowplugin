@@ -37,7 +37,8 @@ public class InstructionSerializerInjectorTest {
 
     @Before
     public void setUp() throws Exception {
-        injector = InstructionSerializerInjector.createInjector(switchConnectionProvider, EncodeConstants.OF13_VERSION_ID);
+        injector =
+                InstructionSerializerInjector.createInjector(switchConnectionProvider, EncodeConstants.OF13_VERSION_ID);
     }
 
     @Test

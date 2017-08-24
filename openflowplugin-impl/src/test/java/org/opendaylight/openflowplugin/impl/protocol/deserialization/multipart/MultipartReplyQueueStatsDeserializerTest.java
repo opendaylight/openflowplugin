@@ -20,9 +20,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.
 public class MultipartReplyQueueStatsDeserializerTest extends AbstractMultipartDeserializerTest {
     private static final int PORT = 1;
     private static final int QUEUE_ID = 1;
-    private static final long TRANSMITTED_BYTES = 5l;
-    private static final long TRANSMITTED_PACKETS = 3l;
-    private static final long TRANSMISSON_ERRORS = 9l;
+    private static final long TRANSMITTED_BYTES = 5L;
+    private static final long TRANSMITTED_PACKETS = 3L;
+    private static final long TRANSMISSON_ERRORS = 9L;
     private static final int SECOND = 14;
     private static final int NANOSECOND = 15;
 

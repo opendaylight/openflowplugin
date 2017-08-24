@@ -25,8 +25,8 @@ public class MultipartReplyGroupStatsDeserializerTest extends AbstractMultipartD
     private static final int REF_COUNT = 4;
     private static final int SECOND = 5;
     private static final int NANOSECOND = 6;
-    private static final long PACKET_COUNT = 1l;
-    private static final long BYTE_COUNT = 2l;
+    private static final long PACKET_COUNT = 1L;
+    private static final long BYTE_COUNT = 2L;
 
     @Test
     public void testDeserialize() throws Exception {

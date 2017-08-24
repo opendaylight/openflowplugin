@@ -32,19 +32,24 @@ public class MessageDeserializerInjectorTest {
     @Mock
     private OFDeserializer<OfHeader> ofDeserializer;
 
-    private Function<Integer, Function<Class<? extends OfHeader>, Consumer<OFDeserializer<? extends OfHeader>>>> injector;
+    private Function<Integer, Function<Class<? extends OfHeader>, Consumer<OFDeserializer<? extends OfHeader>>>>
+            injector;
 
     @Before
     public void setUp() throws Exception {
-        injector = MessageDeserializerInjector.createInjector(switchConnectionProvider, EncodeConstants.OF13_VERSION_ID);
+        injector = MessageDeserializerInjector.createInjector(switchConnectionProvider, EncodeConstants
+                .OF13_VERSION_ID);
     }
 
     @Test
     public void injectDeserializers() throws Exception {
         injector.apply(10).apply(OfHeader.class).accept(ofDeserializer);
-        verify(switchConnectionProvider).unregisterDeserializerMapping(new TypeToClassKey(EncodeConstants.OF13_VERSION_ID, 10));
-        verify(switchConnectionProvider).registerDeserializerMapping(new TypeToClassKey(EncodeConstants.OF13_VERSION_ID, 10), OfHeader.class);
-        verify(switchConnectionProvider).registerDeserializer(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 10, OfHeader.class), ofDeserializer);
+        verify(switchConnectionProvider).unregisterDeserializerMapping(new TypeToClassKey(EncodeConstants
+                .OF13_VERSION_ID, 10));
+        verify(switchConnectionProvider).registerDeserializerMapping(new TypeToClassKey(EncodeConstants
+                .OF13_VERSION_ID, 10), OfHeader.class);
+        verify(switchConnectionProvider).registerDeserializer(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 10,
+                OfHeader.class), ofDeserializer);
     }
 
 }

@@ -70,7 +70,7 @@ public abstract class AbstractDeserializerTest {
         private final DeserializerRegistry registry;
         private final DeserializationFactory factory;
 
-        public DeserializerExtensionProviderImpl(final DeserializerRegistry registry, DeserializationFactory factory) {
+        DeserializerExtensionProviderImpl(final DeserializerRegistry registry, DeserializationFactory factory) {
             this.registry = registry;
             this.factory = factory;
         }
@@ -86,53 +86,62 @@ public abstract class AbstractDeserializerTest {
         }
 
         @Override
-        public void registerActionDeserializer(ExperimenterActionDeserializerKey key, OFGeneralDeserializer deserializer) {
+        public void registerActionDeserializer(ExperimenterActionDeserializerKey key,
+                                               OFGeneralDeserializer deserializer) {
 
         }
 
         @Override
-        public void registerInstructionDeserializer(ExperimenterInstructionDeserializerKey key, OFGeneralDeserializer deserializer) {
+        public void registerInstructionDeserializer(ExperimenterInstructionDeserializerKey key,
+                                                    OFGeneralDeserializer deserializer) {
 
         }
 
         @Override
-        public void registerMatchEntryDeserializer(MatchEntryDeserializerKey key, OFGeneralDeserializer deserializer) {
+        public void registerMatchEntryDeserializer(MatchEntryDeserializerKey key,
+                                                   OFGeneralDeserializer deserializer) {
 
         }
 
         @Override
-        public void registerErrorDeserializer(ExperimenterIdDeserializerKey key, OFDeserializer<ErrorMessage> deserializer) {
+        public void registerErrorDeserializer(ExperimenterIdDeserializerKey key,
+                                              OFDeserializer<ErrorMessage> deserializer) {
 
         }
 
         @Override
-        public void registerExperimenterMessageDeserializer(ExperimenterIdDeserializerKey key, OFDeserializer<? extends ExperimenterDataOfChoice> deserializer) {
+        public void registerExperimenterMessageDeserializer(ExperimenterIdDeserializerKey key,
+                                                    OFDeserializer<? extends ExperimenterDataOfChoice> deserializer) {
 
         }
 
         @Override
-        public void registerMultipartReplyMessageDeserializer(ExperimenterIdDeserializerKey key, OFDeserializer<? extends ExperimenterDataOfChoice> deserializer) {
+        public void registerMultipartReplyMessageDeserializer(ExperimenterIdDeserializerKey key,
+                                                      OFDeserializer<? extends ExperimenterDataOfChoice> deserializer) {
 
         }
 
         @Override
-        public void registerMultipartReplyTFDeserializer(ExperimenterIdDeserializerKey key, OFGeneralDeserializer deserializer) {
+        public void registerMultipartReplyTFDeserializer(ExperimenterIdDeserializerKey key,
+                                                         OFGeneralDeserializer deserializer) {
 
         }
 
         @Override
-        public void registerMeterBandDeserializer(ExperimenterIdDeserializerKey key, OFDeserializer<MeterBandExperimenterCase> deserializer) {
+        public void registerMeterBandDeserializer(ExperimenterIdDeserializerKey key,
+                                                  OFDeserializer<MeterBandExperimenterCase> deserializer) {
 
         }
 
         @Override
-        public void registerQueuePropertyDeserializer(ExperimenterIdDeserializerKey key, OFDeserializer<QueueProperty> deserializer) {
+        public void registerQueuePropertyDeserializer(ExperimenterIdDeserializerKey key,
+                                                      OFDeserializer<QueueProperty> deserializer) {
 
         }
 
         @Override
-        public void registerDeserializerMapping(TypeToClassKey typeToClassKey, Class<?> aClass) {
-            factory.registerMapping(typeToClassKey, aClass);
+        public void registerDeserializerMapping(TypeToClassKey typeToClassKey, Class<?> clazz) {
+            factory.registerMapping(typeToClassKey, clazz);
         }
 
         @Override

@@ -28,8 +28,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 
 public class MultipartReplyGroupFeaturesDeserializerTest extends AbstractMultipartDeserializerTest {
-    private static final List<Long> MAX_GROUPS_LIST = Arrays.asList(1l, 2l, 3l, 4l);
-    private static final List<Long> ACTIONS_LIST = Arrays.asList(5l, 6l, 7l, 8l);
+    private static final List<Long> MAX_GROUPS_LIST = Arrays.asList(1L, 2L, 3L, 4L);
+    private static final List<Long> ACTIONS_LIST = Arrays.asList(5L, 6L, 7L, 8L);
 
     private static final List<GroupTypes> GROUP_TYPES_SUPPORTED = Arrays.asList(
             GroupTypes.GroupAll,

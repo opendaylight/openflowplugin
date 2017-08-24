@@ -49,7 +49,9 @@ public abstract class AbstractActionSerializerTest extends AbstractSerializerTes
     }
 
     protected abstract Class<? extends Action> getClazz();
+
     protected abstract int getType();
+
     protected abstract int getLength();
 
 }
