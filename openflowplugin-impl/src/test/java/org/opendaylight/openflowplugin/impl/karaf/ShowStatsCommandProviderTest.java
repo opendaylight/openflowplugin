@@ -51,9 +51,7 @@ public class ShowStatsCommandProviderTest extends AbstractKarafTest {
     }
 
     /**
-     * test for {@link ShowEventTimesComandProvider#doExecute()} when no stats were touched before
-     *
-     * @throws Exception
+     * Test for {@link ShowEventTimesComandProvider#doExecute()} when no stats were touched before.
      */
     @Test
     public void testDoExecute_clean() throws Exception {
@@ -63,18 +61,18 @@ public class ShowStatsCommandProviderTest extends AbstractKarafTest {
     }
 
     /**
-     * test for {@link ShowEventTimesComandProvider#doExecute()} when stats were touched before
-     *
-     * @throws Exception
+     * Test for {@link ShowEventTimesComandProvider#doExecute()} when stats were touched before.
      */
     @Test
     public void testDoExecute_dirty() throws Exception {
         Assert.assertTrue(checkNoActivity(messageIntelligenceAgency.provideIntelligence(), CHECK_NO_ACTIVITY_FUNCTION));
 
         messageIntelligenceAgency.spyMessage(OfHeader.class, MessageSpy.StatisticsGroup.FROM_SWITCH);
-        Assert.assertFalse(checkNoActivity(messageIntelligenceAgency.provideIntelligence(), CHECK_NO_ACTIVITY_FUNCTION));
+        Assert.assertFalse(checkNoActivity(messageIntelligenceAgency.provideIntelligence(),
+                CHECK_NO_ACTIVITY_FUNCTION));
 
         showStatsCommandProvider.execute(cmdSession);
-        Assert.assertFalse(checkNoActivity(messageIntelligenceAgency.provideIntelligence(), CHECK_NO_ACTIVITY_FUNCTION));
+        Assert.assertFalse(checkNoActivity(messageIntelligenceAgency.provideIntelligence(),
+                CHECK_NO_ACTIVITY_FUNCTION));
     }
 }

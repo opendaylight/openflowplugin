@@ -44,9 +44,7 @@ public class ShowSessionStatsCommandProviderTest extends AbstractKarafTest {
     }
 
     /**
-     * test for {@link ShowEventTimesComandProvider#doExecute()} when no stats were touched before
-     *
-     * @throws Exception
+     * Test for {@link ShowEventTimesComandProvider#doExecute()} when no stats were touched before.
      */
     @Test
     public void testDoExecute_clean() throws Exception {
@@ -57,9 +55,7 @@ public class ShowSessionStatsCommandProviderTest extends AbstractKarafTest {
     }
 
     /**
-     * test for {@link ShowEventTimesComandProvider#doExecute()} when stats were touched before
-     *
-     * @throws Exception
+     * Test for {@link ShowEventTimesComandProvider#doExecute()} when stats were touched before.
      */
     @Test
     public void testDoExecute_dirty() throws Exception {

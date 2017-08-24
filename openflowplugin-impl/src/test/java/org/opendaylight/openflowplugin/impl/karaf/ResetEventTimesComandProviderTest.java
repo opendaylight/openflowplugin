@@ -19,7 +19,7 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.Event
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
 
 /**
- * Test for {@link  ResetEventTimesComandProvider}
+ * Test for {@link  ResetEventTimesComandProvider}.
  */
 public class ResetEventTimesComandProviderTest extends AbstractKarafTest {
 
@@ -46,9 +46,7 @@ public class ResetEventTimesComandProviderTest extends AbstractKarafTest {
     }
 
     /**
-     * test for {@link ResetEventTimesComandProvider#doExecute()} when no stats were touched before
-     *
-     * @throws Exception
+     * Test for {@link ResetEventTimesComandProvider#doExecute()} when no stats were touched before.
      */
     @Test
     public void testDoExecute_clean() throws Exception {
@@ -58,9 +56,7 @@ public class ResetEventTimesComandProviderTest extends AbstractKarafTest {
     }
 
     /**
-     * test for {@link ResetEventTimesComandProvider#doExecute()} when stats were touched before
-     *
-     * @throws Exception
+     * Test for {@link ResetEventTimesComandProvider#doExecute()} when stats were touched before.
      */
     @Test
     public void testDoExecute_dirty() throws Exception {

@@ -18,7 +18,7 @@ import org.mockito.Mockito;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.SessionStatistics;
 
 /**
- * Test for {@link ResetSessionStatsComandProvider}
+ * Test for {@link ResetSessionStatsComandProvider}.
  */
 public class ResetSessionStatsComandProviderTest extends AbstractKarafTest {
 
@@ -45,9 +45,7 @@ public class ResetSessionStatsComandProviderTest extends AbstractKarafTest {
     }
 
     /**
-     * test for {@link ResetSessionStatsComandProvider#doExecute()} when no stats were touched before
-     *
-     * @throws Exception
+     * Test for {@link ResetSessionStatsComandProvider#doExecute()} when no stats were touched before.
      */
     @Test
     public void testDoExecute_clean() throws Exception {
@@ -57,9 +55,7 @@ public class ResetSessionStatsComandProviderTest extends AbstractKarafTest {
     }
 
     /**
-     * test for {@link ResetSessionStatsComandProvider#doExecute()} when stats were touched before
-     *
-     * @throws Exception
+     * Test for {@link ResetSessionStatsComandProvider#doExecute()} when stats were touched before.
      */
     @Test
     public void testDoExecute_dirty() throws Exception {

@@ -141,8 +141,8 @@ public class ConfigurationServiceFactoryImplTest {
 
     @Test(expected = NumberFormatException.class)
     public void close() throws Exception {
-       configurationService.close();
-       configurationService.getProperty(ConfigurationProperty.THREAD_POOL_MAX_THREADS.toString(), Integer::valueOf);
+        configurationService.close();
+        configurationService.getProperty(ConfigurationProperty.THREAD_POOL_MAX_THREADS.toString(), Integer::valueOf);
     }
 
 }

@@ -15,17 +15,14 @@ import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 import org.opendaylight.openflowplugin.impl.OpenFlowPluginProviderImpl;
 
-/**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 21.5.2015.
- */
-
 @Command(scope = "ofp", name = "showStats", description = "Show openflow statistics.")
 public class ShowStatsCommandProvider extends OsgiCommandSupport {
 
     @Override
     protected Object doExecute() throws Exception {
         PrintStream out = session.getConsole();
-        final MessageIntelligenceAgency messageIntelligenceAgency = OpenFlowPluginProviderImpl.getMessageIntelligenceAgency();
+        final MessageIntelligenceAgency messageIntelligenceAgency =
+                OpenFlowPluginProviderImpl.getMessageIntelligenceAgency();
         final List<String> statistics = messageIntelligenceAgency.provideIntelligence();
         final StringBuilder result = new StringBuilder();
         for (String line : statistics) {
