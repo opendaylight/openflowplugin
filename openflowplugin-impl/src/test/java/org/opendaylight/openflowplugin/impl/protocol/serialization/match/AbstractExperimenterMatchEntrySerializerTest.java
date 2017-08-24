@@ -18,7 +18,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 
 public abstract class AbstractExperimenterMatchEntrySerializerTest extends AbstractMatchEntrySerializerTest {
 
-    protected void assertMatch(final Match match, final boolean hasMask, final Consumer<ByteBuf> assertBody) throws Exception {
+    protected void assertMatch(final Match match,
+                               final boolean hasMask,
+                               final Consumer<ByteBuf> assertBody) throws Exception {
         final ByteBuf buffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         getSerializer().serialize(match, buffer);
 

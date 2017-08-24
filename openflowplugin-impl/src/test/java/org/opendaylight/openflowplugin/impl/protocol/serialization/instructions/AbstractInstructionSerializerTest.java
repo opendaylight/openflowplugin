@@ -49,6 +49,8 @@ public abstract class AbstractInstructionSerializerTest extends AbstractSerializ
     }
 
     protected abstract Class<? extends Instruction> getClazz();
+
     protected abstract int getType();
+
     protected abstract int getLength();
 }

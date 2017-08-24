@@ -148,7 +148,8 @@ public class MultipartReplyMessageDeserializerTest extends AbstractDeserializerT
 
         assertEquals(1, flowAndStatisticsMapList.getInstructions().getInstruction().size());
 
-        final Instruction instruction = flowAndStatisticsMapList.getInstructions().getInstruction().get(0).getInstruction();
+        final Instruction instruction =
+                flowAndStatisticsMapList.getInstructions().getInstruction().get(0).getInstruction();
         assertEquals(ApplyActionsCase.class, instruction.getImplementedInterface());
 
         final ApplyActionsCase applyActions = ApplyActionsCase.class.cast(instruction);

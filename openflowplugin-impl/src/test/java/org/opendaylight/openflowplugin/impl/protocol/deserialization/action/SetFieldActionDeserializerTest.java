@@ -11,6 +11,8 @@ package org.opendaylight.openflowplugin.impl.protocol.deserialization.action;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.UnpooledByteBufAllocator;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -19,9 +21,6 @@ import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetFieldCase;
-
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.UnpooledByteBufAllocator;
 
 public class SetFieldActionDeserializerTest extends AbstractActionDeserializerTest {
 
@@ -39,7 +38,8 @@ public class SetFieldActionDeserializerTest extends AbstractActionDeserializerTe
         final Action action = deserializeAction(in);
         assertTrue(SetFieldCase.class.isInstance(action));
         assertEquals(
-                OpenflowPortsUtil.getPortLogicalName(EncodeConstants.OF13_VERSION_ID, BinContent.intToUnsignedLong(portNum)),
+                OpenflowPortsUtil
+                        .getPortLogicalName(EncodeConstants.OF13_VERSION_ID, BinContent.intToUnsignedLong(portNum)),
                 SetFieldCase.class.cast(action).getSetField().getInPort().getValue());
         assertEquals(0, in.readableBytes());
     }

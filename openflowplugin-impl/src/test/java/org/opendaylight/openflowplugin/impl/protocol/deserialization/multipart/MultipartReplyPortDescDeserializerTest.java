@@ -22,7 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.P
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.multipart.reply.multipart.reply.body.MultipartReplyPortDesc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 
-public class MultipartReplyPortDescDeserializerTest extends AbstractMultipartDeserializerTest{
+public class MultipartReplyPortDescDeserializerTest extends AbstractMultipartDeserializerTest {
     private static final byte PADDING_IN_PORT_DESC_HEADER_01 = 4;
     private static final byte PADDING_IN_PORT_DESC_HEADER_02 = 2;
 

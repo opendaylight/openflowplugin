@@ -10,6 +10,8 @@ package org.opendaylight.openflowplugin.impl.protocol.deserialization.instructio
 
 import static org.junit.Assert.assertEquals;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.UnpooledByteBufAllocator;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -21,19 +23,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteActionsCase;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.UnpooledByteBufAllocator;
-
 public class WriteActionsInstructionDeserializerTest extends AbstractInstructionDeserializerTest {
 
     private OFDeserializer<Instruction> deserializer;
 
     @Override
+    @SuppressWarnings("checkstyle:LineLength")
     protected void init() {
         deserializer = getRegistry().getDeserializer(
                 new MessageCodeActionExperimenterKey(EncodeConstants.OF13_VERSION_ID, getType(), Instruction.class,
-                    ActionPath.NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION,
-                    null));
+                        ActionPath
+                                .NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION,
+                        null));
     }
 
     @Test

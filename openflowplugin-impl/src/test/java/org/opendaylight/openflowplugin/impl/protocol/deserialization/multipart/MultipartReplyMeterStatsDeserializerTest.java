@@ -22,12 +22,12 @@ public class MultipartReplyMeterStatsDeserializerTest extends AbstractMultipartD
     private static final int METER_ID = 1;
     private static final short ITEM_LENGTH = 50;
     private static final int FLOW_COUNT = 2;
-    private static final long PACKET_IN_COUNT = 3l;
-    private static final long BYTE_IN_COUNT = 4l;
+    private static final long PACKET_IN_COUNT = 3L;
+    private static final long BYTE_IN_COUNT = 4L;
     private static final int SECOND = 5;
     private static final int NANOSECOND = 6;
-    private static final long PACKET_BAND_COUNT = 7l;
-    private static final long BYTE_BAND_COUNT = 8l;
+    private static final long PACKET_BAND_COUNT = 7L;
+    private static final long BYTE_BAND_COUNT = 8L;
 
     @Test
     public void deserialize() throws Exception {

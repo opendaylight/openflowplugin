@@ -48,7 +48,7 @@ public class VlanVidEntrySerializerTest extends AbstractMatchEntrySerializerTest
         assertMatch(vlanMatchMaskOnly, true, out -> {
             assertEquals(out.readShort(), (1 << 12));
 
-            byte mask[] = new byte[2];
+            byte[] mask = new byte[2];
             out.readBytes(mask);
             assertArrayEquals(mask, new byte[] { 16, 0 });
         });

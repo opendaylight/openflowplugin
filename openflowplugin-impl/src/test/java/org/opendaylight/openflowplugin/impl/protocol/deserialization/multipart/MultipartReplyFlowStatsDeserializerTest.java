@@ -29,7 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 
-public class MultipartReplyFlowStatsDeserializerTest extends AbstractMultipartDeserializerTest{
+public class MultipartReplyFlowStatsDeserializerTest extends AbstractMultipartDeserializerTest {
 
     private static final byte PADDING_IN_FLOW_STATS_HEADER_01 = 1;
     private static final byte PADDING_IN_FLOW_STATS_HEADER_02 = 4;
@@ -144,7 +144,8 @@ public class MultipartReplyFlowStatsDeserializerTest extends AbstractMultipartDe
 
         assertEquals(2, flowAndStatisticsMapList.getInstructions().getInstruction().size());
 
-        final Instruction instruction = flowAndStatisticsMapList.getInstructions().getInstruction().get(0).getInstruction();
+        final Instruction instruction =
+                flowAndStatisticsMapList.getInstructions().getInstruction().get(0).getInstruction();
         assertEquals(ApplyActionsCase.class, instruction.getImplementedInterface());
 
         final ApplyActionsCase applyActions = ApplyActionsCase.class.cast(instruction);
@@ -152,7 +153,8 @@ public class MultipartReplyFlowStatsDeserializerTest extends AbstractMultipartDe
         assertEquals(PopPbbActionCase.class, applyActions.getApplyActions().getAction().get(0)
                 .getAction().getImplementedInterface());
 
-        final Instruction instruction1 = flowAndStatisticsMapList.getInstructions().getInstruction().get(1).getInstruction();
+        final Instruction instruction1 =
+                flowAndStatisticsMapList.getInstructions().getInstruction().get(1).getInstruction();
         assertEquals(WriteActionsCase.class, instruction1.getImplementedInterface());
 
         final WriteActionsCase writeActions = WriteActionsCase.class.cast(instruction1);

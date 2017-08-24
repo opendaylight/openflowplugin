@@ -18,7 +18,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 
-public class MultipartReplyGroupDescDeserializerTest extends AbstractMultipartDeserializerTest{
+public class MultipartReplyGroupDescDeserializerTest extends AbstractMultipartDeserializerTest {
     private static final byte PADDING_IN_GROUP_DESC_HEADER = 1;
     private static final byte PADDING_IN_BUCKETS_HEADER = 4;
     private static final short ITEM_LENGTH = 32;
@@ -51,8 +51,10 @@ public class MultipartReplyGroupDescDeserializerTest extends AbstractMultipartDe
 
         assertEquals(GROUP_ID, reply.getGroupDescStats().get(0).getGroupId().getValue().intValue());
         assertEquals(WEIGHT, reply.getGroupDescStats().get(0).getBuckets().getBucket().get(0).getWeight().intValue());
-        assertEquals(WATCH_PORT, reply.getGroupDescStats().get(0).getBuckets().getBucket().get(0).getWatchPort().intValue());
-        assertEquals(WATCH_GROUP, reply.getGroupDescStats().get(0).getBuckets().getBucket().get(0).getWatchGroup().intValue());
+        assertEquals(WATCH_PORT, reply.getGroupDescStats().get(0).getBuckets().getBucket().get(0).getWatchPort()
+                .intValue());
+        assertEquals(WATCH_GROUP, reply.getGroupDescStats().get(0).getBuckets().getBucket().get(0).getWatchGroup()
+                .intValue());
         assertEquals(GROUP_TYPE, reply.getGroupDescStats().get(0).getGroupType().getIntValue());
         assertEquals(0, buffer.readableBytes());
     }
