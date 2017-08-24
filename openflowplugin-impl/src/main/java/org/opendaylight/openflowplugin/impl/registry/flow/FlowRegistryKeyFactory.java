@@ -11,10 +11,13 @@ package org.opendaylight.openflowplugin.impl.registry.flow;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import java.math.BigInteger;
+import java.util.Objects;
+import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.openflowplugin.impl.util.MatchNormalizationUtil;
+import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionResolvers;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 
@@ -34,6 +37,32 @@ public class FlowRegistryKeyFactory {
         final Match match = MatchNormalizationUtil
                 .normalizeMatch(MoreObjects.firstNonNull(flow.getMatch(), OFConstants.EMPTY_MATCH), version);
         return new FlowRegistryKeyDto(tableId, priority, cookie, match);
+    }
+
+    static int generateMatchHashCode(final Match match) {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + Objects.hashCode(match.getEthernetMatch());
+        result = prime * result + Objects.hashCode(match.getIcmpv4Match());
+        result = prime * result + Objects.hashCode(match.getIcmpv6Match());
+        result = prime * result + Objects.hashCode(match.getInPhyPort());
+        result = prime * result + Objects.hashCode(match.getInPort());
+        result = prime * result + Objects.hashCode(match.getIpMatch());
+        result = prime * result + Objects.hashCode(match.getLayer3Match());
+        result = prime * result + Objects.hashCode(match.getLayer4Match());
+        result = prime * result + Objects.hashCode(match.getMetadata());
+        result = prime * result + Objects.hashCode(match.getProtocolMatchFields());
+        result = prime * result + Objects.hashCode(match.getTcpFlagsMatch());
+        result = prime * result + Objects.hashCode(match.getTunnel());
+        result = prime * result + Objects.hashCode(match.getVlanMatch());
+        result = prime * result + ExtensionResolvers
+                .getMatchExtensionResolver()
+                .getExtension(match)
+                .flatMap(extensions -> Optional.ofNullable(extensions.getExtensionList()))
+                .map(Objects::hashCode)
+                .orElse(0);
+
+        return result;
     }
 
     private static final class FlowRegistryKeyDto implements FlowRegistryKey {
@@ -67,7 +96,7 @@ public class FlowRegistryKeyFactory {
             return getPriority() == that.getPriority()
                     && getTableId() == that.getTableId()
                     && getCookie().equals(that.getCookie())
-                    && getMatch().equals(that.getMatch());
+                    && generateMatchHashCode(getMatch()) == generateMatchHashCode(that.getMatch());
         }
 
         @Override
@@ -75,7 +104,7 @@ public class FlowRegistryKeyFactory {
             int result = tableId;
             result = 31 * result + priority;
             result = 31 * result + cookie.hashCode();
-            result = 31 * result + match.hashCode();
+            result = 31 * result + generateMatchHashCode(match);
             return result;
         }
 
