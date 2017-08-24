@@ -60,7 +60,7 @@ public abstract class AbstractSerializerTest {
 
         @Override
         public <K> void registerSerializer(MessageTypeKey<K> messageTypeKey, OFGeneralSerializer ofGeneralSerializer) {
-           registry.registerSerializer(messageTypeKey, ofGeneralSerializer);
+            registry.registerSerializer(messageTypeKey, ofGeneralSerializer);
         }
 
         @Override
@@ -70,43 +70,41 @@ public abstract class AbstractSerializerTest {
 
         @Override
         public void registerActionSerializer(ActionSerializerKey<?> key, OFGeneralSerializer serializer) {
-
         }
 
         @Override
         public void registerInstructionSerializer(InstructionSerializerKey<?> key, OFGeneralSerializer serializer) {
+        }
+
+        @Override
+        public <C extends OxmClassBase, F extends MatchField> void registerMatchEntrySerializer(
+                MatchEntrySerializerKey<C, F> key, OFGeneralSerializer serializer) {
+        }
+
+        @Override
+        public void registerExperimenterMessageSerializer(ExperimenterIdSerializerKey<? extends
+                ExperimenterDataOfChoice> key, OFSerializer<? extends ExperimenterDataOfChoice> serializer) {
+        }
+
+        @Override
+        public void registerMultipartRequestSerializer(ExperimenterIdSerializerKey<? extends
+                ExperimenterDataOfChoice> key, OFSerializer<? extends ExperimenterDataOfChoice> serializer) {
+        }
+
+        @Override
+        public void registerMultipartRequestTFSerializer(ExperimenterIdSerializerKey<TableFeatureProperties> key,
+                                                         OFGeneralSerializer serializer) {
+        }
+
+        @Override
+        public void registerMeterBandSerializer(ExperimenterIdSerializerKey<MeterBandExperimenterCase> key,
+                                                OFSerializer<MeterBandExperimenterCase> serializer) {
 
         }
 
         @Override
-        public <C extends OxmClassBase, F extends MatchField> void registerMatchEntrySerializer(MatchEntrySerializerKey<C, F> key, OFGeneralSerializer serializer) {
-
-        }
-
-        @Override
-        public void registerExperimenterMessageSerializer(ExperimenterIdSerializerKey<? extends ExperimenterDataOfChoice> key, OFSerializer<? extends ExperimenterDataOfChoice> serializer) {
-
-        }
-
-        @Override
-        public void registerMultipartRequestSerializer(ExperimenterIdSerializerKey<? extends ExperimenterDataOfChoice> key, OFSerializer<? extends ExperimenterDataOfChoice> serializer) {
-
-        }
-
-        @Override
-        public void registerMultipartRequestTFSerializer(ExperimenterIdSerializerKey<TableFeatureProperties> key, OFGeneralSerializer serializer) {
-
-        }
-
-        @Override
-        public void registerMeterBandSerializer(ExperimenterIdSerializerKey<MeterBandExperimenterCase> key, OFSerializer<MeterBandExperimenterCase> serializer) {
-
-        }
-
-        @Override
-        public void registerMeterBandSerializer(ExperimenterIdMeterSubTypeSerializerKey<MeterBandExperimenterCase> key, OFSerializer<MeterBandExperimenterCase> serializer) {
-
+        public void registerMeterBandSerializer(ExperimenterIdMeterSubTypeSerializerKey<MeterBandExperimenterCase>
+                                                            key, OFSerializer<MeterBandExperimenterCase> serializer) {
         }
     }
-
 }

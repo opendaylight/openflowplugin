@@ -30,7 +30,8 @@ public class EthernetSourceEntryDeserializerTest extends AbstractMatchEntryDeser
         writeHeader(in, false);
         in.writeBytes(IetfYangUtil.INSTANCE.bytesFor(ethernetSourceAddress));
 
-        assertEquals(ethernetSourceAddress.getValue(), deserialize(in).getEthernetMatch().getEthernetSource().getAddress().getValue());
+        assertEquals(ethernetSourceAddress.getValue(),
+                deserialize(in).getEthernetMatch().getEthernetSource().getAddress().getValue());
         assertEquals(0, in.readableBytes());
 
         writeHeader(in, true);

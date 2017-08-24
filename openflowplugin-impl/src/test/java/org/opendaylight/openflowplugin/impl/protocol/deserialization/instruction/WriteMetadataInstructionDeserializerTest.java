@@ -8,20 +8,18 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.instruction;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.UnpooledByteBufAllocator;
 import java.math.BigInteger;
-
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadataCase;
-
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.UnpooledByteBufAllocator;
 
 public class WriteMetadataInstructionDeserializerTest extends AbstractInstructionDeserializerTest {
 
@@ -39,16 +37,18 @@ public class WriteMetadataInstructionDeserializerTest extends AbstractInstructio
         assertEquals(WriteMetadataCase.class, instruction.getImplementedInterface());
 
         assertArrayEquals(
-            ByteUtil
-                .convertBigIntegerToNBytes(metadata, EncodeConstants.SIZE_OF_LONG_IN_BYTES),
-            ByteUtil
-                .convertBigIntegerToNBytes(WriteMetadataCase.class.cast(instruction).getWriteMetadata().getMetadata(), EncodeConstants.SIZE_OF_LONG_IN_BYTES));
+                ByteUtil
+                        .convertBigIntegerToNBytes(metadata, EncodeConstants.SIZE_OF_LONG_IN_BYTES),
+                ByteUtil
+                        .convertBigIntegerToNBytes(WriteMetadataCase.class.cast(instruction).getWriteMetadata()
+                                .getMetadata(), EncodeConstants.SIZE_OF_LONG_IN_BYTES));
 
         assertArrayEquals(
-            ByteUtil
-                .convertBigIntegerToNBytes(metadataMask, EncodeConstants.SIZE_OF_LONG_IN_BYTES),
-            ByteUtil
-                .convertBigIntegerToNBytes(WriteMetadataCase.class.cast(instruction).getWriteMetadata().getMetadataMask(), EncodeConstants.SIZE_OF_LONG_IN_BYTES));
+                ByteUtil
+                        .convertBigIntegerToNBytes(metadataMask, EncodeConstants.SIZE_OF_LONG_IN_BYTES),
+                ByteUtil
+                        .convertBigIntegerToNBytes(WriteMetadataCase.class.cast(instruction).getWriteMetadata()
+                                .getMetadataMask(), EncodeConstants.SIZE_OF_LONG_IN_BYTES));
 
         assertEquals(0, in.readableBytes());
     }

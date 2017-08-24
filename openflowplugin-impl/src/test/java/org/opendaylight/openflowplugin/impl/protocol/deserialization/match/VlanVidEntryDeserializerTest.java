@@ -25,7 +25,7 @@ public class VlanVidEntryDeserializerTest extends AbstractMatchEntryDeserializer
     public void deserializeEntry() throws Exception {
         final ByteBuf in = UnpooledByteBufAllocator.DEFAULT.buffer();
         final int vlanVid = 8;
-        final byte[] vlanMask = new byte[] { 16, 0 };
+        final byte[] vlanMask = new byte[]{16, 0};
 
         writeHeader(in, false);
         in.writeShort(vlanVid | (1 << 12));

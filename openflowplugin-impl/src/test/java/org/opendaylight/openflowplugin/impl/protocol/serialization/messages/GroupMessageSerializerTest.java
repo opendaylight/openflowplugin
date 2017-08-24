@@ -101,7 +101,8 @@ public class GroupMessageSerializerTest extends AbstractSerializerTest {
 
     @Override
     protected void init() {
-        serializer = getRegistry().getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, GroupMessage.class));
+        serializer = getRegistry()
+                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, GroupMessage.class));
     }
 
     @Test

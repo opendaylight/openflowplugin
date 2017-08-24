@@ -17,8 +17,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.m
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 
 public class MultipartReplyFlowAggregateStatsDeserializerTest extends AbstractMultipartDeserializerTest {
-    private static final long PACKET_COUNT = 6l;
-    private static final long BYTE_COUNT = 256l;
+    private static final long PACKET_COUNT = 6L;
+    private static final long BYTE_COUNT = 256L;
     private static final int FLOW_COUNT = 3;
     private static final byte PADDING_IN_MULTIPART_REPLY_HEADER = 4;
 

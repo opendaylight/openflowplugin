@@ -42,8 +42,8 @@ public class MultipartReplyTableFeaturesDeserializerTest extends AbstractMultipa
     private static final byte TABLE_ID = 1;
     private static final long METADATA_MATCH = 2;
     private static final long METADATA_WRITE = 3;
-    private static final int  TABLE_CONFIG= 3;
-    private static final int  MAX_ENTRIES= 3;
+    private static final int  TABLE_CONFIG = 3;
+    private static final int  MAX_ENTRIES = 3;
 
     private static final int OFPTFPT_INSTRUCTIONS = 0;
     private static final int OFPTFPT_INSTRUCTIONS_MISS = 1;
@@ -156,10 +156,8 @@ public class MultipartReplyTableFeaturesDeserializerTest extends AbstractMultipa
     }
 
     private void writeValues(ByteBuf buffer, int propertyType) {
-        TableFeaturesPropType propType = TableFeaturesPropType.forValue(propertyType);
-
         buffer.clear();
-        int replyIndex = buffer.readerIndex();
+        final int replyIndex = buffer.readerIndex();
         buffer.writeShort(EncodeConstants.EMPTY_LENGTH);
         buffer.writeByte(TABLE_ID);
         buffer.writeZero(PADDING_IN_MULTIPART_REPLY_TABLE_FEATURES);
@@ -169,11 +167,13 @@ public class MultipartReplyTableFeaturesDeserializerTest extends AbstractMultipa
         buffer.writeInt(TABLE_CONFIG);
         buffer.writeInt(MAX_ENTRIES);
 
-        int propIndex = buffer.writerIndex();
+        final int propIndex = buffer.writerIndex();
         buffer.writeShort(propertyType);
 
-        int propLengthIndex = buffer.writerIndex();
+        final int propLengthIndex = buffer.writerIndex();
         buffer.writeShort(EncodeConstants.EMPTY_LENGTH);
+
+        TableFeaturesPropType propType = TableFeaturesPropType.forValue(propertyType);
 
         switch (propType) {
             case OFPTFPTINSTRUCTIONS:
