@@ -16,14 +16,20 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.tuple.Pair;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
+import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.AddFlowsBatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.AddFlowsBatchOutputBuilder;
@@ -214,6 +220,25 @@ public final class FlowUtil {
     public static <O> Function<List<RpcResult<O>>, RpcResult<List<BatchFailedFlowsOutput>>> createCumulatingFunction(
             final List<? extends BatchFlowIdGrouping> inputBatchFlows) {
         return new CumulatingFunction<O>(inputBatchFlows).invoke();
+    }
+
+    /**
+     * Get flow ID from #{@link org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry} or
+     * create alien ID.
+     * @param flowAndStatisticsMapList flow statistics
+     * @param deviceFlowRegistry device flow registry
+     * @param version OpenFlow version
+     * @return generated flow ID
+     */
+    public static Optional<FlowId> generateFlowId(final FlowAndStatisticsMapList flowAndStatisticsMapList,
+                                                  final DeviceFlowRegistry deviceFlowRegistry,
+                                                  final short version) {
+        final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(version, flowAndStatisticsMapList);
+        deviceFlowRegistry.store(flowRegistryKey);
+
+        return Optional
+                .ofNullable(deviceFlowRegistry.retrieveDescriptor(flowRegistryKey))
+                .map(FlowDescriptor::getFlowId);
     }
 
     private static class CumulatingFunction<O> {

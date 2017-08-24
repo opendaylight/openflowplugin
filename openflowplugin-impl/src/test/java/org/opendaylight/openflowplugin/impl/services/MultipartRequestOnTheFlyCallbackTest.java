@@ -49,6 +49,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorM
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -79,6 +80,7 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 public class MultipartRequestOnTheFlyCallbackTest {
 
     private static final String DUMMY_NODE_ID = "dummyNodeId";
+    private static final String DUMMY_FLOW_ID = "dummyFlowId";
     private static final String DUMMY_EVENT_NAME = "dummy event name 1";
     private static final String DUMMY_DEVICE_ID = "dummy device id 1";
     private static final Long DUMMY_XID = 55L;
@@ -134,6 +136,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
         when(mockedDeviceContext.getDeviceFlowRegistry()).thenReturn(mockedFlowRegistry);
+        when(mockedFlowDescriptor.getFlowId()).thenReturn(new FlowId(DUMMY_FLOW_ID));
         when(mockedFlowRegistry.retrieveDescriptor(Matchers.any(FlowRegistryKey.class)))
                 .thenReturn(mockedFlowDescriptor);
 
