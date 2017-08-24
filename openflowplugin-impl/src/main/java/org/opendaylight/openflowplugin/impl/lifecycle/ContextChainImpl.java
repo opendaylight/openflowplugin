@@ -68,6 +68,7 @@ public class ContextChainImpl implements ContextChain {
     }
 
     @Override
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public void instantiateServiceInstance() {
 
         try {
@@ -104,6 +105,7 @@ public class ContextChainImpl implements ContextChain {
     }
 
     @Override
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public void close() {
         if (ContextChainState.CLOSED.equals(contextChainState.get())) {
             LOG.debug("ContextChain for node {} is already in TERMINATION state.", deviceInfo);
@@ -179,14 +181,20 @@ public class ContextChainImpl implements ContextChain {
                 // Flow registry fill is not mandatory to work as a master
                 LOG.debug("Device {}, initial registry filling OK.", deviceInfo);
                 this.registryFilling.set(true);
+                break;
             case CHECK:
+                // no operation
+                break;
             default:
+                // no operation
+                break;
         }
 
-        final boolean result = initialGathering.get() &&
-                masterStateOnDevice.get() &&
-                rpcRegistration.get() &&
-                inReconciliationFrameworkStep || initialSubmitting.get();
+        final boolean result = initialGathering.get()
+                && masterStateOnDevice.get()
+                && rpcRegistration.get()
+                && inReconciliationFrameworkStep
+                || initialSubmitting.get();
 
         if (!inReconciliationFrameworkStep &&
                 result &&
