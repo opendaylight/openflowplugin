@@ -158,6 +158,8 @@ public final class StatisticsGatheringUtils {
             case OFPMPGROUPDESC:
                 deleteAllKnownGroups(txFacade, instanceIdentifier, deviceRegistry.getDeviceGroupRegistry());
                 break;
+            default:
+                // no operation
         }
 
         if (writeStatistics(type, statistics, deviceInfo, statisticsWriterProvider)) {
@@ -173,6 +175,8 @@ public final class StatisticsGatheringUtils {
                 case OFPMPGROUPDESC:
                     deviceRegistry.getDeviceGroupRegistry().processMarks();
                     break;
+                default:
+                    // no operation
             }
 
             LOG.debug("Stats reply added to transaction for node {} of type {}", deviceInfo.getNodeId(), type);
