@@ -46,6 +46,7 @@ public class ContextChainHolderImplTest {
 
     private static final String ENTITY_TEST = "EntityTest";
     private static final String OPENFLOW_TEST = "openflow:test";
+    private static final Short AUXILIARY_ID = 0;
     @Mock
     private StatisticsManager statisticsManager;
     @Mock
@@ -84,7 +85,6 @@ public class ContextChainHolderImplTest {
     private ContextChainHolderImpl contextChainHolder;
     private ReconciliationFrameworkRegistration registration;
     private MastershipChangeServiceManager manager = new MastershipChangeServiceManagerImpl();
-    private final Short AUXILIARY_ID = 0;
 
     @Before
     public void setUp() throws Exception {
@@ -206,8 +206,8 @@ public class ContextChainHolderImplTest {
         registration.close();
         Assert.assertTrue(contextChainHolder.deviceConnected(connectionContext)
                 == ConnectionStatus.MAY_CONTINUE);
-        Short AUXILIARY_ID_1 = 1;
-        Mockito.when(featuresReply.getAuxiliaryId()).thenReturn(AUXILIARY_ID_1);
+        Short auxiliaryId1 = 1;
+        Mockito.when(featuresReply.getAuxiliaryId()).thenReturn(auxiliaryId1);
         Assert.assertTrue(contextChainHolder.deviceConnected(connectionContext)
                 == ConnectionStatus.MAY_CONTINUE);
         Mockito.when(featuresReply.getAuxiliaryId()).thenReturn(AUXILIARY_ID);

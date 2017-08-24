@@ -21,7 +21,7 @@ import org.opendaylight.openflowplugin.impl.OpenFlowPluginProviderImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 
 /**
- * Test for {@link ClearStatsCommandProvider}
+ * Test for {@link ClearStatsCommandProvider}.
  */
 public class ClearStatsCommandProviderTest extends AbstractKarafTest {
 
@@ -49,9 +49,7 @@ public class ClearStatsCommandProviderTest extends AbstractKarafTest {
     }
 
     /**
-     * test for {@link ClearStatsCommandProvider#doExecute()} when no stats were touched before
-     *
-     * @throws Exception
+     * Test for {@link ClearStatsCommandProvider#doExecute()} when no stats were touched before.
      */
     @Test
     public void testDoExecute_clean() throws Exception {
@@ -62,9 +60,7 @@ public class ClearStatsCommandProviderTest extends AbstractKarafTest {
     }
 
     /**
-     * test for {@link ClearStatsCommandProvider#doExecute()} when stats were touched before
-     *
-     * @throws Exception
+     * Test for {@link ClearStatsCommandProvider#doExecute()} when stats were touched before.
      */
     @Test
     public void testDoExecute_dirty() throws Exception {

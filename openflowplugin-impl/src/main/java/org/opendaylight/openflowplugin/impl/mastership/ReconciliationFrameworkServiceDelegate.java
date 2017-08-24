@@ -16,7 +16,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ReconciliationFrameworkServiceDelegate implements ReconciliationFrameworkEvent, ReconciliationFrameworkRegistration {
+public class ReconciliationFrameworkServiceDelegate implements
+        ReconciliationFrameworkEvent, ReconciliationFrameworkRegistration {
 
     private static final Logger LOG = LoggerFactory.getLogger(ReconciliationFrameworkServiceDelegate.class);
 
