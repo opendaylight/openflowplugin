@@ -19,6 +19,7 @@ import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.services.util.RequestInputUtils;
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.AbstractFlowDirectStatisticsService;
+import org.opendaylight.openflowplugin.impl.util.FlowUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.FlowStatsResponseConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchInjector;
@@ -61,15 +62,18 @@ public class FlowDirectStatisticsService extends AbstractFlowDirectStatisticsSer
                 final Optional<List<FlowAndStatisticsMapList>> statsListPart = getConvertorExecutor().convert(
                     replyBody.getFlowStats(), data);
 
-                statsListPart.ifPresent(flowAndStatisticsMapLists -> {
-                    for (final FlowAndStatisticsMapList part : flowAndStatisticsMapLists) {
-                        final FlowId flowId = new FlowId(generateFlowId(part).getValue());
-                        statsList.add(new FlowAndStatisticsMapListBuilder(part)
-                                .setKey(new FlowAndStatisticsMapListKey(flowId))
-                                .setFlowId(flowId)
-                                .build());
+                if (statsListPart.isPresent()) {
+                    for (final FlowAndStatisticsMapList part : statsListPart.get()) {
+                        FlowUtil.generateFlowId(part, getDeviceRegistry().getDeviceFlowRegistry(), getVersion())
+                                .ifPresent(flowId -> {
+                                    final FlowId id = new FlowId(flowId.getValue());
+                                    statsList.add(new FlowAndStatisticsMapListBuilder(part)
+                                            .setKey(new FlowAndStatisticsMapListKey(id))
+                                            .setFlowId(id)
+                                            .build());
+                                });
                     }
-                });
+                }
             }
         }
 

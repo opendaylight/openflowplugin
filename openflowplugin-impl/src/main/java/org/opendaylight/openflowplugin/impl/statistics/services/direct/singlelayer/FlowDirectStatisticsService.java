@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl.statistics.services.direct.singlelayer;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -16,6 +17,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.AbstractFlowDirectStatisticsService;
+import org.opendaylight.openflowplugin.impl.util.FlowUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsOutput;
@@ -41,32 +43,38 @@ public class FlowDirectStatisticsService extends AbstractFlowDirectStatisticsSer
     @Override
     protected GetFlowStatisticsOutput buildReply(List<MultipartReply> input, boolean success) {
         return new GetFlowStatisticsOutputBuilder()
-            .setFlowAndStatisticsMapList(input
-                .stream()
-                .flatMap(multipartReply -> MultipartReplyFlowStats.class
-                    .cast(multipartReply.getMultipartReplyBody())
-                    .getFlowAndStatisticsMapList()
-                    .stream())
-                .map(flowAndStatisticsMapList -> {
-                    final FlowId flowId = new FlowId(generateFlowId(flowAndStatisticsMapList));
-                    return new FlowAndStatisticsMapListBuilder(flowAndStatisticsMapList)
-                        .setKey(new FlowAndStatisticsMapListKey(flowId))
-                        .setFlowId(flowId)
-                        .build();
-                })
-                .collect(Collectors.toList()))
-            .build();
+                .setFlowAndStatisticsMapList(input
+                        .stream()
+                        .flatMap(multipartReply -> MultipartReplyFlowStats.class
+                                .cast(multipartReply.getMultipartReplyBody())
+                                .getFlowAndStatisticsMapList()
+                                .stream())
+                        .map(flowAndStatisticsMapList -> FlowUtil
+                                .generateFlowId(flowAndStatisticsMapList,
+                                        getDeviceRegistry().getDeviceFlowRegistry(),
+                                        getVersion())
+                                .map(flowId -> {
+                                    final FlowId id = new FlowId(flowId);
+                                    return new FlowAndStatisticsMapListBuilder(flowAndStatisticsMapList)
+                                            .setKey(new FlowAndStatisticsMapListKey(id))
+                                            .setFlowId(id)
+                                            .build();
+                                }))
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .collect(Collectors.toList()))
+                .build();
     }
 
     @Override
     protected OfHeader buildRequest(final Xid xid, final GetFlowStatisticsInput input) throws ServiceException {
         return new MultipartRequestBuilder()
-            .setXid(xid.getValue())
-            .setVersion(getVersion())
-            .setRequestMore(false)
-            .setMultipartRequestBody(new MultipartRequestFlowStatsBuilder(input)
-                .build())
-            .build();
+                .setXid(xid.getValue())
+                .setVersion(getVersion())
+                .setRequestMore(false)
+                .setMultipartRequestBody(new MultipartRequestFlowStatsBuilder(input)
+                        .build())
+                .build();
     }
 
 }
