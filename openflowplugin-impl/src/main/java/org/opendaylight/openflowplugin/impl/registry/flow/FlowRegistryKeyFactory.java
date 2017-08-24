@@ -67,7 +67,7 @@ public class FlowRegistryKeyFactory {
             return getPriority() == that.getPriority()
                     && getTableId() == that.getTableId()
                     && getCookie().equals(that.getCookie())
-                    && getMatch().equals(that.getMatch());
+                    && getMatch().hashCode() == that.getMatch().hashCode();
         }
 
         @Override
