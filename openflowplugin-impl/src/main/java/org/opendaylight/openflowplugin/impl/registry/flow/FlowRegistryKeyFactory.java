@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl.registry.flow;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import java.math.BigInteger;
 import javax.annotation.Nonnull;
@@ -67,7 +68,7 @@ public class FlowRegistryKeyFactory {
             return getPriority() == that.getPriority()
                     && getTableId() == that.getTableId()
                     && getCookie().equals(that.getCookie())
-                    && getMatch().equals(that.getMatch());
+                    && Objects.hashCode(getMatch().hashCode()) == Objects.hashCode(that.getMatch());
         }
 
         @Override
