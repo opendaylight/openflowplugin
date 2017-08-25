@@ -27,12 +27,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
- * Multipart writer provider factory
+ * Multipart writer provider factory.
  */
 public class MultipartWriterProviderFactory {
 
     /**
-     * Create default #{@link MultipartWriterProvider}
+     * Create default #{@link MultipartWriterProvider}.
+     *
      * @param deviceContext device context
      * @return the statistics writer provider
      */
@@ -44,18 +45,27 @@ public class MultipartWriterProviderFactory {
         provider.register(MultipartType.OFPMPTABLE, new TableStatsMultipartWriter(deviceContext, instanceIdentifier));
         provider.register(MultipartType.OFPMPGROUP, new GroupStatsMultipartWriter(deviceContext, instanceIdentifier));
         provider.register(MultipartType.OFPMPMETER, new MeterStatsMultipartWriter(deviceContext, instanceIdentifier));
-        provider.register(MultipartType.OFPMPPORTSTATS, new PortStatsMultipartWriter(deviceContext, instanceIdentifier, deviceContext.getPrimaryConnectionContext().getFeatures()));
+        provider.register(MultipartType.OFPMPPORTSTATS, new PortStatsMultipartWriter(deviceContext,
+                instanceIdentifier, deviceContext.getPrimaryConnectionContext().getFeatures()));
         provider.register(MultipartType.OFPMPQUEUE, new QueueStatsMultipartWriter(deviceContext, instanceIdentifier));
-        provider.register(MultipartType.OFPMPFLOW, new FlowStatsMultipartWriter(deviceContext, instanceIdentifier, deviceContext, deviceContext.getDeviceInfo().getVersion()));
-        provider.register(MultipartType.OFPMPGROUPDESC, new GroupDescMultipartWriter(deviceContext, instanceIdentifier, deviceContext));
-        provider.register(MultipartType.OFPMPMETERCONFIG, new MeterConfigMultipartWriter(deviceContext, instanceIdentifier, deviceContext));
+        provider.register(MultipartType.OFPMPFLOW, new FlowStatsMultipartWriter(deviceContext, instanceIdentifier,
+                deviceContext, deviceContext.getDeviceInfo().getVersion()));
+        provider.register(MultipartType.OFPMPGROUPDESC, new GroupDescMultipartWriter(deviceContext,
+                instanceIdentifier, deviceContext));
+        provider.register(MultipartType.OFPMPMETERCONFIG, new MeterConfigMultipartWriter(deviceContext,
+                instanceIdentifier, deviceContext));
 
         // Device initialization writers
-        provider.register(MultipartType.OFPMPDESC, new DescMultipartWriter(deviceContext, instanceIdentifier, deviceContext.getPrimaryConnectionContext()));
-        provider.register(MultipartType.OFPMPGROUPFEATURES, new GroupFeaturesMultipartWriter(deviceContext, instanceIdentifier));
-        provider.register(MultipartType.OFPMPMETERFEATURES, new MeterFeaturesMultipartWriter(deviceContext, instanceIdentifier));
-        provider.register(MultipartType.OFPMPTABLEFEATURES, new TableFeaturesMultipartWriter(deviceContext, instanceIdentifier));
-        provider.register(MultipartType.OFPMPPORTDESC, new PortDescMultipartWriter(deviceContext, instanceIdentifier, deviceContext.getPrimaryConnectionContext().getFeatures()));
+        provider.register(MultipartType.OFPMPDESC, new DescMultipartWriter(deviceContext, instanceIdentifier,
+                deviceContext.getPrimaryConnectionContext()));
+        provider.register(MultipartType.OFPMPGROUPFEATURES, new GroupFeaturesMultipartWriter(deviceContext,
+                instanceIdentifier));
+        provider.register(MultipartType.OFPMPMETERFEATURES, new MeterFeaturesMultipartWriter(deviceContext,
+                instanceIdentifier));
+        provider.register(MultipartType.OFPMPTABLEFEATURES, new TableFeaturesMultipartWriter(deviceContext,
+                instanceIdentifier));
+        provider.register(MultipartType.OFPMPPORTDESC, new PortDescMultipartWriter(deviceContext, instanceIdentifier,
+                deviceContext.getPrimaryConnectionContext().getFeatures()));
 
         return provider;
     }
