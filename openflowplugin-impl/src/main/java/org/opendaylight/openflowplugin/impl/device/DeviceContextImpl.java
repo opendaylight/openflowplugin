@@ -104,7 +104,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Pa
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceivedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsDataBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -141,7 +140,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final ItemLifeCycleKeeper flowLifeCycleKeeper;
     private final MessageTranslator<PortGrouping, FlowCapableNodeConnector> portStatusTranslator;
     private final MessageTranslator<PacketInMessage, PacketReceived> packetInTranslator;
-    private final MessageTranslator<FlowRemoved, org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved> flowRemovedTranslator;
+    private final MessageTranslator<FlowRemoved, org.opendaylight.yang.gen.v1.urn.opendaylight
+            .flow.service.rev130819.FlowRemoved> flowRemovedTranslator;
     private final TranslatorLibrary translatorLibrary;
     private final ItemLifeCycleRegistry itemLifeCycleSourceRegistry;
     private final ConvertorExecutor convertorExecutor;
@@ -162,7 +162,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private DeviceGroupRegistry deviceGroupRegistry;
     private DeviceMeterRegistry deviceMeterRegistry;
     private ExtensionConverterProvider extensionConverterProvider;
-    private SalRoleService salRoleService;
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
 
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
@@ -194,7 +193,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.portStatusTranslator = translatorLibrary.lookupTranslator(
                 new TranslatorKey(deviceInfo.getVersion(), PortGrouping.class.getName()));
         this.packetInTranslator = translatorLibrary.lookupTranslator(
-                new TranslatorKey(deviceInfo.getVersion(), org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
+                new TranslatorKey(deviceInfo.getVersion(), org.opendaylight.yang.gen.v1.urn.opendaylight.openflow
+                        .protocol.rev130731
                         .PacketIn.class.getName()));
         this.flowRemovedTranslator = translatorLibrary.lookupTranslator(
                 new TranslatorKey(deviceInfo.getVersion(), FlowRemoved.class.getName()));
@@ -237,7 +237,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
                                                           final InstanceIdentifier<T> path,
-                                                          final T data){
+                                                          final T data) {
         if (initialized.get()) {
             transactionChainManager.writeToTransaction(store, path, data, false);
         }
@@ -246,14 +246,15 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public <T extends DataObject> void writeToTransactionWithParentsSlow(final LogicalDatastoreType store,
                                                                          final InstanceIdentifier<T> path,
-                                                                         final T data){
+                                                                         final T data) {
         if (initialized.get()) {
             transactionChainManager.writeToTransaction(store, path, data, true);
         }
     }
 
     @Override
-    public <T extends DataObject> void addDeleteToTxChain(final LogicalDatastoreType store, final InstanceIdentifier<T> path) {
+    public <T extends DataObject> void addDeleteToTxChain(final LogicalDatastoreType store,
+                                                          final InstanceIdentifier<T> path) {
         if (initialized.get()) {
             transactionChainManager.addDeleteOperationTotTxChain(store, path);
         }
@@ -316,7 +317,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         final ItemLifecycleListener itemLifecycleListener = flowLifeCycleKeeper.getItemLifecycleListener();
         if (itemLifecycleListener != null) {
             //2. create registry key
-            final FlowRegistryKey flowRegKey = FlowRegistryKeyFactory.create(getDeviceInfo().getVersion(), flowRemovedNotification);
+            final FlowRegistryKey flowRegKey = FlowRegistryKeyFactory.create(getDeviceInfo().getVersion(),
+                    flowRemovedNotification);
             //3. lookup flowId
             final FlowDescriptor flowDescriptor = deviceFlowRegistry.retrieveDescriptor(flowRegKey);
             //4. if flowId present:
@@ -336,8 +338,10 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public void processPortStatusMessage(final PortStatusMessage portStatus) {
-        messageSpy.spyMessage(portStatus.getImplementedInterface(), MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_SUCCESS);
+        messageSpy.spyMessage(portStatus.getImplementedInterface(), MessageSpy.StatisticsGroup
+                .FROM_SWITCH_PUBLISHED_SUCCESS);
 
         if (initialized.get()) {
             try {
@@ -364,11 +368,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                                 portStatusMessage.getPortNo(),
                                 OpenflowVersion.get(deviceInfo.getVersion()))));
 
-        if (PortReason.OFPPRADD.equals(portStatusMessage.getReason()) || PortReason.OFPPRMODIFY.equals(portStatusMessage.getReason())) {
+        if (PortReason.OFPPRADD.equals(portStatusMessage.getReason())
+                || PortReason.OFPPRMODIFY.equals(portStatusMessage.getReason())) {
             // because of ADD status node connector has to be created
             writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector, new NodeConnectorBuilder()
                     .setKey(iiToNodeConnector.getKey())
-                    .addAugmentation(FlowCapableNodeConnectorStatisticsData.class, new FlowCapableNodeConnectorStatisticsDataBuilder().build())
+                    .addAugmentation(FlowCapableNodeConnectorStatisticsData.class, new
+                            FlowCapableNodeConnectorStatisticsDataBuilder().build())
                     .addAugmentation(FlowCapableNodeConnector.class, flowCapableNodeConnector)
                     .build());
         } else if (PortReason.OFPPRDELETE.equals(portStatusMessage.getReason())) {
@@ -416,7 +422,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         if (!packetInLimiter.acquirePermit()) {
             LOG.debug("Packet limited");
             // TODO: save packet into emergency slot if possible
-            messageSpy.spyMessage(implementedInterface, MessageSpy.StatisticsGroup.FROM_SWITCH_PACKET_IN_LIMIT_REACHED_AND_DROPPED);
+            messageSpy.spyMessage(implementedInterface, MessageSpy.StatisticsGroup
+                    .FROM_SWITCH_PACKET_IN_LIMIT_REACHED_AND_DROPPED);
             return;
         }
 
@@ -444,10 +451,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             }
 
             @Override
-            public void onFailure(final Throwable t) {
-                messageSpy.spyMessage(implementedInterface, MessageSpy.StatisticsGroup.FROM_SWITCH_NOTIFICATION_REJECTED);
-                LOG.debug("notification offer failed: {}", t.getMessage());
-                LOG.trace("notification offer failed..", t);
+            public void onFailure(final Throwable throwable) {
+                messageSpy.spyMessage(implementedInterface, MessageSpy.StatisticsGroup
+                        .FROM_SWITCH_NOTIFICATION_REJECTED);
+                LOG.debug("notification offer failed: {}", throwable.getMessage());
+                LOG.trace("notification offer failed..", throwable);
                 packetInLimiter.releasePermit();
             }
         });
@@ -460,7 +468,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         final MessageTypeKey<? extends ExperimenterDataOfChoice> key = new MessageTypeKey<>(
                 getDeviceInfo().getVersion(),
                 (Class<? extends ExperimenterDataOfChoice>) vendorData.getImplementedInterface());
-        final ConvertorMessageFromOFJava<ExperimenterDataOfChoice, MessagePath> messageConverter = extensionConverterProvider.getMessageConverter(key);
+        final ConvertorMessageFromOFJava<ExperimenterDataOfChoice, MessagePath> messageConverter =
+                extensionConverterProvider.getMessageConverter(key);
         if (messageConverter == null) {
             LOG.warn("custom converter for {}[OF:{}] not found",
                     notification.getExperimenterDataOfChoice().getImplementedInterface(),
@@ -471,7 +480,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         final ExperimenterMessageOfChoice messageOfChoice;
         try {
             messageOfChoice = messageConverter.convert(vendorData, MessagePath.MESSAGE_NOTIFICATION);
-            final ExperimenterMessageFromDevBuilder experimenterMessageFromDevBld = new ExperimenterMessageFromDevBuilder()
+            final ExperimenterMessageFromDevBuilder experimenterMessageFromDevBld = new
+                    ExperimenterMessageFromDevBuilder()
                     .setNode(new NodeRef(getDeviceInfo().getNodeInstanceIdentifier()))
                     .setExperimenterMessageOfChoice(messageOfChoice);
             // publish
@@ -519,13 +529,15 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public <T extends OfHeader> MultiMsgCollector<T> getMultiMsgCollector(final RequestContext<List<T>> requestContext) {
+    public <T extends OfHeader> MultiMsgCollector<T> getMultiMsgCollector(final RequestContext<List<T>>
+                                                                                      requestContext) {
         return new MultiMsgCollectorImpl<>(this, requestContext);
     }
 
     @Override
     public void updatePacketInRateLimit(final long upperBound) {
-        packetInLimiter.changeWaterMarks((int) (LOW_WATERMARK_FACTOR * upperBound), (int) (HIGH_WATERMARK_FACTOR * upperBound));
+        packetInLimiter.changeWaterMarks((int) (LOW_WATERMARK_FACTOR * upperBound),
+                (int) (HIGH_WATERMARK_FACTOR * upperBound));
     }
 
     @Override
@@ -554,7 +566,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 ? transactionChainManager.deactivateTransactionManager()
                 : Futures.immediateFuture(null);
 
-        hashedWheelTimer.newTimeout((t) -> {
+        hashedWheelTimer.newTimeout((timerTask) -> {
             if (!listenableFuture.isDone() && !listenableFuture.isCancelled()) {
                 listenableFuture.cancel(true);
             }
@@ -597,7 +609,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 }
 
                 @Override
-                public void onFailure(final Throwable t) {
+                public void onFailure(final Throwable throwable) {
                     transactionChainManager.close();
                     transactionChainManager = null;
                 }
@@ -615,6 +627,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public void instantiateServiceInstance() {
         lazyTransactionManagerInitialization();
 
@@ -657,7 +670,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     deviceInfo.toString()));
         }
 
-        final ListenableFuture<List<com.google.common.base.Optional<FlowCapableNode>>> deviceFlowRegistryFill = getDeviceFlowRegistry().fill();
+        final ListenableFuture<List<com.google.common.base.Optional<FlowCapableNode>>> deviceFlowRegistryFill =
+                getDeviceFlowRegistry().fill();
         Futures.addCallback(deviceFlowRegistryFill,
                 new DeviceFlowRegistryCallback(deviceFlowRegistryFill, contextChainMastershipWatcher));
     }
@@ -669,7 +683,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 LOG.debug("Transaction chain manager for node {} created", deviceInfo.getLOGValue());
             }
             this.transactionChainManager = new TransactionChainManager(dataBroker, deviceInfo);
-            this.deviceFlowRegistry = new DeviceFlowRegistryImpl(deviceInfo.getVersion(), dataBroker, deviceInfo.getNodeInstanceIdentifier());
+            this.deviceFlowRegistry = new DeviceFlowRegistryImpl(deviceInfo.getVersion(), dataBroker, deviceInfo
+                    .getNodeInstanceIdentifier());
             this.deviceGroupRegistry = new DeviceGroupRegistryImpl();
             this.deviceMeterRegistry = new DeviceMeterRegistryImpl();
         }
@@ -699,7 +714,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         hasState.set(true);
     }
 
-    private class DeviceFlowRegistryCallback implements FutureCallback<List<com.google.common.base.Optional<FlowCapableNode>>> {
+    private class DeviceFlowRegistryCallback implements FutureCallback<List<com.google.common.base
+            .Optional<FlowCapableNode>>> {
         private final ListenableFuture<List<com.google.common.base.Optional<FlowCapableNode>>> deviceFlowRegistryFill;
         private final ContextChainMastershipWatcher contextChainMastershipWatcher;
 
@@ -732,19 +748,22 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                         .filter(Objects::nonNull)
                         .count();
 
-                LOG.debug("Finished filling flow registry with {} flows for node: {}", flowCount, deviceInfo.getLOGValue());
+                LOG.debug("Finished filling flow registry with {} flows for node: {}", flowCount, deviceInfo
+                        .getLOGValue());
             }
-            this.contextChainMastershipWatcher.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_FLOW_REGISTRY_FILL);
+            this.contextChainMastershipWatcher.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState
+                    .INITIAL_FLOW_REGISTRY_FILL);
         }
 
         @Override
-        public void onFailure(Throwable t) {
+        public void onFailure(Throwable throwable) {
             if (deviceFlowRegistryFill.isCancelled()) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Cancelled filling flow registry with flows for node: {}", deviceInfo.getLOGValue());
                 }
             } else {
-                LOG.warn("Failed filling flow registry with flows for node: {} with exception: {}", deviceInfo.getLOGValue(), t);
+                LOG.warn("Failed filling flow registry with flows for node: {} with exception: {}", deviceInfo
+                        .getLOGValue(), throwable);
             }
             contextChainMastershipWatcher.onNotAbleToStartMastership(
                     deviceInfo,

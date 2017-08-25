@@ -34,6 +34,7 @@ abstract class SimpleRatelimiter {
     }
 
     protected abstract void disableFlow();
+
     protected abstract void enableFlow();
 
     boolean acquirePermit() {
