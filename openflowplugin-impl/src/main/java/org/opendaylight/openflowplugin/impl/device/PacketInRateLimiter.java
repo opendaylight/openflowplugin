@@ -20,7 +20,11 @@ final class PacketInRateLimiter extends SimpleRatelimiter {
     private final ConnectionAdapter connectionAdapter;
     private final MessageSpy messageSpy;
 
-    PacketInRateLimiter(final ConnectionAdapter connectionAdapter, final int lowWatermark, final int highWatermark, final MessageSpy messageSpy, float rejectedDrainFactor) {
+    PacketInRateLimiter(final ConnectionAdapter connectionAdapter,
+                        final int lowWatermark,
+                        final int highWatermark,
+                        final MessageSpy messageSpy,
+                        float rejectedDrainFactor) {
         super(lowWatermark, highWatermark);
         Preconditions.checkArgument(rejectedDrainFactor > 0 && rejectedDrainFactor < 1);
         this.rejectedDrainFactor = rejectedDrainFactor;

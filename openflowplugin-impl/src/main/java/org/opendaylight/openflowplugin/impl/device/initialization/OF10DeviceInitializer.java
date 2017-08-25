@@ -60,7 +60,8 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
                                                      final boolean skipTableFeatures,
                                                      @Nullable final MultipartWriterProvider multipartWriterProvider,
                                                      @Nullable final ConvertorExecutor convertorExecutor) {
-        final ConnectionContext connectionContext = Preconditions.checkNotNull(deviceContext.getPrimaryConnectionContext());
+        final ConnectionContext connectionContext =
+                Preconditions.checkNotNull(deviceContext.getPrimaryConnectionContext());
         final DeviceState deviceState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         final DeviceInfo deviceInfo = Preconditions.checkNotNull(deviceContext.getDeviceInfo());
         final CapabilitiesV10 capabilitiesV10 = connectionContext.getFeatures().getCapabilitiesV10();
@@ -86,9 +87,9 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
             }
 
             @Override
-            public void onFailure(@Nonnull final Throwable t) {
+            public void onFailure(@Nonnull final Throwable throwable) {
                 LOG.warn("Error occurred in preparation node {} for protocol 1.0", deviceInfo);
-                LOG.trace("Error for node {} : ", deviceInfo, t);
+                LOG.trace("Error for node {} : ", deviceInfo, throwable);
             }
         });
 
@@ -103,6 +104,7 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
         });
     }
 
+    @SuppressWarnings("checkstyle:IllegalCatch")
     private static void writePhyPortInformation(final DeviceContext deviceContext) {
         final DeviceInfo deviceInfo = deviceContext.getDeviceInfo();
         final ConnectionContext connectionContext = deviceContext.getPrimaryConnectionContext();
@@ -136,6 +138,7 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
         });
     }
 
+    @SuppressWarnings("checkstyle:IllegalCatch")
     private static void makeEmptyFlowCapableNode(final TxFacade txFacade, final DeviceInfo deviceInfo) {
         try {
             txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL,
@@ -152,27 +155,32 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
                                                               final DeviceContext deviceContext) {
         if (deviceContext.canUseSingleLayerSerialization()) {
             final SingleLayerMultipartCollectorService service =
-                new SingleLayerMultipartCollectorService(deviceContext, deviceContext);
+                    new SingleLayerMultipartCollectorService(deviceContext, deviceContext);
 
-            return Futures.transform(service.handleServiceCall(multipartType), new Function<RpcResult<List<MultipartReply>>, Boolean>() {
-                @Nonnull
-                @Override
-                public Boolean apply(final RpcResult<List<MultipartReply>> input) {
-                    return input.isSuccessful();
-                }
-            });
+            return Futures.transform(service.handleServiceCall(multipartType),
+                    new Function<RpcResult<List<MultipartReply>>, Boolean>() {
+                        @Nonnull
+                        @Override
+                        public Boolean apply(final RpcResult<List<MultipartReply>> input) {
+                            return input.isSuccessful();
+                        }
+                    });
         }
 
         final MultiLayerMultipartCollectorService service =
-            new MultiLayerMultipartCollectorService(deviceContext, deviceContext);
+                new MultiLayerMultipartCollectorService(deviceContext, deviceContext);
 
-        return Futures.transform(service.handleServiceCall(multipartType), new Function<RpcResult<List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply>>, Boolean>() {
-            @Nonnull
-            @Override
-            public Boolean apply(final RpcResult<List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply>> input) {
-                return input.isSuccessful();
-            }
-        });
+        return Futures.transform(service.handleServiceCall(multipartType),
+                new Function<RpcResult<List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol
+                        .rev130731.MultipartReply>>, Boolean>() {
+                    @Nonnull
+                    @Override
+                    public Boolean apply(final RpcResult<List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow
+                            .protocol
+                            .rev130731.MultipartReply>> input) {
+                        return input.isSuccessful();
+                    }
+                });
     }
 
 }

@@ -12,22 +12,14 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 
 /**
- * openflowplugin-impl
- * org.opendaylight.openflowplugin.impl.device
- *
- * test of {@link DeviceStateImpl} - lightweight version, using basic ways (TDD)
+ * openflowplugin-impl.org.opendaylight.openflowplugin.impl.device
+ * test of {@link DeviceStateImpl} - lightweight version, using basic ways (TDD).
  */
 @RunWith(MockitoJUnitRunner.class)
 public class DeviceStateImplTest {
-
-    @Mock
-    private DeviceInfo deviceInfo;
-
     private DeviceStateImpl deviceState;
 
     @Before
@@ -36,7 +28,7 @@ public class DeviceStateImplTest {
     }
 
     @Test
-    public void testStatistics_initialValue(){
+    public void testStatistics_initialValue() {
         Assert.assertFalse(deviceState.isFlowStatisticsAvailable());
         Assert.assertFalse(deviceState.isPortStatisticsAvailable());
         Assert.assertFalse(deviceState.isQueueStatisticsAvailable());
@@ -44,7 +36,7 @@ public class DeviceStateImplTest {
     }
 
     @Test
-    public void testMeterAndGroupAvailable_initialValue(){
+    public void testMeterAndGroupAvailable_initialValue() {
         Assert.assertFalse(deviceState.isGroupAvailable());
         Assert.assertFalse(deviceState.isMetersAvailable());
     }
