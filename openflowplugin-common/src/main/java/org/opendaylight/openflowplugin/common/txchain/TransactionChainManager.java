@@ -39,12 +39,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * openflowplugin-impl
- * org.opendaylight.openflowplugin.impl.device
- * Package protected class for controlling {@link WriteTransaction} life cycle. It is
+ * The openflowplugin-impl.org.opendaylight.openflowplugin.impl.device
+ * package protected class for controlling {@link WriteTransaction} life cycle. It is
  * a {@link TransactionChainListener} and provide package protected methods for writeToTransaction
  * method (wrapped {@link WriteTransaction#put(LogicalDatastoreType, InstanceIdentifier, DataObject)})
- * and submitTransaction method (wrapped {@link WriteTransaction#submit()})
+ * and submitTransaction method (wrapped {@link WriteTransaction#submit()}).
  */
 public class TransactionChainManager implements TransactionChainListener, AutoCloseable {
 
@@ -56,7 +55,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
     private final String nodeId;
 
     @GuardedBy("txLock")
-    private ReadWriteTransaction wTx;
+    private ReadWriteTransaction writeTx;
     @GuardedBy("txLock")
     private BindingTransactionChain transactionChain;
     @GuardedBy("txLock")
@@ -102,7 +101,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
             if (TransactionChainManagerStatus.SLEEPING == transactionChainManagerStatus) {
                 Preconditions.checkState(transactionChain == null,
                         "TxChainFactory survive last close.");
-                Preconditions.checkState(wTx == null,
+                Preconditions.checkState(writeTx == null,
                         "We have some unexpected WriteTransaction.");
                 this.transactionChainManagerStatus = TransactionChainManagerStatus.WORKING;
                 this.submitIsEnabled = false;
@@ -127,7 +126,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
             if (TransactionChainManagerStatus.WORKING == transactionChainManagerStatus) {
                 transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
                 future = txChainShuttingDown();
-                Preconditions.checkState(wTx == null,
+                Preconditions.checkState(writeTx == null,
                         "We have some unexpected WriteTransaction.");
                 Futures.addCallback(future, new FutureCallback<Void>() {
                     @Override
@@ -149,9 +148,9 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
     }
 
     private void closeTransactionChain() {
-        if (wTx != null) {
-            wTx.cancel();
-            wTx = null;
+        if (writeTx != null) {
+            writeTx.cancel();
+            writeTx = null;
         }
         Optional.ofNullable(transactionChain).ifPresent(TransactionChain::close);
         transactionChain = null;
@@ -165,7 +164,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                 }
                 return false;
             }
-            if (Objects.isNull(wTx)) {
+            if (Objects.isNull(writeTx)) {
                 if (LOG.isTraceEnabled()) {
                     LOG.trace("nothing to commit - submit returns true");
                 }
@@ -174,9 +173,9 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
             Preconditions.checkState(TransactionChainManagerStatus.WORKING == transactionChainManagerStatus,
                     "we have here Uncompleted Transaction for node {} and we are not MASTER",
                     this.nodeId);
-            final ListenableFuture<Void> submitFuture = wTx.submit();
+            final ListenableFuture<Void> submitFuture = writeTx.submit();
             lastSubmittedFuture = submitFuture;
-            wTx = null;
+            writeTx = null;
 
             if (initCommit) {
                 try {
@@ -196,15 +195,15 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                 }
 
                 @Override
-                public void onFailure(final Throwable t) {
-                    if (t instanceof TransactionCommitFailedException) {
-                        LOG.error("Transaction commit failed. ", t);
+                public void onFailure(final Throwable throwable) {
+                    if (throwable instanceof TransactionCommitFailedException) {
+                        LOG.error("Transaction commit failed. ", throwable);
                     } else {
-                        if (t instanceof CancellationException) {
+                        if (throwable instanceof CancellationException) {
                             LOG.warn("Submit task was canceled");
-                            LOG.trace("Submit exception: ", t);
+                            LOG.trace("Submit exception: ", throwable);
                         } else {
-                            LOG.error("Exception during transaction submitting. ", t);
+                            LOG.error("Exception during transaction submitting. ", throwable);
                         }
                     }
                 }
@@ -217,12 +216,12 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                                                                     final InstanceIdentifier<T> path){
         synchronized (txLock) {
             ensureTransaction();
-            if (wTx == null) {
+            if (writeTx == null) {
                 LOG.debug("WriteTx is null for node {}. Delete {} was not realized.", this.nodeId, path);
                 throw new TransactionChainClosedException(CANNOT_WRITE_INTO_TRANSACTION);
             }
 
-            wTx.delete(store, path);
+            writeTx.delete(store, path);
         }
     }
 
@@ -232,12 +231,12 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                                                           final boolean createParents){
         synchronized (txLock) {
             ensureTransaction();
-            if (wTx == null) {
+            if (writeTx == null) {
                 LOG.debug("WriteTx is null for node {}. Write data for {} was not realized.", this.nodeId, path);
                 throw new TransactionChainClosedException(CANNOT_WRITE_INTO_TRANSACTION);
             }
 
-            wTx.put(store, path, data, createParents);
+            writeTx.put(store, path, data, createParents);
         }
     }
 
@@ -247,12 +246,12 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                                                           final boolean createParents){
         synchronized (txLock) {
             ensureTransaction();
-            if (wTx == null) {
+            if (writeTx == null) {
                 LOG.debug("WriteTx is null for node {}. Merge data for {} was not realized.", this.nodeId, path);
                 throw new TransactionChainClosedException(CANNOT_WRITE_INTO_TRANSACTION);
             }
 
-            wTx.merge(store, path, data, createParents);
+            writeTx.merge(store, path, data, createParents);
         }
     }
 
@@ -261,12 +260,12 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                         final InstanceIdentifier<T> path){
         synchronized (txLock) {
             ensureTransaction();
-            if (wTx == null) {
+            if (writeTx == null) {
                 LOG.debug("WriteTx is null for node {}. Read data for {} was not realized.", this.nodeId, path);
                 throw new TransactionChainClosedException(CANNOT_WRITE_INTO_TRANSACTION);
             }
 
-            return wTx.read(store, path);
+            return writeTx.read(store, path);
         }
     }
 
@@ -279,7 +278,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                 LOG.warn("Transaction chain failed, recreating chain due to ", cause);
                 closeTransactionChain();
                 createTxChain();
-                wTx = null;
+                writeTx = null;
             }
         }
     }
@@ -290,10 +289,10 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
     }
 
     @GuardedBy("txLock")
-   private void ensureTransaction() {
-        if (wTx == null && TransactionChainManagerStatus.WORKING == transactionChainManagerStatus
+    private void ensureTransaction() {
+        if (writeTx == null && TransactionChainManagerStatus.WORKING == transactionChainManagerStatus
             && transactionChain != null) {
-                wTx = transactionChain.newReadWriteTransaction();
+            writeTx = transactionChain.newReadWriteTransaction();
         }
     }
 
@@ -324,11 +323,11 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
             // stay with actual thread
             future = Futures.immediateCheckedFuture(null);
 
-            if (wTx != null) {
-                wTx.cancel();
-                wTx = null;
+            if (writeTx != null) {
+                writeTx.cancel();
+                writeTx = null;
             }
-        } else if (wTx == null) {
+        } else if (writeTx == null) {
             // hijack md-sal thread
             future = lastSubmittedFuture;
         } else {
@@ -336,8 +335,8 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                 LOG.debug("Submitting all transactions for Node {}", this.nodeId);
             }
             // hijack md-sal thread
-            future = wTx.submit();
-            wTx = null;
+            future = writeTx.submit();
+            writeTx = null;
         }
 
         return future;
@@ -354,11 +353,17 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
     }
 
     private enum TransactionChainManagerStatus {
-        /** txChainManager is sleeping - is not active (SLAVE or default init value) */
+        /**
+         * txChainManager is working - is active (MASTER).
+         */
         WORKING,
-        /** txChainManager is working - is active (MASTER) */
+        /**
+         * txChainManager is sleeping - is not active (SLAVE or default init value).
+         */
         SLEEPING,
-        /** txChainManager is trying to be closed - device disconnecting */
-        SHUTTING_DOWN;
+        /**
+         * txChainManager is trying to be closed - device disconnecting.
+         */
+        SHUTTING_DOWN
     }
 }

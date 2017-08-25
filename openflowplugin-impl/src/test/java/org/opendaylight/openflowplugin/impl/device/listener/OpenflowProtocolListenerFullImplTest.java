@@ -40,12 +40,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 /**
  * openflowplugin-impl
  * org.opendaylight.openflowplugin.impl.connection.listener
- * <p/>
- * test of {@link OpenflowProtocolListenerFullImpl} - lightweight version, using basic ways (TDD)
+ * test of {@link OpenflowProtocolListenerFullImpl} - lightweight version, using basic ways (TDD).
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
- *         <p/>
- *         Created: Mar 26, 2015
+ *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class OpenflowProtocolListenerFullImplTest {
@@ -64,7 +62,8 @@ public class OpenflowProtocolListenerFullImplTest {
         // place for mocking method's general behavior for HandshakeContext and ConnectionContext
         ofProtocolListener = new OpenflowProtocolListenerFullImpl(connectionAdapter, deviceReplyProcessor);
         connectionAdapter.setMessageListener(ofProtocolListener);
-        Mockito.when(connectionAdapter.getRemoteAddress()).thenReturn(InetSocketAddress.createUnresolved("ofp-junit.example.org", 6663));
+        Mockito.when(connectionAdapter.getRemoteAddress())
+                .thenReturn(InetSocketAddress.createUnresolved("ofp-junit.example.org", 6663));
         Mockito.verify(connectionAdapter).setMessageListener(Matchers.any(OpenflowProtocolListener.class));
     }
 
@@ -74,7 +73,9 @@ public class OpenflowProtocolListenerFullImplTest {
     }
 
     /**
-     * Test method for {@link OpenflowProtocolListenerFullImpl#onEchoRequestMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessage)}.
+     * Test method for
+     * {@link OpenflowProtocolListenerFullImpl#onEchoRequestMessage(
+     * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessage)}.
      */
     @Test
     public void testOnEchoRequestMessage() {
@@ -86,7 +87,9 @@ public class OpenflowProtocolListenerFullImplTest {
     }
 
     /**
-     * Test method for {@link OpenflowProtocolListenerFullImpl#onErrorMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage)}.
+     * Test method for
+     * {@link OpenflowProtocolListenerFullImpl#onErrorMessage(
+     * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage)}.
      */
     @Test
     public void testOnErrorMessage() {
@@ -98,7 +101,9 @@ public class OpenflowProtocolListenerFullImplTest {
     }
 
     /**
-     * Test method for {@link OpenflowProtocolListenerFullImpl#onExperimenterMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage)}.
+     * Test method for
+     * {@link OpenflowProtocolListenerFullImpl#onExperimenterMessage(
+     * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage)}.
      */
     @Test
     public void testOnExperimenterMessage() {
@@ -110,7 +115,9 @@ public class OpenflowProtocolListenerFullImplTest {
     }
 
     /**
-     * Test method for {@link OpenflowProtocolListenerFullImpl#onFlowRemovedMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage)}.
+     * Test method for
+     * {@link OpenflowProtocolListenerFullImpl#onFlowRemovedMessage(
+     * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage)}.
      */
     @Test
     public void testOnFlowRemovedMessage() {
@@ -122,7 +129,9 @@ public class OpenflowProtocolListenerFullImplTest {
     }
 
     /**
-     * Test method for {@link OpenflowProtocolListenerFullImpl#onHelloMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage)}.
+     * Test method for
+     * {@link OpenflowProtocolListenerFullImpl#onHelloMessage(
+     * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage)}.
      */
     @Test
     public void testOnHelloMessage() {
@@ -135,7 +144,9 @@ public class OpenflowProtocolListenerFullImplTest {
     }
 
     /**
-     * Test method for {@link OpenflowProtocolListenerFullImpl#onPacketInMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage)}.
+     * Test method for
+     * {@link OpenflowProtocolListenerFullImpl#onPacketInMessage(
+     * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage)}.
      */
     @Test
     public void testOnPacketInMessage() {
@@ -147,7 +158,9 @@ public class OpenflowProtocolListenerFullImplTest {
     }
 
     /**
-     * Test method for {@link OpenflowProtocolListenerFullImpl#onPortStatusMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage)}.
+     * Test method for
+     * {@link OpenflowProtocolListenerFullImpl#onPortStatusMessage(
+     * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage)}.
      */
     @Test
     public void testOnPortStatusMessage() {

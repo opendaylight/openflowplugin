@@ -16,7 +16,7 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.yangtools.concepts.Registration;
 
 /**
- * default implementation
+ * Default implementation.
  */
 public class ItemLifeCycleRegistryImpl implements ItemLifeCycleRegistry {
 

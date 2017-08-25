@@ -136,9 +136,9 @@ public class DeviceContextImplTest {
     @Mock
     private DataBroker dataBroker;
     @Mock
-    private ReadWriteTransaction wTx;
+    private ReadWriteTransaction writeTx;
     @Mock
-    private ReadOnlyTransaction rTx;
+    private ReadOnlyTransaction readTx;
     @Mock
     private BindingTransactionChain txChainFactory;
     @Mock
@@ -175,11 +175,13 @@ public class DeviceContextImplTest {
     private DeviceContext deviceContextSpy;
 
     @Before
-    public void setUp() throws Exception{
-        final CheckedFuture<Optional<Node>, ReadFailedException> noExistNodeFuture = Futures.immediateCheckedFuture(Optional.<Node>absent());
-        Mockito.when(rTx.read(LogicalDatastoreType.OPERATIONAL, nodeKeyIdent)).thenReturn(noExistNodeFuture);
-        Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(rTx);
-        Mockito.when(dataBroker.createTransactionChain(Mockito.any(TransactionChainManager.class))).thenReturn(txChainFactory);
+    public void setUp() throws Exception {
+        final CheckedFuture<Optional<Node>, ReadFailedException> noExistNodeFuture =
+                Futures.immediateCheckedFuture(Optional.<Node>absent());
+        Mockito.when(readTx.read(LogicalDatastoreType.OPERATIONAL, nodeKeyIdent)).thenReturn(noExistNodeFuture);
+        Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(readTx);
+        Mockito.when(dataBroker.createTransactionChain(Mockito.any(TransactionChainManager.class)))
+                .thenReturn(txChainFactory);
         Mockito.when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeKeyIdent);
         Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeId);
         Mockito.when(deviceInfo.getDatapathId()).thenReturn(BigInteger.ONE);
@@ -196,8 +198,8 @@ public class DeviceContextImplTest {
             settableFutureMultiReply.set((RpcResult<MultipartReply>) invocation.getArguments()[0]);
             return null;
         }).when(requestContextMultiReply).setResult(any(RpcResult.class));
-        Mockito.when(txChainFactory.newReadWriteTransaction()).thenReturn(wTx);
-        Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(rTx);
+        Mockito.when(txChainFactory.newReadWriteTransaction()).thenReturn(writeTx);
+        Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(readTx);
         Mockito.when(connectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);
         Mockito.when(connectionContext.getConnectionAdapter()).thenReturn(connectionAdapter);
         Mockito.when(connectionContext.getDeviceInfo()).thenReturn(deviceInfo);
@@ -210,18 +212,22 @@ public class DeviceContextImplTest {
         Mockito.when(featuresOutput.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
 
         final PacketReceived packetReceived = new PacketReceivedBuilder()
-                .setMatch(new org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.MatchBuilder()
+                .setMatch(new org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received
+                        .MatchBuilder()
                         .setInPort(new NodeConnectorId("openflow:1:LOCAL"))
                         .build())
                 .build();
 
-        Mockito.when(messageTranslatorPacketReceived.translate(any(Object.class), any(DeviceInfo.class), any(Object.class))).thenReturn(packetReceived);
-        Mockito.when(messageTranslatorFlowCapableNodeConnector.translate(any(Object.class), any(DeviceInfo.class), any(Object.class))).thenReturn(mock(FlowCapableNodeConnector.class));
-        Mockito.when(translatorLibrary.lookupTranslator(eq(new TranslatorKey(OFConstants.OFP_VERSION_1_3, PacketIn.class.getName())))).thenReturn(messageTranslatorPacketReceived);
-        Mockito.when(translatorLibrary.lookupTranslator(eq(new TranslatorKey(OFConstants.OFP_VERSION_1_3, PortGrouping.class.getName())))).thenReturn(messageTranslatorFlowCapableNodeConnector);
+        Mockito.when(messageTranslatorPacketReceived.translate(any(Object.class), any(DeviceInfo.class),
+                any(Object.class))).thenReturn(packetReceived);
+        Mockito.when(messageTranslatorFlowCapableNodeConnector.translate(any(Object.class), any(DeviceInfo.class),
+                any(Object.class))).thenReturn(mock(FlowCapableNodeConnector.class));
         Mockito.when(translatorLibrary.lookupTranslator(eq(new TranslatorKey(OFConstants.OFP_VERSION_1_3,
-                FlowRemoved.class.getName()))))
-                .thenReturn(messageTranslatorFlowRemoved);
+                PacketIn.class.getName())))).thenReturn(messageTranslatorPacketReceived);
+        Mockito.when(translatorLibrary.lookupTranslator(eq(new TranslatorKey(OFConstants.OFP_VERSION_1_3,
+                PortGrouping.class.getName())))).thenReturn(messageTranslatorFlowCapableNodeConnector);
+        Mockito.when(translatorLibrary.lookupTranslator(eq(new TranslatorKey(OFConstants.OFP_VERSION_1_3,
+                FlowRemoved.class.getName())))).thenReturn(messageTranslatorFlowRemoved);
 
         Mockito.when(abstractDeviceInitializer.initialize(any(), anyBoolean(), anyBoolean(), any(), any()))
                 .thenReturn(Futures.immediateFuture(null));
@@ -256,21 +262,18 @@ public class DeviceContextImplTest {
     public void testGetReadTransaction() {
         final ReadTransaction readTx = deviceContext.getReadTransaction();
         assertNotNull(readTx);
-        assertEquals(rTx, readTx);
+        assertEquals(this.readTx, readTx);
     }
 
-    /**
-     * @throws Exception
-     */
     @Test
     public void testInitialSubmitTransaction() throws Exception {
-        Mockito.when(wTx.submit()).thenReturn(Futures.immediateCheckedFuture(null));
+        Mockito.when(writeTx.submit()).thenReturn(Futures.immediateCheckedFuture(null));
         final InstanceIdentifier<Nodes> dummyII = InstanceIdentifier.create(Nodes.class);
         ((DeviceContextImpl) deviceContext).getTransactionChainManager().activateTransactionManager() ;
         ((DeviceContextImpl) deviceContext).getTransactionChainManager().initialSubmitWriteTransaction();
         deviceContext.addDeleteToTxChain(LogicalDatastoreType.CONFIGURATION, dummyII);
         deviceContext.initialSubmitTransaction();
-        verify(wTx).submit();
+        verify(writeTx).submit();
     }
 
     private ConnectionContext prepareConnectionContext() {
@@ -281,21 +284,15 @@ public class DeviceContextImplTest {
         return mockedConnectionContext;
     }
 
-    /**
-     * @throws Exception
-     */
     @Test
-    public void testAddDeleteToTxChain() throws Exception{
+    public void testAddDeleteToTxChain() throws Exception {
         final InstanceIdentifier<Nodes> dummyII = InstanceIdentifier.create(Nodes.class);
         ((DeviceContextImpl) deviceContext).getTransactionChainManager().activateTransactionManager() ;
         ((DeviceContextImpl) deviceContext).getTransactionChainManager().initialSubmitWriteTransaction();
         deviceContext.addDeleteToTxChain(LogicalDatastoreType.CONFIGURATION, dummyII);
-        verify(wTx).delete(eq(LogicalDatastoreType.CONFIGURATION), eq(dummyII));
+        verify(writeTx).delete(eq(LogicalDatastoreType.CONFIGURATION), eq(dummyII));
     }
 
-    /**
-     * @throws Exception
-     */
     @Test
     public void testSubmitTransaction() throws Exception {
         ((DeviceContextImpl) deviceContext).getTransactionChainManager().activateTransactionManager() ;
@@ -356,7 +353,8 @@ public class DeviceContextImplTest {
         final NotificationPublishService mockedNotificationPublishService = mock(NotificationPublishService.class);
         final ListenableFuture stringListenableFuture = Futures.immediateFuture("dummy value");
 
-        when(mockedNotificationPublishService.offerNotification(any(PacketReceived.class))).thenReturn(stringListenableFuture);
+        when(mockedNotificationPublishService.offerNotification(any(PacketReceived.class)))
+                .thenReturn(stringListenableFuture);
         deviceContext.setNotificationPublishService(mockedNotificationPublishService);
         deviceContext.processPacketInMessage(mockedPacketInMessage);
         verify(messageSpy).spyMessage(any(Class.class), eq(MessageSpy.StatisticsGroup.FROM_SWITCH));
@@ -372,7 +370,8 @@ public class DeviceContextImplTest {
         when(mockedNotificationPublishService.offerNotification(any(PacketReceived.class))).thenReturn(dummyFuture);
         deviceContext.setNotificationPublishService(mockedNotificationPublishService);
         deviceContext.processPacketInMessage(mockedPacketInMessage);
-        verify(messageSpy).spyMessage(any(Class.class), eq(MessageSpy.StatisticsGroup.FROM_SWITCH_NOTIFICATION_REJECTED));
+        verify(messageSpy).spyMessage(any(Class.class),
+                eq(MessageSpy.StatisticsGroup.FROM_SWITCH_NOTIFICATION_REJECTED));
     }
 
     @Test
@@ -397,7 +396,7 @@ public class DeviceContextImplTest {
     }
 
     @Test
-    public void testPortStatusMessage() throws Exception{
+    public void testPortStatusMessage() throws Exception {
         final PortStatusMessage mockedPortStatusMessage = mock(PortStatusMessage.class);
         final Class dummyClass = Class.class;
         when(mockedPortStatusMessage.getImplementedInterface()).thenReturn(dummyClass);
@@ -424,17 +423,20 @@ public class DeviceContextImplTest {
                 .setMatch(new MatchBuilder().build());
         final NotificationPublishService mockedNotificationPublishService = mock(NotificationPublishService.class);
 
-        Mockito.when(messageTranslatorFlowRemoved.translate(any(Object.class), any(DeviceInfo.class), any(Object.class)))
+        Mockito.when(messageTranslatorFlowRemoved
+                .translate(any(Object.class), any(DeviceInfo.class), any(Object.class)))
                 .thenReturn(flowRemovedMdsalBld.build());
 
         // insert flow+flowId into local registry
-        final FlowRegistryKey flowRegKey = FlowRegistryKeyFactory.create(deviceInfo.getVersion(), flowRemovedMdsalBld.build());
+        final FlowRegistryKey flowRegKey =
+                FlowRegistryKeyFactory.create(deviceInfo.getVersion(), flowRemovedMdsalBld.build());
         final FlowDescriptor flowDescriptor = FlowDescriptorFactory.create((short) 0, new FlowId("ut-ofp:f456"));
         deviceContext.getDeviceFlowRegistry().storeDescriptor(flowRegKey, flowDescriptor);
 
         // plug in lifecycleListener
         final ItemLifecycleListener itemLifecycleListener = Mockito.mock(ItemLifecycleListener.class);
-        for (final ItemLifeCycleSource lifeCycleSource : deviceContext.getItemLifeCycleSourceRegistry().getLifeCycleSources()) {
+        for (final ItemLifeCycleSource lifeCycleSource : deviceContext.getItemLifeCycleSourceRegistry()
+                .getLifeCycleSources()) {
             lifeCycleSource.setItemLifecycleListener(itemLifecycleListener);
         }
 
@@ -457,7 +459,8 @@ public class DeviceContextImplTest {
     public void testProcessExperimenterMessage() {
         final ConvertorMessageFromOFJava mockedMessageConverter = mock(ConvertorMessageFromOFJava.class);
         final ExtensionConverterProvider mockedExtensionConverterProvider = mock(ExtensionConverterProvider.class);
-        when(mockedExtensionConverterProvider.getMessageConverter(any(MessageTypeKey.class))).thenReturn(mockedMessageConverter);
+        when(mockedExtensionConverterProvider.getMessageConverter(any(MessageTypeKey.class)))
+                .thenReturn(mockedMessageConverter);
 
         final ExperimenterDataOfChoice mockedExperimenterDataOfChoice = mock(ExperimenterDataOfChoice.class);
         final ExperimenterMessage experimenterMessage = new ExperimenterMessageBuilder()

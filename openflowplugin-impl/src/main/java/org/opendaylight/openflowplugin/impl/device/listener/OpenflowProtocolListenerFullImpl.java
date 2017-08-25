@@ -24,9 +24,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- *
- */
 public class OpenflowProtocolListenerFullImpl implements AlienMessageListener, OpenflowMessageListenerFacade {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowProtocolListenerFullImpl.class);
@@ -35,17 +32,20 @@ public class OpenflowProtocolListenerFullImpl implements AlienMessageListener, O
     private final DeviceReplyProcessor deviceReplyProcessor;
 
     /**
-     * @param connectionAdapter
-     * @param deviceReplyProcessor
+     * Constructor.
+     *
+     * @param connectionAdapter - connection adapter
+     * @param deviceReplyProcessor - device replay processor
      */
-    public OpenflowProtocolListenerFullImpl(final ConnectionAdapter connectionAdapter, final DeviceReplyProcessor deviceReplyProcessor) {
+    public OpenflowProtocolListenerFullImpl(final ConnectionAdapter connectionAdapter,
+                                            final DeviceReplyProcessor deviceReplyProcessor) {
         this.connectionAdapter = connectionAdapter;
         this.deviceReplyProcessor = deviceReplyProcessor;
     }
 
     @Override
     public void onEchoRequestMessage(final EchoRequestMessage echoRequestMessage) {
-        if(LOG.isDebugEnabled()) {
+        if (LOG.isDebugEnabled()) {
             LOG.debug("echo request received: {}", echoRequestMessage.getXid());
         }
         final EchoReplyInputBuilder builder = new EchoReplyInputBuilder();
@@ -74,16 +74,17 @@ public class OpenflowProtocolListenerFullImpl implements AlienMessageListener, O
 
     @Override
     public void onHelloMessage(final HelloMessage hello) {
-        LOG.warn("hello message received outside handshake phase -> dropping connection {}", connectionAdapter.getRemoteAddress());
+        LOG.warn("hello message received outside handshake phase -> dropping connection {}",
+                connectionAdapter.getRemoteAddress());
         connectionAdapter.disconnect();
     }
 
     @Override
     public void onMultipartReplyMessage(final MultipartReplyMessage notification) {
-        if(LOG.isTraceEnabled()) {
+        if (LOG.isTraceEnabled()) {
             LOG.trace("Multipart Reply with XID: {}", notification.getXid());
         }
-//        multiMsgCollector.addMultipartMsg(notification);
+        // multiMsgCollector.addMultipartMsg(notification);
     }
 
     @Override

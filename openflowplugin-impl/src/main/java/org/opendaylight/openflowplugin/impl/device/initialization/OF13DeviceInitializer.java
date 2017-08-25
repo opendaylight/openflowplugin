@@ -53,7 +53,8 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                                                      final boolean skipTableFeatures,
                                                      @Nullable final MultipartWriterProvider multipartWriterProvider,
                                                      @Nullable final ConvertorExecutor convertorExecutor) {
-        final ConnectionContext connectionContext = Preconditions.checkNotNull(deviceContext.getPrimaryConnectionContext());
+        final ConnectionContext connectionContext =
+                Preconditions.checkNotNull(deviceContext.getPrimaryConnectionContext());
         final DeviceState deviceState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         final DeviceInfo deviceInfo = Preconditions.checkNotNull(deviceContext.getDeviceInfo());
         final Capabilities capabilities = connectionContext.getFeatures().getCapabilities();
@@ -72,10 +73,14 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                     convertorExecutor);
 
                 final List<ListenableFuture<RpcResult<List<OfHeader>>>> futures = new ArrayList<>();
-                futures.add(requestAndProcessMultipart(MultipartType.OFPMPMETERFEATURES, deviceContext, skipTableFeatures, multipartWriterProvider, convertorExecutor));
-                futures.add(requestAndProcessMultipart(MultipartType.OFPMPGROUPFEATURES, deviceContext, skipTableFeatures, multipartWriterProvider, convertorExecutor));
-                futures.add(requestAndProcessMultipart(MultipartType.OFPMPTABLEFEATURES, deviceContext, skipTableFeatures, multipartWriterProvider, convertorExecutor));
-                futures.add(requestAndProcessMultipart(MultipartType.OFPMPPORTDESC, deviceContext, skipTableFeatures, multipartWriterProvider, convertorExecutor));
+                futures.add(requestAndProcessMultipart(MultipartType.OFPMPMETERFEATURES, deviceContext,
+                        skipTableFeatures, multipartWriterProvider, convertorExecutor));
+                futures.add(requestAndProcessMultipart(MultipartType.OFPMPGROUPFEATURES, deviceContext,
+                        skipTableFeatures, multipartWriterProvider, convertorExecutor));
+                futures.add(requestAndProcessMultipart(MultipartType.OFPMPTABLEFEATURES, deviceContext,
+                        skipTableFeatures, multipartWriterProvider, convertorExecutor));
+                futures.add(requestAndProcessMultipart(MultipartType.OFPMPPORTDESC, deviceContext, skipTableFeatures,
+                        multipartWriterProvider, convertorExecutor));
 
                 return Futures.transform(
                     (switchFeaturesMandatory ? Futures.allAsList(futures) : Futures.successfulAsList(futures)),
@@ -83,7 +88,8 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                         @Nullable
                         @Override
                         public Void apply(@Nullable final List<RpcResult<List<OfHeader>>> input) {
-                            LOG.info("Static node {} successfully finished collecting", deviceContext.getDeviceInfo().getLOGValue());
+                            LOG.info("Static node {} successfully finished collecting",
+                                    deviceContext.getDeviceInfo().getLOGValue());
                             return null;
                         }
                     });
@@ -92,7 +98,8 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
     }
 
     /**
-     * Request multipart of specified type and then run some processing on it
+     * Request multipart of specified type and then run some processing on it.
+     *
      * @param type multipart type
      * @param deviceContext device context
      * @param skipTableFeatures skip collecting of table features
@@ -101,10 +108,10 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
      * @return list of multipart messages unified to parent interface
      */
     private static ListenableFuture<RpcResult<List<OfHeader>>> requestAndProcessMultipart(final MultipartType type,
-                                                                                          final DeviceContext deviceContext,
-                                                                                          final boolean skipTableFeatures,
-                                                                                          final MultipartWriterProvider multipartWriterProvider,
-                                                                                          @Nullable final ConvertorExecutor convertorExecutor) {
+                                                                  final DeviceContext deviceContext,
+                                                                  final boolean skipTableFeatures,
+                                                                  final MultipartWriterProvider multipartWriterProvider,
+                                                                  @Nullable final ConvertorExecutor convertorExecutor) {
         final ListenableFuture<RpcResult<List<OfHeader>>> rpcResultListenableFuture =
             MultipartType.OFPMPTABLEFEATURES.equals(type) && skipTableFeatures
                 ? RpcResultBuilder.<List<OfHeader>>success().buildFuture()
@@ -116,7 +123,8 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
 
     /**
      * Inject callback ti future for specified multipart type. This callback will translate and write
-     * result of multipart messages
+     * result of multipart messages.
+     *
      * @param type multipart type
      * @param future multipart collection future
      * @param deviceContext device context
@@ -159,20 +167,23 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
             }
 
             @Override
-            public void onFailure(@Nonnull final Throwable t) {
-                LOG.warn("Request of type {} for static info of node {} failed.", type, deviceContext.getDeviceInfo().getLOGValue());
+            public void onFailure(@Nonnull final Throwable throwable) {
+                LOG.warn("Request of type {} for static info of node {} failed.",
+                        type, deviceContext.getDeviceInfo().getLOGValue());
             }
         });
     }
 
     /**
-     * Translate and write multipart messages from OpenflowJava
+     * Translate and write multipart messages from OpenflowJava.
+     *
      * @param type multipart type
      * @param result multipart messages
      * @param deviceContext device context
      * @param multipartWriterProvider multipart writer provider
      * @param convertorExecutor convertor executor
      */
+    @SuppressWarnings("checkstyle:IllegalCatch")
     private static void translateAndWriteResult(final MultipartType type,
                                                 final List<OfHeader> result,
                                                 final DeviceContext deviceContext,
@@ -191,8 +202,8 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                         .ifPresent(translatedReply -> {
                             // If we collected meter features, check if we have support for meters
                             // and pass this information to device context
-                            if (MultipartType.OFPMPMETERFEATURES.equals(type) &&
-                                translatedReply instanceof MeterFeatures) {
+                            if (MultipartType.OFPMPMETERFEATURES.equals(type)
+                                    && translatedReply instanceof MeterFeatures) {
                                 final MeterFeatures meterFeatures = (MeterFeatures) translatedReply;
 
                                 if (meterFeatures.getMaxMeter().getValue() > 0) {
@@ -216,7 +227,8 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
     }
 
     /**
-     * Send request to device and unify different possible reply types from OpenflowJava to common parent interface
+     * Send request to device and unify different possible reply types from OpenflowJava to common parent interface.
+     *
      * @param multipartType multipart type
      * @param deviceContext device context
      * @return unified replies
@@ -225,20 +237,50 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                                                                                 final DeviceContext deviceContext) {
         if (deviceContext.canUseSingleLayerSerialization()) {
             final SingleLayerMultipartCollectorService service =
-                new SingleLayerMultipartCollectorService(deviceContext, deviceContext);
+                    new SingleLayerMultipartCollectorService(deviceContext, deviceContext);
 
-            return Futures.transform(service.handleServiceCall(multipartType), new Function<RpcResult<List<MultipartReply>>, RpcResult<List<OfHeader>>>() {
-                @Nonnull
-                @Override
-                public RpcResult<List<OfHeader>> apply(final RpcResult<List<MultipartReply>> input) {
-                    if (Objects.isNull(input.getResult()) && input.isSuccessful()) {
-                        final List<OfHeader> temp = null;
-                        return RpcResultBuilder.success(temp).build();
-                    }
+            return Futures.transform(service.handleServiceCall(multipartType),
+                    new Function<RpcResult<List<MultipartReply>>, RpcResult<List<OfHeader>>>() {
+                        @Nonnull
+                        @Override
+                        public RpcResult<List<OfHeader>> apply(final RpcResult<List<MultipartReply>> input) {
+                            if (Objects.isNull(input.getResult()) && input.isSuccessful()) {
+                                final List<OfHeader> temp = null;
+                                return RpcResultBuilder.success(temp).build();
+                            }
 
-                    return input.isSuccessful()
+                            return input.isSuccessful()
+                                    ? RpcResultBuilder.success(input
+                                    .getResult()
+                                    .stream()
+                                    .map(OfHeader.class::cast)
+                                    .collect(Collectors.toList()))
+                                    .build()
+                                    : RpcResultBuilder.<List<OfHeader>>failed()
+                                    .withRpcErrors(input.getErrors())
+                                    .build();
+                        }
+                    });
+        }
+
+        final MultiLayerMultipartCollectorService service =
+            new MultiLayerMultipartCollectorService(deviceContext, deviceContext);
+
+        return Futures.transform(service.handleServiceCall(multipartType), new Function<RpcResult<List<org
+                .opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply>>,
+                RpcResult<List<OfHeader>>>() {
+            @Nonnull
+            @Override
+            public RpcResult<List<OfHeader>> apply(final RpcResult<List<org.opendaylight.yang.gen.v1.urn.opendaylight
+                    .openflow.protocol.rev130731.MultipartReply>> input) {
+                if (Objects.isNull(input.getResult()) && input.isSuccessful()) {
+                    final List<OfHeader> temp = null;
+                    return RpcResultBuilder.success(temp).build();
+                }
+
+                return input.isSuccessful()
                         ? RpcResultBuilder.success(input
-                            .getResult()
+                        .getResult()
                         .stream()
                         .map(OfHeader.class::cast)
                         .collect(Collectors.toList()))
@@ -246,32 +288,6 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                         : RpcResultBuilder.<List<OfHeader>>failed()
                         .withRpcErrors(input.getErrors())
                         .build();
-                }
-            });
-        }
-
-        final MultiLayerMultipartCollectorService service =
-            new MultiLayerMultipartCollectorService(deviceContext, deviceContext);
-
-        return Futures.transform(service.handleServiceCall(multipartType), new Function<RpcResult<List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply>>, RpcResult<List<OfHeader>>>() {
-            @Nonnull
-            @Override
-            public RpcResult<List<OfHeader>> apply(final RpcResult<List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply>> input) {
-                if (Objects.isNull(input.getResult()) && input.isSuccessful()) {
-                    final List<OfHeader> temp = null;
-                    return RpcResultBuilder.success(temp).build();
-                }
-
-                return input.isSuccessful()
-                    ? RpcResultBuilder.success(input
-                    .getResult()
-                    .stream()
-                    .map(OfHeader.class::cast)
-                    .collect(Collectors.toList()))
-                    .build()
-                    : RpcResultBuilder.<List<OfHeader>>failed()
-                    .withRpcErrors(input.getErrors())
-                    .build();
             }
         });
     }
