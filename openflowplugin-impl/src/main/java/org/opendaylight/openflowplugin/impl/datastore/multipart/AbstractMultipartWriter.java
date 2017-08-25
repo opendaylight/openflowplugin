@@ -32,6 +32,7 @@ public abstract class AbstractMultipartWriter<T extends DataContainer> {
 
     /**
      * Creates put operation using provided data in underlying transaction chain.
+     *
      * @param path path
      * @param data data
      * @param <O> data type
@@ -47,7 +48,8 @@ public abstract class AbstractMultipartWriter<T extends DataContainer> {
     }
 
     /**
-     * Get instance identifier
+     * Get instance identifier.
+     *
      * @return instance identifier
      */
     protected InstanceIdentifier<Node> getInstanceIdentifier() {
@@ -55,7 +57,8 @@ public abstract class AbstractMultipartWriter<T extends DataContainer> {
     }
 
     /**
-     * Write dataContainer
+     * Write dataContainer.
+     *
      * @param dataContainer dataContainer
      * @param withParents write missing parents if needed (slower)
      * @return true if we have correct dataContainer type
@@ -72,18 +75,19 @@ public abstract class AbstractMultipartWriter<T extends DataContainer> {
     }
 
     /**
-     * Get type of writer
+     * Get type of writer.
+     *
      * @return type of writer
      */
     protected abstract Class<T> getType();
 
     /**
-     * Write statistics
+     * Write statistics.
+     *
      * @param statistics statistics
      * @param withParents write missing parents if needed (slower)
      */
-    protected abstract void storeStatistics(final T statistics,
-                                            final boolean withParents);
+    protected abstract void storeStatistics(T statistics, boolean withParents);
 
 
 }
