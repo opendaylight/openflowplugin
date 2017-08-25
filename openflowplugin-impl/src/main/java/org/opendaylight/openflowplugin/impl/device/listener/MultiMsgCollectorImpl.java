@@ -27,13 +27,10 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * <p>
- * Implementation for {@link MultiMsgCollector} interface
+ * Implementation for {@link MultiMsgCollector} interface.
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
  * @author <a href="mailto:tkubas@cisco.com">Timotej Kubas</a>
- *         </p>
- *         Created: Mar 23, 2015
  */
 public class MultiMsgCollectorImpl<T extends OfHeader> implements MultiMsgCollector<T> {
     private static final Logger LOG = LoggerFactory.getLogger(MultiMsgCollectorImpl.class);
@@ -41,13 +38,15 @@ public class MultiMsgCollectorImpl<T extends OfHeader> implements MultiMsgCollec
     private final RequestContext<List<T>> requestContext;
     private final DeviceReplyProcessor deviceReplyProcessor;
 
-    public MultiMsgCollectorImpl(final DeviceReplyProcessor deviceReplyProcessor, final RequestContext<List<T>> requestContext) {
+    public MultiMsgCollectorImpl(final DeviceReplyProcessor deviceReplyProcessor,
+                                 final RequestContext<List<T>> requestContext) {
         this.deviceReplyProcessor = Preconditions.checkNotNull(deviceReplyProcessor);
         this.requestContext = Preconditions.checkNotNull(requestContext);
     }
 
     @Override
-    public void addMultipartMsg(@Nonnull final T reply, final boolean reqMore, @Nullable final EventIdentifier eventIdentifier) {
+    public void addMultipartMsg(@Nonnull final T reply, final boolean reqMore,
+                                @Nullable final EventIdentifier eventIdentifier) {
         Preconditions.checkNotNull(reply);
         Preconditions.checkNotNull(requestContext.getXid());
         Preconditions.checkArgument(requestContext.getXid().getValue().equals(reply.getXid()));
