@@ -94,6 +94,7 @@ public class GuardedContextImpl implements GuardedContext {
     }
 
     @Override
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public ListenableFuture<Void> closeServiceInstance() {
         ListenableFuture<Void> result = Futures.immediateFuture(null);
 
@@ -110,7 +111,7 @@ public class GuardedContextImpl implements GuardedContext {
                     }
 
                     @Override
-                    public void onFailure(@Nonnull final Throwable t) {
+                    public void onFailure(@Nonnull final Throwable throwable) {
                         state = TERMINATED;
                     }
                 }, MoreExecutors.directExecutor());

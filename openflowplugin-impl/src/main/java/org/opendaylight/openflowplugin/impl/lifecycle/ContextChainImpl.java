@@ -68,6 +68,7 @@ public class ContextChainImpl implements ContextChain {
     }
 
     @Override
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public void instantiateServiceInstance() {
 
         try {
@@ -104,6 +105,7 @@ public class ContextChainImpl implements ContextChain {
     }
 
     @Override
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public void close() {
         if (ContextChainState.CLOSED.equals(contextChainState.get())) {
             LOG.debug("ContextChain for node {} is already in TERMINATION state.", deviceInfo);
@@ -178,14 +180,19 @@ public class ContextChainImpl implements ContextChain {
                 // Flow registry fill is not mandatory to work as a master
                 LOG.debug("Device {}, initial registry filling OK.", deviceInfo);
                 this.registryFilling.set(true);
+                break;
             case CHECK:
+                // no operation
+                break;
             default:
+                // no operation
+                break;
         }
 
-        final boolean result = initialGathering.get() &&
-                masterStateOnDevice.get() &&
-                initialSubmitting.get() &&
-                rpcRegistration.get();
+        final boolean result = initialGathering.get()
+                && masterStateOnDevice.get()
+                && initialSubmitting.get()
+                && rpcRegistration.get();
 
         if (result && mastershipState != ContextChainMastershipState.CHECK) {
             LOG.info("Device {} is able to work as master{}",
@@ -204,9 +211,9 @@ public class ContextChainImpl implements ContextChain {
 
     @Override
     public boolean isPrepared() {
-        return this.initialGathering.get() &&
-                this.masterStateOnDevice.get() &&
-                this.rpcRegistration.get();
+        return this.initialGathering.get()
+                && this.masterStateOnDevice.get()
+                && this.rpcRegistration.get();
     }
 
     @Override

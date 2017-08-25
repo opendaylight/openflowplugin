@@ -34,7 +34,7 @@ public final class MastershipChangeServiceManagerImpl implements MastershipChang
         final MastershipServiceDelegate registration =
                 new MastershipServiceDelegate(service, () -> serviceGroup.remove(service));
         serviceGroup.add(service);
-        if (masterChecker!= null && masterChecker.isAnyDeviceMastered()) {
+        if (masterChecker != null && masterChecker.isAnyDeviceMastered()) {
             fireBecomeOwnerAfterRegistration(service);
         }
         return registration;
