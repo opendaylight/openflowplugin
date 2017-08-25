@@ -20,18 +20,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.n
 public class MultipartReplyPortStatsDeserializerTest extends AbstractMultipartDeserializerTest {
     private static final byte PADDING_IN_PORT_STATS_HEADER = 4;
     private static final int PORT = 1;
-    private static final long PACKETS_RECEIVED = 2l;
-    private static final long PACKETS_TRANSMITTED = 3l;
-    private static final long BYTES_RECEIVED = 4l;
-    private static final long BYTES_TRANSMITTED = 5l;
-    private static final long RECEIVE_DROPS = 6l;
-    private static final long TRANSMIT_DROPS = 7l;
-    private static final long RECEIVE_ERRORS = 8l;
-    private static final long TRANSMIT_ERRORS = 9l;
-    private static final long RECEIVE_FRAME_ERROR = 10l;
-    private static final long RECEIVE_OVER_RUN_ERROR = 11l;
-    private static final long RECEIVE_CRC_ERROR = 12l;
-    private static final long COLLIESION_COUNT = 13l;
+    private static final long PACKETS_RECEIVED = 2L;
+    private static final long PACKETS_TRANSMITTED = 3L;
+    private static final long BYTES_RECEIVED = 4L;
+    private static final long BYTES_TRANSMITTED = 5L;
+    private static final long RECEIVE_DROPS = 6L;
+    private static final long TRANSMIT_DROPS = 7L;
+    private static final long RECEIVE_ERRORS = 8L;
+    private static final long TRANSMIT_ERRORS = 9L;
+    private static final long RECEIVE_FRAME_ERROR = 10L;
+    private static final long RECEIVE_OVER_RUN_ERROR = 11L;
+    private static final long RECEIVE_CRC_ERROR = 12L;
+    private static final long COLLIESION_COUNT = 13L;
     private static final int SECOND = 14;
     private static final int NANOSECOND = 15;
 
@@ -57,7 +57,8 @@ public class MultipartReplyPortStatsDeserializerTest extends AbstractMultipartDe
 
         final MultipartReplyPortStats reply = (MultipartReplyPortStats) deserializeMultipart(buffer);
 
-        final NodeConnectorStatisticsAndPortNumberMap portStats = reply.getNodeConnectorStatisticsAndPortNumberMap().get(0);
+        final NodeConnectorStatisticsAndPortNumberMap portStats =
+                reply.getNodeConnectorStatisticsAndPortNumberMap().get(0);
         assertEquals(PACKETS_RECEIVED, portStats.getPackets().getReceived().longValue());
         assertEquals(PACKETS_TRANSMITTED, portStats.getPackets().getTransmitted().longValue());
         assertEquals(BYTES_RECEIVED, portStats.getBytes().getReceived().longValue());

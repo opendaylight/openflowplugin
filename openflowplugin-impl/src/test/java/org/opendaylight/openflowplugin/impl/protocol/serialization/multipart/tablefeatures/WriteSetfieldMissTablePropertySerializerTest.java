@@ -27,8 +27,8 @@ public class WriteSetfieldMissTablePropertySerializerTest extends AbstractTableP
     @Test
     public void testSerialize() throws Exception {
         final WriteSetfieldMiss property = new WriteSetfieldMissBuilder()
-                .setWriteSetfieldMiss(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature
-                        .prop.type.table.feature.prop.type.write.setfield.miss
+                .setWriteSetfieldMiss(new org.opendaylight.yang.gen.v1.urn.opendaylight
+                        .table.types.rev131026.table.feature.prop.type.table.feature.prop.type.write.setfield.miss
                         .WriteSetfieldMissBuilder()
                         .setSetFieldMatch(ImmutableList
                                 .<SetFieldMatch>builder()

@@ -73,8 +73,8 @@ public class MeterMessageSerializerTest extends AbstractSerializerTest {
                     .setMeterBandHeader(Arrays.asList(
                             new MeterBandHeaderBuilder()
                                     .setMeterBandTypes(new MeterBandTypesBuilder()
-                                            .setFlags(new org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918
-                                                    .MeterBandType(true, false, false))
+                                            .setFlags(new org.opendaylight.yang.gen.v1.urn.opendaylight
+                                                    .meter.types.rev130918.MeterBandType(true, false, false))
                                             .build())
                                     .setBandBurstSize(BAND_BURST_SIZE)
                                     .setBandId(new BandId(BAND_ID))
@@ -86,8 +86,8 @@ public class MeterMessageSerializerTest extends AbstractSerializerTest {
                                     .build(),
                             new MeterBandHeaderBuilder()
                                     .setMeterBandTypes(new MeterBandTypesBuilder()
-                                            .setFlags(new org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918
-                                                    .MeterBandType(false, true, false))
+                                            .setFlags(new org.opendaylight.yang.gen.v1.urn.opendaylight
+                                                    .meter.types.rev130918.MeterBandType(false, true, false))
                                             .build())
                                     .setBandBurstSize(BAND_BURST_SIZE)
                                     .setBandId(new BandId(BAND_ID))
@@ -106,7 +106,8 @@ public class MeterMessageSerializerTest extends AbstractSerializerTest {
 
     @Override
     protected void init() {
-        serializer = getRegistry().getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, MeterMessage.class)) ;
+        serializer = getRegistry()
+                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, MeterMessage.class)) ;
     }
 
     @Test

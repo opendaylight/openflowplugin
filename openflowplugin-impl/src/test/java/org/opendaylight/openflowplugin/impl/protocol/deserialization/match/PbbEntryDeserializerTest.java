@@ -10,13 +10,12 @@ package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
 import static org.junit.Assert.assertEquals;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.UnpooledByteBufAllocator;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.ProtocolMatchFields;
-
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.UnpooledByteBufAllocator;
 
 public class PbbEntryDeserializerTest extends AbstractMatchEntryDeserializerTest {
 

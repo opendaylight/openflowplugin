@@ -52,7 +52,8 @@ public class MultipartRequestMessageSerializerTest extends AbstractSerializerTes
 
     @Override
     protected void init() {
-        serializer = getRegistry().getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, MultipartRequest.class)) ;
+        serializer = getRegistry()
+                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, MultipartRequest.class));
     }
 
     @Test
