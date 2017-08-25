@@ -72,12 +72,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.StripVlanActionCase;
 
 /**
- * Util class for injecting new action serializers into OpenflowJava
+ * Util class for injecting new action serializers into OpenflowJava.
  */
 class ActionSerializerInjector {
 
     /**
-     * Injects serializers into provided {@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}
+     * Injects serializers into provided
+     * {@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}.
+     *
      * @param provider OpenflowJava serializer extension provider
      */
     static void injectSerializers(final SerializerExtensionProvider provider) {
@@ -115,9 +117,11 @@ class ActionSerializerInjector {
     }
 
     /**
-     * Create injector that will inject new serializers into #{@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}
+     * Create injector that will inject new serializers into
+     * #{@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}.
+     *
      * @param provider OpenflowJava serializer extension provider
-     * @param version Openflow version
+     * @param version  Openflow version
      * @return injector
      */
     @VisibleForTesting

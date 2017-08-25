@@ -18,7 +18,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.Acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.TableFeaturesPropType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.ApplyActions;
 
-public class ApplyActionsTablePropertySerializer extends AbstractTablePropertySerializer<ApplyActions> implements SerializerRegistryInjector {
+public class ApplyActionsTablePropertySerializer extends AbstractTablePropertySerializer<ApplyActions> implements
+        SerializerRegistryInjector {
 
     private SerializerRegistry registry;
 

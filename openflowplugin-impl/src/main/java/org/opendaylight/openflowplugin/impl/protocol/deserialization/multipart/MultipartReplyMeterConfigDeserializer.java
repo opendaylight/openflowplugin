@@ -31,11 +31,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeaderBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.meter.band.header.MeterBandTypesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class MultipartReplyMeterConfigDeserializer implements OFDeserializer<MultipartReplyBody>, DeserializerRegistryInjector {
+public class MultipartReplyMeterConfigDeserializer implements OFDeserializer<MultipartReplyBody>,
+        DeserializerRegistryInjector {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MultipartReplyMeterConfigDeserializer.class);
 
     private static final byte METER_CONFIG_LENGTH = 8;
-
     private static final int OFPMBTDROP = 1;
     private static final int OFPMBTDSCP = 2;
     private static final int OFPMBTEXPERIMENTER = 0xFFFF;
@@ -53,8 +57,8 @@ public class MultipartReplyMeterConfigDeserializer implements OFDeserializer<Mul
             final int itemLength = message.readUnsignedShort();
 
             final MeterConfigStatsBuilder itemBuilder = new MeterConfigStatsBuilder()
-                .setFlags(readMeterFlags(message))
-                .setMeterId(new MeterId(message.readUnsignedInt()));
+                    .setFlags(readMeterFlags(message))
+                    .setMeterId(new MeterId(message.readUnsignedInt()));
 
             final List<MeterBandHeader> subItems = new ArrayList<>();
             int actualLength = METER_CONFIG_LENGTH;
@@ -68,68 +72,72 @@ public class MultipartReplyMeterConfigDeserializer implements OFDeserializer<Mul
                 switch (itemBandType) {
                     case OFPMBTDROP:
                         subItemBuilder
-                            .setMeterBandTypes(new MeterBandTypesBuilder()
-                                    .setFlags(new MeterBandType(true, false, false))
-                                    .build())
-                            .setBandType(new DropBuilder()
-                                    .setDropRate(message.readUnsignedInt())
-                                    .setDropBurstSize(message.readUnsignedInt())
-                                    .build());
+                                .setMeterBandTypes(new MeterBandTypesBuilder()
+                                        .setFlags(new MeterBandType(true, false, false))
+                                        .build())
+                                .setBandType(new DropBuilder()
+                                        .setDropRate(message.readUnsignedInt())
+                                        .setDropBurstSize(message.readUnsignedInt())
+                                        .build());
                         message.skipBytes(PADDING_IN_METER_BAND_DROP_HEADER);
                         break;
 
                     case OFPMBTDSCP:
                         subItemBuilder
-                            .setMeterBandTypes(new MeterBandTypesBuilder()
-                                    .setFlags(new MeterBandType(false, true, false))
-                                    .build())
-                            .setBandType(new DscpRemarkBuilder()
-                                    .setDscpRemarkRate(message.readUnsignedInt())
-                                    .setDscpRemarkBurstSize(message.readUnsignedInt())
-                                    .setPrecLevel(message.readUnsignedByte())
-                                    .build());
+                                .setMeterBandTypes(new MeterBandTypesBuilder()
+                                        .setFlags(new MeterBandType(false, true, false))
+                                        .build())
+                                .setBandType(new DscpRemarkBuilder()
+                                        .setDscpRemarkRate(message.readUnsignedInt())
+                                        .setDscpRemarkBurstSize(message.readUnsignedInt())
+                                        .setPrecLevel(message.readUnsignedByte())
+                                        .build());
                         message.skipBytes(PADDING_IN_METER_BAND_DSCP_HEADER);
                         break;
 
                     case OFPMBTEXPERIMENTER:
                         // TODO: Finish meter band experimenter deserialization
-                        final long expId = message.getUnsignedInt(message.readerIndex() + 2 * EncodeConstants.SIZE_OF_INT_IN_BYTES);
+                        final long expId = message.getUnsignedInt(message.readerIndex() + 2 * EncodeConstants
+                                .SIZE_OF_INT_IN_BYTES);
                         message.readerIndex(itemStartIndex);
 
                         final OFDeserializer<Experimenter> deserializer = registry.getDeserializer(
-                                new ExperimenterIdDeserializerKey(EncodeConstants.OF13_VERSION_ID, expId, Experimenter.class));
+                                new ExperimenterIdDeserializerKey(EncodeConstants.OF13_VERSION_ID, expId,
+                                        Experimenter.class));
 
                         subItemBuilder
-                            .setMeterBandTypes(new MeterBandTypesBuilder()
-                                    .setFlags(new MeterBandType(false, false, true))
-                                    .build())
-                            .setBandType(deserializer.deserialize(message));
+                                .setMeterBandTypes(new MeterBandTypesBuilder()
+                                        .setFlags(new MeterBandType(false, false, true))
+                                        .build())
+                                .setBandType(deserializer.deserialize(message));
                         break;
+                    default:
+                        // no operation
 
                 }
                 subItems.add(subItemBuilder.build());
             }
 
             items.add(itemBuilder
-                .setKey(new MeterConfigStatsKey(itemBuilder.getMeterId()))
-                .setMeterBandHeaders(new MeterBandHeadersBuilder()
-                    .setMeterBandHeader(subItems)
-                    .build())
-                .build());
+                    .setKey(new MeterConfigStatsKey(itemBuilder.getMeterId()))
+                    .setMeterBandHeaders(new MeterBandHeadersBuilder()
+                            .setMeterBandHeader(subItems)
+                            .build())
+                    .build());
         }
 
         return builder
-            .setMeterConfigStats(items)
-            .build();
+                .setMeterConfigStats(items)
+                .build();
     }
 
     private static MeterFlags readMeterFlags(ByteBuf message) {
         int input = message.readUnsignedShort();
-        final Boolean mfKBPS = (input & (1)) != 0;
-        final Boolean mfPKTPS = (input & (1 << 1)) != 0;
-        final Boolean mfBURST = (input & (1 << 2)) != 0;
-        final Boolean mfSTATS = (input & (1 << 3)) != 0;
-        return new MeterFlags(mfBURST, mfKBPS, mfPKTPS, mfSTATS);
+        final Boolean mfKbps = (input & (1)) != 0;
+        final Boolean mfPktps = (input & (1 << 1)) != 0;
+        final Boolean mfBurst = (input & (1 << 2)) != 0;
+        final Boolean mfStats = (input & (1 << 3)) != 0;
+        return new MeterFlags(mfBurst, mfKbps, mfPktps, mfStats);
     }
 
     @Override

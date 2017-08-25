@@ -32,8 +32,8 @@ public class TunnelIdEntrySerializer extends AbstractMatchEntrySerializer {
 
     @Override
     public boolean matchTypeCheck(Match match) {
-        return Objects.nonNull(match.getTunnel()) &&
-                Objects.nonNull(match.getTunnel().getTunnelId());
+        return Objects.nonNull(match.getTunnel())
+                && Objects.nonNull(match.getTunnel().getTunnelId());
     }
 
     @Override

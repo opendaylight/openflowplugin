@@ -28,9 +28,9 @@ public class TunnelIpv4SourceEntrySerializer extends AbstractMatchEntrySerialize
 
     @Override
     public boolean matchTypeCheck(Match match) {
-        return Objects.nonNull(match.getLayer3Match()) &&
-                TunnelIpv4Match.class.isInstance(match.getLayer3Match()) &&
-                Objects.nonNull(TunnelIpv4Match.class.cast(match.getLayer3Match()).getTunnelIpv4Source());
+        return Objects.nonNull(match.getLayer3Match())
+                && TunnelIpv4Match.class.isInstance(match.getLayer3Match())
+                && Objects.nonNull(TunnelIpv4Match.class.cast(match.getLayer3Match()).getTunnelIpv4Source());
     }
 
     @Override

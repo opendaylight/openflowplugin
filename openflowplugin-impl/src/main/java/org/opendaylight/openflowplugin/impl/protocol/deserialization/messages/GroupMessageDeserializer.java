@@ -36,7 +36,9 @@ public class GroupMessageDeserializer implements OFDeserializer<GroupMessage>, D
     private static final byte BUCKETS_HEADER_LENGTH = 16;
 
     private static final Comparator<Bucket> COMPARATOR = (bucket1, bucket2) -> {
-        if (bucket1.getBucketId() == null || bucket2.getBucketId() == null) return 0;
+        if (bucket1.getBucketId() == null || bucket2.getBucketId() == null) {
+            return 0;
+        }
         return bucket1.getBucketId().getValue().compareTo(bucket2.getBucketId().getValue());
     };
 

@@ -49,22 +49,24 @@ public abstract class AbstractMatchEntrySerializer implements HeaderSerializer<M
     }
 
     /**
-     * Serialize byte mask to bytes. checking for mask length
+     * Serialize byte mask to bytes. checking for mask length.
+     *
      * @param mask byte mask
      * @param outBuffer output buffer
      * @param length mask length
      */
     protected static void writeMask(byte[] mask, ByteBuf outBuffer, int length) {
         if (mask != null && mask.length != length) {
-            throw new IllegalArgumentException("incorrect length of mask: "+
-                    mask.length + ", expected: " + length);
+            throw new IllegalArgumentException("incorrect length of mask: "
+                    + mask.length + ", expected: " + length);
         }
 
         outBuffer.writeBytes(mask);
     }
 
     /**
-     * Serialize Ipv4 address to bytes
+     * Serialize Ipv4 address to bytes.
+     *
      * @param address Ipv4 address
      * @param outBuffer output buffer
      */
@@ -73,7 +75,8 @@ public abstract class AbstractMatchEntrySerializer implements HeaderSerializer<M
     }
 
     /**
-     * Serialize Ipv6 address to bytes
+     * Serialize Ipv6 address to bytes.
+     *
      * @param address Ipv6 address
      * @param outBuffer output buffer
      */
@@ -82,7 +85,8 @@ public abstract class AbstractMatchEntrySerializer implements HeaderSerializer<M
     }
 
     /**
-     * Serialize Mac address to bytes
+     * Serialize Mac address to bytes.
+     *
      * @param address Mac address
      * @param outBuffer output buffer
      */
@@ -91,7 +95,8 @@ public abstract class AbstractMatchEntrySerializer implements HeaderSerializer<M
     }
 
     /**
-     * Serialize Ipv4 prefix (address and mask)
+     * Serialize Ipv4 prefix (address and mask).
+     *
      * @param prefix Ipv4 prefix
      * @param outBuffer output buffer
      */
@@ -108,7 +113,8 @@ public abstract class AbstractMatchEntrySerializer implements HeaderSerializer<M
     }
 
     /**
-     * Serialize Ipv6 prefix (address and mask)
+     * Serialize Ipv6 prefix (address and mask).
+     *
      * @param prefix Ipv6 prefix
      * @param outBuffer output buffer
      */
@@ -123,22 +129,30 @@ public abstract class AbstractMatchEntrySerializer implements HeaderSerializer<M
     }
 
     /**
+     * Has mask getter.
+     *
      * @param match Openflow match
      * @return if field has or has not mask
      */
-    protected abstract boolean getHasMask(final Match match);
+    protected abstract boolean getHasMask(Match match);
 
     /**
+     * Oxm field numeric representation.
+     *
      * @return numeric representation of oxm_field
      */
     protected abstract int getOxmFieldCode();
 
     /**
+     * Oxm class code.
+     *
      * @return numeric representation of oxm_class
      */
     protected abstract int getOxmClassCode();
 
     /**
+     * Get value length.
+     *
      * @return match entry value length (without mask length)
      */
     protected abstract int getValueLength();

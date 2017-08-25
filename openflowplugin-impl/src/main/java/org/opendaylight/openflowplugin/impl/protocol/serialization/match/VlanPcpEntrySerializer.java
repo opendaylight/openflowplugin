@@ -24,8 +24,8 @@ public class VlanPcpEntrySerializer extends AbstractMatchEntrySerializer {
 
     @Override
     public boolean matchTypeCheck(Match match) {
-        return Objects.nonNull(match.getVlanMatch()) &&
-                Objects.nonNull(match.getVlanMatch().getVlanPcp());
+        return Objects.nonNull(match.getVlanMatch())
+                && Objects.nonNull(match.getVlanMatch().getVlanPcp());
     }
 
     @Override

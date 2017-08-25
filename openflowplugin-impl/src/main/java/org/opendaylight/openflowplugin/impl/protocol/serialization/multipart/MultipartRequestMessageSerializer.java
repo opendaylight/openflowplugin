@@ -37,7 +37,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.multipart.request.multipart.request.body.MultipartRequestTableFeatures;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
-public class MultipartRequestMessageSerializer extends AbstractMessageSerializer<MultipartRequest> implements SerializerRegistryInjector {
+public class MultipartRequestMessageSerializer extends AbstractMessageSerializer<MultipartRequest> implements
+        SerializerRegistryInjector {
     private static final byte PADDING_IN_MULTIPART_REQUEST_MESSAGE = 4;
     private SerializerRegistry registry;
 
@@ -46,7 +47,7 @@ public class MultipartRequestMessageSerializer extends AbstractMessageSerializer
         final MultipartRequestBody multipartRequestBody = message.getMultipartRequestBody();
         final MultipartType multipartType = getMultipartType(multipartRequestBody);
 
-        int index = outBuffer.writerIndex();
+        final int index = outBuffer.writerIndex();
         super.serialize(message, outBuffer);
         outBuffer.writeShort(multipartType.getIntValue());
         outBuffer.writeShort(ByteBufUtils.fillBitMask(0, message.isRequestMore()));

@@ -41,11 +41,12 @@ public class Ipv4DestinationEntrySerializer extends AbstractMatchEntrySerializer
     @Override
     public boolean matchTypeCheck(Match match) {
         if (isPrefix(match)) {
-            return Objects.nonNull(match.getLayer3Match()) &&
-                    Objects.nonNull(Ipv4Match.class.cast(match.getLayer3Match()).getIpv4Destination());
+            return Objects.nonNull(match.getLayer3Match())
+                    && Objects.nonNull(Ipv4Match.class.cast(match.getLayer3Match()).getIpv4Destination());
         } else if (isArbitrary(match)) {
-            return Objects.nonNull(match.getLayer3Match()) &&
-                    Objects.nonNull(Ipv4MatchArbitraryBitMask.class.cast(match.getLayer3Match()).getIpv4DestinationAddressNoMask());
+            return Objects.nonNull(match.getLayer3Match())
+                    && Objects.nonNull(Ipv4MatchArbitraryBitMask.class.cast(match.getLayer3Match())
+                    .getIpv4DestinationAddressNoMask());
         }
 
         return false;

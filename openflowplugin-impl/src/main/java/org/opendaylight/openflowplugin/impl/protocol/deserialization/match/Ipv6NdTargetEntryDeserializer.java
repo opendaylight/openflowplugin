@@ -8,15 +8,13 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
+import io.netty.buffer.ByteBuf;
 import java.util.Objects;
-
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchBuilder;
-
-import io.netty.buffer.ByteBuf;
 
 public class Ipv6NdTargetEntryDeserializer extends AbstractMatchEntryDeserializer {
 

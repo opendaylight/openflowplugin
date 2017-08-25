@@ -19,7 +19,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Match
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.Match;
 
-public class MatchTablePropertySerializer extends AbstractTablePropertySerializer<Match> implements SerializerRegistryInjector {
+public class MatchTablePropertySerializer extends AbstractTablePropertySerializer<Match> implements
+        SerializerRegistryInjector {
 
     private SerializerRegistry registry;
 

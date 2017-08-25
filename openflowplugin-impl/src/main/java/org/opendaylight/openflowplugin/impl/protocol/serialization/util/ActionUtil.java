@@ -28,13 +28,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Utility class for action serialization
+ * Utility class for action serialization.
  */
 public class ActionUtil {
     private static final Logger LOG = LoggerFactory.getLogger(ActionUtil.class);
 
     /**
-     * Serialize OpenFlow action, using extension converter if available
+     * Serialize OpenFlow action, using extension converter if available.
      * TODO: Remove also extension converters
      *
      * @param action    OpenFlowPlugin action
@@ -46,34 +46,34 @@ public class ActionUtil {
     public static void writeAction(Action action, short version, SerializerRegistry registry, ByteBuf outBuffer) {
         try {
             Optional.ofNullable(OFSessionUtil.getExtensionConvertorProvider())
-                .flatMap(provider ->
-                    (GeneralExtensionGrouping.class.isInstance(action)
-                        ? convertExtensionGrouping(provider, action, version)
-                        : convertGenericAction(provider, action, version))
-                        .map(ofjAction -> {
-                            final OFSerializer<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common
-                                .action.rev150203.actions.grouping.Action> serializer = registry
-                                .getSerializer(TypeKeyMakerFactory.createActionKeyMaker(version)
-                                    .make(ofjAction));
+                    .flatMap(provider ->
+                            (GeneralExtensionGrouping.class.isInstance(action)
+                                    ? convertExtensionGrouping(provider, action, version)
+                                    : convertGenericAction(provider, action, version))
+                                    .map(ofjAction -> {
+                                        final OFSerializer<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common
+                                                .action.rev150203.actions.grouping.Action> serializer = registry
+                                                .getSerializer(TypeKeyMakerFactory.createActionKeyMaker(version)
+                                                        .make(ofjAction));
 
-                            serializer.serialize(ofjAction, outBuffer);
-                            return action;
-                        })
-                ).orElseGet(() -> {
-                final OFSerializer<Action> serializer = registry.getSerializer(
-                    new MessageTypeKey<>(
-                        version, (Class<? extends Action>) action.getImplementedInterface()));
+                                        serializer.serialize(ofjAction, outBuffer);
+                                        return action;
+                                    })
+                    ).orElseGet(() -> {
+                        final OFSerializer<Action> serializer = registry.getSerializer(
+                                new MessageTypeKey<>(
+                                        version, (Class<? extends Action>) action.getImplementedInterface()));
 
-                serializer.serialize(action, outBuffer);
-                return action;
-            });
+                        serializer.serialize(action, outBuffer);
+                        return action;
+                    });
         } catch (final IllegalStateException | ClassCastException e) {
             LOG.warn("Serializer for action {} for version {} not found.", action.getImplementedInterface(), version);
         }
     }
 
     /**
-     * Serialize OpenFlow action header, using extension converter if available
+     * Serialize OpenFlow action header, using extension converter if available.
      * TODO: Remove also extension converters
      *
      * @param action    OpenFlowPlugin action
@@ -85,39 +85,43 @@ public class ActionUtil {
     public static void writeActionHeader(Action action, short version, SerializerRegistry registry, ByteBuf outBuffer) {
         try {
             Optional.ofNullable(OFSessionUtil.getExtensionConvertorProvider())
-                .flatMap(provider ->
-                    (GeneralExtensionGrouping.class.isInstance(action)
-                        ? convertExtensionGrouping(provider, action, version)
-                        : convertGenericAction(provider, action, version))
-                        .map(ofjAction -> {
-                            final HeaderSerializer<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common
-                                .action.rev150203.actions.grouping.Action> serializer = registry
-                                .getSerializer(TypeKeyMakerFactory.createActionKeyMaker(version)
-                                    .make(ofjAction));
+                    .flatMap(provider ->
+                            (GeneralExtensionGrouping.class.isInstance(action)
+                                    ? convertExtensionGrouping(provider, action, version)
+                                    : convertGenericAction(provider, action, version))
+                                    .map(ofjAction -> {
+                                        final HeaderSerializer<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow
+                                                .common
+                                                .action.rev150203.actions.grouping.Action> serializer = registry
+                                                .getSerializer(TypeKeyMakerFactory.createActionKeyMaker(version)
+                                                        .make(ofjAction));
 
-                            serializer.serializeHeader(ofjAction, outBuffer);
-                            return action;
-                        })
-                ).orElseGet(() -> {
-                final HeaderSerializer<Action> serializer = registry.getSerializer(
-                    new MessageTypeKey<>(
-                        version, (Class<? extends Action>) action.getImplementedInterface()));
+                                        serializer.serializeHeader(ofjAction, outBuffer);
+                                        return action;
+                                    })
+                    ).orElseGet(() -> {
+                        final HeaderSerializer<Action> serializer = registry.getSerializer(
+                                new MessageTypeKey<>(
+                                        version, (Class<? extends Action>) action.getImplementedInterface()));
 
-                serializer.serializeHeader(action, outBuffer);
-                return action;
-            });
+                        serializer.serializeHeader(action, outBuffer);
+                        return action;
+                    });
         } catch (final IllegalStateException | ClassCastException e) {
-            LOG.warn("Header Serializer for action {} for version {} not found.", action.getImplementedInterface(), version);
+            LOG.warn("Header Serializer for action {} for version {} not found.", action.getImplementedInterface(),
+                    version);
         }
     }
 
     /**
-     * Try to convert action that implements #{@link org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralExtensionGrouping}
+     * Try to convert action that implements
+     * #{@link org.opendaylight.yang.gen.v1.urn
+     * .opendaylight.openflowplugin.extension.general.rev140714.GeneralExtensionGrouping}.
      * to OpenFlowJava action
      *
      * @param provider extension converter provider
-     * @param action OpenFlowPlugin action
-     * @param version OpenFlow version
+     * @param action   OpenFlowPlugin action
+     * @param version  OpenFlow version
      * @return optional OpenFlowJava action
      */
     private static Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions
@@ -134,11 +138,11 @@ public class ActionUtil {
     }
 
     /**
-     * Try to convert generic OpenFlowPlugin action to OpenFlowJava action
+     * Try to convert generic OpenFlowPlugin action to OpenFlowJava action.
      *
      * @param provider extension converter provider
-     * @param action OpenFlowPlugin action
-     * @param version OpenFlow version
+     * @param action   OpenFlowPlugin action
+     * @param version  OpenFlow version
      * @return optional OpenFlowJava action
      */
     @SuppressWarnings("unchecked")

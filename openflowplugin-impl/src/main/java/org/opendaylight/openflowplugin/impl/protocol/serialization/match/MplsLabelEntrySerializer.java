@@ -24,8 +24,8 @@ public class MplsLabelEntrySerializer extends AbstractMatchEntrySerializer {
 
     @Override
     public boolean matchTypeCheck(Match match) {
-        return Objects.nonNull(match.getProtocolMatchFields()) &&
-                Objects.nonNull(match.getProtocolMatchFields().getMplsLabel());
+        return Objects.nonNull(match.getProtocolMatchFields())
+                && Objects.nonNull(match.getProtocolMatchFields().getMplsLabel());
     }
 
     @Override
