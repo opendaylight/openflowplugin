@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0">
+
+  <odl:rpc-service id="salFlowService"
+      interface="org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService"/>
+
+  <bean id="test" class="org.opendaylight.openflowplugin.extension.test.Test">
+    <property name="flowService" ref="salFlowService"/>
+  </bean>
+
+  <odl:rpc-implementation ref="test"/>
+
+</blueprint>

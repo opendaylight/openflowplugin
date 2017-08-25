@@ -63,7 +63,6 @@
                         </goals>
                         <configuration>
                             <sources>
-                                <source>${jmxGeneratorPath}</source>
                                 <source>${salGeneratorPath}</source>
                             </sources>
                         </configuration>

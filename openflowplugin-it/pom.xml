@@ -152,21 +152,6 @@
           <artifactId>org.eclipse.equinox.console</artifactId>
           <scope>test</scope>
         </dependency>
-        <dependency>
-          <groupId>org.opendaylight.controller</groupId>
-          <artifactId>config-persister-api</artifactId>
-          <scope>test</scope>
-        </dependency>
-        <dependency>
-          <groupId>org.opendaylight.controller</groupId>
-          <artifactId>config-persister-impl</artifactId>
-          <scope>test</scope>
-        </dependency>
-        <dependency>
-          <groupId>org.opendaylight.controller</groupId>
-          <artifactId>config-persister-file-xml-adapter</artifactId>
-          <scope>test</scope>
-        </dependency>
 
         <dependency>
             <groupId>openexi</groupId>
@@ -193,11 +178,6 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>config-manager</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

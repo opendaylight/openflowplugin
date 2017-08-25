@@ -45,11 +45,6 @@
                 </executions>
                 <dependencies>
                     <dependency>
-                        <groupId>org.opendaylight.controller</groupId>
-                        <artifactId>yang-jmx-generator-plugin</artifactId>
-                        <version>${config.version}</version>
-                    </dependency>
-                    <dependency>
                         <groupId>org.opendaylight.mdsal</groupId>
                         <artifactId>maven-sal-api-gen-plugin</artifactId>
                         <version>${mdsal.model.version}</version>
@@ -91,10 +86,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>config-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
