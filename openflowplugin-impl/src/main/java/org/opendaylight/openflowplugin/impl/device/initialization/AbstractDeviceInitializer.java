@@ -28,13 +28,15 @@ public abstract class AbstractDeviceInitializer {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractDeviceInitializer.class);
 
     /**
-     * Perform initial information gathering and store them to operational datastore
+     * Perform initial information gathering and store them to operational datastore.
+     *
      * @param deviceContext device context
      * @param switchFeaturesMandatory is switch features mandatory
      * @param skipTableFeatures skip collecting of table features
      * @param multipartWriterProvider multipart writer provider
      * @param convertorExecutor convertor executor
      */
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public Future<Void> initialize(@Nonnull final DeviceContext deviceContext,
                                    final boolean switchFeaturesMandatory,
                                    final boolean skipTableFeatures,
@@ -63,9 +65,9 @@ public abstract class AbstractDeviceInitializer {
                 multipartWriterProvider, convertorExecutor);
     }
 
-    protected abstract Future<Void> initializeNodeInformation(@Nonnull final DeviceContext deviceContext,
-                                                              final boolean switchFeaturesMandatory,
-                                                              final boolean skipTableFeatures,
-                                                              @Nullable final MultipartWriterProvider multipartWriterProvider,
-                                                              @Nullable final ConvertorExecutor convertorExecutor);
+    protected abstract Future<Void> initializeNodeInformation(@Nonnull DeviceContext deviceContext,
+                                                              boolean switchFeaturesMandatory,
+                                                              boolean skipTableFeatures,
+                                                              @Nullable MultipartWriterProvider multipartWriterProvider,
+                                                              @Nullable ConvertorExecutor convertorExecutor);
 }

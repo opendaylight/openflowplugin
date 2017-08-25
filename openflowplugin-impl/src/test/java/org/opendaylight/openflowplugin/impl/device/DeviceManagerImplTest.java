@@ -60,14 +60,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint32Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfigBuilder;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcError;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeviceManagerImplTest {
 
     private static final long TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA = 2000L;
-    private static final int barrierCountLimit = 25600;
-    private static final long barrierIntervalNanos = 500;
+    private static final int BARRIER_COUNT_LIMIT = 25600;
+    private static final long BARRIER_INTERVAL_NANOS = 500;
     private static final NodeId DUMMY_NODE_ID = new NodeId("dummyNodeId");
     private static final KeyedInstanceIdentifier<Node, NodeKey> DUMMY_IDENTIFIER  = DeviceStateUtil
             .createNodeInstanceIdentifier(DUMMY_NODE_ID);
@@ -127,8 +126,8 @@ public class DeviceManagerImplTest {
 
         deviceManager = new DeviceManagerImpl(
                 new OpenflowProviderConfigBuilder()
-                        .setBarrierCountLimit(new NonZeroUint16Type(barrierCountLimit))
-                        .setBarrierIntervalTimeoutLimit(new NonZeroUint32Type(barrierIntervalNanos))
+                        .setBarrierCountLimit(new NonZeroUint16Type(BARRIER_COUNT_LIMIT))
+                        .setBarrierIntervalTimeoutLimit(new NonZeroUint32Type(BARRIER_INTERVAL_NANOS))
                         .setGlobalNotificationQuota(TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA)
                         .setSwitchFeaturesMandatory(false)
                         .setEnableFlowRemovedNotification(true)
@@ -209,7 +208,8 @@ public class DeviceManagerImplTest {
     }
 
     @SuppressWarnings("unchecked")
-    private static ConcurrentHashMap<DeviceInfo, DeviceContext> getContextsCollection(final DeviceManagerImpl deviceManager) throws NoSuchFieldException, IllegalAccessException {
+    private static ConcurrentHashMap<DeviceInfo, DeviceContext> getContextsCollection(
+            final DeviceManagerImpl deviceManager) throws NoSuchFieldException, IllegalAccessException {
         // HACK: contexts collection for testing shall be accessed in some more civilized way
         final Field contextsField = DeviceManagerImpl.class.getDeclaredField("deviceContexts");
         Assert.assertNotNull(contextsField);
