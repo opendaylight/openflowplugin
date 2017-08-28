@@ -78,10 +78,16 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     }
 
     @GuardedBy("txLock")
-    private void createTxChain() {
-        BindingTransactionChain txChainFactoryTemp = txChainFactory;
-        txChainFactory = dataBroker.createTransactionChain(TransactionChainManager.this);
-        Optional.ofNullable(txChainFactoryTemp).ifPresent(TransactionChain::close);
+    private void createTxChain(TransactionChain<?, ?> chain) {
+        if (chain == null || chain.equals(txChainFactory)) {
+            txChainFactory = dataBroker.createTransactionChain(TransactionChainManager.this);
+            if (chain != null) {
+                chain.close();
+            }
+        } else if (LOG.isDebugEnabled()) {
+            LOG.debug("Attempt to close not current TxChain - actual: {}, current: {} ", chain.hashCode(),
+                    txChainFactory.hashCode());
+        }
     }
 
     boolean initialSubmitWriteTransaction() {
@@ -105,7 +111,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
                 this.transactionChainManagerStatus = TransactionChainManagerStatus.WORKING;
                 this.submitIsEnabled = false;
                 this.initCommit = true;
-                createTxChain();
+                createTxChain(null);
             }
         }
     }
@@ -239,7 +245,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         synchronized (txLock) {
             if (TransactionChainManagerStatus.WORKING == transactionChainManagerStatus) {
                 LOG.warn("Transaction chain failed, recreating chain due to ", cause);
-                createTxChain();
+                createTxChain(chain);
                 wTx = null;
             }
         }
