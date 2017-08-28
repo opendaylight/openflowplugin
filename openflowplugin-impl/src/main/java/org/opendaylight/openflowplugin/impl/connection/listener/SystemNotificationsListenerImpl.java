@@ -29,9 +29,6 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- *
- */
 public class SystemNotificationsListenerImpl implements SystemNotificationsListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(SystemNotificationsListenerImpl.class);
@@ -63,6 +60,7 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
         threadPool.execute(this::executeOnSwitchIdleEvent);
     }
 
+    @SuppressWarnings("checkstyle:IllegalCatch")
     private void executeOnSwitchIdleEvent() {
         boolean shouldBeDisconnected = true;
 
@@ -76,12 +74,13 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
             builder.setVersion(features.getVersion());
             builder.setXid(ECHO_XID.getValue());
 
-            Future<RpcResult<EchoOutput>> echoReplyFuture = connectionContext.getConnectionAdapter().echo(builder.build());
+            Future<RpcResult<EchoOutput>> echoReplyFuture =
+                    connectionContext.getConnectionAdapter().echo(builder.build());
 
             try {
                 RpcResult<EchoOutput> echoReplyValue = echoReplyFuture.get(echoReplyTimeout, TimeUnit.MILLISECONDS);
-                if (echoReplyValue.isSuccessful() &&
-                        Objects.equals(echoReplyValue.getResult().getXid(), ECHO_XID.getValue())) {
+                if (echoReplyValue.isSuccessful()
+                        && Objects.equals(echoReplyValue.getResult().getXid(), ECHO_XID.getValue())) {
                     connectionContext.changeStateToWorking();
                     shouldBeDisconnected = false;
                 } else {
@@ -89,11 +88,13 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
                 }
             } catch (Exception e) {
                 if (LOG.isWarnEnabled()) {
-                    LOG.warn("Exception while  waiting for echoReply from [{}] in TIMEOUTING state: {}", remoteAddress, e.getMessage());
+                    LOG.warn("Exception while  waiting for echoReply from [{}] in TIMEOUTING state: {}",
+                            remoteAddress, e.getMessage());
                 }
 
                 if (LOG.isTraceEnabled()) {
-                    LOG.trace("Exception while  waiting for echoReply from [{}] in TIMEOUTING state: {}", remoteAddress, e);
+                    LOG.trace("Exception while  waiting for echoReply from [{}] in TIMEOUTING state: {}",
+                            remoteAddress, e);
                 }
 
             }
@@ -101,7 +102,8 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
         if (shouldBeDisconnected) {
             if (LOG.isInfoEnabled()) {
                 LOG.info("ConnectionEvent:Closing connection as device is idle. Echo sent at {}. Device:{}, NodeId:{}",
-                        new Date(System.currentTimeMillis() - echoReplyTimeout), remoteAddress, connectionContext.getSafeNodeIdForLOG());
+                        new Date(System.currentTimeMillis() - echoReplyTimeout),
+                        remoteAddress, connectionContext.getSafeNodeIdForLOG());
             }
 
             connectionContext.closeConnection(true);
@@ -112,7 +114,8 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
         for (RpcError replyError : echoReplyValue.getErrors()) {
             Throwable cause = replyError.getCause();
             if (LOG.isWarnEnabled()) {
-                LOG.warn("Received EchoReply from [{}] in TIMEOUTING state, Error:{}", remoteAddress, cause.getMessage());
+                LOG.warn("Received EchoReply from [{}] in TIMEOUTING state, Error:{}",
+                        remoteAddress, cause.getMessage());
             }
 
             if (LOG.isTraceEnabled()) {

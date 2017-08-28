@@ -84,16 +84,24 @@ public class OpenFlowPluginProviderImplTest {
         when(dataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
         when(writeTransaction.submit()).thenReturn(Futures.immediateCheckedFuture(null));
         when(entityOwnershipService.registerListener(any(), any())).thenReturn(entityOwnershipListenerRegistration);
-        when(rpcProviderRegistry.addRpcImplementation(eq(StatisticsManagerControlService.class), any())).thenReturn(controlServiceRegistration);
+        when(rpcProviderRegistry.addRpcImplementation(eq(StatisticsManagerControlService.class), any()))
+                .thenReturn(controlServiceRegistration);
         when(switchConnectionProvider.startup()).thenReturn(Futures.immediateFuture(true));
         when(switchConnectionProvider.shutdown()).thenReturn(Futures.immediateFuture(true));
-        when(configurationService.getProperty(eq(ConfigurationProperty.USE_SINGLE_LAYER_SERIALIZATION.toString()), any())).thenReturn(USE_SINGLE_LAYER_SERIALIZATION);
-        when(configurationService.getProperty(eq(ConfigurationProperty.THREAD_POOL_MIN_THREADS.toString()), any())).thenReturn(THREAD_POOL_MIN_THREADS);
-        when(configurationService.getProperty(eq(ConfigurationProperty.THREAD_POOL_MAX_THREADS.toString()), any())).thenReturn(THREAD_POOL_MAX_THREADS);
-        when(configurationService.getProperty(eq(ConfigurationProperty.THREAD_POOL_TIMEOUT.toString()), any())).thenReturn(THREAD_POOL_TIMEOUT);
-        when(configurationService.getProperty(eq(ConfigurationProperty.RPC_REQUESTS_QUOTA.toString()), any())).thenReturn(RPC_REQUESTS_QUOTA);
-        when(configurationService.getProperty(eq(ConfigurationProperty.GLOBAL_NOTIFICATION_QUOTA.toString()), any())).thenReturn(GLOBAL_NOTIFICATION_QUOTA);
-        when(configurationService.getProperty(eq(ConfigurationProperty.BASIC_TIMER_DELAY.toString()), any())).thenReturn(BASIC_TIMER_DELAY);
+        when(configurationService.getProperty(eq(ConfigurationProperty.USE_SINGLE_LAYER_SERIALIZATION.toString()),
+                any())).thenReturn(USE_SINGLE_LAYER_SERIALIZATION);
+        when(configurationService.getProperty(eq(ConfigurationProperty.THREAD_POOL_MIN_THREADS.toString()), any()))
+                .thenReturn(THREAD_POOL_MIN_THREADS);
+        when(configurationService.getProperty(eq(ConfigurationProperty.THREAD_POOL_MAX_THREADS.toString()), any()))
+                .thenReturn(THREAD_POOL_MAX_THREADS);
+        when(configurationService.getProperty(eq(ConfigurationProperty.THREAD_POOL_TIMEOUT.toString()), any()))
+                .thenReturn(THREAD_POOL_TIMEOUT);
+        when(configurationService.getProperty(eq(ConfigurationProperty.RPC_REQUESTS_QUOTA.toString()), any()))
+                .thenReturn(RPC_REQUESTS_QUOTA);
+        when(configurationService.getProperty(eq(ConfigurationProperty.GLOBAL_NOTIFICATION_QUOTA.toString()), any()))
+                .thenReturn(GLOBAL_NOTIFICATION_QUOTA);
+        when(configurationService.getProperty(eq(ConfigurationProperty.BASIC_TIMER_DELAY.toString()), any()))
+                .thenReturn(BASIC_TIMER_DELAY);
     }
 
     @Test
