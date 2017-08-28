@@ -89,7 +89,8 @@ public class OpenFlowPluginProviderImpl implements
                     MessageIntelligenceAgencyMXBean.class.getPackage().getName(),
                     MessageIntelligenceAgencyMXBean.class.getSimpleName());
 
-    private final HashedWheelTimer hashedWheelTimer = new HashedWheelTimer(TICK_DURATION, TimeUnit.MILLISECONDS, TICKS_PER_WHEEL);
+    private final HashedWheelTimer hashedWheelTimer =
+            new HashedWheelTimer(TICK_DURATION, TimeUnit.MILLISECONDS, TICKS_PER_WHEEL);
     private final NotificationPublishService notificationPublishService;
     private final ExtensionConverterManager extensionConverterManager;
     private final DataBroker dataBroker;
@@ -162,15 +163,16 @@ public class OpenFlowPluginProviderImpl implements
     }
 
     private ListenableFuture<List<Boolean>> shutdownSwitchConnections() {
-        final ListenableFuture<List<Boolean>> listListenableFuture = Futures.allAsList(switchConnectionProviders.stream().map(switchConnectionProvider -> {
-            // Revert deserializers to their original state
-            if (config.isUseSingleLayerSerialization()) {
-                DeserializerInjector.revertDeserializers(switchConnectionProvider);
-            }
+        final ListenableFuture<List<Boolean>> listListenableFuture =
+                Futures.allAsList(switchConnectionProviders.stream().map(switchConnectionProvider -> {
+                    // Revert deserializers to their original state
+                    if (config.isUseSingleLayerSerialization()) {
+                        DeserializerInjector.revertDeserializers(switchConnectionProvider);
+                    }
 
-            // Shutdown switch connection provider
-            return switchConnectionProvider.shutdown();
-        }).collect(Collectors.toSet()));
+                    // Shutdown switch connection provider
+                    return switchConnectionProvider.shutdown();
+                }).collect(Collectors.toSet()));
 
         Futures.addCallback(listListenableFuture, new FutureCallback<List<Boolean>>() {
             @Override
@@ -272,6 +274,7 @@ public class OpenFlowPluginProviderImpl implements
         unregisterMXBean(MESSAGE_INTELLIGENCE_AGENCY_MX_BEAN_NAME);
     }
 
+    @SuppressWarnings("checkstyle:IllegalCatch")
     private static void gracefulShutdown(final AutoCloseable closeable) {
         if (Objects.isNull(closeable)) {
             return;
@@ -291,7 +294,7 @@ public class OpenFlowPluginProviderImpl implements
 
         try {
             timer.stop();
-        } catch (Exception e) {
+        } catch (IllegalStateException e) {
             LOG.warn("Failed to shutdown {} gracefully.", timer);
         }
     }
@@ -303,7 +306,7 @@ public class OpenFlowPluginProviderImpl implements
 
         try {
             threadPoolExecutor.shutdownNow();
-        } catch (Exception e) {
+        } catch (SecurityException e) {
             LOG.warn("Failed to shutdown {} gracefully.", threadPoolExecutor);
         }
     }
