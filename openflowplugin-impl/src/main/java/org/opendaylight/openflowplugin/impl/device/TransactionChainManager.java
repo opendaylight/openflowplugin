@@ -243,6 +243,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         synchronized (txLock) {
             if (TransactionChainManagerStatus.WORKING == transactionChainManagerStatus) {
                 LOG.warn("Transaction chain failed, recreating chain due to ", cause);
+                Optional.ofNullable(wTx).ifPresent(WriteTransaction::cancel);
                 createTxChain();
                 wTx = null;
             }
