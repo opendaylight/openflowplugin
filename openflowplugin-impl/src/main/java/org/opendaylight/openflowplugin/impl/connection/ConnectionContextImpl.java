@@ -36,9 +36,6 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- *
- */
 public class ConnectionContextImpl implements ConnectionContext {
 
     private final ConnectionAdapter connectionAdapter;
@@ -54,7 +51,9 @@ public class ConnectionContextImpl implements ConnectionContext {
     private List<PortStatusMessage> portStatusMessages = new ArrayList<>();
 
     /**
-     * @param connectionAdapter
+     * Constructor.
+     *
+     * @param connectionAdapter - connection adapter
      */
     public ConnectionContextImpl(final ConnectionAdapter connectionAdapter) {
         this.connectionAdapter = connectionAdapter;
@@ -111,6 +110,7 @@ public class ConnectionContextImpl implements ConnectionContext {
         disconnectDevice(propagate, true);
     }
 
+    @SuppressWarnings("checkstyle:IllegalCatch")
     private void closeHandshakeContext() {
         LOG.debug("Trying closing handshake context for node {}", getSafeNodeIdForLOG());
         if (handshakeContext != null) {
@@ -131,7 +131,8 @@ public class ConnectionContextImpl implements ConnectionContext {
 
     private void disconnectDevice(final boolean propagate,
                                   final boolean forced) {
-        final String device = Objects.nonNull(nodeId) ? nodeId.getValue() : getConnectionAdapter().getRemoteAddress().toString();
+        final String device =
+                Objects.nonNull(nodeId) ? nodeId.getValue() : getConnectionAdapter().getRemoteAddress().toString();
         final short auxiliaryId = Optional
                 .ofNullable(getFeatures())
                 .flatMap(features -> Optional
@@ -181,7 +182,8 @@ public class ConnectionContextImpl implements ConnectionContext {
     }
 
     /**
-     * This method returns safe nodeId for logging
+     * Get safe nodeId for logging.
+     *
      * @return string value od nodeId or string "null"
      */
     @Override
@@ -190,7 +192,8 @@ public class ConnectionContextImpl implements ConnectionContext {
     }
 
     @Override
-    public void setOutboundQueueHandleRegistration(OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration) {
+    public void setOutboundQueueHandleRegistration(OutboundQueueHandlerRegistration<OutboundQueueProvider>
+                                                               outboundQueueHandlerRegistration) {
         this.outboundQueueHandlerRegistration = outboundQueueHandlerRegistration;
     }
 
@@ -260,16 +263,16 @@ public class ConnectionContextImpl implements ConnectionContext {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object object) {
+        if (this == object) {
             return true;
         }
 
-        if (o == null || getClass() != o.getClass()) {
+        if (object == null || getClass() != object.getClass()) {
             return false;
         }
 
-        ConnectionContextImpl that = (ConnectionContextImpl) o;
+        ConnectionContextImpl that = (ConnectionContextImpl) object;
 
         if (!connectionAdapter.equals(that.connectionAdapter)) {
             return false;
@@ -340,21 +343,21 @@ public class ConnectionContextImpl implements ConnectionContext {
         }
 
         @Override
-        public boolean equals(Object o) {
-            if (this == o) {
+        public boolean equals(Object object) {
+            if (this == object) {
                 return true;
             }
 
-            if (o == null || getClass() != o.getClass()) {
+            if (object == null || getClass() != object.getClass()) {
                 return false;
             }
 
-            DeviceInfoImpl that = (DeviceInfoImpl) o;
+            DeviceInfoImpl that = (DeviceInfoImpl) object;
 
-            return  (nodeId.equals(that.nodeId) &&
-                    nodeII.equals(that.nodeII) &&
-                    version.equals(that.version) &&
-                    datapathId.equals(that.datapathId));
+            return  (nodeId.equals(that.nodeId)
+                    && nodeII.equals(that.nodeII)
+                    && version.equals(that.version)
+                    && datapathId.equals(that.datapathId));
 
         }
 

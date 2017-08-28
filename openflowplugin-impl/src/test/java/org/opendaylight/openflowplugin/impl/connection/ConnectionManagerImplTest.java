@@ -43,12 +43,12 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 /**
- * test of {@link ConnectionManagerImpl} - lightweight version, using basic ways (TDD)
+ * Test of {@link ConnectionManagerImpl} - lightweight version, using basic ways (TDD).
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ConnectionManagerImplTest {
 
-    /** timeout of final step [ms] */
+    // timeout of final step [ms]
     private static final int FINAL_STEP_TIMEOUT = 500;
     private ConnectionManagerImpl connectionManagerImpl;
     @Mock
@@ -60,11 +60,8 @@ public class ConnectionManagerImplTest {
     @Captor
     private ArgumentCaptor<OpenflowProtocolListener> ofpListenerAC;
 
-    private final static long ECHO_REPLY_TIMEOUT = 500;
+    private static final long ECHO_REPLY_TIMEOUT = 500;
 
-    /**
-     * before each test method
-     */
     @Before
     public void setUp() {
         final ThreadPoolLoggingExecutor threadPool = new ThreadPoolLoggingExecutor(0, Integer.MAX_VALUE,
@@ -83,25 +80,24 @@ public class ConnectionManagerImplTest {
                 .thenReturn(RpcResultBuilder.success(new BarrierOutputBuilder().build()).buildFuture());
     }
 
-    /**
-     * after each test method
-     * @throws InterruptedException
-     */
     @After
     public void tearDown() throws InterruptedException {
         Thread.sleep(200L);
     }
 
     /**
-     * Test method for {@link org.opendaylight.openflowplugin.impl.connection.ConnectionManagerImpl#onSwitchConnected(org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter)}.
+     * Test method for
+     * {@link org.opendaylight.openflowplugin.impl.connection.ConnectionManagerImpl#onSwitchConnected(
+     * org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter)}.
      * invoking onConnectionReady first, scenario:
      * <ol>
-     *  <li>send hello to device (rpc with void output)</li>
-     *  <li>receive hello from device (notification)</li>
-     *  <li>send getFeature to device (rpc with getFeatureOutput)</li>
-     *  <li>wait for rpc to finish with getFeatureOutput</li>
+     * <li>send hello to device (rpc with void output)</li>
+     * <li>receive hello from device (notification)</li>
+     * <li>send getFeature to device (rpc with getFeatureOutput)</li>
+     * <li>wait for rpc to finish with getFeatureOutput</li>
      * </ol>
-     * @throws InterruptedException
+     *
+     * @throws InterruptedException - interrupted exception
      */
     @Test
     public void testOnSwitchConnected1() throws Exception {
@@ -113,7 +109,8 @@ public class ConnectionManagerImplTest {
         final SettableFuture<RpcResult<Void>> voidResponseFx = SettableFuture.<RpcResult<Void>>create();
         Mockito.when(connection.hello(Matchers.any(HelloInput.class))).thenReturn(voidResponseFx);
         // prepare getFeature reply (getFeture rpc output)
-        final SettableFuture<RpcResult<GetFeaturesOutput>> featureResponseFx = SettableFuture.<RpcResult<GetFeaturesOutput>>create();
+        final SettableFuture<RpcResult<GetFeaturesOutput>> featureResponseFx =
+                SettableFuture.<RpcResult<GetFeaturesOutput>>create();
         Mockito.when(connection.getFeatures(Matchers.any(GetFeaturesInput.class))).thenReturn(featureResponseFx);
 
 
@@ -132,27 +129,31 @@ public class ConnectionManagerImplTest {
         // deliver getFeature output
         Thread.sleep(100L);
         final GetFeaturesOutput getFeatureOutput = new GetFeaturesOutputBuilder()
-        .setDatapathId(BigInteger.TEN)
-        .setVersion(OFConstants.OFP_VERSION_1_3)
-        .setXid(2L)
-        .setTables((short) 15)
-        .build();
+                .setDatapathId(BigInteger.TEN)
+                .setVersion(OFConstants.OFP_VERSION_1_3)
+                .setXid(2L)
+                .setTables((short) 15)
+                .build();
         final RpcResult<GetFeaturesOutput> rpcFeaturesOutput = RpcResultBuilder.success(getFeatureOutput).build();
         featureResponseFx.set(rpcFeaturesOutput);
 
-        Mockito.verify(deviceConnectedHandler, Mockito.timeout(500)).deviceConnected(Matchers.any(ConnectionContext.class));
+        Mockito.verify(deviceConnectedHandler,
+                Mockito.timeout(500)).deviceConnected(Matchers.any(ConnectionContext.class));
     }
 
     /**
-     * Test method for {@link org.opendaylight.openflowplugin.impl.connection.ConnectionManagerImpl#onSwitchConnected(org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter)}.
+     * Test method for
+     * {@link org.opendaylight.openflowplugin.impl.connection.ConnectionManagerImpl#onSwitchConnected(
+     * org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter)}.
      * invoking onHelloMessage, scenario:
      * <ol>
-     *  <li>receive hello from device (notification)</li>
-     *  <li>send hello to device (rpc with void output)</li>
-     *  <li>send getFeature to device (rpc with getFeatureOutput)</li>
-     *  <li>wait for rpc to finish with getFeatureOutput</li>
+     * <li>receive hello from device (notification)</li>
+     * <li>send hello to device (rpc with void output)</li>
+     * <li>send getFeature to device (rpc with getFeatureOutput)</li>
+     * <li>wait for rpc to finish with getFeatureOutput</li>
      * </ol>
-     * @throws InterruptedException
+     *
+     * @throws InterruptedException - interrupted exception
      */
     @Test
     public void testOnSwitchConnected2() throws Exception {
@@ -164,7 +165,8 @@ public class ConnectionManagerImplTest {
         final SettableFuture<RpcResult<Void>> voidResponseFx = SettableFuture.<RpcResult<Void>>create();
         Mockito.when(connection.hello(Matchers.any(HelloInput.class))).thenReturn(voidResponseFx);
         // prepare getFeature reply (getFeture rpc output)
-        final SettableFuture<RpcResult<GetFeaturesOutput>> featureResponseFx = SettableFuture.<RpcResult<GetFeaturesOutput>>create();
+        final SettableFuture<RpcResult<GetFeaturesOutput>> featureResponseFx =
+                SettableFuture.<RpcResult<GetFeaturesOutput>>create();
         Mockito.when(connection.getFeatures(Matchers.any(GetFeaturesInput.class))).thenReturn(featureResponseFx);
 
 
@@ -183,14 +185,15 @@ public class ConnectionManagerImplTest {
         // deliver getFeature output
         Thread.sleep(100L);
         final GetFeaturesOutput getFeatureOutput = new GetFeaturesOutputBuilder()
-        .setDatapathId(BigInteger.TEN)
-        .setVersion(OFConstants.OFP_VERSION_1_3)
-        .setXid(2L)
-        .setTables((short) 15)
-        .build();
+                .setDatapathId(BigInteger.TEN)
+                .setVersion(OFConstants.OFP_VERSION_1_3)
+                .setXid(2L)
+                .setTables((short) 15)
+                .build();
         final RpcResult<GetFeaturesOutput> rpcFeaturesOutput = RpcResultBuilder.success(getFeatureOutput).build();
         featureResponseFx.set(rpcFeaturesOutput);
 
-        Mockito.verify(deviceConnectedHandler, Mockito.timeout(FINAL_STEP_TIMEOUT)).deviceConnected(Matchers.any(ConnectionContext.class));
+        Mockito.verify(deviceConnectedHandler,
+                Mockito.timeout(FINAL_STEP_TIMEOUT)).deviceConnected(Matchers.any(ConnectionContext.class));
     }
 }

@@ -47,7 +47,8 @@ public class OpenflowProtocolListenerInitialImplTest {
     public void setUp() throws Exception {
         Mockito.when(connectionAdapter.isAlive()).thenReturn(true);
         Mockito.when(connectionContext.getConnectionAdapter()).thenReturn(connectionAdapter);
-        Mockito.when(connectionContext.getConnectionState()).thenReturn(null, ConnectionContext.CONNECTION_STATE.HANDSHAKING);
+        Mockito.when(connectionContext.getConnectionState())
+                .thenReturn(null, ConnectionContext.CONNECTION_STATE.HANDSHAKING);
         Mockito.when(handshakeContext.getHandshakeManager()).thenReturn(handshakeManager);
 
         openflowProtocolListenerInitial = new OpenflowProtocolListenerInitialImpl(connectionContext, handshakeContext);

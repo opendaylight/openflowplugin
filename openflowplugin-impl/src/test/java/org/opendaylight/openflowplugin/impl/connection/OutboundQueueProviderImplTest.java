@@ -21,7 +21,8 @@ public class OutboundQueueProviderImplTest extends TestCase {
     private static final Long DUMMY_ENTRY_NUMBER = 44L;
     private static final Long DUMMY_XID = 55L;
 
-    private final OutboundQueueProviderImpl outboundQueueProvider = new OutboundQueueProviderImpl(OFConstants.OFP_VERSION_1_3);
+    private final OutboundQueueProviderImpl outboundQueueProvider =
+            new OutboundQueueProviderImpl(OFConstants.OFP_VERSION_1_3);
 
     @Test
     public void testReserveEntry() throws Exception {
@@ -40,7 +41,7 @@ public class OutboundQueueProviderImplTest extends TestCase {
     @Test
     public void testCreateBarrierRequest() {
         final BarrierInput barrierRequest = outboundQueueProvider.createBarrierRequest(DUMMY_XID);
-        assertNotNull(barrierRequest);;
+        assertNotNull(barrierRequest);
         assertEquals((short)OFConstants.OFP_VERSION_1_3, (short)barrierRequest.getVersion());
         assertEquals(DUMMY_XID, barrierRequest.getXid());
     }

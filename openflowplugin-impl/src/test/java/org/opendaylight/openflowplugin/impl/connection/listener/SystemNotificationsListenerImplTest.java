@@ -40,13 +40,13 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 /**
- * Testing basic bahavior of {@link SystemNotificationsListenerImpl}
+ * Testing basic bahavior of {@link SystemNotificationsListenerImpl}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class SystemNotificationsListenerImplTest {
 
     private static final int SAFE_TIMEOUT = 1000;
-    private final static int ECHO_REPLY_TIMEOUT = 2000;
+    private static final int ECHO_REPLY_TIMEOUT = 2000;
 
     @Mock
     private ConnectionAdapter connectionAdapter;
@@ -57,17 +57,17 @@ public class SystemNotificationsListenerImplTest {
     private ConnectionContextImpl connectionContextGolem;
     private SystemNotificationsListenerImpl systemNotificationsListener;
 
-    private static final NodeId nodeId =
+    private static final NodeId NODE_ID =
             new NodeId("OFP:TEST");
 
-    private final ThreadPoolLoggingExecutor threadPool =
-            new ThreadPoolLoggingExecutor(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<>(), "opfpool");
+    private final ThreadPoolLoggingExecutor threadPool = new ThreadPoolLoggingExecutor(
+            0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<>(), "opfpool");
 
     @Before
     public void setUp() {
         connectionContextGolem = new ConnectionContextImpl(connectionAdapter);
         connectionContextGolem.changeStateToWorking();
-        connectionContextGolem.setNodeId(nodeId);
+        connectionContextGolem.setNodeId(NODE_ID);
         connectionContext = Mockito.spy(connectionContextGolem);
 
         Mockito.when(connectionAdapter.getRemoteAddress()).thenReturn(
@@ -89,9 +89,7 @@ public class SystemNotificationsListenerImplTest {
     }
 
     /**
-     * successful scenario - connection is on and closes without errors
-     *
-     * @throws Exception
+     * Successful scenario - connection is on and closes without errors.
      */
     @Test
     public void testOnDisconnectEvent1() throws Exception {
@@ -108,9 +106,7 @@ public class SystemNotificationsListenerImplTest {
     }
 
     /**
-     * broken scenario - connection is on but fails to close
-     *
-     * @throws Exception
+     * Broken scenario - connection is on but fails to close.
      */
     @Test
     public void testOnDisconnectEvent2() throws Exception {
@@ -127,16 +123,15 @@ public class SystemNotificationsListenerImplTest {
     }
 
     /**
-     * successful scenario - connection is already down
-     *
-     * @throws Exception
+     * Successful scenario - connection is already down.
      */
     @Test
     public void testOnDisconnectEvent3() throws Exception {
         connectionContextGolem.changeStateToTimeouting();
 
         Mockito.when(connectionAdapter.isAlive()).thenReturn(true);
-        Mockito.when(connectionAdapter.disconnect()).thenReturn(Futures.<Boolean>immediateFailedFuture(new Exception("unit exception")));
+        Mockito.when(connectionAdapter.disconnect())
+                .thenReturn(Futures.<Boolean>immediateFailedFuture(new Exception("unit exception")));
 
         DisconnectEvent disconnectNotification = new DisconnectEventBuilder().setInfo("testing disconnect").build();
         systemNotificationsListener.onDisconnectEvent(disconnectNotification);
@@ -148,9 +143,7 @@ public class SystemNotificationsListenerImplTest {
     }
 
     /**
-     * broken scenario - connection is on but throws error on close
-     *
-     * @throws Exception
+     * Broken scenario - connection is on but throws error on close.
      */
     @Test
     public void testOnDisconnectEvent4() throws Exception {
@@ -167,13 +160,12 @@ public class SystemNotificationsListenerImplTest {
     }
 
     /**
-     * first encounter of idle event, echo received successfully
-     *
-     * @throws Exception
+     * First encounter of idle event, echo received successfully.
      */
     @Test
     public void testOnSwitchIdleEvent1() throws Exception {
-        final Future<RpcResult<EchoOutput>> echoReply = Futures.immediateFuture(RpcResultBuilder.success(new EchoOutputBuilder().setXid(0L).build()).build());
+        final Future<RpcResult<EchoOutput>> echoReply =
+                Futures.immediateFuture(RpcResultBuilder.success(new EchoOutputBuilder().setXid(0L).build()).build());
 
         Mockito.when(connectionAdapter.echo(Matchers.any(EchoInput.class))).thenReturn(echoReply);
 
@@ -191,16 +183,15 @@ public class SystemNotificationsListenerImplTest {
     }
 
     /**
-     * first encounter of idle event, echo not receive
-     *
-     * @throws Exception
+     * First encounter of idle event, echo not receive.
      */
     @Test
     public void testOnSwitchIdleEvent2() throws Exception {
         final SettableFuture<RpcResult<EchoOutput>> echoReply = SettableFuture.create();
         Mockito.when(connectionAdapter.echo(Matchers.any(EchoInput.class))).thenReturn(echoReply);
         Mockito.when(connectionAdapter.isAlive()).thenReturn(true);
-        Mockito.when(connectionAdapter.disconnect()).thenReturn(Futures.<Boolean>immediateFailedFuture(new Exception("unit exception")));
+        Mockito.when(connectionAdapter.disconnect())
+                .thenReturn(Futures.<Boolean>immediateFailedFuture(new Exception("unit exception")));
 
         SwitchIdleEvent notification = new SwitchIdleEventBuilder().setInfo("wake up, device sleeps").build();
         systemNotificationsListener.onSwitchIdleEvent(notification);
