@@ -45,7 +45,8 @@ public class ConnectionContextImplTest {
 
     @Before
     public void setUp() throws Exception {
-        Mockito.when(connetionAdapter.getRemoteAddress()).thenReturn(InetSocketAddress.createUnresolved("ofp-ut.example.org", 4242));
+        Mockito.when(connetionAdapter.getRemoteAddress())
+                .thenReturn(InetSocketAddress.createUnresolved("ofp-ut.example.org", 4242));
         Mockito.when(connetionAdapter.isAlive()).thenReturn(true);
 
         connectionContext = new ConnectionContextImpl(connetionAdapter);
