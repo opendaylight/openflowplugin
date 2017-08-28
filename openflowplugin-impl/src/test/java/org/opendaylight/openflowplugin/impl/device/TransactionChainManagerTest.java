@@ -194,8 +194,8 @@ public class TransactionChainManagerTest {
     @Test
     public void testOnTransactionChainFailed() throws Exception {
         txChainManager.onTransactionChainFailed(transactionChain, Mockito.mock(AsyncTransaction.class), Mockito.mock(Throwable.class));
-        Mockito.verify(txChain).close();
-        Mockito.verify(dataBroker, Mockito.times(2)).createTransactionChain(txChainManager);
+        Mockito.verify(txChain, Mockito.never()).close();
+        Mockito.verify(dataBroker, Mockito.times(1)).createTransactionChain(txChainManager);
     }
 
     @Test
