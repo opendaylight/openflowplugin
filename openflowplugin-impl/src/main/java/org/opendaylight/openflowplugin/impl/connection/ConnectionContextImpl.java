@@ -144,11 +144,11 @@ public class ConnectionContextImpl implements ConnectionContext {
             return;
         }
 
+        connectionState = ConnectionContext.CONNECTION_STATE.RIP;
+
         SessionStatistics.countEvent(device, forced
                 ? SessionStatistics.ConnectionStatus.CONNECTION_DISCONNECTED_BY_OFP
                 : SessionStatistics.ConnectionStatus.CONNECTION_DISCONNECTED_BY_DEVICE);
-
-        connectionState = ConnectionContext.CONNECTION_STATE.RIP;
 
         LOG.debug("{}: device={} | auxiliaryId={} | connectionState={}",
                 forced ? "Actively closing connection" : "Disconnecting",
