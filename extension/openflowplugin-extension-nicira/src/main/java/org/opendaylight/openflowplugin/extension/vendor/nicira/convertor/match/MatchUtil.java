@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -33,6 +33,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcUpdateFlowUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxArpShaGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxArpThaGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxCtLabelGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxCtMarkGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxCtStateGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxCtZoneGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshc1Grouping;
@@ -129,6 +131,10 @@ public class MatchUtil {
             NxmOfUdpSrcGrouping.class);
     public final static GroupingResolver<NxmOfUdpDstGrouping, Extension> udpDstResolver = new GroupingResolver<>(
             NxmOfUdpDstGrouping.class);
+    public final static GroupingResolver<NxmNxCtLabelGrouping, Extension> ctLabelResolver = new GroupingResolver<>(
+            NxmNxCtLabelGrouping.class);
+    public final static GroupingResolver<NxmNxCtMarkGrouping, Extension> ctMarkResolver = new GroupingResolver<>(
+            NxmNxCtMarkGrouping.class);
     public final static GroupingResolver<NxmNxCtStateGrouping, Extension> ctStateResolver = new GroupingResolver<>(
             NxmNxCtStateGrouping.class);
     public final static GroupingResolver<NxmNxCtZoneGrouping, Extension> ctZoneResolver = new GroupingResolver<>(
@@ -177,7 +183,8 @@ public class MatchUtil {
         ctStateResolver.setAugmentations(augmentationsOfExtension);
         ctZoneResolver.setAugmentations(augmentationsOfExtension);
         nxmOfInportResolver.setAugmentations(augmentationsOfExtension);
-
+        ctLabelResolver.setAugmentations(augmentationsOfExtension);
+        ctMarkResolver.setAugmentations(augmentationsOfExtension);
     }
 
     public static MatchEntryBuilder createDefaultMatchEntryBuilder(Class<? extends MatchField> matchField,

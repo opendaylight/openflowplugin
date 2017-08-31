@@ -549,6 +549,26 @@ bits specified from the register.";
                     }
                 }
             }
+            case nx-action-ct-label-case {
+                container nx-action-ct-label {
+                    leaf ct-label {
+                        type uint64;
+                    }
+                    leaf mask {
+                        type uint64;
+                    }
+                }
+            }
+            case nx-action-ct-mark-case {
+                container nx-action-ct-mark {
+                    leaf ct-mark {
+                        type uint32;
+                    }
+                    leaf mask {
+                        type uint32;
+                    }
+                }
+            }
         }
     }
 

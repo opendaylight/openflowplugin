@@ -10,6 +10,7 @@ package org.opendaylight.openflowjava.nx.codec.action;
 
 import io.netty.buffer.ByteBuf;
 
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,9 +28,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack.grouping.NxActionConntrackBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack.grouping.nx.action.conntrack.CtActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack.grouping.nx.action.conntrack.CtActionsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.NxActionCtLabelCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.NxActionCtMarkCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.NxActionNatCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.NxActionCtLabelCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.NxActionCtMarkCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.NxActionNatCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.ct.label._case.NxActionCtLabel;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.ct.mark._case.NxActionCtMark;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.nat._case.NxActionNat;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.ct.label._case.NxActionCtLabelBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.ct.mark._case.NxActionCtMarkBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.nat._case.NxActionNatBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +55,11 @@ public class ConntrackCodec extends AbstractActionCodec {
     public static final int NX_NAT_LENGTH = 16;
     public static final int SHORT_LENGTH = 2;
     public static final int INT_LENGTH = 4;
-
+    private static final int NX_CT_LABEL_LENGTH = 32; // TODO - MAYBE PULL THESE FROM CTLABELCODEC
+    private static final int NXM_CT_LABEL_FIELD_CODE = 108;
+    private static final int NX_CT_MARK_LENGTH = 8;
+    private static final int NXM_CT_MARK_FIELD_CODE = 107;
+    
     public static final byte NXAST_CONNTRACK_SUBTYPE = 35;
     public static final byte NXAST_NAT_SUBTYPE = 36;
     public static final NiciraActionSerializerKey SERIALIZER_KEY =
@@ -83,7 +96,11 @@ public class ConntrackCodec extends AbstractActionCodec {
                 int natLength = getNatActionLength(natAction);
                 int pad = 8 - (natLength % 8);
                 length += natLength + pad;
-                }
+            } else if (ctActions.getOfpactActions() instanceof NxActionCtLabelCase) {
+                length += NX_CT_LABEL_LENGTH;
+            } else if (ctActions.getOfpactActions() instanceof NxActionCtMarkCase) {
+                length += NX_CT_MARK_LENGTH;
+            }
         }
         LOG.trace("ActionLength :conntrack: length {}",length);
         return length;
@@ -141,6 +158,25 @@ public class ConntrackCodec extends AbstractActionCodec {
                         outBuffer.writeShort(natAction.getPortMax());
                     }
                     outBuffer.writeZero(pad);
+                } else if (ctActions.getOfpactActions() instanceof NxActionCtLabelCase){
+                    NxActionCtLabelCase nxActionCtLabelCase = (NxActionCtLabelCase)ctActions.getOfpactActions();
+                    NxActionCtLabel ctLabelAction = nxActionCtLabelCase.getNxActionCtLabel();
+                    
+                    BigInteger value = ctLabelAction.getCtLabel();
+                    BigInteger mask = ctLabelAction.getMask();
+
+                    outBuffer.writeZero(8); // pad to 128 bits
+                    outBuffer.writeLong(value.longValue());
+                    outBuffer.writeZero(8); // pad to 128 bits
+                    outBuffer.writeLong(mask.longValue());
+                    
+                    serializeHeader(NX_CT_LABEL_LENGTH, NXM_CT_LABEL_FIELD_CODE, outBuffer);
+                } else if (ctActions.getOfpactActions() instanceof NxActionCtMarkCase){
+                    NxActionCtMarkCase nxActionCtMarkCase = (NxActionCtMarkCase)ctActions.getOfpactActions();
+                    NxActionCtMark ctMarkAction = nxActionCtMarkCase.getNxActionCtMark();
+                    
+                    outBuffer.writeInt(ctMarkAction.getCtMark().intValue());
+                    outBuffer.writeInt(ctMarkAction.getMask().intValue());
                 }
             }
         }
@@ -170,6 +206,9 @@ public class ConntrackCodec extends AbstractActionCodec {
             int ctActionsLength) {
         List<CtActions> ctActionsList = new ArrayList<>();
         while (ctActionsLength > 0){
+            
+            // TODO
+            
             int startIndex = message.readerIndex();
             int length = deserializeCtHeader(message);
             ctActionsLength = ctActionsLength - length;
