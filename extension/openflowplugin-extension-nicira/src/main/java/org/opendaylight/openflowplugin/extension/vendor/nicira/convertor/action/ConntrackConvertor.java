@@ -35,9 +35,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.conntrack.grouping.nx.conntrack.CtActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.conntrack.grouping.nx.conntrack.CtActionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.OfpactActions;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.actions.NxActionCtMarkCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.actions.NxActionNatCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.actions.NxActionCtMarkCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.actions.NxActionNatCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.actions.nx.action.ct.mark._case.NxActionCtMark;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.actions.nx.action.nat._case.NxActionNat;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.actions.nx.action.ct.mark._case.NxActionCtMarkBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.actions.nx.action.nat._case.NxActionNatBuilder;
 
 /**
@@ -70,13 +74,13 @@ public class ConntrackConvertor implements
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack
                 .grouping.nx.action.conntrack.CtActions ctAction : action.getCtActions()) {
             org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions
-                .OfpactActions natAction = ctAction.getOfpactActions();
-            if (natAction instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421
+                .OfpactActions ofpactAction = ctAction.getOfpactActions();
+            if (ofpactAction instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421
                     .ofpact.actions.ofpact.actions.NxActionNatCase) {
                 org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact
                     .actions.nx.action.nat._case.NxActionNat nxActionNat = ((org.opendaylight.yang.gen.v1.urn
                             .opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions
-                            .NxActionNatCase) natAction).getNxActionNat();
+                            .NxActionNatCase) ofpactAction).getNxActionNat();
                 NxActionNatBuilder nxActionNatBuilder = new NxActionNatBuilder();
                 nxActionNatBuilder.setFlags(nxActionNat.getFlags());
                 nxActionNatBuilder.setRangePresent(nxActionNat.getRangePresent());
@@ -86,6 +90,20 @@ public class ConntrackConvertor implements
                 nxActionNatBuilder.setPortMax(nxActionNat.getPortMax());
                 NxActionNatCaseBuilder caseBuilder = new NxActionNatCaseBuilder();
                 caseBuilder.setNxActionNat(nxActionNatBuilder.build());
+                CtActionsBuilder ctActionsBuilder = new CtActionsBuilder();
+                ctActionsBuilder.setOfpactActions(caseBuilder.build());
+                ctActions.add(ctActionsBuilder.build());
+            } else if (ofpactAction instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421
+                    .ofpact.actions.ofpact.actions.NxActionCtMarkCase) {
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact
+                    .actions.nx.action.ct.mark._case.NxActionCtMark nxActionCtMark = ((org.opendaylight.yang.gen.v1.urn
+                            .opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions
+                            .NxActionCtMarkCase) ofpactAction).getNxActionCtMark();
+                NxActionCtMarkBuilder nxActionCtMarkBuilder = new NxActionCtMarkBuilder();
+                nxActionCtMarkBuilder.setCtMark(nxActionCtMark.getCtMark());
+                // TODO: ct_mark mask is not supported yet
+                NxActionCtMarkCaseBuilder caseBuilder = new NxActionCtMarkCaseBuilder();
+                caseBuilder.setNxActionCtMark(nxActionCtMarkBuilder.build());
                 CtActionsBuilder ctActionsBuilder = new CtActionsBuilder();
                 ctActionsBuilder.setOfpactActions(caseBuilder.build());
                 ctActions.add(ctActionsBuilder.build());
@@ -158,10 +176,10 @@ public class ConntrackConvertor implements
             .grouping.nx.action.conntrack.CtActions> ctActions = new ArrayList<org.opendaylight.yang.gen.v1.urn
             .opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack.grouping.nx.action.conntrack
             .CtActions>();
-        for ( CtActions ctAction : action.getCtActions()) {
-            OfpactActions natAction = ctAction.getOfpactActions();
-            if (natAction instanceof NxActionNatCase) {
-                NxActionNat nxActionNat = ((NxActionNatCase) natAction).getNxActionNat();
+        for (CtActions ctAction : action.getCtActions()) {
+            OfpactActions ofpactAction = ctAction.getOfpactActions();
+            if (ofpactAction instanceof NxActionNatCase) {
+                NxActionNat nxActionNat = ((NxActionNatCase) ofpactAction).getNxActionNat();
                 org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact
                     .actions.nx.action.nat._case.NxActionNatBuilder nxActionNatBuilder = new org.opendaylight.yang.gen
                     .v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.nat
@@ -176,6 +194,24 @@ public class ConntrackConvertor implements
                     .actions.NxActionNatCaseBuilder caseBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight
                     .openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.NxActionNatCaseBuilder();
                 caseBuilder.setNxActionNat(nxActionNatBuilder.build());
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack
+                    .grouping.nx.action.conntrack.CtActionsBuilder ctActionsBuilder = new org.opendaylight.yang.gen.v1
+                    .urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack.grouping.nx.action
+                    .conntrack.CtActionsBuilder();
+                ctActionsBuilder.setOfpactActions(caseBuilder.build());
+                ctActions.add(ctActionsBuilder.build());
+            } else if (ofpactAction instanceof NxActionCtMarkCase) {
+                NxActionCtMark nxActionCtMark = ((NxActionCtMarkCase) ofpactAction).getNxActionCtMark();
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact
+                    .actions.nx.action.ct.mark._case.NxActionCtMarkBuilder nxActionCtMarkBuilder = new org.opendaylight.yang.gen
+                    .v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.ct.mark
+                    ._case.NxActionCtMarkBuilder();
+                nxActionCtMarkBuilder.setCtMark(nxActionCtMark.getCtMark());
+                // TODO: ct_mark mask is not supported yet
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact
+                    .actions.NxActionCtMarkCaseBuilder caseBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight
+                    .openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.NxActionCtMarkCaseBuilder();
+                caseBuilder.setNxActionCtMark(nxActionCtMarkBuilder.build());
                 org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack
                     .grouping.nx.action.conntrack.CtActionsBuilder ctActionsBuilder = new org.opendaylight.yang.gen.v1
                     .urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack.grouping.nx.action

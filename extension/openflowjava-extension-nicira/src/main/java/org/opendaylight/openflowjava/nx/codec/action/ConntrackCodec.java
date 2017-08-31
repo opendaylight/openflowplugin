@@ -10,6 +10,7 @@ package org.opendaylight.openflowjava.nx.codec.action;
 
 import io.netty.buffer.ByteBuf;
 
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,9 +28,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack.grouping.NxActionConntrackBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack.grouping.nx.action.conntrack.CtActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack.grouping.nx.action.conntrack.CtActionsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.NxActionCtMarkCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.NxActionNatCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.NxActionCtMarkCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.NxActionNatCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.ct.mark._case.NxActionCtMark;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.nat._case.NxActionNat;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.ct.mark._case.NxActionCtMarkBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.nat._case.NxActionNatBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +51,11 @@ public class ConntrackCodec extends AbstractActionCodec {
     public static final int NX_NAT_LENGTH = 16;
     public static final int SHORT_LENGTH = 2;
     public static final int INT_LENGTH = 4;
-
+    private static final int NX_CT_MARK_LENGTH = 8;
+    private static final int NXM_CT_MARK_FIELD_CODE = 107;
+    private static final int SET_FIELD_LENGTH = 16; // TODO - MAYBE PULL THESE FROM ACTIONCONSTANTS
+    private static final int SET_FIELD_CODE = 25;
+    
     public static final byte NXAST_CONNTRACK_SUBTYPE = 35;
     public static final byte NXAST_NAT_SUBTYPE = 36;
     public static final NiciraActionSerializerKey SERIALIZER_KEY =
@@ -83,7 +92,9 @@ public class ConntrackCodec extends AbstractActionCodec {
                 int natLength = getNatActionLength(natAction);
                 int pad = 8 - (natLength % 8);
                 length += natLength + pad;
-                }
+            } else if (ctActions.getOfpactActions() instanceof NxActionCtMarkCase) {
+                length += SET_FIELD_LENGTH;
+            }
         }
         LOG.trace("ActionLength :conntrack: length {}",length);
         return length;
@@ -117,6 +128,7 @@ public class ConntrackCodec extends AbstractActionCodec {
                     NxActionNat natAction = nxActionNatCase.getNxActionNat();
                     int natLength = getNatActionLength(natAction);
                     int pad = 8 - (natLength % 8);
+
                     serializeHeader(natLength + pad, NXAST_NAT_SUBTYPE, outBuffer);
                     outBuffer.writeZero(2);
                     outBuffer.writeShort(natAction.getFlags().shortValue());
@@ -141,6 +153,27 @@ public class ConntrackCodec extends AbstractActionCodec {
                         outBuffer.writeShort(natAction.getPortMax());
                     }
                     outBuffer.writeZero(pad);
+                } else if (ctActions.getOfpactActions() instanceof NxActionCtMarkCase){
+                    NxActionCtMarkCase nxActionCtMarkCase = (NxActionCtMarkCase)ctActions.getOfpactActions();
+                    NxActionCtMark ctMarkAction = nxActionCtMarkCase.getNxActionCtMark();
+
+                    // structure:
+                    // 00 19 - set field code
+                    // 00 10 - set field length
+                    // 00 01 d6 04
+                    // xx xx xx xx FIELD VALUE (4 bytes)
+                    // xx xx xx xx PADDING (4 bytes)
+                    
+                    outBuffer.writeShort(SET_FIELD_CODE);
+                    outBuffer.writeShort(SET_FIELD_LENGTH);
+                    outBuffer.writeZero(1);
+                    outBuffer.writeByte(1);
+                    outBuffer.writeByte(NXM_CT_MARK_FIELD_CODE << 1);
+                    outBuffer.writeByte(4);                                                        
+                    outBuffer.writeInt(ctMarkAction.getCtMark().intValue());
+                    outBuffer.writeZero(4);
+                    
+                    // TODO: ct_mark mask is not supported yet
                 }
             }
         }
@@ -170,36 +203,66 @@ public class ConntrackCodec extends AbstractActionCodec {
             int ctActionsLength) {
         List<CtActions> ctActionsList = new ArrayList<>();
         while (ctActionsLength > 0){
-            int startIndex = message.readerIndex();
-            int length = deserializeCtHeader(message);
-            ctActionsLength = ctActionsLength - length;
-            NxActionNatBuilder nxActionNatBuilder = new NxActionNatBuilder();
-            message.skipBytes(2);
-            nxActionNatBuilder.setFlags(message.readUnsignedShort());
+            int startReaderIndex = message.readerIndex();
+          
+            if (EncodeConstants.EXPERIMENTER_VALUE == message.readUnsignedShort()) {
+                // NAT action
+                // reset indices
+                message.setIndex(startReaderIndex, message.writerIndex());
+                
+                int startIndex = message.readerIndex();
+                int length = deserializeCtHeader(message);
+                ctActionsLength = ctActionsLength - length;
+                NxActionNatBuilder nxActionNatBuilder = new NxActionNatBuilder();
+                message.skipBytes(2);
+                nxActionNatBuilder.setFlags(message.readUnsignedShort());
 
-            int rangePresent = message.readUnsignedShort();
-            nxActionNatBuilder.setRangePresent(rangePresent);
-            if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEIPV4MIN.getIntValue())) {
-                InetAddress address = InetAddresses.fromInteger((int)message.readUnsignedInt());
-                nxActionNatBuilder.setIpAddressMin(new IpAddress(address.getHostAddress().toCharArray()));
+                int rangePresent = message.readUnsignedShort();
+                nxActionNatBuilder.setRangePresent(rangePresent);
+                if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEIPV4MIN.getIntValue())) {
+                    InetAddress address = InetAddresses.fromInteger((int)message.readUnsignedInt());
+                    nxActionNatBuilder.setIpAddressMin(new IpAddress(address.getHostAddress().toCharArray()));
+                }
+                if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEIPV4MAX.getIntValue())) {
+                    InetAddress address = InetAddresses.fromInteger((int)message.readUnsignedInt());
+                    nxActionNatBuilder.setIpAddressMax(new IpAddress(address.getHostAddress().toCharArray()));
+                }
+                if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEPROTOMIN.getIntValue())) {
+                    nxActionNatBuilder.setPortMin(message.readUnsignedShort());
+                }
+                if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEPROTOMAX.getIntValue())) {
+                    nxActionNatBuilder.setPortMax(message.readUnsignedShort());
+                }
+                NxActionNatCaseBuilder caseBuilder = new NxActionNatCaseBuilder();
+                CtActionsBuilder ctActionsBuilder = new CtActionsBuilder();
+                ctActionsBuilder.setOfpactActions(caseBuilder.build());
+                caseBuilder.setNxActionNat(nxActionNatBuilder.build());
+                ctActionsList.add(ctActionsBuilder.build());
+                int pad = length - (message.readerIndex() - startIndex);
+                message.skipBytes(pad);               
+            } else {
+                // only other possible action here is currently ct_mark
+                // reset indices
+                message.setIndex(startReaderIndex, message.writerIndex());
+                
+                // size of set field code
+                message.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+                // size of set field length
+                message.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+                // 00 01 d6 04
+                message.skipBytes(EncodeConstants.SIZE_OF_INT_IN_BYTES);
+                
+                NxActionCtMarkBuilder nxActionCtMarkBuilder = new NxActionCtMarkBuilder();
+                nxActionCtMarkBuilder.setCtMark(message.readUnsignedInt());
+                  
+                NxActionCtMarkCaseBuilder caseBuilder = new NxActionCtMarkCaseBuilder();
+                CtActionsBuilder ctActionsBuilder = new CtActionsBuilder();
+                ctActionsBuilder.setOfpactActions(caseBuilder.build());
+                caseBuilder.setNxActionCtMark(nxActionCtMarkBuilder.build());
+                ctActionsList.add(ctActionsBuilder.build());
+                // padding
+                message.skipBytes(EncodeConstants.SIZE_OF_INT_IN_BYTES);
             }
-            if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEIPV4MAX.getIntValue())) {
-                InetAddress address = InetAddresses.fromInteger((int)message.readUnsignedInt());
-                nxActionNatBuilder.setIpAddressMax(new IpAddress(address.getHostAddress().toCharArray()));
-            }
-            if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEPROTOMIN.getIntValue())) {
-                nxActionNatBuilder.setPortMin(message.readUnsignedShort());
-            }
-            if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEPROTOMAX.getIntValue())) {
-                nxActionNatBuilder.setPortMax(message.readUnsignedShort());
-            }
-            NxActionNatCaseBuilder caseBuilder = new NxActionNatCaseBuilder();
-            caseBuilder.setNxActionNat(nxActionNatBuilder.build());
-            CtActionsBuilder ctActionsBuilder = new CtActionsBuilder();
-            ctActionsBuilder.setOfpactActions(caseBuilder.build());
-            ctActionsList.add(ctActionsBuilder.build());
-            int pad = length - (message.readerIndex() - startIndex);
-            message.skipBytes(pad);
         }
         nxActionConntrackBuilder.setCtActions(ctActionsList);
     }

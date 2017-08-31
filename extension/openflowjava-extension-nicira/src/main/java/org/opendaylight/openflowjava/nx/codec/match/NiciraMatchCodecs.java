@@ -59,4 +59,6 @@ public class NiciraMatchCodecs {
     public static final Ipv6SrcCodec IPV6_SRC_CODEC = new Ipv6SrcCodec();
     public static final Ipv6DstCodec IPV6_DST_CODEC = new Ipv6DstCodec();
     public static final IcmpTypeCodec ICMP_TYPE_CODEC = new IcmpTypeCodec();
+    public static final CtLabelCodec CT_LBL_CODEC = new CtLabelCodec();
+    public static final CtMarkCodec CT_MARK_CODEC = new CtMarkCodec();
 }

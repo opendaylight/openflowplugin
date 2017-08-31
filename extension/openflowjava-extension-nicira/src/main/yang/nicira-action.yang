@@ -312,7 +312,14 @@ module nicira-action {
                     }
                 }
             }
-
+            case nx-action-ct-mark-case {
+                container nx-action-ct-mark {
+                    leaf ct-mark {
+                        type uint32;
+                    }
+                    // TODO: ct_mark mask is not supported yet
+                }
+            }            
         }
     }
 
