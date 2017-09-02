@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015 Ericsson India Global Services Pvt Ltd. and others.  All rights reserved.
+ * Copyright (c) 2015, 2017 Ericsson India Global Services Pvt Ltd. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -14,7 +14,6 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import java.math.BigInteger;
-import java.util.concurrent.Callable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -31,7 +30,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnectorCommitter<FlowCapableNodeConnector> implements FlowNodeConnectorInventoryTranslator {
+public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnectorCommitter<FlowCapableNodeConnector>
+        implements FlowNodeConnectorInventoryTranslator {
 
     private static final Logger LOG = LoggerFactory.getLogger(FlowNodeConnectorInventoryTranslatorImpl.class);
 
@@ -46,9 +46,11 @@ public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnec
             .augmentation(FlowCapableNodeConnector.class)
             .build();
 
-    private Multimap<BigInteger,String> dpnToPortMultiMap = Multimaps.synchronizedListMultimap(ArrayListMultimap.<BigInteger,String>create());
+    private final Multimap<BigInteger, String> dpnToPortMultiMap = Multimaps
+            .synchronizedListMultimap(ArrayListMultimap.<BigInteger, String>create());
 
-    public FlowNodeConnectorInventoryTranslatorImpl(final ForwardingRulesManager manager, final DataBroker dataBroker){
+    @SuppressWarnings("IllegalCatch")
+    public FlowNodeConnectorInventoryTranslatorImpl(final ForwardingRulesManager manager, final DataBroker dataBroker) {
         super(manager, FlowCapableNodeConnector.class);
         Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
 
@@ -57,21 +59,18 @@ public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnec
         try {
             SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(ForwardingRulesManagerImpl.STARTUP_LOOP_TICK,
                     ForwardingRulesManagerImpl.STARTUP_LOOP_MAX_RETRIES);
-            dataTreeChangeListenerRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<FlowNodeConnectorInventoryTranslatorImpl>>() {
-                @Override
-                public ListenerRegistration<FlowNodeConnectorInventoryTranslatorImpl> call() throws Exception {
-                    return dataBroker.registerDataTreeChangeListener(treeId, FlowNodeConnectorInventoryTranslatorImpl.this);
-                }
-            });
+            dataTreeChangeListenerRegistration = looper.loopUntilNoException(() -> dataBroker
+                    .registerDataTreeChangeListener(treeId, FlowNodeConnectorInventoryTranslatorImpl.this));
         } catch (final Exception e) {
             LOG.warn(" FlowNodeConnectorInventoryTranslatorImpl listener registration fail!");
             LOG.debug("FlowNodeConnectorInventoryTranslatorImpl DataTreeChangeListener registration fail ..", e);
-            throw new IllegalStateException("FlowNodeConnectorInventoryTranslatorImpl startup fail! System needs restart.", e);
+            throw new
+            IllegalStateException("FlowNodeConnectorInventoryTranslatorImpl startup fail! System needs restart.", e);
         }
     }
 
     @Override
-    protected InstanceIdentifier<FlowCapableNodeConnector> getWildCardPath(){
+    protected InstanceIdentifier<FlowCapableNodeConnector> getWildCardPath() {
         return InstanceIdentifier.create(Nodes.class)
                 .child(Node.class)
                 .child(NodeConnector.class)
@@ -81,46 +80,45 @@ public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnec
     @Override
     public void close() {
         if (dataTreeChangeListenerRegistration != null) {
-            try {
-                dataTreeChangeListenerRegistration.close();
-            } catch (final Exception e) {
-                LOG.warn("Error by stop FRM FlowNodeConnectorInventoryTranslatorImpl: {}", e.getMessage());
-                LOG.debug("Error by stop FRM FlowNodeConnectorInventoryTranslatorImpl..", e);
-            }
+            dataTreeChangeListenerRegistration.close();
             dataTreeChangeListenerRegistration = null;
         }
     }
+
     @Override
-    public void remove(InstanceIdentifier<FlowCapableNodeConnector> identifier, FlowCapableNodeConnector del, InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent) {
-        if(compareInstanceIdentifierTail(identifier,II_TO_FLOW_CAPABLE_NODE_CONNECTOR)){
+    public void remove(InstanceIdentifier<FlowCapableNodeConnector> identifier, FlowCapableNodeConnector del,
+            InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent) {
+        if (compareInstanceIdentifierTail(identifier, II_TO_FLOW_CAPABLE_NODE_CONNECTOR)) {
             LOG.debug("Node Connector removed");
-            String sNodeConnectorIdentifier = nodeConnIdent
-                    .firstKeyOf(NodeConnector.class, NodeConnectorKey.class).getId().getValue();
-            BigInteger nDpId = getDpIdFromPortName(sNodeConnectorIdentifier);
+            String nodeConnectorIdentifier = nodeConnIdent.firstKeyOf(NodeConnector.class, NodeConnectorKey.class)
+                    .getId().getValue();
+            BigInteger dpId = getDpIdFromPortName(nodeConnectorIdentifier);
 
-            dpnToPortMultiMap.remove(nDpId, sNodeConnectorIdentifier);
+            dpnToPortMultiMap.remove(dpId, nodeConnectorIdentifier);
         }
     }
 
     @Override
-    public void update(InstanceIdentifier<FlowCapableNodeConnector> identifier, FlowCapableNodeConnector original, FlowCapableNodeConnector update, InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent) {
-        if(compareInstanceIdentifierTail(identifier,II_TO_FLOW_CAPABLE_NODE_CONNECTOR)){
+    public void update(InstanceIdentifier<FlowCapableNodeConnector> identifier, FlowCapableNodeConnector original,
+            FlowCapableNodeConnector update, InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent) {
+        if (compareInstanceIdentifierTail(identifier, II_TO_FLOW_CAPABLE_NODE_CONNECTOR)) {
             LOG.debug("Node Connector updated");
-            //Don't need to do anything as we are not considering updates here
+            // Don't need to do anything as we are not considering updates here
         }
     }
 
     @Override
-    public void add(InstanceIdentifier<FlowCapableNodeConnector> identifier, FlowCapableNodeConnector add, InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent) {
-        if(compareInstanceIdentifierTail(identifier,II_TO_FLOW_CAPABLE_NODE_CONNECTOR)){
+    public void add(InstanceIdentifier<FlowCapableNodeConnector> identifier, FlowCapableNodeConnector add,
+            InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent) {
+        if (compareInstanceIdentifierTail(identifier, II_TO_FLOW_CAPABLE_NODE_CONNECTOR)) {
             LOG.debug("Node Connector added");
-            String sNodeConnectorIdentifier = nodeConnIdent
+            String nodeConnectorIdentifier = nodeConnIdent
                     .firstKeyOf(NodeConnector.class, NodeConnectorKey.class).getId().getValue();
-            BigInteger nDpId = getDpIdFromPortName(sNodeConnectorIdentifier);
+            BigInteger dpId = getDpIdFromPortName(nodeConnectorIdentifier);
 
-            if(!dpnToPortMultiMap.containsEntry(nDpId,sNodeConnectorIdentifier)) {
-                dpnToPortMultiMap.put(nDpId, sNodeConnectorIdentifier);
-            }else{
+            if (!dpnToPortMultiMap.containsEntry(dpId, nodeConnectorIdentifier)) {
+                dpnToPortMultiMap.put(dpId, nodeConnectorIdentifier);
+            } else {
                 LOG.error("Duplicate Event.Node Connector already added");
             }
         }
@@ -128,11 +126,12 @@ public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnec
 
     private boolean compareInstanceIdentifierTail(InstanceIdentifier<?> identifier1,
                                   InstanceIdentifier<?> identifier2) {
-        return Iterables.getLast(identifier1.getPathArguments()).equals(Iterables.getLast(identifier2.getPathArguments()));
+        return Iterables.getLast(identifier1.getPathArguments())
+                .equals(Iterables.getLast(identifier2.getPathArguments()));
     }
 
     @Override
-    public boolean isNodeConnectorUpdated(BigInteger dpId, String portName){
+    public boolean isNodeConnectorUpdated(BigInteger dpId, String portName) {
         return dpnToPortMultiMap.containsEntry(dpId,portName) ;
     }
 
