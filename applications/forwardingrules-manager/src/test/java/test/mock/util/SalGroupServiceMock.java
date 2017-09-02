@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,6 +7,9 @@
  */
 package test.mock.util;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Future;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
@@ -16,14 +19,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.Upd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Future;
-
 public class SalGroupServiceMock implements SalGroupService {
-    private List<AddGroupInput> addGroupCalls = new ArrayList<>();
-    private List<RemoveGroupInput> removeGroupCalls = new ArrayList<>();
-    private List<UpdateGroupInput> updateGroupCalls = new ArrayList<>();
+    private final List<AddGroupInput> addGroupCalls = new ArrayList<>();
+    private final List<RemoveGroupInput> removeGroupCalls = new ArrayList<>();
+    private final List<UpdateGroupInput> updateGroupCalls = new ArrayList<>();
 
     @Override
     public Future<RpcResult<AddGroupOutput>> addGroup(AddGroupInput input) {
