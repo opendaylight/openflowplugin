@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2015, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -38,15 +38,18 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
     private static final Logger LOG = LoggerFactory.getLogger(TableForwarder.class);
     private ListenerRegistration<TableForwarder> listenerRegistration;
 
+    @SuppressWarnings("IllegalCatch")
     public TableForwarder(final ForwardingRulesManager manager, final DataBroker db) {
         super(manager, TableFeatures.class);
         Preconditions.checkNotNull(db, "DataBroker can not be null!");
-        final DataTreeIdentifier<TableFeatures> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, getWildCardPath());
+        final DataTreeIdentifier<TableFeatures> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION,
+                getWildCardPath());
 
         try {
             SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(ForwardingRulesManagerImpl.STARTUP_LOOP_TICK,
                     ForwardingRulesManagerImpl.STARTUP_LOOP_MAX_RETRIES);
-            listenerRegistration = looper.loopUntilNoException(() -> db.registerDataTreeChangeListener(treeId, TableForwarder.this));
+            listenerRegistration = looper
+                    .loopUntilNoException(() -> db.registerDataTreeChangeListener(treeId, TableForwarder.this));
         } catch (final Exception e) {
             LOG.warn("FRM Table DataTreeChangeListener registration fail!");
             LOG.debug("FRM Table DataTreeChangeListener registration fail ..", e);
@@ -57,70 +60,63 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
     @Override
     public void close() {
         if (listenerRegistration != null) {
-            try {
-                listenerRegistration.close();
-            } catch (Exception e) {
-                LOG.warn("Error by stop FRM TableChangeListener: {}", e.getMessage());
-                LOG.debug("Error by stop FRM TableChangeListener..", e);
-            }
+            listenerRegistration.close();
             listenerRegistration = null;
         }
     }
 
     @Override
     protected InstanceIdentifier<TableFeatures> getWildCardPath() {
-        return InstanceIdentifier.create(Nodes.class).child(Node.class)
-                .augmentation(FlowCapableNode.class).child(TableFeatures.class);
+        return InstanceIdentifier.create(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class)
+                .child(TableFeatures.class);
     }
 
     @Override
     public void remove(final InstanceIdentifier<TableFeatures> identifier, final TableFeatures removeDataObj,
-                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         // DO Nothing
     }
 
     @Override
-    public void update(final InstanceIdentifier<TableFeatures> identifier,
-                       final TableFeatures original, final TableFeatures update,
-                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        LOG.debug("Received the Table Update request [Tbl id, node Id, original, upd" +
-                " " + identifier + " " + nodeIdent + " " + original + " " + update);
+    public void update(final InstanceIdentifier<TableFeatures> identifier, final TableFeatures original,
+            final TableFeatures update, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        LOG.debug("Received the Table Update request [Tbl id, node Id, original, upd" + " " + identifier + " "
+                + nodeIdent + " " + original + " " + update);
 
         final TableFeatures originalTableFeatures = original;
         TableFeatures updatedTableFeatures;
         if (null == update) {
             updatedTableFeatures = original;
-        }
-        else {
+        } else {
             updatedTableFeatures = update;
         }
         final UpdateTableInputBuilder builder = new UpdateTableInputBuilder();
 
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
 
-        // TODO: reconsider model - this particular field is not used in service implementation
+        // TODO: reconsider model - this particular field is not used in service
+        // implementation
         builder.setTableRef(new TableRef(identifier));
 
         builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
 
-        builder.setUpdatedTable(new UpdatedTableBuilder().setTableFeatures(
-                Collections.singletonList(updatedTableFeatures)).build());
+        builder.setUpdatedTable(
+                new UpdatedTableBuilder().setTableFeatures(Collections.singletonList(updatedTableFeatures)).build());
 
-        builder.setOriginalTable(new OriginalTableBuilder().setTableFeatures(
-                Collections.singletonList(originalTableFeatures)).build());
+        builder.setOriginalTable(
+                new OriginalTableBuilder().setTableFeatures(Collections.singletonList(originalTableFeatures)).build());
         LOG.debug("Invoking SalTableService ");
 
-        if (this.provider.getSalTableService() != null)
+        if (this.provider.getSalTableService() != null) {
             LOG.debug(" Handle to SalTableServices" + this.provider.getSalTableService());
+        }
         this.provider.getSalTableService().updateTable(builder.build());
 
     }
 
     @Override
-    public Future<? extends RpcResult<?>> add(
-        final InstanceIdentifier<TableFeatures> identifier,
-        final TableFeatures addDataObj,
-        final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public Future<? extends RpcResult<?>> add(final InstanceIdentifier<TableFeatures> identifier,
+            final TableFeatures addDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         return Futures.immediateFuture(null);
     }
 
@@ -128,7 +124,6 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
     public void createStaleMarkEntity(InstanceIdentifier<TableFeatures> identifier, TableFeatures del,
             InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.debug("NO-OP");
-
     }
 
     @Override
@@ -136,6 +131,4 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
             TableFeatures del, InstanceIdentifier<FlowCapableNode> nodeIdent) {
         return null;
     }
-
-
 }

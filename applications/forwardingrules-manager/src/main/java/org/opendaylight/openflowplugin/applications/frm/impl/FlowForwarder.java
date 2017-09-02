@@ -12,7 +12,6 @@ import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.SettableFuture;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
@@ -49,10 +48,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * FlowForwarder
- * It implements {@link org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener}
- * for WildCardedPath to {@link Flow} and ForwardingRulesCommiter interface for methods:
- * add, update and remove {@link Flow} processing for
+ * FlowForwarder It implements
+ * {@link org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener}
+ * for WildCardedPath to {@link Flow} and ForwardingRulesCommiter interface for
+ * methods: add, update and remove {@link Flow} processing for
  * {@link org.opendaylight.controller.md.sal.binding.api.DataTreeModification}.
  */
 public class FlowForwarder extends AbstractListeningCommiter<Flow> {
@@ -61,23 +60,21 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     private final DataBroker dataBroker;
     private ListenerRegistration<FlowForwarder> listenerRegistration;
 
-    public FlowForwarder (final ForwardingRulesManager manager, final DataBroker db) {
+    public FlowForwarder(final ForwardingRulesManager manager, final DataBroker db) {
         super(manager, Flow.class);
         dataBroker = Preconditions.checkNotNull(db, "DataBroker can not be null!");
         registrationListener(db);
     }
 
+    @SuppressWarnings("IllegalCatch")
     private void registrationListener(final DataBroker db) {
-        final DataTreeIdentifier<Flow> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, getWildCardPath());
+        final DataTreeIdentifier<Flow> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION,
+                getWildCardPath());
         try {
             SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(ForwardingRulesManagerImpl.STARTUP_LOOP_TICK,
                     ForwardingRulesManagerImpl.STARTUP_LOOP_MAX_RETRIES);
-            listenerRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<FlowForwarder>>() {
-                @Override
-                public ListenerRegistration<FlowForwarder> call() throws Exception {
-                    return db.registerDataTreeChangeListener(treeId, FlowForwarder.this);
-                }
-            });
+            listenerRegistration = looper
+                    .loopUntilNoException(() -> db.registerDataTreeChangeListener(treeId, FlowForwarder.this));
         } catch (final Exception e) {
             LOG.warn("FRM Flow DataTreeChange listener registration fail!");
             LOG.debug("FRM Flow DataTreeChange listener registration fail ..", e);
@@ -88,20 +85,14 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     @Override
     public void close() {
         if (listenerRegistration != null) {
-            try {
-                listenerRegistration.close();
-            } catch (final Exception e) {
-                LOG.warn("Error by stop FRM FlowChangeListener: {}", e.getMessage());
-                LOG.debug("Error by stop FRM FlowChangeListener..", e);
-            }
+            listenerRegistration.close();
             listenerRegistration = null;
         }
     }
 
     @Override
-    public void remove(final InstanceIdentifier<Flow> identifier,
-                       final Flow removeDataObj,
-                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public void remove(final InstanceIdentifier<Flow> identifier, final Flow removeDataObj,
+            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
         final TableKey tableKey = identifier.firstKeyOf(Table.class, TableKey.class);
         if (tableIdValidationPrecondition(tableKey, removeDataObj)) {
@@ -114,21 +105,16 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
             // removed from datastore. So FRM always needs to set strict flag
             // into remove-flow input so that only a flow entry associated with
             // a given flow object is removed.
-            builder.setTransactionUri(new Uri(provider.getNewTransactionId())).
-                setStrict(Boolean.TRUE);
+            builder.setTransactionUri(new Uri(provider.getNewTransactionId())).setStrict(Boolean.TRUE);
             provider.getSalFlowService().removeFlow(builder.build());
         }
     }
 
-
-
-
-    //TODO: Pull this into ForwardingRulesCommiter and override it here
+    // TODO: Pull this into ForwardingRulesCommiter and override it here
 
     @Override
     public Future<RpcResult<RemoveFlowOutput>> removeWithResult(final InstanceIdentifier<Flow> identifier,
-                       final Flow removeDataObj,
-                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+            final Flow removeDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
         Future<RpcResult<RemoveFlowOutput>> resultFuture = SettableFuture.create();
         final TableKey tableKey = identifier.firstKeyOf(Table.class, TableKey.class);
@@ -142,20 +128,16 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
             // removed from datastore. So FRM always needs to set strict flag
             // into remove-flow input so that only a flow entry associated with
             // a given flow object is removed.
-            builder.setTransactionUri(new Uri(provider.getNewTransactionId())).
-                    setStrict(Boolean.TRUE);
+            builder.setTransactionUri(new Uri(provider.getNewTransactionId())).setStrict(Boolean.TRUE);
             resultFuture = provider.getSalFlowService().removeFlow(builder.build());
         }
 
         return resultFuture;
     }
 
-
-
     @Override
-    public void update(final InstanceIdentifier<Flow> identifier,
-                       final Flow original, final Flow update,
-                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public void update(final InstanceIdentifier<Flow> identifier, final Flow original, final Flow update,
+            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
         final TableKey tableKey = identifier.firstKeyOf(Table.class, TableKey.class);
         if (tableIdValidationPrecondition(tableKey, update)) {
@@ -169,17 +151,16 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
             // has been updated. So FRM always needs to set strict flag into
             // update-flow input so that only a flow entry associated with
             // a given flow object is updated.
-            builder.setUpdatedFlow((new UpdatedFlowBuilder(update)).setStrict(Boolean.TRUE).build());
-            builder.setOriginalFlow((new OriginalFlowBuilder(original)).setStrict(Boolean.TRUE).build());
+            builder.setUpdatedFlow(new UpdatedFlowBuilder(update).setStrict(Boolean.TRUE).build());
+            builder.setOriginalFlow(new OriginalFlowBuilder(original).setStrict(Boolean.TRUE).build());
 
             provider.getSalFlowService().updateFlow(builder.build());
         }
     }
 
     @Override
-    public Future<RpcResult<AddFlowOutput>> add(
-        final InstanceIdentifier<Flow> identifier, final Flow addDataObj,
-        final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public Future<RpcResult<AddFlowOutput>> add(final InstanceIdentifier<Flow> identifier, final Flow addDataObj,
+            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
         Future<RpcResult<AddFlowOutput>> future;
         final TableKey tableKey = identifier.firstKeyOf(Table.class, TableKey.class);
@@ -199,7 +180,8 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     }
 
     @Override
-    public void createStaleMarkEntity(InstanceIdentifier<Flow> identifier, Flow del, InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public void createStaleMarkEntity(InstanceIdentifier<Flow> identifier, Flow del,
+            InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.debug("Creating Stale-Mark entry for the switch {} for flow {} ", nodeIdent.toString(), del.toString());
 
         StaleFlow staleFlow = makeStaleFlow(identifier, del, nodeIdent);
@@ -207,33 +189,33 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 
     }
 
-
-
     @Override
     protected InstanceIdentifier<Flow> getWildCardPath() {
-        return InstanceIdentifier.create(Nodes.class).child(Node.class)
-                .augmentation(FlowCapableNode.class).child(Table.class).child(Flow.class);
+        return InstanceIdentifier.create(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class)
+                .child(Table.class).child(Flow.class);
     }
 
-    private static boolean tableIdValidationPrecondition (final TableKey tableKey, final Flow flow) {
+    private static boolean tableIdValidationPrecondition(final TableKey tableKey, final Flow flow) {
         Preconditions.checkNotNull(tableKey, "TableKey can not be null or empty!");
         Preconditions.checkNotNull(flow, "Flow can not be null or empty!");
-        if (! tableKey.getId().equals(flow.getTableId())) {
-            LOG.warn("TableID in URI tableId={} and in palyload tableId={} is not same.",
-                    flow.getTableId(), tableKey.getId());
+        if (!tableKey.getId().equals(flow.getTableId())) {
+            LOG.warn("TableID in URI tableId={} and in palyload tableId={} is not same.", flow.getTableId(),
+                    tableKey.getId());
             return false;
         }
         return true;
     }
 
-    private StaleFlow makeStaleFlow(InstanceIdentifier<Flow> identifier, Flow del, InstanceIdentifier<FlowCapableNode> nodeIdent){
-         StaleFlowBuilder staleFlowBuilder = new StaleFlowBuilder(del);
+    private StaleFlow makeStaleFlow(InstanceIdentifier<Flow> identifier, Flow del,
+            InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        StaleFlowBuilder staleFlowBuilder = new StaleFlowBuilder(del);
         return staleFlowBuilder.setId(del.getId()).build();
     }
 
-    private void persistStaleFlow(StaleFlow staleFlow, InstanceIdentifier<FlowCapableNode> nodeIdent){
+    private void persistStaleFlow(StaleFlow staleFlow, InstanceIdentifier<FlowCapableNode> nodeIdent) {
         WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
-        writeTransaction.put(LogicalDatastoreType.CONFIGURATION, getStaleFlowInstanceIdentifier(staleFlow, nodeIdent), staleFlow, false);
+        writeTransaction.put(LogicalDatastoreType.CONFIGURATION, getStaleFlowInstanceIdentifier(staleFlow, nodeIdent),
+                staleFlow, false);
 
         CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTransaction.submit();
         handleStaleFlowResultFuture(submitFuture);
@@ -247,18 +229,18 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
             }
 
             @Override
-            public void onFailure(Throwable t) {
-                LOG.error("Stale Flow creation failed {}", t);
+            public void onFailure(Throwable throwable) {
+                LOG.error("Stale Flow creation failed {}", throwable);
             }
         });
 
     }
 
-    private InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlow> getStaleFlowInstanceIdentifier(StaleFlow staleFlow, InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        return nodeIdent
-                .child(Table.class, new TableKey(staleFlow.getTableId()))
-                .child(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlow.class,
-                        new StaleFlowKey(new FlowId(staleFlow.getId())));
+    private InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight
+        .flow.inventory.rev130819.tables.table.StaleFlow> getStaleFlowInstanceIdentifier(
+            StaleFlow staleFlow, InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        return nodeIdent.child(Table.class, new TableKey(staleFlow.getTableId())).child(
+                org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlow.class,
+                new StaleFlowKey(new FlowId(staleFlow.getId())));
     }
 }
-

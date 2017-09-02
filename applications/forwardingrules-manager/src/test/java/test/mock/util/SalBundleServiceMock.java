@@ -22,7 +22,6 @@ public class SalBundleServiceMock implements SalBundleService {
     private final List<ControlBundleInput> controlBundleInput = new ArrayList<>();
     private final List<AddBundleMessagesInput>  addBundleMessagesInput = new ArrayList<>();
 
-
     @Override
     public Future<RpcResult<java.lang.Void>> controlBundle(ControlBundleInput input) {
         getControlBundleInput().add(input);
@@ -42,6 +41,4 @@ public class SalBundleServiceMock implements SalBundleService {
     public List<AddBundleMessagesInput> getAddBundleMessagesInput() {
         return addBundleMessagesInput;
     }
-
-
 }
