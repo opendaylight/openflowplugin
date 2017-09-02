@@ -18,12 +18,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-public abstract class AbstractNodeConnectorCommitter <T extends DataObject> implements FlowCapableNodeConnectorCommitter<T> {
-    private ForwardingRulesManager provider;
+public abstract class AbstractNodeConnectorCommitter<T extends DataObject>
+        implements FlowCapableNodeConnectorCommitter<T> {
+    private final ForwardingRulesManager provider;
 
     private final Class<T> clazz;
 
-    public AbstractNodeConnectorCommitter (ForwardingRulesManager provider, Class<T> clazz) {
+    public AbstractNodeConnectorCommitter(ForwardingRulesManager provider, Class<T> clazz) {
         this.provider = Preconditions.checkNotNull(provider, "ForwardingRulesManager can not be null!");
         this.clazz = Preconditions.checkNotNull(clazz, "Class can not be null!");
     }
@@ -62,7 +63,7 @@ public abstract class AbstractNodeConnectorCommitter <T extends DataObject> impl
 
     /**
      * Method return wildCardPath for Listener registration
-     * and for identify the correct KeyInstanceIdentifier from data;
+     * and for identify the correct KeyInstanceIdentifier from data.
      */
     protected abstract InstanceIdentifier<T> getWildCardPath();
 

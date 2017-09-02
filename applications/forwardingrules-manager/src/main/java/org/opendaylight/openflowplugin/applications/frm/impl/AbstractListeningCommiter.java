@@ -23,13 +23,13 @@ import org.slf4j.LoggerFactory;
  * AbstractChangeListner implemented basic {@link org.opendaylight.controller.md.sal.binding.api.DataTreeModification}
  * processing for flow node subDataObject (flows, groups and meters).
  */
-public abstract class AbstractListeningCommiter <T extends DataObject> implements ForwardingRulesCommiter<T> {
+public abstract class AbstractListeningCommiter<T extends DataObject> implements ForwardingRulesCommiter<T> {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractListeningCommiter.class);
     ForwardingRulesManager provider;
     private final Class<T> clazz;
 
-    public AbstractListeningCommiter (ForwardingRulesManager provider, Class<T> clazz) {
+    public AbstractListeningCommiter(ForwardingRulesManager provider, Class<T> clazz) {
         this.provider = Preconditions.checkNotNull(provider, "ForwardingRulesManager can not be null!");
         this.clazz = Preconditions.checkNotNull(clazz, "Class can not be null!");
     }
@@ -46,24 +46,23 @@ public abstract class AbstractListeningCommiter <T extends DataObject> implement
                     key.firstIdentifierOf(FlowCapableNode.class);
             if (preConfigurationCheck(nodeIdent)) {
                 switch (mod.getModificationType()) {
-                case DELETE:
-                    remove(key, mod.getDataBefore(), nodeIdent);
-                    break;
-                case SUBTREE_MODIFIED:
-                    update(key, mod.getDataBefore(), mod.getDataAfter(), nodeIdent);
-                    break;
-                case WRITE:
-                    if (mod.getDataBefore() == null) {
-                        add(key, mod.getDataAfter(), nodeIdent);
-                    } else {
+                    case DELETE:
+                        remove(key, mod.getDataBefore(), nodeIdent);
+                        break;
+                    case SUBTREE_MODIFIED:
                         update(key, mod.getDataBefore(), mod.getDataAfter(), nodeIdent);
-                    }
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unhandled modification type " + mod.getModificationType());
+                        break;
+                    case WRITE:
+                        if (mod.getDataBefore() == null) {
+                            add(key, mod.getDataAfter(), nodeIdent);
+                        } else {
+                            update(key, mod.getDataBefore(), mod.getDataAfter(), nodeIdent);
+                        }
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Unhandled modification type " + mod.getModificationType());
                 }
-            }
-            else{
+            } else {
                 if (provider.isStaleMarkingEnabled()) {
                     LOG.info("Stale-Marking ENABLED and switch {} is NOT connected, storing stale entities",
                             nodeIdent.toString());
@@ -77,7 +76,8 @@ public abstract class AbstractListeningCommiter <T extends DataObject> implement
                         case WRITE:
                             break;
                         default:
-                            throw new IllegalArgumentException("Unhandled modification type " + mod.getModificationType());
+                            throw new
+                            IllegalArgumentException("Unhandled modification type " + mod.getModificationType());
                     }
                 }
             }
@@ -86,7 +86,7 @@ public abstract class AbstractListeningCommiter <T extends DataObject> implement
 
     /**
      * Method return wildCardPath for Listener registration
-     * and for identify the correct KeyInstanceIdentifier from data;
+     * and for identify the correct KeyInstanceIdentifier from data.
      */
     protected abstract InstanceIdentifier<T> getWildCardPath();
 
@@ -102,7 +102,9 @@ public abstract class AbstractListeningCommiter <T extends DataObject> implement
         // node from operational data store and if it's present it calls flowNodeConnected to explicitly
         // trigger the event of new node connected.
 
-        if(!provider.isNodeOwner(nodeIdent)) { return false; }
+        if (!provider.isNodeOwner(nodeIdent)) {
+            return false;
+        }
 
         if (!provider.isNodeActive(nodeIdent)) {
             if (provider.checkNodeInOperationalDataStore(nodeIdent)) {

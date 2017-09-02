@@ -48,8 +48,8 @@ import test.mock.util.SalMeterServiceMock;
 @RunWith(MockitoJUnitRunner.class)
 public class MeterListenerTest extends FRMTest {
     private ForwardingRulesManagerImpl forwardingRulesManager;
-    private final static NodeId NODE_ID = new NodeId("testnode:1");
-    private final static NodeKey s1Key = new NodeKey(NODE_ID);
+    private static final NodeId NODE_ID = new NodeId("testnode:1");
+    private static final NodeKey NODE_KEY = new NodeKey(NODE_ID);
     RpcProviderRegistry rpcProviderRegistryMock = new RpcProviderRegistryMock();
     @Mock
     ClusterSingletonServiceProvider clusterSingletonService;
@@ -59,7 +59,6 @@ public class MeterListenerTest extends FRMTest {
     private NotificationProviderService notificationService;
     @Mock
     private ReconciliationManager reconciliationManager;
-
 
     @Before
     public void setUp() {
@@ -80,10 +79,10 @@ public class MeterListenerTest extends FRMTest {
 
     @Test
     public void addTwoMetersTest() throws Exception {
-        addFlowCapableNode(s1Key);
+        addFlowCapableNode(NODE_KEY);
 
         MeterKey meterKey = new MeterKey(new MeterId((long) 2000));
-        InstanceIdentifier<Meter> meterII = InstanceIdentifier.create(Nodes.class).child(Node.class, s1Key)
+        InstanceIdentifier<Meter> meterII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Meter.class, meterKey);
         Meter meter = new MeterBuilder().setKey(meterKey).setMeterName("meter_one").build();
 
@@ -96,7 +95,7 @@ public class MeterListenerTest extends FRMTest {
         assertEquals("DOM-0", addMeterCalls.get(0).getTransactionUri().getValue());
 
         meterKey = new MeterKey(new MeterId((long) 2001));
-        meterII = InstanceIdentifier.create(Nodes.class).child(Node.class, s1Key)
+        meterII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Meter.class, meterKey);
         meter = new MeterBuilder().setKey(meterKey).setMeterName("meter_two").setBarrier(true).build();
         writeTx = getDataBroker().newWriteOnlyTransaction();
@@ -111,10 +110,10 @@ public class MeterListenerTest extends FRMTest {
 
     @Test
     public void updateMeterTest() throws Exception {
-        addFlowCapableNode(s1Key);
+        addFlowCapableNode(NODE_KEY);
 
         MeterKey meterKey = new MeterKey(new MeterId((long) 2000));
-        InstanceIdentifier<Meter> meterII = InstanceIdentifier.create(Nodes.class).child(Node.class, s1Key)
+        InstanceIdentifier<Meter> meterII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Meter.class, meterKey);
         Meter meter = new MeterBuilder().setKey(meterKey).setMeterName("meter_one").setBarrier(false).build();
 
@@ -139,10 +138,10 @@ public class MeterListenerTest extends FRMTest {
 
     @Test
     public void removeMeterTest() throws Exception {
-        addFlowCapableNode(s1Key);
+        addFlowCapableNode(NODE_KEY);
 
         MeterKey meterKey = new MeterKey(new MeterId((long) 2000));
-        InstanceIdentifier<Meter> meterII = InstanceIdentifier.create(Nodes.class).child(Node.class, s1Key)
+        InstanceIdentifier<Meter> meterII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Meter.class, meterKey);
         Meter meter = new MeterBuilder().setKey(meterKey).setMeterName("meter_one").build();
 
@@ -164,13 +163,12 @@ public class MeterListenerTest extends FRMTest {
         assertEquals(meterII, removeMeterCalls.get(0).getMeterRef().getValue());
     }
 
-
     @Test
     public void staleMeterCreationTest() throws Exception {
-        addFlowCapableNode(s1Key);
+        addFlowCapableNode(NODE_KEY);
 
         StaleMeterKey meterKey = new StaleMeterKey(new MeterId((long) 2000));
-        InstanceIdentifier<StaleMeter> meterII = InstanceIdentifier.create(Nodes.class).child(Node.class, s1Key)
+        InstanceIdentifier<StaleMeter> meterII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(StaleMeter.class, meterKey);
         StaleMeter meter = new StaleMeterBuilder().setKey(meterKey).setMeterName("stale_meter_one").build();
 
@@ -183,5 +181,4 @@ public class MeterListenerTest extends FRMTest {
     public void tearDown() throws Exception {
         forwardingRulesManager.close();
     }
-
 }

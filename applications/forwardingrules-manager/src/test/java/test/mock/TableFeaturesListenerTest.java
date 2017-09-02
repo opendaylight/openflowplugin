@@ -43,8 +43,8 @@ import test.mock.util.SalTableServiceMock;
 @RunWith(MockitoJUnitRunner.class)
 public class TableFeaturesListenerTest extends FRMTest {
     private ForwardingRulesManagerImpl forwardingRulesManager;
-    private final static NodeId NODE_ID = new NodeId("testnode:1");
-    private final static NodeKey s1Key = new NodeKey(NODE_ID);
+    private static final NodeId NODE_ID = new NodeId("testnode:1");
+    private static final NodeKey NODE_KEY = new NodeKey(NODE_ID);
     RpcProviderRegistry rpcProviderRegistryMock = new RpcProviderRegistryMock();
     @Mock
     ClusterSingletonServiceProvider clusterSingletonService;
@@ -55,17 +55,10 @@ public class TableFeaturesListenerTest extends FRMTest {
     @Mock
     private ReconciliationManager reconciliationManager;
 
-
     @Before
     public void setUp() {
-        forwardingRulesManager = new ForwardingRulesManagerImpl(
-                getDataBroker(),
-                rpcProviderRegistryMock,
-                getConfig(),
-                clusterSingletonService,
-                notificationService,
-                getConfigurationService(),
-                reconciliationManager);
+        forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock, getConfig(),
+                clusterSingletonService, notificationService, getConfigurationService(), reconciliationManager);
 
         forwardingRulesManager.start();
         // TODO consider tests rewrite (added because of complicated access)
@@ -78,11 +71,12 @@ public class TableFeaturesListenerTest extends FRMTest {
         TableKey tableKey = new TableKey((short) 2);
         TableFeaturesKey tableFeaturesKey = new TableFeaturesKey(tableKey.getId());
 
-        addTable(tableKey, s1Key);
+        addTable(tableKey, NODE_KEY);
 
         TableFeatures tableFeaturesData = new TableFeaturesBuilder().setKey(tableFeaturesKey).build();
-        InstanceIdentifier<TableFeatures> tableFeaturesII = InstanceIdentifier.create(Nodes.class).child(Node.class, s1Key)
-                .augmentation(FlowCapableNode.class).child(TableFeatures.class, tableFeaturesKey);
+        InstanceIdentifier<TableFeatures> tableFeaturesII = InstanceIdentifier.create(Nodes.class)
+                .child(Node.class, NODE_KEY).augmentation(FlowCapableNode.class)
+                .child(TableFeatures.class, tableFeaturesKey);
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableFeaturesII, tableFeaturesData);
         assertCommit(writeTx.submit());
@@ -102,5 +96,4 @@ public class TableFeaturesListenerTest extends FRMTest {
     public void tearDown() throws Exception {
         forwardingRulesManager.close();
     }
-
 }
