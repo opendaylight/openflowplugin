@@ -16,71 +16,75 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 /**
- * forwardingrules-manager
- * org.opendaylight.openflowplugin.applications.frm
+ * forwardingrules-manager org.opendaylight.openflowplugin.applications.frm
  *
- * ForwardingRulesCommiter
- * It represent a contract between DataStore DataTreeModification and relevant
- * SalRpcService for device. Every implementation has to be registered for
- * Configurational/DS tree path.
+ * <p>
+ * ForwardingRulesCommiter It represent a contract between DataStore
+ * DataTreeModification and relevant SalRpcService for device. Every
+ * implementation has to be registered for Configurational/DS tree path.
  */
-public interface ForwardingRulesCommiter<D extends DataObject> extends AutoCloseable,
-        ClusteredDataTreeChangeListener<D> {
+public interface ForwardingRulesCommiter<D extends DataObject>
+        extends AutoCloseable, ClusteredDataTreeChangeListener<D> {
 
     /**
-     * Method removes DataObject which is identified by InstanceIdentifier
-     * from device.
+     * Method removes DataObject which is identified by InstanceIdentifier from
+     * device.
      *
-     * @param identifier - the whole path to DataObject
-     * @param del - DataObject for removing
-     * @param nodeIdent Node InstanceIdentifier
+     * @param identifier
+     *            - the whole path to DataObject
+     * @param del
+     *            - DataObject for removing
+     * @param nodeIdent
+     *            Node InstanceIdentifier
      */
-    void remove(InstanceIdentifier<D> identifier, D del,
-            InstanceIdentifier<FlowCapableNode> nodeIdent);
+    void remove(InstanceIdentifier<D> identifier, D del, InstanceIdentifier<FlowCapableNode> nodeIdent);
 
     /**
-     * Method updates the original DataObject to the update DataObject
-     * in device. Both are identified by same InstanceIdentifier
+     * Method updates the original DataObject to the update DataObject in device.
+     * Both are identified by same InstanceIdentifier
      *
-     * @param identifier - the whole path to DataObject
-     * @param original - original DataObject (for update)
-     * @param update - changed DataObject (contain updates)
-     * @param nodeIdent Node InstanceIdentifier
+     * @param identifier
+     *            - the whole path to DataObject
+     * @param original
+     *            - original DataObject (for update)
+     * @param update
+     *            - changed DataObject (contain updates)
+     * @param nodeIdent
+     *            Node InstanceIdentifier
      */
-    void update(InstanceIdentifier<D> identifier, D original, D update,
-            InstanceIdentifier<FlowCapableNode> nodeIdent);
+    void update(InstanceIdentifier<D> identifier, D original, D update, InstanceIdentifier<FlowCapableNode> nodeIdent);
 
     /**
-     * Method adds the DataObject which is identified by InstanceIdentifier
-     * to device.
+     * Method adds the DataObject which is identified by InstanceIdentifier to
+     * device.
      *
-     * @param identifier - the whole path to new DataObject
-     * @param add - new DataObject
-     * @param nodeIdent Node InstanceIdentifier
-     * @return A future associated with RPC task. {@code null} is set to the
-     *         future if this method does not invoke RPC.
+     * @param identifier
+     *            - the whole path to new DataObject
+     * @param add
+     *            - new DataObject
+     * @param nodeIdent
+     *            Node InstanceIdentifier
+     * @return A future associated with RPC task. {@code null} is set to the future
+     *         if this method does not invoke RPC.
      */
     Future<? extends RpcResult<?>> add(InstanceIdentifier<D> identifier, D add,
             InstanceIdentifier<FlowCapableNode> nodeIdent);
 
-
     /**
-     * Method creates stale-marked DataObject which is identified by InstanceIdentifier
-     * from device.
+     * Method creates stale-marked DataObject which is identified by
+     * InstanceIdentifier from device.
      *
-     * @param identifier - the whole path to DataObject
-     * @param del - DataObject removed. Stale-Mark object to be created from this object
-     * @param nodeIdent Node InstanceIdentifier
+     * @param identifier
+     *            - the whole path to DataObject
+     * @param del
+     *            - DataObject removed. Stale-Mark object to be created from this
+     *            object
+     * @param nodeIdent
+     *            Node InstanceIdentifier
      */
-    void createStaleMarkEntity(InstanceIdentifier<D> identifier, D del,
-                InstanceIdentifier<FlowCapableNode> nodeIdent);
-
-
+    void createStaleMarkEntity(InstanceIdentifier<D> identifier, D del, InstanceIdentifier<FlowCapableNode> nodeIdent);
 
     Future<? extends RpcResult<?>> removeWithResult(InstanceIdentifier<D> identifier, D del,
-                                               InstanceIdentifier<FlowCapableNode> nodeIdent);
-
-
+            InstanceIdentifier<FlowCapableNode> nodeIdent);
 
 }
-
