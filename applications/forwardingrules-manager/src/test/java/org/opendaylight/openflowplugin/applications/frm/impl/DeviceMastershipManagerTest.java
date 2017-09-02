@@ -51,8 +51,8 @@ public class DeviceMastershipManagerTest {
 
     @Before
     public void setUp() throws Exception {
-        deviceMastershipManager = new DeviceMastershipManager(clusterSingletonService,
-                notificationService, reconciliationAgent, dataBroker);
+        deviceMastershipManager = new DeviceMastershipManager(clusterSingletonService, notificationService,
+                reconciliationAgent, dataBroker);
         Mockito.when(clusterSingletonService.registerClusterSingletonService(Matchers.<ClusterSingletonService>any()))
                 .thenReturn(registration);
     }
@@ -69,8 +69,8 @@ public class DeviceMastershipManagerTest {
         // destroy context - unregister
         Assert.assertNotNull(deviceMastershipManager.getDeviceMasterships().get(NODE_ID));
         NodeRemovedBuilder nodeRemovedBuilder = new NodeRemovedBuilder();
-        InstanceIdentifier<Node> nodeIId = InstanceIdentifier.create(Nodes.class).
-                child(Node.class, new NodeKey(NODE_ID));
+        InstanceIdentifier<Node> nodeIId = InstanceIdentifier.create(Nodes.class).child(Node.class,
+                new NodeKey(NODE_ID));
         nodeRemovedBuilder.setNodeRef(new NodeRef(nodeIId));
         deviceMastershipManager.onNodeRemoved(nodeRemovedBuilder.build());
         Assert.assertNull(deviceMastershipManager.getDeviceMasterships().get(NODE_ID));
@@ -90,5 +90,4 @@ public class DeviceMastershipManagerTest {
         deviceMastershipManager.getDeviceMasterships().get(NODE_ID).closeServiceInstance();
         Assert.assertFalse(deviceMastershipManager.isDeviceMastered(NODE_ID));
     }
-
 }

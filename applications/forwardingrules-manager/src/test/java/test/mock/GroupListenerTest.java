@@ -48,8 +48,8 @@ import test.mock.util.SalGroupServiceMock;
 @RunWith(MockitoJUnitRunner.class)
 public class GroupListenerTest extends FRMTest {
     private ForwardingRulesManagerImpl forwardingRulesManager;
-    private final static NodeId NODE_ID = new NodeId("testnode:1");
-    private final static NodeKey s1Key = new NodeKey(NODE_ID);
+    private static final NodeId NODE_ID = new NodeId("testnode:1");
+    private static final NodeKey NODE_KEY = new NodeKey(NODE_ID);
     RpcProviderRegistry rpcProviderRegistryMock = new RpcProviderRegistryMock();
     @Mock
     ClusterSingletonServiceProvider clusterSingletonService;
@@ -80,10 +80,10 @@ public class GroupListenerTest extends FRMTest {
 
     @Test
     public void addTwoGroupsTest() throws Exception {
-        addFlowCapableNode(s1Key);
+        addFlowCapableNode(NODE_KEY);
 
         GroupKey groupKey = new GroupKey(new GroupId((long) 255));
-        InstanceIdentifier<Group> groupII = InstanceIdentifier.create(Nodes.class).child(Node.class, s1Key)
+        InstanceIdentifier<Group> groupII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Group.class, groupKey);
         Group group = new GroupBuilder().setKey(groupKey).setGroupName("Group1").build();
 
@@ -96,7 +96,7 @@ public class GroupListenerTest extends FRMTest {
         assertEquals("DOM-0", addGroupCalls.get(0).getTransactionUri().getValue());
 
         groupKey = new GroupKey(new GroupId((long) 256));
-        groupII = InstanceIdentifier.create(Nodes.class).child(Node.class, s1Key)
+        groupII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Group.class, groupKey);
         group = new GroupBuilder().setKey(groupKey).setGroupName("Group1").build();
         writeTx = getDataBroker().newWriteOnlyTransaction();
@@ -110,10 +110,10 @@ public class GroupListenerTest extends FRMTest {
 
     @Test
     public void updateGroupTest() throws Exception {
-        addFlowCapableNode(s1Key);
+        addFlowCapableNode(NODE_KEY);
 
         GroupKey groupKey = new GroupKey(new GroupId((long) 255));
-        InstanceIdentifier<Group> groupII = InstanceIdentifier.create(Nodes.class).child(Node.class, s1Key)
+        InstanceIdentifier<Group> groupII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Group.class, groupKey);
         Group group = new GroupBuilder().setKey(groupKey).setGroupName("Group1").build();
 
@@ -137,10 +137,10 @@ public class GroupListenerTest extends FRMTest {
 
     @Test
     public void removeGroupTest() throws Exception {
-        addFlowCapableNode(s1Key);
+        addFlowCapableNode(NODE_KEY);
 
         GroupKey groupKey = new GroupKey(new GroupId((long) 255));
-        InstanceIdentifier<Group> groupII = InstanceIdentifier.create(Nodes.class).child(Node.class, s1Key)
+        InstanceIdentifier<Group> groupII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Group.class, groupKey);
         Group group = new GroupBuilder().setKey(groupKey).setGroupName("Group1").build();
 
@@ -163,10 +163,10 @@ public class GroupListenerTest extends FRMTest {
 
     @Test
     public void staleGroupCreationTest() throws Exception {
-        addFlowCapableNode(s1Key);
+        addFlowCapableNode(NODE_KEY);
 
         StaleGroupKey groupKey = new StaleGroupKey(new GroupId((long) 255));
-        InstanceIdentifier<StaleGroup> groupII = InstanceIdentifier.create(Nodes.class).child(Node.class, s1Key)
+        InstanceIdentifier<StaleGroup> groupII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(StaleGroup.class, groupKey);
         StaleGroup group = new StaleGroupBuilder().setKey(groupKey).setGroupName("Stale_Group1").build();
 
@@ -179,5 +179,4 @@ public class GroupListenerTest extends FRMTest {
     public void tearDown() throws Exception {
         forwardingRulesManager.close();
     }
-
 }
