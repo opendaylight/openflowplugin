@@ -159,19 +159,16 @@ public class DeviceMastershipManager
                 LOG.debug("Node removed: {}", nodeIdent.firstKeyOf(Node.class).getId().getValue());
             }
 
-            if (!nodeIdent.isWildcarded()) {
-                if (activeNodes.contains(nodeIdent)) {
-                    synchronized (lockObj) {
-                        if (activeNodes.contains(nodeIdent)) {
-                            Set<InstanceIdentifier<FlowCapableNode>> set = Sets.newHashSet(activeNodes);
-                            set.remove(nodeIdent);
-                            activeNodes = Collections.unmodifiableSet(set);
-                            setNodeOperationalStatus(nodeIdent, false);
-                        }
+            if (!nodeIdent.isWildcarded() && activeNodes.contains(nodeIdent)) {
+                synchronized (lockObj) {
+                    if (activeNodes.contains(nodeIdent)) {
+                        Set<InstanceIdentifier<FlowCapableNode>> set = Sets.newHashSet(activeNodes);
+                        set.remove(nodeIdent);
+                        activeNodes = Collections.unmodifiableSet(set);
+                        setNodeOperationalStatus(nodeIdent, false);
                     }
                 }
             }
-
         }
     }
 
@@ -182,15 +179,13 @@ public class DeviceMastershipManager
                 LOG.debug("Node added: {}", nodeIdent.firstKeyOf(Node.class).getId().getValue());
             }
 
-            if (!nodeIdent.isWildcarded()) {
-                if (!activeNodes.contains(nodeIdent)) {
-                    synchronized (lockObj) {
-                        if (!activeNodes.contains(nodeIdent)) {
-                            Set<InstanceIdentifier<FlowCapableNode>> set = Sets.newHashSet(activeNodes);
-                            set.add(nodeIdent);
-                            activeNodes = Collections.unmodifiableSet(set);
-                            setNodeOperationalStatus(nodeIdent, true);
-                        }
+            if (!nodeIdent.isWildcarded() && !activeNodes.contains(nodeIdent)) {
+                synchronized (lockObj) {
+                    if (!activeNodes.contains(nodeIdent)) {
+                        Set<InstanceIdentifier<FlowCapableNode>> set = Sets.newHashSet(activeNodes);
+                        set.add(nodeIdent);
+                        activeNodes = Collections.unmodifiableSet(set);
+                        setNodeOperationalStatus(nodeIdent, true);
                     }
                 }
             }
@@ -216,11 +211,9 @@ public class DeviceMastershipManager
 
     private void setNodeOperationalStatus(InstanceIdentifier<FlowCapableNode> nodeIid, boolean status) {
         NodeId nodeId = nodeIid.firstKeyOf(Node.class).getId();
-        if (nodeId != null) {
-            if (deviceMasterships.containsKey(nodeId)) {
-                deviceMasterships.get(nodeId).setDeviceOperationalStatus(status);
-                LOG.debug("Operational status of device {} is set to {}", nodeId, status);
-            }
+        if (nodeId != null && deviceMasterships.containsKey(nodeId)) {
+            deviceMasterships.get(nodeId).setDeviceOperationalStatus(status);
+            LOG.debug("Operational status of device {} is set to {}", nodeId, status);
         }
     }
 
