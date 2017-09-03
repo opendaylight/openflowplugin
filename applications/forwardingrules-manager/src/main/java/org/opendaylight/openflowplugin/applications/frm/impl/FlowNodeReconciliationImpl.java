@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
@@ -225,21 +224,6 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         return Futures.immediateFuture(null);
                     });
 
-                /* Bundles not supported for meters */
-                List<Meter> meters = flowNode.get().getMeter() != null ? flowNode.get().getMeter()
-                        : Collections.emptyList();
-                ListenableFuture<RpcResult<Void>> meterFuture = Futures.transformAsync(commitBundleFuture,
-                    rpcResult -> {
-                        if (rpcResult.isSuccessful()) {
-                            for (Meter meter : meters) {
-                                final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent = nodeIdentity
-                                        .child(Meter.class, meter.getKey());
-                                provider.getMeterCommiter().add(meterIdent, meter, nodeIdentity);
-                            }
-                        }
-                        return Futures.immediateFuture(null);
-                    });
-
                 trans.close();
                 try {
                     if (commitBundleFuture.get().isSuccessful()) {
@@ -313,7 +297,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
             if (flowNode.isPresent()) {
                 /* Tables - have to be pushed before groups */
-                // CHECK if while pusing the update, updateTableInput can be null to emulate a
+                // CHECK if while pushing the update, updateTableInput can be null to emulate a
                 // table add
                 List<TableFeatures> tableList = flowNode.get().getTableFeatures() != null
                         ? flowNode.get().getTableFeatures()
@@ -628,8 +612,6 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     }
 
     private void deleteDSStaleFlows(List<InstanceIdentifier<StaleFlow>> flowsForBulkDelete) {
-        ImmutableList.Builder<InstanceIdentifier<StaleFlow>> builder = ImmutableList.builder();
-
         WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
 
         for (InstanceIdentifier<StaleFlow> staleFlowIId : flowsForBulkDelete) {
@@ -641,8 +623,6 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     }
 
     private void deleteDSStaleGroups(List<InstanceIdentifier<StaleGroup>> groupsForBulkDelete) {
-        ImmutableList.Builder<InstanceIdentifier<StaleGroup>> builder = ImmutableList.builder();
-
         WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
 
         for (InstanceIdentifier<StaleGroup> staleGroupIId : groupsForBulkDelete) {
@@ -654,8 +634,6 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     }
 
     private void deleteDSStaleMeters(List<InstanceIdentifier<StaleMeter>> metersForBulkDelete) {
-        ImmutableList.Builder<InstanceIdentifier<StaleMeter>> builder = ImmutableList.builder();
-
         WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
 
         for (InstanceIdentifier<StaleMeter> staleMeterIId : metersForBulkDelete) {

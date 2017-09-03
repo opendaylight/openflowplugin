@@ -145,15 +145,13 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
     public void createStaleMarkEntity(InstanceIdentifier<Meter> identifier, Meter del,
             InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.debug("Creating Stale-Mark entry for the switch {} for meter {} ", nodeIdent.toString(), del.toString());
-        StaleMeter staleMeter = makeStaleMeter(identifier, del, nodeIdent);
+        StaleMeter staleMeter = makeStaleMeter(del);
         persistStaleMeter(staleMeter, nodeIdent);
     }
 
-    private StaleMeter makeStaleMeter(InstanceIdentifier<Meter> identifier, Meter del,
-            InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    private StaleMeter makeStaleMeter(Meter del) {
         StaleMeterBuilder staleMeterBuilder = new StaleMeterBuilder(del);
         return staleMeterBuilder.setMeterId(del.getMeterId()).build();
-
     }
 
     private void persistStaleMeter(StaleMeter staleMeter, InstanceIdentifier<FlowCapableNode> nodeIdent) {
@@ -163,7 +161,6 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
 
         CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTransaction.submit();
         handleStaleMeterResultFuture(submitFuture);
-
     }
 
     private void handleStaleMeterResultFuture(CheckedFuture<Void, TransactionCommitFailedException> submitFuture) {
@@ -178,13 +175,11 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
                 LOG.error("Stale Meter creation failed {}", throwable);
             }
         });
-
     }
 
-    private InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.flow
-        .inventory.rev130819.meters.StaleMeter> getStaleMeterInstanceIdentifier(
+    private InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819
+        .meters.StaleMeter> getStaleMeterInstanceIdentifier(
             StaleMeter staleMeter, InstanceIdentifier<FlowCapableNode> nodeIdent) {
         return nodeIdent.child(StaleMeter.class, new StaleMeterKey(new MeterId(staleMeter.getMeterId())));
     }
-
 }

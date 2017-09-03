@@ -27,11 +27,9 @@ public abstract class AbstractListeningCommiter<T extends DataObject> implements
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractListeningCommiter.class);
     ForwardingRulesManager provider;
-    private final Class<T> clazz;
 
     public AbstractListeningCommiter(ForwardingRulesManager provider, Class<T> clazz) {
         this.provider = Preconditions.checkNotNull(provider, "ForwardingRulesManager can not be null!");
-        this.clazz = Preconditions.checkNotNull(clazz, "Class can not be null!");
     }
 
     @Override
