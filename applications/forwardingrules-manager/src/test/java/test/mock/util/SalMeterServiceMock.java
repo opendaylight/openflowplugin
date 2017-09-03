@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,6 +7,9 @@
  */
 package test.mock.util;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Future;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInput;
@@ -16,14 +19,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.Upd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Future;
-
 public class SalMeterServiceMock implements SalMeterService {
-    private List<AddMeterInput> addMeterCalls = new ArrayList<>();
-    private List<RemoveMeterInput> removeMeterCalls = new ArrayList<>();
-    private List<UpdateMeterInput> updateMeterCalls = new ArrayList<>();
+    private final List<AddMeterInput> addMeterCalls = new ArrayList<>();
+    private final List<RemoveMeterInput> removeMeterCalls = new ArrayList<>();
+    private final List<UpdateMeterInput> updateMeterCalls = new ArrayList<>();
 
     @Override
     public Future<RpcResult<AddMeterOutput>> addMeter(AddMeterInput input) {
