@@ -22,11 +22,8 @@ public abstract class AbstractNodeConnectorCommitter<T extends DataObject>
         implements FlowCapableNodeConnectorCommitter<T> {
     private final ForwardingRulesManager provider;
 
-    private final Class<T> clazz;
-
-    public AbstractNodeConnectorCommitter(ForwardingRulesManager provider, Class<T> clazz) {
+    public AbstractNodeConnectorCommitter(ForwardingRulesManager provider) {
         this.provider = Preconditions.checkNotNull(provider, "ForwardingRulesManager can not be null!");
-        this.clazz = Preconditions.checkNotNull(clazz, "Class can not be null!");
     }
 
     @Override
@@ -36,8 +33,8 @@ public abstract class AbstractNodeConnectorCommitter<T extends DataObject>
         for (DataTreeModification<T> change : changes) {
             final InstanceIdentifier<T> key = change.getRootPath().getRootIdentifier();
             final DataObjectModification<T> mod = change.getRootNode();
-            final InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent =
-                    key.firstIdentifierOf(FlowCapableNodeConnector.class);
+            final InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent = key
+                    .firstIdentifierOf(FlowCapableNodeConnector.class);
 
             if (preConfigurationCheck(nodeConnIdent)) {
                 switch (mod.getModificationType()) {
@@ -62,8 +59,8 @@ public abstract class AbstractNodeConnectorCommitter<T extends DataObject>
     }
 
     /**
-     * Method return wildCardPath for Listener registration
-     * and for identify the correct KeyInstanceIdentifier from data.
+     * Method return wildCardPath for Listener registration and for identify the
+     * correct KeyInstanceIdentifier from data.
      */
     protected abstract InstanceIdentifier<T> getWildCardPath();
 
