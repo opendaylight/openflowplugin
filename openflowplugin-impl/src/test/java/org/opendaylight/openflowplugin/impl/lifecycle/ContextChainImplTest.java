@@ -79,9 +79,7 @@ public class ContextChainImplTest {
     @Test
     public void closeServiceInstance() throws Exception {
         contextChain.closeServiceInstance();
-        Mockito.verify(deviceContext).closeServiceInstance();
-        Mockito.verify(rpcContext).closeServiceInstance();
-        Mockito.verify(statisticsContext).closeServiceInstance();
+        Mockito.verify(contextChainMastershipWatcher).onSlaveRoleAcquired(deviceInfo);
     }
 
     @Test
