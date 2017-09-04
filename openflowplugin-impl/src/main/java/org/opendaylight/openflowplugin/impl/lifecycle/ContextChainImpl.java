@@ -16,7 +16,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
@@ -69,32 +68,24 @@ public class ContextChainImpl implements ContextChain {
 
     @Override
     public void instantiateServiceInstance() {
+        contextChainState.set(ContextChainState.PREPARING);
 
         try {
             contexts.forEach(OFPContext::instantiateServiceInstance);
             LOG.info("Started clustering services for node {}", deviceInfo);
         } catch (final Exception ex) {
             LOG.warn("Not able to start clustering services for node {}", deviceInfo);
-            executorService.submit(() -> contextChainMastershipWatcher
-                    .onNotAbleToStartMastershipMandatory(deviceInfo, ex.toString()));
+            contextChainMastershipWatcher
+                    .onNotAbleToStartMastershipMandatory(deviceInfo, ex.toString());
         }
     }
 
     @Override
     public ListenableFuture<Void> closeServiceInstance() {
-
+        contextChainState.set(ContextChainState.PREPARING);
         contextChainMastershipWatcher.onSlaveRoleAcquired(deviceInfo);
-
-        final ListenableFuture<List<Void>> servicesToBeClosed = Futures
-                .allAsList(Lists.reverse(contexts)
-                        .stream()
-                        .map(OFPContext::closeServiceInstance)
-                        .collect(Collectors.toList()));
-
-        return Futures.transform(servicesToBeClosed, (input) -> {
-            LOG.info("Closed clustering services for node {}", deviceInfo);
-            return null;
-        }, executorService);
+        LOG.info("Closed clustering services for node {}", deviceInfo);
+        return Futures.immediateFuture(null);
     }
 
     @Nonnull
@@ -110,13 +101,29 @@ public class ContextChainImpl implements ContextChain {
             return;
         }
 
-        contextChainState.set(ContextChainState.CLOSED);
+        final ContextChainState stateSnapshot = contextChainState.getAndUpdate(state -> ContextChainState.CLOSED);
         unMasterMe();
+
+        // Close all contexts (device, statistics, rpc) in reverse order
+        Lists.reverse(contexts).forEach(OFPContext::close);
+        contexts.clear();
 
         // Close all connections to devices
         auxiliaryConnections.forEach(connectionContext -> connectionContext.closeConnection(false));
         auxiliaryConnections.clear();
+        primaryConnection.closeConnection(false);
 
+        final Runnable task = this::closeRegistrationAndRemoveContext;
+
+        // If we are in initialization process, send task to separate thread to avoid locking
+        if (ContextChainState.PREPARING.equals(stateSnapshot)) {
+            executorService.submit(task);
+        } else {
+            task.run();
+        }
+    }
+
+    private void closeRegistrationAndRemoveContext() {
         // If we are still registered and we are not already closing, then close the registration
         if (Objects.nonNull(registration)) {
             try {
@@ -129,17 +136,10 @@ public class ContextChainImpl implements ContextChain {
             }
         }
 
-
-        // Close all contexts (device, statistics, rpc)
-        contexts.forEach(OFPContext::close);
-        contexts.clear();
-
         // We are closing, so cleanup all managers now
         deviceRemovedHandlers.forEach(h -> h.onDeviceRemoved(deviceInfo));
         deviceRemovedHandlers.clear();
-
-        primaryConnection.closeConnection(false);
-
+        LOG.info("Context chain for device {} was destroyed.", deviceInfo);
     }
 
     @Override
@@ -240,11 +240,14 @@ public class ContextChainImpl implements ContextChain {
     }
 
     private void changeMastershipState(final ContextChainState contextChainState) {
-        if (ContextChainState.CLOSED.equals(this.contextChainState.get())) {
+        final ContextChainState stateSnapshot = this.contextChainState.get();
+
+        if (ContextChainState.CLOSED.equals(stateSnapshot)) {
             return;
         }
 
-        boolean propagate = ContextChainState.UNDEFINED.equals(this.contextChainState.get());
+        boolean propagate = ContextChainState.UNDEFINED.equals(stateSnapshot) ||
+                ContextChainState.PREPARING.equals(stateSnapshot);
         this.contextChainState.set(contextChainState);
 
         if (propagate) {
