@@ -16,7 +16,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
@@ -70,32 +69,21 @@ public class ContextChainImpl implements ContextChain {
     @Override
     @SuppressWarnings("checkstyle:IllegalCatch")
     public void instantiateServiceInstance() {
-
         try {
             contexts.forEach(OFPContext::instantiateServiceInstance);
             LOG.info("Started clustering services for node {}", deviceInfo);
         } catch (final Exception ex) {
             LOG.warn("Not able to start clustering services for node {}", deviceInfo);
-            executorService.submit(() -> contextChainMastershipWatcher
-                    .onNotAbleToStartMastershipMandatory(deviceInfo, ex.toString()));
+            contextChainMastershipWatcher
+                    .onNotAbleToStartMastershipMandatory(deviceInfo, ex.toString());
         }
     }
 
     @Override
     public ListenableFuture<Void> closeServiceInstance() {
-
         contextChainMastershipWatcher.onSlaveRoleAcquired(deviceInfo);
-
-        final ListenableFuture<List<Void>> servicesToBeClosed = Futures
-                .allAsList(Lists.reverse(contexts)
-                        .stream()
-                        .map(OFPContext::closeServiceInstance)
-                        .collect(Collectors.toList()));
-
-        return Futures.transform(servicesToBeClosed, (input) -> {
-            LOG.info("Closed clustering services for node {}", deviceInfo);
-            return null;
-        }, executorService);
+        LOG.info("Closed clustering services for node {}", deviceInfo);
+        return Futures.immediateFuture(null);
     }
 
     @Nonnull
@@ -119,6 +107,14 @@ public class ContextChainImpl implements ContextChain {
         auxiliaryConnections.forEach(connectionContext -> connectionContext.closeConnection(false));
         auxiliaryConnections.clear();
 
+        // Close all contexts (device, statistics, rpc) in reverse order
+        Lists.reverse(contexts).forEach(OFPContext::close);
+        contexts.clear();
+
+        // We are closing, so cleanup all managers now
+        deviceRemovedHandlers.forEach(h -> h.onDeviceRemoved(deviceInfo));
+        deviceRemovedHandlers.clear();
+
         // If we are still registered and we are not already closing, then close the registration
         if (Objects.nonNull(registration)) {
             try {
@@ -131,17 +127,7 @@ public class ContextChainImpl implements ContextChain {
             }
         }
 
-
-        // Close all contexts (device, statistics, rpc)
-        contexts.forEach(OFPContext::close);
-        contexts.clear();
-
-        // We are closing, so cleanup all managers now
-        deviceRemovedHandlers.forEach(h -> h.onDeviceRemoved(deviceInfo));
-        deviceRemovedHandlers.clear();
-
         primaryConnection.closeConnection(false);
-
     }
 
     @Override
