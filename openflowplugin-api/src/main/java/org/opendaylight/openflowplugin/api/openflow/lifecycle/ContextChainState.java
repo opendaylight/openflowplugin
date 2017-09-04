@@ -13,6 +13,10 @@ public enum ContextChainState {
      */
     UNDEFINED,
     /**
+     * Context chain is in working phase.
+     */
+    WORKING,
+    /**
      * Context chain is working as MASTER.
      */
     WORKING_MASTER,
