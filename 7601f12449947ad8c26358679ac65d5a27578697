@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "ba1f61a0_b0e02e97",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/TransactionChainManager.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 5894
+      },
+      "writtenOn": "2017-09-04T11:47:00Z",
+      "side": 1,
+      "message": "Hi, but wasn\u0027t it same before? We have created new transaction chain and close of the \"old one\" failed.",
+      "parentUuid": "ba1f61a0_6f21ccfa",
+      "revId": "7601f12449947ad8c26358679ac65d5a27578697",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba1f61a0_4fba080b",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/TransactionChainManager.java",
         "patchSetId": 3
