@@ -164,16 +164,21 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
             }
         } else {
             LOG.info("Device {} connected.", deviceInfo);
-            if (connectingDevices.putIfAbsent(deviceInfo, connectionContext) != null) {
+            final boolean contextExists = contextChain != null;
+            final boolean isClosing = contextExists && contextChain.isClosing();
+
+            if (!isClosing && connectingDevices.putIfAbsent(deviceInfo, connectionContext) != null) {
                 LOG.warn("Device {} is already trying to connect, wait until succeeded or disconnected.", deviceInfo);
                 return ConnectionStatus.ALREADY_CONNECTED;
             }
-            if (contextChain != null) {
-                if (contextChain.isClosing()) {
+
+            if (contextExists) {
+                if (isClosing) {
                     LOG.warn("Device {} is already in termination state, closing all incoming connections.",
                             deviceInfo);
                     return ConnectionStatus.CLOSING;
                 }
+
                 LOG.warn("Device {} already connected. Closing previous connection", deviceInfo);
                 destroyContextChain(deviceInfo);
                 LOG.info("Old connection dropped, creating new context chain for device {}", deviceInfo);
@@ -182,6 +187,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                 LOG.info("No context chain found for device: {}, creating new.", deviceInfo);
                 createContextChain(connectionContext);
             }
+
             return ConnectionStatus.MAY_CONTINUE;
         }
 
