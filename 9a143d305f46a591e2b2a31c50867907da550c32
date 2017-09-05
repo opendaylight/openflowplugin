@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_aab27691",
+        "filename": "openflowplugin-common/src/main/java/org/opendaylight/openflowplugin/common/txchain/TransactionChainManager.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 271,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-09-05T23:40:19Z",
+      "side": 1,
+      "message": "looks like deactivateTransactionManager() and onTransactionChainFailed() can cause race condition here, given that onTransactionChainFailed and future callback in deactivateTransactionManager will be called in separate thread. so there is a possibility that onTransactionChainFailed  may end up creating a new transaction chain, which won\u0027t be used by anyone, given that device is disconnected (or moved to slave)",
+      "range": {
+        "startLine": 270,
+        "startChar": 17,
+        "endLine": 271,
+        "endChar": 55
+      },
+      "revId": "9a143d305f46a591e2b2a31c50867907da550c32",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
