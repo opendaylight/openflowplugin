@@ -61,6 +61,7 @@ import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRe
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleKeeper;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
+import org.opendaylight.openflowplugin.common.txchain.TransactionChainManager;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderKeeper;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
@@ -268,7 +269,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public boolean submitTransaction() {
-        return initialized.get() && transactionChainManager.submitWriteTransaction();
+        return initialized.get() && transactionChainManager.submitTransaction();
     }
 
     @Override
@@ -665,7 +666,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Transaction chain manager for node {} created", deviceInfo.getLOGValue());
             }
-            this.transactionChainManager = new TransactionChainManager(dataBroker, deviceInfo);
+            this.transactionChainManager = new TransactionChainManager(dataBroker, deviceInfo.getNodeId().getValue());
             this.deviceFlowRegistry = new DeviceFlowRegistryImpl(deviceInfo.getVersion(), dataBroker, deviceInfo.getNodeInstanceIdentifier());
             this.deviceGroupRegistry = new DeviceGroupRegistryImpl();
             this.deviceMeterRegistry = new DeviceMeterRegistryImpl();
