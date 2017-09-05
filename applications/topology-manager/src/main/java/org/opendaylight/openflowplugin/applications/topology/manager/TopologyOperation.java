@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
+import org.opendaylight.openflowplugin.common.txchain.TransactionChainManager;
 
 /**
  * Internal interface for submitted operations. Implementations of this
@@ -17,7 +18,7 @@ interface TopologyOperation {
     /**
      * Execute the operation on top of the transaction.
      *
-     * @param transaction Datastore transaction
+     * @param manager Datastore transaction manager
      */
-    void applyOperation(ReadWriteTransaction transaction);
+    void applyOperation(TransactionChainManager manager);
 }
