@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -11,7 +11,6 @@ import java.util.Collection;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
-import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
@@ -59,12 +58,9 @@ public class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<FlowCapab
         final NodeId nodeId = provideTopologyNodeId(iiToNodeInInventory);
         final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node> iiToTopologyRemovedNode = provideIIToTopologyNode(nodeId);
         if (iiToTopologyRemovedNode != null) {
-            operationProcessor.enqueueOperation(new TopologyOperation() {
-                @Override
-                public void applyOperation(final ReadWriteTransaction transaction) {
-                    transaction.delete(LogicalDatastoreType.OPERATIONAL, iiToTopologyRemovedNode);
-                    TopologyManagerUtil.removeAffectedLinks(nodeId, transaction, II_TO_TOPOLOGY);
-                }
+            operationProcessor.enqueueOperation(manager -> {
+                manager.addDeleteOperationTotTxChain(LogicalDatastoreType.OPERATIONAL, iiToTopologyRemovedNode);
+                TopologyManagerUtil.removeAffectedLinks(nodeId, manager, II_TO_TOPOLOGY);
             });
         } else {
             LOG.debug("Instance identifier to inventory wasn't translated to topology while deleting node.");
