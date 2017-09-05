@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_c4d9a423",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 300,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-09-05T08:07:26Z",
+      "side": 1,
+      "message": "try to find what exception can be thrown instead of suppress warning",
+      "range": {
+        "startLine": 300,
+        "startChar": 11,
+        "endLine": 300,
+        "endChar": 25
+      },
+      "revId": "0d0e4fa2f6621b0f0936121bf72933de0fc64039",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_64d0b8f6",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 313,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-09-05T08:07:26Z",
+      "side": 1,
+      "message": "try to find what exception can be thrown instead of suppress warning",
+      "range": {
+        "startLine": 313,
+        "startChar": 12,
+        "endLine": 313,
+        "endChar": 45
+      },
+      "revId": "0d0e4fa2f6621b0f0936121bf72933de0fc64039",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_84d32c03",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/ConnectionContextImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-09-05T08:07:26Z",
+      "side": 1,
+      "message": "close method in handshake context is overridden, it will never a throw an exception",
+      "range": {
+        "startLine": 118,
+        "startChar": 15,
+        "endLine": 118,
+        "endChar": 41
+      },
+      "revId": "0d0e4fa2f6621b0f0936121bf72933de0fc64039",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_04073c83",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/listener/ConnectionReadyListenerImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-09-05T08:07:26Z",
+      "side": 1,
+      "message": "handshake context doesn\u0027t throw any exception",
+      "range": {
+        "startLine": 65,
+        "startChar": 28,
+        "endLine": 65,
+        "endChar": 53
+      },
+      "revId": "0d0e4fa2f6621b0f0936121bf72933de0fc64039",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_84568c5a",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/listener/HandshakeListenerImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-09-05T08:07:26Z",
+      "side": 1,
+      "message": "remove throw exception from device connected",
+      "range": {
+        "startLine": 83,
+        "startChar": 17,
+        "endLine": 83,
+        "endChar": 43
+      },
+      "revId": "0d0e4fa2f6621b0f0936121bf72933de0fc64039",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
