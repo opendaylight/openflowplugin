@@ -8,13 +8,11 @@
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
 import com.google.common.base.Optional;
-import java.util.concurrent.ExecutionException;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
-import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.openflowplugin.common.txchain.TransactionChainManager;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
@@ -28,11 +26,14 @@ import org.slf4j.LoggerFactory;
 
 public class FlowCapableTopologyProvider implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(FlowCapableTopologyProvider.class);
+    private static final String TOPOLOGY_PROVIDER = "topology-provider";
     static final String TOPOLOGY_ID = "flow:1";
+
 
     private final DataBroker dataBroker;
     private final NotificationProviderService notificationService;
     private final OperationProcessor processor;
+    private TransactionChainManager transactionChainManager;
     private ListenerRegistration<NotificationListener> listenerRegistration;
 
     public FlowCapableTopologyProvider(DataBroker dataBroker, NotificationProviderService notificationService,
@@ -53,15 +54,17 @@ public class FlowCapableTopologyProvider implements AutoCloseable {
 
         final FlowCapableTopologyExporter listener = new FlowCapableTopologyExporter(processor, path);
         this.listenerRegistration = notificationService.registerNotificationListener(listener);
+        this.transactionChainManager = new TransactionChainManager(dataBroker, TOPOLOGY_PROVIDER);
+        this.transactionChainManager.activateTransactionManager();
+        this.transactionChainManager.initialSubmitWriteTransaction();
 
-        if(!isFlowTopologyExist(dataBroker, path)){
-            final ReadWriteTransaction tx = dataBroker.newReadWriteTransaction();
-            tx.put(LogicalDatastoreType.OPERATIONAL, path, new TopologyBuilder().setKey(key).build(), true);
-            try {
-                tx.submit().get();
-            } catch (InterruptedException | ExecutionException e) {
-                LOG.warn("Initial topology export failed, continuing anyway", e);
-            }
+        if(!isFlowTopologyExist(path)){
+            transactionChainManager.writeToTransaction(
+                    LogicalDatastoreType.OPERATIONAL,
+                    path,
+                    new TopologyBuilder().setKey(key).build(),
+                    true);
+            transactionChainManager.submitTransaction();
         }
 
         LOG.info("FlowCapableTopologyProvider started");
@@ -70,6 +73,7 @@ public class FlowCapableTopologyProvider implements AutoCloseable {
     @Override
     public void close() {
         LOG.info("FlowCapableTopologyProvider stopped.");
+        this.transactionChainManager.close();
         if (this.listenerRegistration != null) {
             try {
                 this.listenerRegistration.close();
@@ -81,11 +85,11 @@ public class FlowCapableTopologyProvider implements AutoCloseable {
         }
     }
 
-    private boolean isFlowTopologyExist(final DataBroker dataBroker,
-                                        final InstanceIdentifier<Topology> path) {
-        final ReadTransaction tx = dataBroker.newReadOnlyTransaction();
+    private boolean isFlowTopologyExist(final InstanceIdentifier<Topology> path) {
         try {
-            Optional<Topology> ofTopology = tx.read(LogicalDatastoreType.OPERATIONAL, path).checkedGet();
+            Optional<Topology> ofTopology = this.transactionChainManager
+                    .readFromTransaction(LogicalDatastoreType.OPERATIONAL, path)
+                    .checkedGet();
             LOG.debug("OpenFlow topology exist in the operational data store at {}",path);
             if(ofTopology.isPresent()){
                 return true;
