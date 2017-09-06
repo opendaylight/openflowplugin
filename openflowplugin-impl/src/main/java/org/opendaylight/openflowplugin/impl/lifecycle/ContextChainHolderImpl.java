@@ -49,6 +49,7 @@ import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -147,7 +148,10 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
         final ContextChain contextChain = contextChainMap.get(deviceInfo);
 
-        if (connectionContext.getFeatures().getAuxiliaryId() != 0) {
+        final FeaturesReply featuresReply = connectionContext.getFeatures();
+        final short auxiliaryId = featuresReply != null ? featuresReply.getAuxiliaryId() : 0;
+
+        if (auxiliaryId != 0) {
             if (contextChain == null) {
                 LOG.warn("An auxiliary connection for device {}, but no primary connection. Refusing connection.", deviceInfo);
                 return ConnectionStatus.REFUSING_AUXILIARY_CONNECTION;
