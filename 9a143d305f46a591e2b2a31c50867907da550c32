@@ -22,6 +22,30 @@
       "revId": "9a143d305f46a591e2b2a31c50867907da550c32",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_25635743",
+        "filename": "openflowplugin-common/src/main/java/org/opendaylight/openflowplugin/common/txchain/TransactionChainManager.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 271,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-09-06T06:24:01Z",
+      "side": 1,
+      "message": "More o less the logic here is the same as before. After transaction failed event we recreate a new tChain. The only stuff here is that method will check if the txChain in failed event is still the same txChain we created. If not ignoring txChain was recreated somewhere else. If it is the same it will be recreated here. So long we keep it synchronized and even if there was deactivate call before the method do practically nothing because the chain is already null or changed.",
+      "parentUuid": "ba1f61a0_aab27691",
+      "range": {
+        "startLine": 270,
+        "startChar": 17,
+        "endLine": 271,
+        "endChar": 55
+      },
+      "revId": "9a143d305f46a591e2b2a31c50867907da550c32",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
