@@ -18,6 +18,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +51,8 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     private static final AtomicInteger UNACCOUNTED_FLOWS_COUNTER = new AtomicInteger(0);
 
     private final BiMap<FlowRegistryKey, FlowDescriptor> flowRegistry = Maps.synchronizedBiMap(HashBiMap.create());
+    private final List<FlowDescriptor> flowDescriptors = Collections.synchronizedList(new ArrayList<>());
+    private final List<FlowDescriptor> marks = Collections.synchronizedList(new ArrayList<>());
     private final DataBroker dataBroker;
     private final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier;
     private final List<ListenableFuture<List<Optional<FlowCapableNode>>>> lastFillFutures = new ArrayList<>();
@@ -163,6 +166,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
             }
 
             flowRegistry.put(flowRegistryKey, flowDescriptor);
+            flowDescriptors.add(flowDescriptor);
         } catch (IllegalArgumentException ex) {
             if (LOG.isWarnEnabled()) {
                 LOG.warn("Flow with flow ID {} already exists in table {}, generating alien flow ID", flowDescriptor.getFlowId().getValue(),
@@ -171,11 +175,12 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
             // We are trying to store new flow to flow registry, but we already have different flow with same flow ID
             // stored in registry, so we need to create alien ID for this new flow here.
-            flowRegistry.put(
-                    flowRegistryKey,
-                    FlowDescriptorFactory.create(
-                            flowDescriptor.getTableKey().getId(),
-                            createAlienFlowId(flowDescriptor.getTableKey().getId())));
+            final FlowDescriptor alienFlowDescriptor = FlowDescriptorFactory.create(
+                    flowDescriptor.getTableKey().getId(),
+                    createAlienFlowId(flowDescriptor.getTableKey().getId()));
+
+            flowRegistry.put(flowRegistryKey, alienFlowDescriptor);
+            flowDescriptors.add(alienFlowDescriptor);
         }
     }
 
@@ -202,18 +207,26 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
             LOG.trace("Removing flow descriptor for flow hash : {}", flowRegistryKey.hashCode());
         }
 
-        flowRegistry.remove(flowRegistryKey);
+        marks.add(flowRegistry.remove(flowRegistryKey));
     }
 
     @Override
     public void processMarks() {
-        // Do nothing
+        flowDescriptors.removeAll(marks);
+        marks.clear();
     }
 
     @Override
     public void forEach(final Consumer<FlowRegistryKey> consumer) {
         synchronized (flowRegistry) {
             flowRegistry.keySet().forEach(consumer);
+        }
+    }
+
+    @Override
+    public void forEachValue(final Consumer<FlowDescriptor> consumer) {
+        synchronized (flowDescriptors) {
+            flowDescriptors.forEach(consumer);
         }
     }
 
