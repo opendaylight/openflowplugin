@@ -167,18 +167,6 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
         }
 
         txFacade.submitTransaction();
-
-        switch (getMultipartType()) {
-            case OFPMPFLOW:
-                deviceRegistry.getDeviceFlowRegistry().processMarks();
-                break;
-            case OFPMPMETERCONFIG:
-                deviceRegistry.getDeviceMeterRegistry().processMarks();
-                break;
-            case OFPMPGROUPDESC:
-                deviceRegistry.getDeviceGroupRegistry().processMarks();
-                break;
-        }
     }
 
     /**

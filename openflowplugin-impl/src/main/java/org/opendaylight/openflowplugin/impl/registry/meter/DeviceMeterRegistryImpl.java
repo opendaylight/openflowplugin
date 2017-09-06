@@ -35,15 +35,11 @@ public class DeviceMeterRegistryImpl implements DeviceMeterRegistry {
     }
 
     @Override
-    public void processMarks() {
-        meterIds.removeAll(marks);
-        marks.clear();
-    }
-
-    @Override
-    public void forEach(final Consumer<MeterId> consumer) {
+    public void process(final Consumer<MeterId> consumer) {
         synchronized (meterIds) {
             meterIds.forEach(consumer);
+            meterIds.removeAll(marks);
+            marks.clear();
         }
     }
 

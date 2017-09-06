@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.api.openflow.registry;
 
 import java.util.function.Consumer;
 
-public interface CommonDeviceRegistry<KEY> extends AutoCloseable {
+public interface CommonDeviceRegistry<KEY, VALUE> extends AutoCloseable {
 
     /**
      * Store KEY in device registry.
@@ -25,15 +25,10 @@ public interface CommonDeviceRegistry<KEY> extends AutoCloseable {
     void addMark(KEY key);
 
     /**
-     * Process marked keys.
-     */
-    void processMarks();
-
-    /**
-     * Iterate over all keys in device registry.
+     * Iterate over all values in device registry and then clear all marked values and clear marks.
      * @param consumer key consumer
      */
-    void forEach(Consumer<KEY> consumer);
+    void process(Consumer<VALUE> consumer);
 
     /**
      * Get device registry size.
