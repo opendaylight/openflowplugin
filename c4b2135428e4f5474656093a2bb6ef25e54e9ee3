@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_e56adf7f",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/AbstractListeningCommiter.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-09-06T00:54:09Z",
+      "side": 1,
+      "message": "remove this input parameter as well?",
+      "range": {
+        "startLine": 31,
+        "startChar": 70,
+        "endLine": 31,
+        "endChar": 84
+      },
+      "revId": "c4b2135428e4f5474656093a2bb6ef25e54e9ee3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
