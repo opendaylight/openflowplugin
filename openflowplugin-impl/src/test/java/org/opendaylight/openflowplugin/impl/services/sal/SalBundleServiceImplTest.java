@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.extension.onf.service;
+package org.opendaylight.openflowplugin.impl.services.sal;
 
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;
@@ -51,9 +51,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.common.grouping.BundleProperty;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-/**
- * Test for {@link org.opendaylight.openflowplugin.extension.onf.service.SalBundleServiceImpl}.
- */
 @RunWith(MockitoJUnitRunner.class)
 public class SalBundleServiceImplTest {
 
