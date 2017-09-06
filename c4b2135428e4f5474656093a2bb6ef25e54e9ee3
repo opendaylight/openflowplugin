@@ -22,6 +22,30 @@
       "revId": "c4b2135428e4f5474656093a2bb6ef25e54e9ee3",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_8094b143",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/AbstractListeningCommiter.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-09-06T08:13:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba1f61a0_e56adf7f",
+      "range": {
+        "startLine": 31,
+        "startChar": 70,
+        "endLine": 31,
+        "endChar": 84
+      },
+      "revId": "c4b2135428e4f5474656093a2bb6ef25e54e9ee3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
