@@ -12,6 +12,7 @@ import com.google.common.base.Preconditions;
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterIdDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterIdTypeDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterIdTypeSerializerKey;
+import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterRegistrator;
@@ -26,6 +27,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.BundleAddMessageSal;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.BundleControlSal;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleAddMessageOnf;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleControlOnf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,7 +97,11 @@ public class OnfExtensionProvider {
         converterRegistrator.registerMessageConvertor(
                 new TypeVersionKey<>(BundleControlSal.class, OFConstants.OFP_VERSION_1_3), bundleControlConverter);
         converterRegistrator.registerMessageConvertor(
+                new MessageTypeKey<>(OFConstants.OFP_VERSION_1_3, BundleControlOnf.class), bundleControlConverter);
+        converterRegistrator.registerMessageConvertor(
                 new TypeVersionKey<>(BundleAddMessageSal.class, OFConstants.OFP_VERSION_1_3), bundleAddMessageConverter);
+        converterRegistrator.registerMessageConvertor(
+                new MessageTypeKey<>(OFConstants.OFP_VERSION_1_3, BundleAddMessageOnf.class), bundleAddMessageConverter);
     }
 
 }
