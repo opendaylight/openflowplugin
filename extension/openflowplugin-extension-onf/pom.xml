@@ -26,53 +26,10 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
             </plugin>
-            <plugin>
-                <groupId>org.opendaylight.yangtools</groupId>
-                <artifactId>yang-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate-sources</goal>
-                        </goals>
-                        <configuration>
-                            <yangFilesRootDir>src/main/yang</yangFilesRootDir>
-                            <codeGenerators>
-                                <generator>
-                                    <codeGeneratorClass>org.opendaylight.mdsal.binding.maven.api.gen.plugin.CodeGeneratorImpl</codeGeneratorClass>
-                                    <outputBaseDir>${project.build.directory}/generated-sources/sal</outputBaseDir>
-                                </generator>
-                            </codeGenerators>
-                            <inspectDependencies>true</inspectDependencies>
-                        </configuration>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.opendaylight.mdsal</groupId>
-                        <artifactId>maven-sal-api-gen-plugin</artifactId>
-                        <version>${mdsal.model.version}</version>
-                        <type>jar</type>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.opendaylight.mdsal</groupId>
-                        <artifactId>yang-binding</artifactId>
-                        <version>${mdsal.model.version}</version>
-                        <type>jar</type>
-                    </dependency>
-                </dependencies>
-            </plugin>
         </plugins>
     </build>
 
     <dependencies>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>openflowplugin-blueprint-config</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}.openflowjava</groupId>
-            <artifactId>openflowjava-blueprint-config</artifactId>
-        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>openflowplugin-extension-api</artifactId>
@@ -98,6 +55,10 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.openflowjava</groupId>
+            <artifactId>openflow-protocol-api</artifactId>
         </dependency>
     </dependencies>
 

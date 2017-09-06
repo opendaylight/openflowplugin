@@ -40,7 +40,4 @@
   </bean>
 
   <odl:rpc-implementation ref="operationalStatusChangeService"/>
-
-  <odl:action-provider interface="org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService"/>
-
 </blueprint>

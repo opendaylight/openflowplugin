@@ -14,7 +14,9 @@ import java.util.Optional;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.extension.api.BundleMessageDataInjector;
 import org.opendaylight.openflowplugin.extension.api.ConverterMessageToOFJava;
+import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
+import org.opendaylight.openflowplugin.extension.api.path.MessagePath;
 import org.opendaylight.openflowplugin.extension.onf.OnfConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
@@ -42,6 +44,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.BundleUpdateGroupCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.BundleUpdatePortCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.BundleAddMessageSal;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.BundleAddMessageSalBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.bundle.add.message.sal.SalAddMessageDataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.add.message.grouping.bundle.inner.message.BundleFlowModCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.add.message.grouping.bundle.inner.message.BundleFlowModCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.add.message.grouping.bundle.inner.message.BundleGroupModCase;
@@ -58,7 +62,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 /**
  * Converter for BundleAddMessage messages (ONF approved extension #230).
  */
-public class BundleAddMessageConverter implements ConverterMessageToOFJava<BundleAddMessageSal, BundleAddMessageOnf>, BundleMessageDataInjector {
+public class BundleAddMessageConverter implements
+        ConverterMessageToOFJava<BundleAddMessageSal, BundleAddMessageOnf>,
+        ConvertorMessageFromOFJava<BundleAddMessageOnf, MessagePath>,
+        BundleMessageDataInjector {
 
     private static final ConvertorExecutor converterExecutor = ConvertorManagerFactory.createDefaultManager();
     private long xid;
@@ -189,5 +196,13 @@ public class BundleAddMessageConverter implements ConverterMessageToOFJava<Bundl
     @Override
     public void setNode(NodeRef node) {
         this.node = node;
+    }
+
+    @Override
+    public BundleAddMessageSal convert(final BundleAddMessageOnf input, final MessagePath path) throws ConversionException {
+        return new BundleAddMessageSalBuilder()
+                .setSalAddMessageData(new SalAddMessageDataBuilder(input.getOnfAddMessageGroupingData())
+                        .build())
+                .build();
     }
 }
