@@ -236,7 +236,7 @@ public class DeviceFlowRegistryImplTest {
     @Test
     public void testForEach() throws Exception {
         final AtomicInteger counter = new AtomicInteger(0);
-        deviceFlowRegistry.forEach(key -> counter.incrementAndGet());
+        deviceFlowRegistry.process(key -> counter.incrementAndGet());
         Assert.assertEquals(1, counter.get());
     }
 

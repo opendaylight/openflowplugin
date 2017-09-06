@@ -130,26 +130,8 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
                 .getNodeInstanceIdentifier()
                 .augmentation(FlowCapableNode.class);
 
-        switch (getMultipartType()) {
-            case OFPMPFLOW:
-                StatisticsGatheringUtils.deleteAllKnownFlows(
-                        getTxFacade(),
-                        instanceIdentifier,
-                        deviceRegistry.getDeviceFlowRegistry());
-                break;
-            case OFPMPMETERCONFIG:
-                StatisticsGatheringUtils.deleteAllKnownMeters(
-                        getTxFacade(),
-                        instanceIdentifier,
-                        deviceRegistry.getDeviceMeterRegistry());
-                break;
-            case OFPMPGROUPDESC:
-                StatisticsGatheringUtils.deleteAllKnownGroups(
-                        getTxFacade(),
-                        instanceIdentifier,
-                        deviceRegistry.getDeviceGroupRegistry());
-                break;
-        }
+        StatisticsGatheringUtils
+                .deleteAllKnownStatistics(getMultipartType(), getTxFacade(), instanceIdentifier, deviceRegistry);
     }
 
     /**
@@ -161,23 +143,10 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
         EventsTimeCounter.markEnd(doneEventIdentifier);
         EventsTimeCounter.markEnd(getEventIdentifier());
         spyMessage(MessageSpy.StatisticsGroup.FROM_SWITCH_TRANSLATE_OUT_SUCCESS);
+        txFacade.submitTransaction();
 
         if (setResult) {
             setResult(RpcResultBuilder.success(Collections.<T>emptyList()).build());
-        }
-
-        txFacade.submitTransaction();
-
-        switch (getMultipartType()) {
-            case OFPMPFLOW:
-                deviceRegistry.getDeviceFlowRegistry().processMarks();
-                break;
-            case OFPMPMETERCONFIG:
-                deviceRegistry.getDeviceMeterRegistry().processMarks();
-                break;
-            case OFPMPGROUPDESC:
-                deviceRegistry.getDeviceGroupRegistry().processMarks();
-                break;
         }
     }
 
