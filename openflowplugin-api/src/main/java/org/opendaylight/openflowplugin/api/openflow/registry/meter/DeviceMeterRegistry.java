@@ -11,6 +11,6 @@ package org.opendaylight.openflowplugin.api.openflow.registry.meter;
 import org.opendaylight.openflowplugin.api.openflow.registry.CommonDeviceRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 
-public interface DeviceMeterRegistry extends CommonDeviceRegistry<MeterId> {
+public interface DeviceMeterRegistry extends CommonDeviceRegistry<MeterId, MeterId> {
 
 }
