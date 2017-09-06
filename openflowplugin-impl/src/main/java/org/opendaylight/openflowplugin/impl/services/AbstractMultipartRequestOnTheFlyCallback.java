@@ -134,58 +134,30 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
                 .getNodeInstanceIdentifier()
                 .augmentation(FlowCapableNode.class);
 
-        switch (getMultipartType()) {
-            case OFPMPFLOW:
-                StatisticsGatheringUtils.deleteAllKnownFlows(
-                        getTxFacade(),
-                        instanceIdentifier,
-                        deviceRegistry.getDeviceFlowRegistry());
-                break;
-            case OFPMPMETERCONFIG:
-                StatisticsGatheringUtils.deleteAllKnownMeters(
-                        getTxFacade(),
-                        instanceIdentifier,
-                        deviceRegistry.getDeviceMeterRegistry());
-                break;
-            case OFPMPGROUPDESC:
-                StatisticsGatheringUtils.deleteAllKnownGroups(
-                        getTxFacade(),
-                        instanceIdentifier,
-                        deviceRegistry.getDeviceGroupRegistry());
-                break;
-            default:
-                // no operation
-        }
+        StatisticsGatheringUtils
+                .deleteAllKnownStatistics(getMultipartType(), getTxFacade(), instanceIdentifier, deviceRegistry);
     }
 
     /**
      * Ends collecting of multipart data.
      * @param setResult set empty success result
      */
+    @SuppressWarnings("checkstyle:IllegalCatch")
     private void endCollecting(final boolean setResult) {
         gatheringState = Service.State.TERMINATED;
         EventsTimeCounter.markEnd(doneEventIdentifier);
         EventsTimeCounter.markEnd(getEventIdentifier());
         spyMessage(MessageSpy.StatisticsGroup.FROM_SWITCH_TRANSLATE_OUT_SUCCESS);
 
-        if (setResult) {
-            setResult(RpcResultBuilder.success(Collections.<T>emptyList()).build());
+        try {
+            txFacade.submitTransaction();
+        } catch (final Exception e) {
+            LOG.warn("Stats processing of type {} for node {} failed during processing step", getMultipartType(),
+                    deviceInfo.getNodeId(), e);
         }
 
-        txFacade.submitTransaction();
-
-        switch (getMultipartType()) {
-            case OFPMPFLOW:
-                deviceRegistry.getDeviceFlowRegistry().processMarks();
-                break;
-            case OFPMPMETERCONFIG:
-                deviceRegistry.getDeviceMeterRegistry().processMarks();
-                break;
-            case OFPMPGROUPDESC:
-                deviceRegistry.getDeviceGroupRegistry().processMarks();
-                break;
-            default:
-                // no operation
+        if (setResult) {
+            setResult(RpcResultBuilder.success(Collections.<T>emptyList()).build());
         }
     }
 
@@ -194,4 +166,5 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
      * @return multipart type
      */
     protected abstract MultipartType getMultipartType();
+
 }

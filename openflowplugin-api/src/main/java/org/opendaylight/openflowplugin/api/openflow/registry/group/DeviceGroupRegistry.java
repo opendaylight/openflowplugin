@@ -11,6 +11,6 @@ package org.opendaylight.openflowplugin.api.openflow.registry.group;
 import org.opendaylight.openflowplugin.api.openflow.registry.CommonDeviceRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 
-public interface DeviceGroupRegistry extends CommonDeviceRegistry<GroupId> {
+public interface DeviceGroupRegistry extends CommonDeviceRegistry<GroupId, GroupId> {
 
 }
