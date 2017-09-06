@@ -8,22 +8,17 @@
 
 package org.opendaylight.openflowplugin.impl.statistics;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainClosedException;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -47,7 +42,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.sn
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.snapshot.gathering.status.grouping.SnapshotGatheringStatusEndBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.snapshot.gathering.status.grouping.SnapshotGatheringStatusStartBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
@@ -219,39 +215,12 @@ public final class StatisticsGatheringUtils {
     public static void deleteAllKnownFlows(final TxFacade txFacade,
                                            final InstanceIdentifier<FlowCapableNode> instanceIdentifier,
                                            final DeviceFlowRegistry deviceFlowRegistry) {
-        if (!txFacade.isTransactionsEnabled()) {
-            return;
-        }
-
-        final ReadOnlyTransaction readTx = txFacade.getReadTransaction();
-
-        try {
-            Futures.transform(Futures
-                .catchingAsync(readTx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier), Throwable.class,
-                    t -> {
-                        // we wish to close readTx for fallBack
-                        readTx.close();
-                        return Futures.immediateFailedFuture(t);
-                    }), (Function<Optional<FlowCapableNode>, Void>)
-                flowCapNodeOpt -> {
-                    // we have to read actual tables with all information before we set empty Flow list,
-                    // merge is expensive and not applicable for lists
-                    if (flowCapNodeOpt != null && flowCapNodeOpt.isPresent()) {
-                        for (final Table tableData : flowCapNodeOpt.get().getTable()) {
-                            final Table table =
-                                    new TableBuilder(tableData).setFlow(Collections.emptyList()).build();
-                            final InstanceIdentifier<Table> iiToTable =
-                                    instanceIdentifier.child(Table.class, tableData.getKey());
-                            txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);
-                        }
-                    }
-
-                    readTx.close();
-                    return null;
-                }).get();
-        } catch (InterruptedException | ExecutionException ex) {
-            LOG.debug("Failed to delete {} flows, exception: {}", deviceFlowRegistry.size(), ex);
-        }
+        deviceFlowRegistry.forEachValue(flowDescriptor -> txFacade
+                .addDeleteToTxChain(
+                        LogicalDatastoreType.OPERATIONAL,
+                        instanceIdentifier
+                                .child(Table.class, flowDescriptor.getTableKey())
+                                .child(Flow.class, new FlowKey(flowDescriptor.getFlowId()))));
     }
 
     public static void deleteAllKnownMeters(final TxFacade txFacade,
