@@ -20,7 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
  * Registry for mapping composite-key of flow ({@link FlowRegistryKey}) from device view
  * to flow descriptor ({@link FlowDescriptor}) as the identifier of the same flow in data store.
  */
-public interface DeviceFlowRegistry extends CommonDeviceRegistry<FlowRegistryKey> {
+public interface DeviceFlowRegistry extends CommonDeviceRegistry<FlowRegistryKey, FlowDescriptor> {
 
     ListenableFuture<List<Optional<FlowCapableNode>>> fill();
 

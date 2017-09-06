@@ -42,14 +42,14 @@ public class DeviceGroupRegistryImplTest {
     @Test
     public void testRemoveMarked() throws Exception {
         deviceGroupRegistry.addMark(groupId);
-        deviceGroupRegistry.processMarks();
+        deviceGroupRegistry.process(a -> {});
         Assert.assertEquals(0, deviceGroupRegistry.getAllGroupIds().size());
     }
 
     @Test
     public void testRemoveMarkedNegative() throws Exception {
         deviceGroupRegistry.addMark(groupId2);
-        deviceGroupRegistry.processMarks();
+        deviceGroupRegistry.process(a -> {});
         Assert.assertEquals(1, deviceGroupRegistry.getAllGroupIds().size());
     }
 
@@ -61,7 +61,7 @@ public class DeviceGroupRegistryImplTest {
         Assert.assertEquals(0, deviceGroupRegistry.getAllGroupIds().size());
         deviceGroupRegistry.store(groupId);
         Assert.assertEquals(1, deviceGroupRegistry.getAllGroupIds().size());
-        deviceGroupRegistry.processMarks();
+        deviceGroupRegistry.process(a -> {});
         Assert.assertEquals(1, deviceGroupRegistry.getAllGroupIds().size());
     }
 
@@ -69,7 +69,7 @@ public class DeviceGroupRegistryImplTest {
     public void testForEach() throws Exception {
         final AtomicInteger counter = new AtomicInteger(0);
         deviceGroupRegistry.store(groupId2);
-        deviceGroupRegistry.forEach(group -> counter.incrementAndGet());
+        deviceGroupRegistry.process(group -> counter.incrementAndGet());
         Assert.assertEquals(2, counter.get());
     }
 }

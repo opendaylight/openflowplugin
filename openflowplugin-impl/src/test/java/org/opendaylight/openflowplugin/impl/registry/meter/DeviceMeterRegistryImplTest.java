@@ -42,14 +42,14 @@ public class DeviceMeterRegistryImplTest {
     @Test
     public void testRemoveMarked() throws Exception {
         deviceMeterRegistry.addMark(meterId);
-        deviceMeterRegistry.processMarks();
+        deviceMeterRegistry.process((a) -> {});
         Assert.assertEquals(0, deviceMeterRegistry.getAllMeterIds().size());
     }
 
     @Test
     public void testRemoveMarkedNegative() throws Exception {
         deviceMeterRegistry.addMark(meterId2);
-        deviceMeterRegistry.processMarks();
+        deviceMeterRegistry.process((a) -> {});
         Assert.assertEquals(1, deviceMeterRegistry.getAllMeterIds().size());
     }
 
@@ -61,7 +61,7 @@ public class DeviceMeterRegistryImplTest {
         Assert.assertEquals(0, deviceMeterRegistry.getAllMeterIds().size());
         deviceMeterRegistry.store(meterId);
         Assert.assertEquals(1, deviceMeterRegistry.getAllMeterIds().size());
-        deviceMeterRegistry.processMarks();
+        deviceMeterRegistry.process((a) -> {});
         Assert.assertEquals(1, deviceMeterRegistry.getAllMeterIds().size());
 
     }
@@ -70,7 +70,7 @@ public class DeviceMeterRegistryImplTest {
     public void testForEach() throws Exception {
         final AtomicInteger counter = new AtomicInteger(0);
         deviceMeterRegistry.store(meterId2);
-        deviceMeterRegistry.forEach(meter -> counter.incrementAndGet());
+        deviceMeterRegistry.process(meter -> counter.incrementAndGet());
         Assert.assertEquals(2, counter.get());
     }
 }
