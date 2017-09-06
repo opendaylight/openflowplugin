@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.api.openflow.registry.flow;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;
+import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.opendaylight.openflowplugin.api.openflow.registry.CommonDeviceRegistry;
@@ -28,5 +29,7 @@ public interface DeviceFlowRegistry extends CommonDeviceRegistry<FlowRegistryKey
 
     @Nullable
     FlowDescriptor retrieveDescriptor(@Nonnull FlowRegistryKey flowRegistryKey);
+
+    void forEachValue(Consumer<FlowDescriptor> consumer);
 
 }
