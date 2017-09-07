@@ -47,7 +47,7 @@ public class GroupStatisticsToNotificationTransformer {
         notification.setMoreReplies(Boolean.FALSE);
         notification.setTransactionId(emulatedTxId);
 
-        notification.setGroupStats(new ArrayList<GroupStats>());
+        notification.setGroupStats(new ArrayList<>());
 
         for (MultipartReply mpReply : mpReplyList) {
             MultipartReplyGroupCase caseBody = (MultipartReplyGroupCase) mpReply.getMultipartReplyBody();

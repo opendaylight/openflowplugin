@@ -65,7 +65,7 @@ final class GroupDescriptionService
         notification.setMoreReplies(Boolean.FALSE);
         notification.setTransactionId(emulatedTxId);
 
-        notification.setGroupDescStats(new ArrayList<GroupDescStats>());
+        notification.setGroupDescStats(new ArrayList<>());
         final VersionConvertorData data = new VersionConvertorData(getVersion());
 
         for (MultipartReply mpReply : result) {
