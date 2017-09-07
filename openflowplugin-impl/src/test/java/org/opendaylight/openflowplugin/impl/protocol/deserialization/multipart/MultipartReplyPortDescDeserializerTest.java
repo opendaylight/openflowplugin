@@ -74,10 +74,10 @@ public class MultipartReplyPortDescDeserializerTest extends AbstractMultipartDes
         buffer.writeZero(EncodeConstants.MAX_PORT_NAME_LENGTH);
 
         Map<Integer, Boolean> portMap = new HashMap<>();
-        portMap.put(new Integer(0), PORT_CONFIG.isPORTDOWN());
-        portMap.put(new Integer(2), PORT_CONFIG.isNORECV());
-        portMap.put(new Integer(5), PORT_CONFIG.isNOFWD());
-        portMap.put(new Integer(6), PORT_CONFIG.isNOPACKETIN());
+        portMap.put(0, PORT_CONFIG.isPORTDOWN());
+        portMap.put(2, PORT_CONFIG.isNORECV());
+        portMap.put(5, PORT_CONFIG.isNOFWD());
+        portMap.put(6, PORT_CONFIG.isNOPACKETIN());
 
         buffer.writeInt(ByteBufUtils.fillBitMaskFromMap(portMap));
         buffer.writeInt(ByteBufUtils.fillBitMask(0, PS_BLOCKED, PS_LINK_DOWN, PS_LIVE));
