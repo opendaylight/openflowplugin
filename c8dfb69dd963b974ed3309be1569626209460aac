@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_e88aafbd",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/AbstractListeningCommiter.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-09-07T16:24:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba1f61a0_747fbc66",
+      "range": {
+        "startLine": 103,
+        "startChar": 8,
+        "endLine": 110,
+        "endChar": 20
+      },
+      "revId": "c8dfb69dd963b974ed3309be1569626209460aac",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
