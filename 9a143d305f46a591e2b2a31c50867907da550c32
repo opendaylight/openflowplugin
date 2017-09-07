@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "ba1f61a0_3d9c070f",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2017-09-07T13:25:31Z",
+      "side": 1,
+      "message": "As per my list post, perhaps it would be best to clarify that this:\n\n* does NOT fix Bug 9038\n* DOES fix Bug 9070\n* remove Bug 9071 here, that only creates more confusion",
+      "revId": "9a143d305f46a591e2b2a31c50867907da550c32",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba1f61a0_aab27691",
         "filename": "openflowplugin-common/src/main/java/org/opendaylight/openflowplugin/common/txchain/TransactionChainManager.java",
         "patchSetId": 5
