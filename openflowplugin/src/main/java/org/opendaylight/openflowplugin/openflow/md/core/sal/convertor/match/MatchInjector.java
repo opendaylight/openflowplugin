@@ -8,14 +8,15 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertReactorConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorKey;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ResultInjector;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.FlowConvertor;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.field._case.SetFieldActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder;
@@ -24,25 +25,28 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.aggregate._case.MultipartRequestAggregateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlowBuilder;
 
-/**
- * add prepared convertors and injectors into given mappings
- *
- * @see MatchReactor
- */
-public class MatchReactorMappingFactory {
+public class MatchInjector {
+    @SuppressWarnings("unchecked")
+    public static <FROM, TO> void inject(Optional<FROM> source, TO target, short version) {
+        FROM sourceResult;
+        if (source.isPresent()) {
+            sourceResult = source.get();
+        } else if (version == EncodeConstants.OF10_VERSION_ID) {
+            sourceResult = (FROM) MatchV10Convertor.defaultResult();
+        } else {
+            sourceResult = (FROM) MatchConvertor.defaultResult();
+        }
 
-    /**
-     * @param conversionMapping conversion mapping
-     */
-    public static void addMatchConvertors(final Map<Short, ConvertReactorConvertor<Match, ?>> conversionMapping) {
-        conversionMapping.put(OFConstants.OFP_VERSION_1_3, new MatchConvertorImpl());
-        conversionMapping.put(OFConstants.OFP_VERSION_1_0, new MatchConvertorV10Impl());
+        final Map<ConvertorKey, ResultInjector<?, ?>> injectorMap = new HashMap<>();
+        addInjectors(injectorMap);
+
+        final ResultInjector<FROM, TO> injection = (ResultInjector<FROM, TO>) injectorMap
+                .get(new ConvertorKey(version, target.getClass()));
+
+        injection.inject(sourceResult, target);
     }
 
-    /**
-     * @param injectionMapping injection mapping
-     */
-    public static void addMatchIjectors(final Map<ConvertorKey, ResultInjector<?, ?>> injectionMapping) {
+    private static void addInjectors(final Map<ConvertorKey, ResultInjector<?, ?>> injectionMapping) {
         // OF-1.3|List<MatchEntries> --> FlowModInputBuilder
         injectionMapping.put(new ConvertorKey(OFConstants.OFP_VERSION_1_3, FlowModInputBuilder.class),
                 new ResultInjector<List<MatchEntry>, FlowModInputBuilder>() {
@@ -114,11 +118,7 @@ public class MatchReactorMappingFactory {
                 });
     }
 
-    /**
-     * @param value pure match
-     * @return wrapped match
-     */
-    public static MatchBuilder wrapMatchV13(final List<MatchEntry> value) {
+    private static MatchBuilder wrapMatchV13(final List<MatchEntry> value) {
         MatchBuilder matchBuilder = new MatchBuilder();
         matchBuilder.setType(FlowConvertor.DEFAULT_MATCH_TYPE);
         if (value == null) {

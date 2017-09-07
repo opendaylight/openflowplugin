@@ -56,7 +56,7 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  */
 public class FlowStatsResponseConvertor extends Convertor<List<FlowStats>, List<FlowAndStatisticsMapList>, FlowStatsResponseConvertorData> {
 
-    private static final Set<Class<? extends DataContainer>> TYPES = Collections.singleton(FlowStats.class);
+    private static final Set<Class<?>> TYPES = Collections.singleton(FlowStats.class);
 
     /**
      * Method wraps openflow 1.0 actions list to Apply Action Instructions
@@ -95,7 +95,7 @@ public class FlowStatsResponseConvertor extends Convertor<List<FlowStats>, List<
     }
 
     @Override
-    public Collection<Class<? extends DataContainer>> getTypes() {
+    public Collection<Class<?>> getTypes() {
         return TYPES;
     }
 

@@ -99,10 +99,10 @@ public final class ActionResponseConvertor extends Convertor<
             .addCase(new OfToSalSetVlanPcpCase())
             .addCase(new OfToSalSetVlanIdCase())
             .addCase(new OfToSalStripVlanCase());
-    private static final Set<Class<? extends DataContainer>> TYPES = Collections.singleton(Action.class);
+    private static final Set<Class<?>> TYPES = Collections.singleton(Action.class);
 
     @Override
-    public Collection<Class<? extends DataContainer>> getTypes() {
+    public Collection<Class<?>> getTypes() {
         return TYPES;
     }
 

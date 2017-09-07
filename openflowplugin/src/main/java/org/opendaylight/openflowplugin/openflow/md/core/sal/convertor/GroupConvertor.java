@@ -35,7 +35,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.grouping.BucketsList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.grouping.BucketsListBuilder;
-import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +52,7 @@ import org.slf4j.LoggerFactory;
  * </pre>
  */
 public class GroupConvertor extends Convertor<Group, GroupModInputBuilder, VersionDatapathIdConvertorData> {
-    private static final List<Class<? extends DataContainer>> TYPES = Arrays.asList(Group.class, AddGroupInput.class, RemoveGroupInput.class, UpdatedGroup.class);
+    private static final List<Class<?>> TYPES = Arrays.asList(Group.class, AddGroupInput.class, RemoveGroupInput.class, UpdatedGroup.class);
     /**
      * Create default empty group mod input builder
      * Use this method, if result from convertor is empty.
@@ -136,7 +135,7 @@ public class GroupConvertor extends Convertor<Group, GroupModInputBuilder, Versi
     }
 
     @Override
-    public Collection<Class<? extends DataContainer>> getTypes() {
+    public Collection<Class<?>> getTypes() {
         return  TYPES;
     }
 

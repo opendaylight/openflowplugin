@@ -60,10 +60,10 @@ public final class FlowInstructionResponseConvertor extends Convertor<
         Instructions,
         VersionConvertorData> {
 
-    private static final Set<Class<? extends DataContainer>> TYPES = Collections.singleton(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction.class);
+    private static final Set<Class<?>> TYPES = Collections.singleton(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction.class);
 
     @Override
-    public Collection<Class<? extends DataContainer>> getTypes() {
+    public Collection<Class<?>> getTypes() {
         return TYPES;
     }
 

@@ -8,14 +8,19 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.ActionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatch;
@@ -32,9 +37,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10Builder;
 
 /**
- * The type Match convertor v 10.
+ * The type Match converter v 10.
  */
-public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
+public class MatchV10Convertor extends Convertor<Match, MatchV10, VersionConvertorData> {
+
+    private static final List<Class<?>> TYPES = Arrays.asList(
+            Match.class,
+            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match.class,
+            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.mod.removed.Match.class,
+            org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match.class,
+            org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.in.message.Match.class,
+            org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.Match.class,
+            SetField.class);
 
     /**
      * default MAC
@@ -203,14 +217,20 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
     }
 
     /**
-     * Method builds openflow 1.0 specific match (MatchV10) from MD-SAL match.
-     *
-     * @param match MD-SAL match
-     * @param convertorExecutor
-     * @return OF-API match
+     * Create default empty match v10
+     * Use this method, if result from converter is empty.
      */
+    public static MatchV10 defaultResult() {
+        return new MatchV10Builder().build();
+    }
+
     @Override
-    public MatchV10 convert(final Match match, ConvertorExecutor convertorExecutor) {
+    public Collection<Class<?>> getTypes() {
+        return TYPES;
+    }
+
+    @Override
+    public MatchV10 convert(final Match source, final VersionConvertorData data) {
         MatchV10Builder matchBuilder = new MatchV10Builder();
         boolean _dLDST = true;
         boolean _dLSRC = true;
@@ -238,23 +258,23 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
         matchBuilder.setTpSrc(0);
         matchBuilder.setTpDst(0);
 
-        if (match != null) {
-            EthernetMatch ethernetMatch = match.getEthernetMatch();
+        if (source != null) {
+            EthernetMatch ethernetMatch = source.getEthernetMatch();
             if (ethernetMatch != null) {
                 _dLDST = convertEthernetDlDst(matchBuilder, ethernetMatch);
                 _dLSRC = convertEthernetDlSrc(matchBuilder, ethernetMatch);
                 _dLTYPE = convertEthernetDlType(matchBuilder, ethernetMatch);
             }
-            VlanMatch vlanMatch = match.getVlanMatch();
+            VlanMatch vlanMatch = source.getVlanMatch();
             if (vlanMatch != null) {
                 _dLVLAN = convertDlVlan(matchBuilder, vlanMatch);
                 _dLVLANPCP = convertDlVlanPcp(matchBuilder, vlanMatch);
             }
-            NodeConnectorId inPort = match.getInPort();
+            NodeConnectorId inPort = source.getInPort();
             if (inPort != null) {
                 _iNPORT = convertInPortMatch(matchBuilder, inPort);
             }
-            Layer3Match l3Match = match.getLayer3Match();
+            Layer3Match l3Match = source.getLayer3Match();
             if (l3Match != null) {
                 if (l3Match instanceof Ipv4Match) {
                     Ipv4Match ipv4 = (Ipv4Match) l3Match;
@@ -262,12 +282,12 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
                     convertL3Ipv4DstMatch(matchBuilder, ipv4);
                 }
             }
-            IpMatch ipMatch = match.getIpMatch();
+            IpMatch ipMatch = source.getIpMatch();
             if (ipMatch != null) {
                 _nWPROTO = convertNwProto(matchBuilder, ipMatch);
                 _nWTOS = convertNwTos(matchBuilder, ipMatch);
             }
-            Layer4Match layer4Match = match.getLayer4Match();
+            Layer4Match layer4Match = source.getLayer4Match();
             if (layer4Match != null) {
                 if (layer4Match instanceof TcpMatch) {
                     TcpMatch tcpMatch = (TcpMatch) layer4Match;
@@ -279,7 +299,7 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
                     _tPDST = convertL4UdpDstMatch(matchBuilder, udpMatch);
                 }
             } else {
-                Icmpv4Match icmpv4Match = match.getIcmpv4Match();
+                Icmpv4Match icmpv4Match = source.getIcmpv4Match();
                 if (icmpv4Match != null) {
                     Short type = icmpv4Match.getIcmpv4Type();
                     if (type != null) {

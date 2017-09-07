@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MeterConvertor extends Convertor<Meter, MeterModInputBuilder, VersionConvertorData> {
     private static final Logger LOG = LoggerFactory.getLogger(MeterConvertor.class);
-    private static final List<Class<? extends DataContainer>> TYPES = Arrays.asList(Meter.class, AddMeterInput.class, RemoveMeterInput.class, UpdatedMeter.class);
+    private static final List<Class<?>> TYPES = Arrays.asList(Meter.class, AddMeterInput.class, RemoveMeterInput.class, UpdatedMeter.class);
 
     /**
      * Create default empty meter mot input builder.
@@ -147,7 +147,7 @@ public class MeterConvertor extends Convertor<Meter, MeterModInputBuilder, Versi
     }
 
     @Override
-    public Collection<Class<? extends DataContainer>> getTypes() {
+    public Collection<Class<?>> getTypes() {
         return  TYPES;
     }
 

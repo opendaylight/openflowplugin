@@ -23,23 +23,18 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Con
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
-import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
  * Test for {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager}
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ConvertorManagerTest {
-    /**
-     * Test for {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager#registerConvertor(short, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor)}
-     * @throws Exception
-     */
     @Test
     public void testRegisterConvertor() throws Exception {
         final ConvertorManager convertorManager = new ConvertorManager(OFConstants.OFP_VERSION_1_3)
                 .registerConvertor(OFConstants.OFP_VERSION_1_3, new Convertor<Action, String, VersionConvertorData>() {
                     @Override
-                    public Collection<Class<? extends DataContainer>> getTypes() {
+                    public Collection<Class<?>> getTypes() {
                         return Collections.singleton(Action.class);
                     }
 
@@ -53,16 +48,12 @@ public class ConvertorManagerTest {
         assertTrue("Failed to find convertor for action", convertor.isPresent());
     }
 
-    /**
-     * Test for {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager#convert(org.opendaylight.yangtools.yang.binding.DataContainer, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorData)}
-     * @throws Exception
-     */
     @Test
     public void testConvert() throws Exception {
         final ConvertorManager convertorManager = new ConvertorManager(OFConstants.OFP_VERSION_1_3)
                 .registerConvertor(OFConstants.OFP_VERSION_1_3, new Convertor<Action, String, VersionConvertorData>() {
                     @Override
-                    public Collection<Class<? extends DataContainer>> getTypes() {
+                    public Collection<Class<?>> getTypes() {
                         return Collections.singleton(Action.class);
                     }
 
@@ -90,7 +81,7 @@ public class ConvertorManagerTest {
         final ConvertorManager convertorManager = new ConvertorManager(OFConstants.OFP_VERSION_1_3)
                 .registerConvertor(OFConstants.OFP_VERSION_1_3, new Convertor<List<Action>, String, VersionConvertorData>() {
                     @Override
-                    public Collection<Class<? extends DataContainer>> getTypes() {
+                    public Collection<Class<?>> getTypes() {
                         return Collections.singleton(Action.class);
                     }
 
