@@ -90,7 +90,7 @@ final class AllMeterConfigStatsService
         message.setMoreReplies(Boolean.FALSE);
         message.setTransactionId(emulatedTxId);
 
-        message.setMeterConfigStats(new ArrayList<MeterConfigStats>());
+        message.setMeterConfigStats(new ArrayList<>());
         for (MultipartReply mpReply : result) {
             MultipartReplyMeterConfigCase caseBody = (MultipartReplyMeterConfigCase) mpReply.getMultipartReplyBody();
             MultipartReplyMeterConfig replyBody = caseBody.getMultipartReplyMeterConfig();

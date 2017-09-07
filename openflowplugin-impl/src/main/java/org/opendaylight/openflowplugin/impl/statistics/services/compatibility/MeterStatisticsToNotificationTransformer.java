@@ -54,7 +54,7 @@ public class MeterStatisticsToNotificationTransformer {
         notification.setMoreReplies(Boolean.FALSE);
         notification.setTransactionId(emulatedTxId);
 
-        notification.setMeterStats(new ArrayList<MeterStats>());
+        notification.setMeterStats(new ArrayList<>());
         for (MultipartReply mpReply : mpReplyList) {
             MultipartReplyMeterCase caseBody = (MultipartReplyMeterCase) mpReply.getMultipartReplyBody();
             MultipartReplyMeter replyBody = caseBody.getMultipartReplyMeter();

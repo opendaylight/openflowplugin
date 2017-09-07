@@ -58,7 +58,7 @@ public class NodeConnectorStatisticsToNotificationTransformer {
         notification.setTransactionId(emulatedTxId);
 
         notification
-                .setNodeConnectorStatisticsAndPortNumberMap(new ArrayList<NodeConnectorStatisticsAndPortNumberMap>());
+                .setNodeConnectorStatisticsAndPortNumberMap(new ArrayList<>());
         for (MultipartReply mpReply : mpReplyList) {
             MultipartReplyPortStatsCase caseBody = (MultipartReplyPortStatsCase) mpReply.getMultipartReplyBody();
 
