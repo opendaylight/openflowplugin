@@ -285,7 +285,7 @@ public class SalFlowServiceImplTest extends TestCase {
         UpdatedFlow mockedUpdateFlow1 = new UpdatedFlowBuilder()
                 .setMatch(match)
                 .setTableId((short)1)
-                .setPriority(Integer.valueOf(1))
+                .setPriority(1)
                 .build();
 
         when(mockedUpdateFlowInput.getUpdatedFlow()).thenReturn(mockedUpdateFlow);
@@ -304,7 +304,7 @@ public class SalFlowServiceImplTest extends TestCase {
         OriginalFlow mockedOriginalFlow1 = new OriginalFlowBuilder()
                 .setMatch(match)
                 .setTableId((short)1)
-                .setPriority(Integer.valueOf(2))
+                .setPriority(2)
                 .build();
 
         when(mockedUpdateFlowInput.getOriginalFlow()).thenReturn(mockedOriginalFlow);
