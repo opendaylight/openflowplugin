@@ -31,12 +31,7 @@ public class ItemLifeCycleRegistryImpl implements ItemLifeCycleRegistry {
 
     public Registration registerLifeCycleSource(final ItemLifeCycleSource lifeCycleSource) {
         registry.add(lifeCycleSource);
-        return new Registration() {
-            @Override
-            public void close() throws Exception {
-                registry.remove(lifeCycleSource);
-            }
-        };
+        return () -> registry.remove(lifeCycleSource);
     }
 
     @Override
