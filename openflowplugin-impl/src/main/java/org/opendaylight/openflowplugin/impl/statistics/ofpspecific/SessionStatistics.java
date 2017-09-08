@@ -26,21 +26,11 @@ public class SessionStatistics {
 
     private static EventCounter getConnectionEvent(final Map<ConnectionStatus, EventCounter> sessionsConnectionEvents,
                                                    final ConnectionStatus connectionStatus) {
-        EventCounter eventCounter = sessionsConnectionEvents.get(connectionStatus);
-        if (null == eventCounter) {
-            eventCounter = new EventCounter();
-            sessionsConnectionEvents.put(connectionStatus, eventCounter);
-        }
-        return eventCounter;
+        return sessionsConnectionEvents.computeIfAbsent(connectionStatus, k -> new EventCounter());
     }
 
     private static Map<ConnectionStatus, EventCounter> getConnectionEvents(final String sessionId) {
-        Map<ConnectionStatus, EventCounter> sessionConnectionEvents = SESSION_EVENTS.get(sessionId);
-        if (null == sessionConnectionEvents) {
-            sessionConnectionEvents = new HashMap<>();
-            SESSION_EVENTS.put(sessionId, sessionConnectionEvents);
-        }
-        return sessionConnectionEvents;
+        return SESSION_EVENTS.computeIfAbsent(sessionId, k -> new HashMap<>());
     }
 
 

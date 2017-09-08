@@ -37,13 +37,10 @@ public abstract class AbstractSingleStatsServiceTest extends AbstractStatsServic
                 //NOOP
             }
         };
-        final Answer closeRequestFutureAnswer = new Answer() {
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                rqContext.setResult(rpcResult);
-                rqContext.close();
-                return null;
-            }
+        final Answer closeRequestFutureAnswer = invocation -> {
+            rqContext.setResult(rpcResult);
+            rqContext.close();
+            return null;
         };
 
         Mockito.when(rqContextStack.<Object>createRequestContext()).thenReturn(rqContext);
