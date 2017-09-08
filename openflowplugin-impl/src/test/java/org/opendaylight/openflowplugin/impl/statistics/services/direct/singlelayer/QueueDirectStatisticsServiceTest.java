@@ -92,7 +92,7 @@ public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         final QueueIdAndStatisticsMap map = mock(QueueIdAndStatisticsMap.class);
         when(map.getQueueId()).thenReturn(new QueueId(QUEUE_NO));
 
-        final List<QueueIdAndStatisticsMap> maps = Arrays.asList(map);
+        final List<QueueIdAndStatisticsMap> maps = Collections.singletonList(map);
         final GetQueueStatisticsOutput output = mock(GetQueueStatisticsOutput.class);
         when(output.getQueueIdAndStatisticsMap()).thenReturn(maps);
 

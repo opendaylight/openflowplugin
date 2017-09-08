@@ -97,7 +97,8 @@ public class MeterDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         final org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats stat = mock(org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats.class);
         when(stat.getMeterId()).thenReturn(new MeterId(METER_NO));
 
-        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats> stats = Arrays.asList(stat);
+        final List<org.opendaylight.yang.gen.v1.urn
+                .opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats> stats = Collections.singletonList(stat);
         final GetMeterStatisticsOutput output = mock(GetMeterStatisticsOutput.class);
         when(output.getMeterStats()).thenReturn(stats);
 
