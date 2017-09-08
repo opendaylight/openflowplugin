@@ -9,7 +9,6 @@ package org.opendaylight.openflowplugin.impl.translator;
 
 import com.google.common.collect.Lists;
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.junit.Assert;
