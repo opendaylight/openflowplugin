@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.openflow.md.core.sal;
+package org.opendaylight.openflowplugin.impl.device;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -29,7 +29,7 @@ import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchInjector;
-import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
+import org.opendaylight.openflowplugin.impl.util.FlowCreatorUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutputBuilder;
