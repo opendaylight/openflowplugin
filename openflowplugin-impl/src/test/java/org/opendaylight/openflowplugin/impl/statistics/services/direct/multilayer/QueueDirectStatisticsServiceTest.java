@@ -18,6 +18,7 @@ import static org.mockito.Mockito.when;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -72,8 +73,8 @@ public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         final MultipartReplyQueueCase queueCase = mock(MultipartReplyQueueCase.class);
         final MultipartReplyQueue queue = mock(MultipartReplyQueue.class);
         final QueueStats queueStat = mock(QueueStats.class);
-        final List<QueueStats> queueStats = Arrays.asList(queueStat);
-        final List<MultipartReply> input = Arrays.asList(reply);
+        final List<QueueStats> queueStats = Collections.singletonList(queueStat);
+        final List<MultipartReply> input = Collections.singletonList(reply);
 
         when(queue.getQueueStats()).thenReturn(queueStats);
         when(queueCase.getMultipartReplyQueue()).thenReturn(queue);
@@ -98,7 +99,7 @@ public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         final QueueIdAndStatisticsMap map = mock(QueueIdAndStatisticsMap.class);
         when(map.getQueueId()).thenReturn(new QueueId(QUEUE_NO));
 
-        final List<QueueIdAndStatisticsMap> maps = Arrays.asList(map);
+        final List<QueueIdAndStatisticsMap> maps = Collections.singletonList(map);
         final GetQueueStatisticsOutput output = mock(GetQueueStatisticsOutput.class);
         when(output.getQueueIdAndStatisticsMap()).thenReturn(maps);
 

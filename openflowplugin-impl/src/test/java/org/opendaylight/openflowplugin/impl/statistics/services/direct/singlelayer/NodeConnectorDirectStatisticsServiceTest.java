@@ -85,7 +85,7 @@ public class NodeConnectorDirectStatisticsServiceTest extends AbstractDirectStat
         final NodeConnectorStatisticsAndPortNumberMap stat = mock(NodeConnectorStatisticsAndPortNumberMap.class);
         when(stat.getNodeConnectorId()).thenReturn(nodeConnectorId);
 
-        final List<NodeConnectorStatisticsAndPortNumberMap> stats = Arrays.asList(stat);
+        final List<NodeConnectorStatisticsAndPortNumberMap> stats = Collections.singletonList(stat);
         final GetNodeConnectorStatisticsOutput output = mock(GetNodeConnectorStatisticsOutput.class);
         when(output.getNodeConnectorStatisticsAndPortNumberMap()).thenReturn(stats);
 
