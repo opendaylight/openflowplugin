@@ -87,6 +87,30 @@
       "revId": "9a143d305f46a591e2b2a31c50867907da550c32",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_09e2a52e",
+        "filename": "openflowplugin-common/src/main/java/org/opendaylight/openflowplugin/common/txchain/TransactionChainManager.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 271,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-09-08T07:13:56Z",
+      "side": 1,
+      "message": "(I was reading my comment and I don\u0027t fully understood what I wrote here :))\n\nWhat I meant is, if the event comes here it could be late and already dropped/closed by another event like closing/deactivating. It is just for safety to not to close a chain which we do not working with. Or, I don\u0027t know if it is possible, but won\u0027t rely on another piece of code which I do not know :), it may come this event for another chain from controller which we also should not close here.\n\nAnyway after Michael testing still shows IllegalState, so it is somewhere closing chain improperly. So I try to investigate.",
+      "parentUuid": "ba1f61a0_1a9dc966",
+      "range": {
+        "startLine": 270,
+        "startChar": 17,
+        "endLine": 271,
+        "endChar": 55
+      },
+      "revId": "9a143d305f46a591e2b2a31c50867907da550c32",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
