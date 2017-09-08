@@ -73,7 +73,7 @@ public class DeviceInitializationUtil {
      */
     public static void makeEmptyTables(final TxFacade txFacade, final DeviceInfo deviceInfo, final short nrOfTables) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("About to create {} empty tables for node {}.", nrOfTables, deviceInfo.getLOGValue());
+            LOG.debug("About to create {} empty tables for node {}.", nrOfTables, deviceInfo);
         }
 
         for (int i = 0; i < nrOfTables; i++) {

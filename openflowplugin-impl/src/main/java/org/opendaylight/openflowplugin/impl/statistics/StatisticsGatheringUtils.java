@@ -112,7 +112,7 @@ public final class StatisticsGatheringUtils {
                                 } catch (final Exception e) {
                                     LOG.warn("Stats processing of type {} for node {} "
                                                     + "failed during transformation step",
-                                            type, deviceInfo.getLOGValue(), e);
+                                            type, deviceInfo, e);
                                     return Futures.immediateFailedFuture(e);
                                 }
 
@@ -189,7 +189,7 @@ public final class StatisticsGatheringUtils {
         }
 
         LOG.warn("Stats processing of type {} for node {} "
-                + "failed during write-to-tx step", type, deviceInfo.getLOGValue());
+                + "failed during write-to-tx step", type, deviceInfo);
         return false;
     }
 
@@ -210,7 +210,7 @@ public final class StatisticsGatheringUtils {
             }));
         } catch (final Exception ex) {
             LOG.warn("Stats processing of type {} for node {} "
-                    + "failed during write-to-tx step", type, deviceInfo.getLOGValue(), ex);
+                    + "failed during write-to-tx step", type, deviceInfo, ex);
         }
 
         return result.get();

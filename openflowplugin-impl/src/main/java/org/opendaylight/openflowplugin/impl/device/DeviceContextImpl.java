@@ -349,7 +349,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 submitTransaction();
             } catch (final Exception e) {
                 LOG.warn("Error processing port status message for port {} on device {}",
-                        portStatus.getPortNo(), getDeviceInfo().getLOGValue(), e);
+                        portStatus.getPortNo(), getDeviceInfo(), e);
             }
         } else if (!hasState.get()) {
             primaryConnectionContext.handlePortStatusMessage(portStatus);
@@ -680,7 +680,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     void lazyTransactionManagerInitialization() {
         if (!this.initialized.get()) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Transaction chain manager for node {} created", deviceInfo.getLOGValue());
+                LOG.debug("Transaction chain manager for node {} created", deviceInfo);
             }
             this.transactionChainManager = new TransactionChainManager(dataBroker, deviceInfo);
             this.deviceFlowRegistry = new DeviceFlowRegistryImpl(deviceInfo.getVersion(), dataBroker, deviceInfo
@@ -749,7 +749,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                         .count();
 
                 LOG.debug("Finished filling flow registry with {} flows for node: {}", flowCount, deviceInfo
-                        .getLOGValue());
+                        );
             }
             this.contextChainMastershipWatcher.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState
                     .INITIAL_FLOW_REGISTRY_FILL);
@@ -759,11 +759,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         public void onFailure(Throwable throwable) {
             if (deviceFlowRegistryFill.isCancelled()) {
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("Cancelled filling flow registry with flows for node: {}", deviceInfo.getLOGValue());
+                    LOG.debug("Cancelled filling flow registry with flows for node: {}", deviceInfo);
                 }
             } else {
                 LOG.warn("Failed filling flow registry with flows for node: {} with exception: {}", deviceInfo
-                        .getLOGValue(), throwable);
+                        , throwable);
             }
             contextChainMastershipWatcher.onNotAbleToStartMastership(
                     deviceInfo,
