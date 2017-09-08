@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PacketOutConvertor extends Convertor<TransmitPacketInput, PacketOutInput, PacketOutConvertorData> {
     private static final Logger LOG = LoggerFactory.getLogger(PacketOutConvertor.class);
-    private static final Set<Class<? extends DataContainer>> TYPES = Collections.singleton(TransmitPacketInput.class);
+    private static final Set<Class<?>> TYPES = Collections.singleton(TransmitPacketInput.class);
 
     /**
      * Create default empty meter mot input builder.
@@ -79,7 +79,7 @@ public class PacketOutConvertor extends Convertor<TransmitPacketInput, PacketOut
     }
 
     @Override
-    public Collection<Class<? extends DataContainer>> getTypes() {
+    public Collection<Class<?>> getTypes() {
         return TYPES;
     }
 

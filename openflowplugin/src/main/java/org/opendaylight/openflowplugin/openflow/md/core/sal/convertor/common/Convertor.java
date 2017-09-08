@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common;
 
 import java.util.Collection;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
  * Converts OpenflowJava to MDSal model and vice versa
@@ -46,7 +45,7 @@ public abstract class Convertor<FROM, TO, DATA extends ConvertorData> {
      *
      * @return the type of convertor
      */
-    public abstract Collection<Class<? extends DataContainer>> getTypes();
+    public abstract Collection<Class<?>> getTypes();
 
     /**
      * Converts source to result

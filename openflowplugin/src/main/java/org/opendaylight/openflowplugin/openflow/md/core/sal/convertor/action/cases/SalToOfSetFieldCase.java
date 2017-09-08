@@ -14,7 +14,7 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchInjector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetFieldCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetFieldCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.field._case.SetFieldActionBuilder;
@@ -32,7 +32,9 @@ public class SalToOfSetFieldCase extends ConvertorCase<SetFieldCase, Action, Act
         final short version = data.getVersion();
         final SetFieldActionBuilder setFieldBuilder = new SetFieldActionBuilder();
 
-        MatchReactor.getInstance().convert(source.getSetField(), version, setFieldBuilder, convertorExecutor);
+        // convert and inject match
+        final Optional<Object> conversionMatch = convertorExecutor.convert(source.getSetField(), data);
+        MatchInjector.inject(conversionMatch, setFieldBuilder, version);
 
         return Optional.of(new ActionBuilder()
                 .setActionChoice(new SetFieldCaseBuilder()

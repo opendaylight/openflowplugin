@@ -129,6 +129,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table.features._case.multipart.request.table.features.TableFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeatureProperties;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeaturePropertiesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.table.update.UpdatedTable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.TableFeaturePropType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.ApplyActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.ApplyActionsMiss;
@@ -147,8 +148,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.match.MatchSetfield;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.next.table.miss.TablesMiss;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.wildcards.WildcardSetfield;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.table.update.UpdatedTable;
-import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -172,7 +171,7 @@ public class TableFeaturesConvertor extends Convertor<
     private static final Ordering<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties> TABLE_FEATURE_PROPS_ORDERING =
             Ordering.from(OrderComparator.<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties>build());
     private static final Map<Class<?>, Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField>> SAL_TO_OF_TABLE_FEATURES;
-    private static final List<Class<? extends DataContainer>> TYPES = Arrays.asList(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures.class, UpdatedTable.class);
+    private static final List<Class<?>> TYPES = Arrays.asList(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures.class, UpdatedTable.class);
 
     static {
         Builder<Class<?>, Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField>> builder = ImmutableMap.builder();
@@ -600,7 +599,7 @@ public class TableFeaturesConvertor extends Convertor<
     }
 
     @Override
-    public Collection<Class<? extends DataContainer>> getTypes() {
+    public Collection<Class<?>> getTypes() {
         return  TYPES;
     }
 

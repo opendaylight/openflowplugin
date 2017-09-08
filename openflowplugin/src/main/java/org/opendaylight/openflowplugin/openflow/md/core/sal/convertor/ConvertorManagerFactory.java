@@ -12,9 +12,13 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ActionConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ActionResponseConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.FlowConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.FlowFlagsConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.FlowFlagsV10Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.FlowInstructionResponseConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.FlowStatsResponseConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchResponseConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchV10Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchV10ResponseConvertor;
 
 /**
@@ -33,6 +37,8 @@ public class ConvertorManagerFactory {
         final MeterStatsResponseConvertor meterStatsResponseConvertor = new MeterStatsResponseConvertor();
         final MeterConfigStatsResponseConvertor meterConfigStatsResponseConvertor = new MeterConfigStatsResponseConvertor();
         final PortConvertor portConvertor = new PortConvertor();
+        final MatchConvertor matchConvertor = new MatchConvertor();
+        final MatchV10Convertor matchV10Convertor = new MatchV10Convertor();
         final MatchResponseConvertor matchResponseConvertor = new MatchResponseConvertor();
         final MatchV10ResponseConvertor matchV10ResponseConvertor = new MatchV10ResponseConvertor();
         final ActionConvertor actionConvertor = new ActionConvertor();
@@ -44,6 +50,8 @@ public class ConvertorManagerFactory {
         final FlowConvertor flowConvertor = new FlowConvertor();
         final FlowInstructionResponseConvertor flowInstructionResponseConvertor = new FlowInstructionResponseConvertor();
         final FlowStatsResponseConvertor flowStatsResponseConvertor = new FlowStatsResponseConvertor();
+        final FlowFlagsConvertor flowFlagsConvertor = new FlowFlagsConvertor();
+        final FlowFlagsV10Convertor flowFlagsV10Convertor = new FlowFlagsV10Convertor();
 
         return new ConvertorManager(OFConstants.OFP_VERSION_1_0, OFConstants.OFP_VERSION_1_3)
                 .registerConvertor(OFConstants.OFP_VERSION_1_0, tableFeaturesConvertor)
@@ -58,7 +66,8 @@ public class ConvertorManagerFactory {
                 .registerConvertor(OFConstants.OFP_VERSION_1_3, meterConfigStatsResponseConvertor)
                 .registerConvertor(OFConstants.OFP_VERSION_1_0, portConvertor)
                 .registerConvertor(OFConstants.OFP_VERSION_1_3, portConvertor)
-                // TODO: Add MatchConvertorImpl and MatchConvertorV10Impl
+                .registerConvertor(OFConstants.OFP_VERSION_1_0, matchV10Convertor)
+                .registerConvertor(OFConstants.OFP_VERSION_1_3, matchConvertor)
                 .registerConvertor(OFConstants.OFP_VERSION_1_3, matchResponseConvertor)
                 .registerConvertor(OFConstants.OFP_VERSION_1_0, matchV10ResponseConvertor)
                 .registerConvertor(OFConstants.OFP_VERSION_1_0, actionConvertor)
@@ -78,6 +87,8 @@ public class ConvertorManagerFactory {
                 .registerConvertor(OFConstants.OFP_VERSION_1_0, flowInstructionResponseConvertor)
                 .registerConvertor(OFConstants.OFP_VERSION_1_3, flowInstructionResponseConvertor)
                 .registerConvertor(OFConstants.OFP_VERSION_1_0, flowStatsResponseConvertor)
-                .registerConvertor(OFConstants.OFP_VERSION_1_3, flowStatsResponseConvertor);
+                .registerConvertor(OFConstants.OFP_VERSION_1_3, flowStatsResponseConvertor)
+                .registerConvertor(OFConstants.OFP_VERSION_1_0, flowFlagsV10Convertor)
+                .registerConvertor(OFConstants.OFP_VERSION_1_3, flowFlagsConvertor);
     }
 }

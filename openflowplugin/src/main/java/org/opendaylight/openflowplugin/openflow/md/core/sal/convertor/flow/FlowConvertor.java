@@ -30,8 +30,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.cases
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.cases.MeterCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.cases.WriteActionsCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.cases.WriteMetadataCase;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.flowflag.FlowFlagReactor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchInjector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.VlanCfi;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushVlanActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushVlanActionCaseBuilder;
@@ -65,7 +64,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmMatchType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
-import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
  * Converts the SAL Flow to OF Flow. It checks if there is a set-vlan-id (1.0) action made on OF1.3.
@@ -144,7 +142,7 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
             .addCase(new MeterCase())
             .addCase(new WriteActionsCase())
             .addCase(new WriteMetadataCase());
-    private static final List<Class<? extends DataContainer>> TYPES = Arrays.asList(Flow.class, AddFlowInput.class, RemoveFlowInput.class, UpdatedFlow.class);
+    private static final List<Class<?>> TYPES = Arrays.asList(Flow.class, AddFlowInput.class, RemoveFlowInput.class, UpdatedFlow.class);
 
     static {
         final VlanId zeroVlan = new VlanId(0);
@@ -165,7 +163,7 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
         VLAN_MATCH_TRUE = vlanMatchBuilder2.build();
     }
 
-    private FlowModInputBuilder toFlowModInput(Flow flow, short version, BigInteger datapathid) {
+    private FlowModInputBuilder toFlowModInput(Flow flow, VersionDatapathIdConvertorData versionConverterData) {
 
         FlowModInputBuilder flowMod = new FlowModInputBuilder();
         salToOFFlowCookie(flow, flowMod);
@@ -180,19 +178,19 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
         salToOFFlowOutGroup(flow, flowMod);
 
         // convert and inject flowFlags
-        FlowFlagReactor.getInstance().convert(flow.getFlags(), version, flowMod, getConvertorExecutor());
+        final Optional<Object> conversion = getConvertorExecutor().convert(flow.getFlags(), versionConverterData);
+        FlowFlagsInjector.inject(conversion, flowMod, versionConverterData.getVersion());
 
         // convert and inject match
-        MatchReactor.getInstance().convert(flow.getMatch(), version, flowMod, getConvertorExecutor());
+        final Optional<Object> conversionMatch = getConvertorExecutor().convert(flow.getMatch(), versionConverterData);
+        MatchInjector.inject(conversionMatch, flowMod, versionConverterData.getVersion());
 
         if (flow.getInstructions() != null) {
-            flowMod.setInstruction(toInstructions(flow, version, datapathid));
-            flowMod.setAction(getActions(version, datapathid, flow));
+            flowMod.setInstruction(toInstructions(flow, versionConverterData.getVersion(), versionConverterData.getDatapathId()));
+            flowMod.setAction(getActions(versionConverterData.getVersion(), versionConverterData.getDatapathId(), flow));
         }
 
-        flowMod.setVersion(version);
-
-        return flowMod;
+        flowMod.setVersion(versionConverterData.getVersion());        return flowMod;
     }
 
     private static void salToOFFlowOutGroup(Flow flow, FlowModInputBuilder flowMod) {
@@ -361,7 +359,7 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
      *     1) Match on (OFPVID_NONE ) without mask + action [push vlan tag + set_field]
      *     2) Match on (OFPVID_PRESENT) with mask (OFPVID_PRESENT ) + action [ set_field]
      */
-    private List<FlowModInputBuilder> handleSetVlanIdForOF13(Flow srcFlow, short version, BigInteger datapathId) {
+    private List<FlowModInputBuilder> handleSetVlanIdForOF13(Flow srcFlow, VersionDatapathIdConvertorData versionDatapathIdConverterData) {
         List<FlowModInputBuilder> list = new ArrayList<>(2);
 
         final Match srcMatch = Preconditions.checkNotNull(srcFlow.getMatch());
@@ -378,7 +376,7 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
 
             Optional<? extends Flow> optional = injectMatchToFlow(srcFlow, match);
             if (optional.isPresent()) {
-                list.add(toFlowModInput(optional.get(), version, datapathId));
+                list.add(toFlowModInput(optional.get(), versionDatapathIdConverterData));
             }
         } else {
             // create 2 flows
@@ -388,7 +386,7 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
 
             Optional<? extends Flow> optional1 = injectMatchAndAction(srcFlow, match1);
             if (optional1.isPresent()) {
-                list.add(toFlowModInput(optional1.get(), version, datapathId));
+                list.add(toFlowModInput(optional1.get(), versionDatapathIdConverterData));
             }
 
             //flow2
@@ -396,7 +394,7 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
             Match match2 = new MatchBuilder(srcMatch).setVlanMatch(VLAN_MATCH_TRUE).build();
             Optional<? extends Flow> optional2 = injectMatchToFlow(srcFlow, match2);
             if (optional2.isPresent()) {
-                list.add(toFlowModInput(optional2.get(), version, datapathId));
+                list.add(toFlowModInput(optional2.get(), versionDatapathIdConverterData));
             }
         }
         return list;
@@ -514,16 +512,16 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
     }
 
     @Override
-    public Collection<Class<? extends DataContainer>> getTypes() {
+    public Collection<Class<?>> getTypes() {
         return  TYPES;
     }
 
     @Override
     public List<FlowModInputBuilder> convert(Flow source, VersionDatapathIdConvertorData data) {
         if (data.getVersion() >= OFConstants.OFP_VERSION_1_3 && isSetVlanIdActionCasePresent(source)) {
-            return handleSetVlanIdForOF13(source, data.getVersion(), data.getDatapathId());
+            return handleSetVlanIdForOF13(source, data);
         } else {
-            return Collections.singletonList(toFlowModInput(source, data.getVersion(), data.getDatapathId()));
+            return Collections.singletonList(toFlowModInput(source, data));
         }
     }
 }

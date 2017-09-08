@@ -143,10 +143,10 @@ public class MatchResponseConvertor extends Convertor<MatchEntriesGrouping, Matc
     private static final ConvertorProcessor<MatchEntryValue, MatchBuilder, MatchResponseConvertorData> OF_TO_SAL_TUNNEL_PROCESSOR = new ConvertorProcessor<MatchEntryValue, MatchBuilder, MatchResponseConvertorData>()
             .addCase(new OfToSalTunnelIpv4SrcCase())
             .addCase(new OfToSalTunnelIpv4DstCase());
-    private static final java.util.List<Class<? extends DataContainer>> TYPES = Arrays.asList(Match.class, SetFieldAction.class);
+    private static final java.util.List<Class<?>> TYPES = Arrays.asList(Match.class, SetFieldAction.class);
 
     @Override
-    public Collection<Class<? extends DataContainer>> getTypes() {
+    public Collection<Class<?>> getTypes() {
         return  TYPES;
     }
 

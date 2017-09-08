@@ -6,36 +6,41 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.flowflag;
+package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertReactorConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorKey;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ResultInjector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlagsV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 
-/**
- * add prepared convertors and injectors into given mappings
- *
- * @see FlowFlagReactor
- */
-public class FlowFlagReactorMappingFactory {
+public class FlowFlagsInjector {
+    @SuppressWarnings("unchecked")
+    public static <FROM, TO> void inject(Optional<FROM> source, TO target, short version) {
+        FROM sourceResult;
+        if (source.isPresent()) {
+            sourceResult = source.get();
+        } else if (version == EncodeConstants.OF10_VERSION_ID) {
+            sourceResult = (FROM) FlowFlagsV10Convertor.defaultResult();
+        } else {
+            sourceResult = (FROM) FlowFlagsConvertor.defaultResult();
+        }
 
-    /**
-     * @param conversionMapping conversion mapping
-     */
-    public static void addFlowFlagsConvertors(final Map<Short, ConvertReactorConvertor<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags, ?>> conversionMapping) {
-        conversionMapping.put(OFConstants.OFP_VERSION_1_3, new FlowFlagsConvertorImpl());
-        conversionMapping.put(OFConstants.OFP_VERSION_1_0, new FlowFlagsConvertorV10Impl());
+        final Map<ConvertorKey, ResultInjector<?, ?>> injectorMap = new HashMap<>();
+        addInjectors(injectorMap);
+
+        final ResultInjector<FROM, TO> injection = (ResultInjector<FROM, TO>) injectorMap
+                .get(new ConvertorKey(version, target.getClass()));
+
+        injection.inject(sourceResult, target);
     }
 
-    /**
-     * @param injectionMapping injection mapping
-     */
-    public static void addFlowFlagsIjectors(final Map<ConvertorKey, ResultInjector<?, ?>> injectionMapping) {
+    private static void addInjectors(final Map<ConvertorKey, ResultInjector<?, ?>> injectionMapping) {
         // OF-1.3|FlowModFlags --> FlowModInputBuilder
         injectionMapping.put(new ConvertorKey(OFConstants.OFP_VERSION_1_3, FlowModInputBuilder.class),
                 new ResultInjector<FlowModFlags, FlowModInputBuilder>() {
@@ -55,7 +60,5 @@ public class FlowFlagReactorMappingFactory {
                         target.setFlagsV10(value);
                     }
                 });
-
     }
-
 }

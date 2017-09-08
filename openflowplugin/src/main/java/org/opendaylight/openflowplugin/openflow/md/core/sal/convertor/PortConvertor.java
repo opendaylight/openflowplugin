@@ -30,7 +30,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.desc._case.multipart.reply.port.desc.Ports;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.desc._case.multipart.reply.port.desc.PortsBuilder;
-import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
  * Converts port mod, port status and port description MD-SAL messages to OF library data
@@ -45,7 +44,7 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  */
 public class PortConvertor extends Convertor<Port, PortModInput, VersionConvertorData> {
 
-    private static final Set<Class<? extends DataContainer>> TYPES = Collections.singleton(Port.class);
+    private static final Set<Class<?>> TYPES = Collections.singleton(Port.class);
 
     /**
      * Create default empty port mod input
@@ -162,7 +161,7 @@ public class PortConvertor extends Convertor<Port, PortModInput, VersionConverto
     }
 
     @Override
-    public Collection<Class<? extends DataContainer>> getTypes() {
+    public Collection<Class<?>> getTypes() {
         return TYPES;
     }
 

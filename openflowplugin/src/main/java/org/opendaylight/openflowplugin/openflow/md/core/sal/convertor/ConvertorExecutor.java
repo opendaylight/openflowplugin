@@ -11,7 +11,6 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 import java.util.Collection;
 import java.util.Optional;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorData;
-import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 public interface ConvertorExecutor {
     /**
@@ -24,7 +23,7 @@ public interface ConvertorExecutor {
      * @param data   convertor data
      * @return the result (can be empty, if no convertor was found)
      */
-    <FROM extends DataContainer, TO, DATA extends ConvertorData> Optional<TO> convert(final FROM source, final DATA data);
+    <FROM, TO, DATA extends ConvertorData> Optional<TO> convert(final FROM source, final DATA data);
 
     /**
      * Lookup and use convertor by specified type, then converts source collection and returns converted result
@@ -36,5 +35,5 @@ public interface ConvertorExecutor {
      * @param data   convertor data
      * @return the result (can be empty, if no convertor was found)
      */
-    <FROM extends DataContainer, TO, DATA extends ConvertorData> Optional<TO> convert(final Collection<FROM> source, final DATA data);
+    <FROM, TO, DATA extends ConvertorData> Optional<TO> convert(final Collection<FROM> source, final DATA data);
 }

@@ -53,10 +53,10 @@ public class MatchV10ResponseConvertor extends Convertor<MatchV10, MatchBuilder,
     private static final short PROTO_UDP = 17;
     private static final short PROTO_ICMPV4 = 1;
     private static final String NO_IP = "0.0.0.0/0";
-    private static final Set<Class<? extends DataContainer>> TYPES = Collections.singleton(MatchV10.class);
+    private static final Set<Class<?>> TYPES = Collections.singleton(MatchV10.class);
 
     @Override
-    public Collection<Class<? extends DataContainer>> getTypes() {
+    public Collection<Class<?>> getTypes() {
         return TYPES;
     }
 

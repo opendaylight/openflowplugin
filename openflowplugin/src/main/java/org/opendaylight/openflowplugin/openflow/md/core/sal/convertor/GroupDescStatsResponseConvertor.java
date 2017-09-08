@@ -47,7 +47,7 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  */
 public class GroupDescStatsResponseConvertor extends Convertor<List<GroupDesc>, List<GroupDescStats>, VersionConvertorData> {
 
-    private static final Set<Class<? extends DataContainer>> TYPES = Collections.singleton(GroupDesc.class);
+    private static final Set<Class<?>> TYPES = Collections.singleton(GroupDesc.class);
 
     private org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.Buckets toSALBucketsDesc(List<BucketsList> bucketDescStats, short version) {
         final ActionResponseConvertorData data = new ActionResponseConvertorData(version);
@@ -99,7 +99,7 @@ public class GroupDescStatsResponseConvertor extends Convertor<List<GroupDesc>, 
     }
 
     @Override
-    public Collection<Class<? extends DataContainer>> getTypes() {
+    public Collection<Class<?>> getTypes() {
         return TYPES;
     }
 

@@ -21,7 +21,7 @@ import org.opendaylight.openflowplugin.impl.services.util.RequestInputUtils;
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.AbstractFlowDirectStatisticsService;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.FlowStatsResponseConvertorData;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchInjector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsOutputBuilder;
@@ -112,10 +112,9 @@ public class FlowDirectStatisticsService extends AbstractFlowDirectStatisticsSer
             mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
         }
 
-        MatchReactor.getInstance().convert(input.getMatch(),
-                                           getVersion(),
-                                           mprFlowRequestBuilder,
-                                           getConvertorExecutor());
+        // convert and inject match
+        final Optional<Object> conversionMatch = getConvertorExecutor().convert(input.getMatch(), data);
+        MatchInjector.inject(conversionMatch, mprFlowRequestBuilder, data.getVersion());
 
         return RequestInputUtils.createMultipartHeader(getMultipartType(), xid.getValue(), getVersion())
             .setMultipartRequestBody(new MultipartRequestFlowCaseBuilder()
