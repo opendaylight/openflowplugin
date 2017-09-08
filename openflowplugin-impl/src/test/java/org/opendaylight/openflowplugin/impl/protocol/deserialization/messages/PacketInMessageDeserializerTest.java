@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.messages;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import io.netty.buffer.ByteBuf;
@@ -18,7 +17,6 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.AbstractDeserializerTest;
 import org.opendaylight.openflowplugin.openflow.md.util.PacketInUtil;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketInMessage;
 
 public class PacketInMessageDeserializerTest extends AbstractDeserializerTest {
     private static final byte PADDING_IN_PACKET_IN_HEADER = 2;

@@ -22,8 +22,6 @@ import org.opendaylight.openflowplugin.openflow.md.util.PacketInUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PacketInReason;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketInMessage;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketInMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId;
 
 public class PacketInMessageDeserializer implements OFDeserializer<PacketInMessage>, DeserializerRegistryInjector {

@@ -12,7 +12,6 @@ import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.mastership.ReconciliationFrameworkEvent;
 import org.opendaylight.openflowplugin.api.openflow.mastership.ReconciliationFrameworkRegistration;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
