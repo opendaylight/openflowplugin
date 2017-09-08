@@ -99,6 +99,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.experimenter.core.message.ExperimenterMessageOfChoice;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceivedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
@@ -348,7 +349,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 submitTransaction();
             } catch (final Exception e) {
                 LOG.warn("Error processing port status message for port {} on device {}",
-                        portStatus.getPortNo(), getDeviceInfo().getLOGValue(), e);
+                        portStatus.getPortNo(), getDeviceInfo(), e);
             }
         } else if (!hasState.get()) {
             primaryConnectionContext.handlePortStatusMessage(portStatus);
@@ -679,7 +680,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     void lazyTransactionManagerInitialization() {
         if (!this.initialized.get()) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Transaction chain manager for node {} created", deviceInfo.getLOGValue());
+                LOG.debug("Transaction chain manager for node {} created", deviceInfo);
             }
             this.transactionChainManager = new TransactionChainManager(dataBroker, deviceInfo);
             this.deviceFlowRegistry = new DeviceFlowRegistryImpl(deviceInfo.getVersion(), dataBroker, deviceInfo
@@ -748,7 +749,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                         .count();
 
                 LOG.debug("Finished filling flow registry with {} flows for node: {}", flowCount, deviceInfo
-                        .getLOGValue());
+                        );
             }
             this.contextChainMastershipWatcher.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState
                     .INITIAL_FLOW_REGISTRY_FILL);
@@ -758,11 +759,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         public void onFailure(Throwable throwable) {
             if (deviceFlowRegistryFill.isCancelled()) {
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("Cancelled filling flow registry with flows for node: {}", deviceInfo.getLOGValue());
+                    LOG.debug("Cancelled filling flow registry with flows for node: {}", deviceInfo);
                 }
             } else {
                 LOG.warn("Failed filling flow registry with flows for node: {} with exception: {}", deviceInfo
-                        .getLOGValue(), throwable);
+                        , throwable);
             }
             contextChainMastershipWatcher.onNotAbleToStartMastership(
                     deviceInfo,

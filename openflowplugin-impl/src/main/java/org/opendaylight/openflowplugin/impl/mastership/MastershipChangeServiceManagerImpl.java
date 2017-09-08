@@ -20,6 +20,7 @@ import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeS
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.api.openflow.mastership.ReconciliationFrameworkEvent;
 import org.opendaylight.openflowplugin.api.openflow.mastership.ReconciliationFrameworkRegistration;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
 
 public final class MastershipChangeServiceManagerImpl implements MastershipChangeServiceManager {
 
