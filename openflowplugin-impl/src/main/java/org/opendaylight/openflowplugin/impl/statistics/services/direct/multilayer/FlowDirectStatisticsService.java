@@ -61,15 +61,15 @@ public class FlowDirectStatisticsService extends AbstractFlowDirectStatisticsSer
                 final Optional<List<FlowAndStatisticsMapList>> statsListPart = getConvertorExecutor().convert(
                     replyBody.getFlowStats(), data);
 
-                if (statsListPart.isPresent()) {
-                    for (final FlowAndStatisticsMapList part : statsListPart.get()) {
+                statsListPart.ifPresent(flowAndStatisticsMapLists -> {
+                    for (final FlowAndStatisticsMapList part : flowAndStatisticsMapLists) {
                         final FlowId flowId = new FlowId(generateFlowId(part).getValue());
                         statsList.add(new FlowAndStatisticsMapListBuilder(part)
-                            .setKey(new FlowAndStatisticsMapListKey(flowId))
-                            .setFlowId(flowId)
-                            .build());
+                                .setKey(new FlowAndStatisticsMapListKey(flowId))
+                                .setFlowId(flowId)
+                                .build());
                     }
-                }
+                });
             }
         }
 
