@@ -70,7 +70,7 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
     TransactionChainManager(@Nonnull final DataBroker dataBroker,
                             @Nonnull final DeviceInfo deviceInfo) {
         this.dataBroker = dataBroker;
-        this.nodeId = deviceInfo.getLOGValue();
+        this.nodeId = deviceInfo.toString();
         this.lastSubmittedFuture = Futures.immediateFuture(null);
     }
 
