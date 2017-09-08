@@ -67,9 +67,7 @@ public class FlowStatisticsToNotificationTransformer {
                     convertorExecutor.convert(replyBody.getFlowStats(), data);
 
 
-            if (outStatsItem.isPresent()) {
-                statsList.addAll(outStatsItem.get());
-            }
+            outStatsItem.ifPresent(statsList::addAll);
         }
 
         return notification.build();

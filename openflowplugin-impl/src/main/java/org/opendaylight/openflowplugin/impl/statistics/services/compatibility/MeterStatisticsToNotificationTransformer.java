@@ -57,9 +57,7 @@ public class MeterStatisticsToNotificationTransformer {
             MultipartReplyMeter replyBody = caseBody.getMultipartReplyMeter();
             final Optional<List<MeterStats>> meterStatsList = convertorExecutor.convert(replyBody.getMeterStats(), data);
 
-            if (meterStatsList.isPresent()) {
-                notification.getMeterStats().addAll(meterStatsList.get());
-            }
+            meterStatsList.ifPresent(meterStats -> notification.getMeterStats().addAll(meterStats));
         }
 
         return notification.build();

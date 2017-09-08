@@ -86,9 +86,7 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
 
         final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder>
                 matchOptional = convertorExecutor.convert(input.getMatch(), datapathIdConvertorData);
-        final MatchBuilder matchBuilder = matchOptional.isPresent()
-                ? new MatchBuilder(matchOptional.get().build())
-                : new MatchBuilder();
+        final MatchBuilder matchBuilder = matchOptional.map(matchBuilder1 -> new MatchBuilder(matchBuilder1.build())).orElseGet(MatchBuilder::new);
 
         final AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match>
                 matchExtensionWrap = MatchExtensionHelper.processAllExtensions(
