@@ -329,6 +329,6 @@ class TransactionChainManager implements TransactionChainListener, AutoCloseable
         /**
          * txChainManager is trying to be closed - device disconnecting.
          */
-        SHUTTING_DOWN;
+        SHUTTING_DOWN
     }
 }
