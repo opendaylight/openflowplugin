@@ -98,9 +98,7 @@ final class AllMeterConfigStatsService
             final Optional<List<MeterConfigStats>> meterConfigStatsList =
                     convertorExecutor.convert(replyBody.getMeterConfig(), data);
 
-            if (meterConfigStatsList.isPresent()) {
-                message.getMeterConfigStats().addAll(meterConfigStatsList.get());
-            }
+            meterConfigStatsList.ifPresent(meterConfigStats -> message.getMeterConfigStats().addAll(meterConfigStats));
         }
 
         return message.build();
