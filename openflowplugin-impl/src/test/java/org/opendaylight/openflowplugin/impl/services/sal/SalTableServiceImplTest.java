@@ -57,13 +57,10 @@ public class SalTableServiceImplTest extends ServiceMocking {
     public void setup() {
         handleResultFuture = SettableFuture.create();
         when(mockedRequestContext.getFuture()).thenReturn(handleResultFuture);
-        Mockito.doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                final FutureCallback<OfHeader> callback = (FutureCallback<OfHeader>) invocation.getArguments()[2];
-                callback.onSuccess(null);
-                return null;
-            }
+        Mockito.doAnswer((Answer<Void>) invocation -> {
+            final FutureCallback<OfHeader> callback = (FutureCallback<OfHeader>) invocation.getArguments()[2];
+            callback.onSuccess(null);
+            return null;
         })
                 .when(mockedOutboundQueue).commitEntry(
                 Matchers.anyLong(), Matchers.<OfHeader>any(), Matchers.<FutureCallback<OfHeader>>any());
@@ -75,14 +72,11 @@ public class SalTableServiceImplTest extends ServiceMocking {
 
     @Test
     public void testUpdateTableFail1() throws ExecutionException, InterruptedException {
-        Mockito.doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                final RpcResult<List<MultipartReply>> rpcResult =
-                        RpcResultBuilder.<List<MultipartReply>>failed().build();
-                handleResultFuture.set(rpcResult);
-                return null;
-            }
+        Mockito.doAnswer((Answer<Void>) invocation -> {
+            final RpcResult<List<MultipartReply>> rpcResult =
+                    RpcResultBuilder.<List<MultipartReply>>failed().build();
+            handleResultFuture.set(rpcResult);
+            return null;
         }).when(multiMessageCollector).endCollecting(Matchers.<EventIdentifier>any());
 
         final Future<RpcResult<UpdateTableOutput>> rpcResultFuture = salTableService.updateTable(prepareUpdateTable());
@@ -92,15 +86,12 @@ public class SalTableServiceImplTest extends ServiceMocking {
 
     @Test
     public void testUpdateTableFail2() throws ExecutionException, InterruptedException {
-        Mockito.doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                final RpcResult<List<MultipartReply>> rpcResult =
-                        RpcResultBuilder.success(Collections.<MultipartReply>emptyList())
-                        .build();
-                handleResultFuture.set(rpcResult);
-                return null;
-            }
+        Mockito.doAnswer((Answer<Void>) invocation -> {
+            final RpcResult<List<MultipartReply>> rpcResult =
+                    RpcResultBuilder.success(Collections.<MultipartReply>emptyList())
+                    .build();
+            handleResultFuture.set(rpcResult);
+            return null;
         }).when(multiMessageCollector).endCollecting(Matchers.<EventIdentifier>any());
 
         final Future<RpcResult<UpdateTableOutput>> rpcResultFuture = salTableService.updateTable(prepareUpdateTable());
@@ -110,28 +101,25 @@ public class SalTableServiceImplTest extends ServiceMocking {
 
     @Test
     public void testUpdateTableSuccess() throws ExecutionException, InterruptedException {
-        Mockito.doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                TableFeaturesBuilder tableFeaturesBld = new TableFeaturesBuilder()
-                        .setTableId((short) 0)
-                        .setName("Zafod")
-                        .setMaxEntries(42L)
-                        .setTableFeatureProperties(Collections.<TableFeatureProperties>emptyList());
-                MultipartReplyTableFeaturesBuilder mpTableFeaturesBld = new MultipartReplyTableFeaturesBuilder()
-                        .setTableFeatures(Collections.singletonList(tableFeaturesBld.build()));
-                MultipartReplyTableFeaturesCaseBuilder mpBodyBld = new MultipartReplyTableFeaturesCaseBuilder()
-                        .setMultipartReplyTableFeatures(mpTableFeaturesBld.build());
-                MultipartReplyMessageBuilder mpResultBld = new MultipartReplyMessageBuilder()
-                        .setType(MultipartType.OFPMPTABLEFEATURES)
-                        .setMultipartReplyBody(mpBodyBld.build())
-                        .setXid(21L);
-                final RpcResult<List<MultipartReply>> rpcResult = RpcResultBuilder
-                        .success(Collections.singletonList((MultipartReply) mpResultBld.build()))
-                        .build();
-                handleResultFuture.set(rpcResult);
-                return null;
-            }
+        Mockito.doAnswer((Answer<Void>) invocation -> {
+            TableFeaturesBuilder tableFeaturesBld = new TableFeaturesBuilder()
+                    .setTableId((short) 0)
+                    .setName("Zafod")
+                    .setMaxEntries(42L)
+                    .setTableFeatureProperties(Collections.<TableFeatureProperties>emptyList());
+            MultipartReplyTableFeaturesBuilder mpTableFeaturesBld = new MultipartReplyTableFeaturesBuilder()
+                    .setTableFeatures(Collections.singletonList(tableFeaturesBld.build()));
+            MultipartReplyTableFeaturesCaseBuilder mpBodyBld = new MultipartReplyTableFeaturesCaseBuilder()
+                    .setMultipartReplyTableFeatures(mpTableFeaturesBld.build());
+            MultipartReplyMessageBuilder mpResultBld = new MultipartReplyMessageBuilder()
+                    .setType(MultipartType.OFPMPTABLEFEATURES)
+                    .setMultipartReplyBody(mpBodyBld.build())
+                    .setXid(21L);
+            final RpcResult<List<MultipartReply>> rpcResult = RpcResultBuilder
+                    .success(Collections.singletonList((MultipartReply) mpResultBld.build()))
+                    .build();
+            handleResultFuture.set(rpcResult);
+            return null;
         }).when(multiMessageCollector).endCollecting(Matchers.<EventIdentifier>any());
 
         final Future<RpcResult<UpdateTableOutput>> rpcResultFuture = salTableService.updateTable(prepareUpdateTable());

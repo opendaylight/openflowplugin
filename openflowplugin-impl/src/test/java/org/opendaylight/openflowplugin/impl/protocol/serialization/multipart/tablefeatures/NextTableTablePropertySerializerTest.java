@@ -29,9 +29,7 @@ public class NextTableTablePropertySerializerTest extends AbstractTablePropertyS
                         .build())
                 .build();
 
-        assertProperty(property, out -> {
-            assertEquals(out.readUnsignedByte(), tableId);
-        });
+        assertProperty(property, out -> assertEquals(out.readUnsignedByte(), tableId));
     }
 
     @Override

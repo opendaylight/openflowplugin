@@ -63,16 +63,17 @@ class InstructionDeserializerInjector {
      * @param version  Openflow version
      * @return injector
      */
-    @VisibleForTesting
-    static Function<Byte, Function<ActionPath, Consumer<OFDeserializer<Instruction>>>> createInjector(
+    private static Function<Byte, Function<ActionPath, Consumer<OFDeserializer<Instruction>>>> createInjector(
             final DeserializerExtensionProvider provider,
             final short version) {
-        return code -> actionPath -> deserializer -> {
-            provider.registerDeserializer((Objects.nonNull(actionPath)
-                            ? new MessageCodeActionExperimenterKey(version, code, Instruction.class, actionPath, null)
-                            : new MessageCodeExperimenterKey(version, code, Instruction.class, null)),
-                    deserializer);
-        };
+        return code -> actionPath -> deserializer -> provider.registerDeserializer((Objects.nonNull(actionPath)
+                        ? new MessageCodeActionExperimenterKey(version,
+                                                               code,
+                                                               Instruction.class,
+                                                               actionPath,
+                                                               null)
+                        : new MessageCodeExperimenterKey(version, code, Instruction.class, null)),
+                deserializer);
     }
 
 }

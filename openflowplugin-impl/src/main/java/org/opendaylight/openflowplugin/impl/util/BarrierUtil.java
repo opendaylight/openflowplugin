@@ -52,14 +52,10 @@ public final class BarrierUtil {
 
         // store input result and append barrier
         final ListenableFuture<RpcResult<Void>> barrierResult = Futures.transformAsync(input,
-                new AsyncFunction<RpcResult<T>, RpcResult<Void>>() {
-                    @Override
-                    public ListenableFuture<RpcResult<Void>> apply(@Nullable final RpcResult<T> interInput)
-                            throws Exception {
-                        resultPair.setLeft(interInput);
-                        final SendBarrierInput barrierInput = createSendBarrierInput(nodeRef);
-                        return JdkFutureAdapters.listenInPoolThread(transactionService.sendBarrier(barrierInput));
-                    }
+                interInput -> {
+                    resultPair.setLeft(interInput);
+                    final SendBarrierInput barrierInput = createSendBarrierInput(nodeRef);
+                    return JdkFutureAdapters.listenInPoolThread(transactionService.sendBarrier(barrierInput));
                 });
         // store barrier result and return initiated pair
         final ListenableFuture<Pair<RpcResult<T>, RpcResult<Void>>> compositeResult = Futures.transform(

@@ -56,7 +56,6 @@ public class RpcContextImplTest {
     @Mock
     private BindingAwareBroker.RoutedRpcRegistration<TestRpcService> routedRpcReg;
 
-    private Class<TestRpcService> serviceClass;
     @Mock
     private NotificationPublishService notificationPublishService;
     @Mock
@@ -154,7 +153,7 @@ public class RpcContextImplTest {
 
     @Test
     public void testClose() {
-        serviceClass = TestRpcService.class;
+        Class<TestRpcService> serviceClass = TestRpcService.class;
         when(routedRpcReg.getServiceType()).thenReturn(serviceClass);
         rpcContext.registerRpcServiceImplementation(TestRpcService.class, serviceInstance);
         rpcContext.close();

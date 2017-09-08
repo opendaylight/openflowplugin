@@ -40,8 +40,6 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 @RunWith(MockitoJUnitRunner.class)
 public class HandshakeListenerImplTest {
 
-    private final Short version = OFConstants.OFP_VERSION_1_3;
-
     @Mock
     private DeviceConnectedHandler deviceConnectedHandler;
     @Mock
@@ -74,7 +72,7 @@ public class HandshakeListenerImplTest {
 
     @Test
     public void testOnHandshakeSuccessfull() throws Exception {
-        handshakeListener.onHandshakeSuccessful(features, version);
+        handshakeListener.onHandshakeSuccessful(features, OFConstants.OFP_VERSION_1_3);
         Mockito.verify(connectionContextSpy).changeStateToWorking();
         Mockito.verify(connectionContextSpy).setFeatures(Matchers.any(FeaturesReply.class));
         Mockito.verify(connectionContextSpy).setNodeId(nodeIdCaptor.capture());

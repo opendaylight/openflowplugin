@@ -17,6 +17,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.opendaylight.openflowplugin.impl.util.BarrierUtil;
 import org.opendaylight.openflowplugin.impl.util.GroupUtil;
@@ -38,6 +39,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.AddGroupsBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.AddGroupsBatchOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.BatchGroupInputUpdateGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.RemoveGroupsBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.RemoveGroupsBatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.SalGroupsBatchService;
@@ -86,14 +88,9 @@ public class SalGroupsBatchServiceImpl implements SalGroupsBatchService {
             resultsLot.add(JdkFutureAdapters.listenInPoolThread(salGroupService.updateGroup(updateGroupInput)));
         }
 
-        final Iterable<Group> groups = Iterables.transform(batchUpdateGroups, new Function<BatchUpdateGroups, Group>() {
-                @Nullable
-                @Override
-                public Group apply(@Nullable final BatchUpdateGroups input) {
-                    return input.getUpdatedBatchedGroup();
-                }
-            }
-        );
+        final Iterable<Group> groups = batchUpdateGroups.stream()
+                .map(BatchGroupInputUpdateGrouping::getUpdatedBatchedGroup)
+                .collect(Collectors.toList());
 
         final ListenableFuture<RpcResult<List<BatchFailedGroupsOutput>>> commonResult =
                 Futures.transform(Futures.allAsList(resultsLot), GroupUtil.<UpdateGroupOutput>createCumulatingFunction(

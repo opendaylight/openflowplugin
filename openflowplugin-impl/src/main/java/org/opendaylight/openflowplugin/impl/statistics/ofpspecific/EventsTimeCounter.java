@@ -38,23 +38,13 @@ public final class EventsTimeCounter {
         eventTimeCounter.markEnd();
     }
 
-    private static EventTimeCounter getOrCreateEventOfType(final String event, final Map<String, EventTimeCounter> deviceEvents) {
-        EventTimeCounter lookup = deviceEvents.get(event);
-        if (null == lookup) {
-            lookup = new EventTimeCounter();
-            deviceEvents.put(event, lookup);
-        }
-        return lookup;
+    private static EventTimeCounter getOrCreateEventOfType(final String event,
+                                                           final Map<String, EventTimeCounter> deviceEvents) {
+        return deviceEvents.computeIfAbsent(event, k -> new EventTimeCounter());
     }
 
     private static Map<String, EventTimeCounter> getOrCreateCountersForDevice(final String deviceId) {
-        Map<String, EventTimeCounter> lookup = DEVICES_EVENTS.get(deviceId);
-        if (null == lookup) {
-            lookup = new HashMap<>();
-            DEVICES_EVENTS.put(deviceId, lookup);
-        }
-
-        return lookup;
+        return DEVICES_EVENTS.computeIfAbsent(deviceId, k -> new HashMap<>());
     }
 
     public static List<String> provideTimes() {
