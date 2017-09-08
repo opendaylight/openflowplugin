@@ -18,7 +18,7 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.key.MessageCodeMatchKey;
 import org.opendaylight.openflowplugin.impl.util.MatchUtil;
-import org.opendaylight.openflowplugin.openflow.md.util.PacketInUtil;
+import org.opendaylight.openflowplugin.impl.util.PacketInUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PacketInReason;

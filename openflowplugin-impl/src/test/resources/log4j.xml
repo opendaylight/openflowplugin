@@ -29,7 +29,7 @@
         <appender-ref ref="console" />
     </logger>
 
-    <logger name="org.opendaylight.openflowplugin.openflow.md.core.HandshakeManagerImpl" additivity="false">
+    <logger name="org.opendaylight.openflowplugin.impl.connection.HandshakeManagerImpl" additivity="false">
         <level value="TRACE" />
         <appender-ref ref="console" />
     </logger>
