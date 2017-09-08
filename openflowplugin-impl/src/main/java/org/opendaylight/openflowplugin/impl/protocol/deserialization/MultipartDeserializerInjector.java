@@ -78,15 +78,12 @@ class MultipartDeserializerInjector {
      * @param version  Openflow version
      * @return injector
      */
-    @VisibleForTesting
-    static Function<Integer, Consumer<OFDeserializer<? extends MultipartReplyBody>>> createInjector(
+    private static Function<Integer, Consumer<OFDeserializer<? extends MultipartReplyBody>>> createInjector(
             final DeserializerExtensionProvider provider,
             final short version) {
-        return code -> deserializer -> {
-            provider.registerDeserializer(
-                    new MessageCodeKey(version, code, MultipartReplyBody.class),
-                    deserializer);
-        };
+        return code -> deserializer -> provider.registerDeserializer(
+                new MessageCodeKey(version, code, MultipartReplyBody.class),
+                deserializer);
     }
 
 }

@@ -70,13 +70,10 @@ public abstract class AbstractStatsServiceTest {
 
     public static final NodeId NODE_ID = new NodeId("unit-test-node:123");
 
-    protected final Answer<Void> answerVoidToCallback = new Answer<Void>() {
-        @Override
-        public Void answer(InvocationOnMock invocation) throws Throwable {
-            final FutureCallback<OfHeader> callback = (FutureCallback<OfHeader>) (invocation.getArguments()[2]);
-            callback.onSuccess(null);
-            return null;
-        }
+    protected final Answer<Void> answerVoidToCallback = invocation -> {
+        final FutureCallback<OfHeader> callback = (FutureCallback<OfHeader>) (invocation.getArguments()[2]);
+        callback.onSuccess(null);
+        return null;
     };
 
     @Before
