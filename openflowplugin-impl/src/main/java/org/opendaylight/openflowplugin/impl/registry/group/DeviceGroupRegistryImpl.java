@@ -9,9 +9,8 @@
 package org.opendaylight.openflowplugin.impl.registry.group;
 
 import com.google.common.annotations.VisibleForTesting;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 import javax.annotation.concurrent.ThreadSafe;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
@@ -20,8 +19,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group
 @ThreadSafe
 public class DeviceGroupRegistryImpl implements DeviceGroupRegistry {
 
-    private final List<GroupId> groupIds = Collections.synchronizedList(new ArrayList<>());
-    private final List<GroupId> marks = Collections.synchronizedList(new ArrayList<>());
+    private final Queue<GroupId> groupIds = new ConcurrentLinkedQueue<>();
+    private final Queue<GroupId> marks = new ConcurrentLinkedQueue<>();
 
     @Override
     public void store(final GroupId groupId) {
@@ -42,9 +41,7 @@ public class DeviceGroupRegistryImpl implements DeviceGroupRegistry {
 
     @Override
     public void forEach(final Consumer<GroupId> consumer) {
-        synchronized (groupIds) {
-            groupIds.forEach(consumer);
-        }
+        groupIds.forEach(consumer);
     }
 
     @Override
@@ -59,7 +56,7 @@ public class DeviceGroupRegistryImpl implements DeviceGroupRegistry {
     }
 
     @VisibleForTesting
-    List<GroupId> getAllGroupIds() {
+    Queue<GroupId> getAllGroupIds() {
         return groupIds;
     }
 }

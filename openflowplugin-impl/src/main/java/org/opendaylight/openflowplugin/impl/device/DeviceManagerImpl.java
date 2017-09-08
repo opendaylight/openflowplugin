@@ -7,15 +7,12 @@
  */
 package org.opendaylight.openflowplugin.impl.device;
 
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.MoreExecutors;
 import io.netty.util.HashedWheelTimer;
-import io.netty.util.internal.ConcurrentSet;
 import java.util.Optional;
-import java.util.Set;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -64,7 +61,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private final DeviceInitializerProvider deviceInitializerProvider;
     private final ConvertorExecutor convertorExecutor;
     private final ConcurrentMap<DeviceInfo, DeviceContext> deviceContexts = new ConcurrentHashMap<>();
-    private final Set<KeyedInstanceIdentifier<Node, NodeKey>> notificationCreateNodeSend = new ConcurrentSet<>();
+    private final Queue<KeyedInstanceIdentifier<Node, NodeKey>> notificationCreateNodeSend = new ConcurrentLinkedQueue<>();
     private final NotificationPublishService notificationPublishService;
     private final MessageSpy messageSpy;
     private final HashedWheelTimer hashedWheelTimer;

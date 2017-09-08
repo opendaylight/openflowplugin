@@ -12,7 +12,6 @@ import io.netty.util.HashedWheelTimer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import javax.annotation.Nonnull;
-import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
@@ -49,7 +48,7 @@ public class RoleManagerImpl implements RoleManager {
 
     @Override
     public void close() {
-        contexts.values().forEach(OFPContext::close);
+        contexts.forEach((key, value) -> value.close());
         contexts.clear();
     }
 }

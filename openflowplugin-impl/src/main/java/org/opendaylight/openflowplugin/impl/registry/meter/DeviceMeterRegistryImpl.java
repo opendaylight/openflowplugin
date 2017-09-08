@@ -9,9 +9,8 @@
 package org.opendaylight.openflowplugin.impl.registry.meter;
 
 import com.google.common.annotations.VisibleForTesting;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 import javax.annotation.concurrent.ThreadSafe;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
@@ -20,8 +19,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter
 @ThreadSafe
 public class DeviceMeterRegistryImpl implements DeviceMeterRegistry {
 
-    private final List<MeterId> meterIds = Collections.synchronizedList(new ArrayList<>());
-    private final List<MeterId> marks = Collections.synchronizedList(new ArrayList<>());
+    private final Queue<MeterId> meterIds = new ConcurrentLinkedQueue<>();
+    private final Queue<MeterId> marks = new ConcurrentLinkedQueue<>();
 
     @Override
     public void store(final MeterId meterId) {
@@ -42,9 +41,7 @@ public class DeviceMeterRegistryImpl implements DeviceMeterRegistry {
 
     @Override
     public void forEach(final Consumer<MeterId> consumer) {
-        synchronized (meterIds) {
-            meterIds.forEach(consumer);
-        }
+        meterIds.forEach(consumer);
     }
 
     @Override
@@ -59,7 +56,7 @@ public class DeviceMeterRegistryImpl implements DeviceMeterRegistry {
     }
 
     @VisibleForTesting
-    List<MeterId> getAllMeterIds() {
+    Queue<MeterId> getAllMeterIds() {
         return meterIds;
     }
 }

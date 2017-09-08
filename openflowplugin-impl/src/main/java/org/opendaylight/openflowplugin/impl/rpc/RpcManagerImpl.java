@@ -8,8 +8,6 @@
 package org.opendaylight.openflowplugin.impl.rpc;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Iterators;
-import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import javax.annotation.Nonnull;
@@ -50,10 +48,8 @@ public class RpcManagerImpl implements RpcManager {
 
     @Override
     public void close() {
-        for (final Iterator<RpcContext> iterator = Iterators.consumingIterator(contexts.values().iterator());
-                iterator.hasNext();) {
-            iterator.next().close();
-        }
+        contexts.forEach((key, value) -> value.close());
+        contexts.clear();
     }
 
     /**
@@ -61,9 +57,7 @@ public class RpcManagerImpl implements RpcManager {
      */
     @VisibleForTesting
     void addRecordToContexts(DeviceInfo deviceInfo, RpcContext rpcContexts) {
-        if(!contexts.containsKey(deviceInfo)) {
-            this.contexts.put(deviceInfo,rpcContexts);
-        }
+        contexts.put(deviceInfo,rpcContexts);
     }
 
     @Override

@@ -39,7 +39,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
     private final TxFacade txFacade;
     private final MultipartWriterProvider statisticsWriterProvider;
     private final DeviceRegistry deviceRegistry;
-    private volatile Service.State gatheringState = Service.State.NEW;
+    private Service.State gatheringState = Service.State.NEW;
     private ConvertorExecutor convertorExecutor;
 
     public AbstractMultipartRequestOnTheFlyCallback(final RequestContext<List<T>> context, Class<?> requestType,
@@ -122,7 +122,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
     /**
      * Starts collecting of multipart data
      */
-    private synchronized void startCollecting() {
+    private void startCollecting() {
         EventsTimeCounter.markStart(doneEventIdentifier);
         gatheringState = Service.State.RUNNING;
 

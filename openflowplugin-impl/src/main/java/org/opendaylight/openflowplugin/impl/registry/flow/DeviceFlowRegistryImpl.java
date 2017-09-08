@@ -9,19 +9,16 @@ package org.opendaylight.openflowplugin.impl.registry.flow;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
@@ -49,7 +46,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     private static final String ALIEN_SYSTEM_FLOW_ID = "#UF$TABLE*";
     private static final AtomicInteger UNACCOUNTED_FLOWS_COUNTER = new AtomicInteger(0);
 
-    private final BiMap<FlowRegistryKey, FlowDescriptor> flowRegistry = Maps.synchronizedBiMap(HashBiMap.create());
+    private final Map<FlowRegistryKey, FlowDescriptor> flowRegistry = new ConcurrentHashMap<>(102400);
     private final DataBroker dataBroker;
     private final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier;
     private final List<ListenableFuture<List<Optional<FlowCapableNode>>>> lastFillFutures = new ArrayList<>();
@@ -156,27 +153,12 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     @Override
     public void storeDescriptor(@Nonnull final FlowRegistryKey flowRegistryKey,
                                 @Nonnull final FlowDescriptor flowDescriptor) {
-        try {
-            if (LOG.isTraceEnabled()) {
-                LOG.trace("Storing flowDescriptor with table ID : {} and flow ID : {} for flow hash : {}",
-                        flowDescriptor.getTableKey().getId(), flowDescriptor.getFlowId().getValue(), flowRegistryKey.hashCode());
-            }
-
-            flowRegistry.put(flowRegistryKey, flowDescriptor);
-        } catch (IllegalArgumentException ex) {
-            if (LOG.isWarnEnabled()) {
-                LOG.warn("Flow with flow ID {} already exists in table {}, generating alien flow ID", flowDescriptor.getFlowId().getValue(),
-                        flowDescriptor.getTableKey().getId());
-            }
-
-            // We are trying to store new flow to flow registry, but we already have different flow with same flow ID
-            // stored in registry, so we need to create alien ID for this new flow here.
-            flowRegistry.put(
-                    flowRegistryKey,
-                    FlowDescriptorFactory.create(
-                            flowDescriptor.getTableKey().getId(),
-                            createAlienFlowId(flowDescriptor.getTableKey().getId())));
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("Storing flowDescriptor with table ID : {} and flow ID : {} for flow hash : {}",
+                    flowDescriptor.getTableKey().getId(), flowDescriptor.getFlowId().getValue(), flowRegistryKey.hashCode());
         }
+
+        flowRegistry.put(flowRegistryKey, flowDescriptor);
     }
 
     @Override
@@ -212,9 +194,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
     @Override
     public void forEach(final Consumer<FlowRegistryKey> consumer) {
-        synchronized (flowRegistry) {
-            flowRegistry.keySet().forEach(consumer);
-        }
+        flowRegistry.keySet().forEach(consumer);
     }
 
     @Override
@@ -224,16 +204,13 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
     @Override
     public void close() {
-        final Iterator<ListenableFuture<List<Optional<FlowCapableNode>>>> iterator = lastFillFutures.iterator();
-
         // We need to force interrupt and clear all running futures that are trying to read flow IDs from data store
-        while (iterator.hasNext()) {
-            final ListenableFuture<List<Optional<FlowCapableNode>>> next = iterator.next();
-            boolean success = next.cancel(true);
-            LOG.trace("Cancelling filling flow registry with flows job {} with result: {}", next, success);
-            iterator.remove();
-        }
+        lastFillFutures.forEach(future -> {
+            boolean success = future.cancel(true);
+            LOG.trace("Cancelling filling flow registry with flows job {} with result: {}", future, success);
+        });
 
+        lastFillFutures.clear();
         flowRegistry.clear();
     }
 
