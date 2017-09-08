@@ -58,7 +58,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
         final DeviceState deviceState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         final DeviceInfo deviceInfo = Preconditions.checkNotNull(deviceContext.getDeviceInfo());
         final Capabilities capabilities = connectionContext.getFeatures().getCapabilities();
-        LOG.debug("Setting capabilities for device {}", deviceInfo.getLOGValue());
+        LOG.debug("Setting capabilities for device {}", deviceInfo);
         DeviceStateUtil.setDeviceStateBasedOnV13Capabilities(deviceState, capabilities);
 
         // First process description reply, write data to DS and write consequent data if successful
@@ -89,7 +89,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                         @Override
                         public Void apply(@Nullable final List<RpcResult<List<OfHeader>>> input) {
                             LOG.info("Static node {} successfully finished collecting",
-                                    deviceContext.getDeviceInfo().getLOGValue());
+                                    deviceContext.getDeviceInfo());
                             return null;
                         }
                     });
@@ -140,7 +140,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
             @Override
             public void onSuccess(final RpcResult<List<OfHeader>> result) {
                 if (Objects.nonNull(result.getResult())) {
-                    LOG.info("Static node {} info: {} collected", deviceContext.getDeviceInfo().getLOGValue(), type);
+                    LOG.info("Static node {} info: {} collected", deviceContext.getDeviceInfo(), type);
                     translateAndWriteResult(
                         type,
                         result.getResult(),
@@ -169,7 +169,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
             @Override
             public void onFailure(@Nonnull final Throwable throwable) {
                 LOG.warn("Request of type {} for static info of node {} failed.",
-                        type, deviceContext.getDeviceInfo().getLOGValue());
+                        type, deviceContext.getDeviceInfo());
             }
         });
     }
@@ -218,11 +218,11 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                         });
                 });
             } catch (final Exception e) {
-                LOG.warn("Failed to write node {} to DS ", deviceContext.getDeviceInfo().getLOGValue(), e);
+                LOG.warn("Failed to write node {} to DS ", deviceContext.getDeviceInfo(), e);
             }
         } else {
             LOG.warn("Failed to write node {} to DS because we failed to gather device info.",
-                deviceContext.getDeviceInfo().getLOGValue());
+                deviceContext.getDeviceInfo());
         }
     }
 
