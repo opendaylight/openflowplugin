@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_89eb3577",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsGatheringUtils.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-09-08T09:13:30Z",
+      "side": 0,
+      "message": "ideally it should not happen, but if it happens then it should be reported.",
+      "revId": "cd3738e5076862a6c9545399b278e629d8e312aa",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
