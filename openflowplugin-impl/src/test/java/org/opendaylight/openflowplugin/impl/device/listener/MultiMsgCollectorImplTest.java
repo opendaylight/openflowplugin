@@ -145,13 +145,10 @@ public class MultiMsgCollectorImplTest {
 
         Mockito.reset(deviceProcessor);
 
-        cleanUpCheck = new Runnable() {
-            @Override
-            public void run() {
-                Mockito.verify(deviceProcessor, VerificationModeFactory.noMoreInteractions())
-                    .processReply(xidCaptor.capture(), mmCaptor.capture());
-                Assert.assertEquals(xid, xidCaptor.getValue().getValue());
-            }
+        cleanUpCheck = () -> {
+            Mockito.verify(deviceProcessor, VerificationModeFactory.noMoreInteractions())
+                .processReply(xidCaptor.capture(), mmCaptor.capture());
+            Assert.assertEquals(xid, xidCaptor.getValue().getValue());
         };
     }
 
@@ -174,13 +171,10 @@ public class MultiMsgCollectorImplTest {
 
         Mockito.reset(deviceProcessor);
 
-        cleanUpCheck = new Runnable() {
-            @Override
-            public void run() {
-                Mockito.verify(deviceProcessor, VerificationModeFactory.noMoreInteractions())
-                    .processReply(xidCaptor.capture(), mmCaptor.capture());
-                Assert.assertEquals(xid, xidCaptor.getValue().getValue());
-            }
+        cleanUpCheck = () -> {
+            Mockito.verify(deviceProcessor, VerificationModeFactory.noMoreInteractions())
+                .processReply(xidCaptor.capture(), mmCaptor.capture());
+            Assert.assertEquals(xid, xidCaptor.getValue().getValue());
         };
     }
 

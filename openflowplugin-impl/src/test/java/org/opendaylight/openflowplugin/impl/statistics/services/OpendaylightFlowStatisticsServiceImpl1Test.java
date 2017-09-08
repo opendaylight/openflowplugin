@@ -33,8 +33,6 @@ public class OpendaylightFlowStatisticsServiceImpl1Test extends AbstractStatsSer
     @Captor
     private ArgumentCaptor<MultipartRequestInput> requestInput;
 
-    private AbstractRequestContext<Object> rqContext;
-
     private OpendaylightFlowStatisticsServiceImpl flowStatisticsService;
 
     public void setUp() {
@@ -42,7 +40,7 @@ public class OpendaylightFlowStatisticsServiceImpl1Test extends AbstractStatsSer
         flowStatisticsService =
                 OpendaylightFlowStatisticsServiceImpl.createWithOook(rqContextStack, deviceContext, convertorManager);
 
-        rqContext = new AbstractRequestContext<Object>(42L) {
+        AbstractRequestContext<Object> rqContext = new AbstractRequestContext<Object>(42L) {
             @Override
             public void close() {
                 //NOOP

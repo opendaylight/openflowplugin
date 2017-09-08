@@ -82,8 +82,6 @@ public class SalRoleServiceImplTest {
 
     private NodeId testNodeId = new NodeId(Uri.getDefaultInstance("openflow:1"));
 
-    private static short testVersion = 4;
-
     private static long testXid = 100L;
 
     private static final String ROLEREQUESTFAILED = org.opendaylight.yang.gen.v1.urn
@@ -98,6 +96,7 @@ public class SalRoleServiceImplTest {
         MockitoAnnotations.initMocks(this);
         Mockito.when(mockDeviceInfo.getNodeId()).thenReturn(testNodeId);
         Mockito.when(mockDeviceInfo.getDatapathId()).thenReturn(BigInteger.TEN);
+        short testVersion = 4;
         Mockito.when(mockFeaturesOutput.getVersion()).thenReturn(testVersion);
         Mockito.when(mockDeviceContext.getDeviceState()).thenReturn(mockDeviceState);
         Mockito.when(mockDeviceContext.getDeviceInfo()).thenReturn(mockDeviceInfo);
