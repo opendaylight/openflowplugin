@@ -62,7 +62,7 @@ public final class SessionStatistics {
     }
 
     public enum ConnectionStatus {
-        CONNECTION_CREATED, CONNECTION_DISCONNECTED_BY_DEVICE, CONNECTION_DISCONNECTED_BY_OFP;
+        CONNECTION_CREATED, CONNECTION_DISCONNECTED_BY_DEVICE, CONNECTION_DISCONNECTED_BY_OFP
     }
 
     private static final class EventCounter {
