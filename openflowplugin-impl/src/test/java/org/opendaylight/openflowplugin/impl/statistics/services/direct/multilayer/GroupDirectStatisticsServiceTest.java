@@ -105,7 +105,7 @@ public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         when(stat.getGroupId()).thenReturn(new GroupId(GROUP_NO));
 
         final List<org.opendaylight.yang.gen.v1.urn
-                .opendaylight.group.types.rev131018.group.statistics.reply.GroupStats> stats = Arrays.asList(stat);
+                .opendaylight.group.types.rev131018.group.statistics.reply.GroupStats> stats = Collections.singletonList(stat);
         final GetGroupStatisticsOutput output = mock(GetGroupStatisticsOutput.class);
         when(output.getGroupStats()).thenReturn(stats);
 

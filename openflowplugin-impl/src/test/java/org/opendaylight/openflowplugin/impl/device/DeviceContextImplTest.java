@@ -350,7 +350,7 @@ public class DeviceContextImplTest {
     public void testProcessPacketInMessageFutureSuccess() {
         final PacketInMessage mockedPacketInMessage = mock(PacketInMessage.class);
         final NotificationPublishService mockedNotificationPublishService = mock(NotificationPublishService.class);
-        final ListenableFuture stringListenableFuture = Futures.immediateFuture(new String("dummy value"));
+        final ListenableFuture stringListenableFuture = Futures.immediateFuture("dummy value");
 
         when(mockedNotificationPublishService.offerNotification(any(PacketReceived.class)))
                 .thenReturn(stringListenableFuture);

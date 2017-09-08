@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.translator;
 import com.google.common.collect.Lists;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
@@ -82,7 +83,7 @@ public class PacketReceivedTranslatorTest {
 
     @Before
     public void setUp() throws Exception {
-        final List<PhyPort> phyPorts = Arrays.asList(phyPort);
+        final List<PhyPort> phyPorts = Collections.singletonList(phyPort);
         convertorManager = ConvertorManagerFactory.createDefaultManager();
 
         Mockito.when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);

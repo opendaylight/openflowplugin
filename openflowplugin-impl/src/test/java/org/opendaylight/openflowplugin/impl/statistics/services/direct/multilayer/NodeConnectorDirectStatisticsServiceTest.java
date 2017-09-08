@@ -18,6 +18,7 @@ import static org.mockito.Mockito.when;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -67,8 +68,8 @@ public class NodeConnectorDirectStatisticsServiceTest extends AbstractDirectStat
         final MultipartReplyPortStatsCase nodeConnectorCase = mock(MultipartReplyPortStatsCase.class);
         final MultipartReplyPortStats nodeConnector = mock(MultipartReplyPortStats.class);
         final PortStats nodeConnectorStat = mock(PortStats.class);
-        final List<PortStats> nodeConnectorStats = Arrays.asList(nodeConnectorStat);
-        final List<MultipartReply> input = Arrays.asList(reply);
+        final List<PortStats> nodeConnectorStats = Collections.singletonList(nodeConnectorStat);
+        final List<MultipartReply> input = Collections.singletonList(reply);
 
         when(nodeConnector.getPortStats()).thenReturn(nodeConnectorStats);
         when(nodeConnectorCase.getMultipartReplyPortStats()).thenReturn(nodeConnector);
@@ -101,7 +102,7 @@ public class NodeConnectorDirectStatisticsServiceTest extends AbstractDirectStat
         final NodeConnectorStatisticsAndPortNumberMap stat = mock(NodeConnectorStatisticsAndPortNumberMap.class);
         when(stat.getNodeConnectorId()).thenReturn(nodeConnectorId);
 
-        final List<NodeConnectorStatisticsAndPortNumberMap> stats = Arrays.asList(stat);
+        final List<NodeConnectorStatisticsAndPortNumberMap> stats = Collections.singletonList(stat);
         final GetNodeConnectorStatisticsOutput output = mock(GetNodeConnectorStatisticsOutput.class);
         when(output.getNodeConnectorStatisticsAndPortNumberMap()).thenReturn(stats);
 
