@@ -288,7 +288,6 @@ public class MultipartReplyTranslatorTest {
         DeviceInfo deviceInfo = mock(DeviceInfo.class);
         when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         when(deviceInfo.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
-        when(deviceInfo.getLOGValue()).thenReturn(DUMMY_DATAPATH_ID.toString());
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(deviceInfo);
 
         when(mockedConnectionContext.getFeatures()).thenReturn(mockedFeaturesReply);

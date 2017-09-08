@@ -96,7 +96,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
                                         .ifPresent(writer -> writer.write(reply, false));
                             } catch (final Exception ex) {
                                 LOG.warn("Stats processing of type {} for node {} failed during write-to-tx step",
-                                        getMultipartType(), deviceInfo.getLOGValue(), ex);
+                                        getMultipartType(), deviceInfo, ex);
                             }
                         });
             } catch (final Exception ex) {

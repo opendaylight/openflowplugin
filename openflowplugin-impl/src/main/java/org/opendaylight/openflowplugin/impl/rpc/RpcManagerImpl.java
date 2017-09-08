@@ -84,7 +84,7 @@ public class RpcManagerImpl implements RpcManager {
     public void onDeviceRemoved(final DeviceInfo deviceInfo) {
         contexts.remove(deviceInfo);
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Rpc context removed for node {}", deviceInfo.getLOGValue());
+            LOG.debug("Rpc context removed for node {}", deviceInfo);
         }
     }
 }

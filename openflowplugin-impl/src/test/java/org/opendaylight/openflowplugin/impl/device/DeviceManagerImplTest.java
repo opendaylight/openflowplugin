@@ -168,7 +168,7 @@ public class DeviceManagerImplTest {
     public void removeDeviceFromOperationalDSException() throws Exception {
         final CheckedFuture<Void, TransactionCommitFailedException> failedFuture =
                 Futures.immediateFailedCheckedFuture(
-                        new TransactionCommitFailedException("Test failed transaction", null, null));
+                        new TransactionCommitFailedException("Test failed transaction"));
         Mockito.when(writeTransaction.submit()).thenReturn(failedFuture);
         final ListenableFuture<Void> future = deviceManager
                 .removeDeviceFromOperationalDS(DUMMY_IDENTIFIER);

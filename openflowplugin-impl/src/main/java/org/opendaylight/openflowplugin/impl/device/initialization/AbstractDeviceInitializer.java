@@ -45,7 +45,7 @@ public abstract class AbstractDeviceInitializer {
         Preconditions.checkNotNull(deviceContext);
 
         // Write node to datastore
-        LOG.debug("Initializing node information for node {}", deviceContext.getDeviceInfo().getLOGValue());
+        LOG.debug("Initializing node information for node {}", deviceContext.getDeviceInfo());
         try {
             deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, deviceContext
                     .getDeviceInfo()
