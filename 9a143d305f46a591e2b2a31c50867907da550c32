@@ -111,6 +111,30 @@
       "revId": "9a143d305f46a591e2b2a31c50867907da550c32",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_89121507",
+        "filename": "openflowplugin-common/src/main/java/org/opendaylight/openflowplugin/common/txchain/TransactionChainManager.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 271,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-09-08T07:44:57Z",
+      "side": 1,
+      "message": "\" it may come this event for another chain from controller which we also should not close here.\" --\u003e if this happen we are pretty much screwed and it\u0027s a major bug in mdsal then ;-). Ideally this should not happen, because we are initializing this transaction chain manager for each device and we create transaction chain within this instance and  this instance is the listener as well. I am wondering if we should create individual listener everytime we create transactionChain and pass the reference of the chain to that listner and whenever that transaction chain fails, that specific listner will be called and that can close the related transaction. Something on the  line of \n\n\n    class TxChainListener implements TransactionChainListener {\n        private TransactionChain txChain;\n\n        public void setTxChain(final TransactionChain txChain) {\n            this.txChain \u003d txChain;\n        }\n        @Override\n        public void onTransactionChainFailed(TransactionChain\u003c?, ?\u003e chain, AsyncTransaction\u003c?, ?\u003e transaction, Throwable cause) {\n            Optional.of(txChain).ifPresent(TransactionChain::close);\n        }\n\n        @Override\n        public void onTransactionChainSuccessful(TransactionChain\u003c?, ?\u003e chain) {\n\n        }\n    }\n    @GuardedBy(\"txLock\")\n    private void createTxChain() {\n        TxChainListener txChainListener \u003d new TxChainListener();\n        txChainFactory \u003d dataBroker.createTransactionChain(txChainListener);\n        txChainListener.setTxChain(txChainFactory);\n    }",
+      "parentUuid": "ba1f61a0_09e2a52e",
+      "range": {
+        "startLine": 270,
+        "startChar": 17,
+        "endLine": 271,
+        "endChar": 55
+      },
+      "revId": "9a143d305f46a591e2b2a31c50867907da550c32",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
