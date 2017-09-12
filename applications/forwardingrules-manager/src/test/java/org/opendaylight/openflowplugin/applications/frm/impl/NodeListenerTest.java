@@ -5,7 +5,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package test.mock;
+package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -16,10 +16,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
+import org.opendaylight.openflowplugin.applications.frm.DeviceMastershipManager;
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -32,16 +31,17 @@ import test.mock.util.RpcProviderRegistryMock;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NodeListenerTest extends FRMTest {
-    private ForwardingRulesManagerImpl forwardingRulesManager;
     private static final NodeKey NODE_KEY = new NodeKey(new NodeId("testnode:1"));
-    RpcProviderRegistry rpcProviderRegistryMock = new RpcProviderRegistryMock();
+
+    private ForwardingRulesManagerImpl forwardingRulesManager;
+    private RpcProviderRegistry rpcProviderRegistryMock = new RpcProviderRegistryMock();
+
     @Mock
-    ClusterSingletonServiceProvider clusterSingletonService;
-    @Mock
-    private NotificationProviderService notificationService;
+    private MastershipChangeServiceManager mastershipChangeServiceManager;
     @Mock
     private ReconciliationManager reconciliationManager;
-
+    @Mock
+    private DeviceMastershipManager deviceMastershipManager;
 
     @Before
     public void setUp() {
@@ -49,26 +49,26 @@ public class NodeListenerTest extends FRMTest {
                 getDataBroker(),
                 rpcProviderRegistryMock,
                 getConfig(),
-                clusterSingletonService,
-                notificationService,
+                mastershipChangeServiceManager,
                 getConfigurationService(),
                 reconciliationManager);
 
         forwardingRulesManager.start();
+        forwardingRulesManager.setDeviceMastershipManager(deviceMastershipManager);
     }
 
     @Test
     public void addRemoveNodeTest() throws Exception {
         addFlowCapableNode(NODE_KEY);
 
-        InstanceIdentifier<FlowCapableNode> nodeII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
+        final InstanceIdentifier<FlowCapableNode> nodeII = InstanceIdentifier
+                .create(Nodes.class)
+                .child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class);
-        boolean nodeActive = forwardingRulesManager.isNodeActive(nodeII);
-        assertTrue(nodeActive);
+
+        assertTrue(forwardingRulesManager.checkNodeInOperationalDataStore(nodeII));
         removeNode(NODE_KEY);
-        nodeActive = forwardingRulesManager.isNodeActive(nodeII);
-        assertFalse(nodeActive);
-    }
+        assertFalse(forwardingRulesManager.checkNodeInOperationalDataStore(nodeII));    }
 
     @After
     public void tearDown() throws Exception {

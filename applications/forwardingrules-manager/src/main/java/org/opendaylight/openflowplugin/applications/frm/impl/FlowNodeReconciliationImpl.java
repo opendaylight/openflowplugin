@@ -32,7 +32,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -75,7 +74,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.Messages;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.MessagesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.messages.Message;
@@ -115,31 +113,17 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     // The maximum number of nanoseconds to wait for completion of add-group RPCs.
     private static final long MAX_ADD_GROUP_TIMEOUT = TimeUnit.SECONDS.toNanos(20);
     private static final String SEPARATOR = ":";
+    private static final int FRM_RECONCILIATION_PRIORITY = Integer.getInteger("frm.tasks.priority", 0);
     private static final int THREAD_POOL_SIZE = 4;
-
-    private final DataBroker dataBroker;
-    private final ForwardingRulesManager provider;
-    private final String serviceName;
-    private final int priority;
-    private final ResultState resultState;
-    private final Map<DeviceInfo, ListenableFuture<Boolean>> futureMap = new HashMap<>();
-
-    private final ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
-
-    private final SalBundleService salBundleService;
-
     private static final AtomicLong BUNDLE_ID = new AtomicLong();
     private static final BundleFlags BUNDLE_FLAGS = new BundleFlags(true, true);
 
-    public FlowNodeReconciliationImpl(final ForwardingRulesManager manager, final DataBroker db,
-            final String serviceName, final int priority, final ResultState resultState) {
+    private final ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+    private final Map<DeviceInfo, ListenableFuture<Boolean>> futureMap = new HashMap<>();
+    private final ForwardingRulesManager provider;
+
+    public FlowNodeReconciliationImpl(final ForwardingRulesManager manager) {
         this.provider = Preconditions.checkNotNull(manager, "ForwardingRulesManager can not be null!");
-        dataBroker = Preconditions.checkNotNull(db, "DataBroker can not be null!");
-        this.serviceName = serviceName;
-        this.priority = priority;
-        this.resultState = resultState;
-        salBundleService = Preconditions.checkNotNull(manager.getSalBundleService(),
-                "salBundleService can not be null!");
     }
 
     @Override
@@ -181,7 +165,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             BundleId bundleIdValue = new BundleId(BUNDLE_ID.getAndIncrement());
             BigInteger dpnId = getDpnIdFromNodeName(node);
             LOG.debug("Triggering bundle based reconciliation for device :{}", dpnId);
-            ReadOnlyTransaction trans = provider.getReadTranaction();
+            ReadOnlyTransaction trans = provider.getReadTransaction();
             try {
                 flowNode = trans.read(LogicalDatastoreType.CONFIGURATION, nodeIdentity).get();
             } catch (ExecutionException | InterruptedException e) {
@@ -204,13 +188,13 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         .setNode(nodeRef).setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS)
                         .setMessages(createMessages(nodeRef, flowNode)).build();
 
-                Future<RpcResult<Void>> openBundle = salBundleService.controlBundle(openBundleInput);
+                Future<RpcResult<Void>> openBundle = provider.getSalBundleService().controlBundle(openBundleInput);
 
                 ListenableFuture<RpcResult<Void>> addBundleMessagesFuture = Futures
                         .transformAsync(JdkFutureAdapters.listenInPoolThread(openBundle), rpcResult -> {
                             if (rpcResult.isSuccessful()) {
                                 return JdkFutureAdapters
-                                        .listenInPoolThread(salBundleService.addBundleMessages(addBundleMessagesInput));
+                                        .listenInPoolThread(provider.getSalBundleService().addBundleMessages(addBundleMessagesInput));
                             }
                             return Futures.immediateFuture(null);
                         });
@@ -218,7 +202,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                     rpcResult -> {
                         if (rpcResult.isSuccessful()) {
                             return JdkFutureAdapters
-                                    .listenInPoolThread(salBundleService.controlBundle(commitBundleInput));
+                                    .listenInPoolThread(provider.getSalBundleService().controlBundle(commitBundleInput));
                         }
                         return Futures.immediateFuture(null);
                     });
@@ -272,21 +256,20 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
     @Override
     public int getPriority() {
-        return priority;
+        return FRM_RECONCILIATION_PRIORITY;
     }
 
     @Override
     public String getName() {
-        return serviceName;
+        return getClass().getSimpleName();
     }
 
     @Override
     public ResultState getResultState() {
-        return resultState;
+        return ResultState.DONOTHING;
     }
 
     private class ReconciliationTask implements Callable<Boolean> {
-
         InstanceIdentifier<FlowCapableNode> nodeIdentity;
 
         ReconciliationTask(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
@@ -298,7 +281,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             String node = nodeIdentity.firstKeyOf(Node.class, NodeKey.class).getId().getValue();
             BigInteger dpnId = getDpnIdFromNodeName(node);
 
-            ReadOnlyTransaction trans = provider.getReadTranaction();
+            ReadOnlyTransaction trans = provider.getReadTransaction();
             Optional<FlowCapableNode> flowNode = Optional.absent();
             // initialize the counter
             int counter = 0;
@@ -536,7 +519,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         List<InstanceIdentifier<StaleGroup>> staleGroupsToBeBulkDeleted = Lists.newArrayList();
         List<InstanceIdentifier<StaleMeter>> staleMetersToBeBulkDeleted = Lists.newArrayList();
 
-        ReadOnlyTransaction trans = provider.getReadTranaction();
+        ReadOnlyTransaction trans = provider.getReadTransaction();
         Optional<FlowCapableNode> flowNode = Optional.absent();
 
         try {
@@ -626,7 +609,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     }
 
     private void deleteDSStaleFlows(List<InstanceIdentifier<StaleFlow>> flowsForBulkDelete) {
-        WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
+        WriteTransaction writeTransaction = provider.getWriteTransaction();
 
         for (InstanceIdentifier<StaleFlow> staleFlowIId : flowsForBulkDelete) {
             writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, staleFlowIId);
@@ -637,7 +620,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     }
 
     private void deleteDSStaleGroups(List<InstanceIdentifier<StaleGroup>> groupsForBulkDelete) {
-        WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
+        WriteTransaction writeTransaction = provider.getWriteTransaction();
 
         for (InstanceIdentifier<StaleGroup> staleGroupIId : groupsForBulkDelete) {
             writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, staleGroupIId);
@@ -648,7 +631,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     }
 
     private void deleteDSStaleMeters(List<InstanceIdentifier<StaleMeter>> metersForBulkDelete) {
-        WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
+        WriteTransaction writeTransaction = provider.getWriteTransaction();
 
         for (InstanceIdentifier<StaleMeter> staleMeterIId : metersForBulkDelete) {
             writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, staleMeterIId);
