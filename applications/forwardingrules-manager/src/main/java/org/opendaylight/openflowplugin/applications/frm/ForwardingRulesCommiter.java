@@ -83,8 +83,4 @@ public interface ForwardingRulesCommiter<D extends DataObject>
      *            Node InstanceIdentifier
      */
     void createStaleMarkEntity(InstanceIdentifier<D> identifier, D del, InstanceIdentifier<FlowCapableNode> nodeIdent);
-
-    Future<? extends RpcResult<?>> removeWithResult(InstanceIdentifier<D> identifier, D del,
-            InstanceIdentifier<FlowCapableNode> nodeIdent);
-
 }
