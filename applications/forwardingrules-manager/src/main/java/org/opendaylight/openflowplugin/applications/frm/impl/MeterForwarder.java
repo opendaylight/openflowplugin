@@ -7,18 +7,15 @@
  */
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
-import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
-import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
@@ -31,13 +28,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.meter.update.OriginalMeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.meter.update.UpdatedMeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterRef;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
@@ -52,36 +47,10 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class MeterForwarder extends AbstractListeningCommiter<Meter> {
-
     private static final Logger LOG = LoggerFactory.getLogger(MeterForwarder.class);
-    private final DataBroker dataBroker;
-    private ListenerRegistration<MeterForwarder> listenerRegistration;
 
-    @SuppressWarnings("IllegalCatch")
     public MeterForwarder(final ForwardingRulesManager manager, final DataBroker db) {
-        super(manager);
-        dataBroker = Preconditions.checkNotNull(db, "DataBroker can not be null!");
-        final DataTreeIdentifier<Meter> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION,
-                getWildCardPath());
-
-        try {
-            SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(ForwardingRulesManagerImpl.STARTUP_LOOP_TICK,
-                    ForwardingRulesManagerImpl.STARTUP_LOOP_MAX_RETRIES);
-            listenerRegistration = looper
-                    .loopUntilNoException(() -> db.registerDataTreeChangeListener(treeId, MeterForwarder.this));
-        } catch (final Exception e) {
-            LOG.warn("FRM Meter DataTreeChange listener registration fail!");
-            LOG.debug("FRM Meter DataTreeChange listener registration fail ..", e);
-            throw new IllegalStateException("MeterForwarder startup fail! System needs restart.", e);
-        }
-    }
-
-    @Override
-    public void close() {
-        if (listenerRegistration != null) {
-            listenerRegistration.close();
-            listenerRegistration = null;
-        }
+        super(manager, db);
     }
 
     @Override
@@ -98,20 +67,8 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
 
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
         builder.setMeterRef(new MeterRef(identifier));
-        builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
-        this.provider.getSalMeterService().removeMeter(builder.build());
-    }
-
-    @Override
-    public Future<RpcResult<RemoveMeterOutput>> removeWithResult(final InstanceIdentifier<Meter> identifier,
-            final Meter removeDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-
-        final RemoveMeterInputBuilder builder = new RemoveMeterInputBuilder(removeDataObj);
-
-        builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-        builder.setMeterRef(new MeterRef(identifier));
-        builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
-        return this.provider.getSalMeterService().removeMeter(builder.build());
+        builder.setTransactionUri(new Uri(getProvider().getNewTransactionId()));
+        this.getProvider().getSalMeterService().removeMeter(builder.build());
     }
 
     @Override
@@ -122,11 +79,11 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
 
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
         builder.setMeterRef(new MeterRef(identifier));
-        builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
+        builder.setTransactionUri(new Uri(getProvider().getNewTransactionId()));
         builder.setUpdatedMeter(new UpdatedMeterBuilder(update).build());
         builder.setOriginalMeter(new OriginalMeterBuilder(original).build());
 
-        this.provider.getSalMeterService().updateMeter(builder.build());
+        this.getProvider().getSalMeterService().updateMeter(builder.build());
     }
 
     @Override
@@ -137,8 +94,8 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
 
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
         builder.setMeterRef(new MeterRef(identifier));
-        builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
-        return this.provider.getSalMeterService().addMeter(builder.build());
+        builder.setTransactionUri(new Uri(getProvider().getNewTransactionId()));
+        return this.getProvider().getSalMeterService().addMeter(builder.build());
     }
 
     @Override
@@ -155,7 +112,7 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
     }
 
     private void persistStaleMeter(StaleMeter staleMeter, InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
+        WriteTransaction writeTransaction = getProvider().getWriteTransaction();
         writeTransaction.put(LogicalDatastoreType.CONFIGURATION, getStaleMeterInstanceIdentifier(staleMeter, nodeIdent),
                 staleMeter, false);
 

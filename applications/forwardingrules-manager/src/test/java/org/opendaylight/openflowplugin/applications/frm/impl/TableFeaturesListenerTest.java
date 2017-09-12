@@ -5,7 +5,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package test.mock;
+package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import static org.junit.Assert.assertEquals;
 
@@ -19,11 +19,9 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.openflowplugin.applications.frm.impl.DeviceMastershipManager;
-import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
+import org.opendaylight.openflowplugin.applications.frm.DeviceMastershipManager;
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
@@ -42,26 +40,30 @@ import test.mock.util.SalTableServiceMock;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TableFeaturesListenerTest extends FRMTest {
-    private ForwardingRulesManagerImpl forwardingRulesManager;
     private static final NodeId NODE_ID = new NodeId("testnode:1");
     private static final NodeKey NODE_KEY = new NodeKey(NODE_ID);
-    RpcProviderRegistry rpcProviderRegistryMock = new RpcProviderRegistryMock();
+
+    private ForwardingRulesManagerImpl forwardingRulesManager;
+    private RpcProviderRegistry rpcProviderRegistryMock = new RpcProviderRegistryMock();
+
     @Mock
-    ClusterSingletonServiceProvider clusterSingletonService;
-    @Mock
-    DeviceMastershipManager deviceMastershipManager;
-    @Mock
-    private NotificationProviderService notificationService;
+    private MastershipChangeServiceManager mastershipChangeServiceManager;
     @Mock
     private ReconciliationManager reconciliationManager;
+    @Mock
+    private DeviceMastershipManager deviceMastershipManager;
 
     @Before
     public void setUp() {
-        forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock, getConfig(),
-                clusterSingletonService, notificationService, getConfigurationService(), reconciliationManager);
+        forwardingRulesManager = new ForwardingRulesManagerImpl(
+                getDataBroker(),
+                rpcProviderRegistryMock,
+                getConfig(),
+                mastershipChangeServiceManager,
+                getConfigurationService(),
+                reconciliationManager);
 
         forwardingRulesManager.start();
-        // TODO consider tests rewrite (added because of complicated access)
         forwardingRulesManager.setDeviceMastershipManager(deviceMastershipManager);
         Mockito.when(deviceMastershipManager.isDeviceMastered(NODE_ID)).thenReturn(true);
     }
