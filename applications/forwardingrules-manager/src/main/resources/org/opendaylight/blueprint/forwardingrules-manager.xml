@@ -1,29 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
            xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
-        odl:use-default-for-reference-types="true">
+           odl:use-default-for-reference-types="true">
 
   <reference id="dataBroker" interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"/>
   <reference id="rpcRegistry" interface="org.opendaylight.controller.sal.binding.api.RpcProviderRegistry"/>
-  <reference id="notificationService" interface="org.opendaylight.controller.sal.binding.api.NotificationProviderService"/>
-  <reference id="clusterSingletonService" interface="org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider"/>
+  <reference id="mastershipChangeServiceManager" interface="org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager"/>
   <reference id="configurationService" interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService"/>
   <reference id="reconciliationservice" interface="org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager"/>
 
-
   <odl:clustered-app-config id="frmConfig"
-      binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfig"/>
+                            binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfig"/>
 
-  <bean id="frmManager" class="org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl"
-          init-method="start" destroy-method="close">
+  <bean id="frmManager"
+        class="org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl"
+        init-method="start"
+        destroy-method="close">
     <argument ref="dataBroker"/>
     <argument ref="rpcRegistry"/>
     <argument ref="frmConfig"/>
-    <argument ref="clusterSingletonService"/>
-    <argument ref="notificationService"/>
+    <argument ref="mastershipChangeServiceManager"/>
     <argument ref="configurationService"/>
     <argument ref="reconciliationservice"/>
-
   </bean>
 </blueprint>

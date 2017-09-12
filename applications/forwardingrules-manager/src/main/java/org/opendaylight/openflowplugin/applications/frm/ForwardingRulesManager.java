@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.applications.frm;
 
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationListener;
 import org.opendaylight.openflowplugin.applications.frm.impl.FlowNodeConnectorInventoryTranslatorImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -35,16 +36,6 @@ public interface ForwardingRulesManager extends ConfigurationListener, AutoClose
     void start();
 
     /**
-     * Method returns information : "is Node with send InstanceIdentifier
-     * connected"?.
-     *
-     * @param ident
-     *            - the key of the node
-     * @return boolean - true if device is connected
-     */
-    boolean isNodeActive(InstanceIdentifier<FlowCapableNode> ident);
-
-    /**
      * Method returns information : "is Node with send InstanceIdentifier present in
      * operational data store"?.
      *
@@ -67,7 +58,14 @@ public interface ForwardingRulesManager extends ConfigurationListener, AutoClose
      *
      * @return ReadOnlyTransaction
      */
-    ReadOnlyTransaction getReadTranaction();
+    ReadOnlyTransaction getReadTransaction();
+
+    /**
+     * Method returns Write Transaction. It is need for Node reconciliation only.
+     *
+     * @return ReadOnlyTransaction
+     */
+    WriteTransaction getWriteTransaction();
 
     /**
      * Flow RPC service.
