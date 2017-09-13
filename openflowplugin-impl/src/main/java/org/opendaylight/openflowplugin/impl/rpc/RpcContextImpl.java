@@ -32,6 +32,7 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMaster
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
+import org.opendaylight.openflowplugin.impl.protocol.SerializationProvider;
 import org.opendaylight.openflowplugin.impl.util.MdSalRegistrationUtils;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext;
@@ -47,6 +48,7 @@ class RpcContextImpl implements RpcContext {
     private final RpcProviderRegistry rpcProviderRegistry;
     private final MessageSpy messageSpy;
     private final Semaphore tracker;
+    private final SerializationProvider serializationProvider;
     private boolean isStatisticsRpcEnabled;
 
     // TODO: add private Sal salBroker
@@ -60,11 +62,12 @@ class RpcContextImpl implements RpcContext {
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
 
     RpcContextImpl(@Nonnull final RpcProviderRegistry rpcProviderRegistry,
-                   final int maxRequests,
                    @Nonnull final DeviceContext deviceContext,
                    @Nonnull final ExtensionConverterProvider extensionConverterProvider,
                    @Nonnull final ConvertorExecutor convertorExecutor,
                    @Nonnull final NotificationPublishService notificationPublishService,
+                   @Nonnull final SerializationProvider serializationProvider,
+                   int maxRequests,
                    boolean statisticsRpcEnabled) {
         this.deviceContext = deviceContext;
         this.deviceInfo = deviceContext.getDeviceInfo();
@@ -75,6 +78,7 @@ class RpcContextImpl implements RpcContext {
         this.notificationPublishService = notificationPublishService;
         this.convertorExecutor = convertorExecutor;
         this.isStatisticsRpcEnabled = statisticsRpcEnabled;
+        this.serializationProvider = serializationProvider;
         this.tracker = new Semaphore(maxRequests, true);
     }
 
@@ -186,7 +190,8 @@ class RpcContextImpl implements RpcContext {
 
     @Override
     public void instantiateServiceInstance() {
-        MdSalRegistrationUtils.registerServices(this, deviceContext, extensionConverterProvider, convertorExecutor);
+        MdSalRegistrationUtils.registerServices(this, deviceContext, extensionConverterProvider,
+                convertorExecutor, serializationProvider);
 
         if (isStatisticsRpcEnabled && !deviceContext.canUseSingleLayerSerialization()) {
             MdSalRegistrationUtils.registerStatCompatibilityServices(
