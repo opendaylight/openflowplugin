@@ -75,6 +75,7 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
         openflowPluginProvider.updateProperty(PropertyType.THREAD_POOL_MIN_THREADS, providerConfig.getThreadPoolMinThreads());
         openflowPluginProvider.updateProperty(PropertyType.THREAD_POOL_MAX_THREADS, providerConfig.getThreadPoolMaxThreads().getValue());
         openflowPluginProvider.updateProperty(PropertyType.THREAD_POOL_TIMEOUT, providerConfig.getThreadPoolTimeout());
+        openflowPluginProvider.updateProperty(PropertyType.ENABLE_DATA_PRESERIALIZATION, providerConfig.isEnableDataPreserialization());
 
         LOG.info("Loading configuration from properties file");
         Optional.ofNullable(bundleContext.getServiceReference(ConfigurationAdmin.class.getName())).ifPresent(serviceReference -> {

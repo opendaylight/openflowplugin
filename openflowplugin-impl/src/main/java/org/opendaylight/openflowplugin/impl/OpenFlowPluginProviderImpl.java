@@ -57,6 +57,7 @@ import org.opendaylight.openflowplugin.impl.device.DeviceManagerImpl;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProvider;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProviderFactory;
 import org.opendaylight.openflowplugin.impl.lifecycle.ContextChainHolderImpl;
+import org.opendaylight.openflowplugin.impl.protocol.SerializationProvider;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.DeserializerInjector;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.SerializerInjector;
 import org.opendaylight.openflowplugin.impl.rpc.RpcManagerImpl;
@@ -114,11 +115,13 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private long basicTimerDelay;
     private long maximumTimerDelay;
     private boolean useSingleLayerSerialization;
+    private boolean enableDataPreserialization;
     private ThreadPoolExecutor threadPool;
     private int threadPoolMinThreads;
     private int threadPoolMaxThreads;
     private long threadPoolTimeout;
     private boolean initialized = false;
+    private SerializationProvider serializationProvider;
 
     public static MessageIntelligenceAgency getMessageIntelligenceAgency() {
         return MESSAGE_INTELLIGENCE_AGENCY;
@@ -234,7 +237,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
 
-        rpcManager = new RpcManagerImpl(rpcProviderRegistry, extensionConverterManager, convertorManager, notificationPublishService);
+        serializationProvider = new SerializationProvider(enableDataPreserialization, useSingleLayerSerialization, switchConnectionProviders);
+        rpcManager = new RpcManagerImpl(rpcProviderRegistry, extensionConverterManager, convertorManager, notificationPublishService, serializationProvider);
         rpcManager.setRpcRequestQuota(rpcRequestsQuota);
 
         statisticsManager = new StatisticsManagerImpl(rpcProviderRegistry, hashedWheelTimer, convertorManager);
@@ -479,6 +483,12 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 case USE_SINGLE_LAYER_SERIALIZATION:
                     successCallback = (result) -> useSingleLayerSerialization = (boolean) result;
                     oldValue = useSingleLayerSerialization;
+                    newValue = Boolean.valueOf(sValue);
+                    modifiable = false;
+                    break;
+                case ENABLE_DATA_PRESERIALIZATION:
+                    successCallback = (result) -> enableDataPreserialization = (boolean) result;
+                    oldValue = enableDataPreserialization;
                     newValue = Boolean.valueOf(sValue);
                     modifiable = false;
                     break;
