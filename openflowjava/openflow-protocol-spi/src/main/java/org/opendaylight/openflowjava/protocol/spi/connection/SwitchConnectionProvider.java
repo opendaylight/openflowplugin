@@ -9,12 +9,11 @@
 
 package org.opendaylight.openflowjava.protocol.spi.connection;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
 import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider;
-
-import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  * @author mirehak

@@ -11,6 +11,7 @@ package org.opendaylight.openflowjava.protocol.impl.core;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.Epoll;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
@@ -48,6 +49,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandExperimenterCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.queue.property.header.QueueProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeatureProperties;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,6 +94,11 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     public void setSwitchConnectionHandler(final SwitchConnectionHandler switchConnectionHandler) {
         LOG.debug("setSwitchConnectionHandler");
         this.switchConnectionHandler = switchConnectionHandler;
+    }
+
+    @Override
+    public void messageToBuffer(final short version, final ByteBuf out, final DataObject message) {
+        serializationFactory.messageToBuffer(version, out, message);
     }
 
     @Override
