@@ -58,6 +58,7 @@ import org.opendaylight.openflowplugin.impl.device.DeviceManagerImpl;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProvider;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProviderFactory;
 import org.opendaylight.openflowplugin.impl.lifecycle.ContextChainHolderImpl;
+import org.opendaylight.openflowplugin.impl.protocol.SerializationProvider;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.DeserializerInjector;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.SerializerInjector;
 import org.opendaylight.openflowplugin.impl.role.RoleManagerImpl;
@@ -104,6 +105,7 @@ public class OpenFlowPluginProviderImpl implements
     private final OpenflowProviderConfig config;
     private final EntityOwnershipService entityOwnershipService;
     private final MastershipChangeServiceManager mastershipChangeServiceManager;
+    private final SerializationProvider serializationProvider;
     private DeviceManager deviceManager;
     private RpcManager rpcManager;
     private StatisticsManager statisticsManager;
@@ -130,11 +132,12 @@ public class OpenFlowPluginProviderImpl implements
         this.notificationPublishService = notificationPublishService;
         this.singletonServicesProvider = singletonServiceProvider;
         this.entityOwnershipService = entityOwnershipService;
+        this.mastershipChangeServiceManager = mastershipChangeServiceManager;
         convertorManager = ConvertorManagerFactory.createDefaultManager();
         extensionConverterManager = new ExtensionConverterManagerImpl();
         deviceInitializerProvider = DeviceInitializerProviderFactory.createDefaultProvider();
         config = new OpenFlowProviderConfigImpl(configurationService);
-        this.mastershipChangeServiceManager = mastershipChangeServiceManager;
+        serializationProvider = new SerializationProvider(config, switchConnectionProviders);
     }
 
 
@@ -225,7 +228,8 @@ public class OpenFlowPluginProviderImpl implements
                 rpcProviderRegistry,
                 extensionConverterManager,
                 convertorManager,
-                notificationPublishService);
+                notificationPublishService,
+                serializationProvider);
 
         statisticsManager = new StatisticsManagerImpl(
                 config,
