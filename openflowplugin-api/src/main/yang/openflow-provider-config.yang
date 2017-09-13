@@ -137,5 +137,14 @@ module openflow-provider-config {
             type boolean;
             default "true";
         }
+
+        leaf enable-data-preserialization {
+             description "When enabled together with single-layer-serialization,
+                data sent to device are serialized before they are sent to thread
+                communicating with device. This means less load when communicating
+                with device and that means better latency.";
+             type boolean;
+             default "true";
+        }
     }
 }
