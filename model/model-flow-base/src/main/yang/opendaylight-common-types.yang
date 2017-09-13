@@ -1,0 +1,19 @@
+module opendaylight-common-types {
+    namespace "urn:opendaylight:common:types";
+    prefix common-types;
+
+    import ietf-yang-types {prefix yang; revision-date "2013-07-15";}
+    import openflow-protocol { prefix ofproto; revision-date "2013-07-31"; }
+
+    revision "2017-09-13" {
+        description "Initial revision of common types model";
+    }
+
+    container raw-message {
+        uses ofproto:ofHeader;
+
+        leaf payload {
+            type binary;
+        }
+    }
+}

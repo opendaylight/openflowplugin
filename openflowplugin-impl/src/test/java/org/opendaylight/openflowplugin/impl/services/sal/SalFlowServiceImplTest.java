@@ -38,6 +38,7 @@ import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
+import org.opendaylight.openflowplugin.impl.protocol.SerializationProvider;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -112,6 +113,8 @@ public class SalFlowServiceImplTest extends TestCase {
     private DeviceFlowRegistry deviceFlowRegistry;
     @Mock
     private GetFeaturesOutput mockedFeaturesOutput;
+    @Mock
+    private SerializationProvider serializationProvider;
 
     @Before
     public void initialization() {
@@ -143,7 +146,8 @@ public class SalFlowServiceImplTest extends TestCase {
         when(mockedDeviceInfo.getVersion()).thenReturn(version);
 
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        return new SalFlowServiceImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
+        return new SalFlowServiceImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager,
+                serializationProvider);
     }
 
     @Test
