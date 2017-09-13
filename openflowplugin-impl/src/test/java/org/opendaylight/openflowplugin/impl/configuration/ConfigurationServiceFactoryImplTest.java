@@ -37,7 +37,7 @@ import org.osgi.service.cm.ConfigurationAdmin;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ConfigurationServiceFactoryImplTest {
-    private static final int CONFIG_PROP_COUNT = 16;
+    private static final int CONFIG_PROP_COUNT = 17;
     private static final boolean IS_STATISTICS_POLLING_ON = true;
     private static final int BARRIER_COUNT_LIMIT = 2000;
     private static final long BARRIER_INTERVAL_TIMEOUT_LIMIT = 3000;
@@ -55,6 +55,7 @@ public class ConfigurationServiceFactoryImplTest {
     private static final int THREAD_POOL_MIN_THREADS_UPDATE = 4;
     private static final int THREAD_POOL_MAX_THREADS = 1000;
     private static final long THREAD_POOL_TIMEOUT = 60;
+    private static final boolean ENABLE_DATA_PRESERIALIZATION = true;
 
     @Mock
     private OpenflowProviderConfig config;
@@ -94,6 +95,7 @@ public class ConfigurationServiceFactoryImplTest {
         when(config.getThreadPoolMinThreads()).thenReturn(THREAD_POOL_MIN_THREADS);
         when(config.getThreadPoolMaxThreads()).thenReturn(new NonZeroUint16Type(THREAD_POOL_MAX_THREADS));
         when(config.getThreadPoolTimeout()).thenReturn(THREAD_POOL_TIMEOUT);
+        when(config.isEnableDataPreserialization()).thenReturn(ENABLE_DATA_PRESERIALIZATION);
 
         final Dictionary<String, Object> properties = new Hashtable<>();
         properties.put(ConfigurationProperty.IS_STATISTICS_POLLING_ON.toString(), IS_STATISTICS_POLLING_ON);

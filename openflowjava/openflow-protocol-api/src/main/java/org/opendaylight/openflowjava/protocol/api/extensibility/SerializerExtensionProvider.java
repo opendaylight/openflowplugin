@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowjava.protocol.api.extensibility;
 
+import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.keys.ActionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterIdMeterSubTypeSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterIdSerializerKey;
@@ -20,6 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmC
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandExperimenterCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeatureProperties;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 
 
 /**
@@ -34,6 +36,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author michal.polkorab
  */
 public interface SerializerExtensionProvider {
+
+    /**
+     * Transforms POJO message into ByteBuf
+     * @param version version used for encoding received message
+     * @param out ByteBuf for storing and sending transformed message
+     * @param message POJO message
+     */
+    void messageToBuffer(short version, ByteBuf out, DataObject message);
 
     /**
      * Registers serializer

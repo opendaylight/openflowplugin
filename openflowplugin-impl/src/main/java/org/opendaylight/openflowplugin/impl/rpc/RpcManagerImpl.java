@@ -20,6 +20,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
+import org.opendaylight.openflowplugin.impl.protocol.SerializationProvider;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.slf4j.Logger;
@@ -34,18 +35,21 @@ public class RpcManagerImpl implements RpcManager {
     private final ExtensionConverterProvider extensionConverterProvider;
     private final ConvertorExecutor convertorExecutor;
     private final NotificationPublishService notificationPublishService;
+    private final SerializationProvider serializationProvider;
 
 
     public RpcManagerImpl(final OpenflowProviderConfig config,
                           final RpcProviderRegistry rpcProviderRegistry,
                           final ExtensionConverterProvider extensionConverterProvider,
                           final ConvertorExecutor convertorExecutor,
-                          final NotificationPublishService notificationPublishService) {
+                          final NotificationPublishService notificationPublishService,
+                          final SerializationProvider serializationProvider) {
         this.config = config;
         this.rpcProviderRegistry = rpcProviderRegistry;
         this.extensionConverterProvider = extensionConverterProvider;
         this.convertorExecutor = convertorExecutor;
         this.notificationPublishService = notificationPublishService;
+        this.serializationProvider = serializationProvider;
     }
 
     @Override
@@ -70,11 +74,12 @@ public class RpcManagerImpl implements RpcManager {
     public RpcContext createContext(final @Nonnull DeviceContext deviceContext) {
         final RpcContextImpl rpcContext = new RpcContextImpl(
                 rpcProviderRegistry,
-                config.getRpcRequestsQuota().getValue(),
                 deviceContext,
                 extensionConverterProvider,
                 convertorExecutor,
                 notificationPublishService,
+                serializationProvider,
+                config.getRpcRequestsQuota().getValue(),
                 config.isIsStatisticsRpcEnabled());
 
         contexts.put(deviceContext.getDeviceInfo(), rpcContext);

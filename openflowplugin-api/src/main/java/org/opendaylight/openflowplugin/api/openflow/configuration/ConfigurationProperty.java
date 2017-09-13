@@ -82,7 +82,11 @@ public enum ConfigurationProperty {
     /**
      * Thread pool timeout property type.
      */
-    THREAD_POOL_TIMEOUT;
+    THREAD_POOL_TIMEOUT,
+    /**
+     * Enable data preserialization configuration property.
+     */
+    ENABLE_DATA_PRESERIALIZATION;
 
     private static final Map<String, ConfigurationProperty> KEY_VALUE_MAP;
 

@@ -33,6 +33,7 @@ import org.opendaylight.openflowplugin.extension.api.ConverterMessageToOFJava;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.device.DeviceContextImpl;
+import org.opendaylight.openflowplugin.impl.protocol.SerializationProvider;
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -91,6 +92,8 @@ public abstract class ServiceMocking {
     protected ExtensionConverterProvider mockedExtensionConverterProvider;
     @Mock
     protected ConverterMessageToOFJava<ExperimenterMessageOfChoice, DataContainer> mockedExtensionConverter;
+    @Mock
+    protected SerializationProvider serializationProvider;
 
     @Before
     @SuppressWarnings("unchecked")
