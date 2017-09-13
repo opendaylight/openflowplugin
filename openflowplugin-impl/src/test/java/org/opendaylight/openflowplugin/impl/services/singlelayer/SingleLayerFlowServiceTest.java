@@ -26,7 +26,7 @@ public class SingleLayerFlowServiceTest extends ServiceMocking {
     @Override
     protected void setup() throws Exception {
         service = new SingleLayerFlowService<>(mockedRequestContextStack,
-                mockedDeviceContext, AddFlowOutput.class);
+                mockedDeviceContext, AddFlowOutput.class, serializationProvider);
     }
 
     @Test
