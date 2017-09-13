@@ -29,6 +29,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.XidSequencer;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
+import org.opendaylight.openflowplugin.impl.protocol.SerializationProvider;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -70,6 +71,8 @@ public class RpcContextImplTest {
     private ExtensionConverterProvider extensionConverterProvider;
     @Mock
     private ConvertorExecutor convertorExecutor;
+    @Mock
+    private SerializationProvider serializationProvider;
 
     private KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
 
@@ -86,11 +89,13 @@ public class RpcContextImplTest {
 
         rpcContext = new RpcContextImpl(
                 rpcProviderRegistry,
-                MAX_REQUESTS,
                 deviceContext,
                 extensionConverterProvider,
                 convertorExecutor,
-                notificationPublishService, true);
+                notificationPublishService,
+                serializationProvider,
+                MAX_REQUESTS,
+                true);
 
         when(rpcProviderRegistry.addRoutedRpcImplementation(TestRpcService.class, serviceInstance)).thenReturn(routedRpcReg);
 
@@ -100,11 +105,13 @@ public class RpcContextImplTest {
     public void testStoreOrFail() throws Exception {
         try (final RpcContext rpcContext = new RpcContextImpl(
                 rpcProviderRegistry,
-                100,
                 deviceContext,
                 extensionConverterProvider,
                 convertorExecutor,
-                notificationPublishService, true)){
+                notificationPublishService,
+                serializationProvider,
+                MAX_REQUESTS,
+                true)) {
             final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNotNull(requestContext);
         }
@@ -114,11 +121,13 @@ public class RpcContextImplTest {
     public void testStoreOrFailThatFails() throws Exception {
         try (final RpcContext rpcContext = new RpcContextImpl(
                 rpcProviderRegistry,
-                0,
                 deviceContext,
                 extensionConverterProvider,
                 convertorExecutor,
-                notificationPublishService, true)){
+                notificationPublishService,
+                serializationProvider,
+                0,
+                true)) {
             final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNull(requestContext);
         }
@@ -128,11 +137,13 @@ public class RpcContextImplTest {
     public void testStoreAndCloseOrFail() throws Exception {
         try (final RpcContext rpcContext = new RpcContextImpl(
                 rpcProviderRegistry,
-                100,
                 deviceContext,
                 extensionConverterProvider,
                 convertorExecutor,
-                notificationPublishService, true)){
+                notificationPublishService,
+                serializationProvider,
+                MAX_REQUESTS,
+                true)) {
             final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNotNull(requestContext);
             requestContext.close();

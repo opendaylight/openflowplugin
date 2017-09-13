@@ -32,6 +32,7 @@ import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegist
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
+import org.opendaylight.openflowplugin.impl.protocol.SerializationProvider;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -80,13 +81,15 @@ public class RpcManagerImplTest {
     public ExpectedException expectedException = ExpectedException.none();
 
     private KeyedInstanceIdentifier<Node, NodeKey> nodePath;
+    @Mock
+    private SerializationProvider serializationProvider;
 
     private NodeId nodeId = new NodeId("openflow-junit:1");
 
     @Before
     public void setUp() {
         final NodeKey nodeKey = new NodeKey(nodeId);
-        rpcManager = new RpcManagerImpl(rpcProviderRegistry, extensionConverterProvider, convertorExecutor, notificationPublishService);
+        rpcManager = new RpcManagerImpl(rpcProviderRegistry, extensionConverterProvider, convertorExecutor, notificationPublishService, serializationProvider);
         rpcManager.setRpcRequestQuota(QUOTA_VALUE);
 
         GetFeaturesOutput featuresOutput = new GetFeaturesOutputBuilder()

@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.serialization;
 
+import io.netty.buffer.ByteBuf;
 import org.junit.Before;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFGeneralSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
@@ -26,6 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmC
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandExperimenterCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeatureProperties;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 
 public abstract class AbstractSerializerTest {
     private SerializerExtensionProvider provider;
@@ -56,6 +58,11 @@ public abstract class AbstractSerializerTest {
 
         SerializerExtensionProviderImpl(final SerializerRegistry registry) {
             this.registry = registry;
+        }
+
+        @Override
+        public void messageToBuffer(final short version, final ByteBuf out, final DataObject message) {
+
         }
 
         @Override

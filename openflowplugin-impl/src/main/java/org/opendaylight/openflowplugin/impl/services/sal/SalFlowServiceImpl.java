@@ -25,6 +25,7 @@ import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
+import org.opendaylight.openflowplugin.impl.protocol.SerializationProvider;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowDescriptorFactory;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerFlowService;
@@ -70,14 +71,27 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
     private final DeviceContext deviceContext;
     private ItemLifecycleListener itemLifecycleListener;
 
-    public SalFlowServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConvertorExecutor convertorExecutor) {
+    public SalFlowServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConvertorExecutor convertorExecutor,
+                              final SerializationProvider serializationProvider) {
         this.deviceContext = deviceContext;
-        flowRemove = new MultiLayerFlowService<>(requestContextStack, deviceContext, RemoveFlowOutput.class, convertorExecutor);
-        flowAdd = new MultiLayerFlowService<>(requestContextStack, deviceContext, AddFlowOutput.class, convertorExecutor);
-        flowUpdate = new MultiLayerFlowService<>(requestContextStack, deviceContext, UpdateFlowOutput.class, convertorExecutor);
-        flowAddMessage = new SingleLayerFlowService<>(requestContextStack, deviceContext, AddFlowOutput.class);
-        flowUpdateMessage = new SingleLayerFlowService<>(requestContextStack, deviceContext, UpdateFlowOutput.class);
-        flowRemoveMessage= new SingleLayerFlowService<>(requestContextStack, deviceContext, RemoveFlowOutput.class);
+        flowRemove = new MultiLayerFlowService<>(requestContextStack,
+                                                 deviceContext,
+                                                 RemoveFlowOutput.class,
+                                                 convertorExecutor);
+        flowAdd = new MultiLayerFlowService<>(requestContextStack,
+                                              deviceContext,
+                                              AddFlowOutput.class,
+                                              convertorExecutor);
+        flowUpdate = new MultiLayerFlowService<>(requestContextStack,
+                                                 deviceContext,
+                                                 UpdateFlowOutput.class,
+                                                 convertorExecutor);
+        flowAddMessage = new SingleLayerFlowService<>(requestContextStack, deviceContext, AddFlowOutput.class,
+                serializationProvider);
+        flowUpdateMessage = new SingleLayerFlowService<>(requestContextStack, deviceContext, UpdateFlowOutput.class,
+                serializationProvider);
+        flowRemoveMessage = new SingleLayerFlowService<>(requestContextStack, deviceContext, RemoveFlowOutput.class,
+                serializationProvider);
     }
 
     @Override

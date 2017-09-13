@@ -11,13 +11,16 @@ package org.opendaylight.openflowplugin.impl.services.singlelayer;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.impl.protocol.SerializationProvider;
 import org.opendaylight.openflowplugin.impl.services.AbstractSilentErrorService;
 import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.common.types.rev170913.RawMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModCommand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -25,8 +28,14 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
 public final class SingleLayerFlowService<O extends DataObject> extends AbstractSilentErrorService<Flow, O> {
-    public SingleLayerFlowService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final Class<O> clazz) {
+    private final SerializationProvider serializationProvider;
+
+    public SingleLayerFlowService(final RequestContextStack requestContextStack,
+                                  final DeviceContext deviceContext,
+                                  final Class<O> clazz,
+                                  final SerializationProvider serializationProvider) {
         super(requestContextStack, deviceContext, clazz);
+        this.serializationProvider = serializationProvider;
     }
 
     @Override
@@ -44,10 +53,16 @@ public final class SingleLayerFlowService<O extends DataObject> extends Abstract
                     : FlowModCommand.OFPFCDELETE);
         }
 
-        return flowMessageBuilder
+        final FlowMessage message = flowMessageBuilder
                 .setVersion(getVersion())
                 .setXid(xid.getValue())
                 .build();
+
+        return serializationProvider.isAvailable()
+                ? new RawMessageBuilder(message)
+                    .setPayload(serializationProvider.serialize(getVersion(), message))
+                    .build()
+                : message;
     }
 
 }
