@@ -16,6 +16,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.compatibility.Delegator;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
+import org.opendaylight.openflowplugin.impl.protocol.SerializationProvider;
 import org.opendaylight.openflowplugin.impl.services.sal.FlowCapableTransactionServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.NodeConfigServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.PacketProcessingServiceImpl;
@@ -87,16 +88,21 @@ public class MdSalRegistrationUtils {
     public static void registerServices(@Nonnull final RpcContext rpcContext,
                                         @Nonnull final DeviceContext deviceContext,
                                         final ExtensionConverterProvider extensionConverterProvider,
-                                        final ConvertorExecutor convertorExecutor) {
+                                        final ConvertorExecutor convertorExecutor,
+                                        final SerializationProvider serializationProvider) {
         // TODO: Use multipart writer provider from device context
         final MultipartWriterProvider multipartWriterProvider = MultipartWriterProviderFactory
             .createDefaultProvider(deviceContext);
 
         // create service instances
-        final SalFlowServiceImpl salFlowService = new SalFlowServiceImpl(rpcContext, deviceContext, convertorExecutor);
-        final FlowCapableTransactionServiceImpl flowCapableTransactionService = new FlowCapableTransactionServiceImpl(rpcContext, deviceContext);
-        final SalGroupServiceImpl salGroupService = new SalGroupServiceImpl(rpcContext, deviceContext, convertorExecutor);
-        final SalMeterServiceImpl salMeterService = new SalMeterServiceImpl(rpcContext, deviceContext, convertorExecutor);
+        final SalFlowServiceImpl salFlowService = new SalFlowServiceImpl(rpcContext, deviceContext, convertorExecutor,
+                serializationProvider);
+        final FlowCapableTransactionServiceImpl flowCapableTransactionService =
+                new FlowCapableTransactionServiceImpl(rpcContext, deviceContext);
+        final SalGroupServiceImpl salGroupService =
+                new SalGroupServiceImpl(rpcContext, deviceContext, convertorExecutor);
+        final SalMeterServiceImpl salMeterService =
+                new SalMeterServiceImpl(rpcContext, deviceContext, convertorExecutor);
 
         // register routed service instances
         rpcContext.registerRpcServiceImplementation(SalEchoService.class, new SalEchoServiceImpl(rpcContext, deviceContext));
