@@ -40,6 +40,7 @@ public class OpenFlowProviderConfigImplTest {
     private static final Integer THREAD_POOL_MIN_THREADS = 3;
     private static final Integer THREAD_POOL_MAX_THREADS = 1000;
     private static final Long THREAD_POOL_TIMEOUT = 60L;
+    private static final Boolean ENABLE_DATA_PRESERIALIZATION = true;
 
     @Mock
     private ConfigurationService configurationService;
@@ -79,6 +80,8 @@ public class OpenFlowProviderConfigImplTest {
                 .thenReturn(THREAD_POOL_MAX_THREADS);
         when(configurationService.getProperty(eq(ConfigurationProperty.THREAD_POOL_TIMEOUT.toString()), any()))
                 .thenReturn(THREAD_POOL_TIMEOUT);
+        when(configurationService.getProperty(eq(ConfigurationProperty.ENABLE_DATA_PRESERIALIZATION.toString()), any()))
+                .thenReturn(ENABLE_DATA_PRESERIALIZATION);
         openflowProviderConfig = new OpenFlowProviderConfigImpl(configurationService);
     }
 
@@ -168,4 +171,8 @@ public class OpenFlowProviderConfigImplTest {
         assertEquals(USE_SINGLE_LAYER_SERIALIZATION, openflowProviderConfig.isUseSingleLayerSerialization());
     }
 
+    @Test
+    public void isEnableDataPreserialization() throws Exception {
+        assertEquals(ENABLE_DATA_PRESERIALIZATION, openflowProviderConfig.isEnableDataPreserialization());
+    }
 }
