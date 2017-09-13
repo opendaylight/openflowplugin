@@ -132,6 +132,11 @@ public class OpenFlowProviderConfigImpl implements OpenflowProviderConfig {
     }
 
     @Override
+    public Boolean isEnableDataPreserialization() {
+        return service.getProperty(ConfigurationProperty.ENABLE_DATA_PRESERIALIZATION.toString(), Boolean::valueOf);
+    }
+
+    @Override
     public <E extends Augmentation<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang
             .openflow.provider.config.rev160510.OpenflowProviderConfig>> E getAugmentation(
                     java.lang.Class<E> augmentationType) {
