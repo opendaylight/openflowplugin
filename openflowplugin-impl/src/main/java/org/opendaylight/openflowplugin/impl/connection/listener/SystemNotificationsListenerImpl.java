@@ -12,8 +12,8 @@ import com.google.common.base.Preconditions;
 import java.net.InetSocketAddress;
 import java.util.Date;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -41,12 +41,12 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
     @VisibleForTesting
     static final long MAX_ECHO_REPLY_TIMEOUT = 2000;
     private final long echoReplyTimeout;
-    private final ThreadPoolExecutor threadPool;
+    private final ExecutorService executorService;
 
     public SystemNotificationsListenerImpl(@Nonnull final ConnectionContext connectionContext,
                                            long echoReplyTimeout,
-                                           @Nonnull final ThreadPoolExecutor threadPool) {
-        this.threadPool = threadPool;
+                                           @Nonnull final ExecutorService executorService) {
+        this.executorService = executorService;
         this.connectionContext = Preconditions.checkNotNull(connectionContext);
         this.echoReplyTimeout = echoReplyTimeout;
     }
@@ -60,7 +60,7 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
 
     @Override
     public void onSwitchIdleEvent(final SwitchIdleEvent notification) {
-        threadPool.execute(this::executeOnSwitchIdleEvent);
+        executorService.execute(this::executeOnSwitchIdleEvent);
     }
 
     private void executeOnSwitchIdleEvent() {
