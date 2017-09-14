@@ -40,23 +40,16 @@ import org.slf4j.LoggerFactory;
  * NodeConnectorInventoryEventTranslator is listening for changes in inventory operational DOM tree
  * and update LLDPSpeaker and topology.
  */
-public class NodeConnectorInventoryEventTranslator<T extends DataObject>
-        implements DataTreeChangeListener<T>, AutoCloseable {
+public class NodeConnectorInventoryEventTranslator<T extends DataObject> implements DataTreeChangeListener<T>,
+        AutoCloseable {
 
-    private static final InstanceIdentifier<State> II_TO_STATE
-        = InstanceIdentifier.builder(Nodes.class)
-            .child(Node.class)
-            .child(NodeConnector.class)
-            .augmentation(FlowCapableNodeConnector.class)
-            .child(State.class)
-            .build();
+    private static final InstanceIdentifier<State> II_TO_STATE = InstanceIdentifier.builder(Nodes.class)
+            .child(Node.class).child(NodeConnector.class).augmentation(FlowCapableNodeConnector.class)
+            .child(State.class).build();
 
     private static final InstanceIdentifier<FlowCapableNodeConnector> II_TO_FLOW_CAPABLE_NODE_CONNECTOR
-        = InstanceIdentifier.builder(Nodes.class)
-            .child(Node.class)
-            .child(NodeConnector.class)
-            .augmentation(FlowCapableNodeConnector.class)
-            .build();
+            = InstanceIdentifier.builder(Nodes.class).child(Node.class).child(NodeConnector.class)
+            .augmentation(FlowCapableNodeConnector.class).build();
 
     private static final long STARTUP_LOOP_TICK = 500L;
     private static final int STARTUP_LOOP_MAX_RETRIES = 8;
@@ -65,28 +58,36 @@ public class NodeConnectorInventoryEventTranslator<T extends DataObject>
     private final ListenerRegistration<DataTreeChangeListener> listenerOnPortRegistration;
     private final ListenerRegistration<DataTreeChangeListener> listenerOnPortStateRegistration;
     private final Set<NodeConnectorEventsObserver> observers;
-    private final Map<InstanceIdentifier<?>,FlowCapableNodeConnector> iiToDownFlowCapableNodeConnectors = new HashMap<>();
+    private final Map<InstanceIdentifier<?>, FlowCapableNodeConnector> iiToDownFlowCapableNodeConnectors
+            = new HashMap<>();
 
+    @SuppressWarnings("IllegalCatch")
     public NodeConnectorInventoryEventTranslator(DataBroker dataBroker, NodeConnectorEventsObserver... observers) {
         this.observers = ImmutableSet.copyOf(observers);
-        final DataTreeIdentifier<T> dtiToNodeConnector =
-                new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, II_TO_FLOW_CAPABLE_NODE_CONNECTOR);
-        final DataTreeIdentifier<T> dtiToNodeConnectorState =
-                new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, II_TO_STATE);
+        final DataTreeIdentifier<T> dtiToNodeConnector = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL,
+                                                                                II_TO_FLOW_CAPABLE_NODE_CONNECTOR);
+        final DataTreeIdentifier<T> dtiToNodeConnectorState = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL,
+                                                                                     II_TO_STATE);
         final SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
         try {
-            listenerOnPortRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<DataTreeChangeListener>>() {
-                @Override
-                public ListenerRegistration<DataTreeChangeListener> call() throws Exception {
-                    return dataBroker.registerDataTreeChangeListener(dtiToNodeConnector, NodeConnectorInventoryEventTranslator.this);
-                }
-            });
-            listenerOnPortStateRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<DataTreeChangeListener>>() {
-                @Override
-                public ListenerRegistration<DataTreeChangeListener> call() throws Exception {
-                    return dataBroker.registerDataTreeChangeListener(dtiToNodeConnectorState, NodeConnectorInventoryEventTranslator.this);
-                }
-            });
+            listenerOnPortRegistration = looper
+                    .loopUntilNoException(new Callable<ListenerRegistration<DataTreeChangeListener>>() {
+                        @Override
+                        public ListenerRegistration<DataTreeChangeListener> call() throws Exception {
+                            return dataBroker.registerDataTreeChangeListener(dtiToNodeConnector,
+                                                                             NodeConnectorInventoryEventTranslator
+                                                                                     .this);
+                        }
+                    });
+            listenerOnPortStateRegistration = looper
+                    .loopUntilNoException(new Callable<ListenerRegistration<DataTreeChangeListener>>() {
+                        @Override
+                        public ListenerRegistration<DataTreeChangeListener> call() throws Exception {
+                            return dataBroker.registerDataTreeChangeListener(dtiToNodeConnectorState,
+                                                                             NodeConnectorInventoryEventTranslator
+                                                                                     .this);
+                        }
+                    });
         } catch (Exception e) {
             LOG.error("DataTreeChangeListeners registration failed: {}", e);
             throw new IllegalStateException("NodeConnectorInventoryEventTranslator startup failed!", e);
@@ -106,7 +107,7 @@ public class NodeConnectorInventoryEventTranslator<T extends DataObject>
 
     @Override
     public void onDataTreeChanged(@Nonnull Collection<DataTreeModification<T>> modifications) {
-        for(DataTreeModification modification : modifications) {
+        for (DataTreeModification modification : modifications) {
             LOG.trace("Node connectors in inventory changed -> {}", modification.getRootNode().getModificationType());
             switch (modification.getRootNode().getModificationType()) {
                 case WRITE:
@@ -119,17 +120,18 @@ public class NodeConnectorInventoryEventTranslator<T extends DataObject>
                     processRemovedConnector(modification);
                     break;
                 default:
-                    throw new IllegalArgumentException("Unhandled modification type: {}" +
-                            modification.getRootNode().getModificationType());
+                    throw new IllegalArgumentException(
+                            "Unhandled modification type: {}" + modification.getRootNode().getModificationType());
             }
         }
     }
 
     private void processAddedConnector(final DataTreeModification<T> modification) {
         final InstanceIdentifier<T> identifier = modification.getRootPath().getRootIdentifier();
-        InstanceIdentifier<NodeConnector> nodeConnectorInstanceId =identifier.firstIdentifierOf(NodeConnector.class);
+        InstanceIdentifier<NodeConnector> nodeConnectorInstanceId = identifier.firstIdentifierOf(NodeConnector.class);
         if (compareIITail(identifier, II_TO_FLOW_CAPABLE_NODE_CONNECTOR)) {
-            FlowCapableNodeConnector flowConnector = (FlowCapableNodeConnector) modification.getRootNode().getDataAfter();
+            FlowCapableNodeConnector flowConnector = (FlowCapableNodeConnector) modification.getRootNode()
+                    .getDataAfter();
             if (!isPortDown(flowConnector)) {
                 notifyNodeConnectorAppeared(nodeConnectorInstanceId, flowConnector);
             } else {
@@ -142,7 +144,8 @@ public class NodeConnectorInventoryEventTranslator<T extends DataObject>
         final InstanceIdentifier<T> identifier = modification.getRootPath().getRootIdentifier();
         InstanceIdentifier<NodeConnector> nodeConnectorInstanceId = identifier.firstIdentifierOf(NodeConnector.class);
         if (compareIITail(identifier, II_TO_FLOW_CAPABLE_NODE_CONNECTOR)) {
-            FlowCapableNodeConnector flowConnector = (FlowCapableNodeConnector) modification.getRootNode().getDataAfter();
+            FlowCapableNodeConnector flowConnector = (FlowCapableNodeConnector) modification.getRootNode()
+                    .getDataAfter();
             if (isPortDown(flowConnector)) {
                 notifyNodeConnectorDisappeared(nodeConnectorInstanceId);
             } else {
@@ -153,8 +156,8 @@ public class NodeConnectorInventoryEventTranslator<T extends DataObject>
             if (flowNodeConnector != null) {
                 State state = (State) modification.getRootNode().getDataAfter();
                 if (!state.isLinkDown()) {
-                    FlowCapableNodeConnectorBuilder flowCapableNodeConnectorBuilder =
-                            new FlowCapableNodeConnectorBuilder(flowNodeConnector);
+                    FlowCapableNodeConnectorBuilder flowCapableNodeConnectorBuilder
+                            = new FlowCapableNodeConnectorBuilder(flowNodeConnector);
                     flowCapableNodeConnectorBuilder.setState(state);
                     notifyNodeConnectorAppeared(nodeConnectorInstanceId, flowCapableNodeConnectorBuilder.build());
                     iiToDownFlowCapableNodeConnectors.remove(nodeConnectorInstanceId);
@@ -166,7 +169,8 @@ public class NodeConnectorInventoryEventTranslator<T extends DataObject>
     private void processRemovedConnector(final DataTreeModification<T> modification) {
         final InstanceIdentifier<T> identifier = modification.getRootPath().getRootIdentifier();
         if (compareIITail(identifier, II_TO_FLOW_CAPABLE_NODE_CONNECTOR)) {
-            InstanceIdentifier<NodeConnector> nodeConnectorInstanceId = identifier.firstIdentifierOf(NodeConnector.class);
+            InstanceIdentifier<NodeConnector> nodeConnectorInstanceId = identifier
+                    .firstIdentifierOf(NodeConnector.class);
             notifyNodeConnectorDisappeared(nodeConnectorInstanceId);
         }
     }
@@ -178,8 +182,7 @@ public class NodeConnectorInventoryEventTranslator<T extends DataObject>
     private static boolean isPortDown(final FlowCapableNodeConnector flowCapableNodeConnector) {
         PortState portState = flowCapableNodeConnector.getState();
         PortConfig portConfig = flowCapableNodeConnector.getConfiguration();
-        return portState != null && portState.isLinkDown()
-                || portConfig != null && portConfig.isPORTDOWN();
+        return portState != null && portState.isLinkDown() || portConfig != null && portConfig.isPORTDOWN();
     }
 
     private void notifyNodeConnectorAppeared(final InstanceIdentifier<NodeConnector> nodeConnectorInstanceId,
