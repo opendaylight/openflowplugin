@@ -33,11 +33,8 @@ public final class LLDPUtil {
     private static final Logger LOG = LoggerFactory.getLogger(LLDPUtil.class);
     private static final String OF_URI_PREFIX = "openflow:";
 
-    static byte[] buildLldpFrame(final NodeId nodeId,
-                                 final NodeConnectorId nodeConnectorId,
-                                 final MacAddress src,
-                                 final Long outPortNo,
-                                 final MacAddress destinationAddress) {
+    static byte[] buildLldpFrame(final NodeId nodeId, final NodeConnectorId nodeConnectorId, final MacAddress src,
+                                 final Long outPortNo, final MacAddress destinationAddress) {
         // Create discovery pkt
         LLDP discoveryPkt = new LLDP();
 
@@ -46,23 +43,20 @@ public final class LLDPUtil {
         byte[] cidValue = LLDPTLV.createChassisIDTLVValue(colonize(bigIntegerToPaddedHex(dataPathId)));
         LLDPTLV chassisIdTlv = new LLDPTLV();
         chassisIdTlv.setType(LLDPTLV.TLVType.ChassisID.getValue());
-        chassisIdTlv.setType(LLDPTLV.TLVType.ChassisID.getValue())
-                    .setLength((short) cidValue.length)
-                    .setValue(cidValue);
+        chassisIdTlv.setType(LLDPTLV.TLVType.ChassisID.getValue()).setLength((short) cidValue.length)
+                .setValue(cidValue);
         discoveryPkt.setChassisId(chassisIdTlv);
 
         // Create LLDP PortID TL
         String hexString = Long.toHexString(outPortNo);
         byte[] pidValue = LLDPTLV.createPortIDTLVValue(hexString);
         LLDPTLV portIdTlv = new LLDPTLV();
-        portIdTlv.setType(LLDPTLV.TLVType.PortID.getValue())
-                 .setLength((short) pidValue.length)
-                 .setValue(pidValue);
+        portIdTlv.setType(LLDPTLV.TLVType.PortID.getValue()).setLength((short) pidValue.length).setValue(pidValue);
         portIdTlv.setType(LLDPTLV.TLVType.PortID.getValue());
         discoveryPkt.setPortId(portIdTlv);
 
         // Create LLDP TTL TLV
-        byte[] ttl = new byte[] { (byte) 0x13, (byte) 0x37 };
+        byte[] ttl = new byte[]{(byte) 0x13, (byte) 0x37};
         LLDPTLV ttlTlv = new LLDPTLV();
         ttlTlv.setType(LLDPTLV.TLVType.TTL.getValue()).setLength((short) ttl.length).setValue(ttl);
         discoveryPkt.setTtl(ttlTlv);
@@ -71,17 +65,15 @@ public final class LLDPUtil {
         byte[] snValue = LLDPTLV.createSystemNameTLVValue(nodeId.getValue());
         LLDPTLV systemNameTlv = new LLDPTLV();
         systemNameTlv.setType(LLDPTLV.TLVType.SystemName.getValue());
-        systemNameTlv.setType(LLDPTLV.TLVType.SystemName.getValue())
-                     .setLength((short) snValue.length)
-                     .setValue(snValue);
+        systemNameTlv.setType(LLDPTLV.TLVType.SystemName.getValue()).setLength((short) snValue.length)
+                .setValue(snValue);
         discoveryPkt.setSystemNameId(systemNameTlv);
 
         // Create LLDP Custom TLV
         byte[] customValue = LLDPTLV.createCustomTLVValue(nodeConnectorId.getValue());
         LLDPTLV customTlv = new LLDPTLV();
-        customTlv.setType(LLDPTLV.TLVType.Custom.getValue())
-                 .setLength((short) customValue.length)
-                 .setValue(customValue);
+        customTlv.setType(LLDPTLV.TLVType.Custom.getValue()).setLength((short) customValue.length)
+                .setValue(customValue);
         discoveryPkt.addCustomTLV(customTlv);
 
         //Create LLDP CustomSec TLV
@@ -90,9 +82,8 @@ public final class LLDPUtil {
             pureValue = getValueForLLDPPacketIntegrityEnsuring(nodeConnectorId);
             byte[] customSecValue = LLDPTLV.createCustomTLVValue(CUSTOM_TLV_SUB_TYPE_CUSTOM_SEC, pureValue);
             LLDPTLV customSecTlv = new LLDPTLV();
-            customSecTlv.setType(LLDPTLV.TLVType.Custom.getValue())
-                        .setLength((short)customSecValue.length)
-                        .setValue(customSecValue);
+            customSecTlv.setType(LLDPTLV.TLVType.Custom.getValue()).setLength((short) customSecValue.length)
+                    .setValue(customSecValue);
             discoveryPkt.addCustomTLV(customSecTlv);
         } catch (NoSuchAlgorithmException e1) {
             LOG.info("LLDP extra authenticator creation failed: {}", e1.getMessage());
@@ -103,9 +94,7 @@ public final class LLDPUtil {
         // Create ethernet pkt
         byte[] sourceMac = HexEncode.bytesFromHexString(src.getValue());
         Ethernet ethPkt = new Ethernet();
-        ethPkt.setSourceMACAddress(sourceMac)
-              .setEtherType(EtherTypes.LLDP.shortValue())
-              .setPayload(discoveryPkt);
+        ethPkt.setSourceMACAddress(sourceMac).setEtherType(EtherTypes.LLDP.shortValue()).setPayload(discoveryPkt);
         if (destinationAddress == null) {
             ethPkt.setDestinationMACAddress(LLDP.LLDPMulticastMac);
         } else {
@@ -121,6 +110,11 @@ public final class LLDPUtil {
         return null;
     }
 
+    static byte[] buildLldpFrame(final NodeId nodeId, final NodeConnectorId nodeConnectorId,
+                                 final MacAddress srcMacAddress, final Long outputPortNo) {
+        return buildLldpFrame(nodeId, nodeConnectorId, srcMacAddress, outputPortNo, null);
+    }
+
     private static String colonize(final String orig) {
         return orig.replaceAll("(?<=..)(..)", ":$1");
     }
@@ -132,12 +126,5 @@ public final class LLDPUtil {
 
     private static String bigIntegerToPaddedHex(final BigInteger dataPathId) {
         return StringUtils.leftPad(dataPathId.toString(16), 16, "0");
-    }
-
-    static byte[] buildLldpFrame(final NodeId nodeId,
-                                 final NodeConnectorId nodeConnectorId,
-                                 final MacAddress srcMacAddress,
-                                 final Long outputPortNo) {
-        return buildLldpFrame(nodeId, nodeConnectorId, srcMacAddress, outputPortNo, null);
     }
 }
