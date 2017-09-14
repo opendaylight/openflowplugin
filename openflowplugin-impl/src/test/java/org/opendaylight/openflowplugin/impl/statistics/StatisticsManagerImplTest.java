@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.common.util.concurrent.MoreExecutors;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.List;
@@ -150,7 +151,8 @@ public class StatisticsManagerImplTest {
                         .setMaximumTimerDelay(new NonZeroUint32Type(maximumTimerDelay))
                         .setIsStatisticsPollingOn(false)
                         .build(), rpcProviderRegistry,
-                convertorManager);
+                convertorManager,
+                MoreExecutors.newDirectExecutorService());
     }
 
     private static Map<DeviceInfo, StatisticsContext> getContextsMap(final StatisticsManagerImpl statisticsManager)

@@ -10,9 +10,9 @@ package org.opendaylight.openflowplugin.impl.statistics;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
-import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
@@ -21,8 +21,6 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainClosedException;
@@ -54,7 +52,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,75 +69,60 @@ public final class StatisticsGatheringUtils {
     }
 
     static <T extends OfHeader> ListenableFuture<Boolean> gatherStatistics(
-                                                            final StatisticsGatherer<T> statisticsGatheringService,
-                                                            final DeviceInfo deviceInfo,
-                                                            final MultipartType type,
-                                                            final TxFacade txFacade,
-                                                            final DeviceRegistry registry,
-                                                            final ConvertorExecutor convertorExecutor,
-                                                            final MultipartWriterProvider statisticsWriterProvider) {
+            final StatisticsGatherer<T> statisticsGatheringService,
+            final DeviceInfo deviceInfo,
+            final MultipartType type,
+            final TxFacade txFacade,
+            final DeviceRegistry registry,
+            final ConvertorExecutor convertorExecutor,
+            final MultipartWriterProvider statisticsWriterProvider,
+            final ListeningExecutorService executorService) {
         return Futures.transformAsync(
                 statisticsGatheringService.getStatisticsOfType(
                         new EventIdentifier(QUEUE2_REQCTX + type.toString(), deviceInfo.getNodeId().toString()),
                         type),
-                new AsyncFunction<RpcResult<List<T>>, Boolean>() {
-                    @Nullable
-                    @Override
-                    @SuppressWarnings("checkstyle:IllegalCatch")
-                    public ListenableFuture<Boolean> apply(@Nonnull final RpcResult<List<T>> rpcResult) {
-                        boolean isMultipartProcessed = Boolean.TRUE;
+                rpcResult -> executorService.submit(() -> {
+                    final boolean rpcResultIsNull = rpcResult == null;
 
-                        if (rpcResult.isSuccessful()) {
-                            LOG.debug("Stats reply successfully received for node {} of type {}",
-                                    deviceInfo.getNodeId(), type);
+                    if (!rpcResultIsNull && rpcResult.isSuccessful()) {
+                        LOG.debug("Stats reply successfully received for node {} of type {}",
+                                deviceInfo.getNodeId(), type);
 
-                            // TODO: in case the result value is null then multipart data probably got processed
-                            // TODO: on the fly. This contract should by clearly stated and enforced.
-                            // TODO: Now simple true value is returned
-                            if (Objects.nonNull(rpcResult.getResult()) && !rpcResult.getResult().isEmpty()) {
-                                final List<DataContainer> allMultipartData;
+                        // TODO: in case the result value is null then multipart data probably got processed
+                        // TODO: on the fly. This contract should by clearly stated and enforced.
+                        // TODO: Now simple true value is returned
+                        if (Objects.nonNull(rpcResult.getResult()) && !rpcResult.getResult().isEmpty()) {
+                            try {
+                                final List<DataContainer> allMultipartData = rpcResult
+                                        .getResult()
+                                        .stream()
+                                        .map(reply ->  MultipartReplyTranslatorUtil
+                                                .translate(reply, deviceInfo, convertorExecutor, null))
+                                        .filter(java.util.Optional::isPresent)
+                                        .map(java.util.Optional::get)
+                                        .collect(Collectors.toList());
 
-                                try {
-                                    allMultipartData = rpcResult
-                                            .getResult()
-                                            .stream()
-                                            .map(reply ->  MultipartReplyTranslatorUtil
-                                                    .translate(reply, deviceInfo, convertorExecutor, null))
-                                            .filter(java.util.Optional::isPresent)
-                                            .map(java.util.Optional::get)
-                                            .collect(Collectors.toList());
-                                } catch (final Exception e) {
-                                    LOG.warn("Stats processing of type {} for node {} "
-                                                    + "failed during transformation step",
-                                            type, deviceInfo.getLOGValue(), e);
-                                    return Futures.immediateFailedFuture(e);
-                                }
-
-                                try {
-                                    return Futures.immediateFuture(processStatistics(
-                                            type,
-                                            allMultipartData,
-                                            txFacade,
-                                            registry,
-                                            deviceInfo,
-                                            statisticsWriterProvider));
-                                } catch (final Exception e) {
-                                    LOG.warn("Stats processing of type {} for node {} failed during processing step",
-                                            type, deviceInfo.getNodeId(), e);
-                                    return Futures.immediateFailedFuture(e);
-                                }
-                            } else {
-                                LOG.debug("Stats reply was empty for node {} of type {}", deviceInfo.getNodeId(), type);
+                                return processStatistics(
+                                        type,
+                                        allMultipartData,
+                                        txFacade,
+                                        registry,
+                                        deviceInfo,
+                                        statisticsWriterProvider);
+                            } catch (final Exception e) {
+                                LOG.warn("Stats processing of type {} for node {} failed with error: {}",
+                                        type, deviceInfo, e);
                             }
                         } else {
-                            LOG.warn("Stats reply FAILED for node {} of type {}: {}", deviceInfo.getNodeId(), type,
-                                    rpcResult.getErrors());
-                            isMultipartProcessed = Boolean.FALSE;
+                            LOG.debug("Stats reply was empty for node {} of type {}", deviceInfo.getNodeId(), type);
                         }
-
-                        return Futures.immediateFuture(isMultipartProcessed);
+                    } else {
+                        LOG.warn("Stats reply FAILED for node {} of type {}: {}", deviceInfo.getNodeId(), type,
+                                rpcResultIsNull ? "" : rpcResult.getErrors());
                     }
-                });
+
+                    return false;
+                }));
     }
 
     private static boolean processStatistics(final MultipartType type,

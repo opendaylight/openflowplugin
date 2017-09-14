@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.connection;
 
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.ExecutorService;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeManager;
 
 /**
@@ -25,7 +25,7 @@ public interface HandshakeContext extends AutoCloseable {
      * Getter.
      * @return handshake pool
      */
-    ThreadPoolExecutor getHandshakePool();
+    ExecutorService getHandshakePool();
 
     @Override
     void close();
