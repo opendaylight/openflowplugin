@@ -11,6 +11,8 @@ package org.opendaylight.openflowplugin.impl;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timer;
 import java.lang.management.ManagementFactory;
@@ -18,8 +20,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
@@ -107,7 +109,7 @@ public class OpenFlowPluginProviderImpl implements
     private StatisticsManager statisticsManager;
     private RoleManager roleManager;
     private ConnectionManager connectionManager;
-    private ThreadPoolExecutor threadPool;
+    private ListeningExecutorService executorService;
     private ContextChainHolderImpl contextChainHolder;
 
     public static MessageIntelligenceAgency getMessageIntelligenceAgency() {
@@ -200,11 +202,11 @@ public class OpenFlowPluginProviderImpl implements
         // Creates a thread pool that creates new threads as needed, but will reuse previously
         // constructed threads when they are available.
         // Threads that have not been used for x seconds are terminated and removed from the cache.
-        threadPool = new ThreadPoolLoggingExecutor(
+        executorService = MoreExecutors.listeningDecorator(new ThreadPoolLoggingExecutor(
                 config.getThreadPoolMinThreads(),
                 config.getThreadPoolMaxThreads().getValue(),
                 config.getThreadPoolTimeout(),
-                TimeUnit.SECONDS, new SynchronousQueue<>(), POOL_NAME);
+                TimeUnit.SECONDS, new SynchronousQueue<>(), POOL_NAME));
 
         deviceManager = new DeviceManagerImpl(
                 config,
@@ -228,12 +230,13 @@ public class OpenFlowPluginProviderImpl implements
         statisticsManager = new StatisticsManagerImpl(
                 config,
                 rpcProviderRegistry,
-                convertorManager);
+                convertorManager,
+                executorService);
 
         roleManager = new RoleManagerImpl(hashedWheelTimer);
 
         contextChainHolder = new ContextChainHolderImpl(
-                threadPool,
+                executorService,
                 singletonServicesProvider,
                 entityOwnershipService,
                 mastershipChangeServiceManager);
@@ -243,7 +246,7 @@ public class OpenFlowPluginProviderImpl implements
         contextChainHolder.addManager(rpcManager);
         contextChainHolder.addManager(roleManager);
 
-        connectionManager = new ConnectionManagerImpl(config, threadPool);
+        connectionManager = new ConnectionManagerImpl(config, executorService);
         connectionManager.setDeviceConnectedHandler(contextChainHolder);
         connectionManager.setDeviceDisconnectedHandler(contextChainHolder);
 
@@ -269,7 +272,7 @@ public class OpenFlowPluginProviderImpl implements
         gracefulShutdown(rpcManager);
         gracefulShutdown(statisticsManager);
         gracefulShutdown(roleManager);
-        gracefulShutdown(threadPool);
+        gracefulShutdown(executorService);
         gracefulShutdown(hashedWheelTimer);
         unregisterMXBean(MESSAGE_INTELLIGENCE_AGENCY_MX_BEAN_NAME);
     }
@@ -299,15 +302,15 @@ public class OpenFlowPluginProviderImpl implements
         }
     }
 
-    private static void gracefulShutdown(final ThreadPoolExecutor threadPoolExecutor) {
-        if (Objects.isNull(threadPoolExecutor)) {
+    private static void gracefulShutdown(final ExecutorService executorService) {
+        if (Objects.isNull(executorService)) {
             return;
         }
 
         try {
-            threadPoolExecutor.shutdownNow();
+            executorService.shutdownNow();
         } catch (SecurityException e) {
-            LOG.warn("Failed to shutdown {} gracefully.", threadPoolExecutor);
+            LOG.warn("Failed to shutdown {} gracefully.", executorService);
         }
     }
 

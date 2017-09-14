@@ -14,6 +14,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,6 +59,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     private final Collection<RequestContext<?>> requestContexts = new HashSet<>();
     private final DeviceContext deviceContext;
     private final DeviceState devState;
+    private final ListeningExecutorService executorService;
     private final boolean isStatisticsPollingOn;
     private final ConvertorExecutor convertorExecutor;
     private final MultipartWriterProvider statisticsWriterProvider;
@@ -77,12 +79,14 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     StatisticsContextImpl(@Nonnull final DeviceContext deviceContext,
                           @Nonnull final ConvertorExecutor convertorExecutor,
                           @Nonnull final MultipartWriterProvider statisticsWriterProvider,
+                          @Nonnull final ListeningExecutorService executorService,
                           boolean isStatisticsPollingOn,
                           boolean isUsingReconciliationFramework,
                           long statisticsPollingInterval,
                           long maximumPollingDelay) {
         this.deviceContext = deviceContext;
         this.devState = Preconditions.checkNotNull(deviceContext.getDeviceState());
+        this.executorService = executorService;
         this.isStatisticsPollingOn = isStatisticsPollingOn;
         this.convertorExecutor = convertorExecutor;
         this.itemLifeCycleListener = new ItemLifecycleListenerImpl(deviceContext);
@@ -279,7 +283,8 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
                     deviceContext,
                     deviceContext,
                     convertorExecutor,
-                    statisticsWriterProvider) : Futures.immediateFuture(Boolean.FALSE);
+                    statisticsWriterProvider,
+                    executorService) : Futures.immediateFuture(Boolean.FALSE);
         });
     }
 
