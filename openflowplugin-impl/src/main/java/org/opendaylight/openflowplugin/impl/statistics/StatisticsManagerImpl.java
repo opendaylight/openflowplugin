@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl.statistics;
 
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Future;
@@ -45,16 +46,19 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     private final ConcurrentMap<DeviceInfo, StatisticsContext> contexts = new ConcurrentHashMap<>();
     private final Semaphore workModeGuard = new Semaphore(1, true);
     private final BindingAwareBroker.RpcRegistration<StatisticsManagerControlService> controlServiceRegistration;
+    private final ListeningExecutorService executorService;
     private StatisticsWorkMode workMode = StatisticsWorkMode.COLLECTALL;
     private boolean isStatisticsFullyDisabled;
 
     public StatisticsManagerImpl(@Nonnull final OpenflowProviderConfig config,
                                  @Nonnull final RpcProviderRegistry rpcProviderRegistry,
-                                 final ConvertorExecutor convertorExecutor) {
+                                 final ConvertorExecutor convertorExecutor,
+                                 @Nonnull final ListeningExecutorService executorService) {
         this.config = config;
         this.converterExecutor = convertorExecutor;
         this.controlServiceRegistration = Preconditions.checkNotNull(rpcProviderRegistry
                 .addRpcImplementation(StatisticsManagerControlService.class, this));
+        this.executorService = executorService;
     }
 
     @Override
@@ -104,6 +108,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                                 deviceContext,
                                 converterExecutor,
                                 statisticsWriterProvider,
+                                executorService,
                                 !isStatisticsFullyDisabled && config.isIsStatisticsPollingOn(),
                                 useReconciliationFramework,
                                 config.getBasicTimerDelay().getValue(),
@@ -113,6 +118,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                                 deviceContext,
                                 converterExecutor,
                                 statisticsWriterProvider,
+                                executorService,
                                 !isStatisticsFullyDisabled && config.isIsStatisticsPollingOn(),
                                 useReconciliationFramework,
                                 config.getBasicTimerDelay().getValue(),
