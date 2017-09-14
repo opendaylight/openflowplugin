@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.connection;
 
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeManager;
@@ -15,14 +16,14 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeManager;
  *
  */
 public class HandshakeContextImpl implements HandshakeContext {
-    private ThreadPoolExecutor handshakePool;
+    private ExecutorService handshakePool;
     private HandshakeManager handshakeManager;
 
     /**
      * @param handshakePool
      * @param handshakeManager
      */
-    public HandshakeContextImpl(ThreadPoolExecutor handshakePool, HandshakeManager handshakeManager) {
+    public HandshakeContextImpl(ExecutorService handshakePool, HandshakeManager handshakeManager) {
         this.handshakePool = handshakePool;
         this.handshakeManager = handshakeManager;
     }
@@ -33,7 +34,7 @@ public class HandshakeContextImpl implements HandshakeContext {
     }
 
     @Override
-    public ThreadPoolExecutor getHandshakePool() {
+    public ExecutorService getHandshakePool() {
         return handshakePool;
     }
 

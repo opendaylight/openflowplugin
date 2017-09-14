@@ -9,7 +9,7 @@
 package org.opendaylight.openflowplugin.impl.connection;
 
 import java.net.InetAddress;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.ExecutorService;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -39,12 +39,12 @@ public class ConnectionManagerImpl implements ConnectionManager {
     private static final boolean BITMAP_NEGOTIATION_ENABLED = true;
     private DeviceConnectedHandler deviceConnectedHandler;
     private final OpenflowProviderConfig config;
-    private final ThreadPoolExecutor threadPool;
+    private final ExecutorService executorService;
     private DeviceDisconnectedHandler deviceDisconnectedHandler;
 
-    public ConnectionManagerImpl(final OpenflowProviderConfig config, final ThreadPoolExecutor threadPool) {
+    public ConnectionManagerImpl(final OpenflowProviderConfig config, final ExecutorService executorService) {
         this.config = config;
-        this.threadPool = threadPool;
+        this.executorService = executorService;
     }
 
     @Override
@@ -57,7 +57,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
         final HandshakeManager handshakeManager = createHandshakeManager(connectionAdapter, handshakeListener);
 
         LOG.trace("prepare handshake context");
-        HandshakeContext handshakeContext = new HandshakeContextImpl(threadPool, handshakeManager);
+        HandshakeContext handshakeContext = new HandshakeContextImpl(executorService, handshakeManager);
         handshakeListener.setHandshakeContext(handshakeContext);
         connectionContext.setHandshakeContext(handshakeContext);
 
@@ -71,7 +71,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
         connectionAdapter.setMessageListener(ofMessageListener);
 
         final SystemNotificationsListener systemListener = new SystemNotificationsListenerImpl(
-                connectionContext, config.getEchoReplyTimeout().getValue(), threadPool);
+                connectionContext, config.getEchoReplyTimeout().getValue(), executorService);
         connectionAdapter.setSystemListener(systemListener);
 
         LOG.trace("connection ballet finished");
