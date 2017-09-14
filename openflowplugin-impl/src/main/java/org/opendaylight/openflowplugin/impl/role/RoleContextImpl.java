@@ -19,6 +19,7 @@ import io.netty.util.TimerTask;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -86,7 +87,6 @@ public class RoleContextImpl implements RoleContext {
 
     @Override
     public void close() {
-        slaveTask.cancel();
         changeLastRoleFuture(null);
         requestContexts.forEach(requestContext -> RequestContextUtil
                 .closeRequestContextWithRpcError(requestContext, "Connection closed."));
@@ -126,6 +126,7 @@ public class RoleContextImpl implements RoleContext {
     }
 
     private void changeLastRoleFuture(final ListenableFuture<RpcResult<SetRoleOutput>> newFuture) {
+        slaveTask.cancel();
         lastRoleFuture.getAndUpdate(lastFuture -> {
             if (Objects.nonNull(lastFuture) && !lastFuture.isCancelled() && !lastFuture.isDone()) {
                 lastFuture.cancel(true);
@@ -172,7 +173,6 @@ public class RoleContextImpl implements RoleContext {
     private final class MasterRoleCallback implements FutureCallback<RpcResult<SetRoleOutput>> {
         @Override
         public void onSuccess(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
-            slaveTask.cancel();
             contextChainMastershipWatcher.onMasterRoleAcquired(
                     deviceInfo,
                     ContextChainMastershipState.MASTER_ON_DEVICE);
@@ -181,26 +181,27 @@ public class RoleContextImpl implements RoleContext {
 
         @Override
         public void onFailure(@Nonnull final Throwable throwable) {
-            slaveTask.cancel();
-            contextChainMastershipWatcher.onNotAbleToStartMastershipMandatory(
-                    deviceInfo,
-                    "Was not able to propagate MASTER role on device. Error: " + throwable.toString());
+            if (!(throwable instanceof CancellationException)) {
+                contextChainMastershipWatcher.onNotAbleToStartMastershipMandatory(
+                        deviceInfo,
+                        "Was not able to propagate MASTER role on device. Error: " + throwable.toString());
+            }
         }
     }
 
     private final class SlaveRoleCallback implements FutureCallback<RpcResult<SetRoleOutput>> {
         @Override
         public void onSuccess(@Nullable final RpcResult<SetRoleOutput> result) {
-            slaveTask.cancel();
             contextChainMastershipWatcher.onSlaveRoleAcquired(deviceInfo);
             LOG.debug("Role SLAVE was successfully set on device, node {}", deviceInfo);
         }
 
         @Override
         public void onFailure(@Nonnull final Throwable throwable) {
-            slaveTask.cancel();
-            contextChainMastershipWatcher.onSlaveRoleNotAcquired(deviceInfo,
-                    "Was not able to propagate SLAVE role on device. Error: " + throwable.toString());
+            if (!(throwable instanceof CancellationException)) {
+                contextChainMastershipWatcher.onSlaveRoleNotAcquired(deviceInfo,
+                        "Was not able to propagate SLAVE role on device. Error: " + throwable.toString());
+            }
         }
     }
 }
