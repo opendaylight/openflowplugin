@@ -29,10 +29,9 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 public class NodeConnectorStatNotificationSupplierImpl extends
         AbstractNotificationSupplierForItemStat<FlowCapableNodeConnectorStatistics, NodeConnectorStatisticsUpdate> {
 
-    private static final InstanceIdentifier<FlowCapableNodeConnectorStatistics> wildCardedInstanceIdent =
-            getNodeWildII().child(NodeConnector.class)
-                    .augmentation(FlowCapableNodeConnectorStatisticsData.class)
-                    .child(FlowCapableNodeConnectorStatistics.class);
+    private static final InstanceIdentifier<FlowCapableNodeConnectorStatistics>
+            FLOW_CAPABLE_NODE_CONNECTOR_STATISTICS_INSTANCE_IDENTIFIER = getNodeWildII().child(NodeConnector.class)
+            .augmentation(FlowCapableNodeConnectorStatisticsData.class).child(FlowCapableNodeConnectorStatistics.class);
 
     /**
      * Constructor register supplier as DataTreeChangeListener and create wildCarded InstanceIdentifier.
@@ -40,19 +39,21 @@ public class NodeConnectorStatNotificationSupplierImpl extends
      * @param notifProviderService - {@link NotificationProviderService}
      * @param db                   - {@link DataBroker}
      */
-    public NodeConnectorStatNotificationSupplierImpl(final NotificationProviderService notifProviderService, final DataBroker db) {
+    public NodeConnectorStatNotificationSupplierImpl(final NotificationProviderService notifProviderService,
+                                                     final DataBroker db) {
         super(notifProviderService, db, FlowCapableNodeConnectorStatistics.class);
     }
 
     @Override
     public InstanceIdentifier<FlowCapableNodeConnectorStatistics> getWildCardPath() {
-        return wildCardedInstanceIdent;
+        return FLOW_CAPABLE_NODE_CONNECTOR_STATISTICS_INSTANCE_IDENTIFIER;
     }
 
     @Override
-    public NodeConnectorStatisticsUpdate createNotification(final FlowCapableNodeConnectorStatistics o,
-                                                            final InstanceIdentifier<FlowCapableNodeConnectorStatistics> path) {
-        Preconditions.checkArgument(o != null);
+    public NodeConnectorStatisticsUpdate createNotification(
+            final FlowCapableNodeConnectorStatistics flowCapableNodeConnectorStatistics,
+            final InstanceIdentifier<FlowCapableNodeConnectorStatistics> path) {
+        Preconditions.checkArgument(flowCapableNodeConnectorStatistics != null);
         Preconditions.checkArgument(path != null);
 
         final NodeConnectorBuilder ncBuilder = new NodeConnectorBuilder();
@@ -64,8 +65,8 @@ public class NodeConnectorStatNotificationSupplierImpl extends
         builder.setId(getNodeId(path));
         builder.setMoreReplies(Boolean.FALSE);
         builder.setNodeConnector(Collections.singletonList(ncBuilder.build()));
-        builder.setNodeConnectorStatisticsAndPortNumberMap(Collections
-                .singletonList(new NodeConnectorStatisticsAndPortNumberMapBuilder(o).build()));
+        builder.setNodeConnectorStatisticsAndPortNumberMap(Collections.singletonList(
+                new NodeConnectorStatisticsAndPortNumberMapBuilder(flowCapableNodeConnectorStatistics).build()));
         return builder.build();
     }
 }

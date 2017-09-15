@@ -16,7 +16,6 @@ import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
@@ -42,7 +41,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
- * Test for {@link org.opendaylight.openflowplugin.applications.notification.supplier.impl.item.MeterNotificationSupplierImpl}.
+ * Test for
+ * {@link org.opendaylight.openflowplugin.applications.notification.supplier.impl.item.MeterNotificationSupplierImpl}.
  */
 public class MeterNotificationSupplierImplTest {
 
@@ -82,14 +82,17 @@ public class MeterNotificationSupplierImplTest {
         final MeterAdded notification = notifSupplierImpl.createNotification(createTestMeter(), createTestMeterPath());
         assertNotNull(notification);
         assertEquals(METER_ID, notification.getMeterId().getValue());
-        assertEquals(METER_ID, notification.getMeterRef().getValue().firstKeyOf(Meter.class, MeterKey.class).getMeterId().getValue());
-        assertEquals(FLOW_NODE_ID, notification.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue());
+        assertEquals(METER_ID,
+                     notification.getMeterRef().getValue().firstKeyOf(Meter.class, MeterKey.class).getMeterId()
+                             .getValue());
+        assertEquals(FLOW_NODE_ID,
+                     notification.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue());
     }
 
     @Test
     public void testCreateChangeEvent() {
-        final TestData testData = new TestData(createTestMeterPath(),null,createTestMeter(),
-                DataObjectModification.ModificationType.WRITE);
+        final TestData testData = new TestData(createTestMeterPath(), null, createTestMeter(),
+                                               DataObjectModification.ModificationType.WRITE);
         Collection<DataTreeModification<Meter>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);
@@ -112,14 +115,17 @@ public class MeterNotificationSupplierImplTest {
                 .updateNotification(createTestMeter(), createTestMeterPath());
         assertNotNull(notification);
         assertEquals(METER_ID, notification.getMeterId().getValue());
-        assertEquals(METER_ID, notification.getMeterRef().getValue().firstKeyOf(Meter.class, MeterKey.class).getMeterId().getValue());
-        assertEquals(FLOW_NODE_ID, notification.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue());
+        assertEquals(METER_ID,
+                     notification.getMeterRef().getValue().firstKeyOf(Meter.class, MeterKey.class).getMeterId()
+                             .getValue());
+        assertEquals(FLOW_NODE_ID,
+                     notification.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue());
     }
 
     @Test
     public void testUdateChangeEvent() {
-        final TestData testData = new TestData(createTestMeterPath(),createTestMeter(),createUpdatedTestMeter(),
-                DataObjectModification.ModificationType.SUBTREE_MODIFIED);
+        final TestData testData = new TestData(createTestMeterPath(), createTestMeter(), createUpdatedTestMeter(),
+                                               DataObjectModification.ModificationType.SUBTREE_MODIFIED);
         Collection<DataTreeModification<Meter>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);
@@ -141,14 +147,17 @@ public class MeterNotificationSupplierImplTest {
         final MeterRemoved notification = notifSupplierImpl.deleteNotification(createTestMeterPath());
         assertNotNull(notification);
         assertEquals(METER_ID, notification.getMeterId().getValue());
-        assertEquals(METER_ID, notification.getMeterRef().getValue().firstKeyOf(Meter.class, MeterKey.class).getMeterId().getValue());
-        assertEquals(FLOW_NODE_ID, notification.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue());
+        assertEquals(METER_ID,
+                     notification.getMeterRef().getValue().firstKeyOf(Meter.class, MeterKey.class).getMeterId()
+                             .getValue());
+        assertEquals(FLOW_NODE_ID,
+                     notification.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue());
     }
 
     @Test
     public void testDeleteChangeEvent() {
-        final TestData testData = new TestData(createTestMeterPath(),createTestMeter(),null,
-                DataObjectModification.ModificationType.DELETE);
+        final TestData testData = new TestData(createTestMeterPath(), createTestMeter(), null,
+                                               DataObjectModification.ModificationType.DELETE);
         Collection<DataTreeModification<Meter>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);
@@ -171,7 +180,7 @@ public class MeterNotificationSupplierImplTest {
         return builder.build();
     }
 
-    private static Meter createUpdatedTestMeter(){
+    private static Meter createUpdatedTestMeter() {
         final MeterBuilder builder = new MeterBuilder();
         builder.setMeterId(new MeterId(UPDATED_METER_ID));
         return builder.build();

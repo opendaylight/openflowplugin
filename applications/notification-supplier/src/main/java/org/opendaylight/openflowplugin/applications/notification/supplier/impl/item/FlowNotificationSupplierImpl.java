@@ -27,16 +27,17 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * Implementation define a contract between {@link Flow} data object
  * and {@link FlowAdded}, {@link FlowUpdated} and {@link FlowRemoved} notifications.
  */
-public class FlowNotificationSupplierImpl extends
-        AbstractNotificationSupplierForItem<Flow, FlowAdded, FlowUpdated, FlowRemoved> {
+public class FlowNotificationSupplierImpl extends AbstractNotificationSupplierForItem<Flow, FlowAdded, FlowUpdated,
+        FlowRemoved> {
 
-    private static final InstanceIdentifier<Flow> wildCardedInstanceIdent = getNodeWildII().augmentation(FlowCapableNode.class).child(Table.class).child(Flow.class);
+    private static final InstanceIdentifier<Flow> FLOW_INSTANCE_IDENTIFIER = getNodeWildII()
+            .augmentation(FlowCapableNode.class).child(Table.class).child(Flow.class);
 
     /**
      * Constructor register supplier as DataTreeChangeListener and create wildCarded InstanceIdentifier.
      *
      * @param notifProviderService - {@link NotificationProviderService}
-     * @param db - {@link DataBroker}
+     * @param db                   - {@link DataBroker}
      */
     public FlowNotificationSupplierImpl(final NotificationProviderService notifProviderService, final DataBroker db) {
         super(notifProviderService, db, Flow.class);
@@ -44,24 +45,24 @@ public class FlowNotificationSupplierImpl extends
 
     @Override
     public InstanceIdentifier<Flow> getWildCardPath() {
-        return wildCardedInstanceIdent;
+        return FLOW_INSTANCE_IDENTIFIER;
     }
 
     @Override
-    public FlowAdded createNotification(final Flow o, final InstanceIdentifier<Flow> path) {
-        Preconditions.checkArgument(o != null);
+    public FlowAdded createNotification(final Flow dataTreeItemObject, final InstanceIdentifier<Flow> path) {
+        Preconditions.checkArgument(dataTreeItemObject != null);
         Preconditions.checkArgument(path != null);
-        final FlowAddedBuilder builder = new FlowAddedBuilder(o);
+        final FlowAddedBuilder builder = new FlowAddedBuilder(dataTreeItemObject);
         builder.setFlowRef(new FlowRef(path));
         builder.setNode(createNodeRef(path));
         return builder.build();
     }
 
     @Override
-    public FlowUpdated updateNotification(final Flow o, final InstanceIdentifier<Flow> path) {
-        Preconditions.checkArgument(o != null);
+    public FlowUpdated updateNotification(final Flow flow, final InstanceIdentifier<Flow> path) {
+        Preconditions.checkArgument(flow != null);
         Preconditions.checkArgument(path != null);
-        final FlowUpdatedBuilder builder = new FlowUpdatedBuilder(o);
+        final FlowUpdatedBuilder builder = new FlowUpdatedBuilder(flow);
         builder.setFlowRef(new FlowRef(path));
         builder.setNode(createNodeRef(path));
         return builder.build();

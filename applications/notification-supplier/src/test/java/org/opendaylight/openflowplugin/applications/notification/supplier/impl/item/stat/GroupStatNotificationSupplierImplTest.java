@@ -68,21 +68,21 @@ public class GroupStatNotificationSupplierImplTest {
 
     @Test
     public void testEmptyChangeEvent() {
-        notifSupplierImpl.onDataTreeChanged( TestChangeEventBuildHelper.createEmptyTestDataTreeEvent());
+        notifSupplierImpl.onDataTreeChanged(TestChangeEventBuildHelper.createEmptyTestDataTreeEvent());
     }
 
     @Test
     public void testCreate() {
-        final GroupStatisticsUpdated notification = notifSupplierImpl.createNotification(createTestGroupStat(),
-                createTestGroupStatPath());
+        final GroupStatisticsUpdated notification = notifSupplierImpl
+                .createNotification(createTestGroupStat(), createTestGroupStatPath());
         assertNotNull(notification);
         assertEquals(FLOW_NODE_ID, notification.getId().getValue());
     }
 
     @Test
     public void testCreateChangeEvent() {
-        final TestData testData = new TestData(createTestGroupStatPath(),null,createTestGroupStat(),
-                DataObjectModification.ModificationType.WRITE);
+        final TestData testData = new TestData(createTestGroupStatPath(), null, createTestGroupStat(),
+                                               DataObjectModification.ModificationType.WRITE);
         Collection<DataTreeModification<GroupStatistics>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);

@@ -27,16 +27,17 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * Implementation define a contract between {@link Group} data object
  * and {@link GroupAdded}, {@link GroupUpdated} and {@link GroupRemoved} notifications.
  */
-public class GroupNotificationSupplierImpl extends
-        AbstractNotificationSupplierForItem<Group, GroupAdded, GroupUpdated, GroupRemoved> {
+public class GroupNotificationSupplierImpl extends AbstractNotificationSupplierForItem<Group, GroupAdded,
+        GroupUpdated, GroupRemoved> {
 
-    private static final InstanceIdentifier<Group> wildCardedInstanceIdent = getNodeWildII().augmentation(FlowCapableNode.class).child(Group.class);
+    private static final InstanceIdentifier<Group> GROUP_INSTANCE_IDENTIFIER = getNodeWildII()
+            .augmentation(FlowCapableNode.class).child(Group.class);
 
     /**
      * Constructor register supplier as DataTreeChangeListener and create wildCarded InstanceIdentifier.
      *
      * @param notifProviderService - {@link NotificationProviderService}
-     * @param db - {@link DataBroker}
+     * @param db                   - {@link DataBroker}
      */
     public GroupNotificationSupplierImpl(final NotificationProviderService notifProviderService, final DataBroker db) {
         super(notifProviderService, db, Group.class);
@@ -44,24 +45,24 @@ public class GroupNotificationSupplierImpl extends
 
     @Override
     public InstanceIdentifier<Group> getWildCardPath() {
-        return wildCardedInstanceIdent;
+        return GROUP_INSTANCE_IDENTIFIER;
     }
 
     @Override
-    public GroupAdded createNotification(final Group o, final InstanceIdentifier<Group> path) {
-        Preconditions.checkArgument(o != null);
+    public GroupAdded createNotification(final Group dataTreeItemObject, final InstanceIdentifier<Group> path) {
+        Preconditions.checkArgument(dataTreeItemObject != null);
         Preconditions.checkArgument(path != null);
-        final GroupAddedBuilder builder = new GroupAddedBuilder(o);
+        final GroupAddedBuilder builder = new GroupAddedBuilder(dataTreeItemObject);
         builder.setGroupRef(new GroupRef(path));
         builder.setNode(createNodeRef(path));
         return builder.build();
     }
 
     @Override
-    public GroupUpdated updateNotification(final Group o, final InstanceIdentifier<Group> path) {
-        Preconditions.checkArgument(o != null);
+    public GroupUpdated updateNotification(final Group group, final InstanceIdentifier<Group> path) {
+        Preconditions.checkArgument(group != null);
         Preconditions.checkArgument(path != null);
-        final GroupUpdatedBuilder builder = new GroupUpdatedBuilder(o);
+        final GroupUpdatedBuilder builder = new GroupUpdatedBuilder(group);
         builder.setGroupRef(new GroupRef(path));
         builder.setNode(createNodeRef(path));
         return builder.build();

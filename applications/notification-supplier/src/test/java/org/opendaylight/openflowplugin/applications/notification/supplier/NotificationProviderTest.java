@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.applications.notification.supplier;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
+
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,10 +34,15 @@ public class NotificationProviderTest {
     @Test
     public void testCreateAllSuppliers() {
         final NotificationProviderConfig config = createAllConfigSupplier();
-        final NotificationProvider provider = new NotificationProvider(notificationProviderService, dataBroker, config.isFlowSupport(), config.isMeterSupport(),
-                                                                               config.isGroupSupport(), config.isNodeConnectorStatSupport(), config.isFlowStatSupport(),
-                                                                               config.isFlowTableStatSupport(), config.isMeterStatSupport(), config.isGroupStatSupport(),
-                                                                               config.isQueueStatSupport());
+        final NotificationProvider provider = new NotificationProvider(notificationProviderService, dataBroker,
+                                                                       config.isFlowSupport(), config.isMeterSupport(),
+                                                                       config.isGroupSupport(),
+                                                                       config.isNodeConnectorStatSupport(),
+                                                                       config.isFlowStatSupport(),
+                                                                       config.isFlowTableStatSupport(),
+                                                                       config.isMeterStatSupport(),
+                                                                       config.isGroupStatSupport(),
+                                                                       config.isQueueStatSupport());
         provider.start();
         final List<NotificationSupplierDefinition<?>> listSuppliers = provider.getSupplierList();
         int nrOfSuppliers = 0;
@@ -51,10 +57,15 @@ public class NotificationProviderTest {
     @Test
     public void testCreateRootSuppliersOnly() {
         final NotificationProviderConfig config = createNonConfigSupplier();
-        final NotificationProvider provider = new NotificationProvider(notificationProviderService, dataBroker, config.isFlowSupport(), config.isMeterSupport(),
-                                                                               config.isGroupSupport(), config.isNodeConnectorStatSupport(), config.isFlowStatSupport(),
-                                                                               config.isFlowTableStatSupport(), config.isMeterStatSupport(), config.isGroupStatSupport(),
-                                                                               config.isQueueStatSupport());
+        final NotificationProvider provider = new NotificationProvider(notificationProviderService, dataBroker,
+                                                                       config.isFlowSupport(), config.isMeterSupport(),
+                                                                       config.isGroupSupport(),
+                                                                       config.isNodeConnectorStatSupport(),
+                                                                       config.isFlowStatSupport(),
+                                                                       config.isFlowTableStatSupport(),
+                                                                       config.isMeterStatSupport(),
+                                                                       config.isGroupStatSupport(),
+                                                                       config.isQueueStatSupport());
         provider.start();
         final List<NotificationSupplierDefinition<?>> listSuppliers = provider.getSupplierList();
         int nrOfSuppliers = 0;

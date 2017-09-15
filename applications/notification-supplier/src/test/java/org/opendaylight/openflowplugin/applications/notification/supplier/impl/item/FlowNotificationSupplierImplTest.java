@@ -43,7 +43,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
- * Test for {@link org.opendaylight.openflowplugin.applications.notification.supplier.impl.item.FlowNotificationSupplierImpl}.
+ * Test for
+ * {@link org.opendaylight.openflowplugin.applications.notification.supplier.impl.item.FlowNotificationSupplierImpl}.
  */
 public class FlowNotificationSupplierImplTest {
 
@@ -83,15 +84,18 @@ public class FlowNotificationSupplierImplTest {
     public void testCreate() {
         final FlowAdded notification = notifSupplierImpl.createNotification(createTestFlow(), createTestFlowPath());
         assertNotNull(notification);
-        assertEquals(FLOW_ID, notification.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId().getValue());
-        assertEquals(FLOW_TABLE_ID, notification.getFlowRef().getValue().firstKeyOf(Table.class, TableKey.class).getId());
-        assertEquals(FLOW_NODE_ID, notification.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue());
+        assertEquals(FLOW_ID,
+                     notification.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId().getValue());
+        assertEquals(FLOW_TABLE_ID,
+                     notification.getFlowRef().getValue().firstKeyOf(Table.class, TableKey.class).getId());
+        assertEquals(FLOW_NODE_ID,
+                     notification.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue());
     }
 
     @Test
     public void testCreateChangeEvent() {
-        final TestData testData = new TestData(createTestFlowPath(),null,createTestFlow(),
-                DataObjectModification.ModificationType.WRITE);
+        final TestData testData = new TestData(createTestFlowPath(), null, createTestFlow(),
+                                               DataObjectModification.ModificationType.WRITE);
         Collection<DataTreeModification<Flow>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);
@@ -112,15 +116,18 @@ public class FlowNotificationSupplierImplTest {
     public void testUpdate() {
         final FlowUpdated notification = notifSupplierImpl.updateNotification(createTestFlow(), createTestFlowPath());
         assertNotNull(notification);
-        assertEquals(FLOW_ID, notification.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId().getValue());
-        assertEquals(FLOW_TABLE_ID, notification.getFlowRef().getValue().firstKeyOf(Table.class, TableKey.class).getId());
-        assertEquals(FLOW_NODE_ID, notification.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue());
+        assertEquals(FLOW_ID,
+                     notification.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId().getValue());
+        assertEquals(FLOW_TABLE_ID,
+                     notification.getFlowRef().getValue().firstKeyOf(Table.class, TableKey.class).getId());
+        assertEquals(FLOW_NODE_ID,
+                     notification.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue());
     }
 
     @Test
     public void testUpdateChangeEvent() {
-        final TestData testData = new TestData(createTestFlowPath(),createTestFlow(),createUpdatedTestFlow(),
-                DataObjectModification.ModificationType.SUBTREE_MODIFIED);
+        final TestData testData = new TestData(createTestFlowPath(), createTestFlow(), createUpdatedTestFlow(),
+                                               DataObjectModification.ModificationType.SUBTREE_MODIFIED);
         Collection<DataTreeModification<Flow>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);
@@ -141,15 +148,18 @@ public class FlowNotificationSupplierImplTest {
     public void testDelete() {
         final FlowRemoved notification = notifSupplierImpl.deleteNotification(createTestFlowPath());
         assertNotNull(notification);
-        assertEquals(FLOW_ID, notification.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId().getValue());
-        assertEquals(FLOW_TABLE_ID, notification.getFlowRef().getValue().firstKeyOf(Table.class, TableKey.class).getId());
-        assertEquals(FLOW_NODE_ID, notification.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue());
+        assertEquals(FLOW_ID,
+                     notification.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId().getValue());
+        assertEquals(FLOW_TABLE_ID,
+                     notification.getFlowRef().getValue().firstKeyOf(Table.class, TableKey.class).getId());
+        assertEquals(FLOW_NODE_ID,
+                     notification.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue());
     }
 
     @Test
     public void testDeleteChangeEvent() {
-        final TestData testData = new TestData(createTestFlowPath(),createTestFlow(),null,
-                DataObjectModification.ModificationType.DELETE);
+        final TestData testData = new TestData(createTestFlowPath(), createTestFlow(), null,
+                                               DataObjectModification.ModificationType.DELETE);
         Collection<DataTreeModification<Flow>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);
@@ -174,7 +184,7 @@ public class FlowNotificationSupplierImplTest {
         return builder.build();
     }
 
-    private static Flow createUpdatedTestFlow(){
+    private static Flow createUpdatedTestFlow() {
         final FlowBuilder builder = new FlowBuilder();
         builder.setId(new FlowId(UPDATED_FLOW_ID));
         builder.setTableId(UPDATED_FLOW_TABLE_ID);
