@@ -30,7 +30,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 public class MeterNotificationSupplierImpl extends
         AbstractNotificationSupplierForItem<Meter, MeterAdded, MeterUpdated, MeterRemoved> {
 
-    private static final InstanceIdentifier<Meter> wildCardedInstanceIdent = getNodeWildII().augmentation(FlowCapableNode.class).child(Meter.class);
+    private static final InstanceIdentifier<Meter> METER_INSTANCE_IDENTIFIER
+            = getNodeWildII().augmentation(FlowCapableNode.class).child(Meter.class);
 
     /**
      * Constructor register supplier as DataTreeChangeListener and create wildCarded InstanceIdentifier.
@@ -44,24 +45,24 @@ public class MeterNotificationSupplierImpl extends
 
     @Override
     public InstanceIdentifier<Meter> getWildCardPath() {
-        return wildCardedInstanceIdent;
+        return METER_INSTANCE_IDENTIFIER;
     }
 
     @Override
-    public MeterAdded createNotification(final Meter o, final InstanceIdentifier<Meter> path) {
-        Preconditions.checkArgument(o != null);
+    public MeterAdded createNotification(final Meter dataTreeItemObject, final InstanceIdentifier<Meter> path) {
+        Preconditions.checkArgument(dataTreeItemObject != null);
         Preconditions.checkArgument(path != null);
-        final MeterAddedBuilder builder = new MeterAddedBuilder(o);
+        final MeterAddedBuilder builder = new MeterAddedBuilder(dataTreeItemObject);
         builder.setMeterRef(new MeterRef(path));
         builder.setNode(createNodeRef(path));
         return builder.build();
     }
 
     @Override
-    public MeterUpdated updateNotification(final Meter o, final InstanceIdentifier<Meter> path) {
-        Preconditions.checkArgument(o != null);
+    public MeterUpdated updateNotification(final Meter meter, final InstanceIdentifier<Meter> path) {
+        Preconditions.checkArgument(meter != null);
         Preconditions.checkArgument(path != null);
-        final MeterUpdatedBuilder builder = new MeterUpdatedBuilder(o);
+        final MeterUpdatedBuilder builder = new MeterUpdatedBuilder(meter);
         builder.setMeterRef(new MeterRef(path));
         builder.setNode(createNodeRef(path));
         return builder.build();

@@ -29,33 +29,36 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * Implementation define a contract between {@link FlowStatistics} data object
  * and {@link FlowsStatisticsUpdate} notification.
  */
-public class FlowStatNotificationSupplierImpl extends AbstractNotificationSupplierForItemStat<FlowStatistics, FlowsStatisticsUpdate> {
+public class FlowStatNotificationSupplierImpl extends AbstractNotificationSupplierForItemStat<FlowStatistics,
+        FlowsStatisticsUpdate> {
 
-    private static final InstanceIdentifier<FlowStatistics> wildCardedInstanceIdent =
-            getNodeWildII().augmentation(FlowCapableNode.class).child(Table.class)
-                    .child(Flow.class).augmentation(FlowStatisticsData.class).child(FlowStatistics.class);
+    private static final InstanceIdentifier<FlowStatistics> FLOW_STATISTICS_INSTANCE_IDENTIFIER = getNodeWildII()
+            .augmentation(FlowCapableNode.class).child(Table.class).child(Flow.class)
+            .augmentation(FlowStatisticsData.class).child(FlowStatistics.class);
 
     /**
      * Constructor register supplier as DataTreeChangeListener and create wildCarded InstanceIdentifier.
      *
      * @param notifProviderService - {@link NotificationProviderService}
-     * @param db - {@link DataBroker}
+     * @param db                   - {@link DataBroker}
      */
-    public FlowStatNotificationSupplierImpl(final NotificationProviderService notifProviderService, final DataBroker db) {
+    public FlowStatNotificationSupplierImpl(final NotificationProviderService notifProviderService,
+                                            final DataBroker db) {
         super(notifProviderService, db, FlowStatistics.class);
     }
 
     @Override
     public InstanceIdentifier<FlowStatistics> getWildCardPath() {
-        return wildCardedInstanceIdent;
+        return FLOW_STATISTICS_INSTANCE_IDENTIFIER;
     }
 
     @Override
-    public FlowsStatisticsUpdate createNotification(final FlowStatistics o, final InstanceIdentifier<FlowStatistics> path) {
-        Preconditions.checkArgument(o != null);
+    public FlowsStatisticsUpdate createNotification(final FlowStatistics flowStatistics,
+                                                    final InstanceIdentifier<FlowStatistics> path) {
+        Preconditions.checkArgument(flowStatistics != null);
         Preconditions.checkArgument(path != null);
 
-        final FlowAndStatisticsMapListBuilder fsmlBuilder = new FlowAndStatisticsMapListBuilder(o);
+        final FlowAndStatisticsMapListBuilder fsmlBuilder = new FlowAndStatisticsMapListBuilder(flowStatistics);
         fsmlBuilder.setFlowId(new FlowId(path.firstKeyOf(Flow.class, FlowKey.class).getId().getValue()));
 
         final FlowsStatisticsUpdateBuilder builder = new FlowsStatisticsUpdateBuilder();

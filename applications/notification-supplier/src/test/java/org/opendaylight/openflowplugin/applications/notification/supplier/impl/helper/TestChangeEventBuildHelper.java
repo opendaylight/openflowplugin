@@ -17,13 +17,12 @@ public class TestChangeEventBuildHelper {
         throw new UnsupportedOperationException("Test utility class");
     }
 
-    public static Collection createEmptyTestDataTreeEvent(){
-        return  Collections.EMPTY_LIST ;
+    public static Collection createEmptyTestDataTreeEvent() {
+        return Collections.EMPTY_LIST;
     }
 
-    public static Collection createNullTestDataTreeEvent(){
+    public static Collection createNullTestDataTreeEvent() {
         return null;
     }
-
 }
 

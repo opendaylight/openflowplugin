@@ -23,11 +23,10 @@ public interface NotificationSupplierDefinition<O extends DataObject> extends Au
 
     /**
      * Method return wildCardPath for Listener registration and for identify
-     * the correct KeyInstanceIdentifier from Data Tree Item in DataStore;
+     * the correct KeyInstanceIdentifier from Data Tree Item in DataStore.
      *
      * @return {@link InstanceIdentifier}
      */
     InstanceIdentifier<O> getWildCardPath();
-
 }
 

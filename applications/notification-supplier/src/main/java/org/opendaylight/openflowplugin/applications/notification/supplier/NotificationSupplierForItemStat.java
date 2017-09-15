@@ -21,18 +21,16 @@ import org.opendaylight.yangtools.yang.binding.Notification;
  * @param <O> - data tree item Object
  * @param <N> - Statistics Notification
  */
-public interface NotificationSupplierForItemStat<O extends DataObject, N extends Notification>
-        extends NotificationSupplierDefinition<O> {
-
-
+public interface NotificationSupplierForItemStat<O extends DataObject, N extends Notification> extends
+        NotificationSupplierDefinition<O> {
     /**
-     * Method produces relevant Statistics kind of {@link Notification} from statistics
-     * data tree item identified by {@link InstanceIdentifier} path.
-     * 
-     * @param o - Statistics Data Tree Item
+     * Method produces relevant Statistics kind of {@link Notification} from statistics data tree item identified by
+     * {@link InstanceIdentifier} path.
+     *
+     * @param statisticsDataTreeItem    - Statistics Data Tree Item
      * @param path - Identifier of Data Tree Item
      * @return {@link Notification} - relevant API contract Notification
      */
-    N createNotification(O o, InstanceIdentifier<O> path);
+    N createNotification(O statisticsDataTreeItem, InstanceIdentifier<O> path);
 }
 

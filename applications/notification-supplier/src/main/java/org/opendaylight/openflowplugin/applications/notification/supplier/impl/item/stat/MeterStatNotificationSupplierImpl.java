@@ -26,32 +26,33 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * Implementation define a contract between {@link MeterStatistics} data object
  * and {@link MeterStatisticsUpdated} notification.
  */
-public class MeterStatNotificationSupplierImpl extends
-        AbstractNotificationSupplierForItemStat<MeterStatistics, MeterStatisticsUpdated> {
+public class MeterStatNotificationSupplierImpl extends AbstractNotificationSupplierForItemStat<MeterStatistics,
+        MeterStatisticsUpdated> {
 
-    private static final InstanceIdentifier<MeterStatistics> wildCardedInstanceIdent =
-            getNodeWildII().augmentation(FlowCapableNode.class).child(Meter.class)
-                    .augmentation(NodeMeterStatistics.class).child(MeterStatistics.class);
+    private static final InstanceIdentifier<MeterStatistics> METER_STATISTICS_INSTANCE_IDENTIFIER = getNodeWildII()
+            .augmentation(FlowCapableNode.class).child(Meter.class).augmentation(NodeMeterStatistics.class)
+            .child(MeterStatistics.class);
 
     /**
      * Constructor register supplier as DataTreeChangeListener and create wildCarded InstanceIdentifier.
      *
      * @param notifProviderService - {@link NotificationProviderService}
-     * @param db - {@link DataBroker}
+     * @param db                   - {@link DataBroker}
      */
-    public MeterStatNotificationSupplierImpl(final NotificationProviderService notifProviderService, final DataBroker db) {
+    public MeterStatNotificationSupplierImpl(final NotificationProviderService notifProviderService,
+                                             final DataBroker db) {
         super(notifProviderService, db, MeterStatistics.class);
     }
 
     @Override
     public InstanceIdentifier<MeterStatistics> getWildCardPath() {
-        return wildCardedInstanceIdent;
+        return METER_STATISTICS_INSTANCE_IDENTIFIER;
     }
 
     @Override
-    public MeterStatisticsUpdated createNotification(final MeterStatistics o,
-            final InstanceIdentifier<MeterStatistics> path) {
-        Preconditions.checkArgument(o != null);
+    public MeterStatisticsUpdated createNotification(final MeterStatistics meterStatistics,
+                                                     final InstanceIdentifier<MeterStatistics> path) {
+        Preconditions.checkArgument(meterStatistics != null);
         Preconditions.checkArgument(path != null);
 
         final MeterStatisticsUpdatedBuilder builder = new MeterStatisticsUpdatedBuilder();
@@ -59,7 +60,7 @@ public class MeterStatNotificationSupplierImpl extends
         builder.setMoreReplies(Boolean.FALSE);
         // TODO : fix if it needs, but we have to ask DataStore for the NodeConnector list
         builder.setNodeConnector(Collections.<NodeConnector>emptyList());
-        builder.setMeterStats(Collections.singletonList(new MeterStatsBuilder(o).build()));
+        builder.setMeterStats(Collections.singletonList(new MeterStatsBuilder(meterStatistics).build()));
         return builder.build();
     }
 }

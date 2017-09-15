@@ -16,7 +16,6 @@ import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
@@ -40,9 +39,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-/**
- *
- */
 public class NodeConnectorNotificationSupplierImplTest {
 
     private static final String FLOW_NODE_ID = "openflow:111";
@@ -71,24 +67,27 @@ public class NodeConnectorNotificationSupplierImplTest {
 
     @Test
     public void testEmptyChangeEvent() {
-        notifSupplierImpl.onDataTreeChanged( TestChangeEventBuildHelper.createEmptyTestDataTreeEvent());
+        notifSupplierImpl.onDataTreeChanged(TestChangeEventBuildHelper.createEmptyTestDataTreeEvent());
     }
 
     @Test
     public void testCreate() {
-        final NodeConnectorUpdated notification = notifSupplierImpl.createNotification(createTestFlowCapableNodeConnecor(),
-                createTestFlowCapableConnectorNodePath());
+        final NodeConnectorUpdated notification = notifSupplierImpl
+                .createNotification(createTestFlowCapableNodeConnecor(), createTestFlowCapableConnectorNodePath());
         assertNotNull(notification);
         assertEquals(FLOW_CODE_CONNECTOR_ID, notification.getId().getValue());
         assertEquals(FLOW_CODE_CONNECTOR_ID, notification.getNodeConnectorRef().getValue()
                 .firstKeyOf(NodeConnector.class, NodeConnectorKey.class).getId().getValue());
-        assertEquals(FLOW_NODE_ID, notification.getNodeConnectorRef().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue());
+        assertEquals(FLOW_NODE_ID,
+                     notification.getNodeConnectorRef().getValue().firstKeyOf(Node.class, NodeKey.class).getId()
+                             .getValue());
     }
 
     @Test
     public void testCreateChangeEvent() {
-        final TestData testData = new TestData(createTestFlowCapableConnectorNodePath(),null,
-                createTestFlowCapableNodeConnecor(),DataObjectModification.ModificationType.WRITE);
+        final TestData testData = new TestData(createTestFlowCapableConnectorNodePath(), null,
+                                               createTestFlowCapableNodeConnecor(),
+                                               DataObjectModification.ModificationType.WRITE);
         Collection<DataTreeModification<FlowCapableNodeConnector>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);
@@ -107,17 +106,21 @@ public class NodeConnectorNotificationSupplierImplTest {
 
     @Test
     public void testDelete() {
-        final NodeConnectorRemoved notification = notifSupplierImpl.deleteNotification(createTestFlowCapableConnectorNodePath());
+        final NodeConnectorRemoved notification = notifSupplierImpl
+                .deleteNotification(createTestFlowCapableConnectorNodePath());
         assertNotNull(notification);
         assertEquals(FLOW_CODE_CONNECTOR_ID, notification.getNodeConnectorRef().getValue()
                 .firstKeyOf(NodeConnector.class, NodeConnectorKey.class).getId().getValue());
-        assertEquals(FLOW_NODE_ID, notification.getNodeConnectorRef().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue());
+        assertEquals(FLOW_NODE_ID,
+                     notification.getNodeConnectorRef().getValue().firstKeyOf(Node.class, NodeKey.class).getId()
+                             .getValue());
     }
 
     @Test
     public void testDeleteChangeEvent() {
         final TestData testData = new TestData(createTestFlowCapableConnectorNodePath(),
-                createTestFlowCapableNodeConnecor(),null,DataObjectModification.ModificationType.DELETE);
+                                               createTestFlowCapableNodeConnecor(), null,
+                                               DataObjectModification.ModificationType.DELETE);
         Collection<DataTreeModification<FlowCapableNodeConnector>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);
@@ -131,7 +134,8 @@ public class NodeConnectorNotificationSupplierImplTest {
 
     private static InstanceIdentifier<FlowCapableNodeConnector> createTestFlowCapableConnectorNodePath() {
         return InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(new NodeId(FLOW_NODE_ID)))
-                .child(NodeConnector.class, new NodeConnectorKey(new NodeConnectorId(FLOW_CODE_CONNECTOR_ID))).augmentation(FlowCapableNodeConnector.class);
+                .child(NodeConnector.class, new NodeConnectorKey(new NodeConnectorId(FLOW_CODE_CONNECTOR_ID)))
+                .augmentation(FlowCapableNodeConnector.class);
     }
 
     private static FlowCapableNodeConnector createTestFlowCapableNodeConnecor() {

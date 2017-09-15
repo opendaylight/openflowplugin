@@ -41,9 +41,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.flow.capable.node.connector.queue.statistics.FlowCapableNodeConnectorQueueStatisticsBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-/**
- *
- */
 public class QueueStatNotificationSupplierImplTest {
 
     private static final String FLOW_NODE_ID = "openflow:111";
@@ -77,8 +74,8 @@ public class QueueStatNotificationSupplierImplTest {
 
     @Test
     public void testCreate() {
-        final QueueStatisticsUpdate notification = notifSupplierImpl.createNotification(createTestQueueStat(),
-                createTestQueueStatPath());
+        final QueueStatisticsUpdate notification = notifSupplierImpl
+                .createNotification(createTestQueueStat(), createTestQueueStatPath());
         assertNotNull(notification);
         assertEquals(FLOW_NODE_ID, notification.getId().getValue());
         assertEquals(FLOW_CODE_CONNECTOR_ID, notification.getNodeConnector().get(0).getId().getValue());
@@ -86,8 +83,8 @@ public class QueueStatNotificationSupplierImplTest {
 
     @Test
     public void testCreateChangeEvent() {
-        final TestData testData = new TestData(createTestQueueStatPath(),null,createTestQueueStat(),
-                DataObjectModification.ModificationType.WRITE);
+        final TestData testData = new TestData(createTestQueueStatPath(), null, createTestQueueStat(),
+                                               DataObjectModification.ModificationType.WRITE);
         Collection<DataTreeModification<FlowCapableNodeConnectorQueueStatisticsData>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);
@@ -122,10 +119,11 @@ public class QueueStatNotificationSupplierImplTest {
     }
 
     private static FlowCapableNodeConnectorQueueStatisticsData createTestQueueStat() {
-        final FlowCapableNodeConnectorQueueStatisticsDataBuilder builder = new FlowCapableNodeConnectorQueueStatisticsDataBuilder();
-        final FlowCapableNodeConnectorQueueStatisticsBuilder value = new FlowCapableNodeConnectorQueueStatisticsBuilder();
+        final FlowCapableNodeConnectorQueueStatisticsDataBuilder builder
+                = new FlowCapableNodeConnectorQueueStatisticsDataBuilder();
+        final FlowCapableNodeConnectorQueueStatisticsBuilder value
+                = new FlowCapableNodeConnectorQueueStatisticsBuilder();
         builder.setFlowCapableNodeConnectorQueueStatistics(value.build());
         return builder.build();
     }
 }
-

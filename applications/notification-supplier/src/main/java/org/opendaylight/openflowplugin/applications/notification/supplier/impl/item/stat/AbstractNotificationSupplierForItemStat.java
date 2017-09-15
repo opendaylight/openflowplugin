@@ -22,27 +22,25 @@ import org.opendaylight.yangtools.yang.binding.Notification;
 
 /**
  * Class is package protected abstract implementation for all Old Statistics
- * Notification Suppliers
+ * Notification Suppliers.
  *
  * @param <O> - Statistics {@link DataObject}
  * @param <N> - Statistics Notification
  */
-abstract class AbstractNotificationSupplierForItemStat<O extends DataObject,
-                                                N extends Notification>
-                    extends AbstractNotificationSupplierBase<O>
-                    implements NotificationSupplierForItemStat<O, N> {
+public abstract class AbstractNotificationSupplierForItemStat<O extends DataObject, N extends Notification> extends
+        AbstractNotificationSupplierBase<O> implements NotificationSupplierForItemStat<O, N> {
 
     private final NotificationProviderService notifProviderService;
 
     /**
-     * Default constructor for all Statistic Notification Supplier implementation
+     * Default constructor for all Statistic Notification Supplier implementation.
      *
      * @param notifProviderService - notification publisher
-     * @param db - DataBroker for DataTreeChangeListener registration
-     * @param clazz - Statistics Notification Class
+     * @param db                   - DataBroker for DataTreeChangeListener registration
+     * @param clazz                - Statistics Notification Class
      */
     public AbstractNotificationSupplierForItemStat(final NotificationProviderService notifProviderService,
-            final DataBroker db, final Class<O> clazz) {
+                                                   final DataBroker db, final Class<O> clazz) {
         super(db, clazz);
         this.notifProviderService = Preconditions.checkNotNull(notifProviderService);
     }
@@ -76,22 +74,19 @@ abstract class AbstractNotificationSupplierForItemStat<O extends DataObject,
     }
 
 
-    public void add(InstanceIdentifier<O> identifier , O add ){
+    public void add(InstanceIdentifier<O> identifier, O add) {
         final N notif = createNotification(add, identifier);
         if (notif != null) {
             notifProviderService.publish(notif);
         }
     }
 
-
-    public void remove(InstanceIdentifier<O> identifier , O del){
+    public void remove(InstanceIdentifier<O> identifier, O del) {
         //EMPTY NO-OP
     }
 
-
-    public void update(InstanceIdentifier<O> identifier , O before, O after){
+    public void update(InstanceIdentifier<O> identifier, O before, O after) {
         //EMPTY NO-OP
     }
-
 }
 

@@ -30,7 +30,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 public class NodeConnectorNotificationSupplierImpl extends
         AbstractNotificationSupplierForItemRoot<FlowCapableNodeConnector, NodeConnectorUpdated, NodeConnectorRemoved> {
 
-    private static final InstanceIdentifier<FlowCapableNodeConnector> wildCardedInstanceIdent = getNodeWildII().child(NodeConnector.class).augmentation(FlowCapableNodeConnector.class);
+    private static final InstanceIdentifier<FlowCapableNodeConnector> FLOW_CAPABLE_NODE_CONNECTOR_INSTANCE_IDENTIFIER
+            = getNodeWildII().child(NodeConnector.class).augmentation(FlowCapableNodeConnector.class);
 
     /**
      * Constructor register supplier as DataTreeChangeListener and create wildCarded InstanceIdentifier.
@@ -38,22 +39,24 @@ public class NodeConnectorNotificationSupplierImpl extends
      * @param notifProviderService - {@link NotificationProviderService}
      * @param db                   - {@link DataBroker}
      */
-    public NodeConnectorNotificationSupplierImpl(final NotificationProviderService notifProviderService, final DataBroker db) {
+    public NodeConnectorNotificationSupplierImpl(final NotificationProviderService notifProviderService,
+                                                 final DataBroker db) {
         super(notifProviderService, db, FlowCapableNodeConnector.class);
     }
 
     @Override
     public InstanceIdentifier<FlowCapableNodeConnector> getWildCardPath() {
-        return wildCardedInstanceIdent;
+        return FLOW_CAPABLE_NODE_CONNECTOR_INSTANCE_IDENTIFIER;
     }
 
     @Override
-    public NodeConnectorUpdated createNotification(final FlowCapableNodeConnector o,
+    public NodeConnectorUpdated createNotification(final FlowCapableNodeConnector flowCapableNodeConnector,
                                                    final InstanceIdentifier<FlowCapableNodeConnector> path) {
-        Preconditions.checkArgument(o != null);
+        Preconditions.checkArgument(flowCapableNodeConnector != null);
         Preconditions.checkArgument(path != null);
         final NodeConnectorUpdatedBuilder notifBuilder = new NodeConnectorUpdatedBuilder();
-        final FlowCapableNodeConnectorUpdatedBuilder connNotifBuilder = new FlowCapableNodeConnectorUpdatedBuilder(o);
+        final FlowCapableNodeConnectorUpdatedBuilder connNotifBuilder = new FlowCapableNodeConnectorUpdatedBuilder(
+                flowCapableNodeConnector);
         notifBuilder.setId(path.firstKeyOf(NodeConnector.class, NodeConnectorKey.class).getId());
         notifBuilder.setNodeConnectorRef(new NodeConnectorRef(path));
         notifBuilder.addAugmentation(FlowCapableNodeConnectorUpdated.class, connNotifBuilder.build());

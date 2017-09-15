@@ -41,13 +41,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
- * Test for {@link org.opendaylight.openflowplugin.applications.notification.supplier.impl.item.GroupNotificationSupplierImpl}.
+ * Test for {@link GroupNotificationSupplierImpl}.
  */
 public class GroupNotificationSupplierImplTest {
 
     private static final String FLOW_NODE_ID = "openflow:111";
     private static final Long GROUP_ID = 111L;
-    private static final Long  UPDATED_GROUP_ID = 100L;
+    private static final Long UPDATED_GROUP_ID = 100L;
 
     private GroupNotificationSupplierImpl notifSupplierImpl;
     private NotificationProviderService notifProviderService;
@@ -68,12 +68,12 @@ public class GroupNotificationSupplierImplTest {
 
     @Test(expected = NullPointerException.class)
     public void testNullableChangeEvent() {
-        notifSupplierImpl.onDataTreeChanged( TestChangeEventBuildHelper.createNullTestDataTreeEvent());
+        notifSupplierImpl.onDataTreeChanged(TestChangeEventBuildHelper.createNullTestDataTreeEvent());
     }
 
     @Test
     public void testEmptyChangeEvent() {
-        notifSupplierImpl.onDataTreeChanged( TestChangeEventBuildHelper.createEmptyTestDataTreeEvent());
+        notifSupplierImpl.onDataTreeChanged(TestChangeEventBuildHelper.createEmptyTestDataTreeEvent());
     }
 
     @Test
@@ -81,14 +81,17 @@ public class GroupNotificationSupplierImplTest {
         final GroupAdded notification = notifSupplierImpl.createNotification(createTestGroup(), createTestGroupPath());
         assertNotNull(notification);
         assertEquals(GROUP_ID, notification.getGroupId().getValue());
-        assertEquals(GROUP_ID, notification.getGroupRef().getValue().firstKeyOf(Group.class, GroupKey.class).getGroupId().getValue());
-        assertEquals(FLOW_NODE_ID, notification.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue());
+        assertEquals(GROUP_ID,
+                     notification.getGroupRef().getValue().firstKeyOf(Group.class, GroupKey.class).getGroupId()
+                             .getValue());
+        assertEquals(FLOW_NODE_ID,
+                     notification.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue());
     }
 
     @Test
     public void testCreateChangeEvent() {
-        final TestData testData = new TestData(createTestGroupPath(),null,createTestGroup(),
-                DataObjectModification.ModificationType.WRITE);
+        final TestData testData = new TestData(createTestGroupPath(), null, createTestGroup(),
+                                               DataObjectModification.ModificationType.WRITE);
         Collection<DataTreeModification<Group>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);
@@ -107,17 +110,21 @@ public class GroupNotificationSupplierImplTest {
 
     @Test
     public void testUpdate() {
-        final GroupUpdated notification = notifSupplierImpl.updateNotification(createTestGroup(), createTestGroupPath());
+        final GroupUpdated notification = notifSupplierImpl
+                .updateNotification(createTestGroup(), createTestGroupPath());
         assertNotNull(notification);
         assertEquals(GROUP_ID, notification.getGroupId().getValue());
-        assertEquals(GROUP_ID, notification.getGroupRef().getValue().firstKeyOf(Group.class, GroupKey.class).getGroupId().getValue());
-        assertEquals(FLOW_NODE_ID, notification.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue());
+        assertEquals(GROUP_ID,
+                     notification.getGroupRef().getValue().firstKeyOf(Group.class, GroupKey.class).getGroupId()
+                             .getValue());
+        assertEquals(FLOW_NODE_ID,
+                     notification.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue());
     }
 
     @Test
     public void testUpdateChangeEvent() {
-        final TestData testData = new TestData(createTestGroupPath(),createTestGroup(),createUpdatedTestGroup(),
-                DataObjectModification.ModificationType.SUBTREE_MODIFIED);
+        final TestData testData = new TestData(createTestGroupPath(), createTestGroup(), createUpdatedTestGroup(),
+                                               DataObjectModification.ModificationType.SUBTREE_MODIFIED);
         Collection<DataTreeModification<Group>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);
@@ -139,14 +146,17 @@ public class GroupNotificationSupplierImplTest {
         final GroupRemoved notification = notifSupplierImpl.deleteNotification(createTestGroupPath());
         assertNotNull(notification);
         assertEquals(GROUP_ID, notification.getGroupId().getValue());
-        assertEquals(GROUP_ID, notification.getGroupRef().getValue().firstKeyOf(Group.class, GroupKey.class).getGroupId().getValue());
-        assertEquals(FLOW_NODE_ID, notification.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue());
+        assertEquals(GROUP_ID,
+                     notification.getGroupRef().getValue().firstKeyOf(Group.class, GroupKey.class).getGroupId()
+                             .getValue());
+        assertEquals(FLOW_NODE_ID,
+                     notification.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue());
     }
 
     @Test
     public void testDeleteChangeEvent() {
-        final TestData testData = new TestData(createTestGroupPath(),createTestGroup(),null,
-                DataObjectModification.ModificationType.DELETE);
+        final TestData testData = new TestData(createTestGroupPath(), createTestGroup(), null,
+                                               DataObjectModification.ModificationType.DELETE);
         Collection<DataTreeModification<Group>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);

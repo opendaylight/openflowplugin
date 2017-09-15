@@ -32,33 +32,35 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 public class FlowTableStatNotificationSupplierImpl extends
         AbstractNotificationSupplierForItemStat<FlowTableStatistics, FlowTableStatisticsUpdate> {
 
-    private static final InstanceIdentifier<FlowTableStatistics> wildCardedInstanceIdent =
-            getNodeWildII().augmentation(FlowCapableNode.class).child(Table.class)
-                    .augmentation(FlowTableStatisticsData.class).child(FlowTableStatistics.class);
+    private static final InstanceIdentifier<FlowTableStatistics> FLOW_TABLE_STATISTICS_INSTANCE_IDENTIFIER
+            = getNodeWildII().augmentation(FlowCapableNode.class).child(Table.class)
+            .augmentation(FlowTableStatisticsData.class).child(FlowTableStatistics.class);
 
     /**
      * Constructor register supplier as DataTreeChangeListener and create wildCarded InstanceIdentifier.
      *
      * @param notifProviderService - {@link NotificationProviderService}
-     * @param db - {@link DataBroker}
+     * @param db                   - {@link DataBroker}
      */
-    public FlowTableStatNotificationSupplierImpl(final NotificationProviderService notifProviderService, final DataBroker db) {
+    public FlowTableStatNotificationSupplierImpl(final NotificationProviderService notifProviderService,
+                                                 final DataBroker db) {
         super(notifProviderService, db, FlowTableStatistics.class);
     }
 
     @Override
     public InstanceIdentifier<FlowTableStatistics> getWildCardPath() {
-        return wildCardedInstanceIdent;
+        return FLOW_TABLE_STATISTICS_INSTANCE_IDENTIFIER;
     }
 
     @Override
-    public FlowTableStatisticsUpdate createNotification(final FlowTableStatistics o,
-            final InstanceIdentifier<FlowTableStatistics> path) {
-        Preconditions.checkArgument(o != null);
+    public FlowTableStatisticsUpdate createNotification(final FlowTableStatistics flowTableStatistics,
+                                                        final InstanceIdentifier<FlowTableStatistics> path) {
+        Preconditions.checkArgument(flowTableStatistics != null);
         Preconditions.checkArgument(path != null);
 
-        final FlowTableAndStatisticsMapBuilder ftsmBuilder = new FlowTableAndStatisticsMapBuilder(o);
-        ftsmBuilder.setKey(new FlowTableAndStatisticsMapKey(new TableId(path.firstKeyOf(Table.class, TableKey.class).getId())));
+        final FlowTableAndStatisticsMapBuilder ftsmBuilder = new FlowTableAndStatisticsMapBuilder(flowTableStatistics);
+        ftsmBuilder.setKey(new FlowTableAndStatisticsMapKey(
+                new TableId(path.firstKeyOf(Table.class, TableKey.class).getId())));
 
         final FlowTableStatisticsUpdateBuilder builder = new FlowTableStatisticsUpdateBuilder();
         builder.setId(getNodeId(path));

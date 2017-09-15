@@ -46,28 +46,31 @@ public abstract class AbstractNotificationSupplierBase<O extends DataObject> imp
     private static final int STARTUP_LOOP_MAX_RETRIES = 8;
 
 
-    final DataTreeIdentifier<O> treeId =
-            new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL, getWildCardPath());
+    final DataTreeIdentifier<O> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL, getWildCardPath());
+
     /**
-     * Default constructor for all Notification Supplier implementation
+     * Default constructor for all Notification Supplier implementation.
      *
      * @param db    - {@link DataBroker}
      * @param clazz - API contract class extended {@link DataObject}
      */
+    @SuppressWarnings("IllegalCatch")
     public AbstractNotificationSupplierBase(final DataBroker db, final Class<O> clazz) {
         Preconditions.checkArgument(db != null, "DataBroker can not be null!");
         this.clazz = clazz;
 
         SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
         try {
-            listenerRegistration =  looper.loopUntilNoException(new Callable<ListenerRegistration<DataTreeChangeListener<O>>>() {
-                @Override
-                public ListenerRegistration<DataTreeChangeListener<O>> call() throws Exception {
-                    return db.registerDataTreeChangeListener(treeId, AbstractNotificationSupplierBase.this);
-                }
-            });
-        }catch(final Exception ex){
-            LOG.debug("AbstractNotificationSupplierBase DataTreeChange listener registration fail ..{}", ex.getMessage());
+            listenerRegistration = looper
+                    .loopUntilNoException(new Callable<ListenerRegistration<DataTreeChangeListener<O>>>() {
+                        @Override
+                        public ListenerRegistration<DataTreeChangeListener<O>> call() throws Exception {
+                            return db.registerDataTreeChangeListener(treeId, AbstractNotificationSupplierBase.this);
+                        }
+                    });
+        } catch (final Exception ex) {
+            LOG.debug("AbstractNotificationSupplierBase DataTreeChange listener registration fail ..{}",
+                      ex.getMessage());
             throw new IllegalStateException("Notification supplier startup fail! System needs restart.", ex);
         }
     }
@@ -104,6 +107,8 @@ public abstract class AbstractNotificationSupplierBase<O extends DataObject> imp
     }
 
     /**
+     * Create a node reference.
+     *
      * @param path pointer to element
      * @return extracted {@link NodeKey} and wrapped in {@link NodeRef}
      */
@@ -113,6 +118,8 @@ public abstract class AbstractNotificationSupplierBase<O extends DataObject> imp
     }
 
     /**
+     * Get the node identifier.
+     *
      * @param path pointer to element
      * @return extracted {@link NodeId}
      */
@@ -120,5 +127,4 @@ public abstract class AbstractNotificationSupplierBase<O extends DataObject> imp
         final NodeKey nodeKey = Preconditions.checkNotNull(path.firstKeyOf(Node.class, NodeKey.class));
         return nodeKey.getId();
     }
-
 }

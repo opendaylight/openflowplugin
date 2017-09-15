@@ -22,31 +22,28 @@ import org.opendaylight.yangtools.yang.binding.Notification;
  * @param <U> - Update notification
  * @param <D> - Delete notification
  */
-public interface NotificationSupplierForItem<O extends DataObject,
-                                         C extends Notification,
-                                         U extends Notification,
-                                         D extends Notification>
-        extends NotificationSupplierDefinition<O> {
+public interface NotificationSupplierForItem<O extends DataObject, C extends Notification, U extends Notification, D
+        extends Notification> extends NotificationSupplierDefinition<O> {
 
     /**
      * Method produces relevant addItem kind of {@link Notification} from
      * data tree item identified by {@link InstanceIdentifier} path.
      *
-     * @param o - Data Tree Item object
-     * @param path - Identifier of Data Tree Item
+     * @param dataTreeItemObject - Data Tree Item object
+     * @param path               - Identifier of Data Tree Item
      * @return {@link Notification} - relevant API contract Notification
      */
-     C createNotification(O o, InstanceIdentifier<O> path);
+    C createNotification(O dataTreeItemObject, InstanceIdentifier<O> path);
 
     /**
      * Method produces relevant updateItem kind of {@link Notification} from
      * data tree item identified by {@link InstanceIdentifier} path.
      *
-     * @param o - Data Tree Item object
-     * @param path - Identifier of Data Tree Item
+     * @param dataTreeItemObject - Data Tree Item object
+     * @param path               - Identifier of Data Tree Item
      * @return {@link Notification} - relevant API contract Notification
      */
-    U updateNotification(O o, InstanceIdentifier<O> path);
+    U updateNotification(O dataTreeItemObject, InstanceIdentifier<O> path);
 
     /**
      * Method produces relevant deleteItem kind of {@link Notification} from
@@ -55,6 +52,6 @@ public interface NotificationSupplierForItem<O extends DataObject,
      * @param path - Identifier of Data Tree Item
      * @return {@link Notification} - relevant API contract Notification
      */
-     D deleteNotification(InstanceIdentifier<O> path);
+    D deleteNotification(InstanceIdentifier<O> path);
 }
 

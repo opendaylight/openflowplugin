@@ -72,8 +72,8 @@ public class NodeConnectorStatNotificationSupplierImplTest {
 
     @Test
     public void testCreate() {
-        final NodeConnectorStatisticsUpdate notification = notifSupplierImpl.createNotification(createTestConnectorStat(),
-                createTestConnectorStatPath());
+        final NodeConnectorStatisticsUpdate notification = notifSupplierImpl
+                .createNotification(createTestConnectorStat(), createTestConnectorStatPath());
         assertNotNull(notification);
         assertEquals(FLOW_NODE_ID, notification.getId().getValue());
         assertEquals(FLOW_CODE_CONNECTOR_ID, notification.getNodeConnector().get(0).getId().getValue());
@@ -81,8 +81,8 @@ public class NodeConnectorStatNotificationSupplierImplTest {
 
     @Test
     public void testCreateChangeEvent() {
-        final TestData testData = new TestData(createTestConnectorStatPath(),null,createTestConnectorStat(),
-                DataObjectModification.ModificationType.WRITE);
+        final TestData testData = new TestData(createTestConnectorStatPath(), null, createTestConnectorStat(),
+                                               DataObjectModification.ModificationType.WRITE);
         Collection<DataTreeModification<FlowCapableNodeConnectorStatistics>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);
