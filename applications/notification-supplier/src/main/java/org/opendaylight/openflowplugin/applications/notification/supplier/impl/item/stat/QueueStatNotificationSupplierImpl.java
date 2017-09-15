@@ -30,30 +30,32 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 public class QueueStatNotificationSupplierImpl extends
         AbstractNotificationSupplierForItemStat<FlowCapableNodeConnectorQueueStatisticsData, QueueStatisticsUpdate> {
 
-    private static final InstanceIdentifier<FlowCapableNodeConnectorQueueStatisticsData> wildCardedInstanceIdent =
-            getNodeWildII().child(NodeConnector.class)
-                    .augmentation(FlowCapableNodeConnector.class).child(Queue.class)
-                    .augmentation(FlowCapableNodeConnectorQueueStatisticsData.class);
+    private static final InstanceIdentifier<FlowCapableNodeConnectorQueueStatisticsData>
+            FLOW_CAPABLE_NODE_CONNECTOR_QUEUE_STATISTICS_DATA_INSTANCE_IDENTIFIER = getNodeWildII()
+            .child(NodeConnector.class).augmentation(FlowCapableNodeConnector.class).child(Queue.class)
+            .augmentation(FlowCapableNodeConnectorQueueStatisticsData.class);
 
     /**
      * Constructor register supplier as DataTreeChangeListener and create wildCarded InstanceIdentifier.
      *
      * @param notifProviderService - {@link NotificationProviderService}
-     * @param db - {@link DataBroker}
+     * @param db                   - {@link DataBroker}
      */
-    public QueueStatNotificationSupplierImpl(final NotificationProviderService notifProviderService, final DataBroker db) {
+    public QueueStatNotificationSupplierImpl(final NotificationProviderService notifProviderService,
+                                             final DataBroker db) {
         super(notifProviderService, db, FlowCapableNodeConnectorQueueStatisticsData.class);
     }
 
     @Override
     public InstanceIdentifier<FlowCapableNodeConnectorQueueStatisticsData> getWildCardPath() {
-        return wildCardedInstanceIdent;
+        return FLOW_CAPABLE_NODE_CONNECTOR_QUEUE_STATISTICS_DATA_INSTANCE_IDENTIFIER;
     }
 
     @Override
-    public QueueStatisticsUpdate createNotification(final FlowCapableNodeConnectorQueueStatisticsData o,
+    public QueueStatisticsUpdate createNotification(
+            final FlowCapableNodeConnectorQueueStatisticsData statisticsDataTreeItem,
             final InstanceIdentifier<FlowCapableNodeConnectorQueueStatisticsData> path) {
-        Preconditions.checkArgument(o != null);
+        Preconditions.checkArgument(statisticsDataTreeItem != null);
         Preconditions.checkArgument(path != null);
 
         final NodeConnectorBuilder connBuilder = new NodeConnectorBuilder();
@@ -61,8 +63,8 @@ public class QueueStatNotificationSupplierImpl extends
         connBuilder.setId(key.getId());
         connBuilder.setKey(key);
 
-        final QueueIdAndStatisticsMapBuilder queueStatMapBuilder =
-                new QueueIdAndStatisticsMapBuilder(o.getFlowCapableNodeConnectorQueueStatistics());
+        final QueueIdAndStatisticsMapBuilder queueStatMapBuilder = new QueueIdAndStatisticsMapBuilder(
+                statisticsDataTreeItem.getFlowCapableNodeConnectorQueueStatistics());
 
         final QueueStatisticsUpdateBuilder builder = new QueueStatisticsUpdateBuilder();
         builder.setId(getNodeId(path));

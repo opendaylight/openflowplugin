@@ -66,7 +66,7 @@ public class FlowStatNotificationSupplierImplTest {
 
     @Test(expected = NullPointerException.class)
     public void testNullableChangeEvent() {
-        notifSupplierImpl.onDataTreeChanged( TestChangeEventBuildHelper.createNullTestDataTreeEvent());
+        notifSupplierImpl.onDataTreeChanged(TestChangeEventBuildHelper.createNullTestDataTreeEvent());
     }
 
     @Test
@@ -76,15 +76,16 @@ public class FlowStatNotificationSupplierImplTest {
 
     @Test
     public void testCreate() {
-        final FlowsStatisticsUpdate notification = notifSupplierImpl.createNotification(createTestFlowStat(), createTestFlowStatPath());
+        final FlowsStatisticsUpdate notification = notifSupplierImpl
+                .createNotification(createTestFlowStat(), createTestFlowStatPath());
         assertNotNull(notification);
         assertEquals(FLOW_NODE_ID, notification.getId().getValue());
     }
 
     @Test
     public void testCreateChangeEvent() {
-        final TestData testData = new TestData(createTestFlowStatPath(),null,createTestFlowStat(),
-                DataObjectModification.ModificationType.WRITE);
+        final TestData testData = new TestData(createTestFlowStatPath(), null, createTestFlowStat(),
+                                               DataObjectModification.ModificationType.WRITE);
         Collection<DataTreeModification<FlowStatistics>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);
