@@ -132,6 +132,10 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>openflowplugin-extension-onf</artifactId>
         </dependency>
     </dependencies>

@@ -38,7 +38,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
@@ -61,6 +61,7 @@ import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRe
 import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
+import org.opendaylight.openflowplugin.common.txchain.TransactionChainManager;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.device.initialization.AbstractDeviceInitializer;
@@ -120,40 +121,40 @@ public class DeviceContextImplTest {
     private static final Long DUMMY_XID = 544L;
     private static final Long DUMMY_PORT_NUMBER = 159L;
     private static final BigInteger DUMMY_DATAPATH_ID = new BigInteger("55");
-    Xid xid;
-    Xid xidMulti;
+    private Xid xid;
+    private Xid xidMulti;
 
-    DeviceContext deviceContext;
+    private DeviceContext deviceContext;
     @Mock
-    RequestContext<GetAsyncReply> requestContext;
+    private RequestContext<GetAsyncReply> requestContext;
     @Mock
-    RequestContext<MultipartReply> requestContextMultiReply;
+    private RequestContext<MultipartReply> requestContextMultiReply;
     @Mock
-    ConnectionContext connectionContext;
+    private ConnectionContext connectionContext;
     @Mock
-    GetFeaturesOutput featuresOutput;
+    private GetFeaturesOutput featuresOutput;
     @Mock
-    DataBroker dataBroker;
+    private DataBroker dataBroker;
     @Mock
-    WriteTransaction wTx;
+    private ReadWriteTransaction wTx;
     @Mock
-    ReadOnlyTransaction rTx;
+    private ReadOnlyTransaction rTx;
     @Mock
-    BindingTransactionChain txChainFactory;
+    private BindingTransactionChain txChainFactory;
     @Mock
-    HashedWheelTimer timer;
+    private HashedWheelTimer timer;
     @Mock
-    OutboundQueueProvider outboundQueueProvider;
+    private OutboundQueueProvider outboundQueueProvider;
     @Mock
-    ConnectionAdapter connectionAdapter;
-    NodeId nodeId = new NodeId("h2g2:42");
-    KeyedInstanceIdentifier<Node, NodeKey> nodeKeyIdent = DeviceStateUtil.createNodeInstanceIdentifier(nodeId);
+    private ConnectionAdapter connectionAdapter;
+    private NodeId nodeId = new NodeId("h2g2:42");
+    private KeyedInstanceIdentifier<Node, NodeKey> nodeKeyIdent = DeviceStateUtil.createNodeInstanceIdentifier(nodeId);
     @Mock
-    TranslatorLibrary translatorLibrary;
+    private TranslatorLibrary translatorLibrary;
     @Mock
     MessageTranslator messageTranslatorPacketReceived;
     @Mock
-    MessageTranslator messageTranslatorFlowCapableNodeConnector;
+    private MessageTranslator messageTranslatorFlowCapableNodeConnector;
     @Mock
     private MessageTranslator<Object, Object> messageTranslatorFlowRemoved;
     @Mock
@@ -195,7 +196,7 @@ public class DeviceContextImplTest {
             settableFutureMultiReply.set((RpcResult<MultipartReply>) invocation.getArguments()[0]);
             return null;
         }).when(requestContextMultiReply).setResult(any(RpcResult.class));
-        Mockito.when(txChainFactory.newWriteOnlyTransaction()).thenReturn(wTx);
+        Mockito.when(txChainFactory.newReadWriteTransaction()).thenReturn(wTx);
         Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(rTx);
         Mockito.when(connectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);
         Mockito.when(connectionContext.getConnectionAdapter()).thenReturn(connectionAdapter);
@@ -266,7 +267,7 @@ public class DeviceContextImplTest {
         Mockito.when(wTx.submit()).thenReturn(Futures.immediateCheckedFuture(null));
         final InstanceIdentifier<Nodes> dummyII = InstanceIdentifier.create(Nodes.class);
         ((DeviceContextImpl) deviceContext).getTransactionChainManager().activateTransactionManager() ;
-        ((DeviceContextImpl) deviceContext).getTransactionChainManager().enableSubmit();
+        ((DeviceContextImpl) deviceContext).getTransactionChainManager().initialSubmitWriteTransaction();
         deviceContext.addDeleteToTxChain(LogicalDatastoreType.CONFIGURATION, dummyII);
         deviceContext.initialSubmitTransaction();
         verify(wTx).submit();
@@ -287,7 +288,7 @@ public class DeviceContextImplTest {
     public void testAddDeleteToTxChain() throws Exception{
         final InstanceIdentifier<Nodes> dummyII = InstanceIdentifier.create(Nodes.class);
         ((DeviceContextImpl) deviceContext).getTransactionChainManager().activateTransactionManager() ;
-        ((DeviceContextImpl) deviceContext).getTransactionChainManager().enableSubmit();
+        ((DeviceContextImpl) deviceContext).getTransactionChainManager().initialSubmitWriteTransaction();
         deviceContext.addDeleteToTxChain(LogicalDatastoreType.CONFIGURATION, dummyII);
         verify(wTx).delete(eq(LogicalDatastoreType.CONFIGURATION), eq(dummyII));
     }
@@ -298,7 +299,7 @@ public class DeviceContextImplTest {
     @Test
     public void testSubmitTransaction() throws Exception {
         ((DeviceContextImpl) deviceContext).getTransactionChainManager().activateTransactionManager() ;
-        ((DeviceContextImpl) deviceContext).getTransactionChainManager().enableSubmit();
+        ((DeviceContextImpl) deviceContext).getTransactionChainManager().initialSubmitWriteTransaction();
         assertTrue(deviceContext.submitTransaction());
     }
 
@@ -353,7 +354,7 @@ public class DeviceContextImplTest {
     public void testProcessPacketInMessageFutureSuccess() {
         final PacketInMessage mockedPacketInMessage = mock(PacketInMessage.class);
         final NotificationPublishService mockedNotificationPublishService = mock(NotificationPublishService.class);
-        final ListenableFuture stringListenableFuture = Futures.immediateFuture(new String("dummy value"));
+        final ListenableFuture stringListenableFuture = Futures.immediateFuture("dummy value");
 
         when(mockedNotificationPublishService.offerNotification(any(PacketReceived.class))).thenReturn(stringListenableFuture);
         deviceContext.setNotificationPublishService(mockedNotificationPublishService);
