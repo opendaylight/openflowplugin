@@ -150,9 +150,9 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         final ContextChain contextChain = contextChainMap.get(deviceInfo);
 
         final FeaturesReply featuresReply = connectionContext.getFeatures();
-        final short auxiliaryId = featuresReply != null ? featuresReply.getAuxiliaryId() : 0;
+        final Short auxiliaryId = featuresReply != null ? featuresReply.getAuxiliaryId() : null;
 
-        if (auxiliaryId != 0) {
+        if (auxiliaryId != null && auxiliaryId != 0) {
             if (contextChain == null) {
                 LOG.warn("An auxiliary connection for device {}, but no primary connection. Refusing connection.",
                         deviceInfo);
