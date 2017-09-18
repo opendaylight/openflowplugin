@@ -17,10 +17,11 @@ public class ReconciliationServiceDelegate implements NotificationRegistration {
     private ReconciliationNotificationListener reconciliationNotificationListener;
     private AutoCloseable unregisterService;
 
-    public ReconciliationServiceDelegate( ReconciliationNotificationListener reconciliationNotificationListener,
-            AutoCloseable unregisterService) {
+    public ReconciliationServiceDelegate(ReconciliationNotificationListener reconciliationNotificationListener,
+                                         AutoCloseable unregisterService) {
         this.reconciliationNotificationListener = Preconditions.checkNotNull(reconciliationNotificationListener,
-                "ReconciliationNotificationListener can not be null!");
+                                                                             "ReconciliationNotificationListener can "
+                                                                                     + "not be null!");
         this.unregisterService = unregisterService;
     }
 
