@@ -1,0 +1,7 @@
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Code-Review+2: Tomas Slusny <tomas.slusny@pantheon.tech>
+Submitted-by: Tomas Slusny <tomas.slusny@pantheon.tech>
+Submitted-at: Tue, 19 Sep 2017 07:19:16 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/63208
+Project: openflowplugin
+Branch: refs/heads/master
