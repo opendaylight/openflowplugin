@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -174,6 +175,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private boolean skipTableFeatures;
     private boolean switchFeaturesMandatory;
     private MastershipChangeListener mastershipChangeListener;
+    private AtomicReference<ListenableFuture<RpcResult<SetRoleOutput>>> lastRoleFuture = new AtomicReference<>(
+            Futures.immediateFuture(null));
 
     DeviceContextImpl(
             @Nonnull final ConnectionContext primaryConnectionContext,
@@ -652,7 +655,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     deviceInfo.toString()));
         }
 
-        Futures.addCallback(sendRoleChangeToDevice(OfpRole.BECOMEMASTER),
+        Futures.addCallback(persistSendRoleChangeToDevice(OfpRole.BECOMEMASTER),
                 new RpcResultFutureCallback(mastershipChangeListener));
 
         final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill = getDeviceFlowRegistry().fill();
@@ -692,18 +695,29 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         return abstractRequestContext;
     }
 
+    private ListenableFuture<RpcResult<SetRoleOutput>> persistSendRoleChangeToDevice(final OfpRole newRole) {
+        mastershipChangeListener.onRoleSentToDevice(deviceInfo);
+        final ListenableFuture<RpcResult<SetRoleOutput>> newFuture = sendRoleChangeToDevice(newRole);
+
+        return lastRoleFuture.getAndUpdate(lastFuture -> {
+            if (Objects.nonNull(lastFuture) && !lastFuture.isCancelled() && !lastFuture.isDone()) {
+                lastFuture.cancel(true);
+            }
+
+            return newFuture;
+        });
+    }
+
     private ListenableFuture<RpcResult<SetRoleOutput>> sendRoleChangeToDevice(final OfpRole newRole) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Sending new role {} to device {}", newRole, deviceInfo.getNodeId());
         }
 
-        final Future<RpcResult<SetRoleOutput>> setRoleOutputFuture;
-
         if (deviceInfo.getVersion() >= OFConstants.OFP_VERSION_1_3) {
             final SetRoleInput setRoleInput = (new SetRoleInputBuilder()).setControllerRole(newRole)
                     .setNode(new NodeRef(deviceInfo.getNodeInstanceIdentifier())).build();
 
-            setRoleOutputFuture = this.salRoleService.setRole(setRoleInput);
+            final Future<RpcResult<SetRoleOutput>> setRoleOutputFuture = this.salRoleService.setRole(setRoleInput);
 
             final TimerTask timerTask = timeout -> {
                 if (!setRoleOutputFuture.isDone()) {
@@ -713,17 +727,16 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             };
 
             hashedWheelTimer.newTimeout(timerTask, SET_ROLE_TIMEOUT, TimeUnit.SECONDS);
-        } else {
-            LOG.info("Device: {} with version: {} does not support role", deviceInfo.getLOGValue(), deviceInfo.getVersion());
-            return Futures.immediateFuture(null);
+            return JdkFutureAdapters.listenInPoolThread(setRoleOutputFuture);
         }
 
-        return JdkFutureAdapters.listenInPoolThread(setRoleOutputFuture);
+        LOG.info("Device: {} with version: {} does not support role", deviceInfo.getLOGValue(), deviceInfo.getVersion());
+        return Futures.immediateFuture(null);
     }
 
     @Override
     public ListenableFuture<RpcResult<SetRoleOutput>> makeDeviceSlave() {
-        return sendRoleChangeToDevice(OfpRole.BECOMESLAVE);
+        return persistSendRoleChangeToDevice(OfpRole.BECOMESLAVE);
     }
 
     @Override
@@ -752,9 +765,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
         @Override
         public void onFailure(final Throwable throwable) {
-            mastershipChangeListener.onNotAbleToStartMastershipMandatory(
-                    deviceInfo,
-                    "Was not able to set MASTER role on device");
+            if (!(throwable instanceof CancellationException)) {
+                mastershipChangeListener.onNotAbleToStartMastershipMandatory(
+                        deviceInfo,
+                        "Was not able to set MASTER role on device");
+            }
         }
     }
 

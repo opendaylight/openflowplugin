@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.services.sal;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -47,7 +46,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetR
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
@@ -155,31 +153,6 @@ public class SalRoleServiceImplTest {
         assertNotNull(setRoleOutput);
         assertEquals(BigInteger.valueOf(testXid), setRoleOutput.getTransactionId().getValue());
 
-    }
-
-    @Test
-    public void testSetRoleUnsupported() throws Exception {
-        ListenableFuture<RpcResult<RoleRequestOutput>> futureOutput =
-                RpcResultBuilder.<RoleRequestOutput>failed()
-                        .withError(ErrorType.APPLICATION, ROLES_UNSUPPORTED)
-                        .buildFuture();
-
-        Mockito.when(mockRequestContext.getFuture()).thenReturn(futureOutput);
-
-        SalRoleService salRoleService = new SalRoleServiceImpl(mockRequestContextStack, mockDeviceContext);
-
-        SetRoleInput setRoleInput = new SetRoleInputBuilder()
-                .setControllerRole(OfpRole.BECOMESLAVE)
-                .setNode(nodeRef)
-                .build();
-
-        Future<RpcResult<SetRoleOutput>> future = salRoleService.setRole(setRoleInput);
-
-        RpcResult<SetRoleOutput> roleOutputRpcResult = future.get(5, TimeUnit.SECONDS);
-        assertNotNull("RpcResult from future cannot be null.", roleOutputRpcResult);
-        assertFalse("RpcResult from future is successful.", roleOutputRpcResult.isSuccessful());
-        assertEquals(ROLES_UNSUPPORTED, roleOutputRpcResult
-                .getErrors().iterator().next().getMessage());
     }
 
     @Test
