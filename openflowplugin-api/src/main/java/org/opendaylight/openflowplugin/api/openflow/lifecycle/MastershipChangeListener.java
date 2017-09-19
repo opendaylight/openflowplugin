@@ -52,4 +52,10 @@ public interface MastershipChangeListener {
      * @param deviceInfo device
      */
     void onSlaveRoleNotAcquired(final DeviceInfo deviceInfo);
+
+    /**
+     * Handles event when role is sent to device.
+     * @param deviceInfo device
+     */
+    void onRoleSentToDevice(final DeviceInfo deviceInfo);
 }

@@ -201,6 +201,11 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     }
 
     @Override
+    public void onRoleSentToDevice(final DeviceInfo deviceInfo) {
+        scheduler.remove(deviceInfo);
+    }
+
+    @Override
     public void onDeviceDisconnected(final ConnectionContext connectionContext) {
         final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
 

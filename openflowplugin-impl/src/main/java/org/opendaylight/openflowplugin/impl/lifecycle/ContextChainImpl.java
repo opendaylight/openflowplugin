@@ -16,6 +16,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -293,7 +294,9 @@ public class ContextChainImpl implements ContextChain {
 
         @Override
         public void onFailure(@Nonnull final Throwable t) {
-            mastershipChangeListener.onSlaveRoleNotAcquired(deviceInfo);
+            if (!(t instanceof CancellationException)) {
+                mastershipChangeListener.onSlaveRoleNotAcquired(deviceInfo);
+            }
         }
     }
 }
