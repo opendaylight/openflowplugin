@@ -368,17 +368,16 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                                 portStatusMessage.getPortNo(),
                                 OpenflowVersion.get(deviceInfo.getVersion()))));
 
-        if (PortReason.OFPPRADD.equals(portStatusMessage.getReason())
-                || PortReason.OFPPRMODIFY.equals(portStatusMessage.getReason())) {
-            // because of ADD status node connector has to be created
-            writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector, new NodeConnectorBuilder()
-                    .setKey(iiToNodeConnector.getKey())
-                    .addAugmentation(FlowCapableNodeConnectorStatisticsData.class, new
-                            FlowCapableNodeConnectorStatisticsDataBuilder().build())
-                    .addAugmentation(FlowCapableNodeConnector.class, flowCapableNodeConnector)
-                    .build());
-        } else if (PortReason.OFPPRDELETE.equals(portStatusMessage.getReason())) {
+        writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector, new NodeConnectorBuilder()
+                .setKey(iiToNodeConnector.getKey())
+                .addAugmentation(FlowCapableNodeConnectorStatisticsData.class, new
+                        FlowCapableNodeConnectorStatisticsDataBuilder().build())
+                .addAugmentation(FlowCapableNodeConnector.class, flowCapableNodeConnector)
+                .build());
+        submitTransaction();
+        if (PortReason.OFPPRDELETE.equals(portStatusMessage.getReason())) {
             addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector);
+            submitTransaction();
         }
     }
 
