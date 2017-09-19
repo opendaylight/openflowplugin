@@ -19,7 +19,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>openflowplugin-parent</artifactId>
-    <version>0.5.0-SNAPSHOT</version>
+    <version>0.5.0</version>
     <packaging>pom</packaging>
 
     <scm>
@@ -31,14 +31,14 @@
 
     <properties>
         <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
-        <sal.api.version>0.13.0-SNAPSHOT</sal.api.version>
+        <sal.api.version>0.13.0</sal.api.version>
         <jmxGeneratorPath>${project.build.directory}/generated-sources/config</jmxGeneratorPath>
         <salGeneratorPath>${project.build.directory}/generated-sources/sal</salGeneratorPath>
-        <controller.distribution.version>0.6.0-SNAPSHOT</controller.distribution.version>
-        <config.version>0.7.0-SNAPSHOT</config.version>
-        <mdsal.version>1.6.0-SNAPSHOT</mdsal.version>
-        <mdsal.model.version>0.11.0-SNAPSHOT</mdsal.model.version>
-        <yangtools.version>1.2.0-SNAPSHOT</yangtools.version>
+        <controller.distribution.version>0.6.0</controller.distribution.version>
+        <config.version>0.7.0</config.version>
+        <mdsal.version>1.6.0</mdsal.version>
+        <mdsal.model.version>0.11.0</mdsal.model.version>
+        <yangtools.version>1.2.0</yangtools.version>
         <argparse4j.version>0.7.0</argparse4j.version>
         <exi.nagasena.version>0000.0002.0053.0</exi.nagasena.version>
     </properties>
@@ -62,7 +62,7 @@
             <dependency>
                 <groupId>org.opendaylight.mdsal</groupId>
                 <artifactId>mdsal-artifacts</artifactId>
-                <version>2.3.0-SNAPSHOT</version>
+                <version>2.3.0</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>

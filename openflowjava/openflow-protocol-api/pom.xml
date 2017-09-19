@@ -4,12 +4,12 @@
     <parent>
         <groupId>org.opendaylight.mdsal</groupId>
         <artifactId>binding-parent</artifactId>
-        <version>0.11.0-SNAPSHOT</version>
+        <version>0.11.0</version>
         <relativePath/>
     </parent>
     <groupId>org.opendaylight.openflowplugin.openflowjava</groupId>
     <artifactId>openflow-protocol-api</artifactId>
-    <version>0.5.0-SNAPSHOT</version>
+    <version>0.5.0</version>
     <packaging>bundle</packaging>
     <!-- <name> formatting is used by autorelease to parse and notify projects on
          build failure. Please do not modify this unless you have a good reason. -->
@@ -20,8 +20,8 @@
     </scm>
 
     <properties>
-      <mdsal.version>2.3.0-SNAPSHOT</mdsal.version>
-      <mdsal.model.version>0.11.0-SNAPSHOT</mdsal.model.version>
+      <mdsal.version>2.3.0</mdsal.version>
+      <mdsal.model.version>0.11.0</mdsal.model.version>
     </properties>
 
     <dependencyManagement>
