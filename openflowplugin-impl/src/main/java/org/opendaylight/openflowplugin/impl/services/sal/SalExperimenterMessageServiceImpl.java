@@ -21,16 +21,21 @@ import org.opendaylight.openflowplugin.impl.services.AbstractVoidService;
 import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SalExperimenterMessageService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SendExperimenterInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.experimenter.core.message.ExperimenterMessageOfChoice;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.BundleAddMessageSal;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class SalExperimenterMessageServiceImpl extends AbstractVoidService<SendExperimenterInput>
                                                implements SalExperimenterMessageService {
 
+    private static final Logger  LOG= LoggerFactory.getLogger(SalExperimenterMessageServiceImpl.class); ;
     private final ExtensionConverterProvider extensionConverterProvider;
 
     public SalExperimenterMessageServiceImpl(final RequestContextStack requestContextStack,
@@ -56,6 +61,10 @@ public class SalExperimenterMessageServiceImpl extends AbstractVoidService<SendE
         if (messageConverter instanceof BundleMessageDataInjector) {
             ((BundleMessageDataInjector) messageConverter).setNode(input.getNode());
             ((BundleMessageDataInjector) messageConverter).setXid(xid.getValue());
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Flows and groups: {} present in the Datapath ID: {} refers to the corresponding transaction ID: {}",
+                        ((BundleAddMessageSal) input.getExperimenterMessageOfChoice()).getSalAddMessageData().getBundleInnerMessage(), input.getNode().getValue().firstKeyOf(Node.class).getId(), xid);
+            }
         }
 
         try {
@@ -76,4 +85,5 @@ public class SalExperimenterMessageServiceImpl extends AbstractVoidService<SendE
     public Future<RpcResult<Void>> sendExperimenter(SendExperimenterInput input) {
         return handleServiceCall(input);
     }
+
 }
