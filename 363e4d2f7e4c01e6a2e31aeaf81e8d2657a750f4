@@ -256,6 +256,30 @@
       "revId": "363e4d2f7e4c01e6a2e31aeaf81e8d2657a750f4",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_e1e9fab7",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/sal/SetAsyncConfigService.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-09-21T21:54:12Z",
+      "side": 1,
+      "message": "We might get rid of the openflowjava serializer in Oxygen, so although it\u0027s not performance impact, but it\u0027s creating technical debt here.",
+      "parentUuid": "ba1f61a0_813937a6",
+      "range": {
+        "startLine": 38,
+        "startChar": 23,
+        "endLine": 38,
+        "endChar": 110
+      },
+      "revId": "363e4d2f7e4c01e6a2e31aeaf81e8d2657a750f4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
