@@ -11,16 +11,15 @@ import java.util.concurrent.ThreadPoolExecutor;
 import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeManager;
 
-/**
- *
- */
 public class HandshakeContextImpl implements HandshakeContext {
     private ThreadPoolExecutor handshakePool;
     private HandshakeManager handshakeManager;
 
     /**
-     * @param handshakePool
-     * @param handshakeManager
+     * Constructor.
+     *
+     * @param handshakePool - pool
+     * @param handshakeManager - manager
      */
     public HandshakeContextImpl(ThreadPoolExecutor handshakePool, HandshakeManager handshakeManager) {
         this.handshakePool = handshakePool;

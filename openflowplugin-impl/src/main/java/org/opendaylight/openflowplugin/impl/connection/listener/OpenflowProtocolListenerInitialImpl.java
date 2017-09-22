@@ -24,9 +24,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- *
- */
 public class OpenflowProtocolListenerInitialImpl implements OpenflowProtocolListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowProtocolListenerInitialImpl.class);
@@ -35,8 +32,10 @@ public class OpenflowProtocolListenerInitialImpl implements OpenflowProtocolList
     private final HandshakeContext handshakeContext;
 
     /**
-     * @param connectionContext
-     * @param handshakeContext
+     * Constructor.
+     *
+     * @param connectionContext - connection context
+     * @param handshakeContext - handshake context
      */
     public OpenflowProtocolListenerInitialImpl(final ConnectionContext connectionContext,
                                                final HandshakeContext handshakeContext) {
@@ -119,7 +118,9 @@ public class OpenflowProtocolListenerInitialImpl implements OpenflowProtocolList
     }
 
     /**
-     * @param expectedState
+     * Check state of the connection context.
+     *
+     * @param expectedState - the expected state
      */
     protected boolean checkState(final ConnectionContext.CONNECTION_STATE expectedState) {
         boolean verdict = true;
