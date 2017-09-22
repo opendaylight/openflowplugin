@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+/*
+ * Copyright (c) 2015, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -53,15 +53,14 @@ public class TestUtils {
     static void verifyMockTx(ReadWriteTransaction mockTx) {
         InOrder inOrder = inOrder(mockTx);
         inOrder.verify(mockTx, atLeast(0)).submit();
-        inOrder.verify(mockTx, never()).delete(eq(LogicalDatastoreType.OPERATIONAL),
-              any(InstanceIdentifier.class));
+        inOrder.verify(mockTx, never()).delete(eq(LogicalDatastoreType.OPERATIONAL), any(InstanceIdentifier.class));
     }
 
     @SuppressWarnings("rawtypes")
     static void assertDeletedIDs(InstanceIdentifier[] expDeletedIIDs,
-            ArgumentCaptor<InstanceIdentifier> deletedLinkIDs) {
+                                 ArgumentCaptor<InstanceIdentifier> deletedLinkIDs) {
         Set<InstanceIdentifier> actualIIDs = new HashSet<>(deletedLinkIDs.getAllValues());
-        for(InstanceIdentifier id: expDeletedIIDs) {
+        for (InstanceIdentifier id : expDeletedIIDs) {
             assertTrue("Missing expected deleted IID " + id, actualIIDs.contains(id));
         }
     }
@@ -82,7 +81,7 @@ public class TestUtils {
 
     static void waitForDeletes(int expDeleteCalls, final CountDownLatch latch) {
         boolean done = Uninterruptibles.awaitUninterruptibly(latch, 5, TimeUnit.SECONDS);
-        if(!done) {
+        if (!done) {
             fail("Expected " + expDeleteCalls + " delete calls. Actual: " + (expDeleteCalls - latch.getCount()));
         }
     }
@@ -112,33 +111,29 @@ public class TestUtils {
         }).when(mockTx).delete(eq(LogicalDatastoreType.OPERATIONAL), deletedLinkIDs.capture());
     }
 
-    static org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey
-                                                                        newInvNodeKey(String id) {
-        org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey nodeKey =
-                new org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey(
-                        new org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.
-                                                                      rev130819.NodeId(id));
+    static org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey newInvNodeKey(String id) {
+        org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey nodeKey
+                = new org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey(
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId(id));
         return nodeKey;
     }
 
     static NodeConnectorKey newInvNodeConnKey(String id) {
         return new org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey(
-                new org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.
-                                                               NodeConnectorId(id));
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId(id));
     }
 
     static KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> newNodeConnID(
             org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey nodeKey,
             org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey ncKey) {
-        return InstanceIdentifier.create(Nodes.class).child(
-                org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.class,
-                nodeKey).child(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.
-                        rev130819.node.NodeConnector.class, ncKey);
+        return InstanceIdentifier.create(Nodes.class)
+                .child(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.class, nodeKey)
+                .child(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector.class,
+                       ncKey);
     }
 
     static Link newLink(String id, Source source, Destination dest) {
-        return new LinkBuilder().setLinkId(new LinkId(id))
-                .setSource(source).setDestination(dest).build();
+        return new LinkBuilder().setLinkId(new LinkId(id)).setSource(source).setDestination(dest).build();
     }
 
     static Destination newDestTp(String id) {
