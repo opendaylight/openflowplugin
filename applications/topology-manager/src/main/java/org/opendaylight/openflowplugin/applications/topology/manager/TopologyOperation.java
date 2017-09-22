@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
-import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.openflowplugin.common.txchain.TransactionChainManager;
 
 /**
