@@ -157,12 +157,9 @@ public class ConnectionContextImpl implements ConnectionContext {
                 getConnectionState());
 
         portStatusMessages.clear();
+        getConnectionAdapter().disconnect();
         unregisterOutboundQueue();
         closeHandshakeContext();
-
-        if (forced && getConnectionAdapter().isAlive()) {
-            getConnectionAdapter().disconnect();
-        }
 
         if (propagate) {
             propagateDeviceDisconnectedEvent();
@@ -177,6 +174,8 @@ public class ConnectionContextImpl implements ConnectionContext {
                         connectionAdapter.getRemoteAddress(), datapathId);
             }
             deviceDisconnectedHandler.onDeviceDisconnected(this);
+        } else {
+            LOG.debug("Device disconnect handler not registered for {}", this.connectionAdapter.getRemoteAddress());
         }
     }
 

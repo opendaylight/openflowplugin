@@ -103,7 +103,8 @@ public class SystemNotificationsListenerImplTest {
 
         verifyCommonInvocationsSubSet();
         Mockito.verify(connectionContext).onConnectionClosed();
-        Mockito.verify(connectionContext).getConnectionAdapter();
+        Mockito.verify(connectionAdapter).disconnect();
+        Mockito.verify(connectionContext, Mockito.atMost(2)).getConnectionAdapter();
         Mockito.verify(connectionContext, Mockito.atLeastOnce()).getSafeNodeIdForLOG();
     }
 
@@ -122,7 +123,8 @@ public class SystemNotificationsListenerImplTest {
 
         verifyCommonInvocationsSubSet();
         Mockito.verify(connectionContext).onConnectionClosed();
-        Mockito.verify(connectionContext).getConnectionAdapter();
+        Mockito.verify(connectionAdapter).disconnect();
+        Mockito.verify(connectionContext, Mockito.atMost(2)).getConnectionAdapter();
         Mockito.verify(connectionContext, Mockito.atLeastOnce()).getSafeNodeIdForLOG();
     }
 
@@ -143,7 +145,8 @@ public class SystemNotificationsListenerImplTest {
 
         verifyCommonInvocationsSubSet();
         Mockito.verify(connectionContext).onConnectionClosed();
-        Mockito.verify(connectionContext).getConnectionAdapter();
+        Mockito.verify(connectionAdapter).disconnect();
+        Mockito.verify(connectionContext, Mockito.atMost(2)).getConnectionAdapter();
         Mockito.verify(connectionContext, Mockito.atLeastOnce()).getSafeNodeIdForLOG();
     }
 
@@ -162,7 +165,8 @@ public class SystemNotificationsListenerImplTest {
 
         verifyCommonInvocationsSubSet();
         Mockito.verify(connectionContext).onConnectionClosed();
-        Mockito.verify(connectionContext).getConnectionAdapter();
+        Mockito.verify(connectionAdapter).disconnect();
+        Mockito.verify(connectionContext, Mockito.atMost(2)).getConnectionAdapter();
         Mockito.verify(connectionContext, Mockito.atLeastOnce()).getSafeNodeIdForLOG();
     }
 
