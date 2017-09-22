@@ -29,7 +29,6 @@ public class FlowCapableTopologyProvider implements AutoCloseable {
     private static final String TOPOLOGY_PROVIDER = "topology-provider";
     static final String TOPOLOGY_ID = "flow:1";
 
-
     private final DataBroker dataBroker;
     private final NotificationProviderService notificationService;
     private final OperationProcessor processor;
@@ -37,7 +36,7 @@ public class FlowCapableTopologyProvider implements AutoCloseable {
     private ListenerRegistration<NotificationListener> listenerRegistration;
 
     public FlowCapableTopologyProvider(DataBroker dataBroker, NotificationProviderService notificationService,
-            OperationProcessor processor) {
+                                       OperationProcessor processor) {
         this.dataBroker = dataBroker;
         this.notificationService = notificationService;
         this.processor = processor;
@@ -48,8 +47,7 @@ public class FlowCapableTopologyProvider implements AutoCloseable {
      */
     public void start() {
         final TopologyKey key = new TopologyKey(new TopologyId(TOPOLOGY_ID));
-        final InstanceIdentifier<Topology> path = InstanceIdentifier
-                .create(NetworkTopology.class)
+        final InstanceIdentifier<Topology> path = InstanceIdentifier.create(NetworkTopology.class)
                 .child(Topology.class, key);
 
         final FlowCapableTopologyExporter listener = new FlowCapableTopologyExporter(processor, path);
@@ -58,12 +56,9 @@ public class FlowCapableTopologyProvider implements AutoCloseable {
         this.transactionChainManager.activateTransactionManager();
         this.transactionChainManager.initialSubmitWriteTransaction();
 
-        if(!isFlowTopologyExist(path)){
-            transactionChainManager.writeToTransaction(
-                    LogicalDatastoreType.OPERATIONAL,
-                    path,
-                    new TopologyBuilder().setKey(key).build(),
-                    true);
+        if (!isFlowTopologyExist(path)) {
+            transactionChainManager.writeToTransaction(LogicalDatastoreType.OPERATIONAL, path,
+                                                       new TopologyBuilder().setKey(key).build(), true);
             transactionChainManager.submitTransaction();
         }
 
@@ -72,15 +67,10 @@ public class FlowCapableTopologyProvider implements AutoCloseable {
 
     @Override
     public void close() {
-        LOG.info("FlowCapableTopologyProvider stopped.");
+        LOG.debug("FlowCapableTopologyProvider stopped.");
         this.transactionChainManager.close();
         if (this.listenerRegistration != null) {
-            try {
-                this.listenerRegistration.close();
-            } catch (Exception e) {
-                LOG.warn("Failed to close listener registration: {}", e.getMessage());
-                LOG.debug("Failed to close listener registration.. ", e);
-            }
+            this.listenerRegistration.close();
             listenerRegistration = null;
         }
     }
@@ -88,10 +78,9 @@ public class FlowCapableTopologyProvider implements AutoCloseable {
     private boolean isFlowTopologyExist(final InstanceIdentifier<Topology> path) {
         try {
             Optional<Topology> ofTopology = this.transactionChainManager
-                    .readFromTransaction(LogicalDatastoreType.OPERATIONAL, path)
-                    .checkedGet();
-            LOG.debug("OpenFlow topology exist in the operational data store at {}",path);
-            if(ofTopology.isPresent()){
+                    .readFromTransaction(LogicalDatastoreType.OPERATIONAL, path).checkedGet();
+            LOG.debug("OpenFlow topology exist in the operational data store at {}", path);
+            if (ofTopology.isPresent()) {
                 return true;
             }
         } catch (ReadFailedException e) {

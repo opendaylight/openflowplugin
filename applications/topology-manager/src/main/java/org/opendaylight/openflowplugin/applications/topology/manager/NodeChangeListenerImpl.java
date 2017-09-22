@@ -28,9 +28,10 @@ public class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<FlowCapab
     private static final Logger LOG = LoggerFactory.getLogger(NodeChangeListenerImpl.class);
 
     public NodeChangeListenerImpl(final DataBroker dataBroker, final OperationProcessor operationProcessor) {
-        // TODO: listener on FlowCapableNode. what if node id in Node.class is changed (it won't be caught by this listener)
-        super(operationProcessor, dataBroker, InstanceIdentifier.builder(Nodes.class).child(Node.class)
-                .augmentation(FlowCapableNode.class).build());
+        // TODO: listener on FlowCapableNode. what if node id in Node.class is changed (it won't be caught by this
+        // listener)
+        super(operationProcessor, dataBroker,
+              InstanceIdentifier.builder(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class).build());
     }
 
     @Override
@@ -47,8 +48,8 @@ public class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<FlowCapab
                     processRemovedNode(modification);
                     break;
                 default:
-                    throw new IllegalArgumentException("Unhandled modification type: {}" +
-                            modification.getRootNode().getModificationType());
+                    throw new IllegalArgumentException(
+                            "Unhandled modification type: {}" + modification.getRootNode().getModificationType());
             }
         }
     }
@@ -56,7 +57,9 @@ public class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<FlowCapab
     private void processRemovedNode(final DataTreeModification<FlowCapableNode> modification) {
         final InstanceIdentifier<FlowCapableNode> iiToNodeInInventory = modification.getRootPath().getRootIdentifier();
         final NodeId nodeId = provideTopologyNodeId(iiToNodeInInventory);
-        final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node> iiToTopologyRemovedNode = provideIIToTopologyNode(nodeId);
+        final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology
+                .rev131021.network.topology.topology.Node>
+                iiToTopologyRemovedNode = provideIIToTopologyNode(nodeId);
         if (iiToTopologyRemovedNode != null) {
             operationProcessor.enqueueOperation(manager -> {
                 manager.addDeleteOperationTotTxChain(LogicalDatastoreType.OPERATIONAL, iiToTopologyRemovedNode);
@@ -71,18 +74,20 @@ public class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<FlowCapab
         final InstanceIdentifier<FlowCapableNode> iiToNodeInInventory = modification.getRootPath().getRootIdentifier();
         final NodeId nodeIdInTopology = provideTopologyNodeId(iiToNodeInInventory);
         if (nodeIdInTopology != null) {
-            final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node> iiToTopologyNode = provideIIToTopologyNode(nodeIdInTopology);
+            final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology
+                    .rev131021.network.topology.topology.Node>
+                    iiToTopologyNode = provideIIToTopologyNode(nodeIdInTopology);
             sendToTransactionChain(prepareTopologyNode(nodeIdInTopology, iiToNodeInInventory), iiToTopologyNode);
         } else {
             LOG.debug("Inventory node key is null. Data can't be written to topology");
         }
     }
 
-    private static org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node
-    prepareTopologyNode(final NodeId nodeIdInTopology, final InstanceIdentifier<FlowCapableNode> iiToNodeInInventory) {
+    private static org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network
+            .topology.topology.Node prepareTopologyNode(
+            final NodeId nodeIdInTopology, final InstanceIdentifier<FlowCapableNode> iiToNodeInInventory) {
         final InventoryNode inventoryNode = new InventoryNodeBuilder()
-            .setInventoryNodeRef(new NodeRef(iiToNodeInInventory.firstIdentifierOf(Node.class)))
-            .build();
+                .setInventoryNodeRef(new NodeRef(iiToNodeInInventory.firstIdentifierOf(Node.class))).build();
 
         final NodeBuilder topologyNodeBuilder = new NodeBuilder();
         topologyNodeBuilder.setNodeId(nodeIdInTopology);

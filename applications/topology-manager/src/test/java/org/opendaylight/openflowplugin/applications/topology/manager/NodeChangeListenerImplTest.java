@@ -56,14 +56,13 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
     @SuppressWarnings({ "rawtypes" })
     @Test
     public void testOnNodeRemoved() {
-
         NodeKey topoNodeKey = new NodeKey(new NodeId("node1"));
-        InstanceIdentifier<Node> topoNodeII = topologyIID.child(Node.class, topoNodeKey);
+        final InstanceIdentifier<Node> topoNodeII = topologyIID.child(Node.class, topoNodeKey);
         Node topoNode = new NodeBuilder().setKey(topoNodeKey).build();
 
-        org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey
-                                                                nodeKey = newInvNodeKey(topoNodeKey.getNodeId().getValue());
-        InstanceIdentifier<?> invNodeID = InstanceIdentifier.create(Nodes.class).child(
+        org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819
+                .nodes.NodeKey nodeKey = newInvNodeKey(topoNodeKey.getNodeId().getValue());
+        final InstanceIdentifier<?> invNodeID = InstanceIdentifier.create(Nodes.class).child(
                 org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.class,
                 nodeKey);
 
@@ -73,7 +72,7 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
                 newLink("link2", newSourceNode("source2"), newDestNode("dest2")));
         final Topology topology = new TopologyBuilder().setLink(linkList).build();
 
-        InstanceIdentifier[] expDeletedIIDs = {
+        final InstanceIdentifier[] expDeletedIIDs = {
                 topologyIID.child(Link.class, linkList.get(0).getKey()),
                 topologyIID.child(Link.class, linkList.get(1).getKey()),
                 topologyIID.child(Node.class, new NodeKey(new NodeId("node1")))
@@ -90,7 +89,7 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
         doReturn(Futures.makeChecked(readFutureNode, ReadFailedException.MAPPER)).when(mockTx1)
                 .read(LogicalDatastoreType.OPERATIONAL, topoNodeII);
 
-        CountDownLatch submitLatch1 = setupStubbedSubmit(mockTx1);
+        final CountDownLatch submitLatch1 = setupStubbedSubmit(mockTx1);
 
         int expDeleteCalls = expDeletedIIDs.length;
         CountDownLatch deleteLatch = new CountDownLatch(expDeleteCalls);
@@ -124,18 +123,18 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey
                 nodeKey = newInvNodeKey(topoNodeKey.getNodeId().getValue());
-        InstanceIdentifier<?> invNodeID = InstanceIdentifier.create(Nodes.class).child(
+        final InstanceIdentifier<?> invNodeID = InstanceIdentifier.create(Nodes.class).child(
                 org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.class,
                 nodeKey);
 
-        InstanceIdentifier[] expDeletedIIDs = {
+        final InstanceIdentifier[] expDeletedIIDs = {
                 topologyIID.child(Node.class, new NodeKey(new NodeId("node1")))
             };
 
         ReadWriteTransaction mockTx = mock(ReadWriteTransaction.class);
         doReturn(Futures.immediateCheckedFuture(Optional.absent())).when(mockTx)
                 .read(LogicalDatastoreType.OPERATIONAL, topologyIID);
-        CountDownLatch submitLatch = setupStubbedSubmit(mockTx);
+        final CountDownLatch submitLatch = setupStubbedSubmit(mockTx);
 
         SettableFuture<Optional<Node>> readFutureNode = SettableFuture.create();
         readFutureNode.set(Optional.of(topoNode));

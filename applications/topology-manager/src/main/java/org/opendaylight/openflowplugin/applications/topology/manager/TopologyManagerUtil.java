@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+/*
+ * Copyright (c) 2015, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -25,9 +25,11 @@ class TopologyManagerUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(TopologyManagerUtil.class);
 
-    private TopologyManagerUtil() {}
+    private TopologyManagerUtil() {
+    }
 
-    static void removeAffectedLinks(final NodeId id, final TransactionChainManager manager, InstanceIdentifier<Topology> topology) {
+    static void removeAffectedLinks(final NodeId id, final TransactionChainManager manager,
+                                    InstanceIdentifier<Topology> topology) {
         Optional<Topology> topologyOptional = Optional.absent();
         try {
             topologyOptional = manager.readFromTransaction(LogicalDatastoreType.OPERATIONAL, topology).checkedGet();
@@ -40,22 +42,24 @@ class TopologyManagerUtil {
         }
     }
 
-    private static void removeAffectedLinks(final NodeId id, Optional<Topology> topologyOptional, TransactionChainManager manager, final InstanceIdentifier<Topology> topology) {
+    private static void removeAffectedLinks(final NodeId id, Optional<Topology> topologyOptional,
+                                            TransactionChainManager manager,
+                                            final InstanceIdentifier<Topology> topology) {
         if (!topologyOptional.isPresent()) {
             return;
         }
 
-        List<Link> linkList = topologyOptional.get().getLink() != null ?
-                topologyOptional.get().getLink() : Collections.emptyList();
+        List<Link> linkList =
+                topologyOptional.get().getLink() != null ? topologyOptional.get().getLink() : Collections.emptyList();
         for (Link link : linkList) {
-            if (id.equals(link.getSource().getSourceNode()) ||
-                    id.equals(link.getDestination().getDestNode())) {
+            if (id.equals(link.getSource().getSourceNode()) || id.equals(link.getDestination().getDestNode())) {
                 manager.addDeleteOperationTotTxChain(LogicalDatastoreType.OPERATIONAL, linkPath(link, topology));
             }
         }
     }
 
-    static void removeAffectedLinks(final TpId id, final TransactionChainManager manager, final InstanceIdentifier<Topology> topology) {
+    static void removeAffectedLinks(final TpId id, final TransactionChainManager manager,
+                                    final InstanceIdentifier<Topology> topology) {
         Optional<Topology> topologyOptional = Optional.absent();
         try {
             topologyOptional = manager.readFromTransaction(LogicalDatastoreType.OPERATIONAL, topology).checkedGet();
@@ -68,16 +72,17 @@ class TopologyManagerUtil {
         }
     }
 
-    private static void removeAffectedLinks(final TpId id, Optional<Topology> topologyOptional, TransactionChainManager manager, final InstanceIdentifier<Topology> topology) {
+    private static void removeAffectedLinks(final TpId id, Optional<Topology> topologyOptional,
+                                            TransactionChainManager manager,
+                                            final InstanceIdentifier<Topology> topology) {
         if (!topologyOptional.isPresent()) {
             return;
         }
 
-        List<Link> linkList = topologyOptional.get().getLink() != null
-                ? topologyOptional.get().getLink() : Collections.<Link> emptyList();
+        List<Link> linkList = topologyOptional.get().getLink() != null ? topologyOptional.get()
+                .getLink() : Collections.<Link>emptyList();
         for (Link link : linkList) {
-            if (id.equals(link.getSource().getSourceTp()) ||
-                    id.equals(link.getDestination().getDestTp())) {
+            if (id.equals(link.getSource().getSourceTp()) || id.equals(link.getDestination().getDestTp())) {
                 manager.addDeleteOperationTotTxChain(LogicalDatastoreType.OPERATIONAL, linkPath(link, topology));
             }
         }

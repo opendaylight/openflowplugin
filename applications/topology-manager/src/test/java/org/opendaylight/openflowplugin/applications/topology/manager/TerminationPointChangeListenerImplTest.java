@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+/*
+ * Copyright (c) 2015, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -66,16 +66,16 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         NodeKey topoNodeKey = new NodeKey(new NodeId("node1"));
         TerminationPointKey terminationPointKey = new TerminationPointKey(new TpId("tp1"));
 
-        InstanceIdentifier<Node> topoNodeII = topologyIID.child(Node.class, topoNodeKey);
+        final InstanceIdentifier<Node> topoNodeII = topologyIID.child(Node.class, topoNodeKey);
         Node topoNode = new NodeBuilder().setKey(topoNodeKey).build();
 
-        org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey
-                                                                  nodeKey = newInvNodeKey(topoNodeKey.getNodeId().getValue());
+        org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes
+                .NodeKey nodeKey = newInvNodeKey(topoNodeKey.getNodeId().getValue());
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey ncKey =
                 newInvNodeConnKey(terminationPointKey.getTpId().getValue());
 
-        InstanceIdentifier<?> invNodeConnID = newNodeConnID(nodeKey, ncKey);
+        final InstanceIdentifier<?> invNodeConnID = newNodeConnID(nodeKey, ncKey);
 
         List<Link> linkList = Arrays.asList(
                 newLink("link1", newSourceTp("tp1"), newDestTp("dest")),
@@ -83,7 +83,7 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
                 newLink("link3", newSourceTp("source2"), newDestTp("dest2")));
         final Topology topology = new TopologyBuilder().setLink(linkList).build();
 
-        InstanceIdentifier[] expDeletedIIDs = {
+        final InstanceIdentifier[] expDeletedIIDs = {
                 topologyIID.child(Link.class, linkList.get(0).getKey()),
                 topologyIID.child(Link.class, linkList.get(1).getKey()),
                 topologyIID.child(Node.class, new NodeKey(new NodeId("node1")))
@@ -101,7 +101,7 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         doReturn(Futures.makeChecked(readFutureNode, ReadFailedException.MAPPER)).when(mockTx1)
                 .read(LogicalDatastoreType.OPERATIONAL, topoNodeII);
 
-        CountDownLatch submitLatch1 = setupStubbedSubmit(mockTx1);
+        final CountDownLatch submitLatch1 = setupStubbedSubmit(mockTx1);
 
         int expDeleteCalls = expDeletedIIDs.length;
         CountDownLatch deleteLatch = new CountDownLatch(expDeleteCalls);
@@ -141,9 +141,9 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey ncKey =
                 newInvNodeConnKey(terminationPointKey.getTpId().getValue());
 
-        InstanceIdentifier<?> invNodeConnID = newNodeConnID(nodeKey, ncKey);
+        final InstanceIdentifier<?> invNodeConnID = newNodeConnID(nodeKey, ncKey);
 
-        InstanceIdentifier[] expDeletedIIDs = {
+        final InstanceIdentifier[] expDeletedIIDs = {
                 topologyIID.child(Node.class, new NodeKey(new NodeId("node1")))
                         .child(TerminationPoint.class, new TerminationPointKey(new TpId("tp1")))
             };
@@ -151,7 +151,7 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         ReadWriteTransaction mockTx = mock(ReadWriteTransaction.class);
         doReturn(Futures.immediateCheckedFuture(Optional.absent())).when(mockTx)
                 .read(LogicalDatastoreType.OPERATIONAL, topologyIID);
-        CountDownLatch submitLatch = setupStubbedSubmit(mockTx);
+        final CountDownLatch submitLatch = setupStubbedSubmit(mockTx);
 
         SettableFuture<Optional<Node>> readFutureNode = SettableFuture.create();
         readFutureNode.set(Optional.of(topoNode));
@@ -221,7 +221,7 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey ncKey =
                 newInvNodeConnKey("tp1");
 
-        InstanceIdentifier<?> invNodeConnID = newNodeConnID(nodeKey, ncKey);
+        final InstanceIdentifier<?> invNodeConnID = newNodeConnID(nodeKey, ncKey);
 
         List<Link> linkList = Arrays.asList(newLink("link1", newSourceTp("tp1"), newDestTp("dest")));
         Topology topology = new TopologyBuilder().setLink(linkList).build();
@@ -239,7 +239,8 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
 
         DataTreeModification dataTreeModification = setupDataTreeChange(WRITE, invNodeConnID);
-        when(dataTreeModification.getRootNode().getDataAfter()).thenReturn(provideFlowCapableNodeConnector(true, false));
+        when(dataTreeModification.getRootNode().getDataAfter())
+                .thenReturn(provideFlowCapableNodeConnector(true, false));
         terminationPointListener.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
         waitForDeletes(1, deleteLatch);
@@ -255,7 +256,6 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
                 linkList.get(0).getKey())}, deletedLinkIDs);
     }
 
-
     @SuppressWarnings("rawtypes")
     @Test
     public void testOnNodeConnectorUpdatedWithPortDown() {
@@ -266,7 +266,7 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey ncKey =
                 newInvNodeConnKey("tp1");
 
-        InstanceIdentifier<?> invNodeConnID = newNodeConnID(nodeKey, ncKey);
+        final InstanceIdentifier<?> invNodeConnID = newNodeConnID(nodeKey, ncKey);
 
         List<Link> linkList = Arrays.asList(newLink("link1", newSourceTp("tp1"), newDestTp("dest")));
         Topology topology = new TopologyBuilder().setLink(linkList).build();
@@ -284,7 +284,8 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
 
         DataTreeModification dataTreeModification = setupDataTreeChange(WRITE, invNodeConnID);
-        when(dataTreeModification.getRootNode().getDataAfter()).thenReturn(provideFlowCapableNodeConnector(false, true));
+        when(dataTreeModification.getRootNode().getDataAfter())
+                .thenReturn(provideFlowCapableNodeConnector(false, true));
         terminationPointListener.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
         waitForDeletes(1, deleteLatch);

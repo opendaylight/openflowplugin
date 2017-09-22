@@ -64,14 +64,11 @@ public final class FlowCapableNodeMapping {
         return toTerminationPointId(getNodeConnectorKey(source).getId());
     }
 
-    public static org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node toTopologyNode(
+    public static org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology
+            .topology.Node toTopologyNode(
             final NodeId nodeId, final NodeRef invNodeRef) {
-        return new NodeBuilder()
-                .setNodeId(nodeId)
-                .addAugmentation(InventoryNode.class, new InventoryNodeBuilder()
-                        .setInventoryNodeRef(invNodeRef)
-                        .build())
-                .build();
+        return new NodeBuilder().setNodeId(nodeId).addAugmentation(InventoryNode.class, new InventoryNodeBuilder()
+                .setInventoryNodeRef(invNodeRef).build()).build();
     }
 
     public static TerminationPoint toTerminationPoint(final TpId id, final NodeConnectorRef invNodeConnectorRef) {
