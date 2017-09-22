@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -53,8 +53,7 @@ public abstract class DataTreeChangeListenerBase {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        doReturn(mockTxChain).when(mockDataBroker)
-                .createTransactionChain(any(TransactionChainListener.class));
+        doReturn(mockTxChain).when(mockDataBroker).createTransactionChain(any(TransactionChainListener.class));
 
         processor = new OperationProcessor(mockDataBroker);
 
@@ -71,7 +70,8 @@ public abstract class DataTreeChangeListenerBase {
         executor.shutdownNow();
     }
 
-    protected FlowCapableNodeConnector provideFlowCapableNodeConnector(final boolean isLinkDown, final boolean isPortDown) {
+    protected FlowCapableNodeConnector provideFlowCapableNodeConnector(final boolean isLinkDown,
+                                                                       final boolean isPortDown) {
         FlowCapableNodeConnectorBuilder builder = new FlowCapableNodeConnectorBuilder();
         builder.setState(new StateBuilder().setLinkDown(isLinkDown).build());
         builder.setConfiguration(new PortConfig(true, true, true, isPortDown));
@@ -88,5 +88,4 @@ public abstract class DataTreeChangeListenerBase {
         when(dataTreeModification.getRootNode().getDataAfter()).thenReturn(mock(FlowCapableNodeConnector.class));
         return dataTreeModification;
     }
-
 }

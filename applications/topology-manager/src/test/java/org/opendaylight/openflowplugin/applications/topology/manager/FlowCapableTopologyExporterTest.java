@@ -142,10 +142,11 @@ public class FlowCapableTopologyExporterTest {
                 newDestTp(destNodeConnKey.getId().getValue()));
 
         ReadWriteTransaction mockTx = mock(ReadWriteTransaction.class);
-        CountDownLatch submitLatch = setupStubbedSubmit(mockTx);
+        final CountDownLatch submitLatch = setupStubbedSubmit(mockTx);
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
-        doReturn(Futures.immediateCheckedFuture(Optional.of(link))).when(mockTx).read(LogicalDatastoreType.OPERATIONAL, topologyIID.child(
-                Link.class, new LinkKey(new LinkId(sourceNodeConnKey.getId()))));
+        doReturn(Futures.immediateCheckedFuture(Optional.of(link))).when(mockTx)
+                .read(LogicalDatastoreType.OPERATIONAL,
+                      topologyIID.child(Link.class, new LinkKey(new LinkId(sourceNodeConnKey.getId()))));
 
         exporter.onLinkRemoved(new LinkRemovedBuilder().setSource(
                 new NodeConnectorRef(sourceConnID)).setDestination(
@@ -173,10 +174,11 @@ public class FlowCapableTopologyExporterTest {
         InstanceIdentifier<?> destConnID = newNodeConnID(destNodeKey, destNodeConnKey);
 
         ReadWriteTransaction mockTx = mock(ReadWriteTransaction.class);
-        CountDownLatch submitLatch = setupStubbedSubmit(mockTx);
+        final CountDownLatch submitLatch = setupStubbedSubmit(mockTx);
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
-        doReturn(Futures.immediateCheckedFuture(Optional.<Link>absent())).when(mockTx).read(LogicalDatastoreType.OPERATIONAL, topologyIID.child(
-                Link.class, new LinkKey(new LinkId(sourceNodeConnKey.getId()))));
+        doReturn(Futures.immediateCheckedFuture(Optional.<Link>absent())).when(mockTx)
+                .read(LogicalDatastoreType.OPERATIONAL,
+                      topologyIID.child(Link.class, new LinkKey(new LinkId(sourceNodeConnKey.getId()))));
 
         exporter.onLinkRemoved(new LinkRemovedBuilder().setSource(
                 new NodeConnectorRef(sourceConnID)).setDestination(
@@ -187,5 +189,4 @@ public class FlowCapableTopologyExporterTest {
         verify(mockTx, never()).delete(LogicalDatastoreType.OPERATIONAL, topologyIID.child(
                 Link.class, new LinkKey(new LinkId(sourceNodeConnKey.getId()))));
     }
-
 }
