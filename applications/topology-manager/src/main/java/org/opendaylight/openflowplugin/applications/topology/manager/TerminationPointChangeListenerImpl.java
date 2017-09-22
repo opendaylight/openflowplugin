@@ -34,9 +34,11 @@ import org.slf4j.LoggerFactory;
 public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerImpl<FlowCapableNodeConnector> {
     private static final Logger LOG = LoggerFactory.getLogger(TerminationPointChangeListenerImpl.class);
 
-    public TerminationPointChangeListenerImpl(final DataBroker dataBroker, final OperationProcessor operationProcessor) {
-        super(operationProcessor, dataBroker, InstanceIdentifier.builder(Nodes.class).child(Node.class)
-                .child(NodeConnector.class).augmentation(FlowCapableNodeConnector.class).build());
+    public TerminationPointChangeListenerImpl(final DataBroker dataBroker,
+                                              final OperationProcessor operationProcessor) {
+        super(operationProcessor, dataBroker,
+              InstanceIdentifier.builder(Nodes.class).child(Node.class).child(NodeConnector.class)
+                      .augmentation(FlowCapableNodeConnector.class).build());
         this.operationProcessor = operationProcessor;
     }
 
@@ -54,8 +56,8 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
                     processRemovedTerminationPoints(modification);
                     break;
                 default:
-                    throw new IllegalArgumentException("Unhandled modification type: {}" +
-                            modification.getRootNode().getModificationType());
+                    throw new IllegalArgumentException(
+                            "Unhandled modification type: {}" + modification.getRootNode().getModificationType());
             }
         }
     }
@@ -67,9 +69,15 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
                 terminationPointId, removedNode);
 
         if (iiToTopologyTerminationPoint != null) {
-            final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node> node = iiToTopologyTerminationPoint.firstIdentifierOf(org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node.class);
+            final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology
+                    .rev131021.network.topology.topology.Node>
+                    node = iiToTopologyTerminationPoint.firstIdentifierOf(
+                    org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network
+                            .topology.topology.Node.class);
             operationProcessor.enqueueOperation(manager -> {
-                Optional<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node> nodeOptional = Optional.empty();
+                Optional<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network
+                        .topology.topology.Node>
+                        nodeOptional = Optional.empty();
                 try {
                     nodeOptional = Optional.ofNullable(
                             manager.readFromTransaction(LogicalDatastoreType.OPERATIONAL, node).checkedGet().orNull());
@@ -79,11 +87,13 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
                 }
                 if (nodeOptional.isPresent()) {
                     TopologyManagerUtil.removeAffectedLinks(terminationPointId, manager, II_TO_TOPOLOGY);
-                    manager.addDeleteOperationTotTxChain(LogicalDatastoreType.OPERATIONAL, iiToTopologyTerminationPoint);
+                    manager.addDeleteOperationTotTxChain(LogicalDatastoreType.OPERATIONAL,
+                                                         iiToTopologyTerminationPoint);
                 }
             });
         } else {
-            LOG.debug("Instance identifier to inventory wasn't translated to topology while deleting termination point.");
+            LOG.debug(
+                    "Instance identifier to inventory wasn't translated to topology while deleting termination point.");
         }
     }
 
@@ -92,7 +102,8 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
     }
 
     private void processAddedTerminationPoints(final DataTreeModification<FlowCapableNodeConnector> modification) {
-        final InstanceIdentifier<FlowCapableNodeConnector> iiToNodeInInventory = modification.getRootPath().getRootIdentifier();
+        final InstanceIdentifier<FlowCapableNodeConnector> iiToNodeInInventory = modification.getRootPath()
+                .getRootIdentifier();
         TpId terminationPointIdInTopology = provideTopologyTerminationPointId(iiToNodeInInventory);
         if (terminationPointIdInTopology != null) {
             InstanceIdentifier<TerminationPoint> iiToTopologyTerminationPoint = provideIIToTopologyTerminationPoint(
@@ -107,36 +118,47 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
 
     private void removeLinks(final FlowCapableNodeConnector flowCapNodeConnector, final TerminationPoint point) {
         operationProcessor.enqueueOperation(manager -> {
-            if ((flowCapNodeConnector.getState() != null && flowCapNodeConnector.getState().isLinkDown())
-                    || (flowCapNodeConnector.getConfiguration() != null && flowCapNodeConnector.getConfiguration().isPORTDOWN())) {
+            if ((flowCapNodeConnector.getState() != null && flowCapNodeConnector.getState().isLinkDown()) || (
+                    flowCapNodeConnector.getConfiguration() != null && flowCapNodeConnector.getConfiguration()
+                            .isPORTDOWN())) {
                 TopologyManagerUtil.removeAffectedLinks(point.getTpId(), manager, II_TO_TOPOLOGY);
             }
         });
     }
 
     private static TerminationPoint prepareTopologyTerminationPoint(final TpId terminationPointIdInTopology,
-                                                                    final InstanceIdentifier<FlowCapableNodeConnector> iiToNodeInInventory) {
+                                                                    final
+                                                                    InstanceIdentifier<FlowCapableNodeConnector>
+                                                                            iiToNodeInInventory) {
         final InventoryNodeConnector inventoryNodeConnector = new InventoryNodeConnectorBuilder()
-                .setInventoryNodeConnectorRef(new NodeConnectorRef(iiToNodeInInventory.firstIdentifierOf(NodeConnector.class))).build();
+                .setInventoryNodeConnectorRef(
+                        new NodeConnectorRef(iiToNodeInInventory.firstIdentifierOf(NodeConnector.class))).build();
         final TerminationPointBuilder terminationPointBuilder = new TerminationPointBuilder();
         terminationPointBuilder.setTpId(terminationPointIdInTopology);
         terminationPointBuilder.addAugmentation(InventoryNodeConnector.class, inventoryNodeConnector);
         return terminationPointBuilder.build();
     }
 
-    private InstanceIdentifier<TerminationPoint> provideIIToTopologyTerminationPoint(final TpId terminationPointIdInTopology,
-                                                                                     final InstanceIdentifier<FlowCapableNodeConnector> iiToNodeInInventory) {
+    private InstanceIdentifier<TerminationPoint> provideIIToTopologyTerminationPoint(
+            final TpId terminationPointIdInTopology,
+            final InstanceIdentifier<FlowCapableNodeConnector> iiToNodeInInventory) {
         NodeId nodeIdInTopology = provideTopologyNodeId(iiToNodeInInventory);
         if (terminationPointIdInTopology != null && nodeIdInTopology != null) {
-            InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node> iiToTopologyNode = provideIIToTopologyNode(nodeIdInTopology);
-            return iiToTopologyNode.builder().child(TerminationPoint.class, new TerminationPointKey(terminationPointIdInTopology)).build();
+            InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology
+                    .rev131021.network.topology.topology.Node>
+                    iiToTopologyNode = provideIIToTopologyNode(nodeIdInTopology);
+            return iiToTopologyNode.builder()
+                    .child(TerminationPoint.class, new TerminationPointKey(terminationPointIdInTopology)).build();
         } else {
-            LOG.debug("Value of termination point ID in topology is null. Instance identifier to topology can't be built");
+            LOG.debug(
+                    "Value of termination point ID in topology is null. Instance identifier to topology can't be "
+                            + "built");
             return null;
         }
     }
 
-    private static TpId provideTopologyTerminationPointId(final InstanceIdentifier<FlowCapableNodeConnector> iiToNodeInInventory) {
+    private static TpId provideTopologyTerminationPointId(
+            final InstanceIdentifier<FlowCapableNodeConnector> iiToNodeInInventory) {
         NodeConnectorKey inventoryNodeConnectorKey = iiToNodeInInventory.firstKeyOf(NodeConnector.class);
         if (inventoryNodeConnectorKey != null) {
             return new TpId(inventoryNodeConnectorKey.getId().getValue());

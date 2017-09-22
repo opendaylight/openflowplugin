@@ -25,7 +25,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class DataTreeChangeListenerImpl<T extends DataObject> implements DataTreeChangeListener<T>, AutoCloseable {
+public abstract class DataTreeChangeListenerImpl<T extends DataObject> implements DataTreeChangeListener<T>,
+        AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataTreeChangeListenerImpl.class);
     private static final long STARTUP_LOOP_TICK = 500L;
@@ -33,22 +34,17 @@ public abstract class DataTreeChangeListenerImpl<T extends DataObject> implement
     protected final ListenerRegistration<DataTreeChangeListener> listenerRegistration;
     protected OperationProcessor operationProcessor;
 
-    /**
-     * instance identifier to Node in network topology model (yangtools)
-     */
-    static final InstanceIdentifier<Topology> II_TO_TOPOLOGY =
-            InstanceIdentifier
-            .create(NetworkTopology.class)
+    static final InstanceIdentifier<Topology> II_TO_TOPOLOGY = InstanceIdentifier.create(NetworkTopology.class)
             .child(Topology.class, new TopologyKey(new TopologyId(FlowCapableTopologyProvider.TOPOLOGY_ID)));
 
-    DataTreeChangeListenerImpl(final OperationProcessor operationProcessor,
-                               final DataBroker dataBroker,
+    @SuppressWarnings("checkstyle:IllegalCatch")
+    public DataTreeChangeListenerImpl(final OperationProcessor operationProcessor, final DataBroker dataBroker,
                                final InstanceIdentifier<T> ii) {
         final DataTreeIdentifier<T> identifier = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, ii);
         final SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
         try {
-            listenerRegistration = looper.loopUntilNoException(() ->
-                    dataBroker.registerDataTreeChangeListener(identifier, DataTreeChangeListenerImpl.this));
+            listenerRegistration = looper.loopUntilNoException(
+                () -> dataBroker.registerDataTreeChangeListener(identifier, DataTreeChangeListenerImpl.this));
         } catch (Exception e) {
             LOG.error("Data listener registration failed!");
             throw new IllegalStateException("TopologyManager startup fail! TM bundle needs restart.", e);
@@ -62,17 +58,23 @@ public abstract class DataTreeChangeListenerImpl<T extends DataObject> implement
     }
 
     <T extends DataObject> void sendToTransactionChain(final T node, final InstanceIdentifier<T> iiToTopologyNode) {
-        operationProcessor.enqueueOperation(manager -> manager.mergeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTopologyNode, node, true));
+        operationProcessor.enqueueOperation(
+            manager -> manager.mergeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTopologyNode, node, true));
     }
 
-    InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node> provideIIToTopologyNode(
+    InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network
+            .topology.topology.Node> provideIIToTopologyNode(
             final NodeId nodeIdInTopology) {
-        org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey nodeKeyInTopology = new org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey(
+        org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology
+                .NodeKey
+                nodeKeyInTopology
+                = new org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network
+                .topology.topology.NodeKey(
                 nodeIdInTopology);
-        return II_TO_TOPOLOGY
-                .builder()
-                .child(org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node.class,
-                        nodeKeyInTopology).build();
+        return II_TO_TOPOLOGY.builder()
+                .child(org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network
+                               .topology.topology.Node.class,
+                       nodeKeyInTopology).build();
     }
 
     NodeId provideTopologyNodeId(InstanceIdentifier<T> iiToNodeInInventory) {
@@ -82,5 +84,4 @@ public abstract class DataTreeChangeListenerImpl<T extends DataObject> implement
         }
         return null;
     }
-
 }
