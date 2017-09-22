@@ -8,11 +8,8 @@
 package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
-import com.google.common.util.concurrent.AsyncFunction;
-import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
@@ -648,8 +645,10 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 this.getPrimaryConnectionContext()
                         .getConnectionState()
                         .equals(ConnectionContext.CONNECTION_STATE.RIP);
+
         if (!connectionInterrupted) {
             LOG.info("This controller instance is now acting as a non-owner for node {}", deviceInfo.getLOGValue());
+            makeDeviceSlave();
         }
 
         return deactivateTxManagerFuture;

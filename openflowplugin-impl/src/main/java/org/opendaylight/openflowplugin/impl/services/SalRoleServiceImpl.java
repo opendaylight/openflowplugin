@@ -96,6 +96,8 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
             public void onFailure(final Throwable t) {
                 LOG.error("SetRoleService set Role {} for Node: {} fail . Reason {}", input.getControllerRole(),
                         input.getNode().getValue(), t);
+                //Reset the role, given that this controller instance don't have visibility of the current role.
+                currentRole = OfpRole.NOCHANGE;
                 currentRoleGuard.release();
             }
         });
