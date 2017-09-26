@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_7e70fc3f",
+        "filename": "applications/topology-manager/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-09-26T15:51:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba1f61a0_7e991c78",
+      "range": {
+        "startLine": 92,
+        "startChar": 58,
+        "endLine": 92,
+        "endChar": 65
+      },
+      "revId": "9284d435d47562f2f1a90ea1b9ce2f5184c71737",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
