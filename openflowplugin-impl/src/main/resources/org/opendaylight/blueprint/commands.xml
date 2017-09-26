@@ -9,6 +9,8 @@
 
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
+    <reference id="dataBrokerRef"
+               interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"/>
     <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
         <command name="ofp/showStats">
             <action class="org.opendaylight.openflowplugin.impl.karaf.ShowStatsCommandProvider"/>
@@ -27,6 +29,11 @@
         </command>
         <command name="ofp/reset-session-stats">
             <action class="org.opendaylight.openflowplugin.impl.karaf.ResetSessionStatsComandProvider"/>
+        </command>
+        <command name="shellUtil/getalldpns">
+            <action class="org.opendaylight.openflowplugin.impl.karaf.GetAllDpnsCommandProvider">
+                <property name="dataBroker" ref="dataBrokerRef" />
+            </action>
         </command>
     </command-bundle>
 
