@@ -20,6 +20,7 @@ import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFac
 import org.opendaylight.openflowplugin.impl.services.sal.FlowCapableTransactionServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.NodeConfigServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.PacketProcessingServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.SalAsyncConfigServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.SalBundleServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.SalEchoServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.SalExperimenterMessageServiceImpl;
@@ -44,6 +45,7 @@ import org.opendaylight.openflowplugin.impl.statistics.services.direct.Opendayli
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.multilayer.MultiLayerDirectStatisticsProviderInitializer;
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.singlelayer.SingleLayerDirectStatisticsProviderInitializer;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.async.config.service.rev170619.SalAsyncConfigService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.OpendaylightDirectStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SalEchoService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SalExperimenterMessageService;
@@ -96,6 +98,8 @@ public class MdSalRegistrationUtils {
         final SalFlowServiceImpl salFlowService = new SalFlowServiceImpl(rpcContext, deviceContext, convertorExecutor);
         final FlowCapableTransactionServiceImpl flowCapableTransactionService =
                 new FlowCapableTransactionServiceImpl(rpcContext, deviceContext);
+        final SalAsyncConfigServiceImpl salAsyncConfigService =
+                new SalAsyncConfigServiceImpl(rpcContext, deviceContext);
         final SalGroupServiceImpl salGroupService =
                 new SalGroupServiceImpl(rpcContext, deviceContext, convertorExecutor);
         final SalMeterServiceImpl salMeterService =
@@ -106,6 +110,7 @@ public class MdSalRegistrationUtils {
                 new SalEchoServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(SalFlowService.class, salFlowService);
         rpcContext.registerRpcServiceImplementation(FlowCapableTransactionService.class, flowCapableTransactionService);
+        rpcContext.registerRpcServiceImplementation(SalAsyncConfigService.class, salAsyncConfigService);
         rpcContext.registerRpcServiceImplementation(SalMeterService.class, salMeterService);
         rpcContext.registerRpcServiceImplementation(SalGroupService.class, salGroupService);
         rpcContext.registerRpcServiceImplementation(SalTableService.class,
