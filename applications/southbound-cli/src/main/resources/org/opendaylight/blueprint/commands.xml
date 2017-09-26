@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+  ~
+  ~ This program and the accompanying materials are made available under the
+  ~ terms of the Eclipse Public License v1.0 which accompanies this distribution,
+  ~ and is available at http://www.eclipse.org/legal/epl-v10.html
+  -->
+
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+
+    <reference id="dataBrokerRef"
+               interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"/>
+
+    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
+        <command name="shellUtil/getalldpns">
+            <action class="org.opendaylight.openflowplugin.applications.southboundcli.cli.GetAllDpnsCommandProvider">
+                <property name="dataBroker" ref="dataBrokerRef" />
+            </action>
+        </command>
+        <command name="shellUtil/showDpn">
+            <action class="org.opendaylight.openflowplugin.applications.southboundcli.cli.ShowDpnCommandProvider">
+                <property name="dataBroker" ref="dataBrokerRef" />
+            </action>
+        </command>
+    </command-bundle>
+
+</blueprint>
