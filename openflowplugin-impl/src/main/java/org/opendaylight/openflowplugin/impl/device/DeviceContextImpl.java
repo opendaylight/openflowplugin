@@ -139,6 +139,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     // Timeout in milliseconds after what we will give up on closing transaction chain
     private static final int TX_CHAIN_CLOSE_TIMEOUT = 10000;
 
+    // Timeout after what we will give up on waiting for master role
+    private static final long CHECK_ROLE_MASTER_TIMEOUT = 20000;
+
     private static final int LOW_WATERMARK = 1000;
     private static final int HIGH_WATERMARK = 2000;
     private final MultipartWriterProvider writerProvider;
@@ -164,6 +167,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final AtomicBoolean hasState = new AtomicBoolean(false);
     private final AtomicBoolean isInitialTransactionSubmitted = new AtomicBoolean(false);
     private final AtomicReference<CONTEXT_STATE> state = new AtomicReference<>(CONTEXT_STATE.INITIALIZATION);
+    private final HashedWheelTimer timer;
+    private final Timeout slaveTask;
     private Timeout barrierTaskTimeout;
     private NotificationPublishService notificationPublishService;
     private TransactionChainManager transactionChainManager;
@@ -188,7 +193,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             final boolean skipTableFeatures,
             final HashedWheelTimer hashedWheelTimer,
             final boolean useSingleLayerSerialization,
-            final DeviceInitializerProvider deviceInitializerProvider) {
+            final DeviceInitializerProvider deviceInitializerProvider,
+            final HashedWheelTimer timer) {
 
         this.primaryConnectionContext = primaryConnectionContext;
         this.deviceInfo = primaryConnectionContext.getDeviceInfo();
@@ -217,6 +223,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.skipTableFeatures = skipTableFeatures;
         this.useSingleLayerSerialization = useSingleLayerSerialization;
         writerProvider = MultipartWriterProviderFactory.createDefaultProvider(this);
+
+        this.timer = timer;
+        slaveTask = timer.newTimeout((t) -> makeDeviceSlave(), CHECK_ROLE_MASTER_TIMEOUT, TimeUnit.MILLISECONDS);
+
+        LOG.info("Started timer for setting SLAVE role on device {} if no role will be set in {}s.",
+                deviceInfo,
+                CHECK_ROLE_MASTER_TIMEOUT / 1000L);
     }
 
     @Override
@@ -534,6 +547,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public ListenableFuture<Void> closeServiceInstance() {
         LOG.info("Stopping device context cluster services for node {}", deviceInfo.getLOGValue());
+        slaveTask.cancel();
+        changeLastRoleFuture(null);
 
         final ListenableFuture<Void> listenableFuture = initialized.get()
                 ? transactionChainManager.deactivateTransactionManager()
@@ -575,6 +590,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         }
 
         state.set(CONTEXT_STATE.TERMINATION);
+        slaveTask.cancel();
+        changeLastRoleFuture(null);
 
         // Close all datastore registries and transactions
         if (initialized.get()) {
@@ -696,10 +713,14 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     private ListenableFuture<RpcResult<SetRoleOutput>> persistSendRoleChangeToDevice(final OfpRole newRole) {
-        mastershipChangeListener.onRoleSentToDevice(deviceInfo);
+        slaveTask.cancel();
         final ListenableFuture<RpcResult<SetRoleOutput>> newFuture = sendRoleChangeToDevice(newRole);
+        changeLastRoleFuture(newFuture);
+        return newFuture;
+    }
 
-        return lastRoleFuture.getAndUpdate(lastFuture -> {
+    private void changeLastRoleFuture(final ListenableFuture<RpcResult<SetRoleOutput>> newFuture) {
+        lastRoleFuture.getAndUpdate(lastFuture -> {
             if (Objects.nonNull(lastFuture) && !lastFuture.isCancelled() && !lastFuture.isDone()) {
                 lastFuture.cancel(true);
             }

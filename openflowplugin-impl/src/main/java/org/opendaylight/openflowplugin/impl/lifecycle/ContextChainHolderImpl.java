@@ -36,7 +36,6 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
-import org.opendaylight.openflowplugin.impl.util.ItemScheduler;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
@@ -49,8 +48,6 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     private static final Logger LOG = LoggerFactory.getLogger(ContextChainHolderImpl.class);
 
     private static final String CONTEXT_CREATED_FOR_CONNECTION = " context created for connection: {}";
-    private static final long CHECK_ROLE_MASTER_TIMEOUT = 20000L;
-    private static final long CHECK_ROLE_MASTER_TOLERANCE = CHECK_ROLE_MASTER_TIMEOUT / 2;
     private static final long REMOVE_DEVICE_FROM_DS_TIMEOUT = 5000L;
     private static final String ASYNC_SERVICE_ENTITY_TYPE = "org.opendaylight.mdsal.AsyncServiceCloseEntityType";
 
@@ -61,7 +58,6 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     private StatisticsManager statisticsManager;
     private EntityOwnershipListenerRegistration eosListenerRegistration;
     private ClusterSingletonServiceProvider singletonServiceProvider;
-    private final ItemScheduler<DeviceInfo, ContextChain> scheduler;
     private final ExecutorService executorService;
     private final HashedWheelTimer timer;
 
@@ -74,12 +70,6 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         this.executorService = executorService;
         this.eosListenerRegistration = Objects.requireNonNull(entityOwnershipService
                 .registerListener(ASYNC_SERVICE_ENTITY_TYPE, this));
-
-        this.scheduler = new ItemScheduler<>(
-                timer,
-                CHECK_ROLE_MASTER_TIMEOUT,
-                CHECK_ROLE_MASTER_TOLERANCE,
-                ContextChain::makeDeviceSlave);
     }
 
     @Override
@@ -124,14 +114,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         contextChainMap.put(deviceInfo, contextChain);
         connectingDevices.remove(deviceInfo);
         LOG.debug("Context chain" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfo);
-
         deviceContext.onPublished();
-        scheduler.add(deviceInfo, contextChain);
-        scheduler.startIfNotRunning();
-        LOG.info("Started timer for setting SLAVE role on node {} if no role will be set in {}s.",
-                deviceInfo,
-                CHECK_ROLE_MASTER_TIMEOUT / 1000L);
-
         contextChain.registerServices(singletonServiceProvider);
         return contextChain;
     }
@@ -195,8 +178,6 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
     @Override
     public void onMasterRoleAcquired(final DeviceInfo deviceInfo, @Nonnull final ContextChainMastershipState mastershipState) {
-        scheduler.remove(deviceInfo);
-
         Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(contextChain -> {
             if (contextChain.isMastered(mastershipState)) {
                 LOG.info("Role MASTER was granted to device {}", deviceInfo);
@@ -207,18 +188,12 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
     @Override
     public void onSlaveRoleAcquired(final DeviceInfo deviceInfo) {
-        scheduler.remove(deviceInfo);
         Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(ContextChain::makeContextChainStateSlave);
     }
 
     @Override
     public void onSlaveRoleNotAcquired(final DeviceInfo deviceInfo) {
         Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(contextChain -> destroyContextChain(deviceInfo));
-    }
-
-    @Override
-    public void onRoleSentToDevice(final DeviceInfo deviceInfo) {
-        scheduler.remove(deviceInfo);
     }
 
     @Override
@@ -242,7 +217,6 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
     @Override
     public void close() throws Exception {
-        scheduler.close();
         contextChainMap.keySet().forEach(this::destroyContextChain);
         contextChainMap.clear();
 
@@ -283,8 +257,6 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     }
 
     private synchronized void destroyContextChain(final DeviceInfo deviceInfo) {
-        scheduler.remove(deviceInfo);
-
         Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(contextChain -> {
             deviceManager.sendNodeRemovedNotification(deviceInfo.getNodeInstanceIdentifier());
             contextChain.close();
@@ -308,7 +280,6 @@ public class ContextChainHolderImpl implements ContextChainHolder {
 
     @Override
     public void onDeviceRemoved(final DeviceInfo deviceInfo) {
-        scheduler.remove(deviceInfo);
         contextChainMap.remove(deviceInfo);
         LOG.debug("Context chain removed for node {}", deviceInfo);
     }

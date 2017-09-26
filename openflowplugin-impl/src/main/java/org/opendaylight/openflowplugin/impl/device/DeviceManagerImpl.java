@@ -240,7 +240,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 skipTableFeatures,
                 hashedWheelTimer,
                 useSingleLayerSerialization,
-                deviceInitializerProvider);
+                deviceInitializerProvider,
+                hashedWheelTimer);
 
         deviceContext.setSalRoleService(new SalRoleServiceImpl(deviceContext, deviceContext));
         deviceContext.setSwitchFeaturesMandatory(switchFeaturesMandatory);

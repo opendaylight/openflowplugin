@@ -224,7 +224,8 @@ public class DeviceContextImplTest {
                 deviceManager,
                 convertorExecutor,
                 false, timer, false,
-            DeviceInitializerProviderFactory.createDefaultProvider());
+            DeviceInitializerProviderFactory.createDefaultProvider(),
+                new HashedWheelTimer());
         ((DeviceContextImpl) deviceContext).lazyTransactionManagerInitialization();
         deviceContextSpy = Mockito.spy(deviceContext);
 
