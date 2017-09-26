@@ -97,6 +97,7 @@
         <!-- experimental apps -->
         <module>bulk-o-matic</module>
         <module>reconciliation-framework</module>
+        <module>southbound-cli</module>
     </modules>
 
 </project>
