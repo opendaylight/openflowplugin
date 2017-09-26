@@ -15,6 +15,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.Collections;
 import org.junit.Assert;
 import org.junit.Before;
@@ -56,6 +57,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
         statisticsContext = new StatisticsContextImpl<>(
                 mockedDeviceContext, convertorManager,
                 MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext),
+                MoreExecutors.newDirectExecutorService(),
                 true,
                 false, 3000, 50000);
 
@@ -79,6 +81,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
         final StatisticsContextImpl<MultipartReply> statisticsContext = new StatisticsContextImpl<>(
                 mockedDeviceContext, convertorManager,
                 MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext),
+                MoreExecutors.newDirectExecutorService(),
                 true, false, 3000, 50000);
 
         final RequestContext<Object> requestContext = statisticsContext.createRequestContext();
