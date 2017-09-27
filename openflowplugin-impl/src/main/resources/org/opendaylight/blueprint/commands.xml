@@ -36,6 +36,11 @@
                 <property name="dataBroker" ref="dataBrokerRef" />
             </action>
         </command>
+        <command name="shellUtil/showDpn">
+            <action class="org.opendaylight.openflowplugin.impl.karaf.ShowDpnCommandProvider">
+                <property name="dataBroker" ref="dataBrokerRef" />
+            </action>
+        </command>
     </command-bundle>
 
 
