@@ -8,16 +8,19 @@
 package org.opendaylight.openflowplugin.impl.karaf;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class Dpn implements Comparable<Dpn>,Serializable {
     private static final long serialVersionUID = 1L;
 
     private long dpnId;
     private String dpnName;
+    private List<String> ports;
 
-    public Dpn(long dpnId, String dpnName) {
+    public Dpn(long dpnId, String dpnName, List<String> ports) {
         this.dpnId = dpnId;
         this.dpnName = dpnName;
+        this.ports = ports;
     }
 
     public long getDpnId() {
@@ -36,10 +39,20 @@ public class Dpn implements Comparable<Dpn>,Serializable {
         this.dpnName = dpnName;
     }
 
+    public List<String> getPorts() {
+
+        return ports;
+    }
+
+    public void setPorts(List<String> ports) {
+        this.ports = ports;
+    }
+
     @Override
     public String toString() {
-        return "Node [dpnId=" + dpnId + ", dpnName=" + dpnName + "]";
+        return "Dpn [dpnId=" + dpnId + ", dpnName=" + dpnName + ", ports=" + ports + "]";
     }
+
 
     @Override
     public int compareTo(Dpn dpn) {
