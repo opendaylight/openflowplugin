@@ -35,11 +35,13 @@ public class Ipv6DestinationEntrySerializerTest extends AbstractMatchEntrySerial
         assertMatch(ipv6abmMatch, true, (out) -> {
             byte[] address = new byte[16];
             out.readBytes(address);
-            assertArrayEquals(address, IetfInetUtil.INSTANCE.ipv6AddressBytes(IpConversionUtil.extractIpv6Address(ipv6Address)));
+            assertArrayEquals(address,
+                    IetfInetUtil.INSTANCE.ipv6AddressBytes(IpConversionUtil.extractIpv6Address(ipv6Address)));
 
             byte[] mask = new byte[16];
             out.readBytes(mask);
-            assertArrayEquals(mask, IpConversionUtil.convertIpv6PrefixToByteArray(IpConversionUtil.extractIpv6Prefix(ipv6Address)));
+            assertArrayEquals(mask,
+                    IpConversionUtil.convertIpv6PrefixToByteArray(IpConversionUtil.extractIpv6Prefix(ipv6Address)));
         });
     }
 
@@ -56,7 +58,8 @@ public class Ipv6DestinationEntrySerializerTest extends AbstractMatchEntrySerial
         assertMatch(ipv6abmMatch, false, (out) -> {
             byte[] address = new byte[16];
             out.readBytes(address);
-            assertArrayEquals(address, IetfInetUtil.INSTANCE.ipv6AddressBytes(IpConversionUtil.extractIpv6Address(ipv6Address)));
+            assertArrayEquals(address,
+                    IetfInetUtil.INSTANCE.ipv6AddressBytes(IpConversionUtil.extractIpv6Address(ipv6Address)));
         });
     }
 

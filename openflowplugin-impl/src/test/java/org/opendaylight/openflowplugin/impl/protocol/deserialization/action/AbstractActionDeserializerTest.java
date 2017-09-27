@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.action;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.openflow.protocol.deserialization.MessageCodeExperimenterKey;
@@ -36,6 +35,7 @@ public abstract class AbstractActionDeserializerTest extends AbstractDeserialize
     }
 
     protected abstract short getType();
+
     protected abstract short getLength();
 
 }

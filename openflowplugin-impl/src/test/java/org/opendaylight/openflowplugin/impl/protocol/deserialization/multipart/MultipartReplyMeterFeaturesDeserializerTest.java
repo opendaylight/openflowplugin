@@ -26,7 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 
-public class MultipartReplyMeterFeaturesDeserializerTest extends AbstractMultipartDeserializerTest{
+public class MultipartReplyMeterFeaturesDeserializerTest extends AbstractMultipartDeserializerTest {
     private static final int MAX_METER = 3;
     private static final List BANDS_SUPPORTED = Arrays.asList(MeterBandDrop.class);
     private static final List CAPABILITIES_SUPPORTED = Arrays.asList(MeterKbps.class, MeterBurst.class);

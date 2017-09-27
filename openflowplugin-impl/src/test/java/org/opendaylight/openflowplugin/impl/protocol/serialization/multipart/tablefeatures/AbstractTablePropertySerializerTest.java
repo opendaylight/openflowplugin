@@ -51,5 +51,6 @@ public abstract class AbstractTablePropertySerializerTest extends AbstractSerial
     }
 
     protected abstract Class<? extends TableFeaturePropType> getClazz();
+
     protected abstract int getType();
 }

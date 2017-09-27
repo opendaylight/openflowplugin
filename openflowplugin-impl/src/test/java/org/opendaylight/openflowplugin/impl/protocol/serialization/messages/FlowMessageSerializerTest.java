@@ -179,7 +179,8 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
 
     @Override
     protected void init() {
-        serializer = getRegistry().getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, FlowMessage.class));
+        serializer = getRegistry()
+                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, FlowMessage.class));
     }
 
     @Test
@@ -255,7 +256,7 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
 
         // Set vlan id action
         int setVlanIdLength = 16;
-        int setVlanStartIndex = out.readerIndex();
+        final int setVlanStartIndex = out.readerIndex();
         assertEquals(out.readUnsignedShort(), ActionConstants.SET_FIELD_CODE);
         assertEquals(out.readUnsignedShort(), setVlanIdLength);
         assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
@@ -276,7 +277,7 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
 
         // Set tp src action
         int setTpSrcLength = 16;
-        int setTpSrcStartIndex = out.readerIndex();
+        final int setTpSrcStartIndex = out.readerIndex();
         assertEquals(out.readUnsignedShort(), ActionConstants.SET_FIELD_CODE);
         assertEquals(out.readUnsignedShort(), setTpSrcLength);
         assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
@@ -297,7 +298,7 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
 
         // Set tp dst action
         int setTpDstLength = 16;
-        int setTpDstStartIndex = out.readerIndex();
+        final int setTpDstStartIndex = out.readerIndex();
         assertEquals(out.readUnsignedShort(), ActionConstants.SET_FIELD_CODE);
         assertEquals(out.readUnsignedShort(), setTpDstLength);
         assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
@@ -372,7 +373,7 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
 
         // Set vlan id action
         int setVlanIdLength = 16;
-        int setVlanStartIndex = out.readerIndex();
+        final int setVlanStartIndex = out.readerIndex();
         assertEquals(out.readUnsignedShort(), ActionConstants.SET_FIELD_CODE);
         assertEquals(out.readUnsignedShort(), setVlanIdLength);
         assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
@@ -393,7 +394,7 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
 
         // Set tp src action
         int setTpSrcLength = 16;
-        int setTpSrcStartIndex = out.readerIndex();
+        final int setTpSrcStartIndex = out.readerIndex();
         assertEquals(out.readUnsignedShort(), ActionConstants.SET_FIELD_CODE);
         assertEquals(out.readUnsignedShort(), setTpSrcLength);
         assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
@@ -414,7 +415,7 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
 
         // Set tp dst action
         int setTpDstLength = 16;
-        int setTpDstStartIndex = out.readerIndex();
+        final int setTpDstStartIndex = out.readerIndex();
         assertEquals(out.readUnsignedShort(), ActionConstants.SET_FIELD_CODE);
         assertEquals(out.readUnsignedShort(), setTpDstLength);
         assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
