@@ -115,7 +115,8 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         rpcContext.registerMastershipWatcher(this);
         LOG.debug("RPC" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfo);
 
-        final StatisticsContext statisticsContext = statisticsManager.createContext(deviceContext);
+        final StatisticsContext statisticsContext = statisticsManager.createContext(deviceContext,
+                ownershipChangeListener.isReconciliationFrameworkRegistered());
         statisticsContext.registerMastershipWatcher(this);
         LOG.debug("Statistics" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfo);
 
@@ -215,19 +216,15 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     public void onMasterRoleAcquired(@Nonnull final DeviceInfo deviceInfo,
                                      @Nonnull final ContextChainMastershipState mastershipState) {
         Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(contextChain -> {
-            if (ownershipChangeListener.isReconciliationFrameworkRegistered()) {
-                if (mastershipState == ContextChainMastershipState.INITIAL_SUBMIT) {
-                    LOG.error("Initial submit is not allowed here if using reconciliation framework.");
-                } else {
-                    contextChain.isMastered(mastershipState);
-                    if (contextChain.isPrepared()) {
-                        Futures.addCallback(
-                                ownershipChangeListener.becomeMasterBeforeSubmittedDS(deviceInfo),
-                                reconciliationFrameworkCallback(deviceInfo, contextChain),
-                                MoreExecutors.directExecutor());
-                    }
+            if (ownershipChangeListener.isReconciliationFrameworkRegistered() &&
+                    !ContextChainMastershipState.INITIAL_SUBMIT.equals(mastershipState)) {
+                if (contextChain.isMastered(mastershipState, true)) {
+                    Futures.addCallback(
+                            ownershipChangeListener.becomeMasterBeforeSubmittedDS(deviceInfo),
+                            reconciliationFrameworkCallback(deviceInfo, contextChain),
+                            MoreExecutors.directExecutor());
                 }
-            } else if (contextChain.isMastered(mastershipState)) {
+            } else if (contextChain.isMastered(mastershipState, false)) {
                 LOG.info("Role MASTER was granted to device {}", deviceInfo);
                 ownershipChangeListener.becomeMaster(deviceInfo);
                 deviceManager.sendNodeAddedNotification(deviceInfo.getNodeInstanceIdentifier());
@@ -325,7 +322,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                 .stream()
                 .filter(deviceInfoContextChainEntry -> deviceInfoContextChainEntry
                         .getValue()
-                        .isMastered(ContextChainMastershipState.CHECK))
+                        .isMastered(ContextChainMastershipState.CHECK, false))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
     }
@@ -337,7 +334,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                 .stream()
                 .findAny()
                 .filter(deviceInfoContextChainEntry -> deviceInfoContextChainEntry.getValue()
-                        .isMastered(ContextChainMastershipState.CHECK))
+                        .isMastered(ContextChainMastershipState.CHECK, false))
                 .isPresent();
     }
 
@@ -370,13 +367,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
             public void onSuccess(@Nullable ResultState result) {
                 if (ResultState.DONOTHING == result) {
                     LOG.info("Device {} connection is enabled by reconciliation framework.", deviceInfo);
-                    if (!contextChain.continueInitializationAfterReconciliation()) {
-                        LOG.warn("Initialization submit after reconciliation failed for device {}", deviceInfo);
-                        destroyContextChain(deviceInfo);
-                    } else {
-                        ownershipChangeListener.becomeMaster(deviceInfo);
-                        deviceManager.sendNodeAddedNotification(deviceInfo.getNodeInstanceIdentifier());
-                    }
+                    contextChain.continueInitializationAfterReconciliation();
                 } else {
                     LOG.warn("Reconciliation framework failure for device {}", deviceInfo);
                     destroyContextChain(deviceInfo);
