@@ -99,6 +99,10 @@
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.openflowjava</groupId>
+            <artifactId>openflow-protocol-api</artifactId>
+        </dependency>
     </dependencies>
 
 </project>
