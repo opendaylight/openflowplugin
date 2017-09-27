@@ -30,7 +30,7 @@ public class MatchUtilTest {
 
     private MatchV10Builder expectedV10Match() {
         Short zeroShort = Short.valueOf("0");
-        Integer zeroInteger = Integer.valueOf(0);
+        Integer zeroInteger = 0;
         MatchV10Builder matchV10Builder = new MatchV10Builder();
         matchV10Builder.setDlDst( ZERO_MAC_ADDRESS);
         matchV10Builder.setDlSrc(ZERO_MAC_ADDRESS);
