@@ -1,56 +1,69 @@
 package org.opendaylight.openflowplugin.impl.karaf;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class Dpn implements Comparable<Dpn>,Serializable {
     private static final long serialVersionUID = 1L;
 
-    private long m_nDpId;
-    private String m_sDpnName;
+    private long dpId;
+    private String dpnName;
+    private List<String> ports;
 
     // TODO dpnState
 
-    public Dpn(long nDpId, String sDpnName) {
-        super();
-        m_nDpId = nDpId;
-        m_sDpnName = sDpnName;
+    public Dpn(long nDpId, String sDpnName, List<String> ports) {
+        this.dpId = nDpId;
+        this.dpnName = sDpnName;
+        this.ports = ports;
     }
 
     public long getDpId() {
-        return m_nDpId;
+        return dpId;
     }
 
     public String getDpnName() {
-        return m_sDpnName;
+        return dpnName;
+    }
+
+    public List<String> getPorts() {
+
+        return ports;
     }
 
     public void setDpId(long m_nDpId) {
-        this.m_nDpId = m_nDpId;
+        this.dpId = m_nDpId;
     }
 
     public void setDpnName(String m_sDpnName) {
-        this.m_sDpnName = m_sDpnName;
+        this.dpnName = m_sDpnName;
+    }
+
+    public void setPorts(List<String> ports) {
+        this.ports = ports;
     }
 
     @Override
     public String toString() {
-        return "Node [m_nDpId=" + m_nDpId + ", m_sDpnName=" + m_sDpnName + "]";
+        return "Dpn [dpnId=" + dpId + ", dpnName=" + dpnName + ", ports=" + ports + "]";
     }
+
 
     @Override
     public int compareTo(Dpn dpn) {
         int res = 0;
-        if (m_sDpnName == null && dpn.getDpnName() == null) {
+        if (dpnName == null && dpn.getDpnName() == null) {
             res = 0;
-        } else if (m_sDpnName == null) {
+
+        } else if (dpnName == null) {
             res = 1;
         } else if (dpn.getDpnName() == null) {
             res = -1;
         } else {
-            res = m_sDpnName.compareTo(dpn.getDpnName());
+            res = dpnName.compareTo(dpn.getDpnName());
         }
         if (res == 0) {
-            return Long.compare(m_nDpId, dpn.getDpId());
+            return Long.compare(dpId, dpn.getDpId());
         }
         return res;
     }
