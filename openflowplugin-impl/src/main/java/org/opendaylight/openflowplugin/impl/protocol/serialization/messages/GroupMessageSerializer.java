@@ -17,6 +17,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegist
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.util.ActionUtil;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.OrderComparator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupModCommand;
@@ -58,12 +59,14 @@ public class GroupMessageSerializer extends AbstractMessageSerializer<GroupMessa
                     outBuffer.writeInt(MoreObjects.firstNonNull(bucket.getWatchGroup(), OFConstants.OFPG_ANY).intValue());
                     outBuffer.writeZero(PADDING_IN_BUCKET);
 
-                    Optional.ofNullable(bucket.getAction()).ifPresent(as -> as.forEach(a ->
-                        ActionUtil.writeAction(
-                            a.getAction(),
-                            OFConstants.OFP_VERSION_1_3,
-                            registry,
-                            outBuffer)));
+                    Optional.ofNullable(bucket.getAction()).ifPresent(as -> as
+                            .stream()
+                            .sorted(OrderComparator.build())
+                            .forEach(a -> ActionUtil.writeAction(
+                                    a.getAction(),
+                                    OFConstants.OFP_VERSION_1_3,
+                                    registry,
+                                    outBuffer)));
 
                     outBuffer.setShort(bucketIndex, outBuffer.writerIndex() - bucketIndex);
                 }));
