@@ -200,7 +200,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
     public void onDeviceDisconnected(final ConnectionContext connectionContext) {
         final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
 
-        Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(contextChain -> {
+        Optional.ofNullable(deviceInfo).map(contextChainMap::get).ifPresent(contextChain -> {
             if (contextChain.auxiliaryConnectionDropped(connectionContext)) {
                 LOG.info("Auxiliary connection from device {} disconnected.", deviceInfo);
             } else {
