@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.services.sal;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.MoreExecutors;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -76,10 +75,7 @@ public class SalGroupServiceImpl implements SalGroupService {
             @Override
             public void onSuccess(RpcResult<AddGroupOutput> result) {
                 if (result.isSuccessful()) {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Group add with id={} finished without error", input.getGroupId().getValue());
-                    }
-                    deviceContext.getDeviceGroupRegistry().store(input.getGroupId());
+                    LOG.debug("adding group to groupRegistry", input.getGroupId().getValue());
                 } else {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Group add with id={} failed, errors={}", input.getGroupId().getValue(),
@@ -94,7 +90,7 @@ public class SalGroupServiceImpl implements SalGroupService {
                           input.getGroupId().getValue(),
                           throwable);
             }
-        }, MoreExecutors.directExecutor());
+        });
         return resultFuture;
     }
 
@@ -126,7 +122,7 @@ public class SalGroupServiceImpl implements SalGroupService {
                 LOG.warn("Service call for updating group={} failed, reason: {}",
                         input.getOriginalGroup().getGroupId(), throwable);
             }
-        }, MoreExecutors.directExecutor());
+        });
         return resultFuture;
     }
 
@@ -144,7 +140,6 @@ public class SalGroupServiceImpl implements SalGroupService {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Group remove with id={} finished without error", input.getGroupId().getValue());
                     }
-                    removeGroup.getDeviceRegistry().getDeviceGroupRegistry().addMark(input.getGroupId());
                 } else {
                     LOG.warn("Group remove with id={} failed, errors={}", input.getGroupId().getValue(),
                         ErrorUtil.errorsToString(result.getErrors()));
@@ -157,7 +152,7 @@ public class SalGroupServiceImpl implements SalGroupService {
                 LOG.warn("Service call for removing group={} failed, reason: {}",
                         input.getGroupId().getValue(), throwable);
             }
-        }, MoreExecutors.directExecutor());
+        });
         return resultFuture;
     }
 
