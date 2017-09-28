@@ -145,10 +145,8 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
 
     @Override
     public ConnectionStatus deviceConnected(final ConnectionContext connectionContext) throws Exception {
-
         final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
         final ContextChain contextChain = contextChainMap.get(deviceInfo);
-
         final FeaturesReply featuresReply = connectionContext.getFeatures();
         final Short auxiliaryId = featuresReply != null ? featuresReply.getAuxiliaryId() : null;
 

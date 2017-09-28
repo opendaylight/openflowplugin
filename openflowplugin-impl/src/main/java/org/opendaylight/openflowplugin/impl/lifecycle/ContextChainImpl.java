@@ -70,7 +70,6 @@ public class ContextChainImpl implements ContextChain {
     @Override
     @SuppressWarnings("checkstyle:IllegalCatch")
     public void instantiateServiceInstance() {
-
         try {
             contexts.forEach(OFPContext::instantiateServiceInstance);
             LOG.info("Started clustering services for node {}", deviceInfo);
