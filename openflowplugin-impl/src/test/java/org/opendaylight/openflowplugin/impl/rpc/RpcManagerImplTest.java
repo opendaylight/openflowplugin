@@ -28,7 +28,6 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
-import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
@@ -59,8 +58,6 @@ public class RpcManagerImplTest {
     private DeviceState deviceState;
     @Mock
     private ConnectionContext connectionContext;
-    @Mock
-    private ItemLifeCycleRegistry itemLifeCycleRegistry;
     @Mock
     private MessageSpy messageSpy;
     @Mock
@@ -98,12 +95,10 @@ public class RpcManagerImplTest {
         Mockito.when(connectionContext.getFeatures()).thenReturn(features);
         Mockito.when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
-        Mockito.when(deviceContext.getItemLifeCycleSourceRegistry()).thenReturn(itemLifeCycleRegistry);
         Mockito.when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodePath);
         Mockito.when(connectionContext.getFeatures()).thenReturn(features);
         Mockito.when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
-        Mockito.when(deviceContext.getItemLifeCycleSourceRegistry()).thenReturn(itemLifeCycleRegistry);
         Mockito.when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodePath);
         Mockito.when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
         Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeKey.getId());
