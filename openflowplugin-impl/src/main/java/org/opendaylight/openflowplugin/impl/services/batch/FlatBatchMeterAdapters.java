@@ -46,10 +46,9 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 /**
  * Transform between FlatBatch API and meter batch API.
  */
-public class FlatBatchMeterAdapters {
+public final class FlatBatchMeterAdapters {
 
     private FlatBatchMeterAdapters() {
-        throw new IllegalStateException("This class should not be instantiated.");
     }
 
     /**

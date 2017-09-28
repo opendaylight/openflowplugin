@@ -74,7 +74,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 /**
  * Util class for injecting new action serializers into OpenflowJava.
  */
-class ActionSerializerInjector {
+public final class ActionSerializerInjector {
+
+    private ActionSerializerInjector() {
+    }
 
     /**
      * Injects serializers into provided

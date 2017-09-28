@@ -46,10 +46,9 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 /**
  * Transform between FlatBatch API and group batch API.
  */
-public class FlatBatchGroupAdapters {
+public final class FlatBatchGroupAdapters {
 
     private FlatBatchGroupAdapters() {
-        throw new IllegalStateException("This class should not be instantiated.");
     }
 
     /**

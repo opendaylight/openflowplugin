@@ -30,8 +30,11 @@ import org.slf4j.LoggerFactory;
 /**
  * Utility class for action serialization.
  */
-public class ActionUtil {
+public final class ActionUtil {
     private static final Logger LOG = LoggerFactory.getLogger(ActionUtil.class);
+
+    private ActionUtil() {
+    }
 
     /**
      * Serialize OpenFlow action, using extension converter if available.
