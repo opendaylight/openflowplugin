@@ -80,6 +80,7 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Group add with id={} finished without error", input.getGroupId().getValue());
                     }
+                    LOG.debug("adding group to groupRegistry", input.getGroupId().getValue());
                     deviceContext.getDeviceGroupRegistry().store(input.getGroupId());
                     addIfNecessaryToDS(input.getGroupId(), input);
                 } else {
@@ -172,6 +173,7 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
     }
 
     private void addIfNecessaryToDS(final GroupId groupId, final Group data) {
+        LOG.debug("Group add to datstore addIfNecessaryToDS", groupId);
         if (itemLifecycleListener != null) {
             KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group, GroupKey> groupPath
                     = createGroupPath(groupId,

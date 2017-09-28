@@ -151,17 +151,21 @@ public final class StatisticsGatheringUtils {
 
         switch (type) {
             case OFPMPFLOW:
+                LOG.debug("deleteAllKnownFlows device {}",deviceInfo);
                 deleteAllKnownFlows(txFacade, instanceIdentifier, deviceRegistry.getDeviceFlowRegistry());
                 break;
             case OFPMPMETERCONFIG:
+                LOG.debug("deleteAllKnownMeters device {}",deviceInfo);
                 deleteAllKnownMeters(txFacade, instanceIdentifier, deviceRegistry.getDeviceMeterRegistry());
                 break;
             case OFPMPGROUPDESC:
+                LOG.debug("deleteAllKnownGroups device {}",deviceInfo);
                 deleteAllKnownGroups(txFacade, instanceIdentifier, deviceRegistry.getDeviceGroupRegistry());
                 break;
         }
 
         if (writeStatistics(type, statistics, deviceInfo, statisticsWriterProvider)) {
+            LOG.debug("after writeSattistic for device {}",deviceInfo);
             txFacade.submitTransaction();
 
             switch (type) {
@@ -263,8 +267,14 @@ public final class StatisticsGatheringUtils {
      *
      * @param deviceContext txManager + node path keeper
      */
+<<<<<<< HEAD
     static void markDeviceStateSnapshotStart(final DeviceContext deviceContext) {
         final InstanceIdentifier<FlowCapableStatisticsGatheringStatus> statusPath = deviceContext.getDeviceInfo()
+=======
+    static void markDeviceStateSnapshotStart(final DeviceInfo deviceInfo, final TxFacade txFacade) {
+        LOG.debug("markDeviceStateSnapshotStart on device {}",deviceInfo);
+        final InstanceIdentifier<FlowCapableStatisticsGatheringStatus> statusPath = deviceInfo
+>>>>>>> 8bf06e9... 7826
                 .getNodeInstanceIdentifier().augmentation(FlowCapableStatisticsGatheringStatus.class);
 
         final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AND_TIME_FORMAT);
@@ -290,8 +300,14 @@ public final class StatisticsGatheringUtils {
      * @param deviceContext txManager + node path keeper
      * @param succeeded     outcome of currently finished gathering
      */
+<<<<<<< HEAD
     static void markDeviceStateSnapshotEnd(final DeviceContext deviceContext, final boolean succeeded) {
         final InstanceIdentifier<SnapshotGatheringStatusEnd> statusEndPath = deviceContext.getDeviceInfo()
+=======
+    static void markDeviceStateSnapshotEnd(final DeviceInfo deviceInfo, final TxFacade txFacade, final boolean succeeded) {
+        LOG.debug("markDeviceStateSnapshotEnd for device {}",deviceInfo);
+        final InstanceIdentifier<SnapshotGatheringStatusEnd> statusEndPath = deviceInfo
+>>>>>>> 8bf06e9... 7826
                 .getNodeInstanceIdentifier().augmentation(FlowCapableStatisticsGatheringStatus.class)
                 .child(SnapshotGatheringStatusEnd.class);
 
