@@ -72,6 +72,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     public Future<RpcResult<Void>> changeStatisticsWorkMode(ChangeStatisticsWorkModeInput input) {
         if (workModeGuard.tryAcquire()) {
             final StatisticsWorkMode targetWorkMode = input.getMode();
+
             isStatisticsFullyDisabled = StatisticsWorkMode.FULLYDISABLED.equals(targetWorkMode);
 
             contexts.values().forEach(context -> {
@@ -109,7 +110,6 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                                 deviceContext,
                                 converterExecutor,
                                 statisticsWriterProvider,
-                                executorService,
                                 !isStatisticsFullyDisabled && config.isIsStatisticsPollingOn(),
                                 useReconciliationFramework,
                                 config.getBasicTimerDelay().getValue(),
@@ -119,7 +119,6 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                                 deviceContext,
                                 converterExecutor,
                                 statisticsWriterProvider,
-                                executorService,
                                 !isStatisticsFullyDisabled && config.isIsStatisticsPollingOn(),
                                 useReconciliationFramework,
                                 config.getBasicTimerDelay().getValue(),
