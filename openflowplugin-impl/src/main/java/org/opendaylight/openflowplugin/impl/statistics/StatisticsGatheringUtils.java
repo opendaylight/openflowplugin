@@ -151,31 +151,45 @@ public final class StatisticsGatheringUtils {
 
         switch (type) {
             case OFPMPFLOW:
+                LOG.debug("deleteAllKnownFlows device {}, flow size - {}",deviceInfo,deviceRegistry.getDeviceFlowRegistry().size());
+                deviceRegistry.getDeviceFlowRegistry().processMarks();
                 deleteAllKnownFlows(txFacade, instanceIdentifier, deviceRegistry.getDeviceFlowRegistry());
                 break;
             case OFPMPMETERCONFIG:
+                LOG.debug("deleteAllKnownMeters device {}",deviceInfo);
+                deviceRegistry.getDeviceMeterRegistry().processMarks();
                 deleteAllKnownMeters(txFacade, instanceIdentifier, deviceRegistry.getDeviceMeterRegistry());
                 break;
             case OFPMPGROUPDESC:
+                LOG.debug("deleteAllKnownGroups OFPMPGROUPDESC device {}, group size - {}, ",deviceInfo,deviceRegistry.getDeviceGroupRegistry().size());
+                deviceRegistry.getDeviceGroupRegistry().processMarks();
                 deleteAllKnownGroups(txFacade, instanceIdentifier, deviceRegistry.getDeviceGroupRegistry());
                 break;
         }
 
         if (writeStatistics(type, statistics, deviceInfo, statisticsWriterProvider)) {
+            LOG.debug("after writeSattistic for device {}",deviceInfo);
             txFacade.submitTransaction();
-
-            switch (type) {
+           /* switch (type) {
                 case OFPMPFLOW:
+                    LOG.debug("deleteAllKnownGroups OFPMPFLOW device {}",deviceInfo);
                     deviceRegistry.getDeviceFlowRegistry().processMarks();
                     break;
                 case OFPMPMETERCONFIG:
+                    LOG.debug("deleteAllKnownGroups OFPMPMETERCONFIG device {}",deviceInfo);
                     deviceRegistry.getDeviceMeterRegistry().processMarks();
                     break;
                 case OFPMPGROUPDESC:
+                    LOG.debug("deleteAllKnownGroups OFPMPGROUPDESC device {}",deviceInfo);
                     deviceRegistry.getDeviceGroupRegistry().processMarks();
                     break;
-            }
-
+                case OFPMPGROUP:
+                    LOG.debug("deleteAllKnownGroups OFPMPGROUP device {}",deviceInfo);
+                    deviceRegistry.getDeviceGroupRegistry().processMarks();
+                    break;
+            }*/
+            LOG.debug("Printing teh group contents after writing statistics... ");
+            deviceRegistry.getDeviceGroupRegistry().forEach(groupId -> LOG.debug("groups within the group list {} ",groupId));
             LOG.debug("Stats reply added to transaction for node {} of type {}", deviceInfo.getNodeId(), type);
             return true;
         }
@@ -252,6 +266,7 @@ public final class StatisticsGatheringUtils {
     public static void deleteAllKnownGroups(final TxFacade txFacade,
                                             final InstanceIdentifier<FlowCapableNode> instanceIdentifier,
                                             final DeviceGroupRegistry groupRegistry) {
+        LOG.debug("deleteAllKnownGroups on device targetType {}",instanceIdentifier.getTargetType());
         groupRegistry.forEach(groupId -> txFacade
                 .addDeleteToTxChain(
                         LogicalDatastoreType.OPERATIONAL,
@@ -263,7 +278,9 @@ public final class StatisticsGatheringUtils {
      *
      * @param deviceContext txManager + node path keeper
      */
+
     static void markDeviceStateSnapshotStart(final DeviceContext deviceContext) {
+        LOG.debug("markDeviceStateSnapshotStart on device {}",deviceContext.getDeviceInfo());
         final InstanceIdentifier<FlowCapableStatisticsGatheringStatus> statusPath = deviceContext.getDeviceInfo()
                 .getNodeInstanceIdentifier().augmentation(FlowCapableStatisticsGatheringStatus.class);
 
@@ -291,6 +308,7 @@ public final class StatisticsGatheringUtils {
      * @param succeeded     outcome of currently finished gathering
      */
     static void markDeviceStateSnapshotEnd(final DeviceContext deviceContext, final boolean succeeded) {
+        LOG.debug("markDeviceStateSnapshotEnd for device {}",deviceContext.getDeviceInfo());
         final InstanceIdentifier<SnapshotGatheringStatusEnd> statusEndPath = deviceContext.getDeviceInfo()
                 .getNodeInstanceIdentifier().augmentation(FlowCapableStatisticsGatheringStatus.class)
                 .child(SnapshotGatheringStatusEnd.class);

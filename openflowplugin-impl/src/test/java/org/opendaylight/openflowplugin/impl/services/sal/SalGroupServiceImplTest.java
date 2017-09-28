@@ -71,13 +71,13 @@ public class SalGroupServiceImplTest extends ServiceMocking {
 
         this.<AddGroupOutput>mockSuccessfulFuture();
 
-        salGroupService.setItemLifecycleListener(itemLifecycleListener);
+  //      salGroupService.setItemLifecycleListener(itemLifecycleListener);
 
         salGroupService.addGroup(addGroupInput);
         verify(mockedRequestContextStack).createRequestContext();
-        verify(mockedDeviceGroupRegistry).store(eq(dummyGroupId));
 
         if (itemLifecycleListener != null) {
+            verify(mockedDeviceGroupRegistry).store(eq(dummyGroupId));
             verify(itemLifecycleListener).onAdded(Matchers.<KeyedInstanceIdentifier<Group, GroupKey>>any(),Matchers.<Group>any());
         }
     }
@@ -98,8 +98,6 @@ public class SalGroupServiceImplTest extends ServiceMocking {
         final UpdateGroupInput updateGroupInput = new UpdateGroupInputBuilder().setUpdatedGroup(updatedGroup).setOriginalGroup(originalGroup).build();
 
         this.<UpdateGroupOutput>mockSuccessfulFuture();
-
-        salGroupService.setItemLifecycleListener(itemLifecycleListener);
 
         salGroupService.updateGroup(updateGroupInput);
         verify(mockedRequestContextStack).createRequestContext();
@@ -126,13 +124,11 @@ public class SalGroupServiceImplTest extends ServiceMocking {
 
         this.<RemoveGroupOutput>mockSuccessfulFuture();
 
-        salGroupService.setItemLifecycleListener(itemLifecycleListener);
-
         salGroupService.removeGroup(removeGroupInput);
         verify(mockedRequestContextStack).createRequestContext();
-        verify(mockedDeviceGroupRegistry).addMark(eq(dummyGroupId));
 
         if (itemLifecycleListener != null) {
+            verify(mockedDeviceGroupRegistry).addMark(eq(dummyGroupId));
             verify(itemLifecycleListener).onRemoved(Matchers.<KeyedInstanceIdentifier<Group, GroupKey>>any());
         }
     }
