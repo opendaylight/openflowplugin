@@ -1,0 +1,38 @@
+Bug 7826
+dentified the root cause for issue TransactionCommitFailed for group during statistic collection.
+
+Change-Id: I8fe639e6102629fb903689114c617e76a61d68db
+Signed-off-by: sunilkumarms <sunil.g.kumar@ericsson.com>
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# Date:      Thu Sep 28 13:44:28 2017 +0530
+#
+# HEAD detached from origin/stable/carbon
+# Changes to be committed:
+#	modified:   openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/device/DeviceContext.java
+#	deleted:    openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/registry/ItemLifeCycleRegistry.java
+#	deleted:    openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/rpc/ItemLifeCycleKeeper.java
+#	deleted:    openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/rpc/ItemLifeCycleSource.java
+#	deleted:    openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/rpc/listener/ItemLifecycleListener.java
+#	modified:   openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/statistics/StatisticsContext.java
+#	deleted:    openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/common/ItemLifeCycleSourceImpl.java
+#	renamed:    openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/rpc/listener/ItemLifecycleListenerImpl.java -> openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/common/TransactionCommitterUtil.java
+#	modified:   openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java
+#	deleted:    openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/ItemLifeCycleRegistryImpl.java
+#	modified:   openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/group/DeviceGroupRegistryImpl.java
+#	modified:   openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/sal/SalFlowServiceImpl.java
+#	modified:   openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/sal/SalGroupServiceImpl.java
+#	modified:   openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/sal/SalMeterServiceImpl.java
+#	modified:   openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsContextImpl.java
+#	modified:   openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsGatheringUtils.java
+#	modified:   openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsManagerImpl.java
+#	modified:   openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImplTest.java
+#	deleted:    openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/rpc/ItemLifecycleListenerImplTest.java
+#	modified:   openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/rpc/RpcManagerImplTest.java
+#	modified:   openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/services/sal/SalFlowServiceImplTest.java
+#	modified:   openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/services/sal/SalGroupServiceImplTest.java
+#	modified:   openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/services/sal/SalMeterServiceImplTest.java
+#	modified:   openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsManagerImplTest.java
+#
