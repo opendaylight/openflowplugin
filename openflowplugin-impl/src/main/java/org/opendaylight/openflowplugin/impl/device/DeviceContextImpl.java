@@ -342,7 +342,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
         if (initialized.get()) {
             try {
+                LOG.warn("writePortStatusMessage");
                 writePortStatusMessage(portStatus);
+                LOG.warn("submit transaction for write port status message");
                 submitTransaction();
             } catch (final Exception e) {
                 LOG.warn("Error processing port status message for port {} on device {}",
@@ -354,6 +356,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     private void writePortStatusMessage(final PortStatus portStatusMessage) {
+        LOG.debug("writePortStatusMessage for port  {} ",portStatusMessage);
         final FlowCapableNodeConnector flowCapableNodeConnector = portStatusTranslator
                 .translate(portStatusMessage, getDeviceInfo(), null);
 
@@ -373,6 +376,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     .addAugmentation(FlowCapableNodeConnector.class, flowCapableNodeConnector)
                     .build());
         } else if (PortReason.OFPPRDELETE.equals(portStatusMessage.getReason())) {
+            LOG.debug("addDeleteToTxChain for port reason being same for node {} ",iiToNodeConnector);
             addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector);
         }
     }
@@ -386,6 +390,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private void handlePacketInMessage(final PacketIn packetIn,
                                        final Class<?> implementedInterface,
                                        final Match match) {
+        LOG.debug("handlePacketInMessage ");
         messageSpy.spyMessage(implementedInterface, MessageSpy.StatisticsGroup.FROM_SWITCH);
         final ConnectionAdapter connectionAdapter = getPrimaryConnectionContext().getConnectionAdapter();
 
@@ -622,7 +627,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         try {
             final List<PortStatusMessage> portStatusMessages = primaryConnectionContext
                     .retrieveAndClearPortStatusMessages();
-
+            LOG.debug("instantiateServiceInstance for port status message {} ",portStatusMessages);
             portStatusMessages.forEach(this::writePortStatusMessage);
             submitTransaction();
         } catch (final Exception ex) {

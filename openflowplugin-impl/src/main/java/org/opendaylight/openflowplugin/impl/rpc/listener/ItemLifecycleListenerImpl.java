@@ -35,6 +35,7 @@ public class ItemLifecycleListenerImpl implements ItemLifecycleListener {
     @Override
     public <I extends Identifiable<K> & DataObject, K extends Identifier<I>> void onAdded(KeyedInstanceIdentifier<I, K> itemPath, I itemBody) {
         try {
+            LOG.debug("onAdded {}",itemBody);
             txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, itemPath, itemBody);
             txFacade.submitTransaction();
         } catch (Exception e) {
@@ -45,6 +46,7 @@ public class ItemLifecycleListenerImpl implements ItemLifecycleListener {
     @Override
     public <I extends Identifiable<K> & DataObject, K extends Identifier<I>> void onRemoved(KeyedInstanceIdentifier<I, K> itemPath) {
         try {
+            LOG.debug("onRemoved {}",itemPath);
             txFacade.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, itemPath);
             txFacade.submitTransaction();
         } catch (Exception e) {
@@ -55,6 +57,7 @@ public class ItemLifecycleListenerImpl implements ItemLifecycleListener {
     @Override
     public <I extends Identifiable<K> & DataObject, K extends Identifier<I>> void onUpdated(KeyedInstanceIdentifier<I, K> itemPath, I itemBody) {
         try {
+            LOG.debug("onUpdated {}",itemPath);
             txFacade.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, itemPath);
             txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, itemPath, itemBody);
             txFacade.submitTransaction();
