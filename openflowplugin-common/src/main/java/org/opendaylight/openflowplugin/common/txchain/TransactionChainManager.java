@@ -88,7 +88,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
     }
 
     /**
-     * Method change status for TxChainManager to {@link TransactionChainManagerStatus#WORKING} and it has to make
+     * Method change status for TxChainManager to WORKING and it has to make
      * registration for this class instance as {@link TransactionChainListener} to provide possibility a make DS
      * transactions. Call this method for MASTER role only.
      */
@@ -112,7 +112,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
     }
 
     /**
-     * Method change status for TxChainManger to {@link TransactionChainManagerStatus#SLEEPING} and it unregisters
+     * Method change status for TxChainManger to SLEEPING and it unregisters
      * this class instance as {@link TransactionChainListener} so it broke a possibility to write something to DS.
      * Call this method for SLAVE only.
      * @return Future
@@ -135,7 +135,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                     }
 
                     @Override
-                    public void onFailure(@Nonnull final Throwable t) {
+                    public void onFailure(@Nonnull final Throwable throwable) {
                         closeTransactionChain();
                     }
                 });
@@ -213,7 +213,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
     }
 
     public <T extends DataObject> void addDeleteOperationTotTxChain(final LogicalDatastoreType store,
-                                                                    final InstanceIdentifier<T> path){
+                                                                    final InstanceIdentifier<T> path) {
         synchronized (txLock) {
             ensureTransaction();
             if (writeTx == null) {
@@ -228,7 +228,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
     public <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
                                                           final InstanceIdentifier<T> path,
                                                           final T data,
-                                                          final boolean createParents){
+                                                          final boolean createParents) {
         synchronized (txLock) {
             ensureTransaction();
             if (writeTx == null) {
@@ -243,7 +243,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
     public <T extends DataObject> void mergeToTransaction(final LogicalDatastoreType store,
                                                           final InstanceIdentifier<T> path,
                                                           final T data,
-                                                          final boolean createParents){
+                                                          final boolean createParents) {
         synchronized (txLock) {
             ensureTransaction();
             if (writeTx == null) {
@@ -256,8 +256,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
     }
 
     public <T extends DataObject> CheckedFuture<com.google.common.base.Optional<T>, ReadFailedException>
-    readFromTransaction(final LogicalDatastoreType store,
-                        final InstanceIdentifier<T> path){
+        readFromTransaction(final LogicalDatastoreType store, final InstanceIdentifier<T> path) {
         synchronized (txLock) {
             ensureTransaction();
             if (writeTx == null) {
@@ -273,8 +272,8 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
     public void onTransactionChainFailed(final TransactionChain<?, ?> chain,
                                          final AsyncTransaction<?, ?> transaction, final Throwable cause) {
         synchronized (txLock) {
-            if (TransactionChainManagerStatus.WORKING == transactionChainManagerStatus &&
-                    chain.equals(this.transactionChain)) {
+            if (TransactionChainManagerStatus.WORKING == transactionChainManagerStatus
+                    && chain.equals(this.transactionChain)) {
                 LOG.warn("Transaction chain failed, recreating chain due to ", cause);
                 closeTransactionChain();
                 createTxChain();
