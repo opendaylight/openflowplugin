@@ -150,6 +150,9 @@ module nicira-match {
     identity nxm-of-metadata {
         base ofoxm:match-field;
     }
+    identity nxm-nx-ct-mark {
+        base ofoxm:match-field;
+    }
 
     grouping ofj-nxm-nx-match-reg-grouping {
         container reg-values {
@@ -455,6 +458,17 @@ module nicira-match {
         }
     }
 
+    grouping ofj-nxm-nx-match-ct-mark-grouping {
+        container ct-mark-values {
+            leaf ct-mark {
+               type uint32;
+            }
+            leaf mask {
+               type uint32;
+            }
+        }
+    }
+
     augment "/ofoxm:oxm-container/ofoxm:match-entry-value" {
         ext:augment-identifier "ofj-aug-nx-match";
         case reg-case-value {
@@ -564,6 +578,9 @@ module nicira-match {
         }
         case icmp-type-case-value {
             uses ofj-nxm-of-match-icmp-type-grouping;
+        }
+        case ct-mark-case-value {
+            uses ofj-nxm-nx-match-ct-mark-grouping;
         }
     }
 
