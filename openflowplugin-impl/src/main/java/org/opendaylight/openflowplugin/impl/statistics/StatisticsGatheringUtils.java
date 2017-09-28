@@ -150,17 +150,21 @@ public final class StatisticsGatheringUtils {
 
         switch (type) {
             case OFPMPFLOW:
+                LOG.debug("deleteAllKnownFlows device {}",deviceInfo);
                 deleteAllKnownFlows(txFacade, instanceIdentifier, deviceRegistry.getDeviceFlowRegistry());
                 break;
             case OFPMPMETERCONFIG:
+                LOG.debug("deleteAllKnownMeters device {}",deviceInfo);
                 deleteAllKnownMeters(txFacade, instanceIdentifier, deviceRegistry.getDeviceMeterRegistry());
                 break;
             case OFPMPGROUPDESC:
+                LOG.debug("deleteAllKnownGroups device {}",deviceInfo);
                 deleteAllKnownGroups(txFacade, instanceIdentifier, deviceRegistry.getDeviceGroupRegistry());
                 break;
         }
 
         if (writeStatistics(type, statistics, deviceInfo, statisticsWriterProvider)) {
+            LOG.debug("after writeSattistic for device {}",deviceInfo);
             txFacade.submitTransaction();
 
             switch (type) {
@@ -266,6 +270,7 @@ public final class StatisticsGatheringUtils {
      * @param txFacade tx manager
      */
     static void markDeviceStateSnapshotStart(final DeviceInfo deviceInfo, final TxFacade txFacade) {
+        LOG.debug("markDeviceStateSnapshotStart on device {}",deviceInfo);
         final InstanceIdentifier<FlowCapableStatisticsGatheringStatus> statusPath = deviceInfo
                 .getNodeInstanceIdentifier().augmentation(FlowCapableStatisticsGatheringStatus.class);
 
@@ -294,6 +299,7 @@ public final class StatisticsGatheringUtils {
      * @param succeeded     outcome of currently finished gathering
      */
     static void markDeviceStateSnapshotEnd(final DeviceInfo deviceInfo, final TxFacade txFacade, final boolean succeeded) {
+        LOG.debug("markDeviceStateSnapshotEnd for device {}",deviceInfo);
         final InstanceIdentifier<SnapshotGatheringStatusEnd> statusEndPath = deviceInfo
                 .getNodeInstanceIdentifier().augmentation(FlowCapableStatisticsGatheringStatus.class)
                 .child(SnapshotGatheringStatusEnd.class);
