@@ -1,26 +1,26 @@
-/**
+/*
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
+
 package org.opendaylight.openflowplugin.impl.services.sal;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+
 import java.util.concurrent.Future;
+
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerMeterService;
 import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerMeterService;
+import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerMeterService;
 import org.opendaylight.openflowplugin.impl.util.ErrorUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInput;
@@ -29,8 +29,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.Sal
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,19 +49,19 @@ public class SalMeterServiceImpl implements SalMeterService {
                                final ConvertorExecutor convertorExecutor) {
         this.deviceContext = deviceContext;
         addMeter = new MultiLayerMeterService<>(requestContextStack,
-                                                deviceContext,
-                                                AddMeterOutput.class,
-                                                convertorExecutor);
+                deviceContext,
+                AddMeterOutput.class,
+                convertorExecutor);
 
         updateMeter = new MultiLayerMeterService<>(requestContextStack,
-                                                   deviceContext,
-                                                   UpdateMeterOutput.class,
-                                                   convertorExecutor);
+                deviceContext,
+                UpdateMeterOutput.class,
+                convertorExecutor);
 
         removeMeter = new MultiLayerMeterService<>(requestContextStack,
-                                                   deviceContext,
-                                                   RemoveMeterOutput.class,
-                                                   convertorExecutor);
+                deviceContext,
+                RemoveMeterOutput.class,
+                convertorExecutor);
 
         addMeterMessage = new SingleLayerMeterService<>(requestContextStack, deviceContext, AddMeterOutput.class);
         updateMeterMessage = new SingleLayerMeterService<>(requestContextStack, deviceContext, UpdateMeterOutput.class);
@@ -73,9 +71,9 @@ public class SalMeterServiceImpl implements SalMeterService {
     @Override
     public Future<RpcResult<AddMeterOutput>> addMeter(final AddMeterInput input) {
         final ListenableFuture<RpcResult<AddMeterOutput>> resultFuture =
-            addMeterMessage.canUseSingleLayerSerialization()
-            ? addMeterMessage.handleServiceCall(input)
-            : addMeter.handleServiceCall(input);
+                addMeterMessage.canUseSingleLayerSerialization()
+                        ? addMeterMessage.handleServiceCall(input)
+                        : addMeter.handleServiceCall(input);
 
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<AddMeterOutput>>() {
             @Override
@@ -84,11 +82,10 @@ public class SalMeterServiceImpl implements SalMeterService {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Meter add with id={} finished without error", input.getMeterId());
                     }
-                    deviceContext.getDeviceMeterRegistry().store(input.getMeterId());
                 } else {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Meter add with id={} failed, errors={}", input.getMeterId(),
-                            ErrorUtil.errorsToString(result.getErrors()));
+                                ErrorUtil.errorsToString(result.getErrors()));
                     }
                 }
             }
@@ -104,9 +101,9 @@ public class SalMeterServiceImpl implements SalMeterService {
     @Override
     public Future<RpcResult<UpdateMeterOutput>> updateMeter(final UpdateMeterInput input) {
         final ListenableFuture<RpcResult<UpdateMeterOutput>> resultFuture =
-            updateMeterMessage.canUseSingleLayerSerialization()
-            ? updateMeterMessage.handleServiceCall(input.getUpdatedMeter())
-            : updateMeter.handleServiceCall(input.getUpdatedMeter());
+                updateMeterMessage.canUseSingleLayerSerialization()
+                        ? updateMeterMessage.handleServiceCall(input.getUpdatedMeter())
+                        : updateMeter.handleServiceCall(input.getUpdatedMeter());
 
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<UpdateMeterOutput>>() {
 
@@ -115,19 +112,19 @@ public class SalMeterServiceImpl implements SalMeterService {
                 if (result.isSuccessful()) {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Meter update with id={} finished without error",
-                                  input.getOriginalMeter().getMeterId());
+                                input.getOriginalMeter().getMeterId());
                     }
                 } else {
-                        LOG.warn("Meter update with id={} failed, errors={}", input.getOriginalMeter().getMeterId(),
-                                ErrorUtil.errorsToString(result.getErrors()));
-                        LOG.debug("Meter input={}", input.getUpdatedMeter());
+                    LOG.warn("Meter update with id={} failed, errors={}", input.getOriginalMeter().getMeterId(),
+                            ErrorUtil.errorsToString(result.getErrors()));
+                    LOG.debug("Meter input={}", input.getUpdatedMeter());
                 }
             }
 
             @Override
             public void onFailure(Throwable throwable) {
                 LOG.warn("Service call for updating meter={} failed, reason: {}",
-                        input.getOriginalMeter().getMeterId(),throwable);
+                        input.getOriginalMeter().getMeterId(), throwable);
             }
         });
         return resultFuture;
@@ -136,9 +133,9 @@ public class SalMeterServiceImpl implements SalMeterService {
     @Override
     public Future<RpcResult<RemoveMeterOutput>> removeMeter(final RemoveMeterInput input) {
         final ListenableFuture<RpcResult<RemoveMeterOutput>> resultFuture =
-            removeMeterMessage.canUseSingleLayerSerialization()
-            ? removeMeterMessage.handleServiceCall(input)
-            : removeMeter.handleServiceCall(input);
+                removeMeterMessage.canUseSingleLayerSerialization()
+                        ? removeMeterMessage.handleServiceCall(input)
+                        : removeMeter.handleServiceCall(input);
 
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<RemoveMeterOutput>>() {
             @Override
@@ -147,28 +144,18 @@ public class SalMeterServiceImpl implements SalMeterService {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Meter remove with id={} finished without error", input.getMeterId());
                     }
-                    removeMeter.getDeviceRegistry().getDeviceMeterRegistry().addMark(input.getMeterId());
                 } else {
                     LOG.warn("Meter remove with id={} failed, errors={}", input.getMeterId(),
-                        ErrorUtil.errorsToString(result.getErrors()));
+                            ErrorUtil.errorsToString(result.getErrors()));
                     LOG.debug("Meter input={}", input);
                 }
             }
 
             @Override
             public void onFailure(Throwable throwable) {
-                LOG.warn("Service call for removing meter={} failed, reason: {}",input.getMeterId(),throwable);
+                LOG.warn("Service call for removing meter={} failed, reason: {}", input.getMeterId(), throwable);
             }
         });
         return resultFuture;
-    }
-
-    private static KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn
-            .opendaylight.flow.inventory.rev130819.meters.Meter, MeterKey> createMeterPath(
-                                                            final MeterId meterId,
-                                                            final KeyedInstanceIdentifier<Node, NodeKey> nodePath) {
-        return nodePath.augmentation(FlowCapableNode.class)
-                .child(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter.class,
-                       new MeterKey(meterId));
     }
 }
