@@ -140,18 +140,21 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
                         getTxFacade(),
                         instanceIdentifier,
                         deviceRegistry.getDeviceFlowRegistry());
+                deviceRegistry.getDeviceFlowRegistry().processMarks();
                 break;
             case OFPMPMETERCONFIG:
                 StatisticsGatheringUtils.deleteAllKnownMeters(
                         getTxFacade(),
                         instanceIdentifier,
                         deviceRegistry.getDeviceMeterRegistry());
+                deviceRegistry.getDeviceMeterRegistry().processMarks();
                 break;
             case OFPMPGROUPDESC:
                 StatisticsGatheringUtils.deleteAllKnownGroups(
                         getTxFacade(),
                         instanceIdentifier,
                         deviceRegistry.getDeviceGroupRegistry());
+                deviceRegistry.getDeviceGroupRegistry().processMarks();
                 break;
             default:
                 // no operation

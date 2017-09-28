@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl.services.sal;
 
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -53,20 +52,13 @@ public class SalMeterServiceImplTest extends ServiceMocking {
         addMeter();
     }
 
-    @Test
-    public void testAddMeterWithItemLifecycle() throws Exception {
-        addMeter();
-    }
 
     private void addMeter() {
         final MeterId dummyMeterId = new MeterId(DUMMY_METER_ID);
         AddMeterInput addMeterInput = new AddMeterInputBuilder().setMeterId(dummyMeterId).build();
-
         this.<AddMeterOutput>mockSuccessfulFuture();
-
         salMeterService.addMeter(addMeterInput);
         verify(mockedRequestContextStack).createRequestContext();
-        verify(mockedDeviceMeterRegistry).store(eq(dummyMeterId));
     }
 
     @Test
@@ -74,10 +66,6 @@ public class SalMeterServiceImplTest extends ServiceMocking {
         updateMeter();
     }
 
-    @Test
-    public void testUpdateMeterWithItemLifecycle() throws Exception {
-        updateMeter();
-    }
 
     private void updateMeter() throws Exception {
         final UpdatedMeter dummyUpdatedMeter =
@@ -89,7 +77,6 @@ public class SalMeterServiceImplTest extends ServiceMocking {
                 .setUpdatedMeter(dummyUpdatedMeter).setOriginalMeter(dummyOriginalMeter).build();
 
         this.<AddMeterOutput>mockSuccessfulFuture();
-
         salMeterService.updateMeter(updateMeterInput);
         verify(mockedRequestContextStack).createRequestContext();
     }
@@ -99,19 +86,12 @@ public class SalMeterServiceImplTest extends ServiceMocking {
         removeMeter();
     }
 
-    @Test
-    public void testRemoveMeterWithItemLifecycle() throws Exception {
-        removeMeter();
-    }
 
     private void removeMeter() throws Exception {
         final MeterId dummyMeterId = new MeterId(DUMMY_METER_ID);
         RemoveMeterInput removeMeterInput = new RemoveMeterInputBuilder().setMeterId(dummyMeterId).build();
-
         this.<RemoveMeterOutput>mockSuccessfulFuture();
-
         salMeterService.removeMeter(removeMeterInput);
         verify(mockedRequestContextStack).createRequestContext();
-        verify(mockedDeviceMeterRegistry).addMark(eq(dummyMeterId));
     }
 }
