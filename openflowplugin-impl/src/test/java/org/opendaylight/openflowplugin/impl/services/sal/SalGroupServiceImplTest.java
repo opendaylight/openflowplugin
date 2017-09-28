@@ -75,9 +75,9 @@ public class SalGroupServiceImplTest extends ServiceMocking {
 
         salGroupService.addGroup(addGroupInput);
         verify(mockedRequestContextStack).createRequestContext();
-        verify(mockedDeviceGroupRegistry).store(eq(dummyGroupId));
 
         if (itemLifecycleListener != null) {
+            verify(mockedDeviceGroupRegistry).store(eq(dummyGroupId));
             verify(itemLifecycleListener).onAdded(Matchers.<KeyedInstanceIdentifier<Group, GroupKey>>any(),Matchers.<Group>any());
         }
     }
@@ -130,9 +130,9 @@ public class SalGroupServiceImplTest extends ServiceMocking {
 
         salGroupService.removeGroup(removeGroupInput);
         verify(mockedRequestContextStack).createRequestContext();
-        verify(mockedDeviceGroupRegistry).addMark(eq(dummyGroupId));
 
         if (itemLifecycleListener != null) {
+            verify(mockedDeviceGroupRegistry).addMark(eq(dummyGroupId));
             verify(itemLifecycleListener).onRemoved(Matchers.<KeyedInstanceIdentifier<Group, GroupKey>>any());
         }
     }

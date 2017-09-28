@@ -80,8 +80,10 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Group add with id={} finished without error", input.getGroupId().getValue());
                     }
-                    deviceContext.getDeviceGroupRegistry().store(input.getGroupId());
-                    addIfNecessaryToDS(input.getGroupId(), input);
+                    LOG.debug("adding group to groupRegistry", input.getGroupId().getValue());
+                    if(addIfNecessaryToDS(input.getGroupId(), input)){
+                        deviceContext.getDeviceGroupRegistry().store(input.getGroupId());
+                    }
                 } else {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Group add with id={} failed, errors={}", input.getGroupId().getValue(),
@@ -144,8 +146,9 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Group remove with id={} finished without error", input.getGroupId().getValue());
                     }
-                    removeGroup.getDeviceRegistry().getDeviceGroupRegistry().addMark(input.getGroupId());
-                    removeIfNecessaryFromDS(input.getGroupId());
+                    if(removeIfNecessaryFromDS(input.getGroupId())){
+                        removeGroup.getDeviceRegistry().getDeviceGroupRegistry().addMark(input.getGroupId());
+                    }
                 } else {
                     LOG.warn("Group remove with id={} failed, errors={}", input.getGroupId().getValue(),
                         ErrorUtil.errorsToString(result.getErrors()));
@@ -162,22 +165,27 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
         return resultFuture;
     }
 
-    private void removeIfNecessaryFromDS(final GroupId groupId) {
+    private Boolean removeIfNecessaryFromDS(final GroupId groupId) {
         if (itemLifecycleListener != null) {
             KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group, GroupKey> groupPath
                     = createGroupPath(groupId,
                     deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
             itemLifecycleListener.onRemoved(groupPath);
+            return Boolean.TRUE;
         }
+        return Boolean.FALSE;
     }
 
-    private void addIfNecessaryToDS(final GroupId groupId, final Group data) {
+    private Boolean addIfNecessaryToDS(final GroupId groupId, final Group data) {
+        LOG.debug("Group add to datastore addIfNecessaryToDS {} , itemLifecycleListener ", groupId, itemLifecycleListener);
         if (itemLifecycleListener != null) {
             KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group, GroupKey> groupPath
                     = createGroupPath(groupId,
                     deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
             itemLifecycleListener.onAdded(groupPath, new GroupBuilder(data).build());
+            return Boolean.TRUE;
         }
+        return Boolean.FALSE;
     }
 
     private static KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group, GroupKey>

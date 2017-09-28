@@ -313,6 +313,7 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
                 updatedFlowDescriptor = FlowDescriptorFactory.create(updated.getTableId(), input.getFlowRef().getValue().firstKeyOf(Flow.class).getId());
             } else {
                 if (isUpdate) {
+                    LOG.debug("update for device descriptor {} ,-- {} ",original, origFlowRegistryKey);
                     updatedFlowDescriptor = origFlowDescriptor;
                 } else {
                     deviceFlowRegistry.store(updatedFlowRegistryKey);
