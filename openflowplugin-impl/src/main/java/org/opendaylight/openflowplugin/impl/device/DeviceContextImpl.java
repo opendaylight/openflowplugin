@@ -48,6 +48,8 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainState;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
@@ -63,6 +65,7 @@ import org.opendaylight.openflowplugin.impl.device.initialization.AbstractDevice
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProvider;
 import org.opendaylight.openflowplugin.impl.device.listener.MultiMsgCollectorImpl;
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
+import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.impl.registry.group.DeviceGroupRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.meter.DeviceMeterRegistryImpl;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
@@ -73,6 +76,9 @@ import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.ExperimenterMessageFromDevBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
@@ -299,6 +305,25 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             // Trigger off a notification
             notificationPublishService.offerNotification(flowRemovedNotification);
         }
+
+            //2. create registry key
+            final FlowRegistryKey flowRegKey = FlowRegistryKeyFactory.create(getDeviceInfo().getVersion(),
+                    flowRemovedNotification);
+            //3. lookup flowId
+            final FlowDescriptor flowDescriptor = deviceFlowRegistry.retrieveDescriptor(flowRegKey);
+            //4. if flowId present:
+            if (flowDescriptor != null) {
+                // a) construct flow path
+                final KeyedInstanceIdentifier<Flow, FlowKey> flowPath = getDeviceInfo().getNodeInstanceIdentifier()
+                        .augmentation(FlowCapableNode.class)
+                        .child(Table.class, flowDescriptor.getTableKey())
+                        .child(Flow.class, new FlowKey(flowDescriptor.getFlowId()));
+                addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL,flowPath);
+                deviceFlowRegistry.addMark(flowRegKey);
+            } else {
+                LOG.debug("flow id not found: nodeId={} tableId={}, priority={}",
+                        getDeviceInfo().getNodeId(), flowRegKey.getTableId(), flowRemovedNotification.getPriority());
+            }
     }
 
     @Override
@@ -585,9 +610,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         return useSingleLayerSerialization && getDeviceInfo().getVersion() >= OFConstants.OFP_VERSION_1_3;
     }
 
-    // TODO: exception handling should be fixed by using custom checked exception, never RuntimeExceptions
     @Override
-    @SuppressWarnings({"checkstyle:IllegalCatch", "checkstyle:AvoidHidingCauseExceptionCheck"})
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public void instantiateServiceInstance() {
         lazyTransactionManagerInitialization();
 
@@ -709,7 +733,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                         .filter(Objects::nonNull)
                         .count();
 
-                LOG.debug("Finished filling flow registry with {} flows for node: {}", flowCount, deviceInfo);
+                LOG.debug("Finished filling flow registry with {} flows for node: {}", flowCount, deviceInfo
+                        .getLOGValue());
             }
             this.contextChainMastershipWatcher.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState
                     .INITIAL_FLOW_REGISTRY_FILL);
@@ -722,8 +747,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     LOG.debug("Cancelled filling flow registry with flows for node: {}", deviceInfo.getLOGValue());
                 }
             } else {
-                LOG.warn("Failed filling flow registry with flows for node: {} with exception: {}", deviceInfo,
-                         throwable);
+                LOG.warn("Failed filling flow registry with flows for node: {} with exception: {}", deviceInfo
+                        .getLOGValue(), throwable);
             }
             contextChainMastershipWatcher.onNotAbleToStartMastership(
                     deviceInfo,

@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Future;
+
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -83,7 +84,7 @@ public class SalFlowServiceImpl implements SalFlowService {
                                                  convertorExecutor);
         flowAddMessage = new SingleLayerFlowService<>(requestContextStack, deviceContext, AddFlowOutput.class);
         flowUpdateMessage = new SingleLayerFlowService<>(requestContextStack, deviceContext, UpdateFlowOutput.class);
-        flowRemoveMessage = new SingleLayerFlowService<>(requestContextStack, deviceContext, RemoveFlowOutput.class);
+        flowRemoveMessage= new SingleLayerFlowService<>(requestContextStack, deviceContext, RemoveFlowOutput.class);
     }
 
     @Override
@@ -205,7 +206,7 @@ public class SalFlowServiceImpl implements SalFlowService {
                 .child(Flow.class, new FlowKey(flowDescriptor.getFlowId()));
     }
 
-    private final class AddFlowCallback implements FutureCallback<RpcResult<AddFlowOutput>> {
+    private class AddFlowCallback implements FutureCallback<RpcResult<AddFlowOutput>> {
         private final AddFlowInput input;
         private final FlowRegistryKey flowRegistryKey;
 
@@ -232,6 +233,7 @@ public class SalFlowServiceImpl implements SalFlowService {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Flow add with id={} finished without error", flowDescriptor.getFlowId().getValue());
                 }
+
             } else {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Flow add failed for flow={}, errors={}", input,
@@ -246,7 +248,8 @@ public class SalFlowServiceImpl implements SalFlowService {
         }
     }
 
-    private final class RemoveFlowCallback implements FutureCallback<RpcResult<RemoveFlowOutput>> {
+
+    private class RemoveFlowCallback implements FutureCallback<RpcResult<RemoveFlowOutput>> {
         private final RemoveFlowInput input;
 
         private RemoveFlowCallback(final RemoveFlowInput input) {
@@ -276,7 +279,7 @@ public class SalFlowServiceImpl implements SalFlowService {
         }
     }
 
-    private final class UpdateFlowCallback implements FutureCallback<RpcResult<UpdateFlowOutput>> {
+    private class UpdateFlowCallback implements FutureCallback<RpcResult<UpdateFlowOutput>> {
         private final UpdateFlowInput input;
 
         private UpdateFlowCallback(UpdateFlowInput input) {
@@ -304,6 +307,7 @@ public class SalFlowServiceImpl implements SalFlowService {
                                                      input.getFlowRef().getValue().firstKeyOf(Flow.class).getId());
             } else {
                 if (isUpdate) {
+                    LOG.debug("update for device descriptor {} ,-- {} ",original, origFlowRegistryKey);
                     updatedFlowDescriptor = origFlowDescriptor;
                 } else {
                     deviceFlowRegistry.store(updatedFlowRegistryKey);
