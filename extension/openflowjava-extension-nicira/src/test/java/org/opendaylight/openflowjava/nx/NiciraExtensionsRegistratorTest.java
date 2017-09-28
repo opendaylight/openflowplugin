@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -29,6 +29,7 @@ import org.opendaylight.openflowjava.nx.codec.match.ArpShaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.ArpSpaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.ArpThaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.ArpTpaCodec;
+import org.opendaylight.openflowjava.nx.codec.match.CtMarkCodec;
 import org.opendaylight.openflowjava.nx.codec.match.CtStateCodec;
 import org.opendaylight.openflowjava.nx.codec.match.CtZoneCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EthDstCodec;
@@ -71,6 +72,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionPopNsh;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxArpSha;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxArpTha;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxCtMark;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxCtState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxCtZone;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxNshc1;
@@ -193,6 +195,8 @@ public class NiciraExtensionsRegistratorTest {
         Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers.eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 105)), Matchers.any(CtStateCodec.class));
         Mockito.verify(registrator).registerMatchEntrySerializer(Matchers.eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxCtZone.class)), Matchers.any(CtZoneCodec.class));
         Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers.eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 106)), Matchers.any(CtZoneCodec.class));
+        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers.eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxCtMark.class)), Matchers.any(CtMarkCodec.class));
+        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers.eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 107)), Matchers.any(CtMarkCodec.class));
     }
 
     @Test
@@ -277,5 +281,7 @@ public class NiciraExtensionsRegistratorTest {
         Mockito.verify(registrator).unregisterMatchEntryDeserializer(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 105));
         Mockito.verify(registrator).unregisterMatchEntrySerializer(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxCtZone.class));
         Mockito.verify(registrator).unregisterMatchEntryDeserializer(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 106));
+        Mockito.verify(registrator).unregisterMatchEntrySerializer(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxCtMark.class));
+        Mockito.verify(registrator).unregisterMatchEntryDeserializer(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 107));
     }
 }

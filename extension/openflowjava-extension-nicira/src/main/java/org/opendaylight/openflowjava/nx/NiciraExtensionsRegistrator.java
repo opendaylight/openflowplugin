@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2015 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -25,6 +25,7 @@ import org.opendaylight.openflowjava.nx.codec.match.ArpShaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.ArpSpaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.ArpThaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.ArpTpaCodec;
+import org.opendaylight.openflowjava.nx.codec.match.CtMarkCodec;
 import org.opendaylight.openflowjava.nx.codec.match.CtStateCodec;
 import org.opendaylight.openflowjava.nx.codec.match.CtZoneCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EthDstCodec;
@@ -181,6 +182,8 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         registrator.registerMatchEntryDeserializer(CtStateCodec.DESERIALIZER_KEY, NiciraMatchCodecs.CT_ST_CODEC);
         registrator.registerMatchEntrySerializer(CtZoneCodec.SERIALIZER_KEY, NiciraMatchCodecs.CT_ZONE_CODEC);
         registrator.registerMatchEntryDeserializer(CtZoneCodec.DESERIALIZER_KEY, NiciraMatchCodecs.CT_ZONE_CODEC);
+        registrator.registerMatchEntrySerializer(CtMarkCodec.SERIALIZER_KEY, NiciraMatchCodecs.CT_MARK_CODEC);
+        registrator.registerMatchEntryDeserializer(CtMarkCodec.DESERIALIZER_KEY, NiciraMatchCodecs.CT_MARK_CODEC);
     }
 
     @Override
@@ -285,6 +288,8 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         registrator.unregisterMatchEntryDeserializer(CtStateCodec.DESERIALIZER_KEY);
         registrator.unregisterMatchEntrySerializer(CtZoneCodec.SERIALIZER_KEY);
         registrator.unregisterMatchEntryDeserializer(CtZoneCodec.DESERIALIZER_KEY);
+        registrator.unregisterMatchEntrySerializer(CtMarkCodec.SERIALIZER_KEY);
+        registrator.unregisterMatchEntryDeserializer(CtMarkCodec.DESERIALIZER_KEY);
     }
 
 }
