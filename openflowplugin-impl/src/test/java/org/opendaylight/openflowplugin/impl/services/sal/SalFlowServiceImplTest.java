@@ -245,6 +245,7 @@ public class SalFlowServiceImplTest extends TestCase {
 
         SalFlowServiceImpl salFlowService = mockSalFlowService(version);
         verifyOutput(salFlowService.removeFlow(mockedRemoveFlowInput));
+
     }
 
     @Test
