@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -47,19 +47,19 @@ public class SalMeterServiceImpl implements SalMeterService {
                                final ConvertorExecutor convertorExecutor) {
         this.deviceContext = deviceContext;
         addMeter = new MultiLayerMeterService<>(requestContextStack,
-                                                deviceContext,
-                                                AddMeterOutput.class,
-                                                convertorExecutor);
+                deviceContext,
+                AddMeterOutput.class,
+                convertorExecutor);
 
         updateMeter = new MultiLayerMeterService<>(requestContextStack,
-                                                   deviceContext,
-                                                   UpdateMeterOutput.class,
-                                                   convertorExecutor);
+                deviceContext,
+                UpdateMeterOutput.class,
+                convertorExecutor);
 
         removeMeter = new MultiLayerMeterService<>(requestContextStack,
-                                                   deviceContext,
-                                                   RemoveMeterOutput.class,
-                                                   convertorExecutor);
+                deviceContext,
+                RemoveMeterOutput.class,
+                convertorExecutor);
 
         addMeterMessage = new SingleLayerMeterService<>(requestContextStack, deviceContext, AddMeterOutput.class);
         updateMeterMessage = new SingleLayerMeterService<>(requestContextStack, deviceContext, UpdateMeterOutput.class);
@@ -69,9 +69,9 @@ public class SalMeterServiceImpl implements SalMeterService {
     @Override
     public Future<RpcResult<AddMeterOutput>> addMeter(final AddMeterInput input) {
         final ListenableFuture<RpcResult<AddMeterOutput>> resultFuture =
-            addMeterMessage.canUseSingleLayerSerialization()
-            ? addMeterMessage.handleServiceCall(input)
-            : addMeter.handleServiceCall(input);
+                addMeterMessage.canUseSingleLayerSerialization()
+                        ? addMeterMessage.handleServiceCall(input)
+                        : addMeter.handleServiceCall(input);
 
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<AddMeterOutput>>() {
             @Override
@@ -80,11 +80,10 @@ public class SalMeterServiceImpl implements SalMeterService {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Meter add with id={} finished without error", input.getMeterId());
                     }
-                    deviceContext.getDeviceMeterRegistry().store(input.getMeterId());
                 } else {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Meter add with id={} failed, errors={}", input.getMeterId(),
-                            ErrorUtil.errorsToString(result.getErrors()));
+                                ErrorUtil.errorsToString(result.getErrors()));
                     }
                 }
             }
@@ -100,9 +99,9 @@ public class SalMeterServiceImpl implements SalMeterService {
     @Override
     public Future<RpcResult<UpdateMeterOutput>> updateMeter(final UpdateMeterInput input) {
         final ListenableFuture<RpcResult<UpdateMeterOutput>> resultFuture =
-            updateMeterMessage.canUseSingleLayerSerialization()
-            ? updateMeterMessage.handleServiceCall(input.getUpdatedMeter())
-            : updateMeter.handleServiceCall(input.getUpdatedMeter());
+                updateMeterMessage.canUseSingleLayerSerialization()
+                        ? updateMeterMessage.handleServiceCall(input.getUpdatedMeter())
+                        : updateMeter.handleServiceCall(input.getUpdatedMeter());
 
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<UpdateMeterOutput>>() {
 
@@ -111,19 +110,19 @@ public class SalMeterServiceImpl implements SalMeterService {
                 if (result.isSuccessful()) {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Meter update with id={} finished without error",
-                                  input.getOriginalMeter().getMeterId());
+                                input.getOriginalMeter().getMeterId());
                     }
                 } else {
-                        LOG.warn("Meter update with id={} failed, errors={}", input.getOriginalMeter().getMeterId(),
-                                ErrorUtil.errorsToString(result.getErrors()));
-                        LOG.debug("Meter input={}", input.getUpdatedMeter());
+                    LOG.warn("Meter update with id={} failed, errors={}", input.getOriginalMeter().getMeterId(),
+                            ErrorUtil.errorsToString(result.getErrors()));
+                    LOG.debug("Meter input={}", input.getUpdatedMeter());
                 }
             }
 
             @Override
             public void onFailure(Throwable throwable) {
                 LOG.warn("Service call for updating meter={} failed, reason: {}",
-                        input.getOriginalMeter().getMeterId(),throwable);
+                        input.getOriginalMeter().getMeterId(), throwable);
             }
         }, MoreExecutors.directExecutor());
         return resultFuture;
@@ -132,9 +131,9 @@ public class SalMeterServiceImpl implements SalMeterService {
     @Override
     public Future<RpcResult<RemoveMeterOutput>> removeMeter(final RemoveMeterInput input) {
         final ListenableFuture<RpcResult<RemoveMeterOutput>> resultFuture =
-            removeMeterMessage.canUseSingleLayerSerialization()
-            ? removeMeterMessage.handleServiceCall(input)
-            : removeMeter.handleServiceCall(input);
+                removeMeterMessage.canUseSingleLayerSerialization()
+                        ? removeMeterMessage.handleServiceCall(input)
+                        : removeMeter.handleServiceCall(input);
 
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<RemoveMeterOutput>>() {
             @Override
@@ -143,20 +142,18 @@ public class SalMeterServiceImpl implements SalMeterService {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Meter remove with id={} finished without error", input.getMeterId());
                     }
-                    removeMeter.getDeviceRegistry().getDeviceMeterRegistry().addMark(input.getMeterId());
                 } else {
                     LOG.warn("Meter remove with id={} failed, errors={}", input.getMeterId(),
-                        ErrorUtil.errorsToString(result.getErrors()));
+                            ErrorUtil.errorsToString(result.getErrors()));
                     LOG.debug("Meter input={}", input);
                 }
             }
 
             @Override
             public void onFailure(Throwable throwable) {
-                LOG.warn("Service call for removing meter={} failed, reason: {}",input.getMeterId(),throwable);
+                LOG.warn("Service call for removing meter={} failed, reason: {}", input.getMeterId(), throwable);
             }
         }, MoreExecutors.directExecutor());
         return resultFuture;
     }
-
 }
