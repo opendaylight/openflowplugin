@@ -11,11 +11,10 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.Future;
-import javax.annotation.Nullable;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
-import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
-import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
+import org.opendaylight.openflowplugin.impl.common.TransactionCommitterUtil;
+import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerGroupService;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerGroupService;
 import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerGroupService;
 import org.opendaylight.openflowplugin.impl.util.ErrorUtil;
@@ -39,7 +38,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource {
+public class SalGroupServiceImpl implements SalGroupService {
     private static final Logger LOG = LoggerFactory.getLogger(SalGroupServiceImpl.class);
     private final MultiLayerGroupService<AddGroupInput, AddGroupOutput> addGroup;
     private final MultiLayerGroupService<Group, UpdateGroupOutput> updateGroup;
@@ -49,7 +48,7 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
     private final SingleLayerGroupService<RemoveGroupOutput> removeGroupMessage;
 
     private final DeviceContext deviceContext;
-    private ItemLifecycleListener itemLifecycleListener;
+    private TransactionCommitterUtil transactionComitterUtil;
 
     public SalGroupServiceImpl(final RequestContextStack requestContextStack,
                                final DeviceContext deviceContext,
@@ -73,11 +72,7 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
         addGroupMessage = new SingleLayerGroupService<>(requestContextStack, deviceContext, AddGroupOutput.class);
         updateGroupMessage = new SingleLayerGroupService<>(requestContextStack, deviceContext, UpdateGroupOutput.class);
         removeGroupMessage = new SingleLayerGroupService<>(requestContextStack, deviceContext, RemoveGroupOutput.class);
-    }
-
-    @Override
-    public void setItemLifecycleListener(@Nullable ItemLifecycleListener itemLifecycleListener) {
-        this.itemLifecycleListener = itemLifecycleListener;
+        transactionComitterUtil = new TransactionCommitterUtil(deviceContext);
     }
 
     @Override
@@ -94,8 +89,9 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Group add with id={} finished without error", input.getGroupId().getValue());
                     }
+                    LOG.debug("adding group to groupRegistry", input.getGroupId().getValue());
+                    addDataToOperationalDS(input.getGroupId(), input);
                     deviceContext.getDeviceGroupRegistry().store(input.getGroupId());
-                    addIfNecessaryToDS(input.getGroupId(), input);
                 } else {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Group add with id={} failed, errors={}", input.getGroupId().getValue(),
@@ -130,8 +126,8 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
                         LOG.debug("Group update with original id={} finished without error",
                             input.getOriginalGroup().getGroupId().getValue());
                     }
-                    removeIfNecessaryFromDS(input.getOriginalGroup().getGroupId());
-                    addIfNecessaryToDS(input.getUpdatedGroup().getGroupId(), input.getUpdatedGroup());
+                   removeDataFromOperationalDS(input.getOriginalGroup().getGroupId());
+                   addDataToOperationalDS(input.getUpdatedGroup().getGroupId(), input.getUpdatedGroup());
                 } else {
                     LOG.warn("Group update with original id={} failed, errors={}",
                         input.getOriginalGroup().getGroupId(), ErrorUtil.errorsToString(result.getErrors()));
@@ -162,8 +158,8 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Group remove with id={} finished without error", input.getGroupId().getValue());
                     }
-                    removeGroup.getDeviceRegistry().getDeviceGroupRegistry().addMark(input.getGroupId());
-                    removeIfNecessaryFromDS(input.getGroupId());
+                   removeDataFromOperationalDS(input.getGroupId());
+                   removeGroup.getDeviceRegistry().getDeviceGroupRegistry().addMark(input.getGroupId());
                 } else {
                     LOG.warn("Group remove with id={} failed, errors={}", input.getGroupId().getValue(),
                         ErrorUtil.errorsToString(result.getErrors()));
@@ -180,24 +176,20 @@ public class SalGroupServiceImpl implements SalGroupService, ItemLifeCycleSource
         return resultFuture;
     }
 
-    private void removeIfNecessaryFromDS(final GroupId groupId) {
-        if (itemLifecycleListener != null) {
-            KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn
-                    .opendaylight.group.types.rev131018.groups.Group, GroupKey> groupPath
+    private void removeDataFromOperationalDS(final GroupId groupId) {
+        LOG.debug("Group remove from datastore - removeDataFromOperationalDS {} ", groupId);
+            KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group, GroupKey> groupPath
                     = createGroupPath(groupId,
-                                      deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
-            itemLifecycleListener.onRemoved(groupPath);
-        }
+                    deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
+            transactionComitterUtil.removeDataFromOperationalDataStore(groupPath);
     }
 
-    private void addIfNecessaryToDS(final GroupId groupId, final Group data) {
-        if (itemLifecycleListener != null) {
-            KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn
-                    .opendaylight.group.types.rev131018.groups.Group, GroupKey> groupPath
+    private void addDataToOperationalDS(final GroupId groupId, final Group data) {
+        LOG.debug("Group add to datastore addDataToOperationalDS {} , data {} ", groupId, data);
+            KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group, GroupKey> groupPath
                     = createGroupPath(groupId,
-                                      deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
-            itemLifecycleListener.onAdded(groupPath, new GroupBuilder(data).build());
-        }
+                    deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
+            transactionComitterUtil.addDataToOperationalDataStore(groupPath, new GroupBuilder(data).build());
     }
 
     private static KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn

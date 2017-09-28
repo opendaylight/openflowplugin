@@ -58,8 +58,6 @@ import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
-import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
-import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.common.txchain.TransactionChainManager;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
@@ -432,11 +430,6 @@ public class DeviceContextImplTest {
         final FlowDescriptor flowDescriptor = FlowDescriptorFactory.create((short) 0, new FlowId("ut-ofp:f456"));
         deviceContext.getDeviceFlowRegistry().storeDescriptor(flowRegKey, flowDescriptor);
 
-        // plug in lifecycleListener
-        final ItemLifecycleListener itemLifecycleListener = Mockito.mock(ItemLifecycleListener.class);
-        for (final ItemLifeCycleSource lifeCycleSource : deviceContext.getItemLifeCycleSourceRegistry().getLifeCycleSources()) {
-            lifeCycleSource.setItemLifecycleListener(itemLifecycleListener);
-        }
 
         // prepare empty input message
         final FlowRemovedMessageBuilder flowRemovedBld = new FlowRemovedMessageBuilder();
@@ -449,8 +442,6 @@ public class DeviceContextImplTest {
 
         deviceContext.setNotificationPublishService(mockedNotificationPublishService);
         deviceContext.processFlowRemovedMessage(flowRemovedBld.build());
-
-        Mockito.verify(itemLifecycleListener).onRemoved(flowToBeRemovedPath);
     }
 
     @Test

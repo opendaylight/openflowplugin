@@ -16,15 +16,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Future;
-import javax.annotation.Nullable;
+
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
-import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
-import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
+import org.opendaylight.openflowplugin.impl.common.TransactionCommitterUtil;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowDescriptorFactory;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerFlowService;
@@ -52,6 +51,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -59,7 +59,7 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
+public class SalFlowServiceImpl implements SalFlowService {
     private static final Logger LOG = LoggerFactory.getLogger(SalFlowServiceImpl.class);
     private final MultiLayerFlowService<UpdateFlowOutput> flowUpdate;
     private final MultiLayerFlowService<AddFlowOutput> flowAdd;
@@ -68,7 +68,7 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
     private final SingleLayerFlowService<UpdateFlowOutput> flowUpdateMessage;
     private final SingleLayerFlowService<RemoveFlowOutput> flowRemoveMessage;
     private final DeviceContext deviceContext;
-    private ItemLifecycleListener itemLifecycleListener;
+    private TransactionCommitterUtil transactionComitterUtil;
 
     public SalFlowServiceImpl(final RequestContextStack requestContextStack,
                               final DeviceContext deviceContext,
@@ -88,12 +88,8 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
                                                  convertorExecutor);
         flowAddMessage = new SingleLayerFlowService<>(requestContextStack, deviceContext, AddFlowOutput.class);
         flowUpdateMessage = new SingleLayerFlowService<>(requestContextStack, deviceContext, UpdateFlowOutput.class);
-        flowRemoveMessage = new SingleLayerFlowService<>(requestContextStack, deviceContext, RemoveFlowOutput.class);
-    }
-
-    @Override
-    public void setItemLifecycleListener(@Nullable ItemLifecycleListener itemLifecycleListener) {
-        this.itemLifecycleListener = itemLifecycleListener;
+        flowRemoveMessage= new SingleLayerFlowService<>(requestContextStack, deviceContext, RemoveFlowOutput.class);
+        transactionComitterUtil = new TransactionCommitterUtil(deviceContext);
     }
 
     @Override
@@ -243,12 +239,7 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
                     LOG.debug("Flow add with id={} finished without error", flowDescriptor.getFlowId().getValue());
                 }
 
-                if (itemLifecycleListener != null) {
-                    KeyedInstanceIdentifier<Flow, FlowKey> flowPath = createFlowPath(flowDescriptor,
-                            deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
-                    final FlowBuilder flowBuilder = new FlowBuilder(input).setId(flowDescriptor.getFlowId());
-                    itemLifecycleListener.onAdded(flowPath, flowBuilder.build());
-                }
+                addDataToOperationalDS(flowDescriptor,input);
             } else {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Flow add failed for flow={}, errors={}", input,
@@ -261,6 +252,32 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
         public void onFailure(final Throwable throwable) {
             LOG.warn("Service call for adding flow={} failed, reason: {}", input, throwable);
         }
+    }
+
+    private void addDataToOperationalDS(final FlowDescriptor flowDescriptor, final DataObject input) {
+        LOG.debug("Flow add to datastore addDataToOperationalDS {} , data {} ", flowDescriptor, input);
+        KeyedInstanceIdentifier<Flow, FlowKey> flowPath = createFlowPath(flowDescriptor,
+                deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
+        transactionComitterUtil.addDataToOperationalDataStore(flowPath, new FlowBuilder((AddFlowInput)input).setId(flowDescriptor.getFlowId()).build());
+    }
+
+    private void updateDataToOperationalDS(final FlowDescriptor flowDescriptor, final DataObject input, final FlowDescriptor originalFlowDescriptor) {
+        LOG.debug("Flow update to datastore addDataToOperationalDS {} , data {} ", flowDescriptor, input);
+        KeyedInstanceIdentifier<Flow, FlowKey> flowPath = createFlowPath(flowDescriptor,
+                deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
+        if(Objects.nonNull(originalFlowDescriptor)){
+            transactionComitterUtil.updateDataToOperationalDataStore(flowPath, new FlowBuilder((UpdatedFlow)input).setId(flowDescriptor.getFlowId()).build());
+        }else{
+            transactionComitterUtil.addDataToOperationalDataStore(flowPath, new FlowBuilder((UpdatedFlow)input).setId(flowDescriptor.getFlowId()).build());
+        }
+    }
+
+
+    private void removeDataToOperationalDS(final FlowDescriptor flowDescriptor, final DataObject input) {
+        LOG.debug("Flow remove to datastore addDataToOperationalDS {} , data {} ", flowDescriptor, input);
+        KeyedInstanceIdentifier<Flow, FlowKey> flowPath = createFlowPath(flowDescriptor,
+                deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
+        transactionComitterUtil.removeDataFromOperationalDataStore(flowPath);
     }
 
     private class RemoveFlowCallback implements FutureCallback<RpcResult<RemoveFlowOutput>> {
@@ -280,29 +297,23 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
                         FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), input);
                 deviceContext.getDeviceFlowRegistry().addMark(flowRegistryKey);
 
-                if (itemLifecycleListener != null) {
-                    final FlowDescriptor flowDescriptor =
-                            deviceContext.getDeviceFlowRegistry().retrieveDescriptor(flowRegistryKey);
-
-                    if (flowDescriptor != null) {
-                        KeyedInstanceIdentifier<Flow, FlowKey> flowPath = createFlowPath(flowDescriptor,
-                                deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
-                        itemLifecycleListener.onRemoved(flowPath);
-                    }
+                final FlowDescriptor flowDescriptor = deviceContext.getDeviceFlowRegistry().retrieveDescriptor(flowRegistryKey);
+                if(flowDescriptor!=null){
+                    removeDataToOperationalDS(flowDescriptor,input);
                 }
-            } else {
+            }else {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Flow remove failed for flow={}, errors={}", input,
                             ErrorUtil.errorsToString(result.getErrors()));
                 }
             }
         }
-
         @Override
         public void onFailure(final Throwable throwable) {
             LOG.warn("Service call for removing flow={} failed, reason: {}", input, throwable);
         }
     }
+
 
     private class UpdateFlowCallback implements FutureCallback<RpcResult<UpdateFlowOutput>> {
         private final UpdateFlowInput input;
@@ -332,6 +343,7 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
                                                      input.getFlowRef().getValue().firstKeyOf(Flow.class).getId());
             } else {
                 if (isUpdate) {
+                    LOG.debug("update for device descriptor {} ,-- {} ",original, origFlowRegistryKey);
                     updatedFlowDescriptor = origFlowDescriptor;
                 } else {
                     deviceFlowRegistry.store(updatedFlowRegistryKey);
@@ -344,22 +356,7 @@ public class SalFlowServiceImpl implements SalFlowService, ItemLifeCycleSource {
                 deviceFlowRegistry.storeDescriptor(updatedFlowRegistryKey, updatedFlowDescriptor);
             }
 
-            if (itemLifecycleListener != null) {
-                final KeyedInstanceIdentifier<Flow, FlowKey> flowPath =
-                        createFlowPath(
-                                updatedFlowDescriptor,
-                                deviceContext.getDeviceInfo().getNodeInstanceIdentifier());
-
-                final Flow flow = new FlowBuilder(updated)
-                        .setId(updatedFlowDescriptor.getFlowId())
-                        .build();
-
-                if (Objects.nonNull(origFlowDescriptor)) {
-                    itemLifecycleListener.onUpdated(flowPath, flow);
-                } else {
-                    itemLifecycleListener.onAdded(flowPath, flow);
-                }
-            }
+            updateDataToOperationalDS(updatedFlowDescriptor,updated,origFlowDescriptor);
         }
 
         @Override
