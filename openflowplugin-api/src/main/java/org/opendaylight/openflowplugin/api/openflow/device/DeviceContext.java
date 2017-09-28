@@ -95,6 +95,7 @@ public interface DeviceContext extends
      */
     void updatePacketInRateLimit(long upperBound);
 
+
     /**
      * Checks if device and controller supports single layer serialization.
      * @return true if single layer serialization is supported

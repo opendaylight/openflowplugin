@@ -223,7 +223,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
     @Override
     public void processMarks() {
-        // Do nothing
+
     }
 
     @Override
