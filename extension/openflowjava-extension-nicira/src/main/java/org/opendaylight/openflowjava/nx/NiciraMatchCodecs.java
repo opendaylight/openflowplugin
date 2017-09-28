@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -12,6 +12,7 @@ import org.opendaylight.openflowjava.nx.codec.match.ArpShaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.ArpSpaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.ArpThaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.ArpTpaCodec;
+import org.opendaylight.openflowjava.nx.codec.match.CtMarkCodec;
 import org.opendaylight.openflowjava.nx.codec.match.CtStateCodec;
 import org.opendaylight.openflowjava.nx.codec.match.CtZoneCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EncapEthDstCodec;
@@ -105,4 +106,5 @@ public class NiciraMatchCodecs {
     public static final Ipv6SrcCodec IPV6_SRC_CODEC = new Ipv6SrcCodec();
     public static final Ipv6DstCodec IPV6_DST_CODEC = new Ipv6DstCodec();
     public static final IcmpTypeCodec ICMP_TYPE_CODEC = new IcmpTypeCodec();
+    public static final CtMarkCodec CT_MARK_CODEC = new CtMarkCodec();
 }

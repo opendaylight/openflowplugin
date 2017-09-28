@@ -30,8 +30,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack.grouping.NxActionConntrackBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack.grouping.nx.action.conntrack.CtActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack.grouping.nx.action.conntrack.CtActionsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.NxActionCtMarkCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.NxActionCtMarkCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.NxActionNatCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.NxActionNatCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.ct.mark._case.NxActionCtMark;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.ct.mark._case.NxActionCtMarkBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.nat._case.NxActionNat;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.nat._case.NxActionNatBuilder;
 
@@ -48,6 +52,10 @@ public class ConntrackCodecTest {
     private final int nxNatLengthAction2 = 24;
     private final byte nxastNatSubtype = 36;
 
+    private final byte nxmCtMarkFieldCode = 107;
+    private final byte setFieldCode = 25;
+    private final int setFieldLength = 16;
+
     @Before
     public void setUp() {
         conntrackCodec = new ConntrackCodec();
@@ -59,9 +67,9 @@ public class ConntrackCodecTest {
         action = createAction();
         conntrackCodec.serialize(action, buffer);
 
-        Assert.assertEquals(length + nxNatLengthAction1 + nxNatLengthAction2, buffer.readableBytes());
+        Assert.assertEquals(length + nxNatLengthAction1 + nxNatLengthAction2 + setFieldLength, buffer.readableBytes());
         Assert.assertEquals(EncodeConstants.EXPERIMENTER_VALUE, buffer.readUnsignedShort());
-        Assert.assertEquals(length + nxNatLengthAction1 + nxNatLengthAction2, buffer.readUnsignedShort());
+        Assert.assertEquals(length + nxNatLengthAction1 + nxNatLengthAction2 + setFieldLength, buffer.readUnsignedShort());
         Assert.assertEquals(NiciraConstants.NX_VENDOR_ID.intValue(), buffer.readUnsignedInt());
         Assert.assertEquals(nxastConntrackSubtype, buffer.readUnsignedShort());
         Assert.assertEquals(1, buffer.readUnsignedShort());
@@ -91,6 +99,13 @@ public class ConntrackCodecTest {
         Assert.assertEquals(3232235520L, buffer.readUnsignedInt());
         Assert.assertEquals(4000, buffer.readUnsignedShort());
         buffer.skipBytes(2);
+        Assert.assertEquals(setFieldCode, buffer.readUnsignedShort());
+        Assert.assertEquals(setFieldLength, buffer.readUnsignedShort());
+        buffer.skipBytes(2);
+        Assert.assertEquals(nxmCtMarkFieldCode << 1, buffer.readByte() & 0xFF);
+        buffer.skipBytes(1);
+        Assert.assertEquals(36, buffer.readUnsignedInt());
+        buffer.skipBytes(4);
     }
 
     @Test
@@ -112,9 +127,8 @@ public class ConntrackCodecTest {
 
     @Test
     public void deserializeTest() {
-        createBufer(buffer);
+        createBuffer(buffer);
         action = conntrackCodec.deserialize(buffer);
-
         ActionConntrack result = (ActionConntrack) action.getActionChoice();
 
         Assert.assertEquals(1, result.getNxActionConntrack().getFlags().shortValue());
@@ -136,11 +150,14 @@ public class ConntrackCodecTest {
         Assert.assertEquals(0x21, natAction.getRangePresent().intValue());
         Assert.assertEquals("192.168.0.0", natAction.getIpAddressMin().getIpv4Address().getValue());
         Assert.assertEquals(4000, natAction.getPortMax().shortValue());
+        NxActionCtMarkCase nxActionCtMarkCase = (NxActionCtMarkCase) ctActions.get(2).getOfpactActions();
+        NxActionCtMark ctMarkAction = nxActionCtMarkCase.getNxActionCtMark();
+        Assert.assertEquals((long) 36, ctMarkAction.getCtMark().longValue());
     }
 
     @Test
     public void deserializeTestWithoutCtAction() {
-        createBuferWIthoutCtAction(buffer);
+        createBufferWIthoutCtAction(buffer);
         action = conntrackCodec.deserialize(buffer);
 
         ActionConntrack result = (ActionConntrack) action.getActionChoice();
@@ -184,6 +201,15 @@ public class ConntrackCodecTest {
         ctActionsList.add(ctActionsBuilder.build());
         nxActionConntrackBuilder.setCtActions(ctActionsList);
 
+        NxActionCtMarkBuilder nxActionCtMarkBuilder = new NxActionCtMarkBuilder();
+        nxActionCtMarkBuilder.setCtMark((long) 36);
+        NxActionCtMarkCaseBuilder nxActionCtMarkCaseBuilder = new NxActionCtMarkCaseBuilder();
+        nxActionCtMarkCaseBuilder.setNxActionCtMark(nxActionCtMarkBuilder.build());
+        ctActionsBuilder = new CtActionsBuilder();
+        ctActionsBuilder.setOfpactActions(nxActionCtMarkCaseBuilder.build());
+        ctActionsList.add(ctActionsBuilder.build());
+        nxActionConntrackBuilder.setCtActions(ctActionsList);
+
         ExperimenterId experimenterId = new ExperimenterId(NiciraConstants.NX_VENDOR_ID);
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setExperimenterId(experimenterId);
@@ -212,9 +238,9 @@ public class ConntrackCodecTest {
         return actionBuilder.build();
     }
 
-    private void createBufer(ByteBuf message) {
+    private void createBuffer(ByteBuf message) {
         message.writeShort(EncodeConstants.EXPERIMENTER_VALUE);
-        message.writeShort(length + nxNatLengthAction1 + nxNatLengthAction2);
+        message.writeShort(length + nxNatLengthAction1 + nxNatLengthAction2 + setFieldLength);
         message.writeInt(NiciraConstants.NX_VENDOR_ID.intValue());
         message.writeShort(nxastConntrackSubtype);
         //FLAG = 1
@@ -260,9 +286,19 @@ public class ConntrackCodecTest {
         //PORT MAX
         message.writeShort(4000);
         message.writeZero(2);
+
+        message.writeShort(setFieldCode);
+        message.writeShort(setFieldLength);
+        message.writeZero(1);
+        message.writeByte(1);
+        message.writeByte(nxmCtMarkFieldCode << 1);
+        message.writeByte(4);
+        // value of ct_mark
+        message.writeInt(36);
+        message.writeZero(4);
     }
 
-    private void createBuferWIthoutCtAction(ByteBuf message) {
+    private void createBufferWIthoutCtAction(ByteBuf message) {
         message.writeShort(EncodeConstants.EXPERIMENTER_VALUE);
         message.writeShort(length);
         message.writeInt(NiciraConstants.NX_VENDOR_ID.intValue());
