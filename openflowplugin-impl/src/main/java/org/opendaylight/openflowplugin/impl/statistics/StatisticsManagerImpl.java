@@ -32,7 +32,6 @@ import org.opendaylight.openflowplugin.api.ConnectionException;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
-import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
@@ -209,15 +208,9 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                     switch (targetWorkMode) {
                         case COLLECTALL:
                             scheduleNextPolling(statisticsContext.gainDeviceState(), deviceInfo, statisticsContext, new TimeCounter());
-                            for (final ItemLifeCycleSource lifeCycleSource : deviceContext.getItemLifeCycleSourceRegistry().getLifeCycleSources()) {
-                                lifeCycleSource.setItemLifecycleListener(null);
-                            }
                             break;
                         case FULLYDISABLED:
                             statisticsContext.stopGatheringData();
-                            for (final ItemLifeCycleSource lifeCycleSource : deviceContext.getItemLifeCycleSourceRegistry().getLifeCycleSources()) {
-                                lifeCycleSource.setItemLifecycleListener(statisticsContext.getItemLifeCycleListener());
-                            }
                             break;
                         default:
                             LOG.warn("Statistics work mode not supported: {}", targetWorkMode);
