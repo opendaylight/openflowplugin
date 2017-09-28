@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.deserialization;
 
-import com.google.common.annotations.VisibleForTesting;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -27,7 +26,10 @@ import org.opendaylight.openflowplugin.impl.protocol.deserialization.instruction
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.key.MessageCodeActionExperimenterKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 
-class InstructionDeserializerInjector {
+public final class InstructionDeserializerInjector {
+
+    private InstructionDeserializerInjector() {
+    }
 
     /**
      * Injects instruction deserializers into provided

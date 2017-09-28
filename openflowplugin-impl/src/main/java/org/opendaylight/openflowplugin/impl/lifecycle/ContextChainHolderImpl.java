@@ -82,8 +82,8 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         this.executorService = executorService;
         this.ownershipChangeListener = ownershipChangeListener;
         this.ownershipChangeListener.setMasterChecker(this);
-        this.eosListenerRegistration = Objects.requireNonNull(entityOwnershipService
-                .registerListener(ASYNC_SERVICE_ENTITY_TYPE, this));
+        this.eosListenerRegistration = Objects
+                .requireNonNull(entityOwnershipService.registerListener(ASYNC_SERVICE_ENTITY_TYPE, this));
     }
 
     @Override
@@ -115,8 +115,8 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         rpcContext.registerMastershipWatcher(this);
         LOG.debug("RPC" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfo);
 
-        final StatisticsContext statisticsContext = statisticsManager.createContext(deviceContext,
-                ownershipChangeListener.isReconciliationFrameworkRegistered());
+        final StatisticsContext statisticsContext = statisticsManager
+                .createContext(deviceContext, ownershipChangeListener.isReconciliationFrameworkRegistered());
         statisticsContext.registerMastershipWatcher(this);
         LOG.debug("Statistics" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfo);
 
@@ -124,8 +124,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         roleContext.registerMastershipWatcher(this);
         LOG.debug("Role" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfo);
 
-        final ContextChain contextChain = new ContextChainImpl(this, connectionContext,
-                executorService);
+        final ContextChain contextChain = new ContextChainImpl(this, connectionContext, executorService);
         contextChain.registerDeviceRemovedHandler(deviceManager);
         contextChain.registerDeviceRemovedHandler(rpcManager);
         contextChain.registerDeviceRemovedHandler(statisticsManager);
@@ -153,7 +152,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         if (auxiliaryId != null && auxiliaryId != 0) {
             if (contextChain == null) {
                 LOG.warn("An auxiliary connection for device {}, but no primary connection. Refusing connection.",
-                        deviceInfo);
+                         deviceInfo);
                 return ConnectionStatus.REFUSING_AUXILIARY_CONNECTION;
             } else {
                 if (contextChain.addAuxiliaryConnection(connectionContext)) {
@@ -177,7 +176,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
             if (contextExists) {
                 if (isClosing) {
                     LOG.warn("Device {} is already in termination state, closing all incoming connections.",
-                            deviceInfo);
+                             deviceInfo);
                     return ConnectionStatus.CLOSING;
                 }
 
@@ -196,8 +195,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     }
 
     @Override
-    public void onNotAbleToStartMastership(@Nonnull final DeviceInfo deviceInfo,
-                                           @Nonnull final String reason,
+    public void onNotAbleToStartMastership(@Nonnull final DeviceInfo deviceInfo, @Nonnull final String reason,
                                            final boolean mandatory) {
         LOG.warn("Not able to set MASTER role on device {}, reason: {}", deviceInfo, reason);
 
@@ -207,7 +205,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
 
         Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(contextChain -> {
             LOG.warn("This mastering is mandatory, destroying context chain and closing connection for device {}.",
-                    deviceInfo);
+                     deviceInfo);
             destroyContextChain(deviceInfo);
         });
     }
@@ -216,13 +214,12 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     public void onMasterRoleAcquired(@Nonnull final DeviceInfo deviceInfo,
                                      @Nonnull final ContextChainMastershipState mastershipState) {
         Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(contextChain -> {
-            if (ownershipChangeListener.isReconciliationFrameworkRegistered() &&
-                    !ContextChainMastershipState.INITIAL_SUBMIT.equals(mastershipState)) {
+            if (ownershipChangeListener.isReconciliationFrameworkRegistered()
+                    && !ContextChainMastershipState.INITIAL_SUBMIT.equals(mastershipState)) {
                 if (contextChain.isMastered(mastershipState, true)) {
-                    Futures.addCallback(
-                            ownershipChangeListener.becomeMasterBeforeSubmittedDS(deviceInfo),
-                            reconciliationFrameworkCallback(deviceInfo, contextChain),
-                            MoreExecutors.directExecutor());
+                    Futures.addCallback(ownershipChangeListener.becomeMasterBeforeSubmittedDS(deviceInfo),
+                                        reconciliationFrameworkCallback(deviceInfo, contextChain),
+                                        MoreExecutors.directExecutor());
                 }
             } else if (contextChain.isMastered(mastershipState, false)) {
                 LOG.info("Role MASTER was granted to device {}", deviceInfo);
@@ -249,23 +246,19 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     public void onDeviceDisconnected(final ConnectionContext connectionContext) {
         final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
 
-        Optional.ofNullable(connectionContext.getDeviceInfo())
-                .map(contextChainMap::get)
-                .ifPresent(contextChain -> {
-                    if (contextChain.auxiliaryConnectionDropped(connectionContext)) {
-                        LOG.info("Auxiliary connection from device {} disconnected.", deviceInfo);
-                    } else {
-                        LOG.info("Device {} disconnected.", deviceInfo);
-                        destroyContextChain(deviceInfo);
-                    }
-                });
+        Optional.ofNullable(connectionContext.getDeviceInfo()).map(contextChainMap::get).ifPresent(contextChain -> {
+            if (contextChain.auxiliaryConnectionDropped(connectionContext)) {
+                LOG.info("Auxiliary connection from device {} disconnected.", deviceInfo);
+            } else {
+                LOG.info("Device {} disconnected.", deviceInfo);
+                destroyContextChain(deviceInfo);
+            }
+        });
     }
 
     @VisibleForTesting
     boolean checkAllManagers() {
-        return Objects.nonNull(deviceManager)
-                && Objects.nonNull(rpcManager)
-                && Objects.nonNull(statisticsManager)
+        return Objects.nonNull(deviceManager) && Objects.nonNull(rpcManager) && Objects.nonNull(statisticsManager)
                 && Objects.nonNull(roleManager);
     }
 
@@ -291,18 +284,17 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
             final NodeId nodeId = new NodeId(entityName);
 
             try {
-                final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier =
-                        DeviceStateUtil.createNodeInstanceIdentifier(nodeId);
+                final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier = DeviceStateUtil
+                        .createNodeInstanceIdentifier(nodeId);
 
                 deviceManager.sendNodeRemovedNotification(nodeInstanceIdentifier);
 
                 LOG.info("Try to remove device {} from operational DS", nodeId);
-                deviceManager
-                        .removeDeviceFromOperationalDS(nodeInstanceIdentifier)
+                deviceManager.removeDeviceFromOperationalDS(nodeInstanceIdentifier)
                         .get(REMOVE_DEVICE_FROM_DS_TIMEOUT, TimeUnit.MILLISECONDS);
                 LOG.info("Removing device from operational DS {} was successful", nodeId);
             } catch (TimeoutException | ExecutionException | NullPointerException | InterruptedException e) {
-                LOG.warn("Not able to remove device {} from operational DS. ",nodeId, e);
+                LOG.warn("Not able to remove device {} from operational DS. ", nodeId, e);
             }
         }
     }
@@ -317,40 +309,25 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
 
     @Override
     public List<DeviceInfo> listOfMasteredDevices() {
-        return contextChainMap
-                .entrySet()
-                .stream()
-                .filter(deviceInfoContextChainEntry -> deviceInfoContextChainEntry
-                        .getValue()
-                        .isMastered(ContextChainMastershipState.CHECK, false))
-                .map(Map.Entry::getKey)
+        return contextChainMap.entrySet().stream()
+                .filter(deviceInfoContextChainEntry -> deviceInfoContextChainEntry.getValue()
+                        .isMastered(ContextChainMastershipState.CHECK, false)).map(Map.Entry::getKey)
                 .collect(Collectors.toList());
     }
 
     @Override
     public boolean isAnyDeviceMastered() {
-        return contextChainMap
-                .entrySet()
-                .stream()
-                .findAny()
+        return contextChainMap.entrySet().stream().findAny()
                 .filter(deviceInfoContextChainEntry -> deviceInfoContextChainEntry.getValue()
-                        .isMastered(ContextChainMastershipState.CHECK, false))
-                .isPresent();
+                        .isMastered(ContextChainMastershipState.CHECK, false)).isPresent();
     }
 
     private String getEntityNameFromOwnershipChange(final EntityOwnershipChange entityOwnershipChange) {
-        final YangInstanceIdentifier.NodeIdentifierWithPredicates lastIdArgument =
-                (YangInstanceIdentifier.NodeIdentifierWithPredicates) entityOwnershipChange
-                        .getEntity()
-                        .getId()
-                        .getLastPathArgument();
+        final YangInstanceIdentifier.NodeIdentifierWithPredicates lastIdArgument
+                = (YangInstanceIdentifier.NodeIdentifierWithPredicates) entityOwnershipChange.getEntity().getId()
+                .getLastPathArgument();
 
-        return lastIdArgument
-                .getKeyValues()
-                .values()
-                .iterator()
-                .next()
-                .toString();
+        return lastIdArgument.getKeyValues().values().iterator().next().toString();
     }
 
     @Override
@@ -359,9 +336,8 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         LOG.debug("Context chain removed for node {}", deviceInfo);
     }
 
-    private FutureCallback<ResultState> reconciliationFrameworkCallback(
-            @Nonnull DeviceInfo deviceInfo,
-            ContextChain contextChain) {
+    private FutureCallback<ResultState> reconciliationFrameworkCallback(@Nonnull DeviceInfo deviceInfo,
+                                                                        ContextChain contextChain) {
         return new FutureCallback<ResultState>() {
             @Override
             public void onSuccess(@Nullable ResultState result) {

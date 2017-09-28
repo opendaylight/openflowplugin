@@ -18,7 +18,7 @@ import org.opendaylight.openflowplugin.impl.util.MatchNormalizationUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 
-public class FlowRegistryKeyFactory {
+public final class FlowRegistryKeyFactory {
 
     private FlowRegistryKeyFactory() {
         // Hide implicit constructor
