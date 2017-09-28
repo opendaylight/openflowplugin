@@ -150,12 +150,18 @@ public final class StatisticsGatheringUtils {
 
         switch (type) {
             case OFPMPFLOW:
+                LOG.debug("deleteAllKnownFlows device {}, flow size - {}",deviceInfo,deviceRegistry.getDeviceFlowRegistry().size());
+                deviceRegistry.getDeviceFlowRegistry().processMarks();
                 deleteAllKnownFlows(txFacade, instanceIdentifier, deviceRegistry.getDeviceFlowRegistry());
                 break;
             case OFPMPMETERCONFIG:
+                LOG.debug("deleteAllKnownMeters device {}",deviceInfo);
+                deviceRegistry.getDeviceMeterRegistry().processMarks();
                 deleteAllKnownMeters(txFacade, instanceIdentifier, deviceRegistry.getDeviceMeterRegistry());
                 break;
             case OFPMPGROUPDESC:
+                LOG.debug("deleteAllKnownGroups OFPMPGROUPDESC device {}, group size - {}, ",deviceInfo,deviceRegistry.getDeviceGroupRegistry().size());
+                deviceRegistry.getDeviceGroupRegistry().processMarks();
                 deleteAllKnownGroups(txFacade, instanceIdentifier, deviceRegistry.getDeviceGroupRegistry());
                 break;
             default:
@@ -164,21 +170,6 @@ public final class StatisticsGatheringUtils {
 
         if (writeStatistics(type, statistics, deviceInfo, statisticsWriterProvider)) {
             txFacade.submitTransaction();
-
-            switch (type) {
-                case OFPMPFLOW:
-                    deviceRegistry.getDeviceFlowRegistry().processMarks();
-                    break;
-                case OFPMPMETERCONFIG:
-                    deviceRegistry.getDeviceMeterRegistry().processMarks();
-                    break;
-                case OFPMPGROUPDESC:
-                    deviceRegistry.getDeviceGroupRegistry().processMarks();
-                    break;
-                default:
-                    // no operation
-            }
-
             LOG.debug("Stats reply added to transaction for node {} of type {}", deviceInfo.getNodeId(), type);
             return true;
         }
@@ -248,19 +239,24 @@ public final class StatisticsGatheringUtils {
     public static void deleteAllKnownMeters(final TxFacade txFacade,
                                             final InstanceIdentifier<FlowCapableNode> instanceIdentifier,
                                             final DeviceMeterRegistry meterRegistry) {
-        meterRegistry.forEach(meterId -> txFacade
+        meterRegistry.forEach(meterId -> { txFacade
                 .addDeleteToTxChain(
                         LogicalDatastoreType.OPERATIONAL,
-                        instanceIdentifier.child(Meter.class, new MeterKey(meterId))));
+                        instanceIdentifier.child(Meter.class, new MeterKey(meterId)));
+        meterRegistry.addMark(meterId);
+        });
     }
 
     public static void deleteAllKnownGroups(final TxFacade txFacade,
                                             final InstanceIdentifier<FlowCapableNode> instanceIdentifier,
                                             final DeviceGroupRegistry groupRegistry) {
-        groupRegistry.forEach(groupId -> txFacade
+        LOG.debug("deleteAllKnownGroups on device targetType {}",instanceIdentifier.getTargetType());
+        groupRegistry.forEach(groupId -> {txFacade
                 .addDeleteToTxChain(
                         LogicalDatastoreType.OPERATIONAL,
-                        instanceIdentifier.child(Group.class, new GroupKey(groupId))));
+                        instanceIdentifier.child(Group.class, new GroupKey(groupId)));
+        groupRegistry.addMark(groupId);
+        });
     }
 
     /**
