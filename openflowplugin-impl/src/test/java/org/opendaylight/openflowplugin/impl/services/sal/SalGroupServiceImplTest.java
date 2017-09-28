@@ -7,11 +7,11 @@
  */
 package org.opendaylight.openflowplugin.impl.services.sal;
 
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.Test;
+
 import org.mockito.Mock;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.impl.services.ServiceMocking;
@@ -53,11 +53,6 @@ public class SalGroupServiceImplTest extends ServiceMocking {
         addGroup();
     }
 
-    @Test
-    public void testAddGroupWithItemLifecycle() throws Exception {
-        addGroup();
-    }
-
     private void addGroup() {
         final GroupId dummyGroupId = new GroupId(DUMMY_GROUP_ID);
         AddGroupInput addGroupInput = new AddGroupInputBuilder().setGroupId(dummyGroupId).build();
@@ -66,7 +61,7 @@ public class SalGroupServiceImplTest extends ServiceMocking {
 
         salGroupService.addGroup(addGroupInput);
         verify(mockedRequestContextStack).createRequestContext();
-        verify(mockedDeviceGroupRegistry).store(eq(dummyGroupId));
+
     }
 
     @Test
@@ -88,6 +83,7 @@ public class SalGroupServiceImplTest extends ServiceMocking {
         this.<UpdateGroupOutput>mockSuccessfulFuture();
         salGroupService.updateGroup(updateGroupInput);
         verify(mockedRequestContextStack).createRequestContext();
+
     }
 
     @Test
@@ -103,11 +99,9 @@ public class SalGroupServiceImplTest extends ServiceMocking {
     private void removeGroup() throws Exception {
         final GroupId dummyGroupId = new GroupId(DUMMY_GROUP_ID);
         RemoveGroupInput removeGroupInput = new RemoveGroupInputBuilder().setGroupId(dummyGroupId).build();
-
         this.<RemoveGroupOutput>mockSuccessfulFuture();
-
         salGroupService.removeGroup(removeGroupInput);
         verify(mockedRequestContextStack).createRequestContext();
-        verify(mockedDeviceGroupRegistry).addMark(eq(dummyGroupId));
+
     }
 }
