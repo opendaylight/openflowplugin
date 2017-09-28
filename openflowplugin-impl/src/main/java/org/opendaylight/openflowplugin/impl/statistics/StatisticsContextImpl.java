@@ -36,11 +36,9 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipWatcher;
-import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
-import org.opendaylight.openflowplugin.impl.rpc.listener.ItemLifecycleListenerImpl;
 import org.opendaylight.openflowplugin.impl.services.util.RequestContextUtil;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringOnTheFlyService;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringService;
@@ -55,7 +53,6 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsContextImpl.class);
     private static final String CONNECTION_CLOSED = "Connection closed.";
 
-    private final ItemLifecycleListener itemLifeCycleListener;
     private final Collection<RequestContext<?>> requestContexts = new HashSet<>();
     private final DeviceContext deviceContext;
     private final DeviceState devState;
@@ -89,7 +86,6 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         this.executorService = executorService;
         this.isStatisticsPollingOn = isStatisticsPollingOn;
         this.convertorExecutor = convertorExecutor;
-        this.itemLifeCycleListener = new ItemLifecycleListenerImpl(deviceContext);
         this.deviceInfo = deviceContext.getDeviceInfo();
         this.statisticsPollingInterval = statisticsPollingInterval;
         this.maximumPollingDelay = maximumPollingDelay;
@@ -133,17 +129,11 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     @Override
     public void enableGathering() {
         this.schedulingEnabled.set(true);
-        deviceContext.getItemLifeCycleSourceRegistry()
-                .getLifeCycleSources().forEach(itemLifeCycleSource -> itemLifeCycleSource
-                .setItemLifecycleListener(null));
     }
 
     @Override
     public void disableGathering() {
         this.schedulingEnabled.set(false);
-        deviceContext.getItemLifeCycleSourceRegistry()
-                .getLifeCycleSources().forEach(itemLifeCycleSource -> itemLifeCycleSource
-                .setItemLifecycleListener(itemLifeCycleListener));
     }
 
     @Override
