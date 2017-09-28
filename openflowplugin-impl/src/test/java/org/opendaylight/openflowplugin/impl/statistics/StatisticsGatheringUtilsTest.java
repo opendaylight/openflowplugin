@@ -513,8 +513,7 @@ public class StatisticsGatheringUtilsTest {
             deviceContext,
             deviceContext,
             ConvertorManagerFactory.createDefaultManager(),
-            provider,
-            MoreExecutors.newDirectExecutorService());
+            provider);
 
         Assert.assertTrue(gatherStatisticsResult.get(1, TimeUnit.SECONDS));
         verify(deviceContext).submitTransaction();
