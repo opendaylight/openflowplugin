@@ -14,8 +14,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
 import org.opendaylight.mdsal.common.api.TransactionChainClosedException;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.ConnectionException;
@@ -56,7 +57,6 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     private final Collection<RequestContext<?>> requestContexts = new HashSet<>();
     private final DeviceContext deviceContext;
     private final DeviceState devState;
-    private final ListeningExecutorService executorService;
     private final boolean isStatisticsPollingOn;
     private final ConvertorExecutor convertorExecutor;
     private final MultipartWriterProvider statisticsWriterProvider;
@@ -76,14 +76,17 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     StatisticsContextImpl(@Nonnull final DeviceContext deviceContext,
                           @Nonnull final ConvertorExecutor convertorExecutor,
                           @Nonnull final MultipartWriterProvider statisticsWriterProvider,
-                          @Nonnull final ListeningExecutorService executorService, boolean isStatisticsPollingOn,
-                          boolean isUsingReconciliationFramework, long statisticsPollingInterval,
+                          boolean isStatisticsPollingOn,
+                          boolean isUsingReconciliationFramework,
+                          long statisticsPollingInterval,
                           long maximumPollingDelay) {
         this.deviceContext = deviceContext;
         this.devState = Preconditions.checkNotNull(deviceContext.getDeviceState());
-        this.executorService = executorService;
         this.isStatisticsPollingOn = isStatisticsPollingOn;
         this.convertorExecutor = convertorExecutor;
+        statisticsGatheringService = new StatisticsGatheringService<>(this, deviceContext);
+        statisticsGatheringOnTheFlyService = new StatisticsGatheringOnTheFlyService<>(this,
+                deviceContext, convertorExecutor, statisticsWriterProvider);
         this.deviceInfo = deviceContext.getDeviceInfo();
         this.statisticsPollingInterval = statisticsPollingInterval;
         this.maximumPollingDelay = maximumPollingDelay;
@@ -91,9 +94,8 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         this.isUsingReconciliationFramework = isUsingReconciliationFramework;
 
         statisticsGatheringService = new StatisticsGatheringService<>(this, deviceContext);
-        statisticsGatheringOnTheFlyService = new StatisticsGatheringOnTheFlyService<>(this, deviceContext,
-                                                                                      convertorExecutor,
-                                                                                      statisticsWriterProvider);
+        statisticsGatheringOnTheFlyService = new StatisticsGatheringOnTheFlyService<>(this,
+                deviceContext, convertorExecutor, statisticsWriterProvider);
     }
 
     @Override
@@ -138,12 +140,15 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     @Override
     public void continueInitializationAfterReconciliation() {
         if (deviceContext.initialSubmitTransaction()) {
-            contextChainMastershipWatcher.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_SUBMIT);
+            contextChainMastershipWatcher.onMasterRoleAcquired(
+                    deviceInfo,
+                    ContextChainMastershipState.INITIAL_SUBMIT);
 
             startGatheringData();
         } else {
-            contextChainMastershipWatcher
-                    .onNotAbleToStartMastershipMandatory(deviceInfo, "Initial transaction cannot be submitted.");
+            contextChainMastershipWatcher.onNotAbleToStartMastershipMandatory(
+                    deviceInfo,
+                    "Initial transaction cannot be submitted.");
         }
     }
 
@@ -196,7 +201,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
             }
 
             @Override
-            public void onFailure(final Throwable throwable) {
+            public void onFailure(final Throwable t) {
                 requestContexts.forEach(requestContext -> RequestContextUtil
                         .closeRequestContextWithRpcError(requestContext, CONNECTION_CLOSED));
             }
@@ -214,14 +219,17 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
             StatisticsGatheringUtils.markDeviceStateSnapshotStart(deviceInfo, deviceContext);
 
             // recreate gathering future if it should be recreated
-            final ListenableFuture<Boolean> lastDataGathering =
-                    Objects.isNull(future) || future.isCancelled() || future.isDone() ? Futures
-                            .immediateFuture(Boolean.TRUE) : future;
+            final ListenableFuture<Boolean> lastDataGathering = Objects.isNull(future) ||
+                    future.isCancelled() ||
+                    future.isDone() ?
+                    Futures.immediateFuture(Boolean.TRUE) :
+                    future;
 
             // build statistics gathering future
-            final ListenableFuture<Boolean> newDataGathering = collectingStatType.stream()
-                    .reduce(lastDataGathering, this::statChainFuture,
-                        (listenableFuture, asyn) -> Futures.transformAsync(listenableFuture, result -> asyn));
+            final ListenableFuture<Boolean> newDataGathering = collectingStatType.stream().reduce(
+                    lastDataGathering,
+                    this::statChainFuture,
+                    (a, b) -> Futures.transformAsync(a, result -> b));
 
             // write end timestamp to state snapshot container
             Futures.addCallback(newDataGathering, new FutureCallback<Boolean>() {
@@ -231,8 +239,8 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
                 }
 
                 @Override
-                public void onFailure(final Throwable throwable) {
-                    if (!(throwable instanceof TransactionChainClosedException)) {
+                public void onFailure(final Throwable t) {
+                    if (!(t instanceof TransactionChainClosedException)) {
                         StatisticsGatheringUtils.markDeviceStateSnapshotEnd(deviceInfo, deviceContext, false);
                     }
                 }
@@ -242,10 +250,8 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         });
     }
 
-    private ListenableFuture<Boolean> statChainFuture(final ListenableFuture<Boolean> prevFuture,
-                                                      final MultipartType multipartType) {
-        if (ConnectionContext.CONNECTION_STATE.RIP
-                .equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
+    private ListenableFuture<Boolean> statChainFuture(final ListenableFuture<Boolean> prevFuture, final MultipartType multipartType) {
+        if (ConnectionContext.CONNECTION_STATE.RIP.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
             final String errMsg = String
                     .format("Device connection for node %s doesn't exist anymore. Primary connection status : %s",
                             getDeviceInfo().getNodeId(),
@@ -261,11 +267,14 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
             final boolean supported = collectingStatType.contains(multipartType);
 
             // TODO: Refactor twice sending deviceContext into gatheringStatistics
-            return supported ? StatisticsGatheringUtils
-                    .gatherStatistics(onTheFly ? statisticsGatheringOnTheFlyService : statisticsGatheringService,
-                                      getDeviceInfo(), multipartType, deviceContext, deviceContext, convertorExecutor,
-                                      statisticsWriterProvider, executorService) : Futures
-                    .immediateFuture(Boolean.FALSE);
+            return supported ? StatisticsGatheringUtils.gatherStatistics(
+                    onTheFly ? statisticsGatheringOnTheFlyService : statisticsGatheringService,
+                    getDeviceInfo(),
+                    multipartType,
+                    deviceContext,
+                    deviceContext,
+                    convertorExecutor,
+                    statisticsWriterProvider) : Futures.immediateFuture(Boolean.FALSE);
         });
     }
 
@@ -275,11 +284,9 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         }
 
         LOG.info("Starting statistics gathering for node {}", deviceInfo);
-        final StatisticsPollingService statisticsPollingService =
-                new StatisticsPollingService(timeCounter,
-                                             statisticsPollingInterval,
-                                             maximumPollingDelay,
-                                             StatisticsContextImpl.this::gatherDynamicData);
+        final StatisticsPollingService statisticsPollingService = new StatisticsPollingService(timeCounter,
+                statisticsPollingInterval, maximumPollingDelay,
+                StatisticsContextImpl.this::gatherDynamicData);
 
         schedulingEnabled.set(true);
         statisticsPollingService.startAsync();
@@ -290,7 +297,9 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         LOG.info("Stopping running statistics gathering for node {}", deviceInfo);
         cancelLastDataGathering();
 
-        return Optional.ofNullable(statisticsPollingService.getAndSet(null)).map(StatisticsPollingService::stop)
+        return Optional
+                .ofNullable(statisticsPollingService.getAndSet(null))
+                .map(StatisticsPollingService::stop)
                 .orElseGet(() -> Futures.immediateFuture(null));
     }
 
@@ -308,16 +317,17 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     }
 
     @VisibleForTesting
-    void setStatisticsGatheringOnTheFlyService(
-            final StatisticsGatheringOnTheFlyService<T> statisticsGatheringOnTheFlyService) {
+    void setStatisticsGatheringOnTheFlyService(final StatisticsGatheringOnTheFlyService<T> statisticsGatheringOnTheFlyService) {
         this.statisticsGatheringOnTheFlyService = statisticsGatheringOnTheFlyService;
     }
 
     private final class InitialSubmitCallback implements FutureCallback<Boolean> {
         @Override
         public void onSuccess(@Nullable final Boolean result) {
-            contextChainMastershipWatcher
-                    .onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_GATHERING);
+            contextChainMastershipWatcher.onMasterRoleAcquired(
+                    deviceInfo,
+                    ContextChainMastershipState.INITIAL_GATHERING
+            );
 
             if (!isUsingReconciliationFramework) {
                 continueInitializationAfterReconciliation();
@@ -325,11 +335,10 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         }
 
         @Override
-        public void onFailure(@Nonnull final Throwable throwable) {
-            contextChainMastershipWatcher.onNotAbleToStartMastershipMandatory(deviceInfo,
-                                                                              "Initial gathering statistics "
-                                                                                      + "unsuccessful: "
-                                                                                      + throwable.getMessage());
+        public void onFailure(@Nonnull final Throwable t) {
+            contextChainMastershipWatcher.onNotAbleToStartMastershipMandatory(
+                    deviceInfo,
+                    "Initial gathering statistics unsuccessful: " + t.getMessage());
         }
     }
 }

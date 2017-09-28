@@ -1,6 +1,6 @@
-/**
+/*
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
- *
+ * <p>
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -12,10 +12,12 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Future;
+
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -70,17 +72,17 @@ public class SalFlowServiceImpl implements SalFlowService {
                               final ConvertorExecutor convertorExecutor) {
         this.deviceContext = deviceContext;
         flowRemove = new MultiLayerFlowService<>(requestContextStack,
-                                                 deviceContext,
-                                                 RemoveFlowOutput.class,
-                                                 convertorExecutor);
+                deviceContext,
+                RemoveFlowOutput.class,
+                convertorExecutor);
         flowAdd = new MultiLayerFlowService<>(requestContextStack,
-                                              deviceContext,
-                                              AddFlowOutput.class,
-                                              convertorExecutor);
+                deviceContext,
+                AddFlowOutput.class,
+                convertorExecutor);
         flowUpdate = new MultiLayerFlowService<>(requestContextStack,
-                                                 deviceContext,
-                                                 UpdateFlowOutput.class,
-                                                 convertorExecutor);
+                deviceContext,
+                UpdateFlowOutput.class,
+                convertorExecutor);
         flowAddMessage = new SingleLayerFlowService<>(requestContextStack, deviceContext, AddFlowOutput.class);
         flowUpdateMessage = new SingleLayerFlowService<>(requestContextStack, deviceContext, UpdateFlowOutput.class);
         flowRemoveMessage = new SingleLayerFlowService<>(requestContextStack, deviceContext, RemoveFlowOutput.class);
@@ -135,7 +137,7 @@ public class SalFlowServiceImpl implements SalFlowService {
 
                 final ListenableFuture<List<RpcResult<UpdateFlowOutput>>> listListenableFuture =
                         Futures.successfulAsList(flowUpdateMessage.handleServiceCall(input.getOriginalFlow()),
-                                                 flowUpdateMessage.handleServiceCall(input.getUpdatedFlow()));
+                                flowUpdateMessage.handleServiceCall(input.getUpdatedFlow()));
 
                 Futures.addCallback(listListenableFuture, new FutureCallback<List<RpcResult<UpdateFlowOutput>>>() {
                     @Override
@@ -198,14 +200,14 @@ public class SalFlowServiceImpl implements SalFlowService {
 
     @VisibleForTesting
     private static KeyedInstanceIdentifier<Flow, FlowKey> createFlowPath(
-                                                                    FlowDescriptor flowDescriptor,
-                                                                    KeyedInstanceIdentifier<Node, NodeKey> nodePath) {
+            FlowDescriptor flowDescriptor,
+            KeyedInstanceIdentifier<Node, NodeKey> nodePath) {
         return nodePath.augmentation(FlowCapableNode.class)
                 .child(Table.class, flowDescriptor.getTableKey())
                 .child(Flow.class, new FlowKey(flowDescriptor.getFlowId()));
     }
 
-    private final class AddFlowCallback implements FutureCallback<RpcResult<AddFlowOutput>> {
+    private class AddFlowCallback implements FutureCallback<RpcResult<AddFlowOutput>> {
         private final AddFlowInput input;
         private final FlowRegistryKey flowRegistryKey;
 
@@ -232,6 +234,7 @@ public class SalFlowServiceImpl implements SalFlowService {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Flow add with id={} finished without error", flowDescriptor.getFlowId().getValue());
                 }
+
             } else {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Flow add failed for flow={}, errors={}", input,
@@ -246,7 +249,8 @@ public class SalFlowServiceImpl implements SalFlowService {
         }
     }
 
-    private final class RemoveFlowCallback implements FutureCallback<RpcResult<RemoveFlowOutput>> {
+
+    private class RemoveFlowCallback implements FutureCallback<RpcResult<RemoveFlowOutput>> {
         private final RemoveFlowInput input;
 
         private RemoveFlowCallback(final RemoveFlowInput input) {
@@ -276,7 +280,7 @@ public class SalFlowServiceImpl implements SalFlowService {
         }
     }
 
-    private final class UpdateFlowCallback implements FutureCallback<RpcResult<UpdateFlowOutput>> {
+    private class UpdateFlowCallback implements FutureCallback<RpcResult<UpdateFlowOutput>> {
         private final UpdateFlowInput input;
 
         private UpdateFlowCallback(UpdateFlowInput input) {
@@ -301,9 +305,10 @@ public class SalFlowServiceImpl implements SalFlowService {
             if (Objects.nonNull(input.getFlowRef())) {
                 updatedFlowDescriptor =
                         FlowDescriptorFactory.create(updated.getTableId(),
-                                                     input.getFlowRef().getValue().firstKeyOf(Flow.class).getId());
+                                input.getFlowRef().getValue().firstKeyOf(Flow.class).getId());
             } else {
                 if (isUpdate) {
+                    LOG.debug("update for device descriptor {} ,-- {} ", original, origFlowRegistryKey);
                     updatedFlowDescriptor = origFlowDescriptor;
                 } else {
                     deviceFlowRegistry.store(updatedFlowRegistryKey);
