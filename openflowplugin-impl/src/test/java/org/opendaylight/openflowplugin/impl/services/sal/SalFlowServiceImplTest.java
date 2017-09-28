@@ -37,7 +37,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
-import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
@@ -153,8 +152,8 @@ public class SalFlowServiceImplTest extends TestCase {
 
     @Test
     public void testAddFlow() throws Exception {
-        addFlow(null, OFConstants.OFP_VERSION_1_0);
-        addFlow(null, OFConstants.OFP_VERSION_1_3);
+        addFlow( OFConstants.OFP_VERSION_1_0);
+        addFlow( OFConstants.OFP_VERSION_1_3);
     }
 
     @Test
@@ -212,72 +211,47 @@ public class SalFlowServiceImplTest extends TestCase {
         assertFalse(removeFlowOutputRpcResult.isSuccessful());
     }
 
-    @Test
-    public void testAddFlowWithItemLifecycle() throws Exception {
-        addFlow(mock(ItemLifecycleListener.class), OFConstants.OFP_VERSION_1_0);
-        addFlow(mock(ItemLifecycleListener.class), OFConstants.OFP_VERSION_1_3);
-    }
 
-    private void addFlow(final ItemLifecycleListener itemLifecycleListener, short version) throws ExecutionException, InterruptedException {
+    private void addFlow(short version) throws ExecutionException, InterruptedException {
         AddFlowInput mockedAddFlowInput = new AddFlowInputBuilder()
                 .setMatch(match)
                 .setTableId((short)1)
                 .build();
         SalFlowServiceImpl salFlowService = mockSalFlowService(version);
-        salFlowService.setItemLifecycleListener(itemLifecycleListener);
 
         mockingFlowRegistryLookup();
         verifyOutput(salFlowService.addFlow(mockedAddFlowInput));
-        if (itemLifecycleListener != null) {
-            Mockito.verify(itemLifecycleListener).onAdded(Matchers.<KeyedInstanceIdentifier<Flow, FlowKey>>any(), Matchers.<Flow>any());
-        }
+
     }
 
     @Test
     public void testRemoveFlow() throws Exception {
-        removeFlow(null, OFConstants.OFP_VERSION_1_0);
-        removeFlow(null, OFConstants.OFP_VERSION_1_3);
+        removeFlow( OFConstants.OFP_VERSION_1_0);
+        removeFlow( OFConstants.OFP_VERSION_1_3);
     }
 
-    @Test
-    public void testRemoveFlowWithItemLifecycle() throws Exception {
-        removeFlow(mock(ItemLifecycleListener.class), OFConstants.OFP_VERSION_1_0);
-        removeFlow(mock(ItemLifecycleListener.class), OFConstants.OFP_VERSION_1_3);
-    }
 
-    private void removeFlow(final ItemLifecycleListener itemLifecycleListener, short version) throws Exception {
+    private void removeFlow( short version) throws Exception {
         RemoveFlowInput mockedRemoveFlowInput = new RemoveFlowInputBuilder()
                 .setMatch(match)
                 .setTableId((short)1)
                 .build();
 
         SalFlowServiceImpl salFlowService = mockSalFlowService(version);
-        if (itemLifecycleListener != null) {
-            salFlowService.setItemLifecycleListener(itemLifecycleListener);
-            mockingFlowRegistryLookup();
-
-        }
-
         verifyOutput(salFlowService.removeFlow(mockedRemoveFlowInput));
-        if (itemLifecycleListener != null) {
-            Mockito.verify(itemLifecycleListener).onRemoved(Matchers.<KeyedInstanceIdentifier<Flow, FlowKey>>any());
-        }
 
     }
 
     @Test
     public void testUpdateFlow() throws Exception {
-        updateFlow(null, OFConstants.OFP_VERSION_1_0);
-        updateFlow(null, OFConstants.OFP_VERSION_1_3);
+        updateFlow( OFConstants.OFP_VERSION_1_0);
+        updateFlow( OFConstants.OFP_VERSION_1_3);
     }
 
     @Test
-    public void testUpdateFlowWithItemLifecycle() throws Exception {
-        updateFlow(mock(ItemLifecycleListener.class), OFConstants.OFP_VERSION_1_0);
-        updateFlow(mock(ItemLifecycleListener.class), OFConstants.OFP_VERSION_1_3);
-    }
 
-    private void updateFlow(final ItemLifecycleListener itemLifecycleListener, short version) throws Exception {
+
+    private void updateFlow( short version) throws Exception {
         UpdateFlowInput mockedUpdateFlowInput = mock(UpdateFlowInput.class);
         UpdateFlowInput mockedUpdateFlowInput1 = mock(UpdateFlowInput.class);
 
@@ -315,18 +289,9 @@ public class SalFlowServiceImplTest extends TestCase {
         when(mockedUpdateFlowInput1.getOriginalFlow()).thenReturn(mockedOriginalFlow1);
 
         SalFlowServiceImpl salFlowService = mockSalFlowService(version);
-        if (itemLifecycleListener != null) {
-            salFlowService.setItemLifecycleListener(itemLifecycleListener);
-            mockingFlowRegistryLookup();
-        }
 
         verifyOutput(salFlowService.updateFlow(mockedUpdateFlowInput));
         verifyOutput(salFlowService.updateFlow(mockedUpdateFlowInput1));
-
-        if (itemLifecycleListener != null) {
-            Mockito.verify(itemLifecycleListener, times(2)).onUpdated(Matchers.<KeyedInstanceIdentifier<Flow, FlowKey>>any(), Matchers.<Flow>any());
-        }
-
     }
 
     private void mockingFlowRegistryLookup() {
