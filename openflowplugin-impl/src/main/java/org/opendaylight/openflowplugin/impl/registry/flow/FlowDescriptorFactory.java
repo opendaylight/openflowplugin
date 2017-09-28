@@ -19,7 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
  * This class serves as factory for creating
  * {@link org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor}.
  */
-public class FlowDescriptorFactory {
+public final class FlowDescriptorFactory {
 
     private FlowDescriptorFactory() {
         // Hide implicit constructor

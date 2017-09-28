@@ -31,11 +31,14 @@ import org.slf4j.LoggerFactory;
 /**
  * Utility class used for converting OpenFlow port numbers, Ipv4 and Ipv6 addresses to normalized format.
  */
-public class AddressNormalizationUtil {
+public final class AddressNormalizationUtil {
     private static final Logger LOG = LoggerFactory.getLogger(AddressNormalizationUtil.class);
 
     private static final String NO_ETH_MASK = "ff:ff:ff:ff:ff:ff";
     private static final String PREFIX_SEPARATOR = "/";
+
+    private AddressNormalizationUtil() {
+    }
 
     /**
      * Extract port number from URI and convert it to OpenFlow specific textual representation.

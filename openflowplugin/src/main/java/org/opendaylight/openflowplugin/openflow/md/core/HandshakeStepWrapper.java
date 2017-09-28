@@ -26,6 +26,8 @@ public class HandshakeStepWrapper implements Runnable {
 
 
     /**
+     * Handshake step wrapper.
+     *
      * @param helloMessage initial hello message
      * @param handshakeManager connection handshake manager
      * @param connectionAdapter connection adaptor fro switch

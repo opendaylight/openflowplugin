@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.deserialization;
 
-import com.google.common.annotations.VisibleForTesting;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider;
@@ -34,7 +33,10 @@ import org.opendaylight.openflowplugin.impl.protocol.deserialization.action.SetN
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.action.SetQueueActionDeserializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 
-class ActionDeserializerInjector {
+public final class ActionDeserializerInjector {
+
+    private ActionDeserializerInjector() {
+    }
 
     /**
      * Injects action deserializers into provided
