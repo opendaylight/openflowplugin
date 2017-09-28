@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.services.sal;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -64,17 +65,17 @@ public class SalFlowServiceImpl implements SalFlowService {
                               final ConvertorExecutor convertorExecutor) {
         this.deviceContext = deviceContext;
         flowRemove = new MultiLayerFlowService<>(requestContextStack,
-                                                 deviceContext,
-                                                 RemoveFlowOutput.class,
-                                                 convertorExecutor);
+                deviceContext,
+                RemoveFlowOutput.class,
+                convertorExecutor);
         flowAdd = new MultiLayerFlowService<>(requestContextStack,
-                                              deviceContext,
-                                              AddFlowOutput.class,
-                                              convertorExecutor);
+                deviceContext,
+                AddFlowOutput.class,
+                convertorExecutor);
         flowUpdate = new MultiLayerFlowService<>(requestContextStack,
-                                                 deviceContext,
-                                                 UpdateFlowOutput.class,
-                                                 convertorExecutor);
+                deviceContext,
+                UpdateFlowOutput.class,
+                convertorExecutor);
         flowAddMessage = new SingleLayerFlowService<>(requestContextStack, deviceContext, AddFlowOutput.class);
         flowUpdateMessage = new SingleLayerFlowService<>(requestContextStack, deviceContext, UpdateFlowOutput.class);
         flowRemoveMessage = new SingleLayerFlowService<>(requestContextStack, deviceContext, RemoveFlowOutput.class);
@@ -129,7 +130,7 @@ public class SalFlowServiceImpl implements SalFlowService {
 
                 final ListenableFuture<List<RpcResult<UpdateFlowOutput>>> listListenableFuture =
                         Futures.successfulAsList(flowUpdateMessage.handleServiceCall(input.getOriginalFlow()),
-                                                 flowUpdateMessage.handleServiceCall(input.getUpdatedFlow()));
+                                flowUpdateMessage.handleServiceCall(input.getUpdatedFlow()));
 
                 Futures.addCallback(listListenableFuture, new FutureCallback<List<RpcResult<UpdateFlowOutput>>>() {
                     @Override
@@ -217,6 +218,7 @@ public class SalFlowServiceImpl implements SalFlowService {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Flow add with id={} finished without error", flowDescriptor.getFlowId().getValue());
                 }
+
             } else {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Flow add failed for flow={}, errors={}", input,
@@ -286,9 +288,10 @@ public class SalFlowServiceImpl implements SalFlowService {
             if (Objects.nonNull(input.getFlowRef())) {
                 updatedFlowDescriptor =
                         FlowDescriptorFactory.create(updated.getTableId(),
-                                                     input.getFlowRef().getValue().firstKeyOf(Flow.class).getId());
+                                input.getFlowRef().getValue().firstKeyOf(Flow.class).getId());
             } else {
                 if (isUpdate) {
+                    LOG.debug("update for device descriptor {} ,-- {} ", original, origFlowRegistryKey);
                     updatedFlowDescriptor = origFlowDescriptor;
                 } else {
                     deviceFlowRegistry.store(updatedFlowRegistryKey);
