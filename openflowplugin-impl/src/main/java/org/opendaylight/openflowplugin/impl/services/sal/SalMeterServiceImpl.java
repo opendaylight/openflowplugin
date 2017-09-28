@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -10,8 +10,8 @@ package org.opendaylight.openflowplugin.impl.services.sal;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.MoreExecutors;
 import java.util.concurrent.Future;
+import com.google.common.util.concurrent.MoreExecutors;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerMeterService;
@@ -79,7 +79,6 @@ public class SalMeterServiceImpl implements SalMeterService {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Meter add with id={} finished without error", input.getMeterId());
                     }
-                    deviceContext.getDeviceMeterRegistry().store(input.getMeterId());
                 } else {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Meter add with id={} failed, errors={}", input.getMeterId(),
@@ -142,7 +141,6 @@ public class SalMeterServiceImpl implements SalMeterService {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Meter remove with id={} finished without error", input.getMeterId());
                     }
-                    removeMeter.getDeviceRegistry().getDeviceMeterRegistry().addMark(input.getMeterId());
                 } else {
                     LOG.warn("Meter remove with id={} failed, errors={}", input.getMeterId(),
                         ErrorUtil.errorsToString(result.getErrors()));

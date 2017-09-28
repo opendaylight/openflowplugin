@@ -27,6 +27,9 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
+import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
+import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
@@ -53,6 +56,12 @@ public abstract class AbstractDirectStatisticsServiceTest {
 
     @Mock
     protected RequestContextStack requestContextStack;
+    @Mock
+    protected DeviceFlowRegistry deviceFlowRegistry;
+    @Mock
+    protected DeviceGroupRegistry deviceGroupRegistry;
+    @Mock
+    protected DeviceMeterRegistry deviceMeterRegistry;
     @Mock
     protected DeviceContext deviceContext;
     @Mock
@@ -96,6 +105,9 @@ public abstract class AbstractDirectStatisticsServiceTest {
                 .child(Node.class, new NodeKey(new NodeId(NODE_ID)));
 
         convertorManager = ConvertorManagerFactory.createDefaultManager();
+        when(deviceContext.getDeviceFlowRegistry()).thenReturn(deviceFlowRegistry);
+        when(deviceContext.getDeviceGroupRegistry()).thenReturn(deviceGroupRegistry);
+        when(deviceContext.getDeviceMeterRegistry()).thenReturn(deviceMeterRegistry);
         when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
         when(deviceContext.getMultiMsgCollector(any())).thenReturn(multiMsgCollector);

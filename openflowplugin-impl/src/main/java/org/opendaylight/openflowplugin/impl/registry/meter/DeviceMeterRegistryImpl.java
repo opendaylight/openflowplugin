@@ -9,11 +9,13 @@
 package org.opendaylight.openflowplugin.impl.registry.meter;
 
 import com.google.common.annotations.VisibleForTesting;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import javax.annotation.concurrent.ThreadSafe;
+
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 
@@ -25,8 +27,10 @@ public class DeviceMeterRegistryImpl implements DeviceMeterRegistry {
 
     @Override
     public void store(final MeterId meterId) {
-        marks.remove(meterId);
-        meterIds.add(meterId);
+        if (!meterIds.contains(meterId)) {
+            marks.remove(meterId);
+            meterIds.add(meterId);
+        }
     }
 
     @Override
