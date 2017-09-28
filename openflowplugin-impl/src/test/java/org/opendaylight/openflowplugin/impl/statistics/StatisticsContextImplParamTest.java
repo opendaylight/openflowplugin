@@ -75,7 +75,6 @@ public class StatisticsContextImplParamTest extends StatisticsContextImpMockInit
         final StatisticsContextImpl<MultipartReply> statisticsContext = new StatisticsContextImpl<>(
                 mockedDeviceContext, convertorManager,
                 MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext),
-                MoreExecutors.newDirectExecutorService(),
                 true, false, 3000, 50000);
 
         final ListenableFuture<RpcResult<List<MultipartReply>>> rpcResult = immediateFuture(RpcResultBuilder
