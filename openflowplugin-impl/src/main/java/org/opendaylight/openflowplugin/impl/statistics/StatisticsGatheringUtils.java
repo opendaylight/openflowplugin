@@ -83,24 +83,24 @@ public final class StatisticsGatheringUtils {
 
                 if (!rpcResultIsNull && rpcResult.isSuccessful()) {
                     LOG.debug("Stats reply successfully received for node {} of type {}", deviceInfo.getNodeId(), type);
-                    // TODO: in case the result value is null then multipart data probably got processed
-                    // TODO: on the fly. This contract should by clearly stated and enforced.
-                    // TODO: Now simple true value is returned
+                        // TODO: in case the result value is null then multipart data probably got processed
+                        // TODO: on the fly. This contract should by clearly stated and enforced.
+                        // TODO: Now simple true value is returned
                     if (Objects.nonNull(rpcResult.getResult()) && !rpcResult.getResult().isEmpty()) {
                         final List<DataContainer> allMultipartData = rpcResult.getResult().stream()
                                 .map(reply -> MultipartReplyTranslatorUtil
-                                        .translate(reply, deviceInfo, convertorExecutor, null))
+                                                    .translate(reply, deviceInfo, convertorExecutor, null))
                                 .filter(java.util.Optional::isPresent).map(java.util.Optional::get)
-                                .collect(Collectors.toList());
+                                            .collect(Collectors.toList());
 
                         return processStatistics(type, allMultipartData, txFacade, registry, deviceInfo,
-                                                 statisticsWriterProvider);
+                                        statisticsWriterProvider);
                     } else {
                         LOG.debug("Stats reply was empty for node {} of type {}", deviceInfo.getNodeId(), type);
                     }
                 } else {
                     LOG.warn("Stats reply FAILED for node {} of type {}: {}", deviceInfo.getNodeId(), type,
-                             rpcResultIsNull ? "" : rpcResult.getErrors());
+                                rpcResultIsNull ? "" : rpcResult.getErrors());
                 }
                 return false;
             }), MoreExecutors.directExecutor());
@@ -115,13 +115,16 @@ public final class StatisticsGatheringUtils {
 
         switch (type) {
             case OFPMPFLOW:
-                deleteAllKnownFlows(txFacade, instanceIdentifier, deviceRegistry.getDeviceFlowRegistry());
-                break;
+                 deleteAllKnownFlows(txFacade, instanceIdentifier, deviceRegistry.getDeviceFlowRegistry());
+                 deviceRegistry.getDeviceFlowRegistry().processMarks();
+                 break;
             case OFPMPMETERCONFIG:
                 deleteAllKnownMeters(txFacade, instanceIdentifier, deviceRegistry.getDeviceMeterRegistry());
+                deviceRegistry.getDeviceMeterRegistry().processMarks();
                 break;
             case OFPMPGROUPDESC:
                 deleteAllKnownGroups(txFacade, instanceIdentifier, deviceRegistry.getDeviceGroupRegistry());
+                deviceRegistry.getDeviceGroupRegistry().processMarks();
                 break;
             default:
                 // no operation
@@ -129,20 +132,6 @@ public final class StatisticsGatheringUtils {
 
         if (writeStatistics(type, statistics, deviceInfo, statisticsWriterProvider)) {
             txFacade.submitTransaction();
-
-            switch (type) {
-                case OFPMPFLOW:
-                    deviceRegistry.getDeviceFlowRegistry().processMarks();
-                    break;
-                case OFPMPMETERCONFIG:
-                    deviceRegistry.getDeviceMeterRegistry().processMarks();
-                    break;
-                case OFPMPGROUPDESC:
-                    deviceRegistry.getDeviceGroupRegistry().processMarks();
-                    break;
-                default:
-                    // no operation
-            }
 
             LOG.debug("Stats reply added to transaction for node {} of type {}", deviceInfo.getNodeId(), type);
             return true;
@@ -210,24 +199,33 @@ public final class StatisticsGatheringUtils {
     public static void deleteAllKnownMeters(final TxFacade txFacade,
                                             final InstanceIdentifier<FlowCapableNode> instanceIdentifier,
                                             final DeviceMeterRegistry meterRegistry) {
-        meterRegistry.forEach(meterId -> txFacade.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL,
-                                                                     instanceIdentifier.child(Meter.class,
-                                                                                              new MeterKey(meterId))));
+        meterRegistry.forEach(meterId -> {
+            txFacade
+                    .addDeleteToTxChain(
+                            LogicalDatastoreType.OPERATIONAL,
+                            instanceIdentifier.child(Meter.class, new MeterKey(meterId)));
+            meterRegistry.addMark(meterId);
+        });
     }
 
     public static void deleteAllKnownGroups(final TxFacade txFacade,
                                             final InstanceIdentifier<FlowCapableNode> instanceIdentifier,
                                             final DeviceGroupRegistry groupRegistry) {
-        groupRegistry.forEach(groupId -> txFacade.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL,
-                                                                     instanceIdentifier.child(Group.class,
-                                                                                              new GroupKey(groupId))));
+        LOG.debug("deleteAllKnownGroups on device targetType {}", instanceIdentifier.getTargetType());
+        groupRegistry.forEach(groupId -> {
+            txFacade
+                    .addDeleteToTxChain(
+                            LogicalDatastoreType.OPERATIONAL,
+                            instanceIdentifier.child(Group.class, new GroupKey(groupId)));
+            groupRegistry.addMark(groupId);
+        });
     }
 
     /**
      * Writes snapshot gathering start timestamp + cleans end mark.
      *
      * @param deviceInfo device info
-     * @param txFacade   tx manager
+     * @param txFacade tx manager
      */
     static void markDeviceStateSnapshotStart(final DeviceInfo deviceInfo, final TxFacade txFacade) {
         final InstanceIdentifier<FlowCapableStatisticsGatheringStatus> statusPath = deviceInfo
@@ -236,8 +234,8 @@ public final class StatisticsGatheringUtils {
         final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AND_TIME_FORMAT);
         final FlowCapableStatisticsGatheringStatus gatheringStatus = new FlowCapableStatisticsGatheringStatusBuilder()
                 .setSnapshotGatheringStatusStart(new SnapshotGatheringStatusStartBuilder()
-                                                         .setBegin(new DateAndTime(simpleDateFormat.format(new Date())))
-                                                         .build())
+                        .setBegin(new DateAndTime(simpleDateFormat.format(new Date())))
+                        .build())
                 .setSnapshotGatheringStatusEnd(null) // TODO: reconsider if really need to clean end mark here
                 .build();
         try {
@@ -254,17 +252,20 @@ public final class StatisticsGatheringUtils {
      * Writes snapshot gathering end timestamp + outcome.
      *
      * @param deviceInfo device info
-     * @param txFacade   tx manager
-     * @param succeeded  outcome of currently finished gathering
+     * @param txFacade tx manager
+     * @param succeeded     outcome of currently finished gathering
      */
-    static void markDeviceStateSnapshotEnd(final DeviceInfo deviceInfo, final TxFacade txFacade,
-                                           final boolean succeeded) {
-        final InstanceIdentifier<SnapshotGatheringStatusEnd> statusEndPath = deviceInfo.getNodeInstanceIdentifier()
-                .augmentation(FlowCapableStatisticsGatheringStatus.class).child(SnapshotGatheringStatusEnd.class);
+    static void markDeviceStateSnapshotEnd(final DeviceInfo deviceInfo,
+                                           final TxFacade txFacade, final boolean succeeded) {
+        final InstanceIdentifier<SnapshotGatheringStatusEnd> statusEndPath = deviceInfo
+                .getNodeInstanceIdentifier().augmentation(FlowCapableStatisticsGatheringStatus.class)
+                .child(SnapshotGatheringStatusEnd.class);
 
         final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AND_TIME_FORMAT);
         final SnapshotGatheringStatusEnd gatheringStatus = new SnapshotGatheringStatusEndBuilder()
-                .setEnd(new DateAndTime(simpleDateFormat.format(new Date()))).setSucceeded(succeeded).build();
+                .setEnd(new DateAndTime(simpleDateFormat.format(new Date())))
+                .setSucceeded(succeeded)
+                .build();
         try {
             txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, statusEndPath, gatheringStatus);
         } catch (TransactionChainClosedException e) {

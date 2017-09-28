@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl.registry.meter;
 
 import com.google.common.annotations.VisibleForTesting;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -25,8 +26,10 @@ public class DeviceMeterRegistryImpl implements DeviceMeterRegistry {
 
     @Override
     public void store(final MeterId meterId) {
-        marks.remove(meterId);
-        meterIds.add(meterId);
+        if (!meterIds.contains(meterId)) {
+            marks.remove(meterId);
+            meterIds.add(meterId);
+        }
     }
 
     @Override
