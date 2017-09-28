@@ -16,7 +16,6 @@ import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.MoreExecutors;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
@@ -281,7 +280,6 @@ public class StatisticsGatheringUtilsTest {
 
         verify(deviceContext, Mockito.never()).addDeleteToTxChain(Matchers.eq(LogicalDatastoreType.OPERATIONAL),
                                                                   Matchers.<InstanceIdentifier<?>>any());
-        verify(deviceGroupRegistry).processMarks();
         verify(deviceGroupRegistry).store(storedGroupId);
         verify(deviceContext).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL),
                                                  Matchers.eq(groupPath), Matchers.any(Group.class));
@@ -513,8 +511,7 @@ public class StatisticsGatheringUtilsTest {
             deviceContext,
             deviceContext,
             ConvertorManagerFactory.createDefaultManager(),
-            provider,
-            MoreExecutors.newDirectExecutorService());
+            provider);
 
         Assert.assertTrue(gatherStatisticsResult.get(1, TimeUnit.SECONDS));
         verify(deviceContext).submitTransaction();

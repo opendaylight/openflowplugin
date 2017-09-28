@@ -15,7 +15,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.MoreExecutors;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -75,7 +74,6 @@ public class StatisticsContextImplParamTest extends StatisticsContextImpMockInit
         final StatisticsContextImpl<MultipartReply> statisticsContext = new StatisticsContextImpl<>(
                 mockedDeviceContext, convertorManager,
                 MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext),
-                MoreExecutors.newDirectExecutorService(),
                 true, false, 3000, 50000);
 
         final ListenableFuture<RpcResult<List<MultipartReply>>> rpcResult = immediateFuture(RpcResultBuilder
