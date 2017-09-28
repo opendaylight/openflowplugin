@@ -54,11 +54,12 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
     }
 
     private void initStatisticsContext() {
-        statisticsContext = new StatisticsContextImpl<>(mockedDeviceContext, convertorManager,
-                                                        MultipartWriterProviderFactory
-                                                                .createDefaultProvider(mockedDeviceContext),
-                                                        MoreExecutors.newDirectExecutorService(), true, false, 3000,
-                                                        50000);
+        statisticsContext = new StatisticsContextImpl<>(
+                mockedDeviceContext, convertorManager,
+                MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext),
+                MoreExecutors.newDirectExecutorService(),
+                true,
+                false, 3000, 50000);
 
         statisticsContext.setStatisticsGatheringService(mockedStatisticsGatheringService);
         statisticsContext.setStatisticsGatheringOnTheFlyService(mockedStatisticsOnFlyGatheringService);
@@ -79,14 +80,14 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
     @SuppressWarnings("checkstyle:IllegalCatch")
     public void testClose() throws Exception {
         final StatisticsContextImpl<MultipartReply> statisticsContext =
-                new StatisticsContextImpl<>(mockedDeviceContext,
+                new StatisticsContextImpl<MultipartReply>(mockedDeviceContext,
                                             convertorManager,
                                             MultipartWriterProviderFactory
                                                     .createDefaultProvider(mockedDeviceContext),
-                                            MoreExecutors.newDirectExecutorService(),
+                                             MoreExecutors.newDirectExecutorService(),true,
                                             true,
-                                            false,
-                                            3000,50000);
+                                            3000,
+                                            3000);
 
         final RequestContext<Object> requestContext = statisticsContext.createRequestContext();
         statisticsContext.close();
