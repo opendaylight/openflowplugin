@@ -9,11 +9,13 @@
 package org.opendaylight.openflowplugin.impl.registry.group;
 
 import com.google.common.annotations.VisibleForTesting;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import javax.annotation.concurrent.ThreadSafe;
+
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 
@@ -25,13 +27,17 @@ public class DeviceGroupRegistryImpl implements DeviceGroupRegistry {
 
     @Override
     public void store(final GroupId groupId) {
-        marks.remove(groupId);
-        groupIds.add(groupId);
+        if (!groupIds.contains(groupId)) {
+            marks.remove(groupId);
+            groupIds.add(groupId);
+        }
     }
 
     @Override
     public void addMark(final GroupId groupId) {
-        marks.add(groupId);
+        if (!marks.contains(groupId)) {
+            marks.add(groupId);
+        }
     }
 
     @Override
