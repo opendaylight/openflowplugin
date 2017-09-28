@@ -53,14 +53,11 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
-import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
-import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleKeeper;
-import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.common.txchain.TransactionChainManager;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
@@ -68,7 +65,6 @@ import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderK
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.openflowplugin.extension.api.path.MessagePath;
-import org.opendaylight.openflowplugin.impl.common.ItemLifeCycleSourceImpl;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
 import org.opendaylight.openflowplugin.impl.device.initialization.AbstractDeviceInitializer;
@@ -150,12 +146,10 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final DataBroker dataBroker;
     private final Collection<RequestContext<?>> requestContexts = new HashSet<>();
     private final MessageSpy messageSpy;
-    private final ItemLifeCycleKeeper flowLifeCycleKeeper;
     private final MessageTranslator<PortGrouping, FlowCapableNodeConnector> portStatusTranslator;
     private final MessageTranslator<PacketInMessage, PacketReceived> packetInTranslator;
     private final MessageTranslator<FlowRemoved, org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved> flowRemovedTranslator;
     private final TranslatorLibrary translatorLibrary;
-    private final ItemLifeCycleRegistry itemLifeCycleSourceRegistry;
     private final ConvertorExecutor convertorExecutor;
     private final DeviceManager myManager;
     private final DeviceInitializerProvider deviceInitializerProvider;
@@ -216,9 +210,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.flowRemovedTranslator = translatorLibrary.lookupTranslator(
                 new TranslatorKey(deviceInfo.getVersion(), FlowRemoved.class.getName()));
 
-        this.itemLifeCycleSourceRegistry = new ItemLifeCycleRegistryImpl();
-        this.flowLifeCycleKeeper = new ItemLifeCycleSourceImpl();
-        this.itemLifeCycleSourceRegistry.registerLifeCycleSource(flowLifeCycleKeeper);
         this.convertorExecutor = convertorExecutor;
         this.skipTableFeatures = skipTableFeatures;
         this.useSingleLayerSerialization = useSingleLayerSerialization;
@@ -339,8 +330,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             LOG.debug("For nodeId={} isNotificationFlowRemovedOn={}", getDeviceInfo().getLOGValue(), myManager.isFlowRemovedNotificationOn());
         }
 
-        final ItemLifecycleListener itemLifecycleListener = flowLifeCycleKeeper.getItemLifecycleListener();
-        if (itemLifecycleListener != null) {
             //2. create registry key
             final FlowRegistryKey flowRegKey = FlowRegistryKeyFactory.create(getDeviceInfo().getVersion(), flowRemovedNotification);
             //3. lookup flowId
@@ -352,13 +341,12 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                         .augmentation(FlowCapableNode.class)
                         .child(Table.class, flowDescriptor.getTableKey())
                         .child(Flow.class, new FlowKey(flowDescriptor.getFlowId()));
-                // b) notify listener
-                itemLifecycleListener.onRemoved(flowPath);
+                addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL,flowPath);
+                deviceFlowRegistry.addMark(flowRegKey);
             } else {
                 LOG.debug("flow id not found: nodeId={} tableId={}, priority={}",
                         getDeviceInfo().getNodeId(), flowRegKey.getTableId(), flowRemovedNotification.getPriority());
             }
-        }
     }
 
     @Override
@@ -367,7 +355,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
         if (initialized.get()) {
             try {
+                LOG.warn("writePortStatusMessage");
                 writePortStatusMessage(portStatus);
+                LOG.warn("submit transaction for write port status message");
                 submitTransaction();
             } catch (final Exception e) {
                 LOG.warn("Error processing port status message for port {} on device {}",
@@ -379,6 +369,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     private void writePortStatusMessage(final PortStatus portStatusMessage) {
+        LOG.debug("writePortStatusMessage for port  {} ",portStatusMessage);
         final FlowCapableNodeConnector flowCapableNodeConnector = portStatusTranslator
                 .translate(portStatusMessage, getDeviceInfo(), null);
 
@@ -398,6 +389,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     .addAugmentation(FlowCapableNodeConnector.class, flowCapableNodeConnector)
                     .build());
         } else if (PortReason.OFPPRDELETE.equals(portStatusMessage.getReason())) {
+            LOG.debug("addDeleteToTxChain for port reason being same for node {} ",iiToNodeConnector);
             addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector);
         }
     }
@@ -520,11 +512,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public ItemLifeCycleRegistry getItemLifeCycleSourceRegistry() {
-        return itemLifeCycleSourceRegistry;
-    }
-
-    @Override
     public void setExtensionConverterProvider(final ExtensionConverterProvider extensionConverterProvider) {
         this.extensionConverterProvider = extensionConverterProvider;
     }
@@ -636,7 +623,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         try {
             final List<PortStatusMessage> portStatusMessages = primaryConnectionContext
                     .retrieveAndClearPortStatusMessages();
-
+            LOG.debug("instantiateServiceInstance for port status message {} ",portStatusMessages);
             portStatusMessages.forEach(this::writePortStatusMessage);
             submitTransaction();
         } catch (final Exception ex) {
