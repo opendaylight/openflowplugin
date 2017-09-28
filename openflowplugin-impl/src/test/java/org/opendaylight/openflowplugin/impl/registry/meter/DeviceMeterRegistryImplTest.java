@@ -45,13 +45,6 @@ public class DeviceMeterRegistryImplTest {
         Assert.assertEquals(0, deviceMeterRegistry.getAllMeterIds().size());
     }
 
-    @Test
-    public void testRemoveMarkedNegative() throws Exception {
-        deviceMeterRegistry.addMark(meterId2);
-        deviceMeterRegistry.processMarks();
-        Assert.assertEquals(1, deviceMeterRegistry.getAllMeterIds().size());
-    }
-
 
     @Test
     public void testClose() throws Exception {
@@ -59,10 +52,11 @@ public class DeviceMeterRegistryImplTest {
         deviceMeterRegistry.close();
 
         Assert.assertEquals(0, deviceMeterRegistry.getAllMeterIds().size());
-        deviceMeterRegistry.store(meterId);
+        deviceMeterRegistry.store(meterId2);
         Assert.assertEquals(1, deviceMeterRegistry.getAllMeterIds().size());
+        deviceMeterRegistry.addMark(meterId2);
         deviceMeterRegistry.processMarks();
-        Assert.assertEquals(1, deviceMeterRegistry.getAllMeterIds().size());
+        Assert.assertEquals(0, deviceMeterRegistry.getAllMeterIds().size());
 
     }
 }
