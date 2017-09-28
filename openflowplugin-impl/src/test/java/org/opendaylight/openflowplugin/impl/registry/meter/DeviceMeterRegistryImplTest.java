@@ -50,7 +50,7 @@ public class DeviceMeterRegistryImplTest {
     public void testRemoveMarkedNegative() throws Exception {
         deviceMeterRegistry.addMark(meterId2);
         deviceMeterRegistry.processMarks();
-        Assert.assertEquals(1, deviceMeterRegistry.getAllMeterIds().size());
+        Assert.assertEquals(0, deviceMeterRegistry.getAllMeterIds().size());
     }
 
     @Test
@@ -62,7 +62,7 @@ public class DeviceMeterRegistryImplTest {
         deviceMeterRegistry.store(meterId);
         Assert.assertEquals(1, deviceMeterRegistry.getAllMeterIds().size());
         deviceMeterRegistry.processMarks();
-        Assert.assertEquals(1, deviceMeterRegistry.getAllMeterIds().size());
+        Assert.assertEquals(0, deviceMeterRegistry.getAllMeterIds().size());
 
     }
 
