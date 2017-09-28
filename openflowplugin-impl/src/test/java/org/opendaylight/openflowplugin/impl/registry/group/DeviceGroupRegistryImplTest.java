@@ -50,7 +50,7 @@ public class DeviceGroupRegistryImplTest {
     public void testRemoveMarkedNegative() throws Exception {
         deviceGroupRegistry.addMark(groupId2);
         deviceGroupRegistry.processMarks();
-        Assert.assertEquals(1, deviceGroupRegistry.getAllGroupIds().size());
+        Assert.assertEquals(0, deviceGroupRegistry.getAllGroupIds().size());
     }
 
     @Test
@@ -62,7 +62,7 @@ public class DeviceGroupRegistryImplTest {
         deviceGroupRegistry.store(groupId);
         Assert.assertEquals(1, deviceGroupRegistry.getAllGroupIds().size());
         deviceGroupRegistry.processMarks();
-        Assert.assertEquals(1, deviceGroupRegistry.getAllGroupIds().size());
+        Assert.assertEquals(0, deviceGroupRegistry.getAllGroupIds().size());
     }
 
     @Test

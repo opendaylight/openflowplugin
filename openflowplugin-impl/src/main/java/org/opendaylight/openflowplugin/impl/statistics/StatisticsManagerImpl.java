@@ -68,6 +68,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     public Future<RpcResult<Void>> changeStatisticsWorkMode(ChangeStatisticsWorkModeInput input) {
         if (workModeGuard.tryAcquire()) {
             final StatisticsWorkMode targetWorkMode = input.getMode();
+
             isStatisticsFullyDisabled = StatisticsWorkMode.FULLYDISABLED.equals(targetWorkMode);
 
             contexts.values().forEach(context -> {

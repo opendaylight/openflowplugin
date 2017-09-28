@@ -218,7 +218,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
     @Override
     public void processMarks() {
-        // Do nothing
+        flowRegistry.keySet().removeAll(flowRegistry.keySet());
     }
 
     @Override
