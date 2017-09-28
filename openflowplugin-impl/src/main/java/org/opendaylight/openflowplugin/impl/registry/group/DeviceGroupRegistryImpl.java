@@ -43,6 +43,8 @@ public class DeviceGroupRegistryImpl implements DeviceGroupRegistry {
     @Override
     public void forEach(final Consumer<GroupId> consumer) {
         synchronized (groupIds) {
+            groupIds.removeAll(marks);
+            marks.clear();
             groupIds.forEach(consumer);
         }
     }
