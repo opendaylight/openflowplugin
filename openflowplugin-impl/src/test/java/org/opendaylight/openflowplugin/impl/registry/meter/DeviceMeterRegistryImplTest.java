@@ -61,8 +61,9 @@ public class DeviceMeterRegistryImplTest {
         Assert.assertEquals(0, deviceMeterRegistry.getAllMeterIds().size());
         deviceMeterRegistry.store(meterId);
         Assert.assertEquals(1, deviceMeterRegistry.getAllMeterIds().size());
+        deviceMeterRegistry.addMark(meterId);
         deviceMeterRegistry.processMarks();
-        Assert.assertEquals(1, deviceMeterRegistry.getAllMeterIds().size());
+        Assert.assertEquals(0, deviceMeterRegistry.getAllMeterIds().size());
 
     }
 
