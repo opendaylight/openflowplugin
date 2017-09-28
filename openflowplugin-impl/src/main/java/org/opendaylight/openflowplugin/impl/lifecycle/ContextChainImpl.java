@@ -70,7 +70,6 @@ public class ContextChainImpl implements ContextChain {
     @Override
     @SuppressWarnings("checkstyle:IllegalCatch")
     public void instantiateServiceInstance() {
-
         try {
             contexts.forEach(OFPContext::instantiateServiceInstance);
             LOG.info("Started clustering services for node {}", deviceInfo);
@@ -190,18 +189,12 @@ public class ContextChainImpl implements ContextChain {
                 break;
         }
 
-        final boolean result = initialGathering.get()
-                && masterStateOnDevice.get()
-                && rpcRegistration.get()
-                && inReconciliationFrameworkStep
-                || initialSubmitting.get();
+        final boolean result = initialGathering.get() && masterStateOnDevice.get() && rpcRegistration.get()
+                && inReconciliationFrameworkStep || initialSubmitting.get();
 
-        if (!inReconciliationFrameworkStep &&
-                result &&
-                mastershipState != ContextChainMastershipState.CHECK) {
-            LOG.info("Device {} is able to work as master{}",
-                    deviceInfo,
-                    registryFilling.get() ? "." : " WITHOUT flow registry !!!");
+        if (!inReconciliationFrameworkStep && result && mastershipState != ContextChainMastershipState.CHECK) {
+            LOG.info("Device {} is able to work as master{}", deviceInfo,
+                     registryFilling.get() ? "." : " WITHOUT flow registry !!!");
             changeMastershipState(ContextChainState.WORKING_MASTER);
         }
 

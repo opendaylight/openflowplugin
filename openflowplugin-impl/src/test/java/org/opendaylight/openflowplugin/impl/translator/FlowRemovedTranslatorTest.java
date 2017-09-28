@@ -64,11 +64,9 @@ public class FlowRemovedTranslatorTest {
     @Mock
     private FlowWildcardsV10 flowWildcards;
 
-    private KeyedInstanceIdentifier<Node, NodeKey> nodeId;
-
     @Before
     public void setUp() throws Exception {
-        nodeId = InstanceIdentifier.create(Nodes.class)
+        final KeyedInstanceIdentifier<Node, NodeKey> nodeId = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId("dummyNodeId")));
 
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();

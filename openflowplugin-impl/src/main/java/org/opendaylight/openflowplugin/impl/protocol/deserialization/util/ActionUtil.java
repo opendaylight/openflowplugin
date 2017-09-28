@@ -26,7 +26,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 /**
  * Utility class for action deserialization.
  */
-public class ActionUtil {
+public final class ActionUtil {
+
+    private ActionUtil() {
+    }
 
     /**
      * Deserialize OpenFlow action, using extension converter if available.
