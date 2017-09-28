@@ -18,6 +18,10 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
+<<<<<<< HEAD
+=======
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
+>>>>>>> 51a2612... 7826
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
@@ -68,6 +72,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     public Future<RpcResult<Void>> changeStatisticsWorkMode(ChangeStatisticsWorkModeInput input) {
         if (workModeGuard.tryAcquire()) {
             final StatisticsWorkMode targetWorkMode = input.getMode();
+
             isStatisticsFullyDisabled = StatisticsWorkMode.FULLYDISABLED.equals(targetWorkMode);
 
             contexts.values().forEach(context -> {

@@ -8,8 +8,6 @@
 
 package org.opendaylight.openflowplugin.impl.statistics;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -150,12 +148,18 @@ public final class StatisticsGatheringUtils {
 
         switch (type) {
             case OFPMPFLOW:
+                LOG.debug("deleteAllKnownFlows device {}, flow size - {}",deviceInfo,deviceRegistry.getDeviceFlowRegistry().size());
+                deviceRegistry.getDeviceFlowRegistry().processMarks();
                 deleteAllKnownFlows(txFacade, instanceIdentifier, deviceRegistry.getDeviceFlowRegistry());
                 break;
             case OFPMPMETERCONFIG:
+                LOG.debug("deleteAllKnownMeters device {}",deviceInfo);
+                deviceRegistry.getDeviceMeterRegistry().processMarks();
                 deleteAllKnownMeters(txFacade, instanceIdentifier, deviceRegistry.getDeviceMeterRegistry());
                 break;
             case OFPMPGROUPDESC:
+                LOG.debug("deleteAllKnownGroups OFPMPGROUPDESC device {}, group size - {}, ",deviceInfo,deviceRegistry.getDeviceGroupRegistry().size());
+                deviceRegistry.getDeviceGroupRegistry().processMarks();
                 deleteAllKnownGroups(txFacade, instanceIdentifier, deviceRegistry.getDeviceGroupRegistry());
                 break;
             default:
@@ -164,21 +168,6 @@ public final class StatisticsGatheringUtils {
 
         if (writeStatistics(type, statistics, deviceInfo, statisticsWriterProvider)) {
             txFacade.submitTransaction();
-
-            switch (type) {
-                case OFPMPFLOW:
-                    deviceRegistry.getDeviceFlowRegistry().processMarks();
-                    break;
-                case OFPMPMETERCONFIG:
-                    deviceRegistry.getDeviceMeterRegistry().processMarks();
-                    break;
-                case OFPMPGROUPDESC:
-                    deviceRegistry.getDeviceGroupRegistry().processMarks();
-                    break;
-                default:
-                    // no operation
-            }
-
             LOG.debug("Stats reply added to transaction for node {} of type {}", deviceInfo.getNodeId(), type);
             return true;
         }
@@ -257,6 +246,7 @@ public final class StatisticsGatheringUtils {
     public static void deleteAllKnownGroups(final TxFacade txFacade,
                                             final InstanceIdentifier<FlowCapableNode> instanceIdentifier,
                                             final DeviceGroupRegistry groupRegistry) {
+        LOG.debug("deleteAllKnownGroups on device targetType {}",instanceIdentifier.getTargetType());
         groupRegistry.forEach(groupId -> txFacade
                 .addDeleteToTxChain(
                         LogicalDatastoreType.OPERATIONAL,

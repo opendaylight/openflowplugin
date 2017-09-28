@@ -37,7 +37,10 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
+<<<<<<< HEAD
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ReconciliationFrameworkRegistrar;
+=======
+>>>>>>> 51a2612... 7826
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
@@ -179,6 +182,11 @@ public class StatisticsManagerImplTest {
     @Test
     public void testChangeStatisticsWorkMode1() throws Exception {
         final StatisticsContext statisticContext = Mockito.mock(StatisticsContext.class);
+<<<<<<< HEAD
+=======
+        when(statisticContext.gainDeviceContext()).thenReturn(mockedDeviceContext);
+        when(statisticContext.gainDeviceState()).thenReturn(mockedDeviceState);
+>>>>>>> 51a2612... 7826
 
         getContextsMap(statisticsManager).put(deviceInfo, statisticContext);
 
@@ -190,7 +198,11 @@ public class StatisticsManagerImplTest {
                 .changeStatisticsWorkMode(changeStatisticsWorkModeInputBld.build());
 
         checkWorkModeChangeOutcome(workMode);
+<<<<<<< HEAD
         verify(statisticContext).disableGathering();
+=======
+        verify(statisticContext).stopGatheringData();
+>>>>>>> 51a2612... 7826
     }
 
     private static void checkWorkModeChangeOutcome(Future<RpcResult<Void>> workMode)
@@ -207,6 +219,10 @@ public class StatisticsManagerImplTest {
      */
     @Test
     public void testChangeStatisticsWorkMode2() throws Exception {
+<<<<<<< HEAD
+=======
+        final Timeout pollTimeout = Mockito.mock(Timeout.class);
+>>>>>>> 51a2612... 7826
         final StatisticsContext statisticContext = Mockito.mock(StatisticsContext.class);
 
         getContextsMap(statisticsManager).put(deviceInfo, statisticContext);
@@ -219,7 +235,11 @@ public class StatisticsManagerImplTest {
             .changeStatisticsWorkMode(changeStatisticsWorkModeInputBld.build());
         checkWorkModeChangeOutcome(workMode);
 
+<<<<<<< HEAD
         verify(statisticContext).disableGathering();
+=======
+        verify(statisticContext).stopGatheringData();
+>>>>>>> 51a2612... 7826
     }
 
     /**
@@ -230,10 +250,20 @@ public class StatisticsManagerImplTest {
      */
     @Test
     public void testChangeStatisticsWorkMode3() throws Exception {
+<<<<<<< HEAD
+=======
+        final Timeout pollTimeout = Mockito.mock(Timeout.class);
+>>>>>>> 51a2612... 7826
         final StatisticsContext statisticContext = Mockito.mock(StatisticsContext.class);
 
         getContextsMap(statisticsManager).put(deviceInfo, statisticContext);
 
+<<<<<<< HEAD
+=======
+        when(statisticContext.gainDeviceContext()).thenReturn(mockedDeviceContext);
+        when(statisticContext.gainDeviceState()).thenReturn(mockedDeviceState);
+
+>>>>>>> 51a2612... 7826
         final ChangeStatisticsWorkModeInputBuilder changeStatisticsWorkModeInputBld =
                 new ChangeStatisticsWorkModeInputBuilder()
                         .setMode(StatisticsWorkMode.FULLYDISABLED);
@@ -250,8 +280,13 @@ public class StatisticsManagerImplTest {
                 changeStatisticsWorkModeInputBld.build());
         checkWorkModeChangeOutcome(workMode);
 
+<<<<<<< HEAD
         verify(statisticContext).enableGathering();
     }
+=======
+        verify(statisticContext).stopGatheringData();
+     }
+>>>>>>> 51a2612... 7826
 
     @Test
     public void testClose() throws Exception {
