@@ -12,6 +12,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -141,8 +142,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final ItemLifeCycleKeeper flowLifeCycleKeeper;
     private final MessageTranslator<PortGrouping, FlowCapableNodeConnector> portStatusTranslator;
     private final MessageTranslator<PacketInMessage, PacketReceived> packetInTranslator;
-    private final MessageTranslator<FlowRemoved, org.opendaylight.yang.gen.v1.urn.opendaylight
-            .flow.service.rev130819.FlowRemoved> flowRemovedTranslator;
+    private final MessageTranslator<FlowRemoved, org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service
+            .rev130819.FlowRemoved>
+            flowRemovedTranslator;
     private final TranslatorLibrary translatorLibrary;
     private final ItemLifeCycleRegistry itemLifeCycleSourceRegistry;
     private final ConvertorExecutor convertorExecutor;
@@ -165,17 +167,12 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private ExtensionConverterProvider extensionConverterProvider;
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
 
-    DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
-                      @Nonnull final DataBroker dataBroker,
-                      @Nonnull final MessageSpy messageSpy,
-                      @Nonnull final TranslatorLibrary translatorLibrary,
-                      final ConvertorExecutor convertorExecutor,
-                      final boolean skipTableFeatures,
-                      final HashedWheelTimer hashedWheelTimer,
-                      final boolean useSingleLayerSerialization,
+    DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext, @Nonnull final DataBroker dataBroker,
+                      @Nonnull final MessageSpy messageSpy, @Nonnull final TranslatorLibrary translatorLibrary,
+                      final ConvertorExecutor convertorExecutor, final boolean skipTableFeatures,
+                      final HashedWheelTimer hashedWheelTimer, final boolean useSingleLayerSerialization,
                       final DeviceInitializerProvider deviceInitializerProvider,
-                      final boolean isFlowRemovedNotificationOn,
-                      final boolean switchFeaturesMandatory) {
+                      final boolean isFlowRemovedNotificationOn, final boolean switchFeaturesMandatory) {
 
         this.primaryConnectionContext = primaryConnectionContext;
         this.deviceInfo = primaryConnectionContext.getDeviceInfo();
@@ -191,14 +188,16 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 /*initial*/ LOW_WATERMARK, /*initial*/HIGH_WATERMARK, this.messageSpy, REJECTED_DRAIN_FACTOR);
 
         this.translatorLibrary = translatorLibrary;
-        this.portStatusTranslator = translatorLibrary.lookupTranslator(
-                new TranslatorKey(deviceInfo.getVersion(), PortGrouping.class.getName()));
-        this.packetInTranslator = translatorLibrary.lookupTranslator(
-                new TranslatorKey(deviceInfo.getVersion(), org.opendaylight.yang.gen.v1.urn.opendaylight.openflow
-                        .protocol.rev130731
-                        .PacketIn.class.getName()));
-        this.flowRemovedTranslator = translatorLibrary.lookupTranslator(
-                new TranslatorKey(deviceInfo.getVersion(), FlowRemoved.class.getName()));
+        this.portStatusTranslator = translatorLibrary
+                .lookupTranslator(new TranslatorKey(deviceInfo.getVersion(), PortGrouping.class.getName()));
+        this.packetInTranslator = translatorLibrary.lookupTranslator(new TranslatorKey(deviceInfo.getVersion(),
+                                                                                       org.opendaylight.yang.gen
+                                                                                               .v1.urn.opendaylight
+                                                                                               .openflow.protocol
+                                                                                               .rev130731.PacketIn.class
+                                                                                               .getName()));
+        this.flowRemovedTranslator = translatorLibrary
+                .lookupTranslator(new TranslatorKey(deviceInfo.getVersion(), FlowRemoved.class.getName()));
 
         this.itemLifeCycleSourceRegistry = new ItemLifeCycleRegistryImpl();
         this.flowLifeCycleKeeper = new ItemLifeCycleSourceImpl();
@@ -237,8 +236,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
-                                                          final InstanceIdentifier<T> path,
-                                                          final T data) {
+                                                          final InstanceIdentifier<T> path, final T data) {
         if (initialized.get()) {
             transactionChainManager.writeToTransaction(store, path, data, false);
         }
@@ -288,27 +286,24 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public void processReply(final OfHeader ofHeader) {
-        messageSpy.spyMessage(
-                ofHeader.getImplementedInterface(),
-                (ofHeader instanceof Error)
-                        ? MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_FAILURE
-                        : MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_SUCCESS);
+        messageSpy.spyMessage(ofHeader.getImplementedInterface(),
+                              (ofHeader instanceof Error) ? MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_FAILURE
+                                      : MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_SUCCESS);
     }
 
     @Override
     public void processReply(final Xid xid, final List<? extends OfHeader> ofHeaderList) {
-        ofHeaderList.forEach(header -> messageSpy.spyMessage(
-                header.getImplementedInterface(),
-                (header instanceof Error)
-                        ? MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_FAILURE
-                        : MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_SUCCESS));
+        ofHeaderList.forEach(header -> messageSpy.spyMessage(header.getImplementedInterface(),
+                                                             (header instanceof Error) ? MessageSpy.StatisticsGroup
+                                                                     .FROM_SWITCH_PUBLISHED_FAILURE : MessageSpy
+                                                                     .StatisticsGroup.FROM_SWITCH_PUBLISHED_SUCCESS));
     }
 
     @Override
     public void processFlowRemovedMessage(final FlowRemoved flowRemoved) {
         //1. translate to general flow (table, priority, match, cookie)
-        final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved flowRemovedNotification =
-                flowRemovedTranslator.translate(flowRemoved, deviceInfo, null);
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved flowRemovedNotification
+                = flowRemovedTranslator.translate(flowRemoved, deviceInfo, null);
 
         if (isFlowRemovedNotificationOn) {
             // Trigger off a notification
@@ -318,22 +313,21 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         final ItemLifecycleListener itemLifecycleListener = flowLifeCycleKeeper.getItemLifecycleListener();
         if (itemLifecycleListener != null) {
             //2. create registry key
-            final FlowRegistryKey flowRegKey = FlowRegistryKeyFactory.create(getDeviceInfo().getVersion(),
-                    flowRemovedNotification);
+            final FlowRegistryKey flowRegKey = FlowRegistryKeyFactory
+                    .create(getDeviceInfo().getVersion(), flowRemovedNotification);
             //3. lookup flowId
             final FlowDescriptor flowDescriptor = deviceFlowRegistry.retrieveDescriptor(flowRegKey);
             //4. if flowId present:
             if (flowDescriptor != null) {
                 // a) construct flow path
                 final KeyedInstanceIdentifier<Flow, FlowKey> flowPath = getDeviceInfo().getNodeInstanceIdentifier()
-                        .augmentation(FlowCapableNode.class)
-                        .child(Table.class, flowDescriptor.getTableKey())
+                        .augmentation(FlowCapableNode.class).child(Table.class, flowDescriptor.getTableKey())
                         .child(Flow.class, new FlowKey(flowDescriptor.getFlowId()));
                 // b) notify listener
                 itemLifecycleListener.onRemoved(flowPath);
             } else {
-                LOG.debug("flow id not found: nodeId={} tableId={}, priority={}",
-                        getDeviceInfo().getNodeId(), flowRegKey.getTableId(), flowRemovedNotification.getPriority());
+                LOG.debug("flow id not found: nodeId={} tableId={}, priority={}", getDeviceInfo().getNodeId(),
+                          flowRegKey.getTableId(), flowRemovedNotification.getPriority());
             }
         }
     }
@@ -341,16 +335,16 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     @SuppressWarnings("checkstyle:IllegalCatch")
     public void processPortStatusMessage(final PortStatusMessage portStatus) {
-        messageSpy.spyMessage(portStatus.getImplementedInterface(), MessageSpy.StatisticsGroup
-                .FROM_SWITCH_PUBLISHED_SUCCESS);
+        messageSpy.spyMessage(portStatus.getImplementedInterface(),
+                              MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_SUCCESS);
 
         if (initialized.get()) {
             try {
                 writePortStatusMessage(portStatus);
                 submitTransaction();
             } catch (final Exception e) {
-                LOG.warn("Error processing port status message for port {} on device {}",
-                        portStatus.getPortNo(), getDeviceInfo(), e);
+                LOG.warn("Error processing port status message for port {} on device {}", portStatus.getPortNo(),
+                         getDeviceInfo(), e);
             }
         } else if (!hasState.get()) {
             primaryConnectionContext.handlePortStatusMessage(portStatus);
@@ -361,23 +355,28 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         final FlowCapableNodeConnector flowCapableNodeConnector = portStatusTranslator
                 .translate(portStatusMessage, getDeviceInfo(), null);
 
-        final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector = getDeviceInfo()
+        final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector =
+            getDeviceInfo()
                 .getNodeInstanceIdentifier()
-                .child(NodeConnector.class, new NodeConnectorKey(InventoryDataServiceUtil
-                        .nodeConnectorIdfromDatapathPortNo(
-                                deviceInfo.getDatapathId(),
-                                portStatusMessage.getPortNo(),
-                                OpenflowVersion.get(deviceInfo.getVersion()))));
+                .child(NodeConnector.class,
+                   new NodeConnectorKey(InventoryDataServiceUtil
+                                            .nodeConnectorIdfromDatapathPortNo(deviceInfo
+                                                                                       .getDatapathId(),
+                                                                               portStatusMessage
+                                                                                       .getPortNo(),
+                                                                               OpenflowVersion
+                                                                                       .get(deviceInfo
+                                                                                                    .getVersion()))));
 
-        if (PortReason.OFPPRADD.equals(portStatusMessage.getReason())
-                || PortReason.OFPPRMODIFY.equals(portStatusMessage.getReason())) {
+        if (PortReason.OFPPRADD.equals(portStatusMessage.getReason()) || PortReason.OFPPRMODIFY
+                .equals(portStatusMessage.getReason())) {
             // because of ADD status node connector has to be created
-            writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector, new NodeConnectorBuilder()
-                    .setKey(iiToNodeConnector.getKey())
-                    .addAugmentation(FlowCapableNodeConnectorStatisticsData.class, new
-                            FlowCapableNodeConnectorStatisticsDataBuilder().build())
-                    .addAugmentation(FlowCapableNodeConnector.class, flowCapableNodeConnector)
-                    .build());
+            writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector,
+                               new NodeConnectorBuilder().setKey(iiToNodeConnector.getKey())
+                                       .addAugmentation(FlowCapableNodeConnectorStatisticsData.class,
+                                                        new FlowCapableNodeConnectorStatisticsDataBuilder().build())
+                                       .addAugmentation(FlowCapableNodeConnector.class, flowCapableNodeConnector)
+                                       .build());
         } else if (PortReason.OFPPRDELETE.equals(portStatusMessage.getReason())) {
             addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector);
         }
@@ -389,8 +388,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         handlePacketInMessage(packetReceived, packetInMessage.getImplementedInterface(), packetReceived.getMatch());
     }
 
-    private void handlePacketInMessage(final PacketIn packetIn,
-                                       final Class<?> implementedInterface,
+    private void handlePacketInMessage(final PacketIn packetIn, final Class<?> implementedInterface,
                                        final Match match) {
         messageSpy.spyMessage(implementedInterface, MessageSpy.StatisticsGroup.FROM_SWITCH);
         final ConnectionAdapter connectionAdapter = getPrimaryConnectionContext().getConnectionAdapter();
@@ -404,18 +402,12 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         final OpenflowVersion openflowVersion = OpenflowVersion.get(deviceInfo.getVersion());
 
         // Try to get ingress from match
-        final NodeConnectorRef nodeConnectorRef = Objects.nonNull(packetIn.getIngress())
-                ? packetIn.getIngress() : Optional.ofNullable(match)
-                .map(Match::getInPort)
+        final NodeConnectorRef nodeConnectorRef = Objects.nonNull(packetIn.getIngress()) ? packetIn
+                .getIngress() : Optional.ofNullable(match).map(Match::getInPort)
                 .map(nodeConnectorId -> InventoryDataServiceUtil
-                        .portNumberfromNodeConnectorId(
-                                openflowVersion,
-                                nodeConnectorId))
+                        .portNumberfromNodeConnectorId(openflowVersion, nodeConnectorId))
                 .map(portNumber -> InventoryDataServiceUtil
-                        .nodeConnectorRefFromDatapathIdPortno(
-                                deviceInfo.getDatapathId(),
-                                portNumber,
-                                openflowVersion))
+                        .nodeConnectorRefFromDatapathIdPortno(deviceInfo.getDatapathId(), portNumber, openflowVersion))
                 .orElse(null);
 
         messageSpy.spyMessage(implementedInterface, MessageSpy.StatisticsGroup.FROM_SWITCH_TRANSLATE_OUT_SUCCESS);
@@ -423,18 +415,18 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         if (!packetInLimiter.acquirePermit()) {
             LOG.debug("Packet limited");
             // TODO: save packet into emergency slot if possible
-            messageSpy.spyMessage(implementedInterface, MessageSpy.StatisticsGroup
-                    .FROM_SWITCH_PACKET_IN_LIMIT_REACHED_AND_DROPPED);
+            messageSpy.spyMessage(implementedInterface,
+                                  MessageSpy.StatisticsGroup.FROM_SWITCH_PACKET_IN_LIMIT_REACHED_AND_DROPPED);
             return;
         }
 
-        final ListenableFuture<?> offerNotification = notificationPublishService
-                .offerNotification(new PacketReceivedBuilder(packetIn)
-                        .setIngress(nodeConnectorRef)
-                        .setMatch(MatchUtil.transformMatch(match,
-                                org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received
-                                        .Match.class))
-                        .build());
+        final ListenableFuture<?> offerNotification = notificationPublishService.offerNotification(
+            new PacketReceivedBuilder(packetIn)
+                    .setIngress(nodeConnectorRef).setMatch(MatchUtil
+                                       .transformMatch(match,
+                                                       org.opendaylight.yang.gen.v1.urn.opendaylight
+                                                               .packet.service.rev130709
+                                                               .packet.received.Match.class)).build());
 
         if (NotificationPublishService.REJECTED.equals(offerNotification)) {
             LOG.debug("notification offer rejected");
@@ -453,8 +445,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
             @Override
             public void onFailure(final Throwable throwable) {
-                messageSpy.spyMessage(implementedInterface, MessageSpy.StatisticsGroup
-                        .FROM_SWITCH_NOTIFICATION_REJECTED);
+                messageSpy
+                        .spyMessage(implementedInterface, MessageSpy.StatisticsGroup.FROM_SWITCH_NOTIFICATION_REJECTED);
                 LOG.debug("notification offer failed: {}", throwable.getMessage());
                 LOG.trace("notification offer failed..", throwable);
                 packetInLimiter.releasePermit();
@@ -469,20 +461,20 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         final MessageTypeKey<? extends ExperimenterDataOfChoice> key = new MessageTypeKey<>(
                 getDeviceInfo().getVersion(),
                 (Class<? extends ExperimenterDataOfChoice>) vendorData.getImplementedInterface());
-        final ConvertorMessageFromOFJava<ExperimenterDataOfChoice, MessagePath> messageConverter =
-                extensionConverterProvider.getMessageConverter(key);
+        final ConvertorMessageFromOFJava<ExperimenterDataOfChoice, MessagePath> messageConverter
+                = extensionConverterProvider.getMessageConverter(key);
         if (messageConverter == null) {
             LOG.warn("custom converter for {}[OF:{}] not found",
-                    notification.getExperimenterDataOfChoice().getImplementedInterface(),
-                    getDeviceInfo().getVersion());
+                     notification.getExperimenterDataOfChoice().getImplementedInterface(),
+                     getDeviceInfo().getVersion());
             return;
         }
         // build notification
         final ExperimenterMessageOfChoice messageOfChoice;
         try {
             messageOfChoice = messageConverter.convert(vendorData, MessagePath.MESSAGE_NOTIFICATION);
-            final ExperimenterMessageFromDevBuilder experimenterMessageFromDevBld = new
-                    ExperimenterMessageFromDevBuilder()
+            final ExperimenterMessageFromDevBuilder experimenterMessageFromDevBld
+                    = new ExperimenterMessageFromDevBuilder()
                     .setNode(new NodeRef(getDeviceInfo().getNodeInstanceIdentifier()))
                     .setExperimenterMessageOfChoice(messageOfChoice);
             // publish
@@ -496,11 +488,12 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     public boolean processAlienMessage(final OfHeader message) {
         final Class<? extends DataContainer> implementedInterface = message.getImplementedInterface();
 
-        if (Objects.nonNull(implementedInterface) && org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service
-                .rev130709.PacketInMessage.class.equals(implementedInterface)) {
-            final org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709
-                    .PacketInMessage packetInMessage = org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service
-                    .rev130709.PacketInMessage.class.cast(message);
+        if (Objects.nonNull(implementedInterface)
+                && org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketInMessage.class
+                .equals(implementedInterface)) {
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketInMessage packetInMessage
+                    = org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketInMessage.class
+                    .cast(message);
 
             handlePacketInMessage(packetInMessage, implementedInterface, packetInMessage.getMatch());
             return true;
@@ -530,15 +523,15 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public <T extends OfHeader> MultiMsgCollector<T> getMultiMsgCollector(final RequestContext<List<T>>
-                                                                                      requestContext) {
+    public <T extends OfHeader> MultiMsgCollector<T> getMultiMsgCollector(
+            final RequestContext<List<T>> requestContext) {
         return new MultiMsgCollectorImpl<>(this, requestContext);
     }
 
     @Override
     public void updatePacketInRateLimit(final long upperBound) {
         packetInLimiter.changeWaterMarks((int) (LOW_WATERMARK_FACTOR * upperBound),
-                (int) (HIGH_WATERMARK_FACTOR * upperBound));
+                                         (int) (HIGH_WATERMARK_FACTOR * upperBound));
     }
 
     @Override
@@ -563,9 +556,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public ListenableFuture<Void> closeServiceInstance() {
-        final ListenableFuture<Void> listenableFuture = initialized.get()
-                ? transactionChainManager.deactivateTransactionManager()
-                : Futures.immediateFuture(null);
+        final ListenableFuture<Void> listenableFuture = initialized.get() ? transactionChainManager
+                .deactivateTransactionManager() : Futures.immediateFuture(null);
 
         hashedWheelTimer.newTimeout((timerTask) -> {
             if (!listenableFuture.isDone() && !listenableFuture.isCancelled()) {
@@ -639,42 +631,38 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             portStatusMessages.forEach(this::writePortStatusMessage);
             submitTransaction();
         } catch (final Exception ex) {
-            throw new RuntimeException(String.format("Error processing port status messages from device %s: %s",
-                    deviceInfo.toString(),
-                    ex.toString()));
+            throw new RuntimeException(
+                    String.format("Error processing port status messages from device %s: %s", deviceInfo.toString(),
+                                  ex.toString()), ex);
         }
 
         final Optional<AbstractDeviceInitializer> initializer = deviceInitializerProvider
                 .lookup(deviceInfo.getVersion());
 
         if (initializer.isPresent()) {
-            final Future<Void> initialize = initializer
-                    .get()
+            final Future<Void> initialize = initializer.get()
                     .initialize(this, switchFeaturesMandatory, skipTableFeatures, writerProvider, convertorExecutor);
 
             try {
                 initialize.get(DEVICE_INIT_TIMEOUT, TimeUnit.MILLISECONDS);
             } catch (TimeoutException ex) {
                 initialize.cancel(true);
-                throw new RuntimeException(String.format("Failed to initialize device %s in %ss: %s",
-                        deviceInfo.toString(),
-                        String.valueOf(DEVICE_INIT_TIMEOUT / 1000),
-                        ex.toString()));
+                throw new RuntimeException(
+                        String.format("Failed to initialize device %s in %ss: %s", deviceInfo.toString(),
+                                      String.valueOf(DEVICE_INIT_TIMEOUT / 1000), ex.toString()), ex);
             } catch (ExecutionException | InterruptedException ex) {
-                throw new RuntimeException(String.format("Device %s cannot be initialized: %s",
-                        deviceInfo.toString(),
-                        ex.toString()));
+                throw new RuntimeException(
+                        String.format("Device %s cannot be initialized: %s", deviceInfo.toString(), ex));
             }
         } else {
-            throw new RuntimeException(String.format("Unsupported version %s for device %s",
-                    deviceInfo.getVersion(),
-                    deviceInfo.toString()));
+            throw new RuntimeException(String.format("Unsupported version %s for device %s", deviceInfo.getVersion(),
+                                                     deviceInfo.toString()));
         }
 
-        final ListenableFuture<List<com.google.common.base.Optional<FlowCapableNode>>> deviceFlowRegistryFill =
-                getDeviceFlowRegistry().fill();
+        final ListenableFuture<List<com.google.common.base.Optional<FlowCapableNode>>> deviceFlowRegistryFill
+                = getDeviceFlowRegistry().fill();
         Futures.addCallback(deviceFlowRegistryFill,
-                new DeviceFlowRegistryCallback(deviceFlowRegistryFill, contextChainMastershipWatcher));
+                            new DeviceFlowRegistryCallback(deviceFlowRegistryFill, contextChainMastershipWatcher));
     }
 
     @VisibleForTesting
@@ -685,7 +673,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             }
             this.transactionChainManager = new TransactionChainManager(dataBroker, deviceInfo.getNodeId().getValue());
             this.deviceFlowRegistry = new DeviceFlowRegistryImpl(deviceInfo.getVersion(), dataBroker,
-                    deviceInfo.getNodeInstanceIdentifier());
+                                                                 deviceInfo.getNodeInstanceIdentifier());
             this.deviceGroupRegistry = new DeviceGroupRegistryImpl();
             this.deviceMeterRegistry = new DeviceMeterRegistryImpl();
         }
@@ -733,27 +721,18 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 // Count all flows we read from datastore for debugging purposes.
                 // This number do not always represent how many flows were actually added
                 // to DeviceFlowRegistry, because of possible duplicates.
-                long flowCount = Optional.ofNullable(result)
-                        .map(Collections::singleton)
-                        .orElse(Collections.emptySet())
-                        .stream()
-                        .flatMap(Collection::stream)
-                        .filter(Objects::nonNull)
+                long flowCount = Optional.ofNullable(result).map(Collections::singleton).orElse(Collections.emptySet())
+                        .stream().flatMap(Collection::stream).filter(Objects::nonNull)
                         .flatMap(flowCapableNodeOptional -> flowCapableNodeOptional.asSet().stream())
-                        .filter(Objects::nonNull)
-                        .filter(flowCapableNode -> Objects.nonNull(flowCapableNode.getTable()))
-                        .flatMap(flowCapableNode -> flowCapableNode.getTable().stream())
-                        .filter(Objects::nonNull)
-                        .filter(table -> Objects.nonNull(table.getFlow()))
-                        .flatMap(table -> table.getFlow().stream())
-                        .filter(Objects::nonNull)
-                        .count();
+                        .filter(Objects::nonNull).filter(flowCapableNode -> Objects.nonNull(flowCapableNode.getTable()))
+                        .flatMap(flowCapableNode -> flowCapableNode.getTable().stream()).filter(Objects::nonNull)
+                        .filter(table -> Objects.nonNull(table.getFlow())).flatMap(table -> table.getFlow().stream())
+                        .filter(Objects::nonNull).count();
 
-                LOG.debug("Finished filling flow registry with {} flows for node: {}", flowCount, deviceInfo
-                        );
+                LOG.debug("Finished filling flow registry with {} flows for node: {}", flowCount, deviceInfo);
             }
-            this.contextChainMastershipWatcher.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState
-                    .INITIAL_FLOW_REGISTRY_FILL);
+            this.contextChainMastershipWatcher
+                    .onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_FLOW_REGISTRY_FILL);
         }
 
         @Override
@@ -763,14 +742,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     LOG.debug("Cancelled filling flow registry with flows for node: {}", deviceInfo);
                 }
             } else {
-                LOG.warn("Failed filling flow registry with flows for node: {} with exception: {}", deviceInfo
-                        , throwable);
+                LOG.warn("Failed filling flow registry with flows for node: {} with exception: {}", deviceInfo,
+                         throwable);
             }
-            contextChainMastershipWatcher.onNotAbleToStartMastership(
-                    deviceInfo,
-                    "Was not able to fill flow registry on device",
-                    false);
+            contextChainMastershipWatcher
+                    .onNotAbleToStartMastership(deviceInfo, "Was not able to fill flow registry on device", false);
         }
     }
-
 }

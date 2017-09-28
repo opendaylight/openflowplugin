@@ -25,7 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 /**
  * Pulled out group stats to notification transformation.
  */
-public class GroupStatisticsToNotificationTransformer {
+public final class GroupStatisticsToNotificationTransformer {
 
     private GroupStatisticsToNotificationTransformer() {
         // Hide implicit constructor

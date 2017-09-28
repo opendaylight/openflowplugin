@@ -90,8 +90,9 @@ public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
                         .opendaylight.group.types.rev131018.group.statistics.reply.GroupStats.class);
         when(stat.getGroupId()).thenReturn(new GroupId(GROUP_NO));
 
-        final List<org.opendaylight.yang.gen.v1.urn
-                .opendaylight.group.types.rev131018.group.statistics.reply.GroupStats> stats = Collections.singletonList(stat);
+        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
+                .GroupStats>
+                stats = Collections.singletonList(stat);
         final GetGroupStatisticsOutput output = mock(GetGroupStatisticsOutput.class);
         when(output.getGroupStats()).thenReturn(stats);
 

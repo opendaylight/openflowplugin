@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.impl.util;
 
 import com.google.common.base.Function;
-import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -52,11 +51,11 @@ public final class BarrierUtil {
 
         // store input result and append barrier
         final ListenableFuture<RpcResult<Void>> barrierResult = Futures.transformAsync(input,
-                interInput -> {
-                    resultPair.setLeft(interInput);
-                    final SendBarrierInput barrierInput = createSendBarrierInput(nodeRef);
-                    return JdkFutureAdapters.listenInPoolThread(transactionService.sendBarrier(barrierInput));
-                });
+            interInput -> {
+                resultPair.setLeft(interInput);
+                final SendBarrierInput barrierInput = createSendBarrierInput(nodeRef);
+                return JdkFutureAdapters.listenInPoolThread(transactionService.sendBarrier(barrierInput));
+            });
         // store barrier result and return initiated pair
         final ListenableFuture<Pair<RpcResult<T>, RpcResult<Void>>> compositeResult = Futures.transform(
                 barrierResult, new Function<RpcResult<Void>, Pair<RpcResult<T>, RpcResult<Void>>>() {

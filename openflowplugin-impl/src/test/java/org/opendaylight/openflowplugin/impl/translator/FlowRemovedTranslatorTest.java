@@ -66,7 +66,7 @@ public class FlowRemovedTranslatorTest {
 
     @Before
     public void setUp() throws Exception {
-        KeyedInstanceIdentifier<Node, NodeKey> nodeId = InstanceIdentifier.create(Nodes.class)
+        final KeyedInstanceIdentifier<Node, NodeKey> nodeId = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId("dummyNodeId")));
 
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();

@@ -37,7 +37,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DeviceInitializationUtil {
+public final class DeviceInitializationUtil {
     private static final Logger LOG = LoggerFactory.getLogger(DeviceInitializationUtil.class);
 
     private DeviceInitializationUtil() {
