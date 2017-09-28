@@ -201,13 +201,12 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
         if (LOG.isTraceEnabled()) {
             LOG.trace("Removing flow descriptor for flow hash : {}", flowRegistryKey.hashCode());
         }
-
         flowRegistry.remove(flowRegistryKey);
     }
 
     @Override
     public void processMarks() {
-        // Do nothing
+        flowRegistry.keySet().removeAll(flowRegistry.keySet());
     }
 
     @Override
