@@ -61,8 +61,9 @@ public class DeviceGroupRegistryImplTest {
         Assert.assertEquals(0, deviceGroupRegistry.getAllGroupIds().size());
         deviceGroupRegistry.store(groupId);
         Assert.assertEquals(1, deviceGroupRegistry.getAllGroupIds().size());
+        deviceGroupRegistry.addMark(groupId);
         deviceGroupRegistry.processMarks();
-        Assert.assertEquals(1, deviceGroupRegistry.getAllGroupIds().size());
+        Assert.assertEquals(0, deviceGroupRegistry.getAllGroupIds().size());
     }
 
     @Test

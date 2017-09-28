@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -76,10 +76,7 @@ public class SalGroupServiceImpl implements SalGroupService {
             @Override
             public void onSuccess(RpcResult<AddGroupOutput> result) {
                 if (result.isSuccessful()) {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Group add with id={} finished without error", input.getGroupId().getValue());
-                    }
-                    deviceContext.getDeviceGroupRegistry().store(input.getGroupId());
+                    LOG.trace("succesfully added group {} ", input.getGroupId().getValue());
                 } else {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Group add with id={} failed, errors={}", input.getGroupId().getValue(),
@@ -144,7 +141,6 @@ public class SalGroupServiceImpl implements SalGroupService {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Group remove with id={} finished without error", input.getGroupId().getValue());
                     }
-                    removeGroup.getDeviceRegistry().getDeviceGroupRegistry().addMark(input.getGroupId());
                 } else {
                     LOG.warn("Group remove with id={} failed, errors={}", input.getGroupId().getValue(),
                         ErrorUtil.errorsToString(result.getErrors()));
