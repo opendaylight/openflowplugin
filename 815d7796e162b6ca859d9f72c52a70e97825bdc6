@@ -140,6 +140,29 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_cdc03d2d",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/util/ShellUtil.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-10-02T14:29:48Z",
+      "side": 1,
+      "message": "is this ArrayList initilization required?",
+      "range": {
+        "startLine": 33,
+        "startChar": 27,
+        "endLine": 33,
+        "endChar": 45
+      },
+      "revId": "815d7796e162b6ca859d9f72c52a70e97825bdc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_ed8f0174",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/util/ShellUtil.java",
         "patchSetId": 5
@@ -156,6 +179,52 @@
         "startChar": 0,
         "endLine": 34,
         "endChar": 67
+      },
+      "revId": "815d7796e162b6ca859d9f72c52a70e97825bdc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_cd9b1d71",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/util/ShellUtil.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-10-02T14:29:48Z",
+      "side": 1,
+      "message": "not required",
+      "range": {
+        "startLine": 45,
+        "startChar": 73,
+        "endLine": 45,
+        "endChar": 75
+      },
+      "revId": "815d7796e162b6ca859d9f72c52a70e97825bdc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_0d8d3532",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/util/ShellUtil.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-10-02T14:29:48Z",
+      "side": 1,
+      "message": "not required",
+      "range": {
+        "startLine": 55,
+        "startChar": 97,
+        "endLine": 55,
+        "endChar": 99
       },
       "revId": "815d7796e162b6ca859d9f72c52a70e97825bdc6",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
