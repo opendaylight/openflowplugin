@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_30422cae",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/karaf/GetAllDpnsCommandProvider.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-10-02T14:07:53Z",
+      "side": 1,
+      "message": "2017",
+      "range": {
+        "startLine": 2,
+        "startChar": 25,
+        "endLine": 2,
+        "endChar": 35
+      },
+      "revId": "3cd035998c2144f8e9299c9da8e4b4c8cad80b55",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
