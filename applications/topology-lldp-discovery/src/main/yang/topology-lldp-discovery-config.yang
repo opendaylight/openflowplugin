@@ -11,11 +11,28 @@ module topology-lldp-discovery-config {
             "Initial revision.";
     }
 
+    typedef non-zero-uint32-type {
+            type uint32 {
+                range "1..max";
+            }
+        }
+
     container topology-lldp-discovery-config {
         leaf lldp-secure-key {
             description "Provided key will be used to generate LLDP custom security hash";
             type string;
             mandatory true;
         }
+
+       leaf topology-lldp-interval {
+            type non-zero-uint32-type;
+            default 5000;
+        }
+
+       leaf topology-lldp-expiration-interval {
+            type non-zero-uint32-type;
+            default 60000;
+       }
+
     }
 }
