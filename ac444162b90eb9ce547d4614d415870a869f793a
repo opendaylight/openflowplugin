@@ -1,0 +1,188 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a245df4_ad25090c",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/karaf/ShowDpnCommandProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-10-02T14:45:23Z",
+      "side": 1,
+      "message": "keep it same as getAllDpns",
+      "range": {
+        "startLine": 20,
+        "startChar": 18,
+        "endLine": 20,
+        "endChar": 29
+      },
+      "revId": "ac444162b90eb9ce547d4614d415870a869f793a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_8d22c5ff",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/karaf/ShowDpnCommandProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-10-02T14:45:23Z",
+      "side": 1,
+      "message": "dpnId",
+      "range": {
+        "startLine": 27,
+        "startChar": 15,
+        "endLine": 27,
+        "endChar": 19
+      },
+      "revId": "ac444162b90eb9ce547d4614d415870a869f793a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_ed1f01b6",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/karaf/ShowDpnCommandProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-10-02T14:45:23Z",
+      "side": 1,
+      "message": "dpnId \u003d\u003d\u003e change everywhere",
+      "range": {
+        "startLine": 38,
+        "startChar": 20,
+        "endLine": 38,
+        "endChar": 24
+      },
+      "revId": "ac444162b90eb9ce547d4614d415870a869f793a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_4d88cde7",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/karaf/ShowDpnCommandProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-10-02T14:45:23Z",
+      "side": 1,
+      "message": "private",
+      "range": {
+        "startLine": 53,
+        "startChar": 8,
+        "endLine": 53,
+        "endChar": 14
+      },
+      "revId": "ac444162b90eb9ce547d4614d415870a869f793a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_6d5af184",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/karaf/ShowDpnCommandProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-10-02T14:45:23Z",
+      "side": 1,
+      "message": "you can keep it in single line",
+      "range": {
+        "startLine": 55,
+        "startChar": 16,
+        "endLine": 56,
+        "endChar": 59
+      },
+      "revId": "ac444162b90eb9ce547d4614d415870a869f793a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_ad6ce937",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/karaf/ShowDpnCommandProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-10-02T14:45:23Z",
+      "side": 1,
+      "message": "private",
+      "range": {
+        "startLine": 61,
+        "startChar": 8,
+        "endLine": 61,
+        "endChar": 14
+      },
+      "revId": "ac444162b90eb9ce547d4614d415870a869f793a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_8d692528",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/karaf/ShowDpnCommandProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-10-02T14:45:23Z",
+      "side": 1,
+      "message": "private",
+      "range": {
+        "startLine": 65,
+        "startChar": 8,
+        "endLine": 65,
+        "endChar": 14
+      },
+      "revId": "ac444162b90eb9ce547d4614d415870a869f793a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_2d60f934",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/karaf/ShowDpnCommandProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-10-02T14:45:23Z",
+      "side": 1,
+      "message": "change the variable name, lport not applicable here",
+      "range": {
+        "startLine": 72,
+        "startChar": 23,
+        "endLine": 72,
+        "endChar": 31
+      },
+      "revId": "ac444162b90eb9ce547d4614d415870a869f793a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
