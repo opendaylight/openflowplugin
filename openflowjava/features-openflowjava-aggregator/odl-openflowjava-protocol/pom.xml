@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>single-feature-parent</artifactId>
-        <version>2.0.4</version>
+        <version>2.0.5</version>
         <relativePath/>
     </parent>
 
@@ -25,7 +25,7 @@
         <controller.mdsal.version>1.6.1-SNAPSHOT</controller.mdsal.version>
         <mdsal.version>2.3.1-SNAPSHOT</mdsal.version>
         <mdsal.model.version>0.11.1-SNAPSHOT</mdsal.model.version>
-        <odlparent.netty>2.0.4</odlparent.netty>
+        <odlparent.netty>2.0.5</odlparent.netty>
     </properties>
 
 
@@ -43,8 +43,8 @@
             <!-- Netty -->
             <dependency>
                 <groupId>org.opendaylight.odlparent</groupId>
-                <artifactId>odl-netty-4</artifactId>
-                <version>${odlparent.netty}</version>
+                <artifactId>odlparent-artifacts</artifactId>
+                <version>2.0.5</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
