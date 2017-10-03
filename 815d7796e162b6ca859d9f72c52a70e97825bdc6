@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_16e262d5",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/karaf/Dpn.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-03T05:50:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_ad1fc908",
+      "range": {
+        "startLine": 16,
+        "startChar": 17,
+        "endLine": 16,
+        "endChar": 24
+      },
+      "revId": "815d7796e162b6ca859d9f72c52a70e97825bdc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_ed19c123",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/karaf/Dpn.java",
         "patchSetId": 5
@@ -36,6 +60,30 @@
       "writtenOn": "2017-10-02T14:07:53Z",
       "side": 1,
       "message": "dpnName - same everywhere",
+      "range": {
+        "startLine": 17,
+        "startChar": 19,
+        "endLine": 17,
+        "endChar": 29
+      },
+      "revId": "815d7796e162b6ca859d9f72c52a70e97825bdc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_76e75ee5",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/karaf/Dpn.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-03T05:50:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_ed19c123",
       "range": {
         "startLine": 17,
         "startChar": 19,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_56ecdac7",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/karaf/Dpn.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-03T05:50:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_2dd3d939",
+      "range": {
+        "startLine": 20,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 16
+      },
+      "revId": "815d7796e162b6ca859d9f72c52a70e97825bdc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_6dddd142",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/karaf/Dpn.java",
         "patchSetId": 5
@@ -82,6 +154,30 @@
       "writtenOn": "2017-10-02T14:07:53Z",
       "side": 1,
       "message": "getDpnId",
+      "range": {
+        "startLine": 25,
+        "startChar": 16,
+        "endLine": 25,
+        "endChar": 23
+      },
+      "revId": "815d7796e162b6ca859d9f72c52a70e97825bdc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_b6d0b6f8",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/karaf/Dpn.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-03T05:50:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_6dddd142",
       "range": {
         "startLine": 25,
         "startChar": 16,
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_96cdb260",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/karaf/GetAllDpnsCommandProvider.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-03T05:50:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_ade6a914",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 46
+      },
+      "revId": "815d7796e162b6ca859d9f72c52a70e97825bdc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_8de3e504",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/karaf/GetAllDpnsCommandProvider.java",
         "patchSetId": 5
@@ -128,6 +248,30 @@
       "writtenOn": "2017-10-02T14:07:53Z",
       "side": 1,
       "message": "add no. of dpns",
+      "range": {
+        "startLine": 38,
+        "startChar": 0,
+        "endLine": 38,
+        "endChar": 47
+      },
+      "revId": "815d7796e162b6ca859d9f72c52a70e97825bdc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_f6da2e16",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/karaf/GetAllDpnsCommandProvider.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-03T05:50:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_8de3e504",
       "range": {
         "startLine": 38,
         "startChar": 0,
@@ -163,6 +307,30 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_56033a73",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/util/ShellUtil.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-03T05:50:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_cdc03d2d",
+      "range": {
+        "startLine": 33,
+        "startChar": 27,
+        "endLine": 33,
+        "endChar": 45
+      },
+      "revId": "815d7796e162b6ca859d9f72c52a70e97825bdc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_ed8f0174",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/util/ShellUtil.java",
         "patchSetId": 5
@@ -174,6 +342,30 @@
       "writtenOn": "2017-10-02T14:07:53Z",
       "side": 1,
       "message": "ReadOnlyTransaction should be sufficient",
+      "range": {
+        "startLine": 34,
+        "startChar": 0,
+        "endLine": 34,
+        "endChar": 67
+      },
+      "revId": "815d7796e162b6ca859d9f72c52a70e97825bdc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_d6d72aec",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/util/ShellUtil.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-03T05:50:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_ed8f0174",
       "range": {
         "startLine": 34,
         "startChar": 0,
@@ -209,6 +401,30 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_3604c67d",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/util/ShellUtil.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-03T05:50:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_cd9b1d71",
+      "range": {
+        "startLine": 45,
+        "startChar": 73,
+        "endLine": 45,
+        "endChar": 75
+      },
+      "revId": "815d7796e162b6ca859d9f72c52a70e97825bdc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_0d8d3532",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/util/ShellUtil.java",
         "patchSetId": 5
@@ -232,6 +448,30 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_1609c295",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/util/ShellUtil.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-03T05:50:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_0d8d3532",
+      "range": {
+        "startLine": 55,
+        "startChar": 97,
+        "endLine": 55,
+        "endChar": 99
+      },
+      "revId": "815d7796e162b6ca859d9f72c52a70e97825bdc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_0dbff5d1",
         "filename": "openflowplugin-impl/src/main/resources/org/opendaylight/blueprint/commands.xml",
         "patchSetId": 5
@@ -243,6 +483,30 @@
       "writtenOn": "2017-10-02T14:07:53Z",
       "side": 1,
       "message": "give space after reference",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 86
+      },
+      "revId": "815d7796e162b6ca859d9f72c52a70e97825bdc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_76fe3e6d",
+        "filename": "openflowplugin-impl/src/main/resources/org/opendaylight/blueprint/commands.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-03T05:50:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_0dbff5d1",
       "range": {
         "startLine": 13,
         "startChar": 0,
