@@ -19,6 +19,48 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_99cf99b0",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/action/ConntrackCodec.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 5444
+      },
+      "writtenOn": "2017-10-05T05:35:41Z",
+      "side": 1,
+      "message": "Done. Thanks.",
+      "parentUuid": "9a245df4_b63ef627",
+      "revId": "1fa0041fead588b9f22c427cab0c5eb771457a96",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_f9c33588",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/action/ConntrackCodec.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 5444
+      },
+      "writtenOn": "2017-10-05T05:35:41Z",
+      "side": 1,
+      "message": "Done. Thanks.",
+      "parentUuid": "9a245df4_7f728ae6",
+      "range": {
+        "startLine": 169,
+        "startChar": 39,
+        "endLine": 169,
+        "endChar": 43
+      },
+      "revId": "1fa0041fead588b9f22c427cab0c5eb771457a96",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_6474c39c",
         "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/action/ConntrackCodec.java",
         "patchSetId": 3
@@ -36,6 +78,24 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_593c0194",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/action/ConntrackCodec.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 207,
+      "author": {
+        "id": 5444
+      },
+      "writtenOn": "2017-10-05T05:35:41Z",
+      "side": 1,
+      "message": "At this buffer index, the difference between NAT and ct_mark is the EXPERIMENTER_VALUE. Hopefully, this is clearer with the introduction of the new method deserializeCtHeaderWithoutSubtype() (see patch 4).",
+      "parentUuid": "9a245df4_6474c39c",
+      "revId": "1fa0041fead588b9f22c427cab0c5eb771457a96",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_e4aef3e6",
         "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/action/ConntrackCodec.java",
         "patchSetId": 3
@@ -47,6 +107,24 @@
       "writtenOn": "2017-10-04T11:41:48Z",
       "side": 1,
       "message": "Can use deserializeCtHeader if possible.",
+      "revId": "1fa0041fead588b9f22c427cab0c5eb771457a96",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_b941bd0d",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/action/ConntrackCodec.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 250,
+      "author": {
+        "id": 5444
+      },
+      "writtenOn": "2017-10-05T05:35:41Z",
+      "side": 1,
+      "message": "Done. Thanks.",
+      "parentUuid": "9a245df4_e4aef3e6",
       "revId": "1fa0041fead588b9f22c427cab0c5eb771457a96",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
