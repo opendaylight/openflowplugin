@@ -35,7 +35,6 @@ public class RpcManagerImpl implements RpcManager {
     private final ConvertorExecutor convertorExecutor;
     private final NotificationPublishService notificationPublishService;
 
-
     public RpcManagerImpl(final OpenflowProviderConfig config,
                           final RpcProviderRegistry rpcProviderRegistry,
                           final ExtensionConverterProvider extensionConverterProvider,
@@ -57,12 +56,12 @@ public class RpcManagerImpl implements RpcManager {
     }
 
     /**
-     * This method is only for testing
+     * This method is only for testing.
      */
     @VisibleForTesting
     void addRecordToContexts(DeviceInfo deviceInfo, RpcContext rpcContexts) {
-        if(!contexts.containsKey(deviceInfo)) {
-            this.contexts.put(deviceInfo,rpcContexts);
+        if (!contexts.containsKey(deviceInfo)) {
+            this.contexts.put(deviceInfo, rpcContexts);
         }
     }
 
