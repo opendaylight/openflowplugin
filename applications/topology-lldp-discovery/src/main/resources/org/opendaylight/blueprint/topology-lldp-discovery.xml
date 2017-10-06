@@ -1,25 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
            xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
         odl:use-default-for-reference-types="true">
 
   <reference id="notificationService" interface="org.opendaylight.controller.sal.binding.api.NotificationProviderService"/>
-
   <odl:clustered-app-config id="topologyLLDPConfig"
-      binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.lldp.discovery.config.rev160511.TopologyLldpDiscoveryConfig">
-    <odl:default-config><![CDATA[
+                              binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.lldp.discovery.config.rev160511.TopologyLldpDiscoveryConfig">
+        <odl:default-config><![CDATA[
       <topology-lldp-discovery-config xmlns="urn:opendaylight:params:xml:ns:yang:topology-lldp-discovery:config">
         <lldp-secure-key>aa9251f8-c7c0-4322-b8d6-c3a84593bda3</lldp-secure-key>
       </topology-lldp-discovery-config>
     ]]></odl:default-config>
   </odl:clustered-app-config>
 
+  <cm:property-placeholder persistent-id="org.opendaylight.openflowplugin"
+                           update-strategy="none">
+    <cm:default-properties>
+      <!-- Interval to check LLDP links   -->
+      <cm:property name="topology-lldp-interval" value="5000"/>
+      <!-- Expiration interval for aging out links -->
+      <cm:property name="topology-lldp-expiration-interval" value="60000"/>
+    </cm:default-properties>
+  </cm:property-placeholder>
+
   <bean id="lldpLinkAger" class="org.opendaylight.openflowplugin.applications.topology.lldp.LLDPLinkAger"
           destroy-method="close">
-    <!-- Interval to send LLDP (five seconds) -->
-    <argument value="5000"/>
-    <!-- Expiration interval for aging out links (3 * the interval)  -->
-    <argument value="15000"/>
+    <argument value="${topology-lldp-interval}"/>
+    <argument value="${topology-lldp-expiration-interval}"/>
     <argument ref="notificationService"/>
   </bean>
 
