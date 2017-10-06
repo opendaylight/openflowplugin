@@ -23,7 +23,6 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.openflowplugin.impl.services.sal.SalMetersBatchServiceImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -72,7 +71,8 @@ public class SalMetersBatchServiceImplTest {
 
     public static final NodeId NODE_ID = new NodeId("ut-dummy-node");
     public static final NodeKey NODE_KEY = new NodeKey(NODE_ID);
-    public static final NodeRef NODE_REF = new NodeRef(InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY));
+    public static final NodeRef NODE_REF =
+            new NodeRef(InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY));
 
     @Mock
     private SalMeterService salMeterService;
@@ -150,8 +150,10 @@ public class SalMetersBatchServiceImplTest {
         Assert.assertTrue(resultFuture.isDone());
         Assert.assertFalse(resultFuture.get().isSuccessful());
         Assert.assertEquals(2, resultFuture.get().getResult().getBatchFailedMetersOutput().size());
-        Assert.assertEquals(43L, resultFuture.get().getResult().getBatchFailedMetersOutput().get(0).getMeterId().getValue().longValue());
-        Assert.assertEquals(45L, resultFuture.get().getResult().getBatchFailedMetersOutput().get(1).getMeterId().getValue().longValue());
+        Assert.assertEquals(43L,
+                resultFuture.get().getResult().getBatchFailedMetersOutput().get(0).getMeterId().getValue().longValue());
+        Assert.assertEquals(45L,
+                resultFuture.get().getResult().getBatchFailedMetersOutput().get(1).getMeterId().getValue().longValue());
         Assert.assertEquals(2, resultFuture.get().getErrors().size());
 
 
@@ -199,7 +201,8 @@ public class SalMetersBatchServiceImplTest {
     @Test
     public void testAddMetersBatch_failure() throws Exception {
         Mockito.when(salMeterService.addMeter(Mockito.<AddMeterInput>any()))
-                .thenReturn(RpcResultBuilder.<AddMeterOutput>failed().withError(RpcError.ErrorType.APPLICATION, "ut-groupAddError")
+                .thenReturn(RpcResultBuilder.<AddMeterOutput>failed()
+                        .withError(RpcError.ErrorType.APPLICATION, "ut-groupAddError")
                         .buildFuture());
 
         final AddMetersBatchInput input = new AddMetersBatchInputBuilder()
@@ -215,8 +218,10 @@ public class SalMetersBatchServiceImplTest {
         Assert.assertTrue(resultFuture.isDone());
         Assert.assertFalse(resultFuture.get().isSuccessful());
         Assert.assertEquals(2, resultFuture.get().getResult().getBatchFailedMetersOutput().size());
-        Assert.assertEquals(42L, resultFuture.get().getResult().getBatchFailedMetersOutput().get(0).getMeterId().getValue().longValue());
-        Assert.assertEquals(43L, resultFuture.get().getResult().getBatchFailedMetersOutput().get(1).getMeterId().getValue().longValue());
+        Assert.assertEquals(42L,
+                resultFuture.get().getResult().getBatchFailedMetersOutput().get(0).getMeterId().getValue().longValue());
+        Assert.assertEquals(43L,
+                resultFuture.get().getResult().getBatchFailedMetersOutput().get(1).getMeterId().getValue().longValue());
         Assert.assertEquals(2, resultFuture.get().getErrors().size());
 
 
@@ -262,7 +267,8 @@ public class SalMetersBatchServiceImplTest {
     @Test
     public void testRemoveMetersBatch_failure() throws Exception {
         Mockito.when(salMeterService.removeMeter(Mockito.<RemoveMeterInput>any()))
-                .thenReturn(RpcResultBuilder.<RemoveMeterOutput>failed().withError(RpcError.ErrorType.APPLICATION, "ut-groupRemoveError")
+                .thenReturn(RpcResultBuilder.<RemoveMeterOutput>failed()
+                        .withError(RpcError.ErrorType.APPLICATION, "ut-groupRemoveError")
                         .buildFuture());
 
         final RemoveMetersBatchInput input = new RemoveMetersBatchInputBuilder()
@@ -278,8 +284,10 @@ public class SalMetersBatchServiceImplTest {
         Assert.assertTrue(resultFuture.isDone());
         Assert.assertFalse(resultFuture.get().isSuccessful());
         Assert.assertEquals(2, resultFuture.get().getResult().getBatchFailedMetersOutput().size());
-        Assert.assertEquals(42L, resultFuture.get().getResult().getBatchFailedMetersOutput().get(0).getMeterId().getValue().longValue());
-        Assert.assertEquals(43L, resultFuture.get().getResult().getBatchFailedMetersOutput().get(1).getMeterId().getValue().longValue());
+        Assert.assertEquals(42L,
+                resultFuture.get().getResult().getBatchFailedMetersOutput().get(0).getMeterId().getValue().longValue());
+        Assert.assertEquals(43L,
+                resultFuture.get().getResult().getBatchFailedMetersOutput().get(1).getMeterId().getValue().longValue());
         Assert.assertEquals(2, resultFuture.get().getErrors().size());
 
         final InOrder inOrder = Mockito.inOrder(salMeterService, transactionService);
@@ -307,8 +315,10 @@ public class SalMetersBatchServiceImplTest {
 
     private static BatchUpdateMeters createEmptyBatchUpdateMeter(final long groupIdValue) {
         return new BatchUpdateMetersBuilder()
-                .setOriginalBatchedMeter(new OriginalBatchedMeterBuilder(createEmptyBatchAddMeter(groupIdValue)).build())
-                .setUpdatedBatchedMeter(new UpdatedBatchedMeterBuilder(createEmptyBatchAddMeter(groupIdValue + 1)).build())
+                .setOriginalBatchedMeter(
+                        new OriginalBatchedMeterBuilder(createEmptyBatchAddMeter(groupIdValue)).build())
+                .setUpdatedBatchedMeter(
+                        new UpdatedBatchedMeterBuilder(createEmptyBatchAddMeter(groupIdValue + 1)).build())
                 .build();
     }
 }

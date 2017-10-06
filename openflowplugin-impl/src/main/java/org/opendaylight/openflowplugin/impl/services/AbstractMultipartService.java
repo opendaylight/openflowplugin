@@ -26,7 +26,8 @@ public abstract class AbstractMultipartService<I, T extends OfHeader> extends Ab
     private static final Function<OfHeader, Boolean> ALTERNATE_IS_COMPLETE = message ->
         !(message instanceof MultipartReply) || !((MultipartReply) message).isRequestMore();
 
-    protected AbstractMultipartService(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
+    protected AbstractMultipartService(final RequestContextStack requestContextStack,
+                                       final DeviceContext deviceContext) {
         super(requestContextStack, deviceContext);
     }
 

@@ -77,19 +77,21 @@ public class SingleLayerExperimenterMultipartService extends AbstractExperimente
                             .build())
                         .build());
                 } else {
-                    LOG.warn("OnSuccess, rpc result unsuccessful, multipart response for rpc sendExperimenterMpRequest was unsuccessful.");
-                    future.set(RpcResultBuilder.<SendExperimenterMpRequestOutput>failed().withRpcErrors(result.getErrors()).build());
+                    LOG.warn("OnSuccess, rpc result unsuccessful,"
+                            + " multipart response for rpc sendExperimenterMpRequest was unsuccessful.");
+                    future.set(RpcResultBuilder.<SendExperimenterMpRequestOutput>failed()
+                            .withRpcErrors(result.getErrors()).build());
                 }
             }
 
             @Override
-            public void onFailure(final Throwable t) {
-                LOG.warn("Failure multipart response for Experimenter-Mp request. Exception: {}", t);
-                future.set(RpcResultBuilder.<SendExperimenterMpRequestOutput>failed().withError(ErrorType.RPC, "Future error", t).build());
+            public void onFailure(final Throwable throwable) {
+                LOG.warn("Failure multipart response for Experimenter-Mp request. Exception: {}", throwable);
+                future.set(RpcResultBuilder.<SendExperimenterMpRequestOutput>failed()
+                        .withError(ErrorType.RPC, "Future error", throwable).build());
             }
         });
 
         return future;
     }
-
 }

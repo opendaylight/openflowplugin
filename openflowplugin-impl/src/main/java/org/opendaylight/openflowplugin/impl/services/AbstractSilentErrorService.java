@@ -23,7 +23,9 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 public abstract class AbstractSilentErrorService<I, O extends DataObject>
         extends AbstractSimpleService<I, O> {
 
-    protected AbstractSilentErrorService(RequestContextStack requestContextStack, DeviceContext deviceContext, Class<O> clazz) {
+    protected AbstractSilentErrorService(RequestContextStack requestContextStack,
+                                         DeviceContext deviceContext,
+                                         Class<O> clazz) {
         super(requestContextStack, deviceContext, clazz);
     }
 
@@ -31,9 +33,8 @@ public abstract class AbstractSilentErrorService<I, O extends DataObject>
     public ListenableFuture<RpcResult<O>> handleServiceCall(@Nonnull I input,
                                                             @Nullable final Function<OfHeader, Boolean> isComplete) {
         return Futures.catching(
-                super.handleServiceCall(input, isComplete),
-                Throwable.class,
-                t -> RpcResultBuilder.<O>failed().build());
+            super.handleServiceCall(input, isComplete),
+            Throwable.class,
+            t -> RpcResultBuilder.<O>failed().build());
     }
-
 }
