@@ -154,7 +154,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
                         deviceRegistry.getDeviceGroupRegistry());
                 break;
             default:
-                LOG.warn("Unsupported type {}", getMultipartType());
+                // no operation
         }
     }
 
@@ -185,7 +185,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
                 deviceRegistry.getDeviceGroupRegistry().processMarks();
                 break;
             default:
-                LOG.warn("Unsupported type {}", getMultipartType());
+                // no operation
         }
     }
 

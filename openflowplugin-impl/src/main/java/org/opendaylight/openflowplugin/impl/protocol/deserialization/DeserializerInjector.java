@@ -11,12 +11,14 @@ package org.opendaylight.openflowplugin.impl.protocol.deserialization;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider;
 
 /**
- * Util class for injecting new deserializers into OpenflowJava
+ * Util class for injecting new deserializers into OpenflowJava.
  */
 public class DeserializerInjector {
 
     /**
-     * Injects deserializers into provided {@link org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider}
+     * Injects deserializers into provided.
+     * {@link org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider}
+     *
      * @param provider OpenflowJava deserializer extension provider
      */
     public static void injectDeserializers(final DeserializerExtensionProvider provider) {
@@ -29,7 +31,9 @@ public class DeserializerInjector {
     }
 
     /**
-     * Reverts original deserializers in provided {@link org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider}
+     * Reverts original deserializers in provided.
+     * {@link org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider}
+     *
      * @param provider OpenflowJava deserializer extension provider
      */
     public static void revertDeserializers(final DeserializerExtensionProvider provider) {

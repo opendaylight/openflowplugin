@@ -25,9 +25,9 @@ public class TcpSourcePortEntrySerializer extends AbstractMatchEntrySerializer {
 
     @Override
     public boolean matchTypeCheck(Match match) {
-        return Objects.nonNull(match.getLayer4Match()) &&
-                TcpMatch.class.isInstance(match.getLayer4Match()) &&
-                Objects.nonNull(TcpMatch.class.cast(match.getLayer4Match()).getTcpSourcePort());
+        return Objects.nonNull(match.getLayer4Match())
+                && TcpMatch.class.isInstance(match.getLayer4Match())
+                && Objects.nonNull(TcpMatch.class.cast(match.getLayer4Match()).getTcpSourcePort());
     }
 
     @Override

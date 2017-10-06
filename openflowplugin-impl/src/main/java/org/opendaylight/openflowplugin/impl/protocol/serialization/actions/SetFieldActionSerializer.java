@@ -26,9 +26,9 @@ public class SetFieldActionSerializer extends AbstractActionSerializer implement
     @Override
     public void serialize(Action action, ByteBuf outBuffer) {
         // Serialize field type and save position
-        int startIndex = outBuffer.writerIndex();
+        final int startIndex = outBuffer.writerIndex();
         outBuffer.writeShort(getType());
-        int lengthIndex = outBuffer.writerIndex();
+        final int lengthIndex = outBuffer.writerIndex();
         outBuffer.writeShort(EncodeConstants.EMPTY_LENGTH);
 
         // Serialize match (using small workaround with serializeHeader method to serialize only match entries)

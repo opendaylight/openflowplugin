@@ -23,17 +23,17 @@ public class OutputActionDeserializer extends AbstractActionDeserializer {
         processHeader(message);
 
         final Uri portUri = OpenflowPortsUtil
-            .getProtocolAgnosticPortUri(EncodeConstants.OF13_VERSION_ID, message.readUnsignedInt());
+                .getProtocolAgnosticPortUri(EncodeConstants.OF13_VERSION_ID, message.readUnsignedInt());
 
         final int maxLength = message.readUnsignedShort();
         message.skipBytes(ActionConstants.OUTPUT_PADDING);
 
         return new OutputActionCaseBuilder()
-            .setOutputAction(new OutputActionBuilder()
-                    .setOutputNodeConnector(portUri)
-                    .setMaxLength(maxLength)
-                    .build())
-            .build();
+                .setOutputAction(new OutputActionBuilder()
+                        .setOutputNodeConnector(portUri)
+                        .setMaxLength(maxLength)
+                        .build())
+                .build();
     }
 
     @Override

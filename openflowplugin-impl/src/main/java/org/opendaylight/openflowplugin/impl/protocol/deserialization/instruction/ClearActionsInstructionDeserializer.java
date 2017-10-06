@@ -8,12 +8,11 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.instruction;
 
+import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ClearActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.clear.actions._case.ClearActionsBuilder;
-
-import io.netty.buffer.ByteBuf;
 
 public class ClearActionsInstructionDeserializer extends AbstractInstructionDeserializer {
 
@@ -23,8 +22,8 @@ public class ClearActionsInstructionDeserializer extends AbstractInstructionDese
         message.skipBytes(InstructionConstants.PADDING_IN_ACTIONS_INSTRUCTION);
 
         return new ClearActionsCaseBuilder()
-            .setClearActions(new ClearActionsBuilder().build())
-            .build();
+                .setClearActions(new ClearActionsBuilder().build())
+                .build();
     }
 
     @Override

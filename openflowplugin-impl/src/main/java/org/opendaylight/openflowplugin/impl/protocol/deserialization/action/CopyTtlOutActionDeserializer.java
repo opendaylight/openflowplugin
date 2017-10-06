@@ -7,12 +7,11 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.action;
 
+import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlOutCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.copy.ttl.out._case.CopyTtlOutBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
-
-import io.netty.buffer.ByteBuf;
 
 public class CopyTtlOutActionDeserializer extends AbstractActionDeserializer {
 
@@ -22,8 +21,8 @@ public class CopyTtlOutActionDeserializer extends AbstractActionDeserializer {
         message.skipBytes(ActionConstants.PADDING_IN_ACTION_HEADER);
 
         return new CopyTtlOutCaseBuilder()
-            .setCopyTtlOut(new CopyTtlOutBuilder().build())
-            .build();
+                .setCopyTtlOut(new CopyTtlOutBuilder().build())
+                .build();
     }
 
 

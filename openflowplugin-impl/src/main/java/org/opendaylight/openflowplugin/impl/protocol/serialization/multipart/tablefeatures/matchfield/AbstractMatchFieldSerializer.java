@@ -31,7 +31,9 @@ public abstract class AbstractMatchFieldSerializer implements OFSerializer<SetFi
     }
 
     protected abstract int getOxmClassCode();
+
     protected abstract int getOxmFieldCode();
+
     protected abstract int getValueLength();
 
 }

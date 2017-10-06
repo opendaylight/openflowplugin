@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.key;
 
 import java.util.Objects;
-
 import org.opendaylight.openflowplugin.api.openflow.protocol.deserialization.MessageCodeExperimenterKey;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 
@@ -17,13 +16,15 @@ public class MessageCodeActionExperimenterKey extends MessageCodeExperimenterKey
     private ActionPath actionPath;
 
     /**
-     * Constructor
-     * @param version wire protocol version
-     * @param value used as distinguisher (read from binary data / buffer)
-     * @param clazz class of object that is going to be deserialized
+     * Constructor.
+     *
+     * @param version        wire protocol version
+     * @param value          used as distinguisher (read from binary data / buffer)
+     * @param clazz          class of object that is going to be deserialized
      * @param experimenterId experimenter id
      */
-    public MessageCodeActionExperimenterKey(short version, int value, Class<?> clazz, ActionPath actionPath, Long experimenterId) {
+    public MessageCodeActionExperimenterKey(short version, int value, Class<?> clazz, ActionPath actionPath, Long
+            experimenterId) {
         super(version, value, clazz, experimenterId);
         this.actionPath = actionPath;
     }

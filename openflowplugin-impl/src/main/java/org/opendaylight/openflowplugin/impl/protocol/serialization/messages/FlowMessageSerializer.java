@@ -61,7 +61,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
  * Translates FlowMod messages.
  * OF protocol versions: 1.3
  */
-public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage> implements SerializerRegistryInjector {
+public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage> implements
+        SerializerRegistryInjector {
     private static final FlowCookie DEFAULT_COOKIE = new FlowCookie(OFConstants.DEFAULT_COOKIE);
     private static final FlowCookie DEFAULT_COOKIE_MASK = new FlowCookie(OFConstants.DEFAULT_COOKIE_MASK);
     private static final Short DEFAULT_TABLE_ID = (short) 0;
@@ -102,15 +103,17 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
 
     /**
      * Serialize flow message. Needs to be separated from main serialize method to prevent recursion
-     * when serializing SetVlanId flows
-     * @param message flow message
+     * when serializing SetVlanId flows.
+     *
+     * @param message   flow message
      * @param outBuffer output buffer
      */
     private void writeFlow(final FlowMessage message, final ByteBuf outBuffer) {
-        int index = outBuffer.writerIndex();
+        final int index = outBuffer.writerIndex();
         super.serialize(message, outBuffer);
         outBuffer.writeLong(MoreObjects.firstNonNull(message.getCookie(), DEFAULT_COOKIE).getValue().longValue());
-        outBuffer.writeLong(MoreObjects.firstNonNull(message.getCookieMask(), DEFAULT_COOKIE_MASK).getValue().longValue());
+        outBuffer.writeLong(MoreObjects.firstNonNull(message.getCookieMask(), DEFAULT_COOKIE_MASK).getValue()
+                .longValue());
         outBuffer.writeByte(MoreObjects.firstNonNull(message.getTableId(), DEFAULT_TABLE_ID));
         outBuffer.writeByte(message.getCommand().getIntValue());
         outBuffer.writeShort(MoreObjects.firstNonNull(message.getIdleTimeout(), DEFAULT_IDLE_TIMEOUT));
@@ -128,34 +131,36 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
 
     /**
      * Instead of serializing this flow normally, we need to split it to two parts if flow contains
-     * #{@link org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanIdActionCase}
-     * @param message flow mod message
+     * #{@link org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanIdActionCase}.
+     *
+     * @param message   flow mod message
      * @param outBuffer output buffer
      */
     private void writeVlanFlow(final FlowMessage message, final ByteBuf outBuffer) {
         writeFlow(
-            new FlowMessageBuilder(message)
-                .setMatch(new MatchBuilder(message.getMatch())
-                    .setVlanMatch(VLAN_MATCH_FALSE)
-                    .build())
-                .setInstructions(new InstructionsBuilder()
-                    .setInstruction(updateSetVlanIdAction(message))
-                    .build())
-                .build(),
-            outBuffer);
+                new FlowMessageBuilder(message)
+                        .setMatch(new MatchBuilder(message.getMatch())
+                                .setVlanMatch(VLAN_MATCH_FALSE)
+                                .build())
+                        .setInstructions(new InstructionsBuilder()
+                                .setInstruction(updateSetVlanIdAction(message))
+                                .build())
+                        .build(),
+                outBuffer);
 
         writeFlow(
-            new FlowMessageBuilder(message)
-                .setMatch(new MatchBuilder(message.getMatch())
-                    .setVlanMatch(VLAN_MATCH_TRUE)
-                    .build())
-                .build(),
-            outBuffer);
+                new FlowMessageBuilder(message)
+                        .setMatch(new MatchBuilder(message.getMatch())
+                                .setVlanMatch(VLAN_MATCH_TRUE)
+                                .build())
+                        .build(),
+                outBuffer);
     }
 
     /**
-     * Serialize OpenFlowPlugin match to raw bytes
-     * @param message OpenFlow flow mod message
+     * Serialize OpenFlowPlugin match to raw bytes.
+     *
+     * @param message   OpenFlow flow mod message
      * @param outBuffer output buffer
      */
     private void writeMatch(final FlowMessage message, final ByteBuf outBuffer) {
@@ -165,8 +170,9 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
     }
 
     /**
-     * Serialize OpenFlowPlugin instructions and set ip protocol of set-tp-src and set-tp-dst actions of need
-     * @param message OpenFlow flow mod message
+     * Serialize OpenFlowPlugin instructions and set ip protocol of set-tp-src and set-tp-dst actions of need.
+     *
+     * @param message   OpenFlow flow mod message
      * @param outBuffer output buffer
      */
     @SuppressWarnings("unchecked")
@@ -184,40 +190,44 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
                         .stream()
                         .filter(Objects::nonNull)
                         .sorted(OrderComparator.build())
-                        .map(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Instruction::getInstruction)
+                        .map(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types
+                                .rev131026.Instruction::getInstruction)
                         .filter(Objects::nonNull)
                         .map(i -> protocol.flatMap(p -> updateInstruction(i, p)).orElse(i))
-                        .forEach(i -> InstructionUtil.writeInstruction(i, EncodeConstants.OF13_VERSION_ID, registry, outBuffer)));
+                        .forEach(i -> InstructionUtil.writeInstruction(i, EncodeConstants.OF13_VERSION_ID, registry,
+                                outBuffer)));
     }
 
     /**
-     * Determine type of instruction and update it's actions if it is apply-actions instruction
+     * Determine type of instruction and update it's actions if it is apply-actions instruction.
+     *
      * @param instruction instruction
-     * @param protocol protocol
+     * @param protocol    protocol
      * @return updated instruction or empty
      */
     private static Optional<Instruction> updateInstruction(final Instruction instruction, final Short protocol) {
-        if( ApplyActionsCase.class.isInstance(instruction)) {
+        if (ApplyActionsCase.class.isInstance(instruction)) {
             return Optional
-                .ofNullable(ApplyActionsCase.class.cast(instruction).getApplyActions())
-                .flatMap(aa -> Optional.ofNullable(aa.getAction()))
-                .map(as -> new ApplyActionsCaseBuilder()
-                    .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(as
-                            .stream()
-                            .filter(Objects::nonNull)
-                            .map(a -> updateSetTpActions(a, protocol))
-                            .collect(Collectors.toList()))
-                        .build())
-                    .build());
+                    .ofNullable(ApplyActionsCase.class.cast(instruction).getApplyActions())
+                    .flatMap(aa -> Optional.ofNullable(aa.getAction()))
+                    .map(as -> new ApplyActionsCaseBuilder()
+                            .setApplyActions(new ApplyActionsBuilder()
+                                    .setAction(as
+                                            .stream()
+                                            .filter(Objects::nonNull)
+                                            .map(a -> updateSetTpActions(a, protocol))
+                                            .collect(Collectors.toList()))
+                                    .build())
+                            .build());
         }
 
         return Optional.empty();
     }
 
     /**
-     * If action is set-tp-src or set-tp-dst, inject IP protocol into it, otherwise return original action
-     * @param action OpenFlow action
+     * If action is set-tp-src or set-tp-dst, inject IP protocol into it, otherwise return original action.
+     *
+     * @param action   OpenFlow action
      * @param protocol IP protocol
      * @return updated OpenFlow action
      */
@@ -251,8 +261,11 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
     }
 
     /**
-     * Create copy of instructions of original flow but insert #{@link org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushVlanActionCase}
-     * before each #{@link org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanIdActionCase}
+     * Create copy of instructions of original flow but insert
+     * #{@link org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushVlanActionCase}
+     * before each
+     * #{@link org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanIdActionCase}.
+     *
      * @param message OpenFlowPlugin flow mod message
      * @return list of instructions
      */
@@ -261,7 +274,7 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
         return message.getInstructions().getInstruction()
                 .stream()
                 .map(i -> {
-                    final int[] offset = { 0 };
+                    final int[] offset = {0};
 
                     return ApplyActionsCase.class.isInstance(i.getInstruction())
                             ? Optional
@@ -270,34 +283,38 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
                             .map(a -> a.stream()
                                     .sorted(OrderComparator.build())
                                     .flatMap(action -> {
-                                final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112
-                                        .action.list.Action> actions = new ArrayList<>();
+                                        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112
+                                                .action.list.Action> actions = new ArrayList<>();
 
-                                // If current action is SetVlanId, insert PushVlan action before it and update order
-                                if (SetVlanIdActionCase.class.isInstance(action.getAction())) {
-                                    actions.add(new ActionBuilder()
-                                            .setAction(new PushVlanActionCaseBuilder()
-                                                    .setPushVlanAction(new PushVlanActionBuilder()
-                                                            .setCfi(new VlanCfi(1))
-                                                            .setVlanId(SetVlanIdActionCase.class.cast(action.getAction()).getSetVlanIdAction().getVlanId())
-                                                            .setEthernetType(PUSH_VLAN)
-                                                            .setTag(PUSH_VLAN)
+                                        // If current action is SetVlanId, insert PushVlan action before it and
+                                        // update order
+                                        if (SetVlanIdActionCase.class.isInstance(action.getAction())) {
+                                            actions.add(new ActionBuilder()
+                                                    .setAction(new PushVlanActionCaseBuilder()
+                                                            .setPushVlanAction(new PushVlanActionBuilder()
+                                                                    .setCfi(new VlanCfi(1))
+                                                                    .setVlanId(SetVlanIdActionCase.class.cast(action
+                                                                            .getAction()).getSetVlanIdAction()
+                                                                            .getVlanId())
+                                                                    .setEthernetType(PUSH_VLAN)
+                                                                    .setTag(PUSH_VLAN)
+                                                                    .build())
                                                             .build())
-                                                    .build())
-                                            .setKey(action.getKey())
-                                            .setOrder(action.getOrder() + offset[0])
-                                            .build());
+                                                    .setKey(action.getKey())
+                                                    .setOrder(action.getOrder() + offset[0])
+                                                    .build());
 
-                                    offset[0]++;
-                                }
+                                            offset[0]++;
+                                        }
 
-                                // Update offset of action if there is any inserted PushVlan actions
-                                actions.add(offset[0] > 0
-                                        ? new ActionBuilder(action).setOrder(action.getOrder() + offset[0]).build()
-                                        : action);
+                                        // Update offset of action if there is any inserted PushVlan actions
+                                        actions.add(offset[0] > 0
+                                                ? new ActionBuilder(action).setOrder(action.getOrder() + offset[0])
+                                                .build()
+                                                : action);
 
-                                return actions.stream();
-                            }))
+                                        return actions.stream();
+                                    }))
                             .map(as -> new InstructionBuilder(i)
                                     .setInstruction(new ApplyActionsCaseBuilder()
                                             .setApplyActions(new ApplyActionsBuilder()
@@ -311,7 +328,9 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
     }
 
     /**
-     * Create integer bit mask from #{@link org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags}
+     * Create integer bit mask from
+     * #{@link org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags}.
+     *
      * @param flags flow mod flags
      * @return bit mask
      */
@@ -325,20 +344,25 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
     }
 
     /**
-     * Determine if flow contains vlan match
+     * Determine if flow contains vlan match.
+     *
      * @param flow flow
      * @return true if flow contains vlan match
      */
     private static boolean isVlanMatchPresent(final Flow flow) {
         return Optional
-            .ofNullable(flow.getMatch())
-            .flatMap(m -> Optional.ofNullable(m.getVlanMatch()))
-            .isPresent();
+                .ofNullable(flow.getMatch())
+                .flatMap(m -> Optional.ofNullable(m.getVlanMatch()))
+                .isPresent();
     }
 
     /**
-     * Determine if flow contains #{@link org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase}
-     * instruction with #{@link org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanIdActionCase} action
+     * Determine if flow contains
+     * #{@link org.opendaylight.yang.gen.v1.urn.opendaylight
+     * .flow.types.rev131026.instruction.instruction.ApplyActionsCase} instruction with
+     * #{@link org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanIdActionCase}
+     * action.
+     *
      * @param flow OpenFlowPlugin flow
      * @return true if flow contains SetVlanIdAction
      */
@@ -348,7 +372,8 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
                 .flatMap(is -> Optional.ofNullable(is.getInstruction()))
                 .flatMap(is -> is
                         .stream()
-                        .map(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Instruction::getInstruction)
+                        .map(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types
+                                .rev131026.Instruction::getInstruction)
                         .filter(ApplyActionsCase.class::isInstance)
                         .map(i -> ApplyActionsCase.class.cast(i).getApplyActions())
                         .filter(Objects::nonNull)

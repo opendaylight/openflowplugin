@@ -24,8 +24,8 @@ public class IpEcnEntrySerializer extends AbstractMatchEntrySerializer {
 
     @Override
     public boolean matchTypeCheck(Match match) {
-        return Objects.nonNull(match.getIpMatch()) &&
-                Objects.nonNull(match.getIpMatch().getIpEcn());
+        return Objects.nonNull(match.getIpMatch())
+                && Objects.nonNull(match.getIpMatch().getIpEcn());
     }
 
     @Override

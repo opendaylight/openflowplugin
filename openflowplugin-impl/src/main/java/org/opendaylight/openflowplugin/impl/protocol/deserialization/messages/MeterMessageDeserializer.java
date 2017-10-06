@@ -29,8 +29,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeaderBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.meter.band.header.MeterBandTypesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterModCommand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MeterMessageDeserializer implements OFDeserializer<MeterMessage>, DeserializerRegistryInjector {
+    private static final Logger LOG = LoggerFactory.getLogger(MeterMessageDeserializer.class);
     private static final int OFPMBTDROP = 1;
     private static final int OFPMBTDSCP = 2;
     private static final int OFPMBTEXPERIMENTER = 0xFFFF;
@@ -82,11 +85,13 @@ public class MeterMessageDeserializer implements OFDeserializer<MeterMessage>, D
                 }
                 case OFPMBTEXPERIMENTER: {
                     // TODO: Finish meter band experimenter deserialization
-                    long expId = message.getUnsignedInt(message.readerIndex() + 2 * EncodeConstants.SIZE_OF_INT_IN_BYTES);
+                    long expId =
+                            message.getUnsignedInt(message.readerIndex() + 2 * EncodeConstants.SIZE_OF_INT_IN_BYTES);
                     message.readerIndex(bandStartIndex);
 
                     OFDeserializer<Experimenter> deserializer = registry.getDeserializer(
-                            new ExperimenterIdDeserializerKey(EncodeConstants.OF13_VERSION_ID, expId, Experimenter.class));
+                            new ExperimenterIdDeserializerKey(EncodeConstants.OF13_VERSION_ID, expId,
+                                    Experimenter.class));
 
                     bandBuilder
                             .setMeterBandTypes(new MeterBandTypesBuilder()
@@ -95,6 +100,8 @@ public class MeterMessageDeserializer implements OFDeserializer<MeterMessage>, D
                             .setBandType(deserializer.deserialize(message));
                     break;
                 }
+                default:
+                    // no operation
             }
 
             bands.add(bandBuilder.build());
@@ -115,11 +122,11 @@ public class MeterMessageDeserializer implements OFDeserializer<MeterMessage>, D
 
     private static MeterFlags readMeterFlags(ByteBuf message) {
         int input = message.readUnsignedShort();
-        final Boolean mfKBPS = (input & (1)) != 0;
-        final Boolean mfPKTPS = (input & (1 << 1)) != 0;
-        final Boolean mfBURST = (input & (1 << 2)) != 0;
-        final Boolean mfSTATS = (input & (1 << 3)) != 0;
-        return new MeterFlags(mfBURST, mfKBPS, mfPKTPS, mfSTATS);
+        final Boolean mfKbps = (input & (1)) != 0;
+        final Boolean mfPktps = (input & (1 << 1)) != 0;
+        final Boolean mfBurst = (input & (1 << 2)) != 0;
+        final Boolean mfStats = (input & (1 << 3)) != 0;
+        return new MeterFlags(mfBurst, mfKbps, mfPktps, mfStats);
     }
 
 }

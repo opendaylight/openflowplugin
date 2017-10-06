@@ -24,8 +24,8 @@ public class IpDscpEntrySerializer extends AbstractMatchEntrySerializer {
 
     @Override
     public boolean matchTypeCheck(Match match) {
-        return Objects.nonNull(match.getIpMatch()) &&
-                Objects.nonNull(match.getIpMatch().getIpDscp());
+        return Objects.nonNull(match.getIpMatch())
+                && Objects.nonNull(match.getIpMatch().getIpDscp());
     }
 
     @Override

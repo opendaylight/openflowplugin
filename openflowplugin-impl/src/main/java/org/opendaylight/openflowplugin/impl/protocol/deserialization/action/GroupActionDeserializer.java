@@ -7,11 +7,10 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.action;
 
+import io.netty.buffer.ByteBuf;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.group.action._case.GroupActionBuilder;
-
-import io.netty.buffer.ByteBuf;
 
 public class GroupActionDeserializer extends AbstractActionDeserializer {
 
@@ -20,10 +19,10 @@ public class GroupActionDeserializer extends AbstractActionDeserializer {
         processHeader(message);
 
         return new GroupActionCaseBuilder()
-            .setGroupAction(new GroupActionBuilder()
-                    .setGroupId(message.readUnsignedInt())
-                    .build())
-            .build();
+                .setGroupAction(new GroupActionBuilder()
+                        .setGroupId(message.readUnsignedInt())
+                        .build())
+                .build();
     }
 
     @Override

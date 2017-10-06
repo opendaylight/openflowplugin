@@ -8,12 +8,11 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.instruction;
 
+import io.netty.buffer.ByteBuf;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.MeterCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.meter._case.MeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
-
-import io.netty.buffer.ByteBuf;
 
 public class MeterInstructionDeserializer extends AbstractInstructionDeserializer {
 

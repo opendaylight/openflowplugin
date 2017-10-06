@@ -25,9 +25,9 @@ public class Ipv6NdTllEntrySerializer extends AbstractMatchEntrySerializer {
 
     @Override
     public boolean matchTypeCheck(Match match) {
-        return Objects.nonNull(match.getLayer3Match()) &&
-                Ipv6Match.class.isInstance(match.getLayer3Match()) &&
-                Objects.nonNull(Ipv6Match.class.cast(match.getLayer3Match()).getIpv6NdTll());
+        return Objects.nonNull(match.getLayer3Match())
+                && Ipv6Match.class.isInstance(match.getLayer3Match())
+                && Objects.nonNull(Ipv6Match.class.cast(match.getLayer3Match()).getIpv6NdTll());
     }
 
     @Override

@@ -36,9 +36,9 @@ public class ArpSourceHardwareAddressEntrySerializer extends AbstractMatchEntryS
 
     @Override
     public boolean matchTypeCheck(Match match) {
-        return Objects.nonNull(match.getLayer3Match()) &&
-                ArpMatch.class.isInstance(match.getLayer3Match()) &&
-                Objects.nonNull(ArpMatch.class.cast(match.getLayer3Match()).getArpSourceHardwareAddress());
+        return Objects.nonNull(match.getLayer3Match())
+                && ArpMatch.class.isInstance(match.getLayer3Match())
+                && Objects.nonNull(ArpMatch.class.cast(match.getLayer3Match()).getArpSourceHardwareAddress());
     }
 
     @Override

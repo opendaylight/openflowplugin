@@ -18,7 +18,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.TableFeaturesPropType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.InstructionsMiss;
 
-public class InstructionsMissTablePropertySerializer extends AbstractTablePropertySerializer<InstructionsMiss> implements SerializerRegistryInjector {
+public class InstructionsMissTablePropertySerializer extends
+        AbstractTablePropertySerializer<InstructionsMiss> implements SerializerRegistryInjector {
 
     private SerializerRegistry registry;
 

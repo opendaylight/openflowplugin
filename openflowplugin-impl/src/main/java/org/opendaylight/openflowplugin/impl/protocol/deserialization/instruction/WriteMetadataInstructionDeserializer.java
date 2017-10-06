@@ -8,15 +8,13 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.instruction;
 
+import io.netty.buffer.ByteBuf;
 import java.math.BigInteger;
-
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadataCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.write.metadata._case.WriteMetadataBuilder;
-
-import io.netty.buffer.ByteBuf;
 
 public class WriteMetadataInstructionDeserializer extends AbstractInstructionDeserializer {
 
@@ -31,11 +29,11 @@ public class WriteMetadataInstructionDeserializer extends AbstractInstructionDes
         message.readBytes(metaMask);
 
         return new WriteMetadataCaseBuilder()
-            .setWriteMetadata(new WriteMetadataBuilder()
-                    .setMetadata(new BigInteger(1, meta))
-                    .setMetadataMask(new BigInteger(1, metaMask))
-                    .build())
-            .build();
+                .setWriteMetadata(new WriteMetadataBuilder()
+                        .setMetadata(new BigInteger(1, meta))
+                        .setMetadataMask(new BigInteger(1, metaMask))
+                        .build())
+                .build();
     }
 
     @Override

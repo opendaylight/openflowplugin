@@ -21,8 +21,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv6MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SetTpDstActionSerializer extends AbstractSetFieldActionSerializer {
+    private static final Logger LOG = LoggerFactory.getLogger(SetTpDstActionSerializer.class);
 
     @Override
     protected SetFieldCase buildAction(Action input) {
@@ -56,6 +59,8 @@ public class SetTpDstActionSerializer extends AbstractSetFieldActionSerializer {
                             .build());
                     break;
                 }
+                default:
+                    // no operation
             }
         });
 
