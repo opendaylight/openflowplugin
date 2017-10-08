@@ -26,7 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 /**
  * Pulled out meter stats to notification transformation.
  */
-public class MeterStatisticsToNotificationTransformer {
+public final class MeterStatisticsToNotificationTransformer {
 
     private MeterStatisticsToNotificationTransformer() {
         // Hide implicit constructor

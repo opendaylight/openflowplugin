@@ -265,7 +265,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     // which it can receive the extensions back from switch can differ and that lead to a different hashcode. In that
     // scenario, hashcode won't match and flowRegistry return the  related key. To overcome this issue, these methods
     // make sure that key is stored only if it doesn't equals to any existing key.
-    private void addToFlowRegistry (final FlowRegistryKey flowRegistryKey, final FlowDescriptor flowDescriptor) {
+    private void addToFlowRegistry(final FlowRegistryKey flowRegistryKey, final FlowDescriptor flowDescriptor) {
         FlowRegistryKey existingFlowRegistryKey = getExistingKey(flowRegistryKey);
         if (existingFlowRegistryKey == null) {
             flowRegistry.put(flowRegistryKey, flowDescriptor);
@@ -274,16 +274,16 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
         }
     }
 
-    private void removeFromFlowRegistry (final FlowRegistryKey flowRegistryKey) {
+    private void removeFromFlowRegistry(final FlowRegistryKey flowRegistryKey) {
         FlowRegistryKey existingFlowRegistryKey = getExistingKey(flowRegistryKey);
-        if(existingFlowRegistryKey != null) {
+        if (existingFlowRegistryKey != null) {
             flowRegistry.remove(existingFlowRegistryKey);
         } else {
             flowRegistry.remove(flowRegistryKey);
         }
     }
 
-    private FlowRegistryKey getExistingKey (final FlowRegistryKey flowRegistryKey) {
+    private FlowRegistryKey getExistingKey(final FlowRegistryKey flowRegistryKey) {
         if (flowRegistryKey.getMatch().getAugmentation(GeneralAugMatchNodesNodeTableFlow.class) == null) {
             if (flowRegistry.containsKey(flowRegistryKey)) {
                 return flowRegistryKey;

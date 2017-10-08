@@ -24,7 +24,10 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorE
  * #{@link org.opendaylight.openflowplugin.impl.statistics.services.direct.OpendaylightDirectStatisticsServiceProvider}
  * with all multi-layer services already in.
  */
-public class MultiLayerDirectStatisticsProviderInitializer {
+public final class MultiLayerDirectStatisticsProviderInitializer {
+
+    private MultiLayerDirectStatisticsProviderInitializer() {
+    }
 
     public static OpendaylightDirectStatisticsServiceProvider createProvider(
         final RequestContextStack requestContextStack,
