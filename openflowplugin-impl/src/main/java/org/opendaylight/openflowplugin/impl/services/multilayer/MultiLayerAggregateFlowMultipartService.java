@@ -26,10 +26,10 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.impl.services.AbstractAggregateFlowMultipartService;
 import org.opendaylight.openflowplugin.impl.services.util.RequestInputUtils;
 import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
+import org.opendaylight.openflowplugin.impl.util.FlowCreatorUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchInjector;
-import org.opendaylight.openflowplugin.impl.util.FlowCreatorUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutputBuilder;
@@ -63,10 +63,10 @@ public class MultiLayerAggregateFlowMultipartService extends AbstractAggregateFl
 
     @Override
     protected OfHeader buildRequest(final Xid xid,
-                                    final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input)
-                                                                                            throws ServiceException {
-        final MultipartRequestAggregateCaseBuilder multipartRequestAggregateCaseBuilder =
-                new MultipartRequestAggregateCaseBuilder();
+                                    final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) throws
+            ServiceException {
+        final MultipartRequestAggregateCaseBuilder multipartRequestAggregateCaseBuilder
+                = new MultipartRequestAggregateCaseBuilder();
         final MultipartRequestAggregateBuilder mprAggregateRequestBuilder = new MultipartRequestAggregateBuilder();
         final short tableId = MoreObjects.firstNonNull(input.getTableId(), OFConstants.OFPTT_ALL);
         mprAggregateRequestBuilder.setTableId(tableId);
@@ -86,8 +86,8 @@ public class MultiLayerAggregateFlowMultipartService extends AbstractAggregateFl
             if (input.getCookieMask() == null) {
                 mprAggregateRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
             } else {
-                mprAggregateRequestBuilder.setCookieMask(MoreObjects.firstNonNull(input.getCookieMask().getValue(),
-                                                                                  OFConstants.DEFAULT_COOKIE_MASK));
+                mprAggregateRequestBuilder.setCookieMask(
+                        MoreObjects.firstNonNull(input.getCookieMask().getValue(), OFConstants.DEFAULT_COOKIE_MASK));
             }
             long outGroup = MoreObjects.firstNonNull(input.getOutGroup(), OFConstants.OFPG_ANY);
             mprAggregateRequestBuilder.setOutGroup(outGroup);
@@ -104,11 +104,10 @@ public class MultiLayerAggregateFlowMultipartService extends AbstractAggregateFl
         FlowCreatorUtil.setWildcardedFlowMatch(version, mprAggregateRequestBuilder);
 
         // Set request body to main multipart request
-        multipartRequestAggregateCaseBuilder.setMultipartRequestAggregate(mprAggregateRequestBuilder
-            .build());
+        multipartRequestAggregateCaseBuilder.setMultipartRequestAggregate(mprAggregateRequestBuilder.build());
 
-        final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
-            MultipartType.OFPMPAGGREGATE, xid.getValue(), version);
+        final MultipartRequestInputBuilder mprInput = RequestInputUtils
+                .createMultipartHeader(MultipartType.OFPMPAGGREGATE, xid.getValue(), version);
 
         mprInput.setMultipartRequestBody(multipartRequestAggregateCaseBuilder.build());
 
@@ -116,31 +115,35 @@ public class MultiLayerAggregateFlowMultipartService extends AbstractAggregateFl
     }
 
     @Override
-    public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>>
-        handleAndReply(final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) {
+    public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> handleAndReply(
+            final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) {
         return Futures.transform(handleServiceCall(input),
-            (Function<RpcResult<List<MultipartReply>>,
-             RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>>) result -> {
+                     (Function<RpcResult<List<MultipartReply>>,
+                             RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>>)
+            result -> {
                 if (Preconditions.checkNotNull(result).isSuccessful()) {
-                    final MessageTranslator<MultipartReply, AggregatedFlowStatistics> messageTranslator =
-                        translatorLibrary
-                        .lookupTranslator(new TranslatorKey(getVersion(), MultipartReplyAggregateCase.class.getName()));
+                    final MessageTranslator<MultipartReply, AggregatedFlowStatistics>
+                             messageTranslator = translatorLibrary.lookupTranslator(
+                             new TranslatorKey(getVersion(),
+                                               MultipartReplyAggregateCase.class.getName()));
 
-                    return RpcResultBuilder
-                        .success(new GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutputBuilder()
-                            .setAggregatedFlowStatistics(result
-                                .getResult()
-                                .stream()
-                                .map(multipartReply -> messageTranslator
-                                    .translate(multipartReply, getDeviceInfo(), null))
-                                .collect(Collectors.toList())))
-                        .build();
+                    return RpcResultBuilder.success(
+                             new GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutputBuilder()
+                                     .setAggregatedFlowStatistics(result.getResult().stream()
+                                                                          .map(multipartReply ->
+                                                                                       messageTranslator
+                                                                                  .translate(
+                                                                                          multipartReply,
+                                                                                          getDeviceInfo(),
+                                                                                          null))
+                                                                          .collect(Collectors
+                                                                                           .toList())))
+                             .build();
                 }
 
                 return RpcResultBuilder
-                    .<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>failed()
-                    .withRpcErrors(result.getErrors())
-                    .build();
+                             .<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>failed()
+                             .withRpcErrors(result.getErrors()).build();
             });
     }
 }

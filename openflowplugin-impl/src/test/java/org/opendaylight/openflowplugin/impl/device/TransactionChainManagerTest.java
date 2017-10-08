@@ -64,8 +64,8 @@ public class TransactionChainManagerTest {
     @Before
     public void setUp() throws Exception {
         final ReadOnlyTransaction readOnlyTx = Mockito.mock(ReadOnlyTransaction.class);
-        final CheckedFuture<Optional<Node>, ReadFailedException> noExistNodeFuture =
-                Futures.immediateCheckedFuture(Optional.<Node>absent());
+        final CheckedFuture<Optional<Node>, ReadFailedException> noExistNodeFuture = Futures
+                .immediateCheckedFuture(Optional.<Node>absent());
         Mockito.when(readOnlyTx.read(LogicalDatastoreType.OPERATIONAL, nodeKeyIdent)).thenReturn(noExistNodeFuture);
         Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTx);
         Mockito.when(dataBroker.createTransactionChain(Matchers.any(TransactionChainListener.class)))
@@ -98,8 +98,7 @@ public class TransactionChainManagerTest {
     }
 
     /**
-     * test of {@link TransactionChainManager#submitTransaction()}
-     * @throws Exception
+     * Tests transaction submit {@link TransactionChainManager#submitTransaction()}.
      */
     @Test
     public void testSubmitTransaction() throws Exception {
@@ -114,8 +113,7 @@ public class TransactionChainManagerTest {
     }
 
     /**
-     * test of {@link TransactionChainManager#submitTransaction()}: no submit, never enabled
-     * @throws Exception
+     * test of {@link TransactionChainManager#submitTransaction()}: no submit, never enabled.
      */
     @Test
     public void testSubmitTransaction1() throws Exception {
@@ -130,7 +128,9 @@ public class TransactionChainManagerTest {
 
     @Test
     public void testSubmitTransactionFailed() throws Exception {
-        Mockito.when(writeTx.submit()).thenReturn(Futures.<Void, TransactionCommitFailedException>immediateFailedCheckedFuture(new TransactionCommitFailedException("mock")));
+        Mockito.when(writeTx.submit()).thenReturn(
+                Futures.<Void, TransactionCommitFailedException>immediateFailedCheckedFuture(
+                        new TransactionCommitFailedException("mock")));
         final Node data = new NodeBuilder().setId(nodeId).build();
         txChainManager.initialSubmitWriteTransaction();
         txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data, false);
@@ -157,7 +157,8 @@ public class TransactionChainManagerTest {
 
     @Test
     public void testOnTransactionChainFailed() throws Exception {
-        txChainManager.onTransactionChainFailed(txChain, Mockito.mock(AsyncTransaction.class), Mockito.mock(Throwable.class));
+        txChainManager
+                .onTransactionChainFailed(txChain, Mockito.mock(AsyncTransaction.class), Mockito.mock(Throwable.class));
         Mockito.verify(txChain).close();
         Mockito.verify(dataBroker, Mockito.times(2)).createTransactionChain(txChainManager);
     }
@@ -186,8 +187,8 @@ public class TransactionChainManagerTest {
 
     @Test
     public void testDeactivateTransactionChainManagerFailed() throws Exception {
-        Mockito.when(writeTx.submit())
-                .thenReturn(Futures.<Void, TransactionCommitFailedException>immediateFailedCheckedFuture(
+        Mockito.when(writeTx.submit()).thenReturn(
+                Futures.<Void, TransactionCommitFailedException>immediateFailedCheckedFuture(
                         new TransactionCommitFailedException("mock")));
         final Node data = new NodeBuilder().setId(nodeId).build();
         txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data, false);

@@ -109,26 +109,39 @@ public class SalBundleServiceImplTest {
         service.addBundleMessages(input);
         for (Message msg : innerMessages) {
             Mockito.verify(experimenterMessageService)
-                    .sendExperimenter(
-                            experimenterBuilder.setExperimenterMessageOfChoice(
-                                    addMessageBuilder
-                                            .setSalAddMessageData(
-                                                    dataBuilder.setNode(NODE_REF).setBundleInnerMessage(msg.getBundleInnerMessage()).build()
-                                            ).build()
-                            ).build()
-                    );
+                    .sendExperimenter(experimenterBuilder
+                                  .setExperimenterMessageOfChoice(addMessageBuilder
+                                              .setSalAddMessageData(
+                                                    dataBuilder.setNode(NODE_REF).setBundleInnerMessage(
+                                                                                        msg.getBundleInnerMessage())
+                                                                                .build())
+                                                                .build()).build());
         }
     }
 
     private static List<Message> createMessages() {
         List<Message> messages  = new ArrayList<>();
-        messages.add(new MessageBuilder().setNode(NODE_REF).setBundleInnerMessage(new BundleAddFlowCaseBuilder().build()).build());
-        messages.add(new MessageBuilder().setNode(NODE_REF).setBundleInnerMessage(new BundleUpdateFlowCaseBuilder().build()).build());
-        messages.add(new MessageBuilder().setNode(NODE_REF).setBundleInnerMessage(new BundleRemoveFlowCaseBuilder().build()).build());
-        messages.add(new MessageBuilder().setNode(NODE_REF).setBundleInnerMessage(new BundleAddGroupCaseBuilder().build()).build());
-        messages.add(new MessageBuilder().setNode(NODE_REF).setBundleInnerMessage(new BundleUpdateGroupCaseBuilder().build()).build());
-        messages.add(new MessageBuilder().setNode(NODE_REF).setBundleInnerMessage(new BundleRemoveGroupCaseBuilder().build()).build());
-        messages.add(new MessageBuilder().setNode(NODE_REF).setBundleInnerMessage(new BundleUpdatePortCaseBuilder().build()).build());
+        messages.add(
+                new MessageBuilder().setNode(NODE_REF).setBundleInnerMessage(new BundleAddFlowCaseBuilder().build())
+                        .build());
+        messages.add(
+                new MessageBuilder().setNode(NODE_REF).setBundleInnerMessage(new BundleUpdateFlowCaseBuilder().build())
+                        .build());
+        messages.add(
+                new MessageBuilder().setNode(NODE_REF).setBundleInnerMessage(new BundleRemoveFlowCaseBuilder().build())
+                        .build());
+        messages.add(
+                new MessageBuilder().setNode(NODE_REF).setBundleInnerMessage(new BundleAddGroupCaseBuilder().build())
+                        .build());
+        messages.add(
+                new MessageBuilder().setNode(NODE_REF).setBundleInnerMessage(new BundleUpdateGroupCaseBuilder().build())
+                        .build());
+        messages.add(
+                new MessageBuilder().setNode(NODE_REF).setBundleInnerMessage(new BundleRemoveGroupCaseBuilder().build())
+                        .build());
+        messages.add(
+                new MessageBuilder().setNode(NODE_REF).setBundleInnerMessage(new BundleUpdatePortCaseBuilder().build())
+                        .build());
         return messages;
     }
 

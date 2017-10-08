@@ -15,26 +15,33 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Se
 
 public final class PacketInUtil {
 
-    private PacketInUtil(){
+    private PacketInUtil() {
         throw new AssertionError("PacketInUtil is not expected to be instantiated.");
     }
 
     /**
+     * Get MDSAL packet-in reason.
+     *
      * @param reason openflow java packet in reason
      * @return corresponding MD-SAL reason class for given OF-API reason
      */
-    public static Class<? extends PacketInReason> getMdSalPacketInReason(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PacketInReason reason) {
+    public static Class<? extends PacketInReason> getMdSalPacketInReason(
+            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PacketInReason reason) {
         Class<? extends PacketInReason> resultReason = PacketInReason.class;
 
-        if (reason.equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PacketInReason.OFPRNOMATCH)) {
+        if (reason
+                .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PacketInReason
+                                .OFPRNOMATCH)) {
             resultReason = NoMatch.class;
-        } else if (reason.equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PacketInReason.OFPRINVALIDTTL)) {
+        } else if (reason
+                .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PacketInReason
+                                .OFPRINVALIDTTL)) {
             resultReason = InvalidTtl.class;
-        } else if (reason.equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PacketInReason.OFPRACTION)) {
+        } else if (reason
+                .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PacketInReason
+                                .OFPRACTION)) {
             resultReason = SendToController.class;
         }
-
         return resultReason;
     }
-
 }

@@ -15,13 +15,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * threadPoolExecutor implementation logging exceptions thrown by threads
+ * threadPoolExecutor implementation logging exceptions thrown by threads.
  */
 public class ThreadPoolLoggingExecutor extends ThreadPoolExecutor {
 
     private static final Logger LOG = LoggerFactory.getLogger(ThreadPoolLoggingExecutor.class);
 
     /**
+     * Logging executor.
+     *
      * @param corePoolSize thread pool size
      * @param maximumPoolSize maximum pool size
      * @param keepAliveTime keep alive time
@@ -29,19 +31,18 @@ public class ThreadPoolLoggingExecutor extends ThreadPoolExecutor {
      * @param workQueue task queue
      * @param poolName thread name prefix
      */
-    public ThreadPoolLoggingExecutor(int corePoolSize, int maximumPoolSize,
-                                     long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue,
-            final String poolName) {
+    public ThreadPoolLoggingExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit,
+                                     BlockingQueue<Runnable> workQueue, final String poolName) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,
-                new ThreadFactoryBuilder().setNameFormat(poolName+"-%d").build());
+              new ThreadFactoryBuilder().setNameFormat(poolName + "-%d").build());
     }
 
     @Override
-    protected void afterExecute(Runnable r, Throwable t) {
-        super.afterExecute(r, t);
+    protected void afterExecute(Runnable runnable, Throwable throwable) {
+        super.afterExecute(runnable, throwable);
         // in case of executing pure Runnable
-        if (t != null) {
-            LOG.warn("thread in pool stopped with error", t);
+        if (throwable != null) {
+            LOG.warn("thread in pool stopped with error", throwable);
         }
     }
 }

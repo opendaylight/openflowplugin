@@ -8,9 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.services.sal;
 
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterables;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -18,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 import org.opendaylight.openflowplugin.impl.util.BarrierUtil;
 import org.opendaylight.openflowplugin.impl.util.GroupUtil;
 import org.opendaylight.openflowplugin.impl.util.PathUtil;
@@ -82,26 +79,24 @@ public class SalGroupsBatchServiceImpl implements SalGroupsBatchService {
             final UpdateGroupInput updateGroupInput = new UpdateGroupInputBuilder(input)
                     .setOriginalGroup(new OriginalGroupBuilder(batchGroup.getOriginalBatchedGroup()).build())
                     .setUpdatedGroup(new UpdatedGroupBuilder(batchGroup.getUpdatedBatchedGroup()).build())
-                    .setGroupRef(createGroupRef(input.getNode(), batchGroup))
-                    .setNode(input.getNode())
-                    .build();
+                    .setGroupRef(createGroupRef(input.getNode(), batchGroup)).setNode(input.getNode()).build();
             resultsLot.add(JdkFutureAdapters.listenInPoolThread(salGroupService.updateGroup(updateGroupInput)));
         }
 
         final Iterable<Group> groups = batchUpdateGroups.stream()
-                .map(BatchGroupInputUpdateGrouping::getUpdatedBatchedGroup)
-                .collect(Collectors.toList());
+                .map(BatchGroupInputUpdateGrouping::getUpdatedBatchedGroup).collect(Collectors.toList());
 
-        final ListenableFuture<RpcResult<List<BatchFailedGroupsOutput>>> commonResult =
-                Futures.transform(Futures.allAsList(resultsLot), GroupUtil.<UpdateGroupOutput>createCumulatingFunction(
-                        groups, batchUpdateGroups.size()));
+        final ListenableFuture<RpcResult<List<BatchFailedGroupsOutput>>> commonResult = Futures
+                .transform(Futures.allAsList(resultsLot),
+                           GroupUtil.<UpdateGroupOutput>createCumulatingFunction(groups, batchUpdateGroups.size()));
 
-        ListenableFuture<RpcResult<UpdateGroupsBatchOutput>> updateGroupsBulkFuture = Futures.transform(
-                commonResult, GroupUtil.GROUP_UPDATE_TRANSFORM);
+        ListenableFuture<RpcResult<UpdateGroupsBatchOutput>> updateGroupsBulkFuture = Futures
+                .transform(commonResult, GroupUtil.GROUP_UPDATE_TRANSFORM);
 
         if (input.isBarrierAfter()) {
-            updateGroupsBulkFuture = BarrierUtil.chainBarrier(updateGroupsBulkFuture, input.getNode(),
-                    transactionService, GroupUtil.GROUP_UPDATE_COMPOSING_TRANSFORM);
+            updateGroupsBulkFuture = BarrierUtil
+                    .chainBarrier(updateGroupsBulkFuture, input.getNode(), transactionService,
+                                  GroupUtil.GROUP_UPDATE_COMPOSING_TRANSFORM);
         }
 
         return updateGroupsBulkFuture;
@@ -113,22 +108,20 @@ public class SalGroupsBatchServiceImpl implements SalGroupsBatchService {
         final ArrayList<ListenableFuture<RpcResult<AddGroupOutput>>> resultsLot = new ArrayList<>();
         for (BatchAddGroups addGroup : input.getBatchAddGroups()) {
             final AddGroupInput addGroupInput = new AddGroupInputBuilder(addGroup)
-                    .setGroupRef(createGroupRef(input.getNode(), addGroup))
-                    .setNode(input.getNode())
-                    .build();
+                    .setGroupRef(createGroupRef(input.getNode(), addGroup)).setNode(input.getNode()).build();
             resultsLot.add(JdkFutureAdapters.listenInPoolThread(salGroupService.addGroup(addGroupInput)));
         }
 
-        final ListenableFuture<RpcResult<List<BatchFailedGroupsOutput>>> commonResult =
-                Futures.transform(Futures.allAsList(resultsLot),
-                        GroupUtil.<AddGroupOutput>createCumulatingFunction(input.getBatchAddGroups()));
+        final ListenableFuture<RpcResult<List<BatchFailedGroupsOutput>>> commonResult = Futures
+                .transform(Futures.allAsList(resultsLot),
+                           GroupUtil.<AddGroupOutput>createCumulatingFunction(input.getBatchAddGroups()));
 
-        ListenableFuture<RpcResult<AddGroupsBatchOutput>> addGroupsBulkFuture =
-                Futures.transform(commonResult, GroupUtil.GROUP_ADD_TRANSFORM);
+        ListenableFuture<RpcResult<AddGroupsBatchOutput>> addGroupsBulkFuture = Futures
+                .transform(commonResult, GroupUtil.GROUP_ADD_TRANSFORM);
 
         if (input.isBarrierAfter()) {
-            addGroupsBulkFuture = BarrierUtil.chainBarrier(addGroupsBulkFuture, input.getNode(),
-                    transactionService, GroupUtil.GROUP_ADD_COMPOSING_TRANSFORM);
+            addGroupsBulkFuture = BarrierUtil.chainBarrier(addGroupsBulkFuture, input.getNode(), transactionService,
+                                                           GroupUtil.GROUP_ADD_COMPOSING_TRANSFORM);
         }
 
         return addGroupsBulkFuture;
@@ -136,28 +129,26 @@ public class SalGroupsBatchServiceImpl implements SalGroupsBatchService {
 
     @Override
     public Future<RpcResult<RemoveGroupsBatchOutput>> removeGroupsBatch(final RemoveGroupsBatchInput input) {
-        LOG.trace("Removing groups @ {} : {}",
-                  PathUtil.extractNodeId(input.getNode()),
+        LOG.trace("Removing groups @ {} : {}", PathUtil.extractNodeId(input.getNode()),
                   input.getBatchRemoveGroups().size());
         final ArrayList<ListenableFuture<RpcResult<RemoveGroupOutput>>> resultsLot = new ArrayList<>();
         for (BatchRemoveGroups addGroup : input.getBatchRemoveGroups()) {
             final RemoveGroupInput removeGroupInput = new RemoveGroupInputBuilder(addGroup)
-                    .setGroupRef(createGroupRef(input.getNode(), addGroup))
-                    .setNode(input.getNode())
-                    .build();
+                    .setGroupRef(createGroupRef(input.getNode(), addGroup)).setNode(input.getNode()).build();
             resultsLot.add(JdkFutureAdapters.listenInPoolThread(salGroupService.removeGroup(removeGroupInput)));
         }
 
-        final ListenableFuture<RpcResult<List<BatchFailedGroupsOutput>>> commonResult =
-                Futures.transform(Futures.allAsList(resultsLot),
-                        GroupUtil.<RemoveGroupOutput>createCumulatingFunction(input.getBatchRemoveGroups()));
+        final ListenableFuture<RpcResult<List<BatchFailedGroupsOutput>>> commonResult = Futures
+                .transform(Futures.allAsList(resultsLot),
+                           GroupUtil.<RemoveGroupOutput>createCumulatingFunction(input.getBatchRemoveGroups()));
 
-        ListenableFuture<RpcResult<RemoveGroupsBatchOutput>> removeGroupsBulkFuture =
-                Futures.transform(commonResult, GroupUtil.GROUP_REMOVE_TRANSFORM);
+        ListenableFuture<RpcResult<RemoveGroupsBatchOutput>> removeGroupsBulkFuture = Futures
+                .transform(commonResult, GroupUtil.GROUP_REMOVE_TRANSFORM);
 
         if (input.isBarrierAfter()) {
-            removeGroupsBulkFuture = BarrierUtil.chainBarrier(removeGroupsBulkFuture, input.getNode(),
-                    transactionService, GroupUtil.GROUP_REMOVE_COMPOSING_TRANSFORM);
+            removeGroupsBulkFuture = BarrierUtil
+                    .chainBarrier(removeGroupsBulkFuture, input.getNode(), transactionService,
+                                  GroupUtil.GROUP_REMOVE_COMPOSING_TRANSFORM);
         }
 
         return removeGroupsBulkFuture;
@@ -169,6 +160,6 @@ public class SalGroupsBatchServiceImpl implements SalGroupsBatchService {
 
     private static GroupRef createGroupRef(final NodeRef nodeRef, final BatchUpdateGroups batchGroup) {
         return GroupUtil.buildGroupPath((InstanceIdentifier<Node>) nodeRef.getValue(),
-                batchGroup.getUpdatedBatchedGroup().getGroupId());
+                                        batchGroup.getUpdatedBatchedGroup().getGroupId());
     }
 }

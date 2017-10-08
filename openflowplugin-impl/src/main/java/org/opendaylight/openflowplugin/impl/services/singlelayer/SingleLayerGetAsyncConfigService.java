@@ -20,15 +20,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 
 public class SingleLayerGetAsyncConfigService extends AbstractSimpleService<GetAsyncInput, AsyncConfigMessage> {
 
-    public SingleLayerGetAsyncConfigService(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
+    public SingleLayerGetAsyncConfigService(final RequestContextStack requestContextStack,
+                                            final DeviceContext deviceContext) {
         super(requestContextStack, deviceContext, AsyncConfigMessage.class);
     }
 
     @Override
     protected OfHeader buildRequest(Xid xid, GetAsyncInput input) throws ServiceException {
-        return new GetAsyncInputBuilder()
-                .setVersion(getVersion())
-                .setXid(xid.getValue())
-                .build();
+        return new GetAsyncInputBuilder().setVersion(getVersion()).setXid(xid.getValue()).build();
     }
 }

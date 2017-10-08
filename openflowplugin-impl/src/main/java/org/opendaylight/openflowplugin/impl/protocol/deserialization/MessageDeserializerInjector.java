@@ -16,8 +16,8 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.keys.TypeToClassKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.openflowplugin.impl.protocol.deserialization.messages.FlowMessageDeserializer;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.messages.AsyncConfigMessageDeserializer;
+import org.opendaylight.openflowplugin.impl.protocol.deserialization.messages.FlowMessageDeserializer;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.messages.GroupMessageDeserializer;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.messages.MeterMessageDeserializer;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.messages.PacketInMessageDeserializer;
@@ -38,7 +38,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInput;
 
-class MessageDeserializerInjector {
+final class MessageDeserializerInjector {
+
+    private MessageDeserializerInjector() {
+    }
 
     /**
      * Injects message deserializers into provided.
@@ -85,7 +88,7 @@ class MessageDeserializerInjector {
      */
     @VisibleForTesting
     static Function<Integer, Function<Class<? extends OfHeader>, Consumer<OFDeserializer<? extends OfHeader>>>>
-    createInjector(
+        createInjector(
             final DeserializerExtensionProvider provider,
             final short version) {
         return code -> retType -> deserializer -> {

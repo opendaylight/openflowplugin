@@ -54,12 +54,11 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
     }
 
     private void initStatisticsContext() {
-        statisticsContext = new StatisticsContextImpl<>(
-                mockedDeviceContext, convertorManager,
-                MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext),
-                MoreExecutors.newDirectExecutorService(),
-                true,
-                false, 3000, 50000);
+        statisticsContext = new StatisticsContextImpl<>(mockedDeviceContext, convertorManager,
+                                                        MultipartWriterProviderFactory
+                                                                .createDefaultProvider(mockedDeviceContext),
+                                                        MoreExecutors.newDirectExecutorService(), true, false, 3000,
+                                                        50000);
 
         statisticsContext.setStatisticsGatheringService(mockedStatisticsGatheringService);
         statisticsContext.setStatisticsGatheringOnTheFlyService(mockedStatisticsOnFlyGatheringService);
@@ -74,15 +73,20 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
     }
 
     /**
-     * There is nothing to check in close method
+     * There is nothing to check in close method.
      */
     @Test
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public void testClose() throws Exception {
-        final StatisticsContextImpl<MultipartReply> statisticsContext = new StatisticsContextImpl<>(
-                mockedDeviceContext, convertorManager,
-                MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext),
-                MoreExecutors.newDirectExecutorService(),
-                true, false, 3000, 50000);
+        final StatisticsContextImpl<MultipartReply> statisticsContext =
+                new StatisticsContextImpl<>(mockedDeviceContext,
+                                            convertorManager,
+                                            MultipartWriterProviderFactory
+                                                    .createDefaultProvider(mockedDeviceContext),
+                                            MoreExecutors.newDirectExecutorService(),
+                                            true,
+                                            false,
+                                            3000,50000);
 
         final RequestContext<Object> requestContext = statisticsContext.createRequestContext();
         statisticsContext.close();
@@ -115,18 +119,14 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
         when(mockedDeviceInfo.getNodeInstanceIdentifier()).thenReturn(DUMMY_NODE_ID);
         initStatisticsContext();
 
-        when(mockedStatisticsGatheringService.getStatisticsOfType(Matchers.any(EventIdentifier.class),
-                    Matchers.any(MultipartType.class)))
-                .thenReturn(
-                        Futures.immediateFuture(RpcResultBuilder.success(Collections.<MultipartReply>emptyList())
-                            .build())
-                );
-        when(mockedStatisticsOnFlyGatheringService.getStatisticsOfType(Matchers.any(EventIdentifier.class),
-                    Matchers.any(MultipartType.class)))
-                .thenReturn(
-                        Futures.immediateFuture(RpcResultBuilder.success(Collections.<MultipartReply>emptyList())
-                            .build())
-                );
+        when(mockedStatisticsGatheringService
+                     .getStatisticsOfType(Matchers.any(EventIdentifier.class), Matchers.any(MultipartType.class)))
+                .thenReturn(Futures.immediateFuture(
+                        RpcResultBuilder.success(Collections.<MultipartReply>emptyList()).build()));
+        when(mockedStatisticsOnFlyGatheringService
+                     .getStatisticsOfType(Matchers.any(EventIdentifier.class), Matchers.any(MultipartType.class)))
+                .thenReturn(Futures.immediateFuture(
+                        RpcResultBuilder.success(Collections.<MultipartReply>emptyList()).build()));
 
         statisticsContext.registerMastershipWatcher(mockedMastershipWatcher);
         statisticsContext.setStatisticsGatheringService(mockedStatisticsGatheringService);
