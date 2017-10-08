@@ -27,9 +27,6 @@ public class SingleLayerGetAsyncConfigService extends AbstractSimpleService<GetA
 
     @Override
     protected OfHeader buildRequest(Xid xid, GetAsyncInput input) throws ServiceException {
-        return new GetAsyncInputBuilder()
-                .setVersion(getVersion())
-                .setXid(xid.getValue())
-                .build();
+        return new GetAsyncInputBuilder().setVersion(getVersion()).setXid(xid.getValue()).build();
     }
 }
