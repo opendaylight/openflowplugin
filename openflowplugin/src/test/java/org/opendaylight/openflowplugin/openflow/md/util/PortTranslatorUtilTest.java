@@ -31,8 +31,11 @@ public class PortTranslatorUtilTest {
 
     private static final String MAC_ADDRESS = "00:01:02:03:04:05";
     private static final String NAME = "PortTranslatorTest";
-    private final Boolean[] pfBls = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false};
-    private final boolean[] pfV10Bls = {false, false, false, false, false, false, false, false, false, false, false, false};
+    private final Boolean[] pfBls
+                = {false, false, false, false, false, false, false, false, false, false, false, false, false, false,
+                   false, false};
+    private final boolean[] pfV10Bls
+            = {false, false, false, false, false, false, false, false, false, false, false, false};
     private final boolean[] portCfgBools = {false, false, false, false};
     private final boolean[] portCfgV10bools = {false, false, false, false, false, false, false};
     private final boolean[] portStateBools = {false, false, false, false};
@@ -40,29 +43,31 @@ public class PortTranslatorUtilTest {
     private static final Long MAX_SPEED = Long.decode("4294967295");
 
     /**
-     * Test  method for {@link PortTranslatorUtil#translatePortFeatures(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures)}
+     * Test  method for
+     * {@link PortTranslatorUtil#translatePortFeatures(org.opendaylight.yang.gen.v1.urn.opendaylight
+     * .openflow.common.types.rev130731.PortFeatures)}.
      */
     @Test
     public void testTranslatePortFeatures() {
-
-
         for (int i = 0; i < pfBls.length; i++) {
             pfBls[i] = true;
             final PortFeatures apf = getPortFeatures();
-            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures npf = PortTranslatorUtil.translatePortFeatures(apf);
+            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures npf
+                    = PortTranslatorUtil.translatePortFeatures(apf);
             assertEqualsPortFeatures(apf, npf);
             pfBls[i] = false;
         }
-
     }
 
     private PortFeatures getPortFeatures() {
-        return new PortFeatures(pfBls[0], pfBls[1], pfBls[2], pfBls[3], pfBls[4], pfBls[5], pfBls[6], pfBls[7], pfBls[8],
-                pfBls[9], pfBls[10], pfBls[11], pfBls[12], pfBls[13], pfBls[14], pfBls[15]);
+        return new PortFeatures(pfBls[0], pfBls[1], pfBls[2], pfBls[3], pfBls[4], pfBls[5], pfBls[6], pfBls[7],
+                                pfBls[8], pfBls[9], pfBls[10], pfBls[11], pfBls[12], pfBls[13], pfBls[14], pfBls[15]);
     }
 
     /**
-     * Test  method for {@link PortTranslatorUtil#translatePortFeatures(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeaturesV10)}
+     * Test  method for
+     * {@link PortTranslatorUtil#translatePortFeatures(org.opendaylight.yang.gen.v1.urn
+     * .opendaylight.openflow.common.types.rev130731.PortFeaturesV10)}.
      */
     @Test
     public void testTranslatePortFeaturesV10() {
@@ -72,7 +77,8 @@ public class PortTranslatorUtilTest {
 
             pfV10Bls[i] = true;
             final PortFeaturesV10 apfV10 = getPortFeaturesV10();
-            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures npf = PortTranslatorUtil.translatePortFeatures(apfV10);
+            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures npf
+                    = PortTranslatorUtil.translatePortFeatures(apfV10);
             assertEqualsPortFeaturesV10(apfV10, npf);
             pfV10Bls[i] = false;
 
@@ -81,12 +87,14 @@ public class PortTranslatorUtilTest {
     }
 
     private PortFeaturesV10 getPortFeaturesV10() {
-        return new PortFeaturesV10(pfV10Bls[0], pfV10Bls[1], pfV10Bls[2], pfV10Bls[3], pfV10Bls[4], pfV10Bls[5], pfV10Bls[6],
-                pfV10Bls[7], pfV10Bls[8], pfV10Bls[9], pfV10Bls[10], pfV10Bls[11]);
+        return new PortFeaturesV10(pfV10Bls[0], pfV10Bls[1], pfV10Bls[2], pfV10Bls[3], pfV10Bls[4], pfV10Bls[5],
+                                   pfV10Bls[6], pfV10Bls[7], pfV10Bls[8], pfV10Bls[9], pfV10Bls[10], pfV10Bls[11]);
     }
 
     /**
-     * Test  method for {@link PortTranslatorUtil#translatePort(Short, java.math.BigInteger, Long, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping)} ()}
+     * Test  method for
+     * {@link PortTranslatorUtil#translatePort(Short, java.math.BigInteger,
+     * Long, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping)} ()}.
      */
     @Test
     public void testTranslatePort() {
@@ -97,7 +105,8 @@ public class PortTranslatorUtilTest {
         Long portNumber = Long.MAX_VALUE;
         PortGrouping portGrouping = mockPortGrouping();
 
-        NodeConnectorUpdated nodeConnectorUpdated = PortTranslatorUtil.translatePort(version, dataPathId, portNumber, portGrouping);
+        NodeConnectorUpdated nodeConnectorUpdated = PortTranslatorUtil
+                .translatePort(version, dataPathId, portNumber, portGrouping);
         assertNotNull(nodeConnectorUpdated);
         version = OpenflowVersion.OF13.getVersion();
         nodeConnectorUpdated = PortTranslatorUtil.translatePort(version, dataPathId, portNumber, portGrouping);
@@ -141,14 +150,17 @@ public class PortTranslatorUtilTest {
     }
 
     private PortConfigV10 getPortConfigV10() {
-        return new PortConfigV10(portCfgV10bools[0], portCfgV10bools[1], portCfgV10bools[2], portCfgV10bools[3], portCfgV10bools[4], portCfgV10bools[5], portCfgV10bools[6]);
+        return new PortConfigV10(portCfgV10bools[0], portCfgV10bools[1], portCfgV10bools[2], portCfgV10bools[3],
+                                 portCfgV10bools[4], portCfgV10bools[5], portCfgV10bools[6]);
     }
 
     private PortConfig getPortConfig() {
         return new PortConfig(portCfgBools[0], portCfgBools[1], portCfgBools[2], portCfgBools[3]);
     }
 
-    private static void assertEqualsPortFeaturesV10(final PortFeaturesV10 apfV10, final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures npf) {
+    private static void assertEqualsPortFeaturesV10(final PortFeaturesV10 apfV10,
+                                                    final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types
+                                                            .port.rev130925.PortFeatures npf) {
         assertEquals(apfV10.is_100mbFd(), npf.isHundredMbFd());
         assertEquals(apfV10.is_100mbHd(), npf.isHundredMbHd());
 
@@ -166,7 +178,9 @@ public class PortTranslatorUtilTest {
         assertEquals(apfV10.isPauseAsym(), npf.isPauseAsym());
     }
 
-    private static void assertEqualsPortFeatures(final PortFeatures apf, final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures npf) {
+    private static void assertEqualsPortFeatures(final PortFeatures apf,
+                                                 final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port
+                                                         .rev130925.PortFeatures npf) {
         assertEquals(apf.is_100gbFd(), npf.isHundredGbFd());
         assertEquals(apf.is_100mbFd(), npf.isHundredMbFd());
         assertEquals(apf.is_100mbHd(), npf.isHundredMbHd());

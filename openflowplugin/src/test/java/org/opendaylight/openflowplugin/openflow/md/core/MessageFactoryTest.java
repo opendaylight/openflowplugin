@@ -31,8 +31,7 @@ public class MessageFactoryTest {
     public void testCreateHelloInputWithElements() {
         short highestVersion = (short) 0x04;
         long xid = 42L;
-        Boolean[] expectedVersionBitmap = new Boolean[]{
-                false, true, false, false, true};
+        Boolean[] expectedVersionBitmap = new Boolean[]{false, true, false, false, true};
 
         HelloInput helloMsg = MessageFactory.createHelloInput(highestVersion, xid, OFConstants.VERSION_ORDER);
         Assert.assertEquals(highestVersion, helloMsg.getVersion().shortValue());
