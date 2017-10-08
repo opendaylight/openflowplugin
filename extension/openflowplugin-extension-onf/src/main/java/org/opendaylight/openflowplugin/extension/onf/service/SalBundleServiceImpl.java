@@ -40,8 +40,8 @@ public class SalBundleServiceImpl implements SalBundleService {
     private final SalExperimenterMessageService experimenterMessageService;
 
     public SalBundleServiceImpl(final SalExperimenterMessageService experimenterMessageService) {
-        this.experimenterMessageService = Preconditions.checkNotNull(experimenterMessageService,
-                "SalExperimenterMessageService can not be null!");
+        this.experimenterMessageService = Preconditions
+                .checkNotNull(experimenterMessageService, "SalExperimenterMessageService can not be null!");
     }
 
     @Override
@@ -49,12 +49,7 @@ public class SalBundleServiceImpl implements SalBundleService {
         final SendExperimenterInputBuilder experimenterInputBuilder = new SendExperimenterInputBuilder();
         experimenterInputBuilder.setNode(input.getNode());
         experimenterInputBuilder.setExperimenterMessageOfChoice(
-                new BundleControlSalBuilder()
-                        .setSalControlData(
-                                new SalControlDataBuilder(input).build()
-                        )
-                        .build()
-        );
+                new BundleControlSalBuilder().setSalControlData(new SalControlDataBuilder(input).build()).build());
         return experimenterMessageService.sendExperimenter(experimenterInputBuilder.build());
     }
 
@@ -71,16 +66,17 @@ public class SalBundleServiceImpl implements SalBundleService {
         dataBuilder.setBundleProperty(input.getBundleProperty());
         for (Message message : input.getMessages().getMessage()) {
             dataBuilder.setBundleInnerMessage(message.getBundleInnerMessage());
-            experimenterInputBuilder.setExperimenterMessageOfChoice(bundleAddMessageBuilder
-                    .setSalAddMessageData(dataBuilder.build()).build());
-            ListenableFuture<RpcResult<Void>> res = JdkFutureAdapters.listenInPoolThread(
-                    experimenterMessageService.sendExperimenter(experimenterInputBuilder.build()));
+            experimenterInputBuilder.setExperimenterMessageOfChoice(
+                    bundleAddMessageBuilder.setSalAddMessageData(dataBuilder.build()).build());
+            ListenableFuture<RpcResult<Void>> res = JdkFutureAdapters
+                    .listenInPoolThread(experimenterMessageService.sendExperimenter(experimenterInputBuilder.build()));
             partialResults.add(res);
         }
         return processResults(partialResults);
     }
 
-    private static Future<RpcResult<Void>> processResults(final List<ListenableFuture<RpcResult<Void>>> partialResults) {
+    private static Future<RpcResult<Void>> processResults(
+            final List<ListenableFuture<RpcResult<Void>>> partialResults) {
         final SettableFuture<RpcResult<Void>> result = SettableFuture.create();
         Futures.addCallback(Futures.successfulAsList(partialResults), new FutureCallback<List<RpcResult<Void>>>() {
             @Override
@@ -90,7 +86,7 @@ public class SalBundleServiceImpl implements SalBundleService {
                 for (RpcResult<Void> res : results) {
                     if (res == null) {
                         errors.add(RpcResultBuilder.newError(RpcError.ErrorType.APPLICATION, "BundleExtensionService",
-                                "RpcResult is null."));
+                                                             "RpcResult is null."));
                     } else if (!res.isSuccessful()) {
                         errors.addAll(res.getErrors());
                     }
@@ -104,7 +100,7 @@ public class SalBundleServiceImpl implements SalBundleService {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Throwable throwable) {
                 RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.failed();
                 result.set(rpcResultBuilder.build());
             }

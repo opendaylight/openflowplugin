@@ -32,7 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.n
 /**
  * Pulled out port stats to notification transformation.
  */
-public class NodeConnectorStatisticsToNotificationTransformer {
+public final class NodeConnectorStatisticsToNotificationTransformer {
 
     private NodeConnectorStatisticsToNotificationTransformer() {
         // Hide implicit constructor

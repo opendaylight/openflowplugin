@@ -35,7 +35,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInput;
 
-class MessageDeserializerInjector {
+final class MessageDeserializerInjector {
+
+    private MessageDeserializerInjector() {
+    }
 
     /**
      * Injects message deserializers into provided.

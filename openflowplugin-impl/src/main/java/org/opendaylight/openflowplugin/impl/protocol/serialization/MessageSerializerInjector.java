@@ -30,7 +30,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 /**
  * Util class for injecting new message serializers into OpenflowJava.
  */
-class MessageSerializerInjector {
+final class MessageSerializerInjector {
+
+    private MessageSerializerInjector() {
+    }
 
     /**
      * Injects message serializers into provided
