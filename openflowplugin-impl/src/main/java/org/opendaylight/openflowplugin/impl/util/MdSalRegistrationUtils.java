@@ -66,7 +66,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 
-public class MdSalRegistrationUtils {
+public final class MdSalRegistrationUtils {
 
     //TODO: Make one register and one unregister method for all services
     private MdSalRegistrationUtils() {

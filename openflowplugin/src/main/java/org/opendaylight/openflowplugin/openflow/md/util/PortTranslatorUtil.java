@@ -32,7 +32,9 @@ import org.slf4j.LoggerFactory;
 public abstract class PortTranslatorUtil {
     private static final Logger LOG = LoggerFactory.getLogger(PortTranslatorUtil.class);
 
-    public static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures translatePortFeatures(final PortFeatures apf) {
+    public static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures
+        translatePortFeatures(
+            final PortFeatures apf) {
         org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures napf = null;
         if (apf != null) {
             napf = new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures(
@@ -58,7 +60,8 @@ public abstract class PortTranslatorUtil {
         return napf;
     }
 
-    public static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures translatePortFeatures(
+    public static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures
+        translatePortFeatures(
             final PortFeaturesV10 apf) {
         org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures napf = null;
         if (apf != null) {
@@ -79,7 +82,7 @@ public abstract class PortTranslatorUtil {
                     apf.is_10gbFd(), //_tenGbFd
                     apf.is_10mbFd(), //_tenMbFd
                     apf.is_10mbHd()//_tenMbHd
-                    );
+            );
         }
         return napf;
     }
@@ -104,28 +107,32 @@ public abstract class PortTranslatorUtil {
         return nstate.build();
     }
 
-    public static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig translatePortConfig(final PortConfig pc) {
+    public static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig
+        translatePortConfig(
+            final PortConfig pc) {
         org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig npc = null;
         if (pc != null) {
-            npc = new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig(pc.isNoFwd(),
-                    pc.isNoPacketIn(), pc.isNoRecv(), pc.isPortDown());
+            npc = new org.opendaylight.yang.gen.v1.urn.opendaylight
+                    .flow.types.port.rev130925.PortConfig(pc.isNoFwd(),pc.isNoPacketIn(),pc.isNoRecv(),pc.isPortDown());
         }
         return npc;
     }
 
-    public static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig translatePortConfig(
+    public static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig
+        translatePortConfig(
             final PortConfigV10 pc) {
         org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig npc = null;
         if (pc != null) {
-            npc = new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig(pc.isNoFwd(),
-                    pc.isNoPacketIn(), pc.isNoRecv(), pc.isPortDown());
+            npc = new org.opendaylight.yang.gen.v1.urn.opendaylight
+                    .flow.types.port.rev130925.PortConfig(pc.isNoFwd(),pc.isNoPacketIn(),pc.isNoRecv(),pc.isPortDown());
         }
         return npc;
     }
 
-    public static NodeConnectorUpdated translatePort(final Short version, final BigInteger datapathId, final Long portNumber, final PortGrouping port) {
+    public static NodeConnectorUpdated translatePort(final Short version, final BigInteger datapathId,
+                                                     final Long portNumber, final PortGrouping port) {
         OpenflowVersion ofVersion = OpenflowVersion.get(version);
-        NodeConnectorUpdatedBuilder builder = InventoryDataServiceUtil
+        final NodeConnectorUpdatedBuilder builder = InventoryDataServiceUtil
                 .nodeConnectorUpdatedBuilderFromDatapathIdPortNo(datapathId, port.getPortNo(), ofVersion);
         FlowCapableNodeConnectorUpdatedBuilder fcncub = new FlowCapableNodeConnectorUpdatedBuilder();
         if (ofVersion == OpenflowVersion.OF13) {
@@ -160,10 +167,12 @@ public abstract class PortTranslatorUtil {
         return builder.build();
     }
 
-    public static NodeConnectorRemoved translatePortRemoved(final Short version, final BigInteger datapathId, final Long portNumber, final PortGrouping port) {
+    public static NodeConnectorRemoved translatePortRemoved(final Short version, final BigInteger datapathId,
+                                                            final Long portNumber, final PortGrouping port) {
         OpenflowVersion ofVersion = OpenflowVersion.get(version);
         NodeConnectorRemovedBuilder builder = new NodeConnectorRemovedBuilder();
-        builder.setNodeConnectorRef(InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(datapathId, portNumber, ofVersion));
+        builder.setNodeConnectorRef(
+                InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(datapathId, portNumber, ofVersion));
         return builder.build();
     }
 }

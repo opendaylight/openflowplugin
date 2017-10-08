@@ -66,7 +66,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 /**
  * Util class for injecting new match entry deserializers into OpenflowJava.
  */
-public class MatchDeserializerInjector {
+public final class MatchDeserializerInjector {
+
+    private MatchDeserializerInjector() {
+    }
 
     /**
      * Injects deserializers into provided
