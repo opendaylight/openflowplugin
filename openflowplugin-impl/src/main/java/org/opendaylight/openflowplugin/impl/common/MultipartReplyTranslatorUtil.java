@@ -127,8 +127,11 @@ import org.slf4j.LoggerFactory;
  * Class converts multipart reply messages to the objects that can be then written to datastore using
  * multipart writers.
  */
-public class MultipartReplyTranslatorUtil {
+public final class MultipartReplyTranslatorUtil {
     private static final Logger LOG = LoggerFactory.getLogger(MultipartReplyTranslatorUtil.class);
+
+    private MultipartReplyTranslatorUtil() {
+    }
 
     public static Optional<? extends MultipartReplyBody> translate(
             final OfHeader message,
