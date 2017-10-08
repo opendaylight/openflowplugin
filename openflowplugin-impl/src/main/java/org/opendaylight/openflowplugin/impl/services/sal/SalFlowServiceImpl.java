@@ -205,7 +205,7 @@ public class SalFlowServiceImpl implements SalFlowService {
                 .child(Flow.class, new FlowKey(flowDescriptor.getFlowId()));
     }
 
-    private class AddFlowCallback implements FutureCallback<RpcResult<AddFlowOutput>> {
+    private final class AddFlowCallback implements FutureCallback<RpcResult<AddFlowOutput>> {
         private final AddFlowInput input;
         private final FlowRegistryKey flowRegistryKey;
 
@@ -246,7 +246,7 @@ public class SalFlowServiceImpl implements SalFlowService {
         }
     }
 
-    private class RemoveFlowCallback implements FutureCallback<RpcResult<RemoveFlowOutput>> {
+    private final class RemoveFlowCallback implements FutureCallback<RpcResult<RemoveFlowOutput>> {
         private final RemoveFlowInput input;
 
         private RemoveFlowCallback(final RemoveFlowInput input) {
@@ -276,7 +276,7 @@ public class SalFlowServiceImpl implements SalFlowService {
         }
     }
 
-    private class UpdateFlowCallback implements FutureCallback<RpcResult<UpdateFlowOutput>> {
+    private final class UpdateFlowCallback implements FutureCallback<RpcResult<UpdateFlowOutput>> {
         private final UpdateFlowInput input;
 
         private UpdateFlowCallback(UpdateFlowInput input) {
