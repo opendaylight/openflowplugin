@@ -63,26 +63,26 @@ public class FlowTableStatNotificationSupplierImplTest {
 
     @Test(expected = NullPointerException.class)
     public void testNullableChangeEvent() {
-        notifSupplierImpl.onDataTreeChanged( TestChangeEventBuildHelper.createNullTestDataTreeEvent());
+        notifSupplierImpl.onDataTreeChanged(TestChangeEventBuildHelper.createNullTestDataTreeEvent());
     }
 
     @Test
     public void testEmptyChangeEvent() {
-        notifSupplierImpl.onDataTreeChanged( TestChangeEventBuildHelper.createEmptyTestDataTreeEvent());
+        notifSupplierImpl.onDataTreeChanged(TestChangeEventBuildHelper.createEmptyTestDataTreeEvent());
     }
 
     @Test
     public void testCreate() {
-        final FlowTableStatisticsUpdate notification = notifSupplierImpl.createNotification(createTestFlowTableStat(),
-                createTestFlowTableStatPath());
+        final FlowTableStatisticsUpdate notification = notifSupplierImpl
+                .createNotification(createTestFlowTableStat(), createTestFlowTableStatPath());
         assertNotNull(notification);
         assertEquals(FLOW_NODE_ID, notification.getId().getValue());
     }
 
     @Test
     public void testCreateChangeEvent() {
-        final TestData testData = new TestData(createTestFlowTableStatPath(),null,createTestFlowTableStat(),
-                DataObjectModification.ModificationType.WRITE);
+        final TestData testData = new TestData(createTestFlowTableStatPath(), null, createTestFlowTableStat(),
+                                               DataObjectModification.ModificationType.WRITE);
         Collection<DataTreeModification<FlowTableStatistics>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);

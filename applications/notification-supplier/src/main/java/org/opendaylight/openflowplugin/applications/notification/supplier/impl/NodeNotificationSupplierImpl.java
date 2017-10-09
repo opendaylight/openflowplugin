@@ -27,10 +27,11 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * Implementation define a contract between {@link FlowCapableNode} data object
  * and {@link NodeUpdated} and {@link NodeRemoved} notifications.
  */
-public class NodeNotificationSupplierImpl extends
-        AbstractNotificationSupplierForItemRoot<FlowCapableNode, NodeUpdated, NodeRemoved> {
+public class NodeNotificationSupplierImpl extends AbstractNotificationSupplierForItemRoot<FlowCapableNode,
+        NodeUpdated, NodeRemoved> {
 
-    private static final InstanceIdentifier<FlowCapableNode> wildCardedInstanceIdent = getNodeWildII().augmentation(FlowCapableNode.class);
+    private static final InstanceIdentifier<FlowCapableNode> FLOW_CAPABLE_NODE_INSTANCE_IDENTIFIER = getNodeWildII()
+            .augmentation(FlowCapableNode.class);
 
     /**
      * Constructor register supplier as DataTreeChangeListener and create wildCarded InstanceIdentifier.
@@ -44,14 +45,15 @@ public class NodeNotificationSupplierImpl extends
 
     @Override
     public InstanceIdentifier<FlowCapableNode> getWildCardPath() {
-        return wildCardedInstanceIdent;
+        return FLOW_CAPABLE_NODE_INSTANCE_IDENTIFIER;
     }
 
     @Override
-    public NodeUpdated createNotification(final FlowCapableNode o, final InstanceIdentifier<FlowCapableNode> ii) {
-        Preconditions.checkArgument(o != null);
+    public NodeUpdated createNotification(final FlowCapableNode flowCapableNode,
+                                          final InstanceIdentifier<FlowCapableNode> ii) {
+        Preconditions.checkArgument(flowCapableNode != null);
         Preconditions.checkArgument(ii != null);
-        final FlowCapableNodeUpdatedBuilder flowNodeNotifBuilder = new FlowCapableNodeUpdatedBuilder(o);
+        final FlowCapableNodeUpdatedBuilder flowNodeNotifBuilder = new FlowCapableNodeUpdatedBuilder(flowCapableNode);
         final NodeUpdatedBuilder notifBuilder = new NodeUpdatedBuilder();
         notifBuilder.setId(ii.firstKeyOf(Node.class, NodeKey.class).getId());
         notifBuilder.setNodeRef(new NodeRef(getNodeII(ii)));

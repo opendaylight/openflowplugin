@@ -9,7 +9,7 @@
 package org.opendaylight.openflowplugin.applications.notification.supplier.tools;
 
 /**
- * Class is designed as ConfigSubsitem settings holder
+ * Class is designed as ConfigSubsystem settings holder.
  */
 public class NotificationProviderConfig {
 

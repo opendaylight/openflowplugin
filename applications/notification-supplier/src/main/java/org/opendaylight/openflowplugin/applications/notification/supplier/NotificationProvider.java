@@ -59,7 +59,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.QueueStatisticsUpdate;
 
 /**
- * Provider Implementation
+ * Provider Implementation.
  */
 public class NotificationProvider implements AutoCloseable {
 
@@ -70,49 +70,59 @@ public class NotificationProvider implements AutoCloseable {
     /* Supplier List property help for easy close method implementation and testing */
     private List<NotificationSupplierDefinition<?>> supplierList;
     private NotificationSupplierForItemRoot<FlowCapableNode, NodeUpdated, NodeRemoved> nodeSupp;
-    private NotificationSupplierForItemRoot<FlowCapableNodeConnector, NodeConnectorUpdated, NodeConnectorRemoved> connectorSupp;
+    private NotificationSupplierForItemRoot<FlowCapableNodeConnector, NodeConnectorUpdated, NodeConnectorRemoved>
+            connectorSupp;
     private NotificationSupplierForItem<Flow, FlowAdded, FlowUpdated, FlowRemoved> flowSupp;
     private NotificationSupplierForItem<Meter, MeterAdded, MeterUpdated, MeterRemoved> meterSupp;
     private NotificationSupplierForItem<Group, GroupAdded, GroupUpdated, GroupRemoved> groupSupp;
-    private NotificationSupplierForItemStat<FlowCapableNodeConnectorStatistics, NodeConnectorStatisticsUpdate> connectorStatSupp;
+    private NotificationSupplierForItemStat<FlowCapableNodeConnectorStatistics, NodeConnectorStatisticsUpdate>
+            connectorStatSupp;
     private NotificationSupplierForItemStat<FlowStatistics, FlowsStatisticsUpdate> flowStatSupp;
     private NotificationSupplierForItemStat<FlowTableStatistics, FlowTableStatisticsUpdate> flowTableStatSupp;
     private NotificationSupplierForItemStat<MeterStatistics, MeterStatisticsUpdated> meterStatSupp;
     private NotificationSupplierForItemStat<GroupStatistics, GroupStatisticsUpdated> groupStatSupp;
-    private NotificationSupplierForItemStat<FlowCapableNodeConnectorQueueStatisticsData, QueueStatisticsUpdate> queueStatSupp;
+    private NotificationSupplierForItemStat<FlowCapableNodeConnectorQueueStatisticsData, QueueStatisticsUpdate>
+            queueStatSupp;
 
     /**
-     * Provider constructor set all needed final parameters
-     * @param nps - notifProviderService
-     * @param db - dataBroker
-     * @param flowSupp - Flow Support Flag
-     * @param meterSupp - Meter Support Flag
-     * @param groupSupp - Group Support Flag
+     * Provider constructor set all needed final parameters.
+     *
+     * @param nps               - notifProviderService
+     * @param db                - dataBroker
+     * @param flowSupp          - Flow Support Flag
+     * @param meterSupp         - Meter Support Flag
+     * @param groupSupp         - Group Support Flag
      * @param connectorStatSupp - Connector Stat Support Flag
-     * @param flowStatSupp - Flow Stat Support Flag
+     * @param flowStatSupp      - Flow Stat Support Flag
      * @param flowTableStatSupp - Flow Table Stat Support Flag
-     * @param meterStatSupp - Meter Stat Support Flag
-     * @param groupStatSupp - Group Stat Support Flag
-     * @param queueStatSupp - Queue Stat Support Flag
+     * @param meterStatSupp     - Meter Stat Support Flag
+     * @param groupStatSupp     - Group Stat Support Flag
+     * @param queueStatSupp     - Queue Stat Support Flag
      */
-    public NotificationProvider(final NotificationProviderService nps, final DataBroker db,
-                                boolean flowSupp, boolean meterSupp, boolean groupSupp,
-                                boolean connectorStatSupp, boolean flowStatSupp, boolean flowTableStatSupp,
-                                boolean meterStatSupp, boolean groupStatSupp, boolean queueStatSupp) {
+    public NotificationProvider(final NotificationProviderService nps, final DataBroker db, boolean flowSupp,
+                                boolean meterSupp, boolean groupSupp, boolean connectorStatSupp, boolean flowStatSupp,
+                                boolean flowTableStatSupp, boolean meterStatSupp, boolean groupStatSupp,
+                                boolean queueStatSupp) {
         this.nps = Preconditions.checkNotNull(nps);
         this.db = Preconditions.checkNotNull(db);
-        this.config = initializeNotificationProviderConfig(flowSupp, meterSupp, groupSupp, connectorStatSupp, flowStatSupp,
-                flowTableStatSupp, meterStatSupp, groupStatSupp, queueStatSupp);
+        this.config = initializeNotificationProviderConfig(flowSupp, meterSupp, groupSupp, connectorStatSupp,
+                                                           flowStatSupp, flowTableStatSupp, meterStatSupp,
+                                                           groupStatSupp, queueStatSupp);
     }
 
     /**
-     * Method to initialize NotificationProviderConfig
+     * Method to initialize NotificationProviderConfig.
      */
-    private NotificationProviderConfig initializeNotificationProviderConfig(boolean flowSupp, boolean meterSupp, boolean groupSupp,
-                                                      boolean connectorStatSupp, boolean flowStatSupp, boolean flowTableStatSupp,
-                                                      boolean meterStatSupp, boolean groupStatSupp, boolean queueStatSupp){
-        NotificationProviderConfig.NotificationProviderConfigBuilder  notif =
-                new NotificationProviderConfig.NotificationProviderConfigBuilder();
+    private NotificationProviderConfig initializeNotificationProviderConfig(boolean flowSupp, boolean meterSupp,
+                                                                            boolean groupSupp,
+                                                                            boolean connectorStatSupp,
+                                                                            boolean flowStatSupp,
+                                                                            boolean flowTableStatSupp,
+                                                                            boolean meterStatSupp,
+                                                                            boolean groupStatSupp,
+                                                                            boolean queueStatSupp) {
+        NotificationProviderConfig.NotificationProviderConfigBuilder notif
+                = new NotificationProviderConfig.NotificationProviderConfigBuilder();
         notif.setFlowSupport(flowSupp);
         notif.setMeterSupport(meterSupp);
         notif.setGroupSupport(groupSupp);
@@ -131,15 +141,18 @@ public class NotificationProvider implements AutoCloseable {
         flowSupp = config.isFlowSupport() ? new FlowNotificationSupplierImpl(nps, db) : null;
         meterSupp = config.isMeterSupport() ? new MeterNotificationSupplierImpl(nps, db) : null;
         groupSupp = config.isGroupSupport() ? new GroupNotificationSupplierImpl(nps, db) : null;
-        connectorStatSupp = config.isNodeConnectorStatSupport() ? new NodeConnectorStatNotificationSupplierImpl(nps, db) : null;
+        connectorStatSupp = config.isNodeConnectorStatSupport() ? new NodeConnectorStatNotificationSupplierImpl(nps,
+                                                                                                                db) :
+                null;
         flowStatSupp = config.isFlowStatSupport() ? new FlowStatNotificationSupplierImpl(nps, db) : null;
         flowTableStatSupp = config.isFlowTableStatSupport() ? new FlowTableStatNotificationSupplierImpl(nps, db) : null;
         meterStatSupp = config.isMeterStatSupport() ? new MeterStatNotificationSupplierImpl(nps, db) : null;
         groupStatSupp = config.isGroupStatSupport() ? new GroupStatNotificationSupplierImpl(nps, db) : null;
         queueStatSupp = config.isQueueStatSupport() ? new QueueStatNotificationSupplierImpl(nps, db) : null;
 
-        supplierList = new ArrayList<>(Arrays.asList(nodeSupp, connectorSupp, flowSupp, meterSupp, groupSupp,
-                connectorStatSupp, flowStatSupp, flowTableStatSupp, meterStatSupp, groupStatSupp, queueStatSupp));
+        supplierList = new ArrayList<>(
+                Arrays.asList(nodeSupp, connectorSupp, flowSupp, meterSupp, groupSupp, connectorStatSupp, flowStatSupp,
+                              flowTableStatSupp, meterStatSupp, groupStatSupp, queueStatSupp));
     }
 
     @Override

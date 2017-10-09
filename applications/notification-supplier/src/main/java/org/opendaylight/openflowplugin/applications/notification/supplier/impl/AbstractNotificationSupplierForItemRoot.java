@@ -21,30 +21,26 @@ import org.opendaylight.yangtools.yang.binding.Notification;
 
 /**
  * Class is package protected abstract implementation for all Root Items
- * Notification Suppliers
+ * Notification Suppliers.
  *
  * @param <O> - data tree item Object
  * @param <C> - Create notification
  * @param <D> - Delete notification
  */
-abstract class AbstractNotificationSupplierForItemRoot<O extends DataObject,
-                                               C extends Notification,
-                                               D extends Notification>
-                    extends AbstractNotificationSupplierBase<O>
-                    implements NotificationSupplierForItemRoot<O, C, D> {
+public abstract class AbstractNotificationSupplierForItemRoot<O extends DataObject, C extends Notification, D extends
+        Notification> extends AbstractNotificationSupplierBase<O> implements NotificationSupplierForItemRoot<O, C, D> {
 
     private final NotificationProviderService notificationProviderService;
 
     /**
-     * Default constructor for all Root Item Notification Supplier implementation
+     * Default constructor for all Root Item Notification Supplier implementation.
      *
      * @param notificationProviderService - notification publisher
-     * @param db - DataBroker for DataTreeChangeListener registration
-     * @param clazz - Statistics Notification Class
+     * @param db                          - DataBroker for DataTreeChangeListener registration
+     * @param clazz                       - Statistics Notification Class
      */
     public AbstractNotificationSupplierForItemRoot(final NotificationProviderService notificationProviderService,
-                                                   final DataBroker db,
-                                                   final Class<O> clazz) {
+                                                   final DataBroker db, final Class<O> clazz) {
         super(db, clazz);
         this.notificationProviderService = Preconditions.checkNotNull(notificationProviderService);
     }
@@ -78,7 +74,7 @@ abstract class AbstractNotificationSupplierForItemRoot<O extends DataObject,
     }
 
 
-    public void add(InstanceIdentifier<O> identifier , O add ){
+    public void add(InstanceIdentifier<O> identifier, O add) {
 
         final C notif = createNotification(add, identifier);
         if (notif != null) {
@@ -86,14 +82,14 @@ abstract class AbstractNotificationSupplierForItemRoot<O extends DataObject,
         }
     }
 
-    public void remove(InstanceIdentifier<O> identifier , O del){
+    public void remove(InstanceIdentifier<O> identifier, O del) {
         final D notif = deleteNotification(identifier.firstIdentifierOf(clazz));
         if (notif != null) {
             notificationProviderService.publish(notif);
         }
     }
 
-    public void update(InstanceIdentifier<O> identifier , O before, O after){
+    public void update(InstanceIdentifier<O> identifier, O before, O after) {
         //EMPTY NO-OP
     }
 

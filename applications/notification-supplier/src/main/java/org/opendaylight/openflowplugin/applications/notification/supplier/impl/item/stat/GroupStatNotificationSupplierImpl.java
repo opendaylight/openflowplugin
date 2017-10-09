@@ -26,12 +26,12 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * Implementation define a contract between {@link GroupStatistics} data object
  * and {@link GroupStatisticsUpdated} notification.
  */
-public class GroupStatNotificationSupplierImpl extends
-        AbstractNotificationSupplierForItemStat<GroupStatistics, GroupStatisticsUpdated> {
+public class GroupStatNotificationSupplierImpl extends AbstractNotificationSupplierForItemStat<GroupStatistics,
+        GroupStatisticsUpdated> {
 
-    private static final InstanceIdentifier<GroupStatistics> wildCardedInstanceIdent =
-            getNodeWildII().augmentation(FlowCapableNode.class).child(Group.class)
-                    .augmentation(NodeGroupStatistics.class).child(GroupStatistics.class);
+    private static final InstanceIdentifier<GroupStatistics> GROUP_STATISTICS_INSTANCE_IDENTIFIER = getNodeWildII()
+            .augmentation(FlowCapableNode.class).child(Group.class).augmentation(NodeGroupStatistics.class)
+            .child(GroupStatistics.class);
 
     /**
      * Constructor register supplier as DataTreeChangeListener and create wildCarded InstanceIdentifier.
@@ -39,19 +39,20 @@ public class GroupStatNotificationSupplierImpl extends
      * @param notifProviderService - {@link NotificationProviderService}
      * @param db                   - {@link DataBroker}
      */
-    public GroupStatNotificationSupplierImpl(final NotificationProviderService notifProviderService, final DataBroker db) {
+    public GroupStatNotificationSupplierImpl(final NotificationProviderService notifProviderService,
+                                             final DataBroker db) {
         super(notifProviderService, db, GroupStatistics.class);
     }
 
     @Override
     public InstanceIdentifier<GroupStatistics> getWildCardPath() {
-        return wildCardedInstanceIdent;
+        return GROUP_STATISTICS_INSTANCE_IDENTIFIER;
     }
 
     @Override
-    public GroupStatisticsUpdated createNotification(final GroupStatistics o,
+    public GroupStatisticsUpdated createNotification(final GroupStatistics groupStatistics,
                                                      final InstanceIdentifier<GroupStatistics> path) {
-        Preconditions.checkArgument(o != null);
+        Preconditions.checkArgument(groupStatistics != null);
         Preconditions.checkArgument(path != null);
 
         final GroupStatisticsUpdatedBuilder builder = new GroupStatisticsUpdatedBuilder();
@@ -59,7 +60,7 @@ public class GroupStatNotificationSupplierImpl extends
         builder.setMoreReplies(Boolean.FALSE);
         // TODO : fix if it needs, but we have to ask DataStore for the NodeConnector list
         builder.setNodeConnector(Collections.<NodeConnector>emptyList());
-        builder.setGroupStats(Collections.singletonList(new GroupStatsBuilder(o).build()));
+        builder.setGroupStats(Collections.singletonList(new GroupStatsBuilder(groupStatistics).build()));
         return builder.build();
     }
 }
