@@ -1,12 +1,12 @@
-/**
- * Copyright (c) 2014 2017 Cisco Systems, Inc. and others. All rights reserved.
+/*
+ * Copyright (c) 2015, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.applications.tableMissEnforcer;
+package org.opendaylight.openflowplugin.applications.tablemissenforcer;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -67,18 +67,21 @@ public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeC
         this.dataBroker = dataBroker;
     }
 
+    @SuppressWarnings("IllegalCatch")
     public void start() {
-        final InstanceIdentifier<FlowCapableNode> path = InstanceIdentifier.create(Nodes.class).child(Node.class).
-                augmentation(FlowCapableNode.class);
-        final DataTreeIdentifier<FlowCapableNode> identifier = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, path);
+        final InstanceIdentifier<FlowCapableNode> path = InstanceIdentifier.create(Nodes.class).child(Node.class)
+                .augmentation(FlowCapableNode.class);
+        final DataTreeIdentifier<FlowCapableNode> identifier = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL,
+                                                                                      path);
         SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
         try {
-            listenerRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<DataTreeChangeListener>>() {
-                @Override
-                public ListenerRegistration<DataTreeChangeListener> call() throws Exception {
-                    return dataBroker.registerDataTreeChangeListener(identifier, LLDPPacketPuntEnforcer.this);
-                }
-            });
+            listenerRegistration = looper
+                    .loopUntilNoException(new Callable<ListenerRegistration<DataTreeChangeListener>>() {
+                        @Override
+                        public ListenerRegistration<DataTreeChangeListener> call() throws Exception {
+                            return dataBroker.registerDataTreeChangeListener(identifier, LLDPPacketPuntEnforcer.this);
+                        }
+                    });
         } catch (Exception e) {
             throw new IllegalStateException("registerDataTreeChangeListener failed", e);
         }
@@ -86,7 +89,7 @@ public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeC
 
     @Override
     public void close() {
-        if(listenerRegistration != null) {
+        if (listenerRegistration != null) {
             listenerRegistration.close();
         }
     }
@@ -96,7 +99,8 @@ public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeC
         for (DataTreeModification modification : modifications) {
             if (modification.getRootNode().getModificationType() == ModificationType.WRITE) {
                 AddFlowInputBuilder addFlowInput = new AddFlowInputBuilder(createFlow());
-                addFlowInput.setNode(new NodeRef(modification.getRootPath().getRootIdentifier().firstIdentifierOf(Node.class)));
+                addFlowInput.setNode(
+                        new NodeRef(modification.getRootPath().getRootIdentifier().firstIdentifierOf(Node.class)));
                 this.flowService.addFlow(addFlowInput.build());
             }
         }
@@ -129,7 +133,7 @@ public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeC
     }
 
     private static InstructionsBuilder createSendToControllerInstructions() {
-        List<Action> actionList = new ArrayList<>();
+        final List<Action> actionList = new ArrayList<>();
         ActionBuilder ab = new ActionBuilder();
 
         OutputActionBuilder output = new OutputActionBuilder();

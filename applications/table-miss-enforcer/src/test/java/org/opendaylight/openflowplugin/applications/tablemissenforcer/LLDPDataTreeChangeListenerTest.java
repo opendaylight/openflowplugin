@@ -1,12 +1,12 @@
-/**
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+/*
+ * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.applications.tableMissEnforcer;
+package org.opendaylight.openflowplugin.applications.tablemissenforcer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -49,7 +49,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 @RunWith(MockitoJUnitRunner.class)
 public class LLDPDataTreeChangeListenerTest {
     private LLDPPacketPuntEnforcer lldpPacketPuntEnforcer;
-    private final static InstanceIdentifier<Node> nodeIID = InstanceIdentifier.create(Nodes.class)
+    private static final InstanceIdentifier<Node> NODE_IID = InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(new NodeId("testnode:1")));
     @Mock
     private SalFlowService flowService;
@@ -61,7 +61,8 @@ public class LLDPDataTreeChangeListenerTest {
     @Before
     public void setUp() {
         lldpPacketPuntEnforcer = new LLDPPacketPuntEnforcer(flowService, Mockito.mock(DataBroker.class));
-        final DataTreeIdentifier<FlowCapableNode> identifier = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, nodeIID);
+        final DataTreeIdentifier<FlowCapableNode> identifier = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL,
+                                                                                      NODE_IID);
         Mockito.when(dataTreeModification.getRootPath()).thenReturn(identifier);
         Mockito.when(dataTreeModification.getRootNode()).thenReturn(Mockito.mock(DataObjectModification.class));
         Mockito.when(dataTreeModification.getRootNode().getModificationType()).thenReturn(ModificationType.WRITE);
@@ -72,7 +73,7 @@ public class LLDPDataTreeChangeListenerTest {
         lldpPacketPuntEnforcer.onDataTreeChanged(Collections.singleton(dataTreeModification));
         Mockito.verify(flowService).addFlow(addFlowInputCaptor.capture());
         AddFlowInput captured = addFlowInputCaptor.getValue();
-        Assert.assertEquals(nodeIID, captured.getNode().getValue());
+        Assert.assertEquals(NODE_IID, captured.getNode().getValue());
     }
 
     @Test
