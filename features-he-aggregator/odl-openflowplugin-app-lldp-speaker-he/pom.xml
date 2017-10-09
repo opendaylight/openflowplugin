@@ -5,14 +5,14 @@
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>single-feature-parent</artifactId>
-        <version>1.8.2-SNAPSHOT</version>
+        <version>1.8.2-Carbon</version>
         <relativePath/>
     </parent>
 
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>odl-openflowplugin-app-lldp-speaker-he</artifactId>
     <packaging>feature</packaging>
-    <version>0.4.2-SNAPSHOT</version>
+    <version>0.4.2-Carbon</version>
 
     <name>OpenDaylight :: Openflow Plugin :: app lldp-speaker</name>
 

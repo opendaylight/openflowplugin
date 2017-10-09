@@ -5,26 +5,26 @@
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>features-parent</artifactId>
-        <version>1.8.2-SNAPSHOT</version>
+        <version>1.8.2-Carbon</version>
         <relativePath/>
     </parent>
 
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>features-openflowplugin</artifactId>
     <packaging>pom</packaging>
-    <version>0.4.2-SNAPSHOT</version>
+    <version>0.4.2-Carbon</version>
 
     <properties>
-        <yangtools.version>1.1.2-SNAPSHOT</yangtools.version>
-        <config.version>0.6.2-SNAPSHOT</config.version>
-        <mdsal.version>1.5.2-SNAPSHOT</mdsal.version>
-        <openflowjava.version>0.9.2-SNAPSHOT</openflowjava.version>
-        <openflowplugin.version>0.4.2-SNAPSHOT</openflowplugin.version>
-        <dluxapps.version>0.5.2-SNAPSHOT</dluxapps.version>
-        <lldp.version>0.12.2-SNAPSHOT</lldp.version>
+        <yangtools.version>1.1.2-Carbon</yangtools.version>
+        <config.version>0.6.2-Carbon</config.version>
+        <mdsal.version>1.5.2-Carbon</mdsal.version>
+        <openflowjava.version>0.9.2-Carbon</openflowjava.version>
+        <openflowplugin.version>0.4.2-Carbon</openflowplugin.version>
+        <dluxapps.version>0.5.2-Carbon</dluxapps.version>
+        <lldp.version>0.12.2-Carbon</lldp.version>
         <config.configfile.directory>etc/opendaylight/karaf</config.configfile.directory>
-        <restconf.version>1.5.2-SNAPSHOT</restconf.version>
-        <mdsal.model.version>0.10.2-SNAPSHOT</mdsal.model.version>
+        <restconf.version>1.5.2-Carbon</restconf.version>
+        <mdsal.model.version>0.10.2-Carbon</mdsal.model.version>
     </properties>
 
     <dependencyManagement>

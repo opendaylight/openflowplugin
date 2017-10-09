@@ -5,14 +5,14 @@
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>odlparent-lite</artifactId>
-        <version>1.8.2-SNAPSHOT</version>
+        <version>1.8.2-Carbon</version>
         <relativePath/>
     </parent>
 
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>features-he-aggregator</artifactId>
     <packaging>pom</packaging>
-    <version>0.4.2-SNAPSHOT</version>
+    <version>0.4.2-Carbon</version>
 
     <modules>
         <module>features-openflowplugin-he</module>

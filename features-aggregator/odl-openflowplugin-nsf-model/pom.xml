@@ -5,21 +5,21 @@
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>single-feature-parent</artifactId>
-        <version>1.8.2-SNAPSHOT</version>
+        <version>1.8.2-Carbon</version>
         <relativePath/>
     </parent>
 
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>odl-openflowplugin-nsf-model</artifactId>
     <packaging>feature</packaging>
-    <version>0.4.2-SNAPSHOT</version>
+    <version>0.4.2-Carbon</version>
 
     <name>OpenDaylight :: OpenflowPlugin :: NSF :: Model</name>
 
     <properties>
-        <mdsal.version>1.5.2-SNAPSHOT</mdsal.version>
-        <openflowjava.version>0.9.2-SNAPSHOT</openflowjava.version>
-        <mdsal.model.version>0.10.2-SNAPSHOT</mdsal.model.version>
+        <mdsal.version>1.5.2-Carbon</mdsal.version>
+        <openflowjava.version>0.9.2-Carbon</openflowjava.version>
+        <mdsal.model.version>0.10.2-Carbon</mdsal.model.version>
     </properties>
 
     <dependencyManagement>
