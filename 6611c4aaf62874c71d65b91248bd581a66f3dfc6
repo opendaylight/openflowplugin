@@ -1,0 +1,687 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a245df4_3148395b",
+        "filename": "applications/southbound-cli/pom.xml",
+        "patchSetId": 10
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-09T23:27:36Z",
+      "side": 1,
+      "message": "please remove this. Not required.",
+      "range": {
+        "startLine": 91,
+        "startChar": 1,
+        "endLine": 96,
+        "endChar": 10
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_91e9251d",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/GetAllDpnsCommandProvider.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-09T23:27:36Z",
+      "side": 1,
+      "message": "remove this empty line.",
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_9174859d",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/GetAllDpnsCommandProvider.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-09T23:27:36Z",
+      "side": 1,
+      "message": "please make it final.",
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_71791193",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/GetAllDpnsCommandProvider.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-09T23:27:36Z",
+      "side": 1,
+      "message": "please make it final.",
+      "range": {
+        "startLine": 27,
+        "startChar": 30,
+        "endLine": 27,
+        "endChar": 51
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_b17389b0",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/GetAllDpnsCommandProvider.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-09T23:27:36Z",
+      "side": 1,
+      "message": "please move it in the IF block, no point in creating garbage if dpnList is null or empty.",
+      "range": {
+        "startLine": 34,
+        "startChar": 8,
+        "endLine": 35,
+        "endChar": 59
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_116895b9",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/GetAllDpnsCommandProvider.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-09T23:27:36Z",
+      "side": 1,
+      "message": "please print a explicit log in case there is no node connected to plugin, so that use is clear that no node is connected, rather then that the command failed.",
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_51620dd9",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/ShowDpnCommandProvider.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-09T23:27:36Z",
+      "side": 1,
+      "message": "please make it final.",
+      "range": {
+        "startLine": 30,
+        "startChar": 4,
+        "endLine": 30,
+        "endChar": 13
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_919be5c8",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/ShowDpnCommandProvider.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-09T23:27:36Z",
+      "side": 1,
+      "message": "please make it final",
+      "range": {
+        "startLine": 32,
+        "startChar": 30,
+        "endLine": 32,
+        "endChar": 52
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_b1aa69d2",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/ShowDpnCommandProvider.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-09T23:27:36Z",
+      "side": 1,
+      "message": "i think it\u0027s good to print port per line, rather then printing it as a list.",
+      "range": {
+        "startLine": 72,
+        "startChar": 8,
+        "endLine": 73,
+        "endChar": 28
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_51904d95",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/Dpn.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-09T23:27:36Z",
+      "side": 1,
+      "message": "please use OFNode, OpenFlowNode or Node. OpenFlowplugin don\u0027t use DPN term in the plugin context. Also please update the logs accordingly.",
+      "range": {
+        "startLine": 13,
+        "startChar": 13,
+        "endLine": 13,
+        "endChar": 16
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_9182c550",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/Dpn.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-09T23:27:36Z",
+      "side": 1,
+      "message": "please make the parameters final.",
+      "range": {
+        "startLine": 20,
+        "startChar": 15,
+        "endLine": 20,
+        "endChar": 61
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_d17c3d75",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/Dpn.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-09T23:27:36Z",
+      "side": 1,
+      "message": "please override the hashCode() as well, in case someone end up putting these objects in hash map.",
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_71ee3124",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-09T23:27:36Z",
+      "side": 1,
+      "message": "please add an empty line between LOG and DPN_PREFIX.",
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_d1f39d08",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-09T23:27:36Z",
+      "side": 1,
+      "message": "please mark it final.",
+      "range": {
+        "startLine": 37,
+        "startChar": 39,
+        "endLine": 37,
+        "endChar": 56
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_b1f8a9e6",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-09T23:27:36Z",
+      "side": 1,
+      "message": "please move this initialization in the if(nodes !\u003d null) block.",
+      "range": {
+        "startLine": 38,
+        "startChar": 7,
+        "endLine": 38,
+        "endChar": 46
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_11dd3571",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-09T23:27:36Z",
+      "side": 1,
+      "message": "please remove \"getAllDpns\"",
+      "range": {
+        "startLine": 50,
+        "startChar": 23,
+        "endLine": 50,
+        "endChar": 33
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_31e4b93a",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-09T23:27:36Z",
+      "side": 1,
+      "message": "please get the augmentation and then null check the return object. This try catch is unnecessary.",
+      "range": {
+        "startLine": 58,
+        "startChar": 31,
+        "endLine": 58,
+        "endChar": 91
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_71d59142",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-09T23:27:36Z",
+      "side": 1,
+      "message": "i would suggest to create another constructor that just takes the first two parameter, rather then passing null.",
+      "range": {
+        "startLine": 62,
+        "startChar": 30,
+        "endLine": 62,
+        "endChar": 76
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_d1ca7da0",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-09T23:27:36Z",
+      "side": 1,
+      "message": "please remove getAllDpn prefix.",
+      "range": {
+        "startLine": 64,
+        "startChar": 35,
+        "endLine": 64,
+        "endChar": 45
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_b1cf09b0",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-09T23:27:36Z",
+      "side": 1,
+      "message": "catching NPE is not a good idea, please do the nullcheeck on node-getId.getvalue",
+      "range": {
+        "startLine": 67,
+        "startChar": 16,
+        "endLine": 69,
+        "endChar": 17
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_11c41591",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-09T23:27:36Z",
+      "side": 1,
+      "message": "please make parameters final.",
+      "range": {
+        "startLine": 76,
+        "startChar": 30,
+        "endLine": 76,
+        "endChar": 58
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_f1c0617e",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-09T23:27:36Z",
+      "side": 1,
+      "message": "please move this line in the else block. Less garbage.",
+      "range": {
+        "startLine": 77,
+        "startChar": 8,
+        "endLine": 77,
+        "endChar": 47
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_51be8d00",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-09T23:27:36Z",
+      "side": 1,
+      "message": "fix the check-style",
+      "range": {
+        "startLine": 88,
+        "startChar": 16,
+        "endLine": 89,
+        "endChar": 36
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_31bb1910",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-09T23:27:36Z",
+      "side": 1,
+      "message": "make parameters final.",
+      "range": {
+        "startLine": 97,
+        "startChar": 29,
+        "endLine": 97,
+        "endChar": 58
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_713c7194",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-09T23:27:36Z",
+      "side": 1,
+      "message": "please do null check on FlowCapableNode and then do getDescription() if it\u0027s not null. This NPE check is unnecessary.",
+      "range": {
+        "startLine": 112,
+        "startChar": 16,
+        "endLine": 117,
+        "endChar": 17
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_d141dd0c",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-09T23:27:36Z",
+      "side": 1,
+      "message": "same here.",
+      "range": {
+        "startLine": 126,
+        "startChar": 16,
+        "endLine": 128,
+        "endChar": 17
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_b146e921",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-09T23:27:36Z",
+      "side": 1,
+      "message": "please don\u0027t prefix method name to the log.",
+      "range": {
+        "startLine": 131,
+        "startChar": 27,
+        "endLine": 131,
+        "endChar": 33
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_114b752c",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-09T23:27:36Z",
+      "side": 1,
+      "message": "i don\u0027t think you need to do NPE check here.",
+      "range": {
+        "startLine": 133,
+        "startChar": 60,
+        "endLine": 133,
+        "endChar": 81
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_5155edc4",
+        "filename": "applications/southbound-cli/src/main/resources/org/opendaylight/blueprint/commands.xml",
+        "patchSetId": 10
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-09T23:27:36Z",
+      "side": 1,
+      "message": "at the karaf console, user will have to type shellUtil/getalldpns? I that\u0027s the case then we will have to change it to openflow/get-all-nodes.",
+      "range": {
+        "startLine": 16,
+        "startChar": 23,
+        "endLine": 16,
+        "endChar": 32
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_915e45e8",
+        "filename": "artifacts/pom.xml",
+        "patchSetId": 10
+      },
+      "lineNbr": 354,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-09T23:27:36Z",
+      "side": 1,
+      "message": "i think you don\u0027t need to inheret projects version for this application. it can have it\u0027s own independent version. e.g 1.0.0",
+      "range": {
+        "startLine": 354,
+        "startChar": 25,
+        "endLine": 354,
+        "endChar": 43
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_3152f9dd",
+        "filename": "features-aggregator/odl-openflowplugin-app-southbound-cli/pom.xml",
+        "patchSetId": 10
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-09T23:27:36Z",
+      "side": 1,
+      "message": "please fix this.",
+      "range": {
+        "startLine": 17,
+        "startChar": 58,
+        "endLine": 17,
+        "endChar": 83
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
