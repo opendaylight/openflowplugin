@@ -32,7 +32,7 @@ public class MatchUtilTest {
         Short zeroShort = Short.valueOf("0");
         Integer zeroInteger = 0;
         MatchV10Builder matchV10Builder = new MatchV10Builder();
-        matchV10Builder.setDlDst( ZERO_MAC_ADDRESS);
+        matchV10Builder.setDlDst(ZERO_MAC_ADDRESS);
         matchV10Builder.setDlSrc(ZERO_MAC_ADDRESS);
         matchV10Builder.setDlType(zeroInteger);
         matchV10Builder.setDlVlan(zeroInteger);
@@ -46,7 +46,8 @@ public class MatchUtilTest {
         matchV10Builder.setNwTos(zeroShort);
         matchV10Builder.setTpDst(zeroInteger);
         matchV10Builder.setTpSrc(zeroInteger);
-        FlowWildcardsV10 flowWildcardsV10 = new FlowWildcardsV10(true, true, true, true, true, true, true, true, true, true);
+        FlowWildcardsV10 flowWildcardsV10 =
+                new FlowWildcardsV10(true, true, true, true, true, true, true, true, true, true);
         matchV10Builder.setWildcards(flowWildcardsV10);
         return matchV10Builder;
     }
