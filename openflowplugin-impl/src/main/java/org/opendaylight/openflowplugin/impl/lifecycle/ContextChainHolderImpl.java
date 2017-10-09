@@ -154,7 +154,8 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
 
         if (auxiliaryId != null && auxiliaryId != 0) {
             if (contextChain == null) {
-                LOG.warn("An auxiliary connection for device {}, but no primary connection. Refusing connection.", deviceInfo);
+                LOG.warn("An auxiliary connection for device {}, but no primary connection. Refusing connection.",
+                        deviceInfo);
                 return ConnectionStatus.REFUSING_AUXILIARY_CONNECTION;
             } else {
                 if (contextChain.addAuxiliaryConnection(connectionContext)) {
@@ -207,7 +208,8 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         }
 
         Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(contextChain -> {
-            LOG.warn("This mastering is mandatory, destroying context chain and closing connection for device {}.", deviceInfo);
+            LOG.warn("This mastering is mandatory, destroying context chain and closing connection for device {}.",
+                    deviceInfo);
             destroyContextChain(deviceInfo);
         });
     }
@@ -219,8 +221,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
             if (ownershipChangeListener.isReconciliationFrameworkRegistered() &&
                     !ContextChainMastershipState.INITIAL_SUBMIT.equals(mastershipState)) {
                 if (contextChain.isMastered(mastershipState, true)) {
-                    Futures.addCallback(
-                            ownershipChangeListener.becomeMasterBeforeSubmittedDS(deviceInfo),
+                    Futures.addCallback(ownershipChangeListener.becomeMasterBeforeSubmittedDS(deviceInfo),
                             reconciliationFrameworkCallback(deviceInfo, contextChain),
                             MoreExecutors.directExecutor());
                 }
@@ -375,7 +376,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
             }
 
             @Override
-            public void onFailure(@Nonnull Throwable t) {
+            public void onFailure(@Nonnull Throwable throwable) {
                 LOG.warn("Reconciliation framework failure.");
                 destroyContextChain(deviceInfo);
             }

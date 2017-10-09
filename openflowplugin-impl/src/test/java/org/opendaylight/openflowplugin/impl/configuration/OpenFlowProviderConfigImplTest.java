@@ -51,12 +51,12 @@ public class OpenFlowProviderConfigImplTest {
                 .thenReturn(IS_STATISTICS_POLLING_ON);
         when(configurationService.getProperty(eq(ConfigurationProperty.BARRIER_COUNT_LIMIT.toString()), any()))
                 .thenReturn(BARRIER_COUNT_LIMIT);
-        when(configurationService.getProperty(eq(ConfigurationProperty.BARRIER_INTERVAL_TIMEOUT_LIMIT.toString()), any()))
-                .thenReturn(BARRIER_INTERVAL_TIMEOUT_LIMIT);
+        when(configurationService.getProperty(eq(ConfigurationProperty.BARRIER_INTERVAL_TIMEOUT_LIMIT.toString()),
+                any())).thenReturn(BARRIER_INTERVAL_TIMEOUT_LIMIT);
         when(configurationService.getProperty(eq(ConfigurationProperty.ECHO_REPLY_TIMEOUT.toString()), any()))
                 .thenReturn(ECHO_REPLY_TIMEOUT);
-        when(configurationService.getProperty(eq(ConfigurationProperty.ENABLE_FLOW_REMOVED_NOTIFICATION.toString()), any()))
-                .thenReturn(ENABLE_FLOW_REMOVED_NOTIFICATION);
+        when(configurationService.getProperty(eq(ConfigurationProperty.ENABLE_FLOW_REMOVED_NOTIFICATION.toString()),
+                any())).thenReturn(ENABLE_FLOW_REMOVED_NOTIFICATION);
         when(configurationService.getProperty(eq(ConfigurationProperty.SKIP_TABLE_FEATURES.toString()), any()))
                 .thenReturn(SKIP_TABLE_FEATURES);
         when(configurationService.getProperty(eq(ConfigurationProperty.BASIC_TIMER_DELAY.toString()), any()))
@@ -67,8 +67,8 @@ public class OpenFlowProviderConfigImplTest {
                 .thenReturn(SWITCH_FEATURES_MANDATORY);
         when(configurationService.getProperty(eq(ConfigurationProperty.IS_STATISTICS_RPC_ENABLED.toString()), any()))
                 .thenReturn(IS_STATISTICS_RPC_ENABLED);
-        when(configurationService.getProperty(eq(ConfigurationProperty.USE_SINGLE_LAYER_SERIALIZATION.toString()), any()))
-                .thenReturn(USE_SINGLE_LAYER_SERIALIZATION);
+        when(configurationService.getProperty(eq(ConfigurationProperty.USE_SINGLE_LAYER_SERIALIZATION.toString()),
+                any())).thenReturn(USE_SINGLE_LAYER_SERIALIZATION);
         when(configurationService.getProperty(eq(ConfigurationProperty.RPC_REQUESTS_QUOTA.toString()), any()))
                 .thenReturn(RPC_REQUESTS_QUOTA);
         when(configurationService.getProperty(eq(ConfigurationProperty.GLOBAL_NOTIFICATION_QUOTA.toString()), any()))
@@ -114,7 +114,8 @@ public class OpenFlowProviderConfigImplTest {
 
     @Test
     public void getBarrierIntervalTimeoutLimit() throws Exception {
-        assertEquals(BARRIER_INTERVAL_TIMEOUT_LIMIT, openflowProviderConfig.getBarrierIntervalTimeoutLimit().getValue());
+        assertEquals(BARRIER_INTERVAL_TIMEOUT_LIMIT, openflowProviderConfig.getBarrierIntervalTimeoutLimit()
+                .getValue());
     }
 
     @Test
