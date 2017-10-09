@@ -16,6 +16,24 @@
       "revId": "be69fac5b03aed5bd9e2837b8d908707603c66ff",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_45e24fa0",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/karaf/Dpn.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-09T10:20:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_dc3d7fbd",
+      "revId": "be69fac5b03aed5bd9e2837b8d908707603c66ff",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
