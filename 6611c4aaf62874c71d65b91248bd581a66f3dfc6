@@ -295,6 +295,30 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_23ff4e36",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/ShowDpnCommandProvider.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-10T21:19:05Z",
+      "side": 1,
+      "message": "sorry my bad, i though it\u0027s been set in constructor.",
+      "parentUuid": "9a245df4_110c1542",
+      "range": {
+        "startLine": 30,
+        "startChar": 4,
+        "endLine": 30,
+        "endChar": 13
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_919be5c8",
         "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/ShowDpnCommandProvider.java",
         "patchSetId": 10
@@ -377,6 +401,30 @@
       "side": 1,
       "message": "If there are a large number of ports connected to the DPN, the cli output would look cumbersome.",
       "parentUuid": "9a245df4_b1aa69d2",
+      "range": {
+        "startLine": 72,
+        "startChar": 8,
+        "endLine": 73,
+        "endChar": 28
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_63f9464d",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/ShowDpnCommandProvider.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-10T21:19:05Z",
+      "side": 1,
+      "message": "i think list of large number of port will also not of much use.",
+      "parentUuid": "9a245df4_ccd144cf",
       "range": {
         "startLine": 72,
         "startChar": 8,
