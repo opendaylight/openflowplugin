@@ -45,9 +45,11 @@
         </dependency>
 
         <dependency>
-            <groupId>org.opendaylight.controller.model</groupId>
-            <artifactId>model-inventory</artifactId>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>odl-mdsal-model-inventory</artifactId>
             <version>${mdsal.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
         </dependency>
 
         <dependency>
