@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_f1ace137",
+        "filename": "applications/southbound-cli/pom.xml",
+        "patchSetId": 10
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-10T19:14:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_3148395b",
+      "range": {
+        "startLine": 91,
+        "startChar": 1,
+        "endLine": 96,
+        "endChar": 10
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_91e9251d",
         "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/GetAllDpnsCommandProvider.java",
         "patchSetId": 10
@@ -36,6 +60,24 @@
       "writtenOn": "2017-10-09T23:27:36Z",
       "side": 1,
       "message": "remove this empty line.",
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_51aa0d1a",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/GetAllDpnsCommandProvider.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-10T19:14:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_91e9251d",
       "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -59,6 +101,24 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_9163e519",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/GetAllDpnsCommandProvider.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-10T19:14:33Z",
+      "side": 1,
+      "message": "I have to assign the databroker with the setDataBroker(which would be called by the commands.xml) method so not making the databroker final.",
+      "parentUuid": "9a245df4_9174859d",
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_71791193",
         "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/GetAllDpnsCommandProvider.java",
         "patchSetId": 10
@@ -70,6 +130,30 @@
       "writtenOn": "2017-10-09T23:27:36Z",
       "side": 1,
       "message": "please make it final.",
+      "range": {
+        "startLine": 27,
+        "startChar": 30,
+        "endLine": 27,
+        "endChar": 51
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_31a79951",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/GetAllDpnsCommandProvider.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-10T19:14:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_71791193",
       "range": {
         "startLine": 27,
         "startChar": 30,
@@ -105,6 +189,30 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_7168f1f5",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/GetAllDpnsCommandProvider.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-10T19:14:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_b17389b0",
+      "range": {
+        "startLine": 34,
+        "startChar": 8,
+        "endLine": 35,
+        "endChar": 59
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_116895b9",
         "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/GetAllDpnsCommandProvider.java",
         "patchSetId": 10
@@ -122,6 +230,24 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_112535c2",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/GetAllDpnsCommandProvider.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-10T19:14:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_116895b9",
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_51620dd9",
         "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/ShowDpnCommandProvider.java",
         "patchSetId": 10
@@ -133,6 +259,30 @@
       "writtenOn": "2017-10-09T23:27:36Z",
       "side": 1,
       "message": "please make it final.",
+      "range": {
+        "startLine": 30,
+        "startChar": 4,
+        "endLine": 30,
+        "endChar": 13
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_110c1542",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/ShowDpnCommandProvider.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-10T19:14:33Z",
+      "side": 1,
+      "message": "Gain, have to assign the databroker within the setDataBroker() method so not keeping it final",
+      "parentUuid": "9a245df4_51620dd9",
       "range": {
         "startLine": 30,
         "startChar": 4,
@@ -168,6 +318,30 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_b17269e3",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/ShowDpnCommandProvider.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-10T19:14:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_919be5c8",
+      "range": {
+        "startLine": 32,
+        "startChar": 30,
+        "endLine": 32,
+        "endChar": 52
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_b1aa69d2",
         "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/ShowDpnCommandProvider.java",
         "patchSetId": 10
@@ -179,6 +353,30 @@
       "writtenOn": "2017-10-09T23:27:36Z",
       "side": 1,
       "message": "i think it\u0027s good to print port per line, rather then printing it as a list.",
+      "range": {
+        "startLine": 72,
+        "startChar": 8,
+        "endLine": 73,
+        "endChar": 28
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_ccd144cf",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/ShowDpnCommandProvider.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-10T19:14:33Z",
+      "side": 1,
+      "message": "If there are a large number of ports connected to the DPN, the cli output would look cumbersome.",
+      "parentUuid": "9a245df4_b1aa69d2",
       "range": {
         "startLine": 72,
         "startChar": 8,
@@ -214,6 +412,30 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_ec8528ae",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/Dpn.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-10T19:14:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_51904d95",
+      "range": {
+        "startLine": 13,
+        "startChar": 13,
+        "endLine": 13,
+        "endChar": 16
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_9182c550",
         "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/Dpn.java",
         "patchSetId": 10
@@ -225,6 +447,30 @@
       "writtenOn": "2017-10-09T23:27:36Z",
       "side": 1,
       "message": "please make the parameters final.",
+      "range": {
+        "startLine": 20,
+        "startChar": 15,
+        "endLine": 20,
+        "endChar": 61
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_d16d5d06",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/Dpn.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-10T19:14:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_9182c550",
       "range": {
         "startLine": 20,
         "startChar": 15,
@@ -254,6 +500,24 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_8cff4c01",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/Dpn.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-10T19:14:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_d17c3d75",
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_71ee3124",
         "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
         "patchSetId": 10
@@ -271,6 +535,24 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_1189b5ca",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-10T19:14:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_71ee3124",
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_d1f39d08",
         "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
         "patchSetId": 10
@@ -282,6 +564,30 @@
       "writtenOn": "2017-10-09T23:27:36Z",
       "side": 1,
       "message": "please mark it final.",
+      "range": {
+        "startLine": 37,
+        "startChar": 39,
+        "endLine": 37,
+        "endChar": 56
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_f18501ae",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-10T19:14:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_d1f39d08",
       "range": {
         "startLine": 37,
         "startChar": 39,
@@ -317,6 +623,30 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_51932dfa",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-10T19:14:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_b1f8a9e6",
+      "range": {
+        "startLine": 38,
+        "startChar": 7,
+        "endLine": 38,
+        "endChar": 46
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_11dd3571",
         "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
         "patchSetId": 10
@@ -328,6 +658,30 @@
       "writtenOn": "2017-10-09T23:27:36Z",
       "side": 1,
       "message": "please remove \"getAllDpns\"",
+      "range": {
+        "startLine": 50,
+        "startChar": 23,
+        "endLine": 50,
+        "endChar": 33
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_319039ec",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-10T19:14:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_11dd3571",
       "range": {
         "startLine": 50,
         "startChar": 23,
@@ -363,6 +717,30 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_4c1d5466",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-10T19:14:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_31e4b93a",
+      "range": {
+        "startLine": 58,
+        "startChar": 31,
+        "endLine": 58,
+        "endChar": 91
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_71d59142",
         "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
         "patchSetId": 10
@@ -374,6 +752,30 @@
       "writtenOn": "2017-10-09T23:27:36Z",
       "side": 1,
       "message": "i would suggest to create another constructor that just takes the first two parameter, rather then passing null.",
+      "range": {
+        "startLine": 62,
+        "startChar": 30,
+        "endLine": 62,
+        "endChar": 76
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_ec0fe82c",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-10T19:14:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_71d59142",
       "range": {
         "startLine": 62,
         "startChar": 30,
@@ -409,6 +811,30 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_11b0958a",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-10T19:14:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_d1ca7da0",
+      "range": {
+        "startLine": 64,
+        "startChar": 35,
+        "endLine": 64,
+        "endChar": 45
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_b1cf09b0",
         "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
         "patchSetId": 10
@@ -420,6 +846,30 @@
       "writtenOn": "2017-10-09T23:27:36Z",
       "side": 1,
       "message": "catching NPE is not a good idea, please do the nullcheeck on node-getId.getvalue",
+      "range": {
+        "startLine": 67,
+        "startChar": 16,
+        "endLine": 69,
+        "endChar": 17
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_ac25f0ac",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-10T19:14:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_b1cf09b0",
       "range": {
         "startLine": 67,
         "startChar": 16,
@@ -455,6 +905,30 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_d1b6fd89",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-10T19:14:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_11c41591",
+      "range": {
+        "startLine": 76,
+        "startChar": 30,
+        "endLine": 76,
+        "endChar": 58
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_f1c0617e",
         "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
         "patchSetId": 10
@@ -466,6 +940,30 @@
       "writtenOn": "2017-10-09T23:27:36Z",
       "side": 1,
       "message": "please move this line in the else block. Less garbage.",
+      "range": {
+        "startLine": 77,
+        "startChar": 8,
+        "endLine": 77,
+        "endChar": 47
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_b1bb8971",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-10T19:14:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_f1c0617e",
       "range": {
         "startLine": 77,
         "startChar": 8,
@@ -501,6 +999,30 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_ec36c8e6",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-10T19:14:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_51be8d00",
+      "range": {
+        "startLine": 88,
+        "startChar": 16,
+        "endLine": 89,
+        "endChar": 36
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_31bb1910",
         "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
         "patchSetId": 10
@@ -512,6 +1034,30 @@
       "writtenOn": "2017-10-09T23:27:36Z",
       "side": 1,
       "message": "make parameters final.",
+      "range": {
+        "startLine": 97,
+        "startChar": 29,
+        "endLine": 97,
+        "endChar": 58
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_71c111e4",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-10T19:14:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_31bb1910",
       "range": {
         "startLine": 97,
         "startChar": 29,
@@ -547,6 +1093,30 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_ec08882f",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-10T19:14:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_713c7194",
+      "range": {
+        "startLine": 112,
+        "startChar": 16,
+        "endLine": 117,
+        "endChar": 17
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_d141dd0c",
         "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
         "patchSetId": 10
@@ -558,6 +1128,30 @@
       "writtenOn": "2017-10-09T23:27:36Z",
       "side": 1,
       "message": "same here.",
+      "range": {
+        "startLine": 126,
+        "startChar": 16,
+        "endLine": 128,
+        "endChar": 17
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_cc3b04ea",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-10T19:14:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_d141dd0c",
       "range": {
         "startLine": 126,
         "startChar": 16,
@@ -593,6 +1187,30 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_91bc856e",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-10T19:14:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_b146e921",
+      "range": {
+        "startLine": 131,
+        "startChar": 27,
+        "endLine": 131,
+        "endChar": 33
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_114b752c",
         "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
         "patchSetId": 10
@@ -616,6 +1234,30 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_2c3100ed",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-10T19:14:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_114b752c",
+      "range": {
+        "startLine": 133,
+        "startChar": 60,
+        "endLine": 133,
+        "endChar": 81
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_5155edc4",
         "filename": "applications/southbound-cli/src/main/resources/org/opendaylight/blueprint/commands.xml",
         "patchSetId": 10
@@ -627,6 +1269,30 @@
       "writtenOn": "2017-10-09T23:27:36Z",
       "side": 1,
       "message": "at the karaf console, user will have to type shellUtil/getalldpns? I that\u0027s the case then we will have to change it to openflow/get-all-nodes.",
+      "range": {
+        "startLine": 16,
+        "startChar": 23,
+        "endLine": 16,
+        "endChar": 32
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_879ba7c8",
+        "filename": "applications/southbound-cli/src/main/resources/org/opendaylight/blueprint/commands.xml",
+        "patchSetId": 10
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-10T19:14:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_5155edc4",
       "range": {
         "startLine": 16,
         "startChar": 23,
@@ -673,6 +1339,30 @@
       "writtenOn": "2017-10-09T23:27:36Z",
       "side": 1,
       "message": "please fix this.",
+      "range": {
+        "startLine": 17,
+        "startChar": 58,
+        "endLine": 17,
+        "endChar": 83
+      },
+      "revId": "6611c4aaf62874c71d65b91248bd581a66f3dfc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_f17341e5",
+        "filename": "features-aggregator/odl-openflowplugin-app-southbound-cli/pom.xml",
+        "patchSetId": 10
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-10T19:14:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_3152f9dd",
       "range": {
         "startLine": 17,
         "startChar": 58,
