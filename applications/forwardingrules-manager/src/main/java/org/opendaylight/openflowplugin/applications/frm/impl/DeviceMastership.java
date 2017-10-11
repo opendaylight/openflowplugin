@@ -36,8 +36,8 @@ public class DeviceMastership implements ClusterSingletonService, AutoCloseable 
     public DeviceMastership(final NodeId nodeId) {
         this.nodeId = nodeId;
         this.identifier = ServiceGroupIdentifier.create(nodeId.getValue());
-        fcnIID = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId)).augmentation
-                (FlowCapableNode.class);
+        fcnIID = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId))
+                .augmentation(FlowCapableNode.class);
     }
 
     @Override
@@ -69,6 +69,7 @@ public class DeviceMastership implements ClusterSingletonService, AutoCloseable 
     public void setDeviceOperationalStatus(boolean inOperDS) {
         isDeviceInOperDS.set(inOperDS);
     }
+
     public void reconcile() {
         deviceMastered.set(true);
     }

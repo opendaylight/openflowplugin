@@ -16,7 +16,6 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.Nonnull;
 
-import com.google.common.util.concurrent.Futures;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -49,11 +48,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * forwardingrules-manager
- * org.opendaylight.openflowplugin.applications.frm.impl
+ * forwardingrules-manager org.opendaylight.openflowplugin.applications.frm.impl
  *
- * Manager and middle point for whole module.
- * It contains ActiveNodeHolder and provide all RPC services.
+ * <p>
+ * Manager and middle point for whole module. It contains ActiveNodeHolder and
+ * provide all RPC services.
  *
  */
 public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
@@ -89,13 +88,10 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private int reconciliationRetryCount;
     private boolean isBundleBasedReconciliationEnabled;
 
-    public ForwardingRulesManagerImpl(final DataBroker dataBroker,
-                                      final RpcConsumerRegistry rpcRegistry,
-                                      final ForwardingRulesManagerConfig config,
-                                      final ClusterSingletonServiceProvider clusterSingletonService,
-                                      final NotificationProviderService notificationService,
-                                      final ConfigurationService configurationService,
-                                      final ReconciliationManager reconciliationManager) {
+    public ForwardingRulesManagerImpl(final DataBroker dataBroker, final RpcConsumerRegistry rpcRegistry,
+            final ForwardingRulesManagerConfig config, final ClusterSingletonServiceProvider clusterSingletonService,
+            final NotificationProviderService notificationService, final ConfigurationService configurationService,
+            final ReconciliationManager reconciliationManager) {
         disableReconciliation = config.isDisableReconciliation();
         staleMarkingEnabled = config.isStaleMarkingEnabled();
         reconciliationRetryCount = config.getReconciliationRetryCount();
@@ -104,8 +100,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         this.dataService = Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
         this.clusterSingletonServiceProvider = Preconditions.checkNotNull(clusterSingletonService,
                 "ClusterSingletonService provider can not be null");
-        this.notificationService = Preconditions.checkNotNull(notificationService, "Notification publisher configurationService is" +
-                " not available");
+        this.notificationService = Preconditions.checkNotNull(notificationService,
+                "Notification publisher configurationService is" + " not available");
         this.reconciliationManager = reconciliationManager;
 
         Preconditions.checkArgument(rpcRegistry != null, "RpcConsumerRegistry can not be null !");
@@ -124,19 +120,17 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
 
     @Override
     public void start() {
-        this.nodeListener = new FlowNodeReconciliationImpl(this,dataService,
-                SERVICE_NAME, FRM_RECONCILIATION_PRIORITY, ResultState.DONOTHING);
+        this.nodeListener = new FlowNodeReconciliationImpl(this, dataService, SERVICE_NAME, FRM_RECONCILIATION_PRIORITY,
+                ResultState.DONOTHING);
         if (this.isReconciliationDisabled()) {
             LOG.debug("Reconciliation is disabled by user");
         } else {
             this.reconciliationNotificationRegistration = reconciliationManager.registerService(this.nodeListener);
             LOG.debug("Reconciliation is enabled by user and successfully registered to the reconciliation framework");
         }
-        this.deviceMastershipManager = new DeviceMastershipManager(clusterSingletonServiceProvider,
-                notificationService,
-                this.nodeListener,
-                dataService);
-        flowNodeConnectorInventoryTranslatorImpl = new FlowNodeConnectorInventoryTranslatorImpl(this,dataService);
+        this.deviceMastershipManager = new DeviceMastershipManager(clusterSingletonServiceProvider, notificationService,
+                this.nodeListener, dataService);
+        flowNodeConnectorInventoryTranslatorImpl = new FlowNodeConnectorInventoryTranslatorImpl(this, dataService);
 
         this.flowListener = new FlowForwarder(this, dataService);
         this.groupListener = new GroupForwarder(this, dataService);
@@ -198,14 +192,14 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         boolean result = false;
         InstanceIdentifier<Node> nodeIid = ident.firstIdentifierOf(Node.class);
         final ReadOnlyTransaction transaction = dataService.newReadOnlyTransaction();
-        CheckedFuture<com.google.common.base.Optional<Node>, ReadFailedException> future = transaction.read(LogicalDatastoreType.OPERATIONAL, nodeIid);
+        CheckedFuture<com.google.common.base.Optional<Node>, ReadFailedException> future = transaction
+                .read(LogicalDatastoreType.OPERATIONAL, nodeIid);
         try {
             com.google.common.base.Optional<Node> optionalDataObject = future.checkedGet();
             if (optionalDataObject.isPresent()) {
                 result = true;
             } else {
-                LOG.debug("{}: Failed to read {}",
-                        Thread.currentThread().getStackTrace()[1], nodeIid);
+                LOG.debug("{}: Failed to read {}", Thread.currentThread().getStackTrace()[1], nodeIid);
             }
         } catch (ReadFailedException e) {
             LOG.warn("Failed to read {} ", nodeIid, e);
@@ -310,6 +304,9 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                     break;
                 case BUNDLE_BASED_RECONCILIATION_ENABLED:
                     isBundleBasedReconciliationEnabled = Boolean.valueOf(propertyValue);
+                    break;
+                default:
+                    LOG.warn("Not forwarding rule property found.");
                     break;
             }
         });

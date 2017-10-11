@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -33,8 +33,6 @@ public abstract class FRMTest extends AbstractDataBrokerTest {
 
     public void addFlowCapableNode(NodeKey nodeKey) {
         Nodes nodes = new NodesBuilder().setNode(Collections.<Node>emptyList()).build();
-        InstanceIdentifier<Node> flowNodeIdentifier = InstanceIdentifier.create(Nodes.class)
-                .child(Node.class, nodeKey);
 
         FlowCapableNodeBuilder fcnBuilder = new FlowCapableNodeBuilder();
         NodeBuilder nodeBuilder = new NodeBuilder();
@@ -43,6 +41,8 @@ public abstract class FRMTest extends AbstractDataBrokerTest {
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(Nodes.class), nodes);
+
+        InstanceIdentifier<Node> flowNodeIdentifier = InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey);
         writeTx.put(LogicalDatastoreType.OPERATIONAL, flowNodeIdentifier, nodeBuilder.build());
         writeTx.put(LogicalDatastoreType.CONFIGURATION, InstanceIdentifier.create(Nodes.class), nodes);
         writeTx.put(LogicalDatastoreType.CONFIGURATION, flowNodeIdentifier, nodeBuilder.build());
@@ -51,7 +51,8 @@ public abstract class FRMTest extends AbstractDataBrokerTest {
 
     public void removeNode(NodeKey nodeKey) throws ExecutionException, InterruptedException {
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
-        writeTx.delete(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey));
+        writeTx.delete(LogicalDatastoreType.OPERATIONAL,
+                InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey));
         writeTx.submit().get();
     }
 
@@ -78,7 +79,8 @@ public abstract class FRMTest extends AbstractDataBrokerTest {
         final ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
         final ForwardingRulesManagerConfig config = getConfig();
 
-        Mockito.when(configurationService.registerListener(Mockito.any())).thenReturn(() -> {});
+        Mockito.when(configurationService.registerListener(Mockito.any())).thenReturn(() -> {
+        });
 
         Mockito.when(configurationService.getProperty(Mockito.eq("disable-reconciliation"), Mockito.any()))
                 .thenReturn(config.isDisableReconciliation());
@@ -94,5 +96,4 @@ public abstract class FRMTest extends AbstractDataBrokerTest {
 
         return configurationService;
     }
-
 }

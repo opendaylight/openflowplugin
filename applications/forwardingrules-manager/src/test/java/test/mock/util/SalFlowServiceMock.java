@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,6 +7,9 @@
  */
 package test.mock.util;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Future;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
@@ -16,21 +19,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Upda
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Future;
-
-public class SalFlowServiceMock implements SalFlowService{
-    private List<AddFlowInput> addFlowCalls = new ArrayList<>();
-    private List<RemoveFlowInput> removeFlowCalls = new ArrayList<>();
-    private List<UpdateFlowInput> updateFlowCalls = new ArrayList<>();
+public class SalFlowServiceMock implements SalFlowService {
+    private final List<AddFlowInput> addFlowCalls = new ArrayList<>();
+    private final List<RemoveFlowInput> removeFlowCalls = new ArrayList<>();
+    private final List<UpdateFlowInput> updateFlowCalls = new ArrayList<>();
 
     @Override
     public Future<RpcResult<AddFlowOutput>> addFlow(AddFlowInput input) {
         addFlowCalls.add(input);
         return null;
     }
-
 
     @Override
     public Future<RpcResult<RemoveFlowOutput>> removeFlow(RemoveFlowInput input) {

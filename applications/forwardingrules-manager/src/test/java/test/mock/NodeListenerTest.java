@@ -33,7 +33,7 @@ import test.mock.util.RpcProviderRegistryMock;
 @RunWith(MockitoJUnitRunner.class)
 public class NodeListenerTest extends FRMTest {
     private ForwardingRulesManagerImpl forwardingRulesManager;
-    private final static NodeKey s1Key = new NodeKey(new NodeId("testnode:1"));
+    private static final NodeKey NODE_KEY = new NodeKey(new NodeId("testnode:1"));
     RpcProviderRegistry rpcProviderRegistryMock = new RpcProviderRegistryMock();
     @Mock
     ClusterSingletonServiceProvider clusterSingletonService;
@@ -59,13 +59,13 @@ public class NodeListenerTest extends FRMTest {
 
     @Test
     public void addRemoveNodeTest() throws Exception {
-        addFlowCapableNode(s1Key);
+        addFlowCapableNode(NODE_KEY);
 
-        InstanceIdentifier<FlowCapableNode> nodeII = InstanceIdentifier.create(Nodes.class).child(Node.class, s1Key)
+        InstanceIdentifier<FlowCapableNode> nodeII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class);
         boolean nodeActive = forwardingRulesManager.isNodeActive(nodeII);
         assertTrue(nodeActive);
-        removeNode(s1Key);
+        removeNode(NODE_KEY);
         nodeActive = forwardingRulesManager.isNodeActive(nodeII);
         assertFalse(nodeActive);
     }
@@ -74,5 +74,4 @@ public class NodeListenerTest extends FRMTest {
     public void tearDown() throws Exception {
         forwardingRulesManager.close();
     }
-
 }
