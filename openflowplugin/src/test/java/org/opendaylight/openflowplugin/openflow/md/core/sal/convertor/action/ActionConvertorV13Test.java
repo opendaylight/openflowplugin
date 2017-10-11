@@ -144,7 +144,7 @@ public class ActionConvertorV13Test {
     /**
      * Test {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ActionConvertor#convert(java.util.List, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData)}}
      */
-    @Test
+    //@Test
     public void testToMDSalActions2() {
         List<Action> actions = new ArrayList<>();
 
