@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a245df4_32ce725b",
+        "filename": "artifacts/pom.xml",
+        "patchSetId": 13
+      },
+      "lineNbr": 354,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-11T19:21:59Z",
+      "side": 1,
+      "message": "given that\u0027s it\u0027s first version, i would suggest to mark it 1.0.0-SNAPSHOT",
+      "range": {
+        "startLine": 354,
+        "startChar": 25,
+        "endLine": 354,
+        "endChar": 39
+      },
+      "revId": "1c23e6bc2eac0457f33dfb5fd54b8c581abe016b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
