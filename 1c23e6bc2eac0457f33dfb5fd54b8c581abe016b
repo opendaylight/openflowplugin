@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "9a245df4_b209c297",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/ShowNodeCommandProvider.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-11T19:23:36Z",
+      "side": 1,
+      "message": "so this will print empty string for all the port except first one, that\u0027s intentional?",
+      "range": {
+        "startLine": 71,
+        "startChar": 1,
+        "endLine": 72,
+        "endChar": 32
+      },
+      "revId": "1c23e6bc2eac0457f33dfb5fd54b8c581abe016b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_32ce725b",
         "filename": "artifacts/pom.xml",
         "patchSetId": 13
