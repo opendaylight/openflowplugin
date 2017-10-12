@@ -79,6 +79,16 @@
             <artifactId>openflow-protocol-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.opendaylight.infrautils</groupId>
+            <artifactId>diagstatus-api</artifactId>
+            <version>1.3.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.cdi</groupId>
+            <artifactId>pax-cdi-api</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}.openflowjava</groupId>
             <artifactId>openflow-protocol-spi</artifactId>
         </dependency>
@@ -93,6 +103,10 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
