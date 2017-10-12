@@ -12,6 +12,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.infrautils.diagstatus.DiagStatusService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
@@ -28,5 +29,6 @@ public interface OpenFlowPluginProviderFactory {
                                        EntityOwnershipService entityOwnershipService,
                                        List<SwitchConnectionProvider> switchConnectionProviders,
                                        ClusterSingletonServiceProvider singletonServiceProvider,
-                                       MastershipChangeServiceManager mastershipChangeServiceManager);
+                                       MastershipChangeServiceManager mastershipChangeServiceManager,
+                                       DiagStatusService diagStatusService);
 }
