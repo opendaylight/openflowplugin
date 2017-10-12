@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_3d48032d",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/ShowNodeCommandProvider.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-12T06:21:42Z",
+      "side": 1,
+      "message": "This will print empty nodeid  node name for all the lines except first one. \nFor eg:\nNodeId       NodeName        Ports\n1            Name            Port1\n                             Port2\n                             Port3",
+      "parentUuid": "9a245df4_b209c297",
+      "range": {
+        "startLine": 71,
+        "startChar": 1,
+        "endLine": 72,
+        "endChar": 32
+      },
+      "revId": "1c23e6bc2eac0457f33dfb5fd54b8c581abe016b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_32ce725b",
         "filename": "artifacts/pom.xml",
         "patchSetId": 13
@@ -36,6 +60,30 @@
       "writtenOn": "2017-10-11T19:21:59Z",
       "side": 1,
       "message": "given that\u0027s it\u0027s first version, i would suggest to mark it 1.0.0-SNAPSHOT",
+      "range": {
+        "startLine": 354,
+        "startChar": 25,
+        "endLine": 354,
+        "endChar": 39
+      },
+      "revId": "1c23e6bc2eac0457f33dfb5fd54b8c581abe016b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_9d1acf15",
+        "filename": "artifacts/pom.xml",
+        "patchSetId": 13
+      },
+      "lineNbr": 354,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-10-12T06:21:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_32ce725b",
       "range": {
         "startLine": 354,
         "startChar": 25,
