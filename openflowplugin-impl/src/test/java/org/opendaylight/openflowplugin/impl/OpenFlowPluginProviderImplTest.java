@@ -27,6 +27,7 @@ import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipL
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.infrautils.diagstatus.DiagStatusService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
@@ -46,6 +47,9 @@ public class OpenFlowPluginProviderImplTest {
 
     @Mock
     NotificationPublishService notificationPublishService;
+
+    @Mock
+    DiagStatusService diagStatusService;
 
     @Mock
     WriteTransaction writeTransaction;
@@ -114,7 +118,8 @@ public class OpenFlowPluginProviderImplTest {
                 entityOwnershipService,
                 Lists.newArrayList(switchConnectionProvider),
                 clusterSingletonServiceProvider,
-                mastershipChangeServiceManager);
+                mastershipChangeServiceManager,
+                diagStatusService);
 
         verify(switchConnectionProvider).startup();
         provider.close();
