@@ -306,7 +306,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                     isBundleBasedReconciliationEnabled = Boolean.valueOf(propertyValue);
                     break;
                 default:
-                    LOG.warn("Not forwarding rule property found.");
+                    LOG.warn("No forwarding rule property found.");
                     break;
             }
         });
