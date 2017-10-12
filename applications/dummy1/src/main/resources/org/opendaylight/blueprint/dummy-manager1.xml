@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
+           odl:use-default-for-reference-types="true">
+
+    <reference id="dataBroker" interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"/>
+    <reference id="reconciliationservice" interface="org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager"/>
+    <odl:rpc-service id="flowService"
+                     interface="org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService"/>
+
+    <bean id="dummyManager" class="org.opendaylight.openflowplugin.applications.dummy1.impl.DummyManager1Impl"
+          init-method="start" destroy-method="close">
+        <argument ref="dataBroker"/>
+        <argument ref="reconciliationservice"/>
+        <argument ref="flowService"/>
+    </bean>
+
+</blueprint>
