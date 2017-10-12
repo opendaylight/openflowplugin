@@ -4,7 +4,8 @@
            odl:use-default-for-reference-types="true">
 
   <odl:action-provider interface="org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService"/>
-
+  <reference id="diagStatusService"
+             interface="org.opendaylight.infrautils.diagstatus.DiagStatusService" />
   <bean id="ofPluginProviderFactory" class="org.opendaylight.openflowplugin.impl.OpenFlowPluginProviderFactoryImpl"/>
   <service ref="ofPluginProviderFactory" interface="org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProviderFactory"/>
 
