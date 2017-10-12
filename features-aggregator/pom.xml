@@ -29,6 +29,7 @@
         <module>odl-openflowplugin-app-forwardingrules-manager</module>
         <module>odl-openflowplugin-app-forwardingrules-sync</module>
         <module>odl-openflowplugin-app-reconciliation-framework</module>
+        <module>odl-openflowplugin-app-dummy1</module>
     </modules>
 
 </project>
