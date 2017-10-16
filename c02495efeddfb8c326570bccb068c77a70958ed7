@@ -16,6 +16,24 @@
       "revId": "c02495efeddfb8c326570bccb068c77a70958ed7",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_7e9387a3",
+        "filename": "features-aggregator/features-openflowplugin/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 797
+      },
+      "writtenOn": "2017-10-16T22:21:42Z",
+      "side": 1,
+      "message": "I think this is the feature template used to create the int/dist distribution so removing the feature from this file will result in skipping this feature from the distribution: https://git.opendaylight.org/gerrit/gitweb?p\u003dintegration/distribution.git;a\u003dblob;f\u003dfeatures/repos/index/pom.xml",
+      "parentUuid": "9a245df4_5e21639e",
+      "revId": "c02495efeddfb8c326570bccb068c77a70958ed7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
