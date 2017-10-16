@@ -37,7 +37,7 @@ public class PortTranslatorUtilTest {
     private final boolean[] portCfgV10bools = {false, false, false, false, false, false, false};
     private final boolean[] portStateBools = {false, false, false, false};
     private final Long currentSpeed = Long.decode("4294967295");
-    private static final Long maxSpeed = Long.decode("4294967295");
+    private static final Long MAX_SPEED = Long.decode("4294967295");
 
     /**
      * Test  method for {@link PortTranslatorUtil#translatePortFeatures(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures)}
@@ -121,7 +121,7 @@ public class PortTranslatorUtilTest {
         when(portGrouping.getCurrSpeed()).thenReturn(currentSpeed);
         when(portGrouping.getHwAddr()).thenReturn(getMacAddress());
         when(portGrouping.getName()).thenReturn(NAME);
-        when(portGrouping.getMaxSpeed()).thenReturn(maxSpeed);
+        when(portGrouping.getMaxSpeed()).thenReturn(MAX_SPEED);
         when(portGrouping.getPeerFeatures()).thenReturn(getPortFeatures());
         when(portGrouping.getPeerFeaturesV10()).thenReturn(getPortFeaturesV10());
         when(portGrouping.getPortNo()).thenReturn(Long.MAX_VALUE);
