@@ -15,7 +15,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Se
 
 public final class PacketInUtil {
 
-    private PacketInUtil(){
+    private PacketInUtil() {
         throw new AssertionError("PacketInUtil is not expected to be instantiated.");
     }
 

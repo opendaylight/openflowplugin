@@ -65,8 +65,8 @@ public class StatisticsPollingService extends AbstractScheduledService {
             }
 
             @Override
-            public void onFailure(@Nonnull final Throwable t) {
-                waitFuture.completeExceptionally(t);
+            public void onFailure(@Nonnull final Throwable throwable) {
+                waitFuture.completeExceptionally(throwable);
             }
         }, MoreExecutors.directExecutor());
 

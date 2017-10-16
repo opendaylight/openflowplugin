@@ -192,7 +192,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
 
     @Override
     public void close() {
-         Futures.addCallback(stopGatheringData(), new FutureCallback<Void>() {
+        Futures.addCallback(stopGatheringData(), new FutureCallback<Void>() {
             @Override
             public void onSuccess(@Nullable final Void result) {
                 requestContexts.forEach(requestContext -> RequestContextUtil
@@ -200,7 +200,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
             }
 
             @Override
-            public void onFailure(final Throwable t) {
+            public void onFailure(final Throwable throwable) {
                 requestContexts.forEach(requestContext -> RequestContextUtil
                         .closeRequestContextWithRpcError(requestContext, CONNECTION_CLOSED));
             }
@@ -249,7 +249,8 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         });
     }
 
-    private ListenableFuture<Boolean> statChainFuture(final ListenableFuture<Boolean> prevFuture, final MultipartType multipartType) {
+    private ListenableFuture<Boolean> statChainFuture(final ListenableFuture<Boolean> prevFuture,
+                                                      final MultipartType multipartType) {
         if (ConnectionContext.CONNECTION_STATE.RIP.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
             final String errMsg = String
                     .format("Device connection for node %s doesn't exist anymore. Primary connection status : %s",
@@ -335,10 +336,10 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         }
 
         @Override
-        public void onFailure(@Nonnull final Throwable t) {
+        public void onFailure(@Nonnull final Throwable throwable) {
             contextChainMastershipWatcher.onNotAbleToStartMastershipMandatory(
                     deviceInfo,
-                    "Initial gathering statistics unsuccessful: " + t.getMessage());
+                    "Initial gathering statistics unsuccessful: " + throwable.getMessage());
         }
     }
 }

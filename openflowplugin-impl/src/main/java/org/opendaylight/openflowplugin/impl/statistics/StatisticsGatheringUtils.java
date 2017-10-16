@@ -288,7 +288,8 @@ public final class StatisticsGatheringUtils {
      * @param txFacade tx manager
      * @param succeeded     outcome of currently finished gathering
      */
-    static void markDeviceStateSnapshotEnd(final DeviceInfo deviceInfo, final TxFacade txFacade, final boolean succeeded) {
+    static void markDeviceStateSnapshotEnd(final DeviceInfo deviceInfo, final TxFacade txFacade,
+                                           final boolean succeeded) {
         final InstanceIdentifier<SnapshotGatheringStatusEnd> statusEndPath = deviceInfo
                 .getNodeInstanceIdentifier().augmentation(FlowCapableStatisticsGatheringStatus.class)
                 .child(SnapshotGatheringStatusEnd.class);
