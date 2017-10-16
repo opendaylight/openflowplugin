@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core;
 
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.OFConstants;

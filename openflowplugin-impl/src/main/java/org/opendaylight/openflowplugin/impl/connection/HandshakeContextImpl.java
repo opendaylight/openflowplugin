@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.connection;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
 import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeManager;
 
