@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a245df4_5e21639e",
+        "filename": "features-aggregator/features-openflowplugin/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-16T21:06:22Z",
+      "side": 1,
+      "message": "I think features-openflowplugin should not require dependency on southbound-cli, given that it\u0027s now a new feature outside of openflowplugin. Please push a patch to remove this dependency ( we need this on master, and nitrogen both. Once you do that will merge this patch.",
+      "revId": "c02495efeddfb8c326570bccb068c77a70958ed7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
