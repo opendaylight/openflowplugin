@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl.device;
 
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -18,16 +17,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 
 /**
  * Tests for setting switch features for different version of OF plugin
- * 
+ *
  * @author jsebin
  *
  */
 public class SwitchFeaturesUtilTest {
 
-    private GetFeaturesOutputBuilder featuresOutputBuilder;    
+    private GetFeaturesOutputBuilder featuresOutputBuilder;
     private SwitchFeaturesUtil swUtil;
-    
-    
+
+
     /**
      * initialization of {@link org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder GetFeaturesOutputBuilder}
      * and {@link SwitchFeaturesUtil SwitchFeaturesUtil}
@@ -55,13 +54,13 @@ public class SwitchFeaturesUtilTest {
      * .
      */
     @Test
-    public void testSwFeaturesCapabilitiesV10() {        
-        CapabilitiesV10 capabilities = new CapabilitiesV10( true, false, true, false, true, false, true, false);
+    public void testSwFeaturesCapabilitiesV10() {
+        CapabilitiesV10 capabilities = new CapabilitiesV10(true, false, true, false, true, false, true, false);
         featuresOutputBuilder.setCapabilitiesV10(capabilities).setVersion((short) 1);
-        
+
         Assert.assertNotNull(swUtil.buildSwitchFeatures(featuresOutputBuilder.build()));
     }
-    
+
     /**
      * Test method for
      * {@link SwitchFeaturesUtil#buildSwitchFeatures} for OF 1.3 version
@@ -72,24 +71,24 @@ public class SwitchFeaturesUtilTest {
     public void testSwFeaturesCapabilitiesV13() {
         Capabilities capabilities = new Capabilities(true, false, true, false, true, false, true);
         featuresOutputBuilder.setCapabilities(capabilities).setCapabilitiesV10(null).setVersion((short) 4);
-        
+
         Assert.assertNotNull(swUtil.buildSwitchFeatures(featuresOutputBuilder.build()));
     }
-    
+
     /**
      * Test method for
      * {@link SwitchFeaturesUtil#buildSwitchFeatures} for malformed switch feature capabilities
      * - at least one feature is null
      * .
-     */    
+     */
     //@Test TODO:do we need to check if capability is null?
     public void testSwFeaturesCapabilitiesMalformed() {
-        CapabilitiesV10 capabilities = new CapabilitiesV10( true, false, true, false, true, false, true, null);
+        CapabilitiesV10 capabilities = new CapabilitiesV10(true, false, true, false, true, false, true, null);
         featuresOutputBuilder.setCapabilitiesV10(capabilities).setCapabilities(null).setVersion((short) 1);
-        
+
         Assert.assertNull(swUtil.buildSwitchFeatures(featuresOutputBuilder.build()));
     }
-    
+
     /**
      * Test method for
      * {@link SwitchFeaturesUtil#buildSwitchFeatures} for mismatch between
@@ -98,12 +97,12 @@ public class SwitchFeaturesUtilTest {
      */
     @Test
     public void testSwFeaturesCapabilitiesVersionMismatch() {
-        CapabilitiesV10 capabilities = new CapabilitiesV10( true, false, true, false, true, false, true, false);
+        CapabilitiesV10 capabilities = new CapabilitiesV10(true, false, true, false, true, false, true, false);
         featuresOutputBuilder.setCapabilitiesV10(capabilities).setCapabilities(null).setVersion((short) 4);
-        
+
         Assert.assertNull(swUtil.buildSwitchFeatures(featuresOutputBuilder.build()));
     }
-    
+
     /**
      * Test method for
      * {@link SwitchFeaturesUtil#buildSwitchFeatures} for nonexisting version
@@ -111,9 +110,9 @@ public class SwitchFeaturesUtilTest {
      */
     @Test
     public void testSwFeaturesCapabilitiesNonexistingVersion() {
-        CapabilitiesV10 capabilities = new CapabilitiesV10( true, false, true, false, true, false, true, false);
+        CapabilitiesV10 capabilities = new CapabilitiesV10(true, false, true, false, true, false, true, false);
         featuresOutputBuilder.setCapabilitiesV10(capabilities).setCapabilities(null).setVersion((short) 0);
-        
+
         Assert.assertNull(swUtil.buildSwitchFeatures(featuresOutputBuilder.build()));
     }
 }

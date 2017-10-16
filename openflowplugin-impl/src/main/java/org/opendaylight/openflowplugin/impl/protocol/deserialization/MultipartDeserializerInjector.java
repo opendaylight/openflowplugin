@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.deserialization;
 
-import com.google.common.annotations.VisibleForTesting;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider;

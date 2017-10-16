@@ -33,7 +33,7 @@ public class ThreadPoolLoggingExecutor extends ThreadPoolExecutor {
                                      long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue,
             final String poolName) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,
-                new ThreadFactoryBuilder().setNameFormat(poolName+"-%d").build());
+                new ThreadFactoryBuilder().setNameFormat(poolName + "-%d").build());
     }
 
     @Override

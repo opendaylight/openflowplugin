@@ -101,6 +101,7 @@ public class SalBundleServiceImpl implements SalBundleService {
                 }
                 result.set(rpcResultBuilder.build());
             }
+
             @Override
             public void onFailure(Throwable t) {
                 RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.failed();
@@ -109,5 +110,4 @@ public class SalBundleServiceImpl implements SalBundleService {
         });
         return result;
     }
-
 }
