@@ -32,7 +32,7 @@ public final class SwitchFeaturesUtil {
     }
 
     /**
-     * Get singleton instance
+     * Get singleton instance.
      *
      * @return instance
      */
@@ -46,7 +46,7 @@ public final class SwitchFeaturesUtil {
      */
     public SwitchFeatures buildSwitchFeatures(GetFeaturesOutput features) {
 
-        if(swFeaturesBuilders.containsKey(features.getVersion())) {
+        if (swFeaturesBuilders.containsKey(features.getVersion())) {
             LOG.debug("map contains version {}", features.getVersion());
             try {
                 return swFeaturesBuilders.get(features.getVersion()).build(features);
@@ -54,8 +54,7 @@ public final class SwitchFeaturesUtil {
                 LOG.warn("error while building switch features: {}", e.getMessage());
                 LOG.debug("error while building switch features.. ", e);
             }
-        }
-        else {
+        } else {
             LOG.warn("unknown version: {}", features.getVersion());
         }
 

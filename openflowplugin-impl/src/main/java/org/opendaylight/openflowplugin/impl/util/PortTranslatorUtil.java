@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class PortTranslatorUtil {
     private static final Logger LOG = LoggerFactory.getLogger(PortTranslatorUtil.class);
+
     public static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures translatePortFeatures(final PortFeatures apf) {
         org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures napf = null;
         if (apf != null) {
@@ -148,7 +149,7 @@ public abstract class PortTranslatorUtil {
         if (port instanceof PortStatusMessage) {
             if (((PortStatusMessage) port).getReason() != null) {
                 fcncub.setReason(PortReason.forValue(((PortStatusMessage) port).getReason().getIntValue()));
-            }else {
+            } else {
                 LOG.debug("PortStatus Message has reason as null");
             }
         }
