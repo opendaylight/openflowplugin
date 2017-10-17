@@ -5,20 +5,20 @@
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>single-feature-parent</artifactId>
-        <version>1.8.2-SNAPSHOT</version>
+        <version>1.8.3-SNAPSHOT</version>
         <relativePath/>
     </parent>
 
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>odl-openflowplugin-flow-services-ui</artifactId>
     <packaging>feature</packaging>
-    <version>0.4.2-SNAPSHOT</version>
+    <version>0.4.3-SNAPSHOT</version>
 
     <name>OpenDaylight :: Openflow Plugin :: Flow Services :: UI</name>
 
     <properties>
-        <dlux.version>0.5.2-SNAPSHOT</dlux.version>
-        <restconf.version>1.5.2-SNAPSHOT</restconf.version>
+        <dlux.version>0.5.3-SNAPSHOT</dlux.version>
+        <restconf.version>1.5.3-SNAPSHOT</restconf.version>
     </properties>
 
     <dependencyManagement>
