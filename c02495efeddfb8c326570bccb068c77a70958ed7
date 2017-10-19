@@ -34,6 +34,24 @@
       "revId": "c02495efeddfb8c326570bccb068c77a70958ed7",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_a3815f91",
+        "filename": "features-aggregator/features-openflowplugin/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-10-19T03:50:22Z",
+      "side": 1,
+      "message": "If we remove this dependency, then the southbound-cli would not come distribution target folder, so its needed. If you see all the applications like frm, frs, reconcilition-framework is having dependencies here",
+      "parentUuid": "9a245df4_7e9387a3",
+      "revId": "c02495efeddfb8c326570bccb068c77a70958ed7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
