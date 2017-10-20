@@ -10,11 +10,11 @@ package org.opendaylight.openflowplugin.applications.bulk.o.matic;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
@@ -32,7 +32,6 @@ import javax.management.ObjectName;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.AddFlowsDsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.AddFlowsRpcInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.BulkFlowBaseContentGrouping;
@@ -97,8 +96,8 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
                     flowBuilder.build(), createParents);
             createParents = createParentsNextTime;
         }
-        CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTransaction.submit();
-        return handleResultFuture(submitFuture);
+        ListenableFuture<Void> submitFuture = writeTransaction.submit();
+        return handleResultFuture(Futures.allAsList(submitFuture));
     }
 
     private InstanceIdentifier<Flow> getFlowInstanceIdentifier(BulkFlowDsItem bulkFlow) {
@@ -114,28 +113,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         for (BulkFlowDsItem bulkFlow : input.getBulkFlowDsItem()) {
             writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, getFlowInstanceIdentifier(bulkFlow));
         }
-        CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTransaction.submit();
-        return handleResultFuture(submitFuture);
-    }
-
-    private ListenableFuture<RpcResult<Void>> handleResultFuture(
-            CheckedFuture<Void, TransactionCommitFailedException> submitFuture) {
-        final SettableFuture<RpcResult<Void>> rpcResult = SettableFuture.create();
-        Futures.addCallback(submitFuture, new FutureCallback<Void>() {
-            @Override
-            public void onSuccess(Void result) {
-                rpcResult.set(RpcResultBuilder.success(result).build());
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-                RpcResultBuilder<Void> rpcResultBld = RpcResultBuilder.<Void>failed()
-                        .withRpcErrors(Collections.singleton(RpcResultBuilder.newError(RpcError.ErrorType.APPLICATION,
-                                null, throwable.getMessage())));
-                rpcResult.set(rpcResultBld.build());
-            }
-        });
-        return rpcResult;
+        return handleResultFuture(Futures.allAsList(writeTransaction.submit()));
     }
 
     private <T> ListenableFuture<RpcResult<Void>> handleResultFuture(ListenableFuture<List<T>> submitFuture) {
@@ -153,7 +131,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
                                 null, throwable.getMessage())));
                 rpcResult.set(rpcResultBld.build());
             }
-        });
+        }, MoreExecutors.directExecutor());
         return rpcResult;
     }
 
