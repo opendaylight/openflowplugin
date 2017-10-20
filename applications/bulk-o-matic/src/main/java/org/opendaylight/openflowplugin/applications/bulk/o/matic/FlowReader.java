@@ -28,7 +28,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FlowReader implements Runnable, FlowCounterMBean {
+public final class FlowReader implements Runnable, FlowCounterMBean {
     private static final Logger LOG = LoggerFactory.getLogger(FlowReader.class);
     private final DataBroker dataBroker;
     private final Integer dpnCount;

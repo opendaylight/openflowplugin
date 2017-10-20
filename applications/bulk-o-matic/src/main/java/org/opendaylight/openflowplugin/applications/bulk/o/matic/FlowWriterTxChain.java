@@ -9,6 +9,8 @@ package org.opendaylight.openflowplugin.applications.bulk.o.matic;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.MoreExecutors;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -144,7 +146,7 @@ public class FlowWriterTxChain implements FlowCounterMBean {
                 LOG.debug("Submitting Txn for dpId: {}, begin tableId: {}, end tableId: {}, sourceIp: {}", dpId,
                         tableId, calculatedTableId, sourceIp - 1);
                 Futures.addCallback(writeTransaction.submit(),
-                        new DsCallBack(dpId, tableId, calculatedTableId, sourceIp));
+                        new DsCallBack(dpId, tableId, calculatedTableId, sourceIp), MoreExecutors.directExecutor());
                 // Wrap around
                 tableId = (short) ((calculatedTableId + 1) % (short) (endTableId - startTableId + 1) + startTableId);
                 newBatchSize += batchSize;
