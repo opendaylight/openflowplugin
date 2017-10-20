@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.applications.lldpspeaker;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import java.util.Collection;
@@ -16,8 +17,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import javax.annotation.Nonnull;
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
+import org.opendaylight.controller.md.sal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -41,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * and update LLDPSpeaker and topology.
  */
 public class NodeConnectorInventoryEventTranslator<T extends DataObject>
-        implements DataTreeChangeListener<T>, AutoCloseable {
+        implements ClusteredDataTreeChangeListener<T>, AutoCloseable {
 
     private static final InstanceIdentifier<State> II_TO_STATE
         = InstanceIdentifier.builder(Nodes.class)
@@ -62,8 +65,8 @@ public class NodeConnectorInventoryEventTranslator<T extends DataObject>
     private static final int STARTUP_LOOP_MAX_RETRIES = 8;
     private static final Logger LOG = LoggerFactory.getLogger(NodeConnectorInventoryEventTranslator.class);
 
-    private final ListenerRegistration<DataTreeChangeListener> listenerOnPortRegistration;
-    private final ListenerRegistration<DataTreeChangeListener> listenerOnPortStateRegistration;
+    private final ListenerRegistration<ClusteredDataTreeChangeListener> listenerOnPortRegistration;
+    private final ListenerRegistration<ClusteredDataTreeChangeListener> listenerOnPortStateRegistration;
     private final Set<NodeConnectorEventsObserver> observers;
     private final Map<InstanceIdentifier<?>,FlowCapableNodeConnector> iiToDownFlowCapableNodeConnectors = new HashMap<>();
 
@@ -75,21 +78,50 @@ public class NodeConnectorInventoryEventTranslator<T extends DataObject>
                 new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, II_TO_STATE);
         final SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
         try {
-            listenerOnPortRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<DataTreeChangeListener>>() {
+            listenerOnPortRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<ClusteredDataTreeChangeListener>>() {
                 @Override
-                public ListenerRegistration<DataTreeChangeListener> call() throws Exception {
+                public ListenerRegistration<ClusteredDataTreeChangeListener> call() throws Exception {
                     return dataBroker.registerDataTreeChangeListener(dtiToNodeConnector, NodeConnectorInventoryEventTranslator.this);
                 }
             });
-            listenerOnPortStateRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<DataTreeChangeListener>>() {
+            listenerOnPortStateRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<ClusteredDataTreeChangeListener>>() {
                 @Override
-                public ListenerRegistration<DataTreeChangeListener> call() throws Exception {
+                public ListenerRegistration<ClusteredDataTreeChangeListener> call() throws Exception {
                     return dataBroker.registerDataTreeChangeListener(dtiToNodeConnectorState, NodeConnectorInventoryEventTranslator.this);
                 }
             });
         } catch (Exception e) {
             LOG.error("DataTreeChangeListeners registration failed: {}", e);
             throw new IllegalStateException("NodeConnectorInventoryEventTranslator startup failed!", e);
+        }
+
+        ReadOnlyTransaction tx = null;
+        try{
+            tx = dataBroker.newReadOnlyTransaction();
+            Optional<Nodes> nodes = tx.read(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.builder(Nodes.class).build()).get();
+            if (nodes != null && nodes.isPresent() && nodes.get().getNode() != null){
+                for (Node node: nodes.get().getNode()){
+                    if (node.getNodeConnector() ==null){
+                        continue;
+                    }
+                    for (NodeConnector connector:node.getNodeConnector()){
+                        FlowCapableNodeConnector flowConnector = connector.getAugmentation(FlowCapableNodeConnector.class);
+                        if (flowConnector != null && !isPortDown(flowConnector)){
+                            notifyNodeConnectorAppeared(InstanceIdentifier.builder(Nodes.class)
+                                    .child(Node.class,node.getKey())
+                                    .child(NodeConnector.class,connector.getKey())
+                                    .build(), flowConnector);
+                        }
+                    }
+
+                }
+            }
+        }catch (Exception e){
+            LOG.error("Cannot read current flow connector",e);
+        }finally{
+            if (tx != null){
+                tx.close();
+            }
         }
         LOG.info("NodeConnectorInventoryEventTranslator has started.");
     }
