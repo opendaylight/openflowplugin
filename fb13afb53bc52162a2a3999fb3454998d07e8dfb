@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a245df4_ac2ca203",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statusanddiag/OpenflowPluginStatusMonitor.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2017-10-23T15:14:07Z",
+      "side": 1,
+      "message": "volatile",
+      "range": {
+        "startLine": 26,
+        "startChar": 19,
+        "endLine": 26,
+        "endChar": 20
+      },
+      "revId": "fb13afb53bc52162a2a3999fb3454998d07e8dfb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
