@@ -25,6 +25,11 @@ module sal-role {
             enum BECOMESLAVE {
                 description "demote current role to SLAVE";
             }
+
+            enum BECOMEEQUAL {
+                description "demote current role to EQUAL";
+            }
+
         }
     }
 
