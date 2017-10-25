@@ -51,6 +51,10 @@
       <version>0.13.1-SNAPSHOT</version>
     </dependency>
     <dependency>
+      <groupId>org.opendaylight.openflowplugin</groupId>
+      <artifactId>openflowplugin-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opendaylight.openflowplugin.model</groupId>
       <artifactId>model-flow-base</artifactId>
     </dependency>
