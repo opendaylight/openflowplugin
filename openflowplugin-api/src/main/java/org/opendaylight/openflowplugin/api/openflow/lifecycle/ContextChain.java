@@ -35,6 +35,11 @@ public interface ContextChain extends ClusterSingletonService, AutoCloseable, Re
     void makeContextChainStateSlave();
 
     /**
+    * Equal was successfully set.
+    */
+    void makeContextChainStateEqual();
+
+    /**
      * Registers context chain into cluster singleton service.
      * @param clusterSingletonServiceProvider provider
      */

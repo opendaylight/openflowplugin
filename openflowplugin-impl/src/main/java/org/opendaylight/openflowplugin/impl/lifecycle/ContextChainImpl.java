@@ -149,6 +149,12 @@ public class ContextChainImpl implements ContextChain {
         changeMastershipState(ContextChainState.WORKING_SLAVE);
     }
 
+	@Override
+    public void makeContextChainStateEqual() {
+        unMasterMe();
+        changeMastershipState(ContextChainState.WORKING_EQUAL);
+    }
+
     @Override
     public void registerServices(final ClusterSingletonServiceProvider clusterSingletonServiceProvider) {
         registration = Objects.requireNonNull(clusterSingletonServiceProvider

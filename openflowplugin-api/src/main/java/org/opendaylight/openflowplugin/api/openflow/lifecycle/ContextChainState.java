@@ -21,6 +21,10 @@ public enum ContextChainState {
      */
     WORKING_SLAVE,
     /**
+     * Context chain is working as EQUAL, initial gathering already done.
+     */
+    WORKING_EQUAL,
+    /**
      * Context chain is closed.
      */
     CLOSED

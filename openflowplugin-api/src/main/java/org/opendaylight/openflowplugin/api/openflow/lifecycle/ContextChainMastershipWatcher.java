@@ -54,4 +54,17 @@ public interface ContextChainMastershipWatcher {
      * @param reason reason
      */
     void onSlaveRoleNotAcquired(DeviceInfo deviceInfo, String reason);
+
+    /**
+     * Change to EQUAL role on device was successful.
+     * @param deviceInfo connected switch identification
+     */
+    void onEqualRoleAcquired(DeviceInfo deviceInfo);
+
+    /**
+     * Change to EQUAL role on device was not able.
+     * @param deviceInfo connected switch identification
+     * @param reason reason
+     */
+    void onEqualRoleNotAcquired(DeviceInfo deviceInfo, String reason);
 }

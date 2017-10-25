@@ -57,15 +57,17 @@ public class RoleContextImpl implements RoleContext {
     private final Timeout slaveTask;
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
     private SalRoleService roleService;
+	private final Timeout equalTask;
 
     RoleContextImpl(@Nonnull final DeviceInfo deviceInfo,
                     @Nonnull final HashedWheelTimer timer,
                     final long checkRoleMasterTimeout) {
         this.deviceInfo = deviceInfo;
         this.timer = timer;
-        slaveTask = timer.newTimeout((timerTask) -> makeDeviceSlave(), checkRoleMasterTimeout, TimeUnit.MILLISECONDS);
-
-        LOG.info("Started timer for setting SLAVE role on device {} if no role will be set in {}s.",
+		slaveTask = null;
+        //slaveTask = timer.newTimeout((timerTask) -> makeDeviceSlave(), checkRoleMasterTimeout, TimeUnit.MILLISECONDS);
+        equalTask = timer.newTimeout((timerTask) -> makeDeviceEqual(), checkRoleMasterTimeout, TimeUnit.MILLISECONDS);
+        LOG.info("Started timer for setting Equal role on device {} if no role will be set in {}s.",
                 deviceInfo,
                 checkRoleMasterTimeout / 1000L);
     }
@@ -136,6 +138,17 @@ public class RoleContextImpl implements RoleContext {
         });
     }
 
+   private void changeLastRoleFutureEqual(final ListenableFuture<RpcResult<SetRoleOutput>> newFuture) {
+        equalTask.cancel();
+        lastRoleFuture.getAndUpdate(lastFuture -> {
+            if (Objects.nonNull(lastFuture) && !lastFuture.isCancelled() && !lastFuture.isDone()) {
+                lastFuture.cancel(true);
+            }
+
+            return newFuture;
+        });
+    }
+   
     private ListenableFuture<RpcResult<SetRoleOutput>> makeDeviceSlave() {
         final ListenableFuture<RpcResult<SetRoleOutput>> future = sendRoleChangeToDevice(OfpRole.BECOMESLAVE);
         changeLastRoleFuture(future);
@@ -143,6 +156,12 @@ public class RoleContextImpl implements RoleContext {
         return future;
     }
 
+    private ListenableFuture<RpcResult<SetRoleOutput>> makeDeviceEqual() {
+        final ListenableFuture<RpcResult<SetRoleOutput>> future = sendRoleChangeToDevice(OfpRole.BECOMEEQUAL);
+        changeLastRoleFutureEqual(future);
+        Futures.addCallback(future, new EqualRoleCallback(), MoreExecutors.directExecutor());
+        return future;
+    }
     private ListenableFuture<RpcResult<SetRoleOutput>> sendRoleChangeToDevice(final OfpRole newRole) {
         LOG.debug("Sending new role {} to device {}", newRole, deviceInfo);
 
@@ -201,6 +220,22 @@ public class RoleContextImpl implements RoleContext {
             if (!(throwable instanceof CancellationException)) {
                 contextChainMastershipWatcher.onSlaveRoleNotAcquired(deviceInfo,
                         "Was not able to propagate SLAVE role on device. Error: " + throwable.toString());
+            }
+        }
+    }
+
+	private final class EqualRoleCallback implements FutureCallback<RpcResult<SetRoleOutput>> {
+        @Override
+        public void onSuccess(@Nullable final RpcResult<SetRoleOutput> result) {
+            contextChainMastershipWatcher.onEqualRoleAcquired(deviceInfo);
+            LOG.debug("Role EQUAL was successfully set on device, node {}", deviceInfo);
+        }
+
+        @Override
+        public void onFailure(@Nonnull final Throwable throwable) {
+            if (!(throwable instanceof CancellationException)) {
+                contextChainMastershipWatcher.onEqualRoleNotAcquired(deviceInfo,
+                        "Was not able to propagate EQUAL role on device. Error: " + throwable.toString());
             }
         }
     }

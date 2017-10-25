@@ -69,6 +69,14 @@ public final class MastershipChangeServiceManagerImpl implements MastershipChang
         serviceGroup.forEach(mastershipChangeService -> mastershipChangeService.onLoseOwnership(deviceInfo));
     }
 
+	@Override
+    public void becomeEqualOrDisconnect(@Nonnull final DeviceInfo deviceInfo) {
+        if (rfService != null) {
+            rfService.onDeviceDisconnected(deviceInfo);
+        }
+        serviceGroup.forEach(mastershipChangeService -> mastershipChangeService.onLoseOwnership(deviceInfo));
+    }
+
     @Override
     public ListenableFuture<ResultState> becomeMasterBeforeSubmittedDS(@Nonnull DeviceInfo deviceInfo) {
         return rfService == null ? null : rfService.onDevicePrepared(deviceInfo);

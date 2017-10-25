@@ -243,6 +243,19 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     }
 
     @Override
+    public void onEqualRoleAcquired(final DeviceInfo deviceInfo) {
+        ownershipChangeListener.becomeEqualOrDisconnect(deviceInfo);
+        LOG.info("Role Equal was granted to device {}", deviceInfo);
+        Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(ContextChain::makeContextChainStateEqual);
+    }
+
+    @Override
+    public void onEqualRoleNotAcquired(final DeviceInfo deviceInfo, final String reason) {
+        LOG.warn("Not able to set EQUAL role on device {}, reason: {}", deviceInfo, reason);
+        Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(contextChain -> destroyContextChain(deviceInfo));
+    }
+
+    @Override
     public void onDeviceDisconnected(final ConnectionContext connectionContext) {
         final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
 
