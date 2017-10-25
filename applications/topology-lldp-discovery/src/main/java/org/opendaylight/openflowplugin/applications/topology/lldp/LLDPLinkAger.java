@@ -11,30 +11,40 @@ import com.google.common.annotations.VisibleForTesting;
 import java.util.Date;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
+import javax.annotation.Nonnull;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationListener;
+import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscovered;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkRemovedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.lldp.discovery.config.rev160511.TopologyLldpDiscoveryConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-
-public class LLDPLinkAger implements AutoCloseable {
+public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
+    private static final Logger LOG = LoggerFactory.getLogger(LLDPLinkAger.class);
     private final long linkExpirationTime;
     private final Map<LinkDiscovered, Date> linkToDate;
     private final Timer timer;
     private final NotificationProviderService notificationService;
+    private final AutoCloseable configurationServiceRegistration;
 
     /**
      * default ctor - start timer
      */
-    public LLDPLinkAger(final long lldpInterval, final long linkExpirationTime,
-            final NotificationProviderService notificationService) {
-        this.linkExpirationTime = linkExpirationTime;
+    public LLDPLinkAger(final TopologyLldpDiscoveryConfig topologyLldpDiscoveryConfig,
+                        final NotificationProviderService notificationService,
+                        final ConfigurationService configurationService) {
+        this.linkExpirationTime = topologyLldpDiscoveryConfig.getTopologyLldpExpirationInterval().getValue();
         this.notificationService = notificationService;
+        this.configurationServiceRegistration = configurationService.registerListener(this);
         linkToDate = new ConcurrentHashMap<>();
         timer = new Timer();
-        timer.schedule(new LLDPAgingTask(), 0, lldpInterval);
+        timer.schedule(new LLDPAgingTask(), 0, topologyLldpDiscoveryConfig.getTopologyLldpInterval().getValue());
     }
 
     public void put(LinkDiscovered link) {
@@ -44,9 +54,10 @@ public class LLDPLinkAger implements AutoCloseable {
     }
 
     @Override
-    public void close() {
+    public void close() throws Exception {
         timer.cancel();
         linkToDate.clear();
+        configurationServiceRegistration.close();
     }
 
     private class LLDPAgingTask extends TimerTask {
@@ -75,5 +86,23 @@ public class LLDPLinkAger implements AutoCloseable {
         return linkToDate.isEmpty();
     }
 
+    @Override
+    public void onPropertyChanged(@Nonnull final String propertyName, @Nonnull final String propertyValue) {
+        Optional.ofNullable(TopologyLLDPDiscoveryProperty.forValue(propertyName)).ifPresent(lldpDiscoveryProperty -> {
+            switch (lldpDiscoveryProperty) {
+                case LLDP_SECURE_KEY:
+                    LOG.warn("Runtime update not supported for property {}", lldpDiscoveryProperty);
+                    break;
+                case TOPOLOGY_LLDP_INTERVAL:
+                    LOG.warn("Runtime update not supported for property {}", lldpDiscoveryProperty);
+                    break;
+                case TOPOLOGY_LLDP_EXPIRATION_INTERVAL:
+                    LOG.warn("Runtime update not supported for property {}", lldpDiscoveryProperty);
+                    break;
+                default:
+                    LOG.warn("No topology lldp discovery property found.");
+                    break;
+            }
+        });
+    }
 }
-

@@ -21,7 +21,7 @@ module topology-lldp-discovery-config {
         leaf lldp-secure-key {
             description "Provided key will be used to generate LLDP custom security hash";
             type string;
-            mandatory true;
+            default aa9251f8-c7c0-4322-b8d6-c3a84593bda3;
         }
 
        leaf topology-lldp-interval {
