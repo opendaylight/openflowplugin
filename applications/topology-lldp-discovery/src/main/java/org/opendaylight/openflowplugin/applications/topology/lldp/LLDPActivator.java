@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.applications.topology.lldp;
 
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.lldp.discovery.config.rev160511.TopologyLldpDiscoveryConfig;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.NotificationListener;
 import org.slf4j.Logger;
@@ -21,8 +22,8 @@ public class LLDPActivator implements AutoCloseable {
     private final ListenerRegistration<NotificationListener> lldpNotificationRegistration;
 
     public LLDPActivator(NotificationProviderService notificationService, LLDPDiscoveryListener lldpDiscoveryListener,
-            String secureKey) {
-        lldpSecureKey = secureKey;
+                         TopologyLldpDiscoveryConfig topologyLldpDiscoveryConfig) {
+        lldpSecureKey = topologyLldpDiscoveryConfig.getLldpSecureKey();
 
         LOG.info("Starting LLDPActivator with lldpSecureKey: {}", lldpSecureKey);
 
