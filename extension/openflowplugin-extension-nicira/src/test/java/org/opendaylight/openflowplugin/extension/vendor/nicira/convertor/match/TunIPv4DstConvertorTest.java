@@ -26,10 +26,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.TunIpv4DstCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.TunIpv4DstCaseValueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNodesNodeTableFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNodesNodeTableFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifPacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifSwitchFlowRemoved;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifUpdateFlowStats;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifUpdateFlowStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxTunIpv4DstKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.tun.ipv4.dst.grouping.NxmNxTunIpv4DstBuilder;
@@ -53,7 +53,7 @@ public class TunIPv4DstConvertorTest {
     public void setUp() throws Exception {
         final NxmNxTunIpv4DstBuilder nxmNxTunIpv4DstBuilder = new NxmNxTunIpv4DstBuilder()
                 .setIpv4Address(IPV4_ADDRESS);
-        final NxAugMatchNotifUpdateFlowStatsBuilder nxAugMatchNotifUpdateFlowStatsBuilder = new NxAugMatchNotifUpdateFlowStatsBuilder();
+        final NxAugMatchNodesNodeTableFlowBuilder nxAugMatchNotifUpdateFlowStatsBuilder = new NxAugMatchNodesNodeTableFlowBuilder();
         nxAugMatchNotifUpdateFlowStatsBuilder.setNxmNxTunIpv4Dst(nxmNxTunIpv4DstBuilder.build());
 
         final Augmentation<Extension> extensionAugmentation = nxAugMatchNotifUpdateFlowStatsBuilder.build();
@@ -88,7 +88,7 @@ public class TunIPv4DstConvertorTest {
         Assert.assertEquals(extensionAugment.getKey(), NxmNxTunIpv4DstKey.class);
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = tunIPv4DstConvertor.convert(matchEntry, MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
-        Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchNotifUpdateFlowStats)extensionAugment2.getAugmentationObject()).getNxmNxTunIpv4Dst().getIpv4Address());
+        Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchNodesNodeTableFlow)extensionAugment2.getAugmentationObject()).getNxmNxTunIpv4Dst().getIpv4Address());
         Assert.assertEquals(extensionAugment.getKey(), NxmNxTunIpv4DstKey.class);
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = tunIPv4DstConvertor.convert(matchEntry, MatchPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH);
