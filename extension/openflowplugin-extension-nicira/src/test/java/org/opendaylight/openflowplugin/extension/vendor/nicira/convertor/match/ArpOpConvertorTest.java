@@ -25,11 +25,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.arp.op._case.ArpOpBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.ArpOpCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNodesNodeTableFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifPacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifSwitchFlowRemoved;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifUpdateFlowStats;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcAddFlowBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfArpOpKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of.arp.op.grouping.NxmOfArpOpBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
@@ -85,7 +85,7 @@ public class ArpOpConvertorTest {
         Assert.assertEquals(extensionAugment.getKey(), NxmOfArpOpKey.class);
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = arpOpConvertor.convert(matchEntry, MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
-        Assert.assertEquals(arpOpCase.getArpOp().getOpCode(), ((NxAugMatchNotifUpdateFlowStats)extensionAugment1.getAugmentationObject()).getNxmOfArpOp().getValue());
+        Assert.assertEquals(arpOpCase.getArpOp().getOpCode(), ((NxAugMatchNodesNodeTableFlow)extensionAugment1.getAugmentationObject()).getNxmOfArpOp().getValue());
         Assert.assertEquals(extensionAugment1.getKey(), NxmOfArpOpKey.class);
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = arpOpConvertor.convert(matchEntry, MatchPath.SWITCHFLOWREMOVED_MATCH);

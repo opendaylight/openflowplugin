@@ -25,6 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowWildcardsV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10Builder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeTableFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeTableFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeTableFlowWriteActionsSetField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeTableFlowWriteActionsSetFieldBuilder;
@@ -33,6 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifSwitchFlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifSwitchFlowRemovedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifUpdateFlowStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifUpdateFlowStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchPacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchPacketInMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionList;
@@ -47,11 +49,13 @@ public final class MatchUtil {
             .put(SetField.class, match -> {
                 final SetFieldBuilder matchBuilder = new SetFieldBuilder(match);
 
-                resolveExtensions(match).ifPresent(extensionLists -> matchBuilder
-                        .addAugmentation(GeneralAugMatchNodesNodeTableFlowWriteActionsSetField.class,
-                                new GeneralAugMatchNodesNodeTableFlowWriteActionsSetFieldBuilder()
-                                        .setExtensionList(extensionLists)
-                                        .build()));
+                resolveExtensions(match).ifPresent(extensionLists -> {
+                    matchBuilder
+                            .addAugmentation(GeneralAugMatchNodesNodeTableFlowWriteActionsSetField.class,
+                                    new GeneralAugMatchNodesNodeTableFlowWriteActionsSetFieldBuilder()
+                                            .setExtensionList(extensionLists)
+                                            .build());
+                });
 
                 return matchBuilder.build();
             })
@@ -60,8 +64,8 @@ public final class MatchUtil {
                     final MatchBuilder matchBuilder = new MatchBuilder(match);
 
                     resolveExtensions(match).ifPresent(extensionLists -> matchBuilder
-                            .addAugmentation(GeneralAugMatchNotifUpdateFlowStats.class,
-                                    new GeneralAugMatchNodesNodeTableFlowBuilder()
+                            .addAugmentation(GeneralAugMatchNodesNodeTableFlow.class,
+                                    new GeneralAugMatchNotifUpdateFlowStatsBuilder()
                                             .setExtensionList(extensionLists)
                                             .build()));
 
