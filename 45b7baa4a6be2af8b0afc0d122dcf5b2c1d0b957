@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a245df4_cb59e95b",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/flow/DeviceFlowRegistryImpl.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-10-27T09:16:07Z",
+      "side": 1,
+      "message": "this code will throw ConcurrentModificationException, fix it\n\nhttps://logs.opendaylight.org/releng/jenkins092/netvirt-csit-1node-openstack-ocata-gate-stateful-nitrogen/33/odl1_karaf.log.gz",
+      "range": {
+        "startLine": 221,
+        "startChar": 0,
+        "endLine": 221,
+        "endChar": 63
+      },
+      "revId": "45b7baa4a6be2af8b0afc0d122dcf5b2c1d0b957",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
