@@ -39,6 +39,16 @@ public enum MatchPath implements AugmentationPath {
     /**
      * openflowplugin-extension-general.yang
      * <pre>
+     * module: packet-processing
+     * container:
+     *    +---n packet-in-message
+     *       +--ro match
+     * </pre>
+     */
+    PACKETINMESSAGE_MATCH(null),
+    /**
+     * openflowplugin-extension-general.yang
+     * <pre>
      * module: opendaylight-flow-statistics
      * notifications:
      *    +---n flows-statistics-update             
@@ -46,6 +56,7 @@ public enum MatchPath implements AugmentationPath {
      *    |  |  +--ro match
      * </pre>
      */
+
     FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH(null),
     /**
      * openflowplugin-extension-general.yang

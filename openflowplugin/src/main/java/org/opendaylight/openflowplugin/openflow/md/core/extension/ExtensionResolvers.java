@@ -18,6 +18,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifPacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifSwitchFlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifUpdateFlowStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchPacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchRpcAddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchRpcAddFlowApplyActionsSetField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchRpcAddFlowWriteActionsSetField;
@@ -52,6 +53,7 @@ public class ExtensionResolvers {
                     .add(GeneralAugMatchNotifPacketIn.class)
                     .add(GeneralAugMatchNotifUpdateFlowStats.class)
                     .add(GeneralAugMatchNotifSwitchFlowRemoved.class)
+                    .add(GeneralAugMatchPacketInMessage.class)
                     // SetField extensions
                     .add(GeneralAugMatchRpcAddFlowWriteActionsSetField.class)
                     .add(GeneralAugMatchRpcAddFlowApplyActionsSetField.class)

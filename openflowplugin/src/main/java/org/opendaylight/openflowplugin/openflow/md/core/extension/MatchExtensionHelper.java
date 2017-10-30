@@ -31,6 +31,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifSwitchFlowRemovedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifUpdateFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifUpdateFlowStatsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchPacketInMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchPacketInMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchRpcOutputFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchRpcOutputFlowStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
@@ -122,6 +124,13 @@ public final class MatchExtensionHelper {
                     generalExtMatchAugBld2.setExtensionList(extensionsList);
                     augmentTuple = (AugmentTuple<EXT_POINT>)
                             new AugmentTuple<Match>(GeneralAugMatchNotifPacketIn.class, generalExtMatchAugBld2.build());
+                    break;
+                case PACKETINMESSAGE_MATCH:
+                    GeneralAugMatchPacketInMessageBuilder generalExtMatchAugBld5 = new GeneralAugMatchPacketInMessageBuilder();
+                    generalExtMatchAugBld5.setExtensionList(extensionsList);
+                    augmentTuple = (AugmentTuple<EXT_POINT>)
+                            new AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.in.message
+                                    .Match>(GeneralAugMatchPacketInMessage.class, generalExtMatchAugBld5.build());
                     break;
                 case SWITCHFLOWREMOVED_MATCH:
                     GeneralAugMatchNotifSwitchFlowRemovedBuilder generalExtMatchAugBld3 = new GeneralAugMatchNotifSwitchFlowRemovedBuilder();

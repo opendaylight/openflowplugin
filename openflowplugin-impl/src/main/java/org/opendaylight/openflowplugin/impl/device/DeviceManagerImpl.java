@@ -255,6 +255,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 connectionContext.getConnectionAdapter(), deviceContext);
 
         connectionContext.getConnectionAdapter().setMessageListener(messageListener);
+        connectionContext.getConnectionAdapter().setAlienMessageListener(messageListener);
 
         return deviceContext;
     }
