@@ -29,7 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.
 /**
  * Pulled out queue stats to notification transformation.
  */
-public class QueueStatisticsToNotificationTransformer {
+public final class QueueStatisticsToNotificationTransformer {
 
     private QueueStatisticsToNotificationTransformer() {
         // Hide implicit constructor

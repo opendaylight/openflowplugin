@@ -176,7 +176,6 @@ public class StatisticsManagerImplTest {
     /**
      * switching to {@link StatisticsWorkMode#FULLYDISABLED}; no pollTimeout and no lifecycleRegistry.
      *
-     * @throws Exception
      */
     @Test
     public void testChangeStatisticsWorkMode1() throws Exception {
@@ -205,7 +204,6 @@ public class StatisticsManagerImplTest {
     /**
      * Switching to {@link StatisticsWorkMode#FULLYDISABLED}; with pollTimeout and lifecycleRegistry.
      *
-     * @throws Exception
      */
     @Test
     public void testChangeStatisticsWorkMode2() throws Exception {
@@ -225,10 +223,9 @@ public class StatisticsManagerImplTest {
     }
 
     /**
-     * switching to {@link StatisticsWorkMode#FULLYDISABLED} and back
-     * to {@link StatisticsWorkMode#COLLECTALL}; with lifecycleRegistry and pollTimeout
+     * Tests switching to {@link StatisticsWorkMode#FULLYDISABLED} and back
+     * to {@link StatisticsWorkMode#COLLECTALL}; with lifecycleRegistry and pollTimeout.
      *
-     * @throws Exception
      */
     @Test
     public void testChangeStatisticsWorkMode3() throws Exception {

@@ -585,8 +585,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         return useSingleLayerSerialization && getDeviceInfo().getVersion() >= OFConstants.OFP_VERSION_1_3;
     }
 
+    // TODO: exception handling should be fixed by using custom checked exception, never RuntimeExceptions
     @Override
-    @SuppressWarnings("checkstyle:IllegalCatch")
+    @SuppressWarnings({"checkstyle:IllegalCatch", "checkstyle:AvoidHidingCauseExceptionCheck"})
     public void instantiateServiceInstance() {
         lazyTransactionManagerInitialization();
 
@@ -707,8 +708,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                         .filter(Objects::nonNull)
                         .count();
 
-                LOG.debug("Finished filling flow registry with {} flows for node: {}", flowCount, deviceInfo
-                        );
+                LOG.debug("Finished filling flow registry with {} flows for node: {}", flowCount, deviceInfo);
             }
             this.contextChainMastershipWatcher.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState
                     .INITIAL_FLOW_REGISTRY_FILL);
@@ -721,8 +721,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     LOG.debug("Cancelled filling flow registry with flows for node: {}", deviceInfo);
                 }
             } else {
-                LOG.warn("Failed filling flow registry with flows for node: {} with exception: {}", deviceInfo
-                        , throwable);
+                LOG.warn("Failed filling flow registry with flows for node: {} with exception: {}", deviceInfo,
+                         throwable);
             }
             contextChainMastershipWatcher.onNotAbleToStartMastership(
                     deviceInfo,
