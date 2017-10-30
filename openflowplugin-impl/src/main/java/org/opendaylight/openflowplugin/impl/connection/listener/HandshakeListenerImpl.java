@@ -28,9 +28,6 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- *
- */
 public class HandshakeListenerImpl implements HandshakeListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(HandshakeListenerImpl.class);
@@ -40,10 +37,13 @@ public class HandshakeListenerImpl implements HandshakeListener {
     private HandshakeContext handshakeContext;
 
     /**
-     * @param connectionContext
-     * @param deviceConnectedHandler
+     * Constructor.
+     *
+     * @param connectionContext - connection context
+     * @param deviceConnectedHandler - device connected handler
      */
-    public HandshakeListenerImpl(final ConnectionContext connectionContext, final DeviceConnectedHandler deviceConnectedHandler) {
+    public HandshakeListenerImpl(final ConnectionContext connectionContext,
+                                 final DeviceConnectedHandler deviceConnectedHandler) {
         this.connectionContext = connectionContext;
         this.deviceConnectedHandler = deviceConnectedHandler;
     }
@@ -67,9 +67,11 @@ public class HandshakeListenerImpl implements HandshakeListener {
     private FutureCallback<RpcResult<BarrierOutput>> addBarrierCallback() {
         return new FutureCallback<RpcResult<BarrierOutput>>() {
             @Override
+            @SuppressWarnings("checkstyle:IllegalCatch")
             public void onSuccess(@Nullable final RpcResult<BarrierOutput> result) {
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("succeeded by getting sweep barrier after post-handshake for device {}", connectionContext.getDeviceInfo());
+                    LOG.debug("succeeded by getting sweep barrier after post-handshake for device {}",
+                            connectionContext.getDeviceInfo());
                 }
                 try {
                     ConnectionStatus connectionStatusResult = deviceConnectedHandler.deviceConnected(connectionContext);
@@ -87,8 +89,9 @@ public class HandshakeListenerImpl implements HandshakeListener {
             }
 
             @Override
-            public void onFailure(final Throwable t) {
-                LOG.warn("failed to get sweep barrier after post-handshake for device {}", connectionContext.getDeviceInfo(), t);
+            public void onFailure(final Throwable throwable) {
+                LOG.warn("failed to get sweep barrier after post-handshake for device {}",
+                        connectionContext.getDeviceInfo(), throwable);
                 connectionContext.closeConnection(false);
             }
         };
