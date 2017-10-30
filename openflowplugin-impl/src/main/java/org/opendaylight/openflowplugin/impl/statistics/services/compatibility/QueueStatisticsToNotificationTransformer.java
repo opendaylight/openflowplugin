@@ -53,7 +53,7 @@ public class QueueStatisticsToNotificationTransformer {
         notification.setMoreReplies(Boolean.FALSE);
         notification.setTransactionId(emulatedTxId);
 
-        notification.setQueueIdAndStatisticsMap(new ArrayList<QueueIdAndStatisticsMap>());
+        notification.setQueueIdAndStatisticsMap(new ArrayList<>());
         for (MultipartReply mpReply : mpReplyList) {
 
             MultipartReplyQueueCase caseBody = (MultipartReplyQueueCase) mpReply.getMultipartReplyBody();
