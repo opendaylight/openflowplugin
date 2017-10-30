@@ -14,6 +14,7 @@ import static org.junit.Assert.assertTrue;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.junit.Test;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
@@ -28,7 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 
 public class MultipartReplyMeterFeaturesDeserializerTest extends AbstractMultipartDeserializerTest {
     private static final int MAX_METER = 3;
-    private static final List BANDS_SUPPORTED = Arrays.asList(MeterBandDrop.class);
+    private static final List BANDS_SUPPORTED = Collections.singletonList(MeterBandDrop.class);
     private static final List CAPABILITIES_SUPPORTED = Arrays.asList(MeterKbps.class, MeterBurst.class);
     private static final byte MAX_BANDS = 56;
     private static final byte MAX_COLOR = 48;

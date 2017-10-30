@@ -108,7 +108,7 @@ public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsSer
         when(stat.getTableId()).thenReturn(TABLE_NO);
         when(stat.getMatch()).thenReturn(new MatchBuilder().build());
 
-        final List<FlowAndStatisticsMapList> stats = Arrays.asList(stat);
+        final List<FlowAndStatisticsMapList> stats = Collections.singletonList(stat);
         final GetFlowStatisticsOutput output = mock(GetFlowStatisticsOutput.class);
         when(output.getFlowAndStatisticsMapList()).thenReturn(stats);
 
