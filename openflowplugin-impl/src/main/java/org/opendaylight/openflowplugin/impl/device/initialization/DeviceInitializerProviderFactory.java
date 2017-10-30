@@ -11,12 +11,12 @@ package org.opendaylight.openflowplugin.impl.device.initialization;
 import org.opendaylight.openflowplugin.api.OFConstants;
 
 /**
- * Multipart writer provider factory
+ * Multipart writer provider factory.
  */
 public class DeviceInitializerProviderFactory {
 
     /**
-     * Create default #{@link org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProvider}
+     * Create default #{@link org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProvider}.
      * @return the device initialization provider
      */
     public static DeviceInitializerProvider createDefaultProvider() {

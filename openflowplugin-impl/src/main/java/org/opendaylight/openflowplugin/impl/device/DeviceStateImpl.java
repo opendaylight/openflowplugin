@@ -9,11 +9,9 @@
 package org.opendaylight.openflowplugin.impl.device;
 
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 
 /**
- * Holder for device features
+ * Holder for device features.
  */
 class DeviceStateImpl implements DeviceState {
 
