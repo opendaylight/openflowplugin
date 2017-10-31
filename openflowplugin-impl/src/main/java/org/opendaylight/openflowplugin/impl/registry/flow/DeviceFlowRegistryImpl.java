@@ -38,6 +38,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeTableFlow;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
@@ -65,7 +66,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
         flowConsumer = flow -> {
             final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(version, flow);
 
-            if (!flowRegistry.containsKey(flowRegistryKey)) {
+            if (getExistingKey(flowRegistryKey) == null) {
                 // Now, we will update the registry
                 storeDescriptor(flowRegistryKey, FlowDescriptorFactory.create(flow.getTableId(), flow.getId()));
             }
@@ -154,10 +155,14 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     @Override
     public FlowDescriptor retrieveDescriptor(@Nonnull final FlowRegistryKey flowRegistryKey) {
         if (LOG.isTraceEnabled()) {
-            LOG.trace("Retrieving flow descriptor for flow hash : {}", flowRegistryKey.hashCode());
+            LOG.trace("Retrieving flow descriptor for flow registry : {}", flowRegistryKey.toString());
         }
 
-        return flowRegistry.get(flowRegistryKey);
+        FlowRegistryKey existingFlowRegistryKey = getExistingKey(flowRegistryKey);
+        if (existingFlowRegistryKey != null) {
+            return flowRegistry.get(existingFlowRegistryKey);
+        }
+        return null;
     }
 
     @Override
@@ -168,10 +173,10 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
                 LOG.trace("Storing flowDescriptor with table ID : {} and flow ID : {} for flow hash : {}",
                         flowDescriptor.getTableKey().getId(),
                         flowDescriptor.getFlowId().getValue(),
-                        flowRegistryKey.hashCode());
+                        flowRegistryKey.toString());
             }
 
-            flowRegistry.put(flowRegistryKey, flowDescriptor);
+            addToFlowRegistry(flowRegistryKey, flowDescriptor);
         } catch (IllegalArgumentException ex) {
             if (LOG.isWarnEnabled()) {
                 LOG.warn("Flow with flow ID {} already exists in table {}, generating alien flow ID",
@@ -181,7 +186,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
             // We are trying to store new flow to flow registry, but we already have different flow with same flow ID
             // stored in registry, so we need to create alien ID for this new flow here.
-            flowRegistry.put(
+            addToFlowRegistry(
                     flowRegistryKey,
                     FlowDescriptorFactory.create(
                             flowDescriptor.getTableKey().getId(),
@@ -194,7 +199,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
         if (Objects.isNull(retrieveDescriptor(flowRegistryKey))) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Flow descriptor for flow hash : {} not found, generating alien flow ID",
-                        flowRegistryKey.hashCode());
+                        flowRegistryKey.toString());
             }
 
             // We do not found flow in flow registry, that means it do not have any ID already assigned, so we need
@@ -210,10 +215,10 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     @Override
     public void addMark(final FlowRegistryKey flowRegistryKey) {
         if (LOG.isTraceEnabled()) {
-            LOG.trace("Removing flow descriptor for flow hash : {}", flowRegistryKey.hashCode());
+            LOG.trace("Removing flow descriptor for flow hash : {}", flowRegistryKey.toString());
         }
 
-        flowRegistry.remove(flowRegistryKey);
+        removeFromFlowRegistry(flowRegistryKey);
     }
 
     @Override
@@ -253,6 +258,44 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
         final String alienId = ALIEN_SYSTEM_FLOW_ID + tableId + '-' + UNACCOUNTED_FLOWS_COUNTER.incrementAndGet();
         LOG.debug("Created alien flow id {} for table id {}", alienId, tableId);
         return new FlowId(alienId);
+    }
+
+    //Hashcode generation of the extension augmentation can differ for the same object received from the datastore and
+    // the one received after deserialization of switch message. OpenFlowplugin extensions are list, and the order in
+    // which it can receive the extensions back from switch can differ and that lead to a different hashcode. In that
+    // scenario, hashcode won't match and flowRegistry return the  related key. To overcome this issue, these methods
+    // make sure that key is stored only if it doesn't equals to any existing key.
+    private void addToFlowRegistry (final FlowRegistryKey flowRegistryKey, final FlowDescriptor flowDescriptor) {
+        FlowRegistryKey existingFlowRegistryKey = getExistingKey(flowRegistryKey);
+        if (existingFlowRegistryKey == null) {
+            flowRegistry.put(flowRegistryKey, flowDescriptor);
+        } else {
+            flowRegistry.put(existingFlowRegistryKey, flowDescriptor);
+        }
+    }
+
+    private void removeFromFlowRegistry (final FlowRegistryKey flowRegistryKey) {
+        FlowRegistryKey existingFlowRegistryKey = getExistingKey(flowRegistryKey);
+        if(existingFlowRegistryKey != null) {
+            flowRegistry.remove(existingFlowRegistryKey);
+        } else {
+            flowRegistry.remove(flowRegistryKey);
+        }
+    }
+
+    private FlowRegistryKey getExistingKey (final FlowRegistryKey flowRegistryKey) {
+        if (flowRegistryKey.getMatch().getAugmentation(GeneralAugMatchNodesNodeTableFlow.class) == null) {
+            if (flowRegistry.containsKey(flowRegistryKey)) {
+                return flowRegistryKey;
+            }
+        } else {
+            for (Map.Entry<FlowRegistryKey, FlowDescriptor> keyValueSet : flowRegistry.entrySet()) {
+                if (keyValueSet.getKey().equals(flowRegistryKey)) {
+                    return keyValueSet.getKey();
+                }
+            }
+        }
+        return null;
     }
 
     @VisibleForTesting

@@ -47,11 +47,13 @@ public final class MatchUtil {
             .put(SetField.class, match -> {
                 final SetFieldBuilder matchBuilder = new SetFieldBuilder(match);
 
-                resolveExtensions(match).ifPresent(extensionLists -> matchBuilder
-                        .addAugmentation(GeneralAugMatchNodesNodeTableFlowWriteActionsSetField.class,
-                                new GeneralAugMatchNodesNodeTableFlowWriteActionsSetFieldBuilder()
-                                        .setExtensionList(extensionLists)
-                                        .build()));
+                resolveExtensions(match).ifPresent(extensionLists -> {
+                    matchBuilder
+                            .addAugmentation(GeneralAugMatchNodesNodeTableFlowWriteActionsSetField.class,
+                                    new GeneralAugMatchNodesNodeTableFlowWriteActionsSetFieldBuilder()
+                                            .setExtensionList(extensionLists)
+                                            .build());
+                });
 
                 return matchBuilder.build();
             })
