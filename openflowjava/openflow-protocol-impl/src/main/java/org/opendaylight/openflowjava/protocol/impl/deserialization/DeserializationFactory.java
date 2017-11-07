@@ -17,6 +17,8 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.keys.TypeToClassKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author michal.polkorab
@@ -24,7 +26,7 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
  * @author giuseppex.petralia@intel.com
  */
 public class DeserializationFactory {
-
+    private static final Logger LOG = LoggerFactory.getLogger(DeserializationFactory.class);
     private final Map<TypeToClassKey, Class<?>> messageClassMap = new ConcurrentHashMap<>();
     private DeserializerRegistry registry;
 
@@ -50,8 +52,10 @@ public class DeserializationFactory {
         DataObject dataObject = null;
         int type = rawMessage.readUnsignedByte();
         Class<?> clazz = messageClassMap.get(new TypeToClassKey(version, type));
+        LOG.info("type : {} --  class : {}",type,clazz);
         rawMessage.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
         OFDeserializer<DataObject> deserializer = registry.getDeserializer(new MessageCodeKey(version, type, clazz));
+        LOG.info("type : {} --  class : {} -- deserializer :{}",type,clazz,deserializer);
         dataObject = deserializer.deserialize(rawMessage);
         return dataObject;
     }
