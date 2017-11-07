@@ -20,46 +20,7 @@ import org.opendaylight.openflowjava.nx.codec.action.RegMoveCodec;
 import org.opendaylight.openflowjava.nx.codec.action.ResubmitCodec;
 import org.opendaylight.openflowjava.nx.codec.action.PushNshCodec;
 import org.opendaylight.openflowjava.nx.codec.action.PopNshCodec;
-import org.opendaylight.openflowjava.nx.codec.match.ArpOpCodec;
-import org.opendaylight.openflowjava.nx.codec.match.ArpShaCodec;
-import org.opendaylight.openflowjava.nx.codec.match.ArpSpaCodec;
-import org.opendaylight.openflowjava.nx.codec.match.ArpThaCodec;
-import org.opendaylight.openflowjava.nx.codec.match.ArpTpaCodec;
-import org.opendaylight.openflowjava.nx.codec.match.CtMarkCodec;
-import org.opendaylight.openflowjava.nx.codec.match.CtStateCodec;
-import org.opendaylight.openflowjava.nx.codec.match.CtZoneCodec;
-import org.opendaylight.openflowjava.nx.codec.match.EthDstCodec;
-import org.opendaylight.openflowjava.nx.codec.match.EthSrcCodec;
-import org.opendaylight.openflowjava.nx.codec.match.EthTypeCodec;
-import org.opendaylight.openflowjava.nx.codec.match.Nshc1Codec;
-import org.opendaylight.openflowjava.nx.codec.match.Nshc2Codec;
-import org.opendaylight.openflowjava.nx.codec.match.Nshc3Codec;
-import org.opendaylight.openflowjava.nx.codec.match.Nshc4Codec;
-import org.opendaylight.openflowjava.nx.codec.match.NsiCodec;
-import org.opendaylight.openflowjava.nx.codec.match.NspCodec;
-import org.opendaylight.openflowjava.nx.codec.match.EncapEthTypeCodec;
-import org.opendaylight.openflowjava.nx.codec.match.EncapEthSrcCodec;
-import org.opendaylight.openflowjava.nx.codec.match.EncapEthDstCodec;
-import org.opendaylight.openflowjava.nx.codec.match.NshMdtypeCodec;
-import org.opendaylight.openflowjava.nx.codec.match.NshNpCodec;
-import org.opendaylight.openflowjava.nx.codec.match.TunGpeNpCodec;
-import org.opendaylight.openflowjava.nx.codec.match.Reg0Codec;
-import org.opendaylight.openflowjava.nx.codec.match.Reg1Codec;
-import org.opendaylight.openflowjava.nx.codec.match.Reg2Codec;
-import org.opendaylight.openflowjava.nx.codec.match.Reg3Codec;
-import org.opendaylight.openflowjava.nx.codec.match.Reg4Codec;
-import org.opendaylight.openflowjava.nx.codec.match.Reg5Codec;
-import org.opendaylight.openflowjava.nx.codec.match.Reg6Codec;
-import org.opendaylight.openflowjava.nx.codec.match.Reg7Codec;
-import org.opendaylight.openflowjava.nx.codec.match.TcpDstCodec;
-import org.opendaylight.openflowjava.nx.codec.match.TcpSrcCodec;
-import org.opendaylight.openflowjava.nx.codec.match.TunIdCodec;
-import org.opendaylight.openflowjava.nx.codec.match.TunIpv4DstCodec;
-import org.opendaylight.openflowjava.nx.codec.match.TunIpv4SrcCodec;
-import org.opendaylight.openflowjava.nx.codec.match.UdpDstCodec;
-import org.opendaylight.openflowjava.nx.codec.match.UdpSrcCodec;
-import org.opendaylight.openflowjava.nx.codec.match.InPortCodec;
-import org.opendaylight.openflowjava.nx.codec.match.MplsLabelCodec;
+import org.opendaylight.openflowjava.nx.codec.match.*;
 
 import com.google.common.base.Preconditions;
 
@@ -170,6 +131,23 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
                 NiciraMatchCodecs.ENCAP_ETH_DST_CODEC);
         registrator.registerMatchEntryDeserializer(EncapEthDstCodec.DESERIALIZER_KEY,
                 NiciraMatchCodecs.ENCAP_ETH_DST_CODEC);
+
+        registrator.registerMatchEntryDeserializer(Ipv6DstCodec.DESERIALIZER_KEY,
+                NiciraMatchCodecs.IPV6_DST_CODEC);
+        registrator.registerMatchEntrySerializer(Ipv6SrcCodec.SERIALIZER_KEY, NiciraMatchCodecs.IPV6_SRC_CODEC);
+        registrator.registerMatchEntrySerializer(Ipv6DstCodec.SERIALIZER_KEY, NiciraMatchCodecs.IPV6_DST_CODEC);
+        registrator.registerMatchEntryDeserializer(Ipv6DstCodec.DESERIALIZER_KEY,
+                NiciraMatchCodecs.IPV6_SRC_CODEC);
+
+        registrator.registerMatchEntrySerializer(IpDstCodec.SERIALIZER_KEY,
+                NiciraMatchCodecs.IP_DST_CODEC);
+        registrator.registerMatchEntryDeserializer(IpDstCodec.DESERIALIZER_KEY,
+                NiciraMatchCodecs.IP_DST_CODEC);
+        registrator.registerMatchEntryDeserializer(IpSrcCodec.DESERIALIZER_KEY,
+                NiciraMatchCodecs.IP_SRC_CODEC);
+        registrator.registerMatchEntrySerializer(IpSrcCodec.SERIALIZER_KEY,
+                NiciraMatchCodecs.IP_SRC_CODEC);
+
         registrator.registerMatchEntrySerializer(NshMdtypeCodec.SERIALIZER_KEY, NiciraMatchCodecs.NSH_MDTYPE_CODEC);
         registrator.registerMatchEntryDeserializer(NshMdtypeCodec.DESERIALIZER_KEY, NiciraMatchCodecs.NSH_MDTYPE_CODEC);
         registrator.registerMatchEntrySerializer(NshNpCodec.SERIALIZER_KEY, NiciraMatchCodecs.NSH_NP_CODEC);

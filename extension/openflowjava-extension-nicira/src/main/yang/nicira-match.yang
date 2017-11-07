@@ -72,6 +72,12 @@ module nicira-match {
     identity nxm-nx-tun-ipv4-src {
         base ofoxm:match-field;
     }
+    identity nxm-nx-tun-ipv6-dst {
+        base ofoxm:match-field;
+    }
+    identity nxm-nx-tun-ipv6-src {
+        base ofoxm:match-field;
+    }
     identity nxm-of-eth-src {
         base ofoxm:match-field;
     }
