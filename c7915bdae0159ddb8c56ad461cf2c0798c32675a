@@ -1,0 +1,100 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a245df4_4f25d807",
+        "filename": "features-aggregator/odl-openflowplugin-southbound/pom.xml",
+        "patchSetId": 10
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 817
+      },
+      "writtenOn": "2017-11-07T01:35:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_3101f038",
+      "range": {
+        "startLine": 57,
+        "startChar": 20,
+        "endLine": 57,
+        "endChar": 36
+      },
+      "revId": "c7915bdae0159ddb8c56ad461cf2c0798c32675a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_8f1b50c9",
+        "filename": "openflowplugin-api/pom.xml",
+        "patchSetId": 10
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 817
+      },
+      "writtenOn": "2017-11-07T01:35:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_d197b4ea",
+      "range": {
+        "startLine": 96,
+        "startChar": 21,
+        "endLine": 96,
+        "endChar": 35
+      },
+      "revId": "c7915bdae0159ddb8c56ad461cf2c0798c32675a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_cf80a8c2",
+        "filename": "openflowplugin-impl/pom.xml",
+        "patchSetId": 10
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 817
+      },
+      "writtenOn": "2017-11-07T01:35:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_b19cc010",
+      "range": {
+        "startLine": 59,
+        "startChar": 21,
+        "endLine": 59,
+        "endChar": 35
+      },
+      "revId": "c7915bdae0159ddb8c56ad461cf2c0798c32675a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_6f289ce2",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 286,
+      "author": {
+        "id": 817
+      },
+      "writtenOn": "2017-11-07T01:35:27Z",
+      "side": 1,
+      "message": "This value is used only here. So is it worth defining a constant?",
+      "parentUuid": "9a245df4_119e6c07",
+      "range": {
+        "startLine": 286,
+        "startChar": 76,
+        "endLine": 286,
+        "endChar": 99
+      },
+      "revId": "c7915bdae0159ddb8c56ad461cf2c0798c32675a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
