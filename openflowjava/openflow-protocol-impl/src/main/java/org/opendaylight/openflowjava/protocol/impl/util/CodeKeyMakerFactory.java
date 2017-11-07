@@ -17,13 +17,15 @@ import org.opendaylight.openflowjava.protocol.api.keys.InstructionDeserializerKe
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author michal.polkorab
  *
  */
 public abstract class CodeKeyMakerFactory {
-
+    private static final Logger LOG = LoggerFactory.getLogger(CodeKeyMakerFactory.class);
     private CodeKeyMakerFactory() {
         //not called
     }
@@ -38,6 +40,7 @@ public abstract class CodeKeyMakerFactory {
                 int oxmClass = input.getUnsignedShort(input.readerIndex());
                 int oxmField = input.getUnsignedByte(input.readerIndex()
                         + EncodeConstants.SIZE_OF_SHORT_IN_BYTES) >>> 1;
+                LOG.info("MessageCodeKey make :oxmClass: {} -- oxmField {}",oxmClass,oxmField);
                 MatchEntryDeserializerKey key = new MatchEntryDeserializerKey(getVersion(),
                         oxmClass, oxmField);
                 if (oxmClass == EncodeConstants.EXPERIMENTER_VALUE) {
