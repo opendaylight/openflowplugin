@@ -8,7 +8,7 @@
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action;
 
 import com.google.common.base.Preconditions;
-import org.opendaylight.openflowjava.nx.NiciraMatchCodecs;
+import org.opendaylight.openflowjava.nx.codec.match.NiciraMatchCodecs;
 import org.opendaylight.openflowjava.nx.codec.match.NxmHeader;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
