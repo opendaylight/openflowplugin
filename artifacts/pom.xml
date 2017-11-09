@@ -43,6 +43,11 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>openflowplugin-blueprint-config</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>openflowplugin-extension-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -182,13 +187,6 @@
                 <version>${project.version}</version>
                 <type>xml</type>
                 <classifier>configmsgspy</classifier>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>openflowplugin-extension-nicira-config</artifactId>
-                <version>${project.version}</version>
-                <type>xml</type>
-                <classifier>config</classifier>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
