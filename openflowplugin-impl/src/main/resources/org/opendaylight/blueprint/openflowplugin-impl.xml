@@ -7,4 +7,10 @@
   <service ref="ofPluginProviderFactory" interface="org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProviderFactory"
           odl:type="default"/>
 
+  <bean id="OpenFlowPluginExtensionRegistratorProvider" class="org.opendaylight.openflowplugin.impl.OpenFlowPluginProviderImpl"/>
+
+  <service ref="OpenFlowPluginExtensionRegistratorProvider" interface="org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider"
+           odl:type="default"/>
+
+
 </blueprint>
