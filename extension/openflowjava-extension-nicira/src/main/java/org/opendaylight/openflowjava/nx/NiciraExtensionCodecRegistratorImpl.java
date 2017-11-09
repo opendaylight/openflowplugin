@@ -5,27 +5,19 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowjava.nx.api.impl;
-
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+package org.opendaylight.openflowjava.nx;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraActionSerializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraExtensionCodecRegistrator;
 import org.opendaylight.openflowjava.nx.api.NiciraUtil;
+import org.opendaylight.openflowjava.nx.api.impl.ActionDeserializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFGeneralDeserializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFGeneralSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
-import org.opendaylight.openflowjava.protocol.api.keys.ActionSerializerKey;
-import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterActionDeserializerKey;
-import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterDeserializerKey;
-import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterSerializerKey;
-import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
-import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
+import org.opendaylight.openflowjava.protocol.api.keys.*;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
@@ -33,11 +25,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * @author msunal
  *
  */
-public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodecRegistrator {
+public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodecRegistrator, AutoCloseable {
 
     private static final Map<NiciraActionDeserializerKey, OFDeserializer<Action>> actionDeserializers = new ConcurrentHashMap<>();
 

@@ -31,17 +31,6 @@
                             <codeGenerators>
                                 <generator>
                                     <codeGeneratorClass>
-                                        org.opendaylight.controller.config.yangjmxgenerator.plugin.JMXGenerator
-                                    </codeGeneratorClass>
-                                    <outputBaseDir>${project.build.directory}/generated-sources/config</outputBaseDir>
-                                    <additionalConfiguration>
-                                        <namespaceToPackage1>
-                                            urn:opendaylight:params:xml:ns:yang:controller:config==org.opendaylight.controller.config.yang
-                                        </namespaceToPackage1>
-                                    </additionalConfiguration>
-                                </generator>
-                                <generator>
-                                    <codeGeneratorClass>
                                         org.opendaylight.mdsal.binding.maven.api.gen.plugin.CodeGeneratorImpl
                                     </codeGeneratorClass>
                                     <outputBaseDir>${project.build.directory}/generated-sources/sal</outputBaseDir>
@@ -93,15 +82,15 @@
 
         <!-- MD-SAL models -->
         <dependency>
-            <groupId>org.opendaylight.openflowplugin.model</groupId>
+            <groupId>${project.groupId}.model</groupId>
             <artifactId>model-flow-base</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowplugin.model</groupId>
+            <groupId>${project.groupId}.model</groupId>
             <artifactId>model-flow-service</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowplugin.model</groupId>
+            <groupId>${project.groupId}.model</groupId>
             <artifactId>model-flow-statistics</artifactId>
         </dependency>
         <dependency>
