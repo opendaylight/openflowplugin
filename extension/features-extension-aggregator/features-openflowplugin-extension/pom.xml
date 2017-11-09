@@ -48,12 +48,6 @@
     <!-- Nicira extensions -->
     <dependency>
       <groupId>org.opendaylight.openflowplugin</groupId>
-      <artifactId>openflowplugin-extension-nicira-config</artifactId>
-      <type>xml</type>
-      <classifier>config</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin</groupId>
       <artifactId>openflowplugin-extension-nicira</artifactId>
     </dependency>
     <dependency>
@@ -64,11 +58,19 @@
       <groupId>org.opendaylight.openflowplugin</groupId>
       <artifactId>openflowjava-extension-nicira</artifactId>
     </dependency>
-
-    <!-- ONF extensions -->
     <dependency>
-      <groupId>org.opendaylight.openflowplugin</groupId>
-      <artifactId>openflowplugin-extension-onf</artifactId>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>odl-openflowplugin-nxm-extensions</artifactId>
+      <version>${project.version}</version>
+      <type>xml</type>
+      <classifier>features</classifier>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>odl-openflowplugin-onf-extensions</artifactId>
+      <version>${project.version}</version>
+      <type>xml</type>
+      <classifier>features</classifier>
     </dependency>
   </dependencies>
 
