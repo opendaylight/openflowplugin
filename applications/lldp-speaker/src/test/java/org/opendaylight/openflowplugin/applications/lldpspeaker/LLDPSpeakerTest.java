@@ -24,6 +24,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipChange;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipState;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortNumberUni;
@@ -66,6 +69,8 @@ public class LLDPSpeakerTest {
     private ScheduledExecutorService scheduledExecutorService;
     @Mock
     private ScheduledFuture scheduledSpeakerTask;
+    @Mock
+    private EntityOwnershipService entityOwnershipService;
 
     private final MacAddress destinationMACAddress = null;
     private LLDPSpeaker lldpSpeaker;
@@ -76,8 +81,8 @@ public class LLDPSpeakerTest {
                 scheduledExecutorService.scheduleAtFixedRate(
                         any(Runnable.class), anyLong(), anyLong(),
                         any(TimeUnit.class))).thenReturn(scheduledSpeakerTask);
-        lldpSpeaker = new LLDPSpeaker(packetProcessingService,
-                scheduledExecutorService, destinationMACAddress);
+        lldpSpeaker = new LLDPSpeaker(packetProcessingService, destinationMACAddress,
+                entityOwnershipService);
         lldpSpeaker.setOperationalStatus(OperStatus.RUN);
     }
 
@@ -111,11 +116,11 @@ public class LLDPSpeakerTest {
         lldpSpeaker.nodeConnectorAdded(id, fcnc);
 
         // Execute one iteration of periodic task - LLDP packet should be
-        // transmitted second time
+        // not transmitt second packet because it doesn't own the device.
         lldpSpeaker.run();
 
         // Check packet transmission
-        verify(packetProcessingService, times(2)).transmitPacket(packet);
+        verify(packetProcessingService, times(1)).transmitPacket(packet);
         verifyNoMoreInteractions(packetProcessingService);
     }
 
@@ -155,16 +160,6 @@ public class LLDPSpeakerTest {
         // Check packet transmission
         verify(packetProcessingService, times(1)).transmitPacket(packet);
         verifyNoMoreInteractions(packetProcessingService);
-    }
-
-    /**
-     * Test that lldpSpeaker cancels periodic LLDP flood task and stops
-     */
-    @Test
-    public void testCleanup() {
-        lldpSpeaker.close();
-        verify(scheduledSpeakerTask, times(1)).cancel(true);
-        verify(scheduledExecutorService, times(1)).shutdown();
     }
 
     /**
