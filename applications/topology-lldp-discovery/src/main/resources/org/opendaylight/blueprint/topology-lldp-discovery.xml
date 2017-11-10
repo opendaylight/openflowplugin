@@ -5,6 +5,8 @@
         odl:use-default-for-reference-types="true">
 
   <reference id="notificationService" interface="org.opendaylight.controller.sal.binding.api.NotificationProviderService"/>
+  <reference id="entityOwnershipService" interface="org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService"/>
+
   <odl:clustered-app-config id="topologyLLDPConfig"
                               binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.lldp.discovery.config.rev160511.TopologyLldpDiscoveryConfig">
         <odl:default-config><![CDATA[
@@ -29,11 +31,13 @@
     <argument value="${topology-lldp-interval}"/>
     <argument value="${topology-lldp-expiration-interval}"/>
     <argument ref="notificationService"/>
+    <argument ref="entityOwnershipService"/>
   </bean>
 
   <bean id="lldpDiscoveryListener" class="org.opendaylight.openflowplugin.applications.topology.lldp.LLDPDiscoveryListener">
     <argument ref="notificationService"/>
     <argument ref="lldpLinkAger"/>
+    <argument ref="entityOwnershipService"/>
   </bean>
 
   <bean id="LLDPActivator" class="org.opendaylight.openflowplugin.applications.topology.lldp.LLDPActivator"
