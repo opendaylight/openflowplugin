@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class LLDPUtil {
     private static final Logger LOG = LoggerFactory.getLogger(LLDPUtil.class);
+
     private static final String OF_URI_PREFIX = "openflow:";
 
     private LLDPUtil() {
@@ -88,9 +89,8 @@ public final class LLDPUtil {
             customSecTlv.setType(LLDPTLV.TLVType.Custom.getValue()).setLength((short) customSecValue.length)
                     .setValue(customSecValue);
             discoveryPkt.addCustomTLV(customSecTlv);
-        } catch (NoSuchAlgorithmException e1) {
-            LOG.info("LLDP extra authenticator creation failed: {}", e1.getMessage());
-            LOG.debug("Reason why LLDP extra authenticator creation failed: ", e1);
+        } catch (NoSuchAlgorithmException e) {
+            LOG.warn("LLDP extra authenticator creation failed.", e);
         }
 
 
@@ -107,8 +107,7 @@ public final class LLDPUtil {
         try {
             return ethPkt.serialize();
         } catch (PacketException e) {
-            LOG.warn("Error creating LLDP packet: {}", e.getMessage());
-            LOG.debug("Error creating LLDP packet.. ", e);
+            LOG.warn("Error creating LLDP packet.", e);
         }
         return null;
     }
