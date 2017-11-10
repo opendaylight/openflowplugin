@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.lldp.utils;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hasher;
@@ -24,6 +26,12 @@ import org.opendaylight.controller.liblldp.Ethernet;
 import org.opendaylight.controller.liblldp.LLDP;
 import org.opendaylight.controller.liblldp.LLDPTLV;
 import org.opendaylight.controller.liblldp.NetUtils;
+import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipChange;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipState;
+import org.opendaylight.mdsal.eos.dom.api.DOMEntity;
+import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.applications.topology.lldp.LLDPActivator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
@@ -181,5 +189,38 @@ public class LLDPDiscoveryUtils {
         }
 
         return (ethernetType == ETHERNET_TYPE_LLDP);
+    }
+
+    public static boolean isEntityOwned(final EntityOwnershipService eos, final String nodeId) {
+        Preconditions.checkNotNull(eos, "Entity ownership service must not be null");
+
+        EntityOwnershipChange change = null;
+        Optional<EntityOwnershipChange> status = getCurrentOwnershipStatus(eos, nodeId);
+        if (status.isPresent()) {
+            change = status.get();
+        } else {
+            LOG.error("Fetching ownership status failed for node {}", nodeId);
+        }
+        return change != null? change.isOwner():false;
+    }
+
+    private static Optional<EntityOwnershipChange> getCurrentOwnershipStatus(final EntityOwnershipService eos, final
+    String
+            nodeId) {
+        Entity entity = createNodeEntity(nodeId);
+        Optional<EntityOwnershipState> ownershipStatus = eos.getOwnershipState(entity);
+
+        if(ownershipStatus.isPresent()) {
+            LOG.debug("Fetched ownership status for node {} is {}", nodeId, ownershipStatus.get());
+            return Optional.of(new EntityOwnershipChange(entity, false, ownershipStatus.get().isOwner(), ownershipStatus
+                    .get().hasOwner(), false));
+        }
+        return Optional.absent();
+    }
+
+    private static Entity createNodeEntity(final String nodeId) {
+        DOMEntity domEntity = new DOMEntity("org.opendaylight.mdsal.ServiceEntityType",
+                ServiceGroupIdentifier.create(nodeId).getValue());
+        return new Entity(domEntity.getType(), domEntity.getIdentifier());
     }
 }
