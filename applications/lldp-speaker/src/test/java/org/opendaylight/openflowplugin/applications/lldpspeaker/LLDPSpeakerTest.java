@@ -16,6 +16,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import com.google.common.base.Optional;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -24,6 +25,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
+import org.opendaylight.mdsal.eos.common.api.EntityOwnershipState;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortNumberUni;
@@ -62,6 +65,8 @@ public class LLDPSpeakerTest {
     private ScheduledExecutorService scheduledExecutorService;
     @Mock
     private ScheduledFuture scheduledSpeakerTask;
+    @Mock
+    private EntityOwnershipService entityOwnershipService;
 
     private final MacAddress destinationMACAddress = null;
     private LLDPSpeaker lldpSpeaker;
@@ -73,12 +78,13 @@ public class LLDPSpeakerTest {
                         any(Runnable.class), anyLong(), anyLong(),
                         any(TimeUnit.class))).thenReturn(scheduledSpeakerTask);
         lldpSpeaker = new LLDPSpeaker(packetProcessingService,
-                scheduledExecutorService, destinationMACAddress);
+                scheduledExecutorService, destinationMACAddress, entityOwnershipService);
+        when(entityOwnershipService.getOwnershipState(any())).thenReturn(Optional.of(EntityOwnershipState.IS_OWNER));
         lldpSpeaker.setOperationalStatus(OperStatus.RUN);
     }
 
     /**
-     * Test that speaker does nothing when in standby mode.
+     * Test that speaker does nothing when in {@link OperStatus.STANDBY} mode.
      */
     @Test
     public void testStandBy() {
@@ -106,12 +112,14 @@ public class LLDPSpeakerTest {
         // packetProcessingService
         lldpSpeaker.nodeConnectorAdded(ID, FLOW_CAPABLE_NODE_CONNECTOR);
 
+
+        when(entityOwnershipService.getOwnershipState(any())).thenReturn(Optional.of(EntityOwnershipState.OWNED_BY_OTHER));
         // Execute one iteration of periodic task - LLDP packet should be
-        // transmitted second time
+        // not transmit second packet because it doesn't own the device.
         lldpSpeaker.run();
 
         // Check packet transmission
-        verify(packetProcessingService, times(2)).transmitPacket(PACKET_INPUT);
+        verify(packetProcessingService, times(1)).transmitPacket(PACKET_INPUT);
         verifyNoMoreInteractions(packetProcessingService);
     }
 
@@ -151,16 +159,6 @@ public class LLDPSpeakerTest {
         // Check packet transmission
         verify(packetProcessingService, times(1)).transmitPacket(PACKET_INPUT);
         verifyNoMoreInteractions(packetProcessingService);
-    }
-
-    /**
-     * Test that lldpSpeaker cancels periodic LLDP flood task and stops.
-     */
-    @Test
-    public void testCleanup() {
-        lldpSpeaker.close();
-        verify(scheduledSpeakerTask, times(1)).cancel(true);
-        verify(scheduledExecutorService, times(1)).shutdown();
     }
 
     /**

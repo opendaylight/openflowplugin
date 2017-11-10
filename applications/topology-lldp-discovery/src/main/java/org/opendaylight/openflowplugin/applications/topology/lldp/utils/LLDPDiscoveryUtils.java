@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.lldp.utils;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hasher;
@@ -18,6 +20,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Objects;
 import org.apache.commons.lang3.ArrayUtils;
+import org.opendaylight.mdsal.eos.binding.api.Entity;
+import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
+import org.opendaylight.mdsal.eos.common.api.EntityOwnershipState;
 import org.opendaylight.openflowplugin.applications.topology.lldp.LLDPActivator;
 import org.opendaylight.openflowplugin.libraries.liblldp.BitBufferHelper;
 import org.opendaylight.openflowplugin.libraries.liblldp.CustomTLVKey;
@@ -46,6 +51,7 @@ public final class LLDPDiscoveryUtils {
     public static final short ETHERNET_TYPE_LLDP = (short) 0x88cc;
     private static final short ETHERNET_TYPE_OFFSET = 12;
     private static final short ETHERNET_VLAN_OFFSET = ETHERNET_TYPE_OFFSET + 4;
+    private static final String SERVICE_ENTITY_TYPE = "org.opendaylight.mdsal.ServiceEntityType";
 
     private LLDPDiscoveryUtils() {
     }
@@ -188,5 +194,34 @@ public final class LLDPDiscoveryUtils {
         }
 
         return ethernetType == ETHERNET_TYPE_LLDP;
+    }
+
+    public static boolean isEntityOwned(final EntityOwnershipService eos, final String nodeId) {
+        Preconditions.checkNotNull(eos, "Entity ownership service must not be null");
+
+        EntityOwnershipState state = null;
+        java.util.Optional<EntityOwnershipState> status = getCurrentOwnershipStatus(eos, nodeId);
+        if (status.isPresent()) {
+            state = status.get();
+        } else {
+            LOG.debug("Fetching ownership status failed for node {}", nodeId);
+        }
+        return state != null && state.equals(EntityOwnershipState.IS_OWNER);
+    }
+
+    private static java.util.Optional<EntityOwnershipState> getCurrentOwnershipStatus(final EntityOwnershipService eos,
+            final String nodeId) {
+        Entity entity = createNodeEntity(nodeId);
+        Optional<EntityOwnershipState> ownershipStatus = eos.getOwnershipState(entity);
+
+        if (ownershipStatus.isPresent()) {
+            LOG.debug("Fetched ownership status for node {} is {}", nodeId, ownershipStatus.get());
+            return java.util.Optional.of(ownershipStatus.get());
+        }
+        return java.util.Optional.empty();
+    }
+
+    private static Entity createNodeEntity(final String nodeId) {
+        return new Entity(SERVICE_ENTITY_TYPE, nodeId);
     }
 }
