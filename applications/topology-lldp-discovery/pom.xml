@@ -30,6 +30,10 @@
       <artifactId>sal-binding-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opendaylight.mdsal</groupId>
+      <artifactId>mdsal-eos-dom-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opendaylight.openflowplugin.libraries</groupId>
       <artifactId>liblldp</artifactId>
       <version>${project.version}</version>

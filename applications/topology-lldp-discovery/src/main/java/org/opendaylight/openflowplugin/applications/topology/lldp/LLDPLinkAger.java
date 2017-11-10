@@ -17,6 +17,8 @@ import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
+import org.opendaylight.openflowplugin.applications.topology.lldp.utils.LLDPDiscoveryUtils;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationListener;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscovered;
@@ -24,6 +26,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.lldp.discovery.config.rev160511.TopologyLldpDiscoveryConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 
 public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(LLDPLinkAger.class);
@@ -32,16 +36,18 @@ public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
     private final Timer timer;
     private final NotificationProviderService notificationService;
     private final AutoCloseable configurationServiceRegistration;
+    private final EntityOwnershipService eos;
 
     /**
      * default ctor - start timer.
      */
     public LLDPLinkAger(final TopologyLldpDiscoveryConfig topologyLldpDiscoveryConfig,
-                        final NotificationProviderService notificationService,
-                        final ConfigurationService configurationService) {
+            final NotificationProviderService notificationService,
+            final ConfigurationService configurationService, final EntityOwnershipService entityOwnershipService) {
         this.linkExpirationTime = topologyLldpDiscoveryConfig.getTopologyLldpExpirationInterval().getValue();
         this.notificationService = notificationService;
         this.configurationServiceRegistration = configurationService.registerListener(this);
+        this.eos = entityOwnershipService;
         linkToDate = new ConcurrentHashMap<>();
         timer = new Timer();
         timer.schedule(new LLDPAgingTask(), 0, topologyLldpDiscoveryConfig.getTopologyLldpInterval().getValue());
@@ -64,21 +70,29 @@ public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
 
         @Override
         public void run() {
-            for (Entry<LinkDiscovered,Date> entry : linkToDate.entrySet()) {
+            for (Entry<LinkDiscovered, Date> entry : linkToDate.entrySet()) {
                 LinkDiscovered link = entry.getKey();
                 Date expires = entry.getValue();
                 Date now = new Date();
                 if (now.after(expires)) {
                     if (notificationService != null) {
                         LinkRemovedBuilder lrb = new LinkRemovedBuilder(link);
-                        notificationService.publish(lrb.build());
+
+                        NodeKey nodeKey = link.getDestination().getValue().firstKeyOf(Node.class);
+                        LOG.info("No update received for link {} from last {} milliseconds. Removing link from cache.",
+                                link, linkExpirationTime);
                         linkToDate.remove(link);
+                        if (nodeKey != null && LLDPDiscoveryUtils.isEntityOwned(eos, nodeKey.getId().getValue())) {
+                            LOG.info("Publish Link Remove event for the link {}", link);
+                            notificationService.publish(lrb.build());
+                        } else {
+                            LOG.trace("Skip publishing Link Remove event for the link {} because link destination "
+                                    + "node is not owned by the controller", link);
+                        }
                     }
                 }
             }
-
         }
-
     }
 
     @VisibleForTesting
