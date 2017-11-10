@@ -10,8 +10,10 @@ package org.opendaylight.openflowplugin.applications.topology.lldp;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import com.google.common.base.Optional;
 import java.util.Date;
 import java.util.Map;
 import java.util.Timer;
@@ -20,10 +22,20 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.controller.md.sal.common.api.clustering.Entity;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipState;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscovered;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkRemoved;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +54,7 @@ public class LLDPLinkAgerTest {
      * We need to w8 while other tasks are finished before we can check anything
      * in LLDPAgingTask
      */
-    private final int SLEEP = 100;
+    private final int SLEEP = 200;
 
 
     @Mock
@@ -54,11 +66,16 @@ public class LLDPLinkAgerTest {
     @Mock
     private NotificationProviderService notificationService;
     @Mock
+    private EntityOwnershipService eos;
+    @Mock
     private LinkRemoved linkRemoved;
 
     @Before
     public void setUp() throws Exception {
-        lldpLinkAger = new LLDPLinkAger(LLDP_INTERVAL, LINK_EXPIRATION_TIME, notificationService);
+        lldpLinkAger = new LLDPLinkAger(LLDP_INTERVAL, LINK_EXPIRATION_TIME, notificationService, eos);
+        Mockito.when(link.getDestination()).thenReturn(new NodeConnectorRef(
+                InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(new NodeId("openflow:1")))));
+        Mockito.when(eos.getOwnershipState(Mockito.any(Entity.class))).thenReturn(Optional.of(new EntityOwnershipState(true, true)));
     }
 
     @Test
