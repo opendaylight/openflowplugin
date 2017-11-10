@@ -6,6 +6,7 @@
 
   <reference id="notificationService" interface="org.opendaylight.controller.sal.binding.api.NotificationProviderService"/>
   <reference id="configurationService" interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService"/>
+  <reference id="entityOwnershipService" interface="org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService"/>
 
   <odl:clustered-app-config id="topologyLLDPConfig"
       binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.lldp.discovery.config.rev160511.TopologyLldpDiscoveryConfig">
@@ -21,11 +22,13 @@
     <argument ref="topologyLLDPConfig"/>
     <argument ref="notificationService"/>
     <argument ref="configurationService"/>
+    <argument ref="entityOwnershipService"/>
   </bean>
 
   <bean id="lldpDiscoveryListener" class="org.opendaylight.openflowplugin.applications.topology.lldp.LLDPDiscoveryListener">
     <argument ref="notificationService"/>
     <argument ref="lldpLinkAger"/>
+    <argument ref="entityOwnershipService"/>
   </bean>
 
   <bean id="LLDPActivator" class="org.opendaylight.openflowplugin.applications.topology.lldp.LLDPActivator"
