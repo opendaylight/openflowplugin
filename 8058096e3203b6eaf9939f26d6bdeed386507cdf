@@ -1,0 +1,76 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a245df4_4dd7894b",
+        "filename": "docs/specs/group-add-mod.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-11-13T12:43:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_3c6529b5",
+      "range": {
+        "startLine": 92,
+        "startChar": 0,
+        "endLine": 92,
+        "endChar": 1
+      },
+      "revId": "8058096e3203b6eaf9939f26d6bdeed386507cdf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_47892a74",
+        "filename": "docs/specs/group-add-mod.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-11-13T12:43:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_fc66f1b9",
+      "range": {
+        "startLine": 129,
+        "startChar": 0,
+        "endLine": 129,
+        "endChar": 4
+      },
+      "revId": "8058096e3203b6eaf9939f26d6bdeed386507cdf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_8dcd01ba",
+        "filename": "docs/specs/group-add-mod.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-11-13T12:43:19Z",
+      "side": 1,
+      "message": "Not required, below reference covers the same",
+      "parentUuid": "9a245df4_1c6ae580",
+      "range": {
+        "startLine": 187,
+        "startChar": 0,
+        "endLine": 187,
+        "endChar": 10
+      },
+      "revId": "8058096e3203b6eaf9939f26d6bdeed386507cdf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
