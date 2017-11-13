@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a245df4_6dd24d5d",
+        "filename": "docs/specs/group-add-mod.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-11-13T12:43:19Z",
+      "side": 1,
+      "message": "change to flag",
+      "range": {
+        "startLine": 174,
+        "startChar": 28,
+        "endLine": 174,
+        "endChar": 32
+      },
+      "revId": "e43d608295a0a3be24a15f13cd1dad0f1aa01d31",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
