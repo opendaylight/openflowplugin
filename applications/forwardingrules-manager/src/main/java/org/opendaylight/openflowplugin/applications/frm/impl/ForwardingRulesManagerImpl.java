@@ -87,6 +87,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private boolean staleMarkingEnabled;
     private int reconciliationRetryCount;
     private boolean isBundleBasedReconciliationEnabled;
+    private boolean isGroupAddModEnabled;
 
     public ForwardingRulesManagerImpl(final DataBroker dataBroker, final RpcConsumerRegistry rpcRegistry,
             final ForwardingRulesManagerConfig config, final ClusterSingletonServiceProvider clusterSingletonService,
@@ -96,6 +97,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         staleMarkingEnabled = config.isStaleMarkingEnabled();
         reconciliationRetryCount = config.getReconciliationRetryCount();
         isBundleBasedReconciliationEnabled = config.isBundleBasedReconciliationEnabled();
+        isGroupAddModEnabled = config.isGroupAddModEnabled();
         this.configurationServiceRegistration = configurationService.registerListener(this);
         this.dataService = Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
         this.clusterSingletonServiceProvider = Preconditions.checkNotNull(clusterSingletonService,
@@ -277,6 +279,10 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     @Override
     public boolean isBundleBasedReconciliationEnabled() {
         return isBundleBasedReconciliationEnabled;
+    }
+
+    @Override public boolean isGroupAddModEnabled() {
+        return isGroupAddModEnabled;
     }
 
     @Override

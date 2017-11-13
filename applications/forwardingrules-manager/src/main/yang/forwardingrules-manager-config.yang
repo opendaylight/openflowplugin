@@ -31,5 +31,10 @@ module forwarding-rules-manager-config {
             type boolean;
             default false;
         }
+
+         leaf group-add-mod-enabled {
+            type boolean;
+            default false;
+        }
     }
 }

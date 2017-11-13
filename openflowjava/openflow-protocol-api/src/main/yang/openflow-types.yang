@@ -878,6 +878,10 @@
               value 2;
               description "Delete all matching groups.";
             }
+            enum OFPGC_ADD_OR_MOD {
+              value 3;
+              description "Add_Mod switch feature to Add or Update";
+            }
         }
     }
 

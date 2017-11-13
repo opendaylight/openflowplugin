@@ -18,13 +18,7 @@ import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerGrou
 import org.opendaylight.openflowplugin.impl.util.ErrorUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
@@ -43,6 +37,8 @@ public class SalGroupServiceImpl implements SalGroupService {
     private final SingleLayerGroupService<AddGroupOutput> addGroupMessage;
     private final SingleLayerGroupService<UpdateGroupOutput> updateGroupMessage;
     private final SingleLayerGroupService<RemoveGroupOutput> removeGroupMessage;
+    private final SingleLayerGroupService<AddUpdateGroupOutput> addUpdateGroupMessage;
+
 
     private final DeviceContext deviceContext;
 
@@ -68,6 +64,7 @@ public class SalGroupServiceImpl implements SalGroupService {
         addGroupMessage = new SingleLayerGroupService<>(requestContextStack, deviceContext, AddGroupOutput.class);
         updateGroupMessage = new SingleLayerGroupService<>(requestContextStack, deviceContext, UpdateGroupOutput.class);
         removeGroupMessage = new SingleLayerGroupService<>(requestContextStack, deviceContext, RemoveGroupOutput.class);
+        addUpdateGroupMessage = new SingleLayerGroupService<>(requestContextStack, deviceContext, AddUpdateGroupOutput.class);
     }
 
     @Override
@@ -103,6 +100,36 @@ public class SalGroupServiceImpl implements SalGroupService {
         return resultFuture;
     }
 
+    @Override
+    public Future<RpcResult<AddUpdateGroupOutput>> addUpdateGroup(final AddUpdateGroupInput input) {
+        final ListenableFuture<RpcResult<AddUpdateGroupOutput>> resultFuture =
+                addUpdateGroupMessage.canUseSingleLayerSerialization()
+                        ? addUpdateGroupMessage.handleServiceCall(input.getUpdatedGroup())
+                        : addUpdateGroupMessage.handleServiceCall(input.getUpdatedGroup());
+
+        Futures.addCallback(resultFuture, new FutureCallback<RpcResult<AddUpdateGroupOutput>>() {
+            @Override
+            public void onSuccess(RpcResult<AddUpdateGroupOutput> result) {
+                if (result.isSuccessful()) {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Group update with original id={} finished without error",
+                                input.getOriginalGroup().getGroupId().getValue());
+                    }
+                } else {
+                    LOG.warn("Group update with original id={} failed, errors={}",
+                            input.getOriginalGroup().getGroupId(), ErrorUtil.errorsToString(result.getErrors()));
+                    LOG.debug("Group input={}", input.getUpdatedGroup());
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                LOG.warn("Service call for updating group={} failed, reason: {}",
+                        input.getOriginalGroup().getGroupId(), throwable);
+            }
+        });
+        return resultFuture;
+    }
 
     @Override
     public Future<RpcResult<UpdateGroupOutput>> updateGroup(final UpdateGroupInput input) {
