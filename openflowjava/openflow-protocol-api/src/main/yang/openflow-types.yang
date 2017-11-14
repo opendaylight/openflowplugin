@@ -878,6 +878,11 @@
               value 2;
               description "Delete all matching groups.";
             }
+            enum OFPGC_ADD_OR_MOD {
+            /* Hexa value for OFPGC_ADD_OR_MOD = 0x8000 */
+              value 32768;
+              description "Create new or modify existing group.";
+            }
         }
     }
 
