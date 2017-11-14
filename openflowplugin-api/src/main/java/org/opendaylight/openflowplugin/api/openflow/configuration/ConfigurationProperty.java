@@ -38,6 +38,8 @@ public enum ConfigurationProperty {
      * Enable flow removed notification property type.
      */
     ENABLE_FLOW_REMOVED_NOTIFICATION,
+
+    GROUP_ADD_MOD_ENABLED,
     /**
      * Skip table features property type.
      */

@@ -37,15 +37,24 @@ public final class SingleLayerGroupService<O extends DataObject> extends Abstrac
     protected OfHeader buildRequest(final Xid xid, final Group input) throws ServiceException {
         final GroupMessageBuilder groupMessageBuilder = new GroupMessageBuilder(input);
         final Class<? extends DataContainer> clazz = input.getImplementedInterface();
+        if(getDeviceContext().getConfig().isGroupAddModEnabled()) {
+            if (clazz.equals(AddGroupInput.class) || clazz.equals(UpdatedGroup.class)) {
+                groupMessageBuilder.setCommand(GroupModCommand.OFPGCADDORMOD);
+            } else if (clazz.equals(RemoveGroupInput.class) || clazz.equals(OriginalGroup.class)) {
+                groupMessageBuilder.setCommand(GroupModCommand.OFPGCDELETE);
+            }
 
-        if (clazz.equals(AddGroupInput.class)) {
-            groupMessageBuilder.setCommand(GroupModCommand.OFPGCADD);
-        } else if (clazz.equals(UpdatedGroup.class)) {
-            groupMessageBuilder.setCommand(GroupModCommand.OFPGCMODIFY);
-        } else if (clazz.equals(RemoveGroupInput.class)
-                || clazz.equals(OriginalGroup.class)) {
-            groupMessageBuilder.setCommand(GroupModCommand.OFPGCDELETE);
+        } else {
+            if (clazz.equals(AddGroupInput.class)) {
+                groupMessageBuilder.setCommand(GroupModCommand.OFPGCADD);
+            } else if (clazz.equals(UpdatedGroup.class)) {
+                groupMessageBuilder.setCommand(GroupModCommand.OFPGCMODIFY);
+            } else if (clazz.equals(RemoveGroupInput.class)
+                    || clazz.equals(OriginalGroup.class)) {
+                groupMessageBuilder.setCommand(GroupModCommand.OFPGCDELETE);
+            }
         }
+
 
         return groupMessageBuilder
                 .setVersion(getVersion())

@@ -137,5 +137,12 @@ module openflow-provider-config {
             type boolean;
             default "true";
         }
+
+        leaf group-add-mod-enabled {
+        description " When true, group add mod messages are sent instead of the
+                group add and group mod messages";
+            type boolean;
+            default true;
+        }
     }
 }

@@ -17,6 +17,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgColl
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainStateListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 
 /**
  * The central entity of OFP is the Device Context, which encapsulate the logical state of a switch
@@ -105,5 +106,7 @@ public interface DeviceContext extends
      * Method for initial submit transaction after successful initial gathering.
      */
     boolean initialSubmitTransaction();
+
+    OpenflowProviderConfig getConfig();
 }
 
