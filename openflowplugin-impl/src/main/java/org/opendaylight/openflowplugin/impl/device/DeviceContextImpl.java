@@ -93,6 +93,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceivedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsDataBuilder;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
@@ -152,18 +153,20 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private DeviceMeterRegistry deviceMeterRegistry;
     private ExtensionConverterProvider extensionConverterProvider;
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
+    private final OpenflowProviderConfig config;
 
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
-                      @Nonnull final DataBroker dataBroker,
-                      @Nonnull final MessageSpy messageSpy,
-                      @Nonnull final TranslatorLibrary translatorLibrary,
-                      final ConvertorExecutor convertorExecutor,
-                      final boolean skipTableFeatures,
-                      final HashedWheelTimer hashedWheelTimer,
-                      final boolean useSingleLayerSerialization,
-                      final DeviceInitializerProvider deviceInitializerProvider,
-                      final boolean isFlowRemovedNotificationOn,
-                      final boolean switchFeaturesMandatory) {
+            @Nonnull final DataBroker dataBroker,
+            @Nonnull final MessageSpy messageSpy,
+            @Nonnull final TranslatorLibrary translatorLibrary,
+            final ConvertorExecutor convertorExecutor,
+            final boolean skipTableFeatures,
+            final HashedWheelTimer hashedWheelTimer,
+            final boolean useSingleLayerSerialization,
+            final DeviceInitializerProvider deviceInitializerProvider,
+            final boolean isFlowRemovedNotificationOn,
+            final boolean switchFeaturesMandatory,
+            final OpenflowProviderConfig config) {
 
         this.primaryConnectionContext = primaryConnectionContext;
         this.deviceInfo = primaryConnectionContext.getDeviceInfo();
@@ -192,6 +195,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.skipTableFeatures = skipTableFeatures;
         this.useSingleLayerSerialization = useSingleLayerSerialization;
         writerProvider = MultipartWriterProviderFactory.createDefaultProvider(this);
+        this.config = config;
     }
 
     @Override
@@ -203,6 +207,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         final boolean initialSubmit = transactionChainManager.initialSubmitWriteTransaction();
         isInitialTransactionSubmitted.set(initialSubmit);
         return initialSubmit;
+    }
+
+    @Override
+    public OpenflowProviderConfig getConfig() {
+        return config;
     }
 
     @Override
