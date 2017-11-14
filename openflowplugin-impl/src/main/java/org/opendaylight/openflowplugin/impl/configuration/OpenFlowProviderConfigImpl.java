@@ -132,6 +132,11 @@ public class OpenFlowProviderConfigImpl implements OpenflowProviderConfig {
     }
 
     @Override
+    public Boolean isGroupAddModEnabled() {
+        return service.getProperty(ConfigurationProperty.GROUP_ADD_MOD_ENABLED.toString(), Boolean::valueOf);
+    }
+
+    @Override
     public <E extends Augmentation<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang
             .openflow.provider.config.rev160510.OpenflowProviderConfig>> E getAugmentation(
                     java.lang.Class<E> augmentationType) {

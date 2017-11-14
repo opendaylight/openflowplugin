@@ -39,6 +39,10 @@ public enum ConfigurationProperty {
      */
     ENABLE_FLOW_REMOVED_NOTIFICATION,
     /**
+     * Enable group_add_mod messages.
+     */
+    GROUP_ADD_MOD_ENABLED,
+    /**
      * Skip table features property type.
      */
     SKIP_TABLE_FEATURES,
