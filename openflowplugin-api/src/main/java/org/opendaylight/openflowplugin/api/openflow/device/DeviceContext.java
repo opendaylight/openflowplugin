@@ -105,5 +105,11 @@ public interface DeviceContext extends
      * Method for initial submit transaction after successful initial gathering.
      */
     boolean initialSubmitTransaction();
+
+    /**
+     * Method to get the configuration parameters from openflowplugin.cfg
+     * @return true if group mod
+     */
+    boolean isGroupAddModEnabled();
 }
 
