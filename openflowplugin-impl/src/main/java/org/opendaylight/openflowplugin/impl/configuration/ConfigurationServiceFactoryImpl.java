@@ -58,6 +58,8 @@ public class ConfigurationServiceFactoryImpl implements ConfigurationServiceFact
                             providerConfig.isSwitchFeaturesMandatory().toString())
                     .put(ConfigurationProperty.ENABLE_FLOW_REMOVED_NOTIFICATION.toString(),
                             providerConfig.isEnableFlowRemovedNotification().toString())
+                    .put(ConfigurationProperty.GROUP_ADD_MOD_ENABLED.toString(),
+                            providerConfig.isGroupAddModEnabled().toString())
                     .put(ConfigurationProperty.IS_STATISTICS_RPC_ENABLED.toString(),
                             providerConfig.isIsStatisticsRpcEnabled().toString())
                     .put(ConfigurationProperty.BARRIER_COUNT_LIMIT.toString(),
