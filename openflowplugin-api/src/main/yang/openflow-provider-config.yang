@@ -137,5 +137,12 @@ module openflow-provider-config {
             type boolean;
             default "true";
         }
+
+        leaf group-add-mod-enabled {
+            description "When true, group command OFPGC_ADD_OR_MOD are sent
+                instead of OFPGC_ADD/OFPGC_MODIFY";
+            type boolean;
+            default false;
+        }
     }
 }
