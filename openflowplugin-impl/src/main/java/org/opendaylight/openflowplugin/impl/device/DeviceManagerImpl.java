@@ -154,12 +154,9 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 messageSpy,
                 translatorLibrary,
                 convertorExecutor,
-                config.isSkipTableFeatures(),
                 hashedWheelTimer,
-                config.isUseSingleLayerSerialization(),
                 deviceInitializerProvider,
-                config.isEnableFlowRemovedNotification(),
-                config.isSwitchFeaturesMandatory());
+                config);
 
         ((ExtensionConverterProviderKeeper) deviceContext).setExtensionConverterProvider(extensionConverterProvider);
         deviceContext.setNotificationPublishService(notificationPublishService);

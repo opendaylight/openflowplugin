@@ -93,6 +93,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceivedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsDataBuilder;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
@@ -138,10 +139,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final PacketInRateLimiter packetInLimiter;
     private final DeviceInfo deviceInfo;
     private final ConnectionContext primaryConnectionContext;
-    private final boolean skipTableFeatures;
-    private final boolean switchFeaturesMandatory;
-    private final boolean isFlowRemovedNotificationOn;
-    private final boolean useSingleLayerSerialization;
     private final AtomicBoolean initialized = new AtomicBoolean(false);
     private final AtomicBoolean hasState = new AtomicBoolean(false);
     private final AtomicBoolean isInitialTransactionSubmitted = new AtomicBoolean(false);
@@ -152,25 +149,17 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private DeviceMeterRegistry deviceMeterRegistry;
     private ExtensionConverterProvider extensionConverterProvider;
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
+    private final OpenflowProviderConfig config;
 
-    DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
-                      @Nonnull final DataBroker dataBroker,
-                      @Nonnull final MessageSpy messageSpy,
-                      @Nonnull final TranslatorLibrary translatorLibrary,
-                      final ConvertorExecutor convertorExecutor,
-                      final boolean skipTableFeatures,
-                      final HashedWheelTimer hashedWheelTimer,
-                      final boolean useSingleLayerSerialization,
-                      final DeviceInitializerProvider deviceInitializerProvider,
-                      final boolean isFlowRemovedNotificationOn,
-                      final boolean switchFeaturesMandatory) {
+    DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext, @Nonnull final DataBroker dataBroker,
+            @Nonnull final MessageSpy messageSpy, @Nonnull final TranslatorLibrary translatorLibrary,
+            final ConvertorExecutor convertorExecutor, final HashedWheelTimer hashedWheelTimer, final DeviceInitializerProvider deviceInitializerProvider,
+            final OpenflowProviderConfig config) {
 
         this.primaryConnectionContext = primaryConnectionContext;
         this.deviceInfo = primaryConnectionContext.getDeviceInfo();
         this.hashedWheelTimer = hashedWheelTimer;
         this.deviceInitializerProvider = deviceInitializerProvider;
-        this.isFlowRemovedNotificationOn = isFlowRemovedNotificationOn;
-        this.switchFeaturesMandatory = switchFeaturesMandatory;
         this.deviceState = new DeviceStateImpl();
         this.dataBroker = dataBroker;
         this.messageSpy = messageSpy;
@@ -189,9 +178,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 new TranslatorKey(deviceInfo.getVersion(), FlowRemoved.class.getName()));
 
         this.convertorExecutor = convertorExecutor;
-        this.skipTableFeatures = skipTableFeatures;
-        this.useSingleLayerSerialization = useSingleLayerSerialization;
         writerProvider = MultipartWriterProviderFactory.createDefaultProvider(this);
+        this.config = config;
     }
 
     @Override
@@ -203,6 +191,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         final boolean initialSubmit = transactionChainManager.initialSubmitWriteTransaction();
         isInitialTransactionSubmitted.set(initialSubmit);
         return initialSubmit;
+    }
+
+    @Override
+    public boolean isGroupAddModEnabled() {
+        return config.isGroupAddModEnabled();
     }
 
     @Override
@@ -295,7 +288,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved flowRemovedNotification =
                 flowRemovedTranslator.translate(flowRemoved, deviceInfo, null);
 
-        if (isFlowRemovedNotificationOn) {
+        if (config.isEnableFlowRemovedNotification()) {
             // Trigger off a notification
             notificationPublishService.offerNotification(flowRemovedNotification);
         }
@@ -582,7 +575,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public boolean canUseSingleLayerSerialization() {
-        return useSingleLayerSerialization && getDeviceInfo().getVersion() >= OFConstants.OFP_VERSION_1_3;
+        return config.isUseSingleLayerSerialization() && getDeviceInfo().getVersion() >= OFConstants.OFP_VERSION_1_3;
     }
 
     // TODO: exception handling should be fixed by using custom checked exception, never RuntimeExceptions
@@ -609,7 +602,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         if (initializer.isPresent()) {
             final Future<Void> initialize = initializer
                     .get()
-                    .initialize(this, switchFeaturesMandatory, skipTableFeatures, writerProvider, convertorExecutor);
+                    .initialize(this, config.isSwitchFeaturesMandatory(), config.isSkipTableFeatures(), writerProvider, convertorExecutor);
 
             try {
                 initialize.get(DEVICE_INIT_TIMEOUT, TimeUnit.MILLISECONDS);
