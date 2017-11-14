@@ -131,6 +131,10 @@ public class OpenFlowProviderConfigImpl implements OpenflowProviderConfig {
         return service.getProperty(ConfigurationProperty.USE_SINGLE_LAYER_SERIALIZATION.toString(), Boolean::valueOf);
     }
 
+    @Override public Boolean isGroupAddModEnabled() {
+        return service.getProperty(ConfigurationProperty.GROUP_ADD_MOD_ENABLED.toString(), Boolean::valueOf);
+    }
+
     @Override
     public <E extends Augmentation<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang
             .openflow.provider.config.rev160510.OpenflowProviderConfig>> E getAugmentation(
