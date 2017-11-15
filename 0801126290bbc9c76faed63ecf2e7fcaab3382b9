@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "9a245df4_b9cd99b9",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-11-15T15:59:49Z",
+      "side": 1,
+      "message": "update the topic to group-add-mod",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 16
+      },
+      "revId": "0801126290bbc9c76faed63ecf2e7fcaab3382b9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_79896174",
         "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/device/DeviceContext.java",
         "patchSetId": 3
