@@ -2,6 +2,30 @@
   "comments": [
     {
       "key": {
+        "uuid": "9a245df4_72019c37",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 10
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 817
+      },
+      "writtenOn": "2017-11-15T08:31:04Z",
+      "side": 1,
+      "message": "Yes, Arun\u0027s team will be working on this, depending on the current behaviour of openflowplugin. This patch is for the initial integration, which will show the usage, so that",
+      "parentUuid": "9a245df4_72251c08",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 22
+      },
+      "revId": "c7915bdae0159ddb8c56ad461cf2c0798c32675a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_4f25d807",
         "filename": "features-aggregator/odl-openflowplugin-southbound/pom.xml",
         "patchSetId": 10
