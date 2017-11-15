@@ -37,6 +37,8 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.infrautils.diagstatus.DiagStatusService;
+import org.opendaylight.infrautils.diagstatus.ServiceState;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
@@ -57,6 +59,7 @@ import org.opendaylight.openflowplugin.impl.connection.ConnectionManagerImpl;
 import org.opendaylight.openflowplugin.impl.device.DeviceManagerImpl;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProvider;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProviderFactory;
+import org.opendaylight.openflowplugin.impl.diagstatus.OpenflowPluginDiagStatusProvider;
 import org.opendaylight.openflowplugin.impl.lifecycle.ContextChainHolderImpl;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.DeserializerInjector;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.SerializerInjector;
@@ -111,6 +114,7 @@ public class OpenFlowPluginProviderImpl implements
     private ConnectionManager connectionManager;
     private ListeningExecutorService executorService;
     private ContextChainHolderImpl contextChainHolder;
+    private OpenflowPluginDiagStatusProvider openflowPluginStatusMonitor;
 
     public static MessageIntelligenceAgency getMessageIntelligenceAgency() {
         return MESSAGE_INTELLIGENCE_AGENCY;
@@ -123,7 +127,8 @@ public class OpenFlowPluginProviderImpl implements
                                final NotificationPublishService notificationPublishService,
                                final ClusterSingletonServiceProvider singletonServiceProvider,
                                final EntityOwnershipService entityOwnershipService,
-                               final MastershipChangeServiceManager mastershipChangeServiceManager) {
+                               final MastershipChangeServiceManager mastershipChangeServiceManager,
+                               final DiagStatusService diagStatusService) {
         this.switchConnectionProviders = switchConnectionProviders;
         this.dataBroker = dataBroker;
         this.rpcProviderRegistry = rpcProviderRegistry;
@@ -135,6 +140,7 @@ public class OpenFlowPluginProviderImpl implements
         deviceInitializerProvider = DeviceInitializerProviderFactory.createDefaultProvider();
         config = new OpenFlowProviderConfigImpl(configurationService);
         this.mastershipChangeServiceManager = mastershipChangeServiceManager;
+        openflowPluginStatusMonitor = new OpenflowPluginDiagStatusProvider(diagStatusService);
     }
 
 
@@ -155,11 +161,13 @@ public class OpenFlowPluginProviderImpl implements
             @Override
             public void onSuccess(final List<Boolean> result) {
                 LOG.info("All switchConnectionProviders are up and running ({}).", result.size());
+                openflowPluginStatusMonitor.reportStatus(ServiceState.OPERATIONAL, "switch connections started");
             }
 
             @Override
             public void onFailure(@Nonnull final Throwable throwable) {
                 LOG.warn("Some switchConnectionProviders failed to start.", throwable);
+                openflowPluginStatusMonitor.reportStatus(ServiceState.ERROR, "some switch connections failed to start");
             }
         });
     }
@@ -275,6 +283,7 @@ public class OpenFlowPluginProviderImpl implements
         gracefulShutdown(executorService);
         gracefulShutdown(hashedWheelTimer);
         unregisterMXBean(MESSAGE_INTELLIGENCE_AGENCY_MX_BEAN_NAME);
+        openflowPluginStatusMonitor.reportStatus(ServiceState.UNREGISTERED, "service shutting down");
     }
 
     @SuppressWarnings("checkstyle:IllegalCatch")

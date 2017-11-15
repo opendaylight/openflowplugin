@@ -19,6 +19,7 @@
     <properties>
         <mdsal.version>1.7.0-SNAPSHOT</mdsal.version>
         <lldp.version>0.14.0-SNAPSHOT</lldp.version>
+        <infrautils.version>1.3.0-SNAPSHOT</infrautils.version>
     </properties>
 
     <dependencyManagement>
@@ -51,7 +52,13 @@
             <classifier>features</classifier>
             <type>xml</type>
         </dependency>
-
+        <dependency>
+            <groupId>org.opendaylight.infrautils</groupId>
+            <artifactId>odl-infrautils-diagstatus</artifactId>
+            <version>${infrautils.version}</version>
+            <type>xml</type>
+            <classifier>features</classifier>
+        </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>odl-openflowplugin-nsf-model</artifactId>
@@ -90,6 +97,10 @@
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>liblldp</artifactId>
             <version>${lldp.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
         </dependency>
 
         <!-- config files -->
