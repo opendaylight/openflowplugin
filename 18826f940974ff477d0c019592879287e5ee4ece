@@ -1,0 +1,190 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a245df4_65e37ca4",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-11-15T04:01:03Z",
+      "side": 1,
+      "message": "Added the content you mentioned above.\n\nAnd this spec is for who is interacting with ODL/OFP. I hope no others will review or use it.",
+      "parentUuid": "9a245df4_2b515836",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 19
+      },
+      "revId": "18826f940974ff477d0c019592879287e5ee4ece",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_6547fcbc",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-11-15T04:01:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_4b4c8c9e",
+      "range": {
+        "startLine": 23,
+        "startChar": 93,
+        "endLine": 23,
+        "endChar": 97
+      },
+      "revId": "18826f940974ff477d0c019592879287e5ee4ece",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_053e0028",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-11-15T04:01:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_0b7f34ac",
+      "range": {
+        "startLine": 23,
+        "startChar": 61,
+        "endLine": 23,
+        "endChar": 64
+      },
+      "revId": "18826f940974ff477d0c019592879287e5ee4ece",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_a51454a0",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-11-15T04:01:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_eb7bc0bb",
+      "range": {
+        "startLine": 24,
+        "startChar": 18,
+        "endLine": 24,
+        "endChar": 21
+      },
+      "revId": "18826f940974ff477d0c019592879287e5ee4ece",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_c538683f",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-11-15T04:01:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_8b420466",
+      "revId": "18826f940974ff477d0c019592879287e5ee4ece",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_45e0f895",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-11-15T04:01:03Z",
+      "side": 1,
+      "message": "Can you give me exactly what needs to be added? What is the state you are referring to?",
+      "parentUuid": "9a245df4_6b47d077",
+      "range": {
+        "startLine": 40,
+        "startChar": 83,
+        "endLine": 41,
+        "endChar": 84
+      },
+      "revId": "18826f940974ff477d0c019592879287e5ee4ece",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_e50acc77",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-11-15T04:01:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_eb52a033",
+      "range": {
+        "startLine": 46,
+        "startChar": 43,
+        "endLine": 46,
+        "endChar": 59
+      },
+      "revId": "18826f940974ff477d0c019592879287e5ee4ece",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_e5812cc4",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-11-15T04:01:03Z",
+      "side": 1,
+      "message": "Added the existing sequence only, let me know what you want exactly here? All the steps are given as per the order, let me know if anything needs to be changed?",
+      "parentUuid": "9a245df4_8b3964f4",
+      "range": {
+        "startLine": 56,
+        "startChar": 2,
+        "endLine": 58,
+        "endChar": 75
+      },
+      "revId": "18826f940974ff477d0c019592879287e5ee4ece",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
