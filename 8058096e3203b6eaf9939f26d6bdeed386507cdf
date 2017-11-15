@@ -2,6 +2,30 @@
   "comments": [
     {
       "key": {
+        "uuid": "9a245df4_45f75859",
+        "filename": "docs/specs/group-add-mod.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-11-15T04:03:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_5c60dda4",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 19
+      },
+      "revId": "8058096e3203b6eaf9939f26d6bdeed386507cdf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_4dd7894b",
         "filename": "docs/specs/group-add-mod.rst",
         "patchSetId": 1
@@ -42,6 +66,78 @@
         "startLine": 129,
         "startChar": 0,
         "endLine": 129,
+        "endChar": 4
+      },
+      "revId": "8058096e3203b6eaf9939f26d6bdeed386507cdf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_85f5d058",
+        "filename": "docs/specs/group-add-mod.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-11-15T04:03:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_9c56d5cc",
+      "range": {
+        "startLine": 141,
+        "startChar": 0,
+        "endLine": 141,
+        "endChar": 4
+      },
+      "revId": "8058096e3203b6eaf9939f26d6bdeed386507cdf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_e5e64caf",
+        "filename": "docs/specs/group-add-mod.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-11-15T04:03:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_dc732d7e",
+      "range": {
+        "startLine": 172,
+        "startChar": 0,
+        "endLine": 172,
+        "endChar": 10
+      },
+      "revId": "8058096e3203b6eaf9939f26d6bdeed386507cdf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_0501e037",
+        "filename": "docs/specs/group-add-mod.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-11-15T04:03:59Z",
+      "side": 1,
+      "message": "No documentation change required. Or please point me the document, so i can put it here and make the changes.",
+      "parentUuid": "9a245df4_bc70f972",
+      "range": {
+        "startLine": 185,
+        "startChar": 0,
+        "endLine": 185,
         "endChar": 4
       },
       "revId": "8058096e3203b6eaf9939f26d6bdeed386507cdf",
