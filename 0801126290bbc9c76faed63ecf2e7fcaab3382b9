@@ -1,0 +1,165 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a245df4_79896174",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/device/DeviceContext.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-11-15T15:58:09Z",
+      "side": 1,
+      "message": "api should be boolean isGroupAddModEnabled()",
+      "range": {
+        "startLine": 114,
+        "startChar": 0,
+        "endLine": 114,
+        "endChar": 39
+      },
+      "revId": "0801126290bbc9c76faed63ecf2e7fcaab3382b9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_d97a0d76",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
+        "patchSetId": 3
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-11-15T15:58:09Z",
+      "side": 1,
+      "message": "provide one line before it",
+      "range": {
+        "startLine": 105,
+        "startChar": 0,
+        "endLine": 105,
+        "endChar": 29
+      },
+      "revId": "0801126290bbc9c76faed63ecf2e7fcaab3382b9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_39e2492f",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-11-15T15:58:09Z",
+      "side": 1,
+      "message": "config.getSingleLayer",
+      "range": {
+        "startLine": 196,
+        "startChar": 43,
+        "endLine": 196,
+        "endChar": 70
+      },
+      "revId": "0801126290bbc9c76faed63ecf2e7fcaab3382b9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_59e57d36",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 213,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-11-15T15:58:09Z",
+      "side": 1,
+      "message": "This should be boolean isGroupAddModEnabled",
+      "range": {
+        "startLine": 213,
+        "startChar": 0,
+        "endLine": 213,
+        "endChar": 47
+      },
+      "revId": "0801126290bbc9c76faed63ecf2e7fcaab3382b9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_199825bf",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceManagerImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-11-15T15:58:09Z",
+      "side": 1,
+      "message": "Check if you can remove all these (isSkipTableFeatures, isUseSingleLayerSerialization,  isEnableFlowRemovedNotification and isSwitchFeaturesMandatory. And just pass config and initilize all the variable in the constructor.",
+      "range": {
+        "startLine": 161,
+        "startChar": 16,
+        "endLine": 162,
+        "endChar": 51
+      },
+      "revId": "0801126290bbc9c76faed63ecf2e7fcaab3382b9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_598e1d7a",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/singlelayer/SingleLayerGroupService.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-11-15T15:58:09Z",
+      "side": 1,
+      "message": "it should be getDeviceContext().isGroupAddModEnabled()",
+      "range": {
+        "startLine": 40,
+        "startChar": 0,
+        "endLine": 40,
+        "endChar": 67
+      },
+      "revId": "0801126290bbc9c76faed63ecf2e7fcaab3382b9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_99d2555a",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImplTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 250,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-11-15T15:58:09Z",
+      "side": 1,
+      "message": "Remove all the default boolean from config and use Mocikto.when(config.get())",
+      "range": {
+        "startLine": 250,
+        "startChar": 29,
+        "endLine": 250,
+        "endChar": 35
+      },
+      "revId": "0801126290bbc9c76faed63ecf2e7fcaab3382b9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
