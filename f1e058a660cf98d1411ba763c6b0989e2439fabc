@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a245df4_2444ddb5",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 8
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 3635
+      },
+      "writtenOn": "2017-11-16T16:10:47Z",
+      "side": 1,
+      "message": "This is not valid formatting;  docs is currently failing because this is an illegal indentation according to the coala compiler.  I feel there are several places where this indentation will be flagged in this document as an RST compile time error.  I do not have a docs environment installed so I really can\u0027t help much more...",
+      "revId": "f1e058a660cf98d1411ba763c6b0989e2439fabc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
