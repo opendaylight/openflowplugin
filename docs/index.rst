@@ -11,4 +11,6 @@ Applications/Projects that can co-exist with other ODL Projects.
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
+   
+   specs/index
