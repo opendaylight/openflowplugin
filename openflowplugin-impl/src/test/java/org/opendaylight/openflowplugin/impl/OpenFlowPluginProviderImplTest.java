@@ -49,6 +49,9 @@ public class OpenFlowPluginProviderImplTest {
     NotificationPublishService notificationPublishService;
 
     @Mock
+    SystemReadyMonitor systemReadyMonitor;
+
+    @Mock
     DiagStatusService diagStatusService;
 
     @Mock
@@ -120,6 +123,7 @@ public class OpenFlowPluginProviderImplTest {
                 clusterSingletonServiceProvider,
                 mastershipChangeServiceManager,
                 diagStatusService);
+
 
         verify(switchConnectionProvider).startup();
         provider.close();
