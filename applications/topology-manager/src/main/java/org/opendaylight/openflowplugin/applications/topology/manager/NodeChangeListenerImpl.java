@@ -54,6 +54,7 @@ public class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<FlowCapab
     }
 
     private void processRemovedNode(final DataTreeModification<FlowCapableNode> modification) {
+        LOG.info("Inside processRemovedNode");
         final InstanceIdentifier<FlowCapableNode> iiToNodeInInventory = modification.getRootPath().getRootIdentifier();
         final NodeId nodeId = provideTopologyNodeId(iiToNodeInInventory);
         final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node> iiToTopologyRemovedNode = provideIIToTopologyNode(nodeId);

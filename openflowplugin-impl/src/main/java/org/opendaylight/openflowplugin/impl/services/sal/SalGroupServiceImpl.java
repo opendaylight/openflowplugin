@@ -62,7 +62,6 @@ public class SalGroupServiceImpl implements SalGroupService {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Group add with id={} finished without error", input.getGroupId().getValue());
                     }
-                    LOG.debug("adding group to groupRegistry {}", input.getGroupId().getValue());
                 } else {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Group add with id={} failed, errors={}", input.getGroupId().getValue(),

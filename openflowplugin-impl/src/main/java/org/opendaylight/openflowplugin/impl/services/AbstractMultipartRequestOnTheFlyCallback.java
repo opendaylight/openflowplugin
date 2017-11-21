@@ -7,9 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext.CONTEXT_STATE;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -31,6 +28,9 @@ import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeader> extends AbstractMultipartRequestCallback<T> {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractMultipartRequestOnTheFlyCallback.class);

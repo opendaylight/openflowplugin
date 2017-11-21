@@ -173,7 +173,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         (counter <= provider.getReconciliationRetryCount())) { //also check if the counter has not crossed the threshold
 
                     if (toBeInstalledGroups.isEmpty() && !suspectedGroups.isEmpty()) {
-                        LOG.error("These Groups are pointing to node-connectors that are not up yet {}", suspectedGroups.toString());
+                        LOG.error("These Groups are pointing to node-connectors that are not up yet {} for DPN id {}", suspectedGroups.toString(), nDpId);
                         toBeInstalledGroups.addAll(suspectedGroups);
                         break;
                     }
@@ -288,6 +288,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             }
         /* clean transaction */
             trans.close();
+            LOG.debug("Resync completed for DPN .. {}", nDpId);
         }
 
         /**
