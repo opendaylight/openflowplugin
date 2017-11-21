@@ -355,12 +355,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
         if (initialized.get()) {
             try {
-                LOG.warn("writePortStatusMessage");
+                LOG.debug("writePortStatusMessage");
                 writePortStatusMessage(portStatus);
-                LOG.warn("submit transaction for write port status message");
                 submitTransaction();
             } catch (final Exception e) {
-                LOG.warn("Error processing port status message for port {} on device {}",
+                LOG.error("Error processing port status message for port {} on device {}",
                         portStatus.getPortNo(), getDeviceInfo().getLOGValue(), e);
             }
         } else if (!hasState.get()) {
