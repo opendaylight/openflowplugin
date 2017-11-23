@@ -11,3 +11,4 @@ Contents:
    :maxdepth: 1
 
    reconciliation-framework
+   group-add-mod
