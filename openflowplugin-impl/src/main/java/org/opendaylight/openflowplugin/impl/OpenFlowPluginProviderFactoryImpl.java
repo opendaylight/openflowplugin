@@ -13,12 +13,14 @@ import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.infrautils.diagstatus.DiagStatusService;
+import org.opendaylight.infrautils.ready.SystemReadyMonitor;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProviderFactory;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
+import org.ops4j.pax.cdi.api.OsgiService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +41,8 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
                                               final List<SwitchConnectionProvider> switchConnectionProviders,
                                               final ClusterSingletonServiceProvider singletonServiceProvider,
                                               final MastershipChangeServiceManager mastershipChangeServiceManager,
-                                              final DiagStatusService diagStatusService) {
+                                              final DiagStatusService diagStatusService,
+                                              @OsgiService final SystemReadyMonitor systemReadyMonitor) {
         LOG.info("Initializing new OFP southbound.");
         final OpenFlowPluginProvider openflowPluginProvider = new OpenFlowPluginProviderImpl(
                 configurationService,
@@ -50,7 +53,8 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
                 singletonServiceProvider,
                 entityOwnershipService,
                 mastershipChangeServiceManager,
-                diagStatusService);
+                diagStatusService,
+                systemReadyMonitor);
 
         openflowPluginProvider.initialize();
         return openflowPluginProvider;

@@ -137,5 +137,10 @@
             <!-- Explicitly bring in the linux classifier, test may fail on 32-bit linux -->
             <classifier>linux-x86_64</classifier>
         </dependency>
+        <dependency>
+            <groupId>org.opendaylight.infrautils</groupId>
+            <artifactId>ready-api</artifactId>
+            <version>1.2.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>

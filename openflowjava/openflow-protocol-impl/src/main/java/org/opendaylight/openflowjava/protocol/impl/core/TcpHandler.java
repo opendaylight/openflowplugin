@@ -28,6 +28,7 @@ import io.netty.channel.epoll.EpollServerSocketChannel;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
+import org.opendaylight.infrautils.ready.SystemReadyListener;
 import org.opendaylight.openflowjava.protocol.api.connection.ThreadConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

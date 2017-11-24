@@ -95,6 +95,11 @@
             <artifactId>diagstatus-api</artifactId>
             <version>${infrautils.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.cdi</groupId>
+            <artifactId>pax-cdi-api</artifactId>
+            <version>0.12.0</version>
+        </dependency>
     </dependencies>
 
 </project>
