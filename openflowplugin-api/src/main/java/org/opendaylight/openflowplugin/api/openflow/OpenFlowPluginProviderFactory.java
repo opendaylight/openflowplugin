@@ -13,10 +13,12 @@ import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.infrautils.diagstatus.DiagStatusService;
+import org.opendaylight.infrautils.ready.SystemReadyMonitor;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
+import org.ops4j.pax.cdi.api.OsgiService;
 
 /**
  * Factory for creating OpenFlowPluginProvider instances.
@@ -30,5 +32,6 @@ public interface OpenFlowPluginProviderFactory {
                                        List<SwitchConnectionProvider> switchConnectionProviders,
                                        ClusterSingletonServiceProvider singletonServiceProvider,
                                        MastershipChangeServiceManager mastershipChangeServiceManager,
-                                       DiagStatusService diagStatusService);
+                                       DiagStatusService diagStatusService,
+                                       @OsgiService final SystemReadyMonitor systemReadyMonitor);
 }
