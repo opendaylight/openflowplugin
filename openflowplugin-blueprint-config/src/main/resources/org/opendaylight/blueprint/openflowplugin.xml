@@ -10,6 +10,7 @@
     <reference id="entityOwnershipService" interface="org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService"/>
     <reference id="clusterSingletonServiceProvider" interface="org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider"/>
     <reference id="diagStatusService" interface="org.opendaylight.infrautils.diagstatus.DiagStatusService" />
+    <reference id="systemReadyMonitor" interface="org.opendaylight.infrautils.ready.SystemReadyMonitor" />
 
     <reference id="defaultSwitchConnProvider" interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider"
                odl:type="openflow-switch-connection-provider-default-impl"/>
@@ -40,6 +41,13 @@
                                update-method="update"/>
     </bean>
 
+    <bean id="ofPluginDiagstatusProvider"
+          class="org.opendaylight.openflowplugin.api.diagstatus.OpenflowPluginDiagStatusProvider">
+        <argument ref="diagStatusService"/>
+    </bean>
+
+    <service ref="ofPluginDiagstatusProvider" interface="org.opendaylight.infrautils.diagstatus.ServiceStatusProvider"/>
+
     <service ref="configurationService" interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService"/>
 
     <bean id="openflowPluginProvider"
@@ -59,7 +67,8 @@
         </argument>
         <argument ref="clusterSingletonServiceProvider"/>
         <argument ref="mastershipChangeServiceManager"/>
-        <argument ref="diagStatusService"/>
+        <argument ref="ofPluginDiagstatusProvider"/>
+        <argument ref="systemReadyMonitor"/>
     </bean>
 
     <service ref="openflowPluginProvider" odl:type="openflow-plugin-provider-impl">
