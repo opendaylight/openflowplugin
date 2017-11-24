@@ -39,6 +39,8 @@ import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipS
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.infrautils.diagstatus.DiagStatusService;
 import org.opendaylight.infrautils.diagstatus.ServiceState;
+import org.opendaylight.infrautils.ready.SystemReadyListener;
+import org.opendaylight.infrautils.ready.SystemReadyMonitor;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
@@ -80,13 +82,15 @@ import org.slf4j.LoggerFactory;
 
 public class OpenFlowPluginProviderImpl implements
         OpenFlowPluginProvider,
-        OpenFlowPluginExtensionRegistratorProvider {
+        OpenFlowPluginExtensionRegistratorProvider,
+        SystemReadyListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenFlowPluginProviderImpl.class);
 
     private static final int TICKS_PER_WHEEL = 500; // 0.5 sec.
     private static final long TICK_DURATION = 10;
     private static final String POOL_NAME = "ofppool";
+
 
     private static final MessageIntelligenceAgency MESSAGE_INTELLIGENCE_AGENCY = new MessageIntelligenceAgencyImpl();
     private static final String MESSAGE_INTELLIGENCE_AGENCY_MX_BEAN_NAME = String
@@ -115,6 +119,7 @@ public class OpenFlowPluginProviderImpl implements
     private ListeningExecutorService executorService;
     private ContextChainHolderImpl contextChainHolder;
     private OpenflowPluginDiagStatusProvider openflowPluginStatusMonitor;
+    private DiagStatusService diagStatusService;
 
     public static MessageIntelligenceAgency getMessageIntelligenceAgency() {
         return MESSAGE_INTELLIGENCE_AGENCY;
@@ -128,7 +133,8 @@ public class OpenFlowPluginProviderImpl implements
                                final ClusterSingletonServiceProvider singletonServiceProvider,
                                final EntityOwnershipService entityOwnershipService,
                                final MastershipChangeServiceManager mastershipChangeServiceManager,
-                               final DiagStatusService diagStatusService) {
+                               final DiagStatusService diagStatusService,
+                               final SystemReadyMonitor systemReadyMonitor) {
         this.switchConnectionProviders = switchConnectionProviders;
         this.dataBroker = dataBroker;
         this.rpcProviderRegistry = rpcProviderRegistry;
@@ -140,9 +146,16 @@ public class OpenFlowPluginProviderImpl implements
         deviceInitializerProvider = DeviceInitializerProviderFactory.createDefaultProvider();
         config = new OpenFlowProviderConfigImpl(configurationService);
         this.mastershipChangeServiceManager = mastershipChangeServiceManager;
+        this.diagStatusService = diagStatusService;
         openflowPluginStatusMonitor = new OpenflowPluginDiagStatusProvider(diagStatusService);
+        systemReadyMonitor.registerListener(this);
+
     }
 
+    @Override
+    public void onSystemBootReady() {
+        startSwitchConnections();
+    }
 
     private void startSwitchConnections() {
         Futures.addCallback(Futures.allAsList(switchConnectionProviders.stream().map(switchConnectionProvider -> {
@@ -259,7 +272,6 @@ public class OpenFlowPluginProviderImpl implements
         connectionManager.setDeviceDisconnectedHandler(contextChainHolder);
 
         deviceManager.initialize();
-        startSwitchConnections();
     }
 
     @Override
