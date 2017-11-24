@@ -39,6 +39,7 @@ import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipS
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.infrautils.diagstatus.DiagStatusService;
 import org.opendaylight.infrautils.diagstatus.ServiceState;
+import org.opendaylight.infrautils.ready.SystemReadyMonitor;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
@@ -128,7 +129,8 @@ public class OpenFlowPluginProviderImpl implements
                                final ClusterSingletonServiceProvider singletonServiceProvider,
                                final EntityOwnershipService entityOwnershipService,
                                final MastershipChangeServiceManager mastershipChangeServiceManager,
-                               final DiagStatusService diagStatusService) {
+                               final DiagStatusService diagStatusService,
+                               final SystemReadyMonitor systemReadyMonitor) {
         this.switchConnectionProviders = switchConnectionProviders;
         this.dataBroker = dataBroker;
         this.rpcProviderRegistry = rpcProviderRegistry;
@@ -141,8 +143,15 @@ public class OpenFlowPluginProviderImpl implements
         config = new OpenFlowProviderConfigImpl(configurationService);
         this.mastershipChangeServiceManager = mastershipChangeServiceManager;
         openflowPluginStatusMonitor = new OpenflowPluginDiagStatusProvider(diagStatusService);
+        systemReadyMonitor.registerListener(this);
+        LOG.debug("registered onSystemBootReady() listener for deferred startSwitchConnections()");
     }
 
+    @Override
+    public void onSystemBootReady() {
+        LOG.debug("onSystemBootReady() received, starting the switch connections");
+        startSwitchConnections();
+    }
 
     private void startSwitchConnections() {
         Futures.addCallback(Futures.allAsList(switchConnectionProviders.stream().map(switchConnectionProvider -> {
@@ -259,7 +268,6 @@ public class OpenFlowPluginProviderImpl implements
         connectionManager.setDeviceDisconnectedHandler(contextChainHolder);
 
         deviceManager.initialize();
-        startSwitchConnections();
     }
 
     @Override
