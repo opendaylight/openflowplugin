@@ -28,8 +28,10 @@ import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipS
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.infrautils.diagstatus.DiagStatusService;
+import org.opendaylight.infrautils.ready.SystemReadyMonitor;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
+import org.opendaylight.openflowplugin.api.diagstatus.OpenflowPluginDiagStatusProvider;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationProperty;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
@@ -49,7 +51,10 @@ public class OpenFlowPluginProviderImplTest {
     NotificationPublishService notificationPublishService;
 
     @Mock
-    DiagStatusService diagStatusService;
+    OpenflowPluginDiagStatusProvider ofPluginDiagstatusProvider;
+
+    @Mock
+    SystemReadyMonitor systemReadyMonitor;
 
     @Mock
     WriteTransaction writeTransaction;
@@ -119,8 +124,11 @@ public class OpenFlowPluginProviderImplTest {
                 Lists.newArrayList(switchConnectionProvider),
                 clusterSingletonServiceProvider,
                 mastershipChangeServiceManager,
-                diagStatusService);
+                ofPluginDiagstatusProvider,
+                systemReadyMonitor);
 
+        // Manually calling the onSystemBootReady() callback
+        provider.onSystemBootReady();
         verify(switchConnectionProvider).startup();
         provider.close();
         verify(switchConnectionProvider).shutdown();

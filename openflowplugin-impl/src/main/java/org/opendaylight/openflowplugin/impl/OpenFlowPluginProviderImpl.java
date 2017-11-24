@@ -37,8 +37,8 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-import org.opendaylight.infrautils.diagstatus.DiagStatusService;
 import org.opendaylight.infrautils.diagstatus.ServiceState;
+import org.opendaylight.infrautils.ready.SystemReadyMonitor;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
@@ -59,7 +59,7 @@ import org.opendaylight.openflowplugin.impl.connection.ConnectionManagerImpl;
 import org.opendaylight.openflowplugin.impl.device.DeviceManagerImpl;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProvider;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProviderFactory;
-import org.opendaylight.openflowplugin.impl.diagstatus.OpenflowPluginDiagStatusProvider;
+import org.opendaylight.openflowplugin.api.diagstatus.OpenflowPluginDiagStatusProvider;
 import org.opendaylight.openflowplugin.impl.lifecycle.ContextChainHolderImpl;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.DeserializerInjector;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.SerializerInjector;
@@ -128,7 +128,8 @@ public class OpenFlowPluginProviderImpl implements
                                final ClusterSingletonServiceProvider singletonServiceProvider,
                                final EntityOwnershipService entityOwnershipService,
                                final MastershipChangeServiceManager mastershipChangeServiceManager,
-                               final DiagStatusService diagStatusService) {
+                               final OpenflowPluginDiagStatusProvider openflowPluginStatusMonitor,
+                               final SystemReadyMonitor systemReadyMonitor) {
         this.switchConnectionProviders = switchConnectionProviders;
         this.dataBroker = dataBroker;
         this.rpcProviderRegistry = rpcProviderRegistry;
@@ -140,9 +141,16 @@ public class OpenFlowPluginProviderImpl implements
         deviceInitializerProvider = DeviceInitializerProviderFactory.createDefaultProvider();
         config = new OpenFlowProviderConfigImpl(configurationService);
         this.mastershipChangeServiceManager = mastershipChangeServiceManager;
-        openflowPluginStatusMonitor = new OpenflowPluginDiagStatusProvider(diagStatusService);
+        this.openflowPluginStatusMonitor = openflowPluginStatusMonitor;
+        systemReadyMonitor.registerListener(this);
+        LOG.debug("registered onSystemBootReady() listener for deferred startSwitchConnections()");
     }
 
+    @Override
+    public void onSystemBootReady() {
+        LOG.debug("onSystemBootReady() received, starting the switch connections");
+        startSwitchConnections();
+    }
 
     private void startSwitchConnections() {
         Futures.addCallback(Futures.allAsList(switchConnectionProviders.stream().map(switchConnectionProvider -> {
@@ -259,7 +267,6 @@ public class OpenFlowPluginProviderImpl implements
         connectionManager.setDeviceDisconnectedHandler(contextChainHolder);
 
         deviceManager.initialize();
-        startSwitchConnections();
     }
 
     @Override

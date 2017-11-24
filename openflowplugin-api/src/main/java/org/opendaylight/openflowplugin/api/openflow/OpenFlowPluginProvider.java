@@ -9,11 +9,12 @@
 package org.opendaylight.openflowplugin.api.openflow;
 
 import org.opendaylight.controller.md.sal.binding.api.BindingService;
+import org.opendaylight.infrautils.ready.SystemReadyListener;
 
 /**
  * Plugin services provider.
  */
-public interface OpenFlowPluginProvider extends AutoCloseable, BindingService {
+public interface OpenFlowPluginProvider extends AutoCloseable, BindingService, SystemReadyListener {
 
     /**
      * Method initializes all DeviceManager, RpcManager and related contexts.
