@@ -12,9 +12,10 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-import org.opendaylight.infrautils.diagstatus.DiagStatusService;
+import org.opendaylight.infrautils.ready.SystemReadyMonitor;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
+import org.opendaylight.openflowplugin.api.diagstatus.OpenflowPluginDiagStatusProvider;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProviderFactory;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
@@ -39,7 +40,8 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
                                               final List<SwitchConnectionProvider> switchConnectionProviders,
                                               final ClusterSingletonServiceProvider singletonServiceProvider,
                                               final MastershipChangeServiceManager mastershipChangeServiceManager,
-                                              final DiagStatusService diagStatusService) {
+                                              final OpenflowPluginDiagStatusProvider ofPluginDiagstatusProvider,
+                                              final SystemReadyMonitor systemReadyMonitor) {
         LOG.info("Initializing new OFP southbound.");
         final OpenFlowPluginProvider openflowPluginProvider = new OpenFlowPluginProviderImpl(
                 configurationService,
@@ -50,7 +52,8 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
                 singletonServiceProvider,
                 entityOwnershipService,
                 mastershipChangeServiceManager,
-                diagStatusService);
+                ofPluginDiagstatusProvider,
+                systemReadyMonitor);
 
         openflowPluginProvider.initialize();
         return openflowPluginProvider;
