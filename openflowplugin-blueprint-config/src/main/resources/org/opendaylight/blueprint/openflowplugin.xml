@@ -10,6 +10,7 @@
     <reference id="entityOwnershipService" interface="org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService"/>
     <reference id="clusterSingletonServiceProvider" interface="org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider"/>
     <reference id="diagStatusService" interface="org.opendaylight.infrautils.diagstatus.DiagStatusService" />
+    <reference id="systemReadyMonitor" interface="org.opendaylight.infrautils.ready.SystemReadyMonitor" />
 
     <reference id="defaultSwitchConnProvider" interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider"
                odl:type="openflow-switch-connection-provider-default-impl"/>
@@ -60,6 +61,7 @@
         <argument ref="clusterSingletonServiceProvider"/>
         <argument ref="mastershipChangeServiceManager"/>
         <argument ref="diagStatusService"/>
+        <argument ref="systemReadyMonitor"/>
     </bean>
 
     <service ref="openflowPluginProvider" odl:type="openflow-plugin-provider-impl">
