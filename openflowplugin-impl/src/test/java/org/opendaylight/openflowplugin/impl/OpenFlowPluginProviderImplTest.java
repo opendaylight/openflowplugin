@@ -27,10 +27,10 @@ import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipL
 import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-import org.opendaylight.infrautils.diagstatus.DiagStatusService;
+import org.opendaylight.infrautils.ready.SystemReadyMonitor;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
-import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
+import org.opendaylight.openflowplugin.api.diagstatus.OpenflowPluginDiagStatusProvider;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationProperty;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
@@ -49,7 +49,10 @@ public class OpenFlowPluginProviderImplTest {
     NotificationPublishService notificationPublishService;
 
     @Mock
-    DiagStatusService diagStatusService;
+    OpenflowPluginDiagStatusProvider ofPluginDiagstatusProvider;
+
+    @Mock
+    SystemReadyMonitor systemReadyMonitor;
 
     @Mock
     WriteTransaction writeTransaction;
@@ -110,17 +113,21 @@ public class OpenFlowPluginProviderImplTest {
 
     @Test
     public void testInitializeAndClose() throws Exception {
-        final OpenFlowPluginProvider provider = new OpenFlowPluginProviderFactoryImpl().newInstance(
+        final OpenFlowPluginProviderImpl provider = new OpenFlowPluginProviderImpl(
                 configurationService,
+                Lists.newArrayList(switchConnectionProvider),
                 dataBroker,
                 rpcProviderRegistry,
                 notificationPublishService,
-                entityOwnershipService,
-                Lists.newArrayList(switchConnectionProvider),
                 clusterSingletonServiceProvider,
+                entityOwnershipService,
                 mastershipChangeServiceManager,
-                diagStatusService);
+                ofPluginDiagstatusProvider,
+                systemReadyMonitor);
 
+        provider.initialize();
+        // Calling the onSystemBootReady() callback
+        provider.onSystemBootReady();
         verify(switchConnectionProvider).startup();
         provider.close();
         verify(switchConnectionProvider).shutdown();
