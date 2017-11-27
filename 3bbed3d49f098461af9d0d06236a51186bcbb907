@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a1969be_8973dde6",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 817
+      },
+      "writtenOn": "2017-11-27T07:04:11Z",
+      "side": 1,
+      "message": "why is diagstatusservice being passed here?",
+      "revId": "3bbed3d49f098461af9d0d06236a51186bcbb907",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
