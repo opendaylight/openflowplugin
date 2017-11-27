@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "7a1969be_6c5aef84",
+        "filename": "docs/specs/index.rst",
+        "patchSetId": 13
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-11-27T11:40:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a1969be_ec6b7f83",
+      "range": {
+        "startLine": 2,
+        "startChar": 0,
+        "endLine": 2,
+        "endChar": 28
+      },
+      "revId": "6536f7d245162f67026ce1bcf4743e6ca64bb0ac",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a1969be_cc68438a",
         "filename": "docs/specs/reconciliation-framework.rst",
         "patchSetId": 13
@@ -36,6 +60,30 @@
       "writtenOn": "2017-11-27T08:11:23Z",
       "side": 1,
       "message": "incorrect formatting. should be: strlen(\"Reconciliation Framework\") \u003d\u003d strlen(\"\u003d...\")",
+      "range": {
+        "startLine": 4,
+        "startChar": 0,
+        "endLine": 6,
+        "endChar": 25
+      },
+      "revId": "6536f7d245162f67026ce1bcf4743e6ca64bb0ac",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a1969be_4c5f3373",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 13
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-11-27T11:40:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a1969be_cc68438a",
       "range": {
         "startLine": 4,
         "startChar": 0,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "7a1969be_ac53476b",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 13
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-11-27T11:40:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a1969be_2c0597c2",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 8,
+        "endChar": 54
+      },
+      "revId": "6536f7d245162f67026ce1bcf4743e6ca64bb0ac",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a1969be_0c0a5bd2",
         "filename": "docs/specs/reconciliation-framework.rst",
         "patchSetId": 13
@@ -94,6 +166,30 @@
     },
     {
       "key": {
+        "uuid": "7a1969be_2cc75714",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 13
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-11-27T11:40:49Z",
+      "side": 1,
+      "message": "Yes it is a code block, but not required, removed.",
+      "parentUuid": "7a1969be_0c0a5bd2",
+      "range": {
+        "startLine": 171,
+        "startChar": 0,
+        "endLine": 174,
+        "endChar": 28
+      },
+      "revId": "6536f7d245162f67026ce1bcf4743e6ca64bb0ac",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a1969be_6c0f8fe2",
         "filename": "docs/specs/reconciliation-framework.rst",
         "patchSetId": 13
@@ -105,6 +201,30 @@
       "writtenOn": "2017-11-27T08:11:23Z",
       "side": 1,
       "message": "hyperlink.\n\nhttp://www.sphinx-doc.org/en/stable/rest.html#hyperlinks",
+      "range": {
+        "startLine": 272,
+        "startChar": 0,
+        "endLine": 272,
+        "endChar": 102
+      },
+      "revId": "6536f7d245162f67026ce1bcf4743e6ca64bb0ac",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a1969be_0ccc1b35",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 13
+      },
+      "lineNbr": 272,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-11-27T11:40:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a1969be_6c0f8fe2",
       "range": {
         "startLine": 272,
         "startChar": 0,
