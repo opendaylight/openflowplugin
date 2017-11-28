@@ -7,11 +7,12 @@
  */
 package org.opendaylight.openflowplugin.api.diagstatus;
 
+import java.io.IOException;
+import java.net.Socket;
 import org.opendaylight.infrautils.diagstatus.DiagStatusService;
 import org.opendaylight.infrautils.diagstatus.ServiceDescriptor;
 import org.opendaylight.infrautils.diagstatus.ServiceState;
 import org.opendaylight.infrautils.diagstatus.ServiceStatusProvider;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +20,8 @@ public class OpenflowPluginDiagStatusProvider implements ServiceStatusProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowPluginDiagStatusProvider.class);
     private static final String OPENFLOW_SERVICE_NAME = "OPENFLOW";
+    private static final int OF_PORT_11 = 6633;
+    private static final int OF_PORT_13 = 6653;
 
     private final DiagStatusService diagStatusService;
     private volatile ServiceDescriptor serviceDescriptor;
@@ -36,7 +39,35 @@ public class OpenflowPluginDiagStatusProvider implements ServiceStatusProvider {
 
     @Override
     public ServiceDescriptor getServiceDescriptor() {
-        // TODO Check 6653/6633 port status to report dynamic status
+
+        if (serviceDescriptor.getServiceState().equals(ServiceState.OPERATIONAL)) {
+            if (getApplicationNetworkState(OF_PORT_13) && getApplicationNetworkState(OF_PORT_11)) {
+                return serviceDescriptor;
+            } else {
+                serviceDescriptor = new ServiceDescriptor(OPENFLOW_SERVICE_NAME, ServiceState.ERROR,
+                        "OF::PORTS:: 6653 and 6633 are not up yet");
+                return serviceDescriptor;
+            }
+        }
         return serviceDescriptor;
+    }
+
+    private boolean getApplicationNetworkState(int port) {
+        Socket socket = null;
+        try {
+            socket = new Socket("localhost", port);
+            LOG.debug("Socket connection established");
+            return true;
+        } catch (IOException e) {
+            return false;
+        } finally {
+            try {
+                if (socket != null) {
+                    socket.close();
+                }
+            } catch (IOException ex) {
+                LOG.error("Failed to close socket : {}", socket, ex);
+            }
+        }
     }
 }
