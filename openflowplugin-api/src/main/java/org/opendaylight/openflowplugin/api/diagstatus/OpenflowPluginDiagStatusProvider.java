@@ -7,11 +7,12 @@
  */
 package org.opendaylight.openflowplugin.api.diagstatus;
 
+import java.io.IOException;
+import java.net.Socket;
 import org.opendaylight.infrautils.diagstatus.DiagStatusService;
 import org.opendaylight.infrautils.diagstatus.ServiceDescriptor;
 import org.opendaylight.infrautils.diagstatus.ServiceState;
 import org.opendaylight.infrautils.diagstatus.ServiceStatusProvider;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +20,10 @@ public class OpenflowPluginDiagStatusProvider implements ServiceStatusProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowPluginDiagStatusProvider.class);
     private static final String OPENFLOW_SERVICE_NAME = "OPENFLOW";
+    public ServiceState serviceStatus = null;
+    private static int OFPort11 = 6633;
+    private static int OFPort13 = 6653;
+    private Socket socket = null;
 
     private final DiagStatusService diagStatusService;
     private volatile ServiceDescriptor serviceDescriptor;
@@ -36,7 +41,34 @@ public class OpenflowPluginDiagStatusProvider implements ServiceStatusProvider {
 
     @Override
     public ServiceDescriptor getServiceDescriptor() {
-        // TODO Check 6653/6633 port status to report dynamic status
+
+        if (serviceDescriptor.getServiceState().equals(ServiceState.OPERATIONAL)) {
+            if (getApplicationNetworkState(OFPort13) && getApplicationNetworkState(OFPort11)) {
+                return serviceDescriptor;
+            } else {
+                serviceDescriptor = new ServiceDescriptor(OPENFLOW_SERVICE_NAME, ServiceState.ERROR,
+                        "OF::PORTS:: 6653 and 6633 are not up yet");
+                return serviceDescriptor;
+            }
+        }
         return serviceDescriptor;
+    }
+
+    public boolean getApplicationNetworkState(int port) {
+        try {
+            socket = new Socket("localhost", port);
+            LOG.debug("Socket connection established");
+            return true;
+        } catch (IOException e) {
+            return false;
+        } finally {
+            try {
+                if (socket != null) {
+                    socket.close();
+                }
+            } catch (IOException ex) {
+                LOG.error(ex.getMessage());
+            }
+        }
     }
 }
