@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a1969be_7ad101cd",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 817
+      },
+      "writtenOn": "2017-11-28T05:28:57Z",
+      "side": 1,
+      "message": "is OPENFLOW service reporting as \"OPERATIONAL\" code inside this method?",
+      "revId": "3096604b3d148dd6deddf79227c1b7b2c10e8a3a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
