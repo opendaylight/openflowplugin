@@ -16,11 +16,20 @@ import org.ops4j.pax.cdi.api.OsgiServiceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.Socket;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 @OsgiServiceProvider(classes = ServiceStatusProvider.class)
 public class OpenflowPluginDiagStatusProvider implements ServiceStatusProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowPluginDiagStatusProvider.class);
     private static final String OPENFLOW_SERVICE_NAME = "OPENFLOW";
+    public ServiceState serviceStatus = null;
+    private static int OFPort11 = 6633;
+    private static int OFPort13 = 6653;
+    private Socket socket = null;
 
     private final DiagStatusService diagStatusService;
     private volatile ServiceDescriptor serviceDescriptor;
@@ -38,7 +47,34 @@ public class OpenflowPluginDiagStatusProvider implements ServiceStatusProvider {
 
     @Override
     public ServiceDescriptor getServiceDescriptor() {
-        // TODO Check 6653/6633 port status to report dynamic status
-        return serviceDescriptor;
+
+        if (serviceDescriptor.getServiceState().equals(ServiceState.OPERATIONAL)) {
+            if (getApplicationNetworkState(OFPort13) && getApplicationNetworkState(OFPort11)) {
+                return serviceDescriptor;
+            } else {
+                serviceDescriptor = new ServiceDescriptor(OPENFLOW_SERVICE_NAME, ServiceState.ERROR,
+                        "OF::PORTS:: 6653 and 6633 are not up yet");
+                return serviceDescriptor;
+            }
+        }
+            return serviceDescriptor;
+    }
+
+    public boolean getApplicationNetworkState(int port) {
+        try {
+            socket = new Socket("localhost", port);
+            LOG.debug("Socket connection established");
+            return true;
+        } catch (Exception e) {
+            return false;
+        } finally {
+            try {
+                if (socket != null) {
+                    socket.close();
+                }
+            } catch (Exception ex) {
+                LOG.error(ex.getMessage());
+            }
+        }
     }
 }
