@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "7a1969be_d7f8c3c6",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/OpenFlowPluginProvider.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2017-11-29T17:14:49Z",
+      "side": 1,
+      "message": "personally I would not add extends SystemReadyListener here, but instead only add implements SystemReadyListener to OpenFlowPluginProviderImpl, because this really is an implementation detail - an  openflowplugin-api consumer should not have to have a clue that its using infrautils.ready and infrautils.diagstatus inside.\n\nPS: In fact, even having the dependency in the POM seems wrong to me, but that may be more difficult to change? I noticed that OpenFlowPluginProviderFactory .. this seems curious to me, but fixing that is certainly out of scope for this otherwise simple change.",
+      "range": {
+        "startLine": 16,
+        "startChar": 3,
+        "endLine": 17,
+        "endChar": 80
+      },
+      "revId": "3096604b3d148dd6deddf79227c1b7b2c10e8a3a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a1969be_7ad101cd",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
         "patchSetId": 5
