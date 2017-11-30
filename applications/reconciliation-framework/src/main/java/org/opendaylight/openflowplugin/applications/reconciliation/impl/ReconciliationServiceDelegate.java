@@ -14,8 +14,8 @@ import org.opendaylight.openflowplugin.applications.reconciliation.Reconciliatio
 
 public class ReconciliationServiceDelegate implements NotificationRegistration {
 
-    private ReconciliationNotificationListener reconciliationNotificationListener;
-    private AutoCloseable unregisterService;
+    private final ReconciliationNotificationListener reconciliationNotificationListener;
+    private final AutoCloseable unregisterService;
 
     public ReconciliationServiceDelegate(ReconciliationNotificationListener reconciliationNotificationListener,
                                          AutoCloseable unregisterService) {

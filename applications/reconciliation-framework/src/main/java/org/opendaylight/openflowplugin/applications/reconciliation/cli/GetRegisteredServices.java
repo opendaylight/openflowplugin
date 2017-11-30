@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GetRegisteredServices extends OsgiCommandSupport {
     private static final Logger LOG = LoggerFactory.getLogger(GetRegisteredServices.class);
-    public static final String CLI_FORMAT = "%d %-20s ";
+    private static final String CLI_FORMAT = "%d %-20s ";
 
     private ReconciliationManager reconciliationManager;
 
