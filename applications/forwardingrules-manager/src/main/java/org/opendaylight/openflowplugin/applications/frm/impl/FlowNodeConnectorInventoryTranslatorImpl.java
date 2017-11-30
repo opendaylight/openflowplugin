@@ -51,7 +51,7 @@ public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnec
 
     @SuppressWarnings("IllegalCatch")
     public FlowNodeConnectorInventoryTranslatorImpl(final ForwardingRulesManager manager, final DataBroker dataBroker) {
-        super(manager, FlowCapableNodeConnector.class);
+        super(manager);
         Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
 
         final DataTreeIdentifier<FlowCapableNodeConnector> treeId =

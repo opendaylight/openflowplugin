@@ -40,7 +40,7 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
 
     @SuppressWarnings("IllegalCatch")
     public TableForwarder(final ForwardingRulesManager manager, final DataBroker db) {
-        super(manager, TableFeatures.class);
+        super(manager);
         Preconditions.checkNotNull(db, "DataBroker can not be null!");
         final DataTreeIdentifier<TableFeatures> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION,
                 getWildCardPath());
