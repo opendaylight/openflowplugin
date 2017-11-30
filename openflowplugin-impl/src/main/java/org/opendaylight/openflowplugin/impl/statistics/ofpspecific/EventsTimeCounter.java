@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.statistics.ofpspecific;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -95,6 +96,7 @@ public final class EventsTimeCounter {
             delta = System.nanoTime();
         }
 
+        @SuppressFBWarnings("VO_VOLATILE_INCREMENT") // counter++ is volatile, but this is synchronized, so OK
         public synchronized void markEnd() {
             if (0 == delta) {
                 return;
@@ -108,7 +110,7 @@ public final class EventsTimeCounter {
             if (delta > maximum) {
                 maximum = delta;
             }
-            if (average > 0 && delta > (average * 1.8)) {
+            if (average > 0 && delta > average * 1.8) {
                 summary += average;
             } else {
                 summary += delta;
