@@ -56,7 +56,7 @@ public class HandshakeManagerImplTest {
 
     private RpcResult<GetFeaturesOutput> resultFeatures;
 
-    private long helloXid = 42L;
+    private final long helloXid = 42L;
 
     private int expectedErrors = 0;
 
@@ -65,10 +65,8 @@ public class HandshakeManagerImplTest {
      */
     @Before
     public void setUp() {
-        handshakeManager = new HandshakeManagerImpl(adapter, OFConstants.OFP_VERSION_1_3, OFConstants.VERSION_ORDER);
-        handshakeManager.setErrorHandler(errorHandler);
-        handshakeManager.setHandshakeListener(handshakeListener);
-        handshakeManager.setUseVersionBitmap(false);
+        handshakeManager = new HandshakeManagerImpl(adapter, OFConstants.OFP_VERSION_1_3, OFConstants.VERSION_ORDER,
+                errorHandler, handshakeListener, false);
 
         resultFeatures = RpcResultBuilder.success(new GetFeaturesOutputBuilder().build()).build();
 
@@ -521,9 +519,9 @@ public class HandshakeManagerImplTest {
         for (int index = 0; index <= elementsCount; index++) {
             List<Boolean> booleanList = new ArrayList<>();
             for (int i = 0; i < Integer.SIZE; i++) {
-                if (value == ((index * Integer.SIZE) + i)) {
+                if (value == index * Integer.SIZE + i) {
                     booleanList.add(true);
-                    value = (orderIndex == 0) ? highestVersion : versionOrder.get(--orderIndex);
+                    value = orderIndex == 0 ? highestVersion : versionOrder.get(--orderIndex);
                 } else {
                     booleanList.add(false);
                 }

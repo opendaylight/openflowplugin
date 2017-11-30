@@ -7,11 +7,13 @@
  */
 package org.opendaylight.openflowplugin.impl.connection;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Future;
@@ -41,18 +43,17 @@ public class HandshakeManagerImpl implements HandshakeManager {
     private Short lastReceivedVersion;
     private final List<Short> versionOrder;
 
-
     private final ConnectionAdapter connectionAdapter;
     private Short version;
-    private ErrorHandler errorHandler;
+    private final ErrorHandler errorHandler;
 
-    private Short highestVersion;
+    private final Short highestVersion;
 
     private Long activeXid;
 
-    private HandshakeListener handshakeListener;
+    private final HandshakeListener handshakeListener;
 
-    private boolean useVersionBitmap;
+    private boolean useVersionBitmap; // not final just for unit test
 
     /**
      * Constructor.
@@ -60,16 +61,18 @@ public class HandshakeManagerImpl implements HandshakeManager {
      * @param connectionAdapter connection adaptor for switch
      * @param highestVersion    highest openflow version
      * @param versionOrder      list of version in order for connection protocol negotiation
+     * @param errorHandler      the ErrorHandler
+     * @param handshakeListener the HandshakeListener
+     * @param useVersionBitmap  should use negotiation bit map
      */
-    public HandshakeManagerImpl(ConnectionAdapter connectionAdapter, Short highestVersion, List<Short> versionOrder) {
+    public HandshakeManagerImpl(ConnectionAdapter connectionAdapter, Short highestVersion, List<Short> versionOrder,
+            ErrorHandler errorHandler, HandshakeListener handshakeListener, boolean useVersionBitmap) {
         this.highestVersion = highestVersion;
         this.versionOrder = versionOrder;
         this.connectionAdapter = connectionAdapter;
-    }
-
-    @Override
-    public void setHandshakeListener(HandshakeListener handshakeListener) {
+        this.errorHandler = errorHandler;
         this.handshakeListener = handshakeListener;
+        this.useVersionBitmap = useVersionBitmap;
     }
 
     @Override
@@ -260,7 +263,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
      */
     protected Short proposeCommonBitmapVersion(List<Elements> list) {
         Short supportedHighestVersion = null;
-        if ((null != list) && (0 != list.size())) {
+        if (null != list && 0 != list.size()) {
             for (Elements element : list) {
                 List<Boolean> bitmap = element.getVersionBitmap();
                 // check for version bitmap
@@ -412,13 +415,14 @@ public class HandshakeManagerImpl implements HandshakeManager {
         LOG.debug("future features [{}] hooked ..", xid);
     }
 
-    @Override
-    public void setUseVersionBitmap(boolean useVersionBitmap) {
+    /**
+     * Method for unit testing, only.
+     * This method is not thread safe and can only safely be used from a test.
+     */
+    @VisibleForTesting
+    @SuppressFBWarnings("IS2_INCONSISTENT_SYNC") // because shake() is synchronized
+    void setUseVersionBitmap(boolean useVersionBitmap) {
         this.useVersionBitmap = useVersionBitmap;
     }
 
-    @Override
-    public void setErrorHandler(ErrorHandler errorHandler) {
-        this.errorHandler = errorHandler;
-    }
 }
