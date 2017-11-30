@@ -37,12 +37,12 @@ import org.slf4j.LoggerFactory;
 public class LLDPSpeaker implements AutoCloseable, NodeConnectorEventsObserver, Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(LLDPSpeaker.class);
     private static final long LLDP_FLOOD_PERIOD = 5;
-    private long Current_Flood_Period = LLDP_FLOOD_PERIOD;
+    private long currentFloodPeriod = LLDP_FLOOD_PERIOD;
 
     private final PacketProcessingService packetProcessingService;
     private final ScheduledExecutorService scheduledExecutorService;
-    private final Map<InstanceIdentifier<NodeConnector>, TransmitPacketInput> nodeConnectorMap =
-            new ConcurrentHashMap<>();
+    private final Map<InstanceIdentifier<NodeConnector>, TransmitPacketInput> nodeConnectorMap = new
+            ConcurrentHashMap<>();
     private ScheduledFuture<?> scheduledSpeakerTask;
     private final MacAddress addressDestionation;
     private volatile OperStatus operationalStatus = OperStatus.RUN;
@@ -64,24 +64,22 @@ public class LLDPSpeaker implements AutoCloseable, NodeConnectorEventsObserver, 
     }
 
     public void setLldpFloodInterval(long time) {
-        this.Current_Flood_Period = time;
+        this.currentFloodPeriod = time;
         scheduledSpeakerTask.cancel(false);
-        scheduledSpeakerTask = this.scheduledExecutorService
-                     .scheduleAtFixedRate(this, time, time, TimeUnit.SECONDS);
+        scheduledSpeakerTask = this.scheduledExecutorService.scheduleAtFixedRate(this, time, time, TimeUnit.SECONDS);
         LOG.info("LLDPSpeaker restarted, it will send LLDP frames each {} seconds", time);
-   }
+    }
 
     public long getLldpFloodInterval() {
-        return Current_Flood_Period;
+        return currentFloodPeriod;
     }
 
     public LLDPSpeaker(final PacketProcessingService packetProcessingService,
-                       final ScheduledExecutorService scheduledExecutorService,
-                       final MacAddress addressDestionation) {
+                       final ScheduledExecutorService scheduledExecutorService, final MacAddress addressDestionation) {
         this.addressDestionation = addressDestionation;
         this.scheduledExecutorService = scheduledExecutorService;
-        scheduledSpeakerTask = this.scheduledExecutorService
-                .scheduleAtFixedRate(this, LLDP_FLOOD_PERIOD,LLDP_FLOOD_PERIOD, TimeUnit.SECONDS);
+        scheduledSpeakerTask = this.scheduledExecutorService.scheduleAtFixedRate(this, LLDP_FLOOD_PERIOD,
+                LLDP_FLOOD_PERIOD, TimeUnit.SECONDS);
         this.packetProcessingService = packetProcessingService;
         LOG.info("LLDPSpeaker started, it will send LLDP frames each {} seconds", LLDP_FLOOD_PERIOD);
     }
@@ -124,8 +122,7 @@ public class LLDPSpeaker implements AutoCloseable, NodeConnectorEventsObserver, 
         // frames to
         // port, so first we check if we actually need to perform any action
         if (nodeConnectorMap.containsKey(nodeConnectorInstanceId)) {
-            LOG.trace(
-                    "Port {} already in LLDPSpeaker.nodeConnectorMap, no need for additional processing",
+            LOG.trace("Port {} already in LLDPSpeaker.nodeConnectorMap, no need for additional processing",
                     nodeConnectorId.getValue());
             return;
         }
@@ -145,10 +142,8 @@ public class LLDPSpeaker implements AutoCloseable, NodeConnectorEventsObserver, 
         // Generate packet with destination switch and port
         TransmitPacketInput packet = new TransmitPacketInputBuilder()
                 .setEgress(new NodeConnectorRef(nodeConnectorInstanceId))
-                .setNode(new NodeRef(nodeInstanceId))
-                .setPayload(LLDPUtil
-                        .buildLldpFrame(nodeId, nodeConnectorId, srcMacAddress, outputPortNo, addressDestionation))
-                .build();
+                .setNode(new NodeRef(nodeInstanceId)).setPayload(LLDPUtil.buildLldpFrame(nodeId,
+                        nodeConnectorId, srcMacAddress, outputPortNo, addressDestionation)).build();
 
         // Save packet to node connector id -> packet map to transmit it every 5
         // seconds
