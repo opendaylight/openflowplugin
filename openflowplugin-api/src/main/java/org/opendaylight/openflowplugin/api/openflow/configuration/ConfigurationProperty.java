@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.api.openflow.configuration;
 
 import com.google.common.collect.ImmutableMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -114,6 +115,6 @@ public enum ConfigurationProperty {
      */
     @Override
     public String toString() {
-        return this.name().toLowerCase().replace('_', '-');
+        return this.name().toLowerCase(Locale.ENGLISH).replace('_', '-');
     }
 }
