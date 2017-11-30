@@ -33,9 +33,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.meter._case.MultipartRequestMeterBuilder;
 
-final class AllMeterStatsService extends AbstractCompatibleStatService<GetAllMeterStatisticsInput,
-                                                                       GetAllMeterStatisticsOutput,
-                                                                       MeterStatisticsUpdated> {
+final class AllMeterStatsService
+        extends AbstractCompatibleStatService<GetAllMeterStatisticsInput, GetAllMeterStatisticsOutput, MeterStatisticsUpdated> {
     private static final MultipartRequestMeterCase METER_CASE;
 
     static {
@@ -51,10 +50,7 @@ final class AllMeterStatsService extends AbstractCompatibleStatService<GetAllMet
 
     private final ConvertorExecutor convertorExecutor;
 
-    AllMeterStatsService(RequestContextStack requestContextStack,
-                                DeviceContext deviceContext,
-                                AtomicLong compatibilityXidSeed,
-                                ConvertorExecutor convertorExecutor) {
+    public AllMeterStatsService(RequestContextStack requestContextStack, DeviceContext deviceContext, AtomicLong compatibilityXidSeed, ConvertorExecutor convertorExecutor) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
         this.convertorExecutor = convertorExecutor;
     }
@@ -74,10 +70,6 @@ final class AllMeterStatsService extends AbstractCompatibleStatService<GetAllMet
 
     @Override
     public MeterStatisticsUpdated transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
-        return MeterStatisticsToNotificationTransformer.transformToNotification(result,
-                                                                                getDeviceInfo(),
-                                                                                getOfVersion(),
-                                                                                emulatedTxId,
-                                                                                convertorExecutor);
+        return MeterStatisticsToNotificationTransformer.transformToNotification(result, getDeviceInfo(), getOfVersion(), emulatedTxId, convertorExecutor);
     }
 }

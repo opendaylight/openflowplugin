@@ -112,10 +112,7 @@ public class FlowDirectStatisticsService extends AbstractFlowDirectStatisticsSer
             mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
         }
 
-        MatchReactor.getInstance().convert(input.getMatch(),
-                                           getVersion(),
-                                           mprFlowRequestBuilder,
-                                           getConvertorExecutor());
+        MatchReactor.getInstance().convert(input.getMatch(), getVersion(), mprFlowRequestBuilder, getConvertorExecutor());
 
         return RequestInputUtils.createMultipartHeader(getMultipartType(), xid.getValue(), getVersion())
             .setMultipartRequestBody(new MultipartRequestFlowCaseBuilder()
@@ -123,4 +120,5 @@ public class FlowDirectStatisticsService extends AbstractFlowDirectStatisticsSer
                 .build())
             .build();
     }
+
 }

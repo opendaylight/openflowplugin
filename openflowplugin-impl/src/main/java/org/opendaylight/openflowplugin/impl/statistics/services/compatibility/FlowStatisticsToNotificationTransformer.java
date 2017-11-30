@@ -27,7 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.MultipartReplyFlow;
 
 /**
- * Pulled out flow stats to notification transformation.
+ * pulled out flow stats to notification transformation
  */
 public class FlowStatisticsToNotificationTransformer {
 
@@ -36,13 +36,11 @@ public class FlowStatisticsToNotificationTransformer {
     }
 
     /**
-     * Transform to notification.
-     *
      * @param mpResult      raw multipart response from device
-     * @param deviceInfo    device state
+     * @param deviceInfo   device state
      * @param ofVersion     device version
-     * @param emulatedTxId  emulated transaction Id
-     * @param convertorExecutor convertor executor
+     * @param emulatedTxId
+     * @param convertorExecutor
      * @return notification containing flow stats
      */
     public static FlowsStatisticsUpdate transformToNotification(final List<MultipartReply> mpResult,

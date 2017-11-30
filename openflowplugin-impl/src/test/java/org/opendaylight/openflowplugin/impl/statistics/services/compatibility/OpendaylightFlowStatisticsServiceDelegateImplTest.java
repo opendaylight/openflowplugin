@@ -94,8 +94,7 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
 
     @Test
     public void testGetAggregateFlowStatisticsFromFlowTableForAllFlows() throws Exception {
-        GetAggregateFlowStatisticsFromFlowTableForAllFlowsInputBuilder input =
-                new GetAggregateFlowStatisticsFromFlowTableForAllFlowsInputBuilder()
+        GetAggregateFlowStatisticsFromFlowTableForAllFlowsInputBuilder input = new GetAggregateFlowStatisticsFromFlowTableForAllFlowsInputBuilder()
                 .setNode(createNodeRef("unitProt:123"))
                 .setTableId(new TableId((short) 1));
 
@@ -124,13 +123,11 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
                 = flowStatisticsServiceDelegate.getAggregateFlowStatisticsFromFlowTableForAllFlows(input.build());
 
         Assert.assertTrue(resultFuture.isDone());
-        final RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput> rpcResultCompatible =
-                resultFuture.get();
+        final RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput> rpcResultCompatible = resultFuture.get();
         Assert.assertTrue(rpcResultCompatible.isSuccessful());
         Assert.assertEquals(MultipartType.OFPMPAGGREGATE, requestInput.getValue().getType());
 
-        Mockito.verify(notificationPublishService, Mockito.timeout(NOTIFICATION_WAIT_TIMEOUT_MS))
-                .offerNotification(Matchers.any(Notification.class));
+        Mockito.verify(notificationPublishService, Mockito.timeout(NOTIFICATION_WAIT_TIMEOUT_MS)).offerNotification(Matchers.any(Notification.class));
     }
 
     @Test
@@ -149,8 +146,7 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
         Assert.assertTrue(rpcResultCompatible.isSuccessful());
         Assert.assertEquals(MultipartType.OFPMPFLOW, requestInput.getValue().getType());
 
-        Mockito.verify(notificationPublishService, Mockito.timeout(NOTIFICATION_WAIT_TIMEOUT_MS))
-                .offerNotification(Matchers.any(Notification.class));
+        Mockito.verify(notificationPublishService, Mockito.timeout(NOTIFICATION_WAIT_TIMEOUT_MS)).offerNotification(Matchers.any(Notification.class));
     }
 
     private static RpcResult<Object> buildFlowStatsReply() {
@@ -179,8 +175,7 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
                                                         .setApplyActions(new ApplyActionsBuilder()
                                                                 .setAction(Collections.singletonList(new ActionBuilder()
                                                                         .setActionChoice(new OutputActionCaseBuilder()
-                                                                                .setOutputAction(
-                                                                                        new OutputActionBuilder()
+                                                                                .setOutputAction(new OutputActionBuilder()
                                                                                         .setMaxLength(17)
                                                                                         .setPort(new PortNumber(18L))
                                                                                         .build())
@@ -198,8 +193,7 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
 
     @Test
     public void testGetAllFlowsStatisticsFromAllFlowTables() throws Exception {
-        GetAllFlowsStatisticsFromAllFlowTablesInputBuilder input =
-                new GetAllFlowsStatisticsFromAllFlowTablesInputBuilder()
+        GetAllFlowsStatisticsFromAllFlowTablesInputBuilder input = new GetAllFlowsStatisticsFromAllFlowTablesInputBuilder()
                 .setNode(createNodeRef("unitProt:123"));
 
         rpcResult = buildFlowStatsReply();
@@ -212,8 +206,7 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
         Assert.assertTrue(rpcResultCompatible.isSuccessful());
         Assert.assertEquals(MultipartType.OFPMPFLOW, requestInput.getValue().getType());
 
-        Mockito.verify(notificationPublishService, Mockito.timeout(NOTIFICATION_WAIT_TIMEOUT_MS))
-                .offerNotification(Matchers.any(Notification.class));
+        Mockito.verify(notificationPublishService, Mockito.timeout(NOTIFICATION_WAIT_TIMEOUT_MS)).offerNotification(Matchers.any(Notification.class));
     }
 
     @Test
@@ -234,7 +227,6 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
         Assert.assertTrue(rpcResultCompatible.isSuccessful());
         Assert.assertEquals(MultipartType.OFPMPFLOW, requestInput.getValue().getType());
 
-        Mockito.verify(notificationPublishService, Mockito.timeout(NOTIFICATION_WAIT_TIMEOUT_MS))
-                .offerNotification(Matchers.any(Notification.class));
+        Mockito.verify(notificationPublishService, Mockito.timeout(NOTIFICATION_WAIT_TIMEOUT_MS)).offerNotification(Matchers.any(Notification.class));
     }
 }

@@ -22,14 +22,12 @@ public class MessageIntelligenceAgencyImplTest {
         messageIntelligenceAgency.spyMessage(String.class, MessageSpy.StatisticsGroup.FROM_SWITCH);
         messageIntelligenceAgency.spyMessage(Integer.class, MessageSpy.StatisticsGroup.TO_SWITCH_ENTERED);
         final List<String> intelligence = messageIntelligenceAgency.provideIntelligence();
-        findExpectedStatistics(intelligence,
-                "FROM_SWITCH: MSG[String] -> +1 | 1", "TO_SWITCH_ENTERED: MSG[Integer] -> +1 | 1");
+        findExpectedStatistics(intelligence, "FROM_SWITCH: MSG[String] -> +1 | 1", "TO_SWITCH_ENTERED: MSG[Integer] -> +1 | 1");
     }
 
     private void findExpectedStatistics(final List<String> statisticsInfo, String ... expectedValues) {
         for (String expectedValue : expectedValues) {
-            assertTrue("Expected value " + expectedValue + "wasn't found.",
-                    findValueInStatistics(statisticsInfo, expectedValue));
+            assertTrue("Expected value " + expectedValue + "wasn't found.", findValueInStatistics(statisticsInfo, expectedValue));
         }
     }
 
@@ -41,4 +39,6 @@ public class MessageIntelligenceAgencyImplTest {
         }
         return false;
     }
+
+
 }

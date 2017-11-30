@@ -30,7 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.n
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMapKey;
 
 /**
- * Pulled out port stats to notification transformation.
+ * pulled out port stats to notification transformation
  */
 public class NodeConnectorStatisticsToNotificationTransformer {
 
@@ -39,12 +39,10 @@ public class NodeConnectorStatisticsToNotificationTransformer {
     }
 
     /**
-     * Transform statistics to notification.
-     *
      * @param mpReplyList   raw multipart response from device
      * @param deviceInfo    device basic info
      * @param ofVersion     device version
-     * @param emulatedTxId  emulated transaction Id
+     * @param emulatedTxId
      * @return notification containing flow stats
      */
     public static NodeConnectorStatisticsUpdate transformToNotification(final List<MultipartReply> mpReplyList,
@@ -73,9 +71,7 @@ public class NodeConnectorStatisticsToNotificationTransformer {
     }
 
     @VisibleForTesting
-    static NodeConnectorStatisticsAndPortNumberMapBuilder processSingleNodeConnectorStats(DeviceInfo deviceInfo,
-                                                                                          OpenflowVersion ofVersion,
-                                                                                          PortStats portStats) {
+    static NodeConnectorStatisticsAndPortNumberMapBuilder processSingleNodeConnectorStats(DeviceInfo deviceInfo, OpenflowVersion ofVersion, PortStats portStats) {
         NodeConnectorStatisticsAndPortNumberMapBuilder statsBuilder =
                 new NodeConnectorStatisticsAndPortNumberMapBuilder();
         statsBuilder.setNodeConnectorId(

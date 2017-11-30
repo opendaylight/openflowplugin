@@ -48,10 +48,7 @@ public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsSer
 
     @Override
     public void setUp() throws Exception {
-        service = new FlowDirectStatisticsService(requestContextStack,
-                                                  deviceContext,
-                                                  convertorManager,
-                                                  multipartWriterProvider);
+        service = new FlowDirectStatisticsService(requestContextStack, deviceContext, convertorManager, multipartWriterProvider);
         final DeviceFlowRegistry registry = mock(DeviceFlowRegistry.class);
         when(registry.retrieveDescriptor(any())).thenReturn(FlowDescriptorFactory.create(TABLE_NO, new FlowId("1")));
         when(deviceContext.getDeviceFlowRegistry()).thenReturn(registry);
@@ -85,8 +82,7 @@ public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsSer
                 .setByteCount(BigInteger.ONE)
                 .setPacketCount(BigInteger.ONE)
                 .setFlags(mock(FlowModFlags.class))
-                .setMatch(new org.opendaylight.yang.gen.v1.urn
-                        .opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder()
+                .setMatch(new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder()
                         .setMatchEntry(Collections.emptyList())
                         .build())
                 .build();

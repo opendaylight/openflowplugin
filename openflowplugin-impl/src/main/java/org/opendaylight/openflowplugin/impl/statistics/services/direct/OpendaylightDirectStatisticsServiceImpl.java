@@ -75,8 +75,7 @@ public class OpendaylightDirectStatisticsServiceImpl implements OpendaylightDire
 
     @Override
     @SuppressWarnings("unchecked")
-    public Future<RpcResult<GetNodeConnectorStatisticsOutput>>
-            getNodeConnectorStatistics(GetNodeConnectorStatisticsInput input) {
+    public Future<RpcResult<GetNodeConnectorStatisticsOutput>> getNodeConnectorStatistics(GetNodeConnectorStatisticsInput input) {
         return provider.lookup(AbstractPortDirectStatisticsService.class)
                 .map(service -> service.handleAndReply(input))
                 .orElse(missingImplementation(AbstractPortDirectStatisticsService.class));

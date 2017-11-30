@@ -20,9 +20,8 @@ import org.opendaylight.openflowplugin.impl.statistics.services.direct.Opendayli
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 
 /**
- * Utility class for instantiating
- * #{@link org.opendaylight.openflowplugin.impl.statistics.services.direct.OpendaylightDirectStatisticsServiceProvider}
- * with all multi-layer services already in.
+ * Utility class for instantiating #{@link org.opendaylight.openflowplugin.impl.statistics.services.direct.OpendaylightDirectStatisticsServiceProvider}
+ * with all multi-layer services already in
  */
 public class MultiLayerDirectStatisticsProviderInitializer {
 
@@ -47,4 +46,5 @@ public class MultiLayerDirectStatisticsProviderInitializer {
 
         return provider;
     }
+
 }

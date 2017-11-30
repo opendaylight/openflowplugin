@@ -53,8 +53,7 @@ public class PortDirectStatisticsService extends AbstractPortDirectStatisticsSer
 
         if (success) {
             for (final MultipartReply mpReply : input) {
-                final MultipartReplyPortStatsCase caseBody =
-                        (MultipartReplyPortStatsCase) mpReply.getMultipartReplyBody();
+                final MultipartReplyPortStatsCase caseBody = (MultipartReplyPortStatsCase) mpReply.getMultipartReplyBody();
                 final MultipartReplyPortStats replyBody = caseBody.getMultipartReplyPortStats();
 
                 for (final PortStats portStats : replyBody.getPortStats()) {
@@ -79,8 +78,7 @@ public class PortDirectStatisticsService extends AbstractPortDirectStatisticsSer
                         durationBuilder.setNanosecond(new Counter32(portStats.getDurationNsec()));
                     }
 
-                    final NodeConnectorStatisticsAndPortNumberMap stats =
-                            new NodeConnectorStatisticsAndPortNumberMapBuilder()
+                    final NodeConnectorStatisticsAndPortNumberMap stats = new NodeConnectorStatisticsAndPortNumberMapBuilder()
                         .setBytes(bytesBuilder.build())
                         .setPackets(packetsBuilder.build())
                         .setNodeConnectorId(nodeConnectorId)
@@ -110,8 +108,7 @@ public class PortDirectStatisticsService extends AbstractPortDirectStatisticsSer
         final MultipartRequestPortStatsBuilder mprPortStatsBuilder = new MultipartRequestPortStatsBuilder();
 
         if (input.getNodeConnectorId() != null) {
-            mprPortStatsBuilder.setPortNo(InventoryDataServiceUtil.portNumberfromNodeConnectorId(getOfVersion(),
-                    input.getNodeConnectorId()));
+            mprPortStatsBuilder.setPortNo(InventoryDataServiceUtil.portNumberfromNodeConnectorId(getOfVersion(), input.getNodeConnectorId()));
         } else {
             mprPortStatsBuilder.setPortNo(OFConstants.OFPP_ANY);
         }
@@ -122,4 +119,5 @@ public class PortDirectStatisticsService extends AbstractPortDirectStatisticsSer
                 .build())
             .build();
     }
+
 }

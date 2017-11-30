@@ -40,9 +40,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.meter.config._case.MultipartRequestMeterConfigBuilder;
 
 final class AllMeterConfigStatsService
-        extends AbstractCompatibleStatService<GetAllMeterConfigStatisticsInput,
-                                              GetAllMeterConfigStatisticsOutput,
-                                              MeterConfigStatsUpdated> {
+        extends AbstractCompatibleStatService<GetAllMeterConfigStatisticsInput, GetAllMeterConfigStatisticsOutput, MeterConfigStatsUpdated> {
 
     private static final MultipartRequestMeterConfigCase METER_CONFIG_CASE;
 
@@ -61,18 +59,14 @@ final class AllMeterConfigStatsService
     private final ConvertorExecutor convertorExecutor;
     private final VersionConvertorData data;
 
-    AllMeterConfigStatsService(RequestContextStack requestContextStack,
-                                      DeviceContext deviceContext,
-                                      AtomicLong compatibilityXidSeed,
-                                      ConvertorExecutor convertorExecutor) {
+    public AllMeterConfigStatsService(RequestContextStack requestContextStack, DeviceContext deviceContext, AtomicLong compatibilityXidSeed, ConvertorExecutor convertorExecutor) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
         this.convertorExecutor = convertorExecutor;
         data = new VersionConvertorData(getVersion());
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid,
-                                    final GetAllMeterConfigStatisticsInput input) throws ServiceException {
+    protected OfHeader buildRequest(final Xid xid, final GetAllMeterConfigStatisticsInput input) throws ServiceException {
         MultipartRequestInputBuilder mprInput = RequestInputUtils
                 .createMultipartHeader(MultipartType.OFPMPMETERCONFIG, xid.getValue(), getVersion());
         return mprInput.setMultipartRequestBody(METER_CONFIG_CASE).build();
@@ -95,8 +89,7 @@ final class AllMeterConfigStatsService
             MultipartReplyMeterConfigCase caseBody = (MultipartReplyMeterConfigCase) mpReply.getMultipartReplyBody();
             MultipartReplyMeterConfig replyBody = caseBody.getMultipartReplyMeterConfig();
 
-            final Optional<List<MeterConfigStats>> meterConfigStatsList =
-                    convertorExecutor.convert(replyBody.getMeterConfig(), data);
+            final Optional<List<MeterConfigStats>> meterConfigStatsList = convertorExecutor.convert(replyBody.getMeterConfig(), data);
 
             if (meterConfigStatsList.isPresent()) {
                 message.getMeterConfigStats().addAll(meterConfigStatsList.get());

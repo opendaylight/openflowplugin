@@ -16,7 +16,6 @@ import static org.mockito.Mockito.when;
 
 import com.google.common.util.concurrent.Futures;
 import java.util.Collections;
-import java.util.concurrent.ExecutionException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,7 +72,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
     }
 
     /**
-     * There is nothing to check in close method.
+     * There is nothing to check in close method
      */
     @Test
     public void testClose() throws Exception {
@@ -88,7 +87,8 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
             Assert.assertTrue(requestContext.getFuture().isDone());
             final RpcResult<?> rpcResult = requestContext.getFuture().get();
             Assert.assertFalse(rpcResult.isSuccessful());
-        } catch (final ExecutionException e) {
+            Assert.assertFalse(rpcResult.isSuccessful());
+        } catch (final Exception e) {
             LOG.error("request future value should be finished", e);
             Assert.fail("request context closing failed");
         }
@@ -109,17 +109,21 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
         when(mockedDeviceState.isMetersAvailable()).thenReturn(Boolean.TRUE);
         when(mockedDeviceState.isPortStatisticsAvailable()).thenReturn(Boolean.TRUE);
         when(mockedDeviceState.isQueueStatisticsAvailable()).thenReturn(Boolean.TRUE);
-        when(mockedDeviceInfo.getNodeInstanceIdentifier()).thenReturn(DUMMY_NODE_ID);
+        when(mockedDeviceInfo.getNodeInstanceIdentifier()).thenReturn(dummyNodeII);
         initStatisticsContext();
 
-        when(mockedStatisticsGatheringService
-                     .getStatisticsOfType(Matchers.any(EventIdentifier.class), Matchers.any(MultipartType.class)))
-                .thenReturn(Futures.immediateFuture(
-                        RpcResultBuilder.success(Collections.<MultipartReply>emptyList()).build()));
-        when(mockedStatisticsOnFlyGatheringService
-                     .getStatisticsOfType(Matchers.any(EventIdentifier.class), Matchers.any(MultipartType.class)))
-                .thenReturn(Futures.immediateFuture(
-                        RpcResultBuilder.success(Collections.<MultipartReply>emptyList()).build()));
+        when(mockedStatisticsGatheringService.getStatisticsOfType(Matchers.any(EventIdentifier.class),
+                    Matchers.any(MultipartType.class)))
+                .thenReturn(
+                        Futures.immediateFuture(RpcResultBuilder.success(Collections.<MultipartReply>emptyList())
+                            .build())
+                );
+        when(mockedStatisticsOnFlyGatheringService.getStatisticsOfType(Matchers.any(EventIdentifier.class),
+                    Matchers.any(MultipartType.class)))
+                .thenReturn(
+                        Futures.immediateFuture(RpcResultBuilder.success(Collections.<MultipartReply>emptyList())
+                            .build())
+                );
 
         statisticsContext.registerMastershipWatcher(mockedMastershipWatcher);
         statisticsContext.setStatisticsGatheringService(mockedStatisticsGatheringService);

@@ -31,19 +31,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.GetAllQueuesStatisticsFromGivenPortOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.QueueStatisticsUpdate;
 
-final class AllQueuesOnePortService extends AbstractCompatibleStatService<GetAllQueuesStatisticsFromGivenPortInput,
-                                                                          GetAllQueuesStatisticsFromGivenPortOutput,
-                                                                          QueueStatisticsUpdate> {
+final class AllQueuesOnePortService
+        extends AbstractCompatibleStatService<GetAllQueuesStatisticsFromGivenPortInput, GetAllQueuesStatisticsFromGivenPortOutput, QueueStatisticsUpdate> {
 
-    AllQueuesOnePortService(RequestContextStack requestContextStack,
-                                   DeviceContext deviceContext,
-                                   AtomicLong compatibilityXidSeed) {
+    public AllQueuesOnePortService(RequestContextStack requestContextStack, DeviceContext deviceContext, AtomicLong compatibilityXidSeed) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid,
-                                    final GetAllQueuesStatisticsFromGivenPortInput input) throws ServiceException {
+    protected OfHeader buildRequest(final Xid xid, final GetAllQueuesStatisticsFromGivenPortInput input) throws ServiceException {
         MultipartRequestQueueCaseBuilder caseBuilder = new MultipartRequestQueueCaseBuilder();
         MultipartRequestQueueBuilder mprQueueBuilder = new MultipartRequestQueueBuilder();
         // Select all queues
@@ -70,9 +66,6 @@ final class AllQueuesOnePortService extends AbstractCompatibleStatService<GetAll
 
     @Override
     public QueueStatisticsUpdate transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
-        return QueueStatisticsToNotificationTransformer.transformToNotification(result,
-                                                                                getDeviceInfo(),
-                                                                                getOfVersion(),
-                                                                                emulatedTxId);
+        return QueueStatisticsToNotificationTransformer.transformToNotification(result, getDeviceInfo(), getOfVersion(), emulatedTxId);
     }
 }

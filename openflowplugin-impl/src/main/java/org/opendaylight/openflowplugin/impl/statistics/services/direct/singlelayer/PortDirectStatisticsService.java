@@ -49,8 +49,7 @@ public class PortDirectStatisticsService extends AbstractPortDirectStatisticsSer
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid,
-                                    final GetNodeConnectorStatisticsInput input) throws ServiceException {
+    protected OfHeader buildRequest(final Xid xid, final GetNodeConnectorStatisticsInput input) throws ServiceException {
         return new MultipartRequestBuilder()
             .setXid(xid.getValue())
             .setVersion(getVersion())

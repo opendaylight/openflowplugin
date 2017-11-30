@@ -28,7 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMapBuilder;
 
 /**
- * Pulled out queue stats to notification transformation.
+ * pulled out queue stats to notification transformation
  */
 public class QueueStatisticsToNotificationTransformer {
 
@@ -37,12 +37,10 @@ public class QueueStatisticsToNotificationTransformer {
     }
 
     /**
-     * Transform statistics to notification.
-     *
      * @param mpReplyList   raw multipart response from device
-     * @param deviceInfo    device state
+     * @param deviceInfo   device state
      * @param ofVersion     device version
-     * @param emulatedTxId  emulated transaction Id
+     * @param emulatedTxId
      * @return notification containing flow stats
      */
     public static QueueStatisticsUpdate transformToNotification(final List<MultipartReply> mpReplyList,
@@ -85,4 +83,6 @@ public class QueueStatisticsToNotificationTransformer {
         }
         return notification.build();
     }
+
+
 }

@@ -30,16 +30,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.group._case.MultipartRequestGroupBuilder;
 
-final class GroupStatsService extends AbstractCompatibleStatService<GetGroupStatisticsInput,
-                                                                    GetGroupStatisticsOutput,
-                                                                    GroupStatisticsUpdated> {
+final class GroupStatsService
+        extends AbstractCompatibleStatService<GetGroupStatisticsInput, GetGroupStatisticsOutput, GroupStatisticsUpdated> {
 
     private final ConvertorExecutor convertorExecutor;
 
-    GroupStatsService(RequestContextStack requestContextStack,
-                             DeviceContext deviceContext,
-                             AtomicLong compatibilityXidSeed,
-                             ConvertorExecutor convertorExecutor) {
+    public GroupStatsService(RequestContextStack requestContextStack, DeviceContext deviceContext, AtomicLong compatibilityXidSeed, ConvertorExecutor convertorExecutor) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
         this.convertorExecutor = convertorExecutor;
     }
@@ -65,9 +61,6 @@ final class GroupStatsService extends AbstractCompatibleStatService<GetGroupStat
 
     @Override
     public GroupStatisticsUpdated transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
-        return GroupStatisticsToNotificationTransformer.transformToNotification(result,
-                                                                                getDeviceInfo(),
-                                                                                emulatedTxId,
-                                                                                convertorExecutor);
+        return GroupStatisticsToNotificationTransformer.transformToNotification(result, getDeviceInfo(), emulatedTxId, convertorExecutor);
     }
 }

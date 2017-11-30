@@ -31,9 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.G
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.NodeConnectorStatisticsUpdate;
 
 final class AllPortStatsService
-        extends AbstractCompatibleStatService<GetAllNodeConnectorsStatisticsInput,
-                                              GetAllNodeConnectorsStatisticsOutput,
-                                              NodeConnectorStatisticsUpdate> {
+        extends AbstractCompatibleStatService<GetAllNodeConnectorsStatisticsInput, GetAllNodeConnectorsStatisticsOutput, NodeConnectorStatisticsUpdate> {
 
     private static final MultipartRequestPortStatsCase PORT_STATS_CASE;
 
@@ -49,15 +47,12 @@ final class AllPortStatsService
         PORT_STATS_CASE = caseBuilder.build();
     }
 
-    AllPortStatsService(RequestContextStack requestContextStack,
-                               DeviceContext deviceContext,
-                               AtomicLong compatibilityXidSeed) {
+    public AllPortStatsService(RequestContextStack requestContextStack, DeviceContext deviceContext, AtomicLong compatibilityXidSeed) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid,
-                                    final GetAllNodeConnectorsStatisticsInput input) throws ServiceException {
+    protected OfHeader buildRequest(final Xid xid, final GetAllNodeConnectorsStatisticsInput input) throws ServiceException {
         MultipartRequestInputBuilder mprInput = RequestInputUtils
                 .createMultipartHeader(MultipartType.OFPMPPORTSTATS, xid.getValue(), getVersion());
         mprInput.setMultipartRequestBody(PORT_STATS_CASE);
@@ -70,11 +65,7 @@ final class AllPortStatsService
     }
 
     @Override
-    public NodeConnectorStatisticsUpdate transformToNotification(List<MultipartReply> result,
-                                                                 TransactionId emulatedTxId) {
-        return NodeConnectorStatisticsToNotificationTransformer.transformToNotification(result,
-                                                                                        getDeviceInfo(),
-                                                                                        getOfVersion(),
-                                                                                        emulatedTxId);
+    public NodeConnectorStatisticsUpdate transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
+        return NodeConnectorStatisticsToNotificationTransformer.transformToNotification(result, getDeviceInfo(), getOfVersion(), emulatedTxId);
     }
 }

@@ -35,8 +35,7 @@ public class FlowDirectStatisticsService extends AbstractFlowDirectStatisticsSer
                                        final DeviceContext deviceContext,
                                        final ConvertorExecutor convertorExecutor,
                                        final MultipartWriterProvider statisticsWriterProvider) {
-        super(requestContextStack, deviceContext, convertorExecutor, statisticsWriterProvider);
-    }
+        super(requestContextStack, deviceContext, convertorExecutor, statisticsWriterProvider);    }
 
     @Override
     protected GetFlowStatisticsOutput buildReply(List<MultipartReply> input, boolean success) {
