@@ -31,12 +31,14 @@ public class StatisticsGatheringService<T extends OfHeader>
 
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsGatheringService.class);
 
-    public StatisticsGatheringService(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
+    public StatisticsGatheringService(final RequestContextStack requestContextStack,
+                                      final DeviceContext deviceContext) {
         super(requestContextStack, deviceContext);
     }
 
     @Override
-    public ListenableFuture<RpcResult<List<T>>> getStatisticsOfType(final EventIdentifier eventIdentifier, final MultipartType type) {
+    public ListenableFuture<RpcResult<List<T>>> getStatisticsOfType(final EventIdentifier eventIdentifier,
+                                                                    final MultipartType type) {
         LOG.debug("Getting statistics for node {} of type {}", getDeviceInfo().getNodeId(), type);
         EventsTimeCounter.markStart(eventIdentifier);
         setEventIdentifier(eventIdentifier);
@@ -45,7 +47,9 @@ public class StatisticsGatheringService<T extends OfHeader>
 
     @Override
     protected OfHeader buildRequest(final Xid xid, final MultipartType input) throws ServiceException {
-        return MultipartRequestInputFactory.makeMultipartRequest(xid.getValue(), getVersion(), input, canUseSingleLayerSerialization());
+        return MultipartRequestInputFactory.makeMultipartRequest(xid.getValue(),
+                                                                 getVersion(),
+                                                                 input,
+                                                                 canUseSingleLayerSerialization());
     }
-
 }

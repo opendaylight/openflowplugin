@@ -36,7 +36,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 /**
- * Test for {@link OpendaylightFlowTableStatisticsServiceImpl}
+ * Test for {@link OpendaylightFlowTableStatisticsServiceImpl}.
  */
 public class OpendaylightFlowTableStatisticsServiceImplTest extends AbstractSingleStatsServiceTest {
 
@@ -100,7 +100,8 @@ public class OpendaylightFlowTableStatisticsServiceImplTest extends AbstractSing
         final MultipartRequestInput mpRequest = (MultipartRequestInput) request;
         Assert.assertEquals(MultipartType.OFPMPTABLE, mpRequest.getType());
         Assert.assertTrue(mpRequest.getMultipartRequestBody() instanceof MultipartRequestTableCase);
-        final MultipartRequestTableCase mpRequestBody = (MultipartRequestTableCase) (mpRequest.getMultipartRequestBody());
+        final MultipartRequestTableCase mpRequestBody =
+                (MultipartRequestTableCase) (mpRequest.getMultipartRequestBody());
         Assert.assertTrue(mpRequestBody.getMultipartRequestTable().isEmpty());
     }
 }

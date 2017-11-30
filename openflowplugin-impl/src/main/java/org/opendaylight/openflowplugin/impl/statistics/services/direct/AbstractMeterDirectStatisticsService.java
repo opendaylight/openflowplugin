@@ -27,7 +27,8 @@ public abstract class AbstractMeterDirectStatisticsService<T extends OfHeader> e
                                                 final DeviceContext deviceContext,
                                                 final ConvertorExecutor convertorExecutor,
                                                 final MultipartWriterProvider statisticsWriterProvider) {
-        super(MultipartType.OFPMPMETER, requestContextStack, deviceContext, convertorExecutor, statisticsWriterProvider);
+        super(MultipartType.OFPMPMETER, requestContextStack, deviceContext, convertorExecutor,
+                statisticsWriterProvider);
     }
 
 }

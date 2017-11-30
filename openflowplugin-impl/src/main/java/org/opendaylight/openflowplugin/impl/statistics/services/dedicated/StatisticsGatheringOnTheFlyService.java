@@ -16,9 +16,9 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.StatisticsGatherer;
 import org.opendaylight.openflowplugin.impl.common.MultipartRequestInputFactory;
+import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.services.AbstractMultipartOnTheFlyService;
 import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
-import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * collects statistics and processes them on the fly
+ * Collects statistics and processes them on the fly.
  */
 public class StatisticsGatheringOnTheFlyService<T extends OfHeader>
     extends AbstractMultipartOnTheFlyService<MultipartType, T>
@@ -44,7 +44,8 @@ public class StatisticsGatheringOnTheFlyService<T extends OfHeader>
     }
 
     @Override
-    public ListenableFuture<RpcResult<List<T>>> getStatisticsOfType(final EventIdentifier eventIdentifier, final MultipartType type) {
+    public ListenableFuture<RpcResult<List<T>>> getStatisticsOfType(final EventIdentifier eventIdentifier,
+                                                                    final MultipartType type) {
         LOG.debug("Getting statistics (onTheFly) for node {} of type {}", getDeviceInfo().getNodeId(), type);
         EventsTimeCounter.markStart(eventIdentifier);
         setEventIdentifier(eventIdentifier);
@@ -53,7 +54,9 @@ public class StatisticsGatheringOnTheFlyService<T extends OfHeader>
 
     @Override
     protected OfHeader buildRequest(final Xid xid, final MultipartType input) throws ServiceException {
-        return MultipartRequestInputFactory.makeMultipartRequest(xid.getValue(), getVersion(), input, canUseSingleLayerSerialization());
+        return MultipartRequestInputFactory.makeMultipartRequest(xid.getValue(),
+                                                                 getVersion(),
+                                                                 input,
+                                                                 canUseSingleLayerSerialization());
     }
-
 }

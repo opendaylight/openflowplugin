@@ -11,7 +11,7 @@ package org.opendaylight.openflowplugin.impl.statistics;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Moving average - measure and compute
+ * Moving average - measure and compute.
  */
 public class TimeCounter {
     private long beginningOfLap;

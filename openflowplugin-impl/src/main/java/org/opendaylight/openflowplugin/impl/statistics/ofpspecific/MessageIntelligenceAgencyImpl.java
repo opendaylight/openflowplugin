@@ -22,16 +22,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Implementation of {@link org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency}.
- * Class counts message of {@link StatisticsGroup} type
- * and provides info as debug log.
+ * Implementation of
+ * {@link org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency}.
+ * Class counts message of {@link StatisticsGroup} type and provides info as debug log.
  */
 public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency, MessageIntelligenceAgencyMXBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(MessageIntelligenceAgencyImpl.class);
 
     private static final class MessageCounters {
-        private static final AtomicLongFieldUpdater<MessageCounters> UPDATER = AtomicLongFieldUpdater.newUpdater(MessageCounters.class, "current");
+        private static final AtomicLongFieldUpdater<MessageCounters> UPDATER =
+                AtomicLongFieldUpdater.newUpdater(MessageCounters.class, "current");
         @SuppressWarnings("unused")
         private volatile long current;
         private long cumulative;
@@ -51,7 +52,8 @@ public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency,
         }
     }
 
-    private ConcurrentMap<StatisticsGroup, ConcurrentMap<Class<?>, MessageCounters>> inputStats = new ConcurrentHashMap<>();
+    private ConcurrentMap<StatisticsGroup, ConcurrentMap<Class<?>, MessageCounters>> inputStats =
+            new ConcurrentHashMap<>();
 
     @Override
     public void spyMessage(@Nonnull final Class<?> message, final StatisticsGroup statGroup) {
@@ -60,6 +62,7 @@ public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency,
     }
 
     /**
+     * Get counters.
      * @param message counted element
      * @param statGroup statistic counter group
      * @return corresponding counter
@@ -70,7 +73,8 @@ public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency,
         return counters;
     }
 
-    private static MessageCounters getOrCreateCountersPair(final Class<?> msgType, final ConcurrentMap<Class<?>, MessageCounters> groupData) {
+    private static MessageCounters getOrCreateCountersPair(final Class<?> msgType,
+                                                           final ConcurrentMap<Class<?>, MessageCounters> groupData) {
         final MessageCounters lookup = groupData.get(msgType);
         if (lookup != null) {
             return lookup;

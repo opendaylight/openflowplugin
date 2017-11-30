@@ -38,8 +38,14 @@ public class OpendaylightMeterStatisticsServiceImpl implements OpendaylightMeter
                                                   final ConvertorExecutor convertorExecutor) {
         this.notificationPublishService = notificationPublishService;
 
-        allMeterConfig = new AllMeterConfigStatsService(requestContextStack, deviceContext, compatibilityXidSeed, convertorExecutor);
-        allMeterStats = new AllMeterStatsService(requestContextStack, deviceContext, compatibilityXidSeed, convertorExecutor);
+        allMeterConfig = new AllMeterConfigStatsService(requestContextStack,
+                                                        deviceContext,
+                                                        compatibilityXidSeed,
+                                                        convertorExecutor);
+        allMeterStats = new AllMeterStatsService(requestContextStack,
+                                                 deviceContext,
+                                                 compatibilityXidSeed,
+                                                 convertorExecutor);
         meterFeatures = new MeterFeaturesService(requestContextStack, deviceContext, compatibilityXidSeed);
         meterStats = new MeterStatsService(requestContextStack, deviceContext, compatibilityXidSeed, convertorExecutor);
     }
@@ -51,7 +57,8 @@ public class OpendaylightMeterStatisticsServiceImpl implements OpendaylightMeter
     }
 
     @Override
-    public Future<RpcResult<GetAllMeterStatisticsOutput>> getAllMeterStatistics(final GetAllMeterStatisticsInput input) {
+    public Future<RpcResult<GetAllMeterStatisticsOutput>> getAllMeterStatistics(
+                                                                      final GetAllMeterStatisticsInput input) {
         return allMeterStats.handleAndNotify(input, notificationPublishService);
     }
 

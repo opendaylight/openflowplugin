@@ -34,7 +34,10 @@ import org.opendaylight.openflowplugin.impl.protocol.deserialization.action.SetN
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.action.SetQueueActionDeserializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 
-class ActionDeserializerInjector {
+public final class ActionDeserializerInjector {
+
+    private ActionDeserializerInjector() {
+    }
 
     /**
      * Injects action deserializers into provided

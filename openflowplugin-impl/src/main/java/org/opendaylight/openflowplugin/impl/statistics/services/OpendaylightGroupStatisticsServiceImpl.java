@@ -24,9 +24,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.OpendaylightGroupStatisticsService;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
-/**
- * @author joe
- */
 public class OpendaylightGroupStatisticsServiceImpl implements OpendaylightGroupStatisticsService {
     private final AllGroupsStatsService allGroups;
     private final GroupDescriptionService groupDesc;
@@ -34,19 +31,25 @@ public class OpendaylightGroupStatisticsServiceImpl implements OpendaylightGroup
     private final GroupStatsService groupStats;
     private final NotificationPublishService notificationPublishService;
 
-    public OpendaylightGroupStatisticsServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext,
+    public OpendaylightGroupStatisticsServiceImpl(final RequestContextStack requestContextStack,
+                                                  final DeviceContext deviceContext,
                                                   final AtomicLong compatibilityXidSeed,
                                                   final NotificationPublishService notificationPublishService,
                                                   final ConvertorExecutor convertorExecutor) {
         this.notificationPublishService = notificationPublishService;
-        allGroups = new AllGroupsStatsService(requestContextStack, deviceContext, compatibilityXidSeed, convertorExecutor);
-        groupDesc = new GroupDescriptionService(requestContextStack, deviceContext, compatibilityXidSeed, convertorExecutor);
+        allGroups =
+                new AllGroupsStatsService(requestContextStack, deviceContext, compatibilityXidSeed, convertorExecutor);
+        groupDesc = new GroupDescriptionService(requestContextStack,
+                                                deviceContext,
+                                                compatibilityXidSeed,
+                                                convertorExecutor);
         groupFeat = new GroupFeaturesService(requestContextStack, deviceContext, compatibilityXidSeed);
         groupStats = new GroupStatsService(requestContextStack, deviceContext, compatibilityXidSeed, convertorExecutor);
     }
 
     @Override
-    public Future<RpcResult<GetAllGroupStatisticsOutput>> getAllGroupStatistics(final GetAllGroupStatisticsInput input) {
+    public Future<RpcResult<GetAllGroupStatisticsOutput>> getAllGroupStatistics(
+            final GetAllGroupStatisticsInput input) {
         return allGroups.handleAndNotify(input, notificationPublishService);
     }
 

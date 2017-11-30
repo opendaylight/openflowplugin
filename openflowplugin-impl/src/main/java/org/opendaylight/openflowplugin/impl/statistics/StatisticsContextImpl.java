@@ -14,6 +14,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,11 +36,9 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipWatcher;
-import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
-import org.opendaylight.openflowplugin.impl.rpc.listener.ItemLifecycleListenerImpl;
 import org.opendaylight.openflowplugin.impl.services.util.RequestContextUtil;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringOnTheFlyService;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringService;
@@ -54,10 +53,10 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsContextImpl.class);
     private static final String CONNECTION_CLOSED = "Connection closed.";
 
-    private final ItemLifecycleListener itemLifeCycleListener;
     private final Collection<RequestContext<?>> requestContexts = new HashSet<>();
     private final DeviceContext deviceContext;
     private final DeviceState devState;
+    private final ListeningExecutorService executorService;
     private final boolean isStatisticsPollingOn;
     private final ConvertorExecutor convertorExecutor;
     private final MultipartWriterProvider statisticsWriterProvider;
@@ -77,15 +76,16 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     StatisticsContextImpl(@Nonnull final DeviceContext deviceContext,
                           @Nonnull final ConvertorExecutor convertorExecutor,
                           @Nonnull final MultipartWriterProvider statisticsWriterProvider,
+                          @Nonnull final ListeningExecutorService executorService,
                           boolean isStatisticsPollingOn,
                           boolean isUsingReconciliationFramework,
                           long statisticsPollingInterval,
                           long maximumPollingDelay) {
         this.deviceContext = deviceContext;
         this.devState = Preconditions.checkNotNull(deviceContext.getDeviceState());
+        this.executorService = executorService;
         this.isStatisticsPollingOn = isStatisticsPollingOn;
         this.convertorExecutor = convertorExecutor;
-        this.itemLifeCycleListener = new ItemLifecycleListenerImpl(deviceContext);
         this.deviceInfo = deviceContext.getDeviceInfo();
         this.statisticsPollingInterval = statisticsPollingInterval;
         this.maximumPollingDelay = maximumPollingDelay;
@@ -129,17 +129,11 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     @Override
     public void enableGathering() {
         this.schedulingEnabled.set(true);
-        deviceContext.getItemLifeCycleSourceRegistry()
-                .getLifeCycleSources().forEach(itemLifeCycleSource -> itemLifeCycleSource
-                .setItemLifecycleListener(null));
     }
 
     @Override
     public void disableGathering() {
         this.schedulingEnabled.set(false);
-        deviceContext.getItemLifeCycleSourceRegistry()
-                .getLifeCycleSources().forEach(itemLifeCycleSource -> itemLifeCycleSource
-                .setItemLifecycleListener(itemLifeCycleListener));
     }
 
     @Override
@@ -198,7 +192,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
 
     @Override
     public void close() {
-         Futures.addCallback(stopGatheringData(), new FutureCallback<Void>() {
+        Futures.addCallback(stopGatheringData(), new FutureCallback<Void>() {
             @Override
             public void onSuccess(@Nullable final Void result) {
                 requestContexts.forEach(requestContext -> RequestContextUtil
@@ -206,7 +200,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
             }
 
             @Override
-            public void onFailure(final Throwable t) {
+            public void onFailure(final Throwable throwable) {
                 requestContexts.forEach(requestContext -> RequestContextUtil
                         .closeRequestContextWithRpcError(requestContext, CONNECTION_CLOSED));
             }
@@ -255,7 +249,8 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         });
     }
 
-    private ListenableFuture<Boolean> statChainFuture(final ListenableFuture<Boolean> prevFuture, final MultipartType multipartType) {
+    private ListenableFuture<Boolean> statChainFuture(final ListenableFuture<Boolean> prevFuture,
+                                                      final MultipartType multipartType) {
         if (ConnectionContext.CONNECTION_STATE.RIP.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
             final String errMsg = String
                     .format("Device connection for node %s doesn't exist anymore. Primary connection status : %s",
@@ -279,7 +274,8 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
                     deviceContext,
                     deviceContext,
                     convertorExecutor,
-                    statisticsWriterProvider) : Futures.immediateFuture(Boolean.FALSE);
+                    statisticsWriterProvider,
+                    executorService) : Futures.immediateFuture(Boolean.FALSE);
         });
     }
 
@@ -340,10 +336,10 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         }
 
         @Override
-        public void onFailure(@Nonnull final Throwable t) {
+        public void onFailure(@Nonnull final Throwable throwable) {
             contextChainMastershipWatcher.onNotAbleToStartMastershipMandatory(
                     deviceInfo,
-                    "Initial gathering statistics unsuccessful: " + t.getMessage());
+                    "Initial gathering statistics unsuccessful: " + throwable.getMessage());
         }
     }
 }

@@ -27,7 +27,10 @@ public abstract class AbstractGroupDirectStatisticsService<T extends OfHeader>
                                                    final DeviceContext deviceContext,
                                                    final ConvertorExecutor convertorExecutor,
                                                    final MultipartWriterProvider statisticsWriterProvider) {
-        super(MultipartType.OFPMPGROUP, requestContextStack, deviceContext, convertorExecutor, statisticsWriterProvider);
+        super(MultipartType.OFPMPGROUP,
+                requestContextStack,
+                deviceContext,
+                convertorExecutor,
+                statisticsWriterProvider);
     }
-
 }

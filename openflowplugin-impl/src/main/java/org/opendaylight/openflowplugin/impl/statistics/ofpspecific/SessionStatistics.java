@@ -14,9 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
-/**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 5.6.2015.
- */
 public class SessionStatistics {
 
     private static final Map<String, Map<ConnectionStatus, EventCounter>> SESSION_EVENTS = new HashMap<>();
@@ -53,7 +50,8 @@ public class SessionStatistics {
             Map<ConnectionStatus, EventCounter> sessionEvents = sessionEntries.getValue();
             dump.add(String.format("SESSION : %s", sessionEntries.getKey()));
             for (Map.Entry<ConnectionStatus, EventCounter> sessionEvent : sessionEvents.entrySet()) {
-                dump.add(String.format(" %s : %d", sessionEvent.getKey().toString(), sessionEvent.getValue().getCount()));
+                dump.add(String.format(" %s : %d", sessionEvent.getKey().toString(),
+                                                   sessionEvent.getValue().getCount()));
             }
         }
         return dump;
@@ -65,7 +63,8 @@ public class SessionStatistics {
     }
 
     private static final class EventCounter {
-        private final AtomicLongFieldUpdater<EventCounter> updater = AtomicLongFieldUpdater.newUpdater(EventCounter.class, "count");
+        private final AtomicLongFieldUpdater<EventCounter> updater =
+                AtomicLongFieldUpdater.newUpdater(EventCounter.class, "count");
         private volatile long count;
 
         public long getCount() {

@@ -47,10 +47,9 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 /**
  * Transform between FlatBatch API and flow batch API.
  */
-public class FlatBatchFlowAdapters {
+public final class FlatBatchFlowAdapters {
 
     private FlatBatchFlowAdapters() {
-        throw new IllegalStateException("This class should not be instantiated.");
     }
 
     /**

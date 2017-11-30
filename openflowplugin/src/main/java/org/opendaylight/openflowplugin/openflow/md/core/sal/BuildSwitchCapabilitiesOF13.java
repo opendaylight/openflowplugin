@@ -9,7 +9,6 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.opendaylight.openflowplugin.api.openflow.md.core.sal.BuildSwitchFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FeatureCapability;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowFeatureCapabilityFlowStats;
@@ -24,17 +23,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 
 /**
- * SwitchFeature builder for OF 1.3
+ * SwitchFeature builder for OF 1.3.
  */
 public final class BuildSwitchCapabilitiesOF13 implements BuildSwitchFeatures {
 
-private static BuildSwitchCapabilitiesOF13 instance = new BuildSwitchCapabilitiesOF13();
-    
-    private BuildSwitchCapabilitiesOF13() {}
-    
+    private static BuildSwitchCapabilitiesOF13 instance = new BuildSwitchCapabilitiesOF13();
+
+    private BuildSwitchCapabilitiesOF13() {
+    }
+
     /**
-     * Get singleton instance
-     * 
+     * Get singleton instance.
+     *
      * @return instance
      */
     public static BuildSwitchCapabilitiesOF13 getInstance() {
@@ -43,37 +43,37 @@ private static BuildSwitchCapabilitiesOF13 instance = new BuildSwitchCapabilitie
 
     @Override
     public SwitchFeatures build(GetFeaturesOutput features) {
-        
+
         SwitchFeaturesBuilder builderSwFeatures = new SwitchFeaturesBuilder();
         builderSwFeatures.setMaxBuffers(features.getBuffers());
         builderSwFeatures.setMaxTables(features.getTables());
-        
+
         List<Class<? extends FeatureCapability>> capabilities = new ArrayList<>();
-        
-        if(features.getCapabilities().isOFPCFLOWSTATS()) {
+
+        if (features.getCapabilities().isOFPCFLOWSTATS()) {
             capabilities.add(FlowFeatureCapabilityFlowStats.class);
         }
-        if(features.getCapabilities().isOFPCGROUPSTATS()) {
+        if (features.getCapabilities().isOFPCGROUPSTATS()) {
             capabilities.add(FlowFeatureCapabilityGroupStats.class);
         }
-        if(features.getCapabilities().isOFPCIPREASM()) {
+        if (features.getCapabilities().isOFPCIPREASM()) {
             capabilities.add(FlowFeatureCapabilityIpReasm.class);
         }
-        if(features.getCapabilities().isOFPCPORTBLOCKED()) {
+        if (features.getCapabilities().isOFPCPORTBLOCKED()) {
             capabilities.add(FlowFeatureCapabilityPortBlocked.class);
         }
-        if(features.getCapabilities().isOFPCPORTSTATS()) {
+        if (features.getCapabilities().isOFPCPORTSTATS()) {
             capabilities.add(FlowFeatureCapabilityPortStats.class);
         }
-        if(features.getCapabilities().isOFPCQUEUESTATS()) {
+        if (features.getCapabilities().isOFPCQUEUESTATS()) {
             capabilities.add(FlowFeatureCapabilityQueueStats.class);
         }
-        if(features.getCapabilities().isOFPCTABLESTATS()) {
+        if (features.getCapabilities().isOFPCTABLESTATS()) {
             capabilities.add(FlowFeatureCapabilityTableStats.class);
         }
-        
+
         builderSwFeatures.setCapabilities(capabilities);
-        
+
         return builderSwFeatures.build();
     }
 

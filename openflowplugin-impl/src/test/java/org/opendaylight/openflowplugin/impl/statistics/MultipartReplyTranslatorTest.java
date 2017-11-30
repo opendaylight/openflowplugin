@@ -83,7 +83,7 @@ public class MultipartReplyTranslatorTest {
     private static final Long DUMMY_REF_COUNT = 1234L;
     private static final GroupTypes DUMMY_GROUPS_TYPE = GroupTypes.GroupAll;
     private static final GroupType DUMMY_GROUP_TYPE = GroupType.OFPGTALL;
-    private static final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
+    private static final ConvertorManager CONVERTOR_MANAGER = ConvertorManagerFactory.createDefaultManager();
 
     @Before
     public void setUp() {
@@ -93,12 +93,13 @@ public class MultipartReplyTranslatorTest {
     public void testTranslateFlow() {
         DeviceContext mockedDeviceContext = mock(DeviceContext.class);
 
-        MultipartReplyMessage multipartReplyMessage = prepareMocks(mockedDeviceContext, prepareMultipartReplyFlow(), MultipartType.OFPMPFLOW);
+        MultipartReplyMessage multipartReplyMessage =
+                prepareMocks(mockedDeviceContext, prepareMultipartReplyFlow(), MultipartType.OFPMPFLOW);
 
         DataContainer result = MultipartReplyTranslatorUtil.translate(
             multipartReplyMessage,
             mockedDeviceContext.getDeviceInfo(),
-            convertorManager,
+                CONVERTOR_MANAGER,
             mockedDeviceContext.oook()).get();
 
         DataContainer dataObject = validateOutput(result);
@@ -109,12 +110,13 @@ public class MultipartReplyTranslatorTest {
     public void testTranslateAggregate() {
         DeviceContext mockedDeviceContext = mock(DeviceContext.class);
 
-        MultipartReplyMessage multipartReplyMessage = prepareMocks(mockedDeviceContext, prepareMultipartReplyAggregate(), MultipartType.OFPMPAGGREGATE);
+        MultipartReplyMessage multipartReplyMessage =
+                prepareMocks(mockedDeviceContext, prepareMultipartReplyAggregate(), MultipartType.OFPMPAGGREGATE);
 
         DataContainer result = MultipartReplyTranslatorUtil.translate(
             multipartReplyMessage,
             mockedDeviceContext.getDeviceInfo(),
-            convertorManager,
+                CONVERTOR_MANAGER,
             mockedDeviceContext.oook()).get();
 
         DataContainer dataObject = validateOutput(result);
@@ -129,21 +131,28 @@ public class MultipartReplyTranslatorTest {
     public void testTranslatePortStats() {
         DeviceContext mockedDeviceContext = mock(DeviceContext.class);
 
-        MultipartReplyMessage multipartReplyMessage = prepareMocks(mockedDeviceContext, prepareMultipartReplyPortStats(), MultipartType.OFPMPPORTSTATS);
+        MultipartReplyMessage multipartReplyMessage =
+                prepareMocks(mockedDeviceContext, prepareMultipartReplyPortStats(), MultipartType.OFPMPPORTSTATS);
 
         DataContainer result = MultipartReplyTranslatorUtil.translate(
             multipartReplyMessage,
             mockedDeviceContext.getDeviceInfo(),
-            convertorManager,
+                CONVERTOR_MANAGER,
             mockedDeviceContext.oook()).get();
 
         DataContainer dataObject = validateOutput(result);
-        assertTrue(dataObject instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.NodeConnectorStatisticsAndPortNumberMap);
-        org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.NodeConnectorStatisticsAndPortNumberMap nodeConnectorStatisticsUpdate = (org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.NodeConnectorStatisticsAndPortNumberMap)dataObject;
-        List<NodeConnectorStatisticsAndPortNumberMap> nodeConnectorStatisticsAndPortNumberMaps = nodeConnectorStatisticsUpdate.getNodeConnectorStatisticsAndPortNumberMap();
+        assertTrue(dataObject instanceof org.opendaylight.yang.gen.v1.urn
+                .opendaylight.port.statistics.rev131214.NodeConnectorStatisticsAndPortNumberMap);
+        org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.NodeConnectorStatisticsAndPortNumberMap
+                nodeConnectorStatisticsUpdate = (org.opendaylight.yang.gen.v1.urn
+                .opendaylight.port.statistics.rev131214.NodeConnectorStatisticsAndPortNumberMap) dataObject;
+        List<NodeConnectorStatisticsAndPortNumberMap> nodeConnectorStatisticsAndPortNumberMaps =
+                nodeConnectorStatisticsUpdate.getNodeConnectorStatisticsAndPortNumberMap();
         assertEquals(1, nodeConnectorStatisticsAndPortNumberMaps.size());
-        NodeConnectorStatisticsAndPortNumberMap nodeConnectorStatisticsAndPortNumberMap = nodeConnectorStatisticsAndPortNumberMaps.get(0);
-        assertEquals("openflow:"+DUMMY_DATAPATH_ID +":"+ DUMMY_PORT_NO, nodeConnectorStatisticsAndPortNumberMap.getNodeConnectorId().getValue());
+        NodeConnectorStatisticsAndPortNumberMap nodeConnectorStatisticsAndPortNumberMap =
+                nodeConnectorStatisticsAndPortNumberMaps.get(0);
+        assertEquals("openflow:" + DUMMY_DATAPATH_ID + ":" + DUMMY_PORT_NO,
+                nodeConnectorStatisticsAndPortNumberMap.getNodeConnectorId().getValue());
         assertEquals(DUMMY_RX_BYTES, nodeConnectorStatisticsAndPortNumberMap.getBytes().getReceived());
         assertEquals(DUMMY_TX_BYTES, nodeConnectorStatisticsAndPortNumberMap.getBytes().getTransmitted());
         assertEquals(DUMMY_RX_PACKETS, nodeConnectorStatisticsAndPortNumberMap.getPackets().getReceived());
@@ -162,20 +171,24 @@ public class MultipartReplyTranslatorTest {
     public void testTranslateGroup() {
         DeviceContext mockedDeviceContext = mock(DeviceContext.class);
 
-        MultipartReplyMessage multipartReplyMessage = prepareMocks(mockedDeviceContext, prepareMultipartReplyGroup(), MultipartType.OFPMPGROUP);
+        MultipartReplyMessage multipartReplyMessage =
+                prepareMocks(mockedDeviceContext, prepareMultipartReplyGroup(), MultipartType.OFPMPGROUP);
 
         DataContainer result = MultipartReplyTranslatorUtil.translate(
             multipartReplyMessage,
             mockedDeviceContext.getDeviceInfo(),
-            convertorManager,
+                CONVERTOR_MANAGER,
             mockedDeviceContext.oook()).get();
 
         DataContainer dataObject = validateOutput(result);
         assertTrue(dataObject instanceof GroupStatisticsReply);
         GroupStatisticsReply groupStatisticsUpdate = (GroupStatisticsReply)dataObject;
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStats> groupStats = groupStatisticsUpdate.getGroupStats();
+        List<org.opendaylight.yang.gen.v1.urn
+                .opendaylight.group.types.rev131018.group.statistics.reply.GroupStats> groupStats =
+                groupStatisticsUpdate.getGroupStats();
         assertEquals(1, groupStats.size());
-        org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStats groupStat = groupStats.get(0);
+        org.opendaylight.yang.gen.v1.urn
+                .opendaylight.group.types.rev131018.group.statistics.reply.GroupStats groupStat = groupStats.get(0);
 
         assertEquals(DUMMY_BYTE_COUNT, groupStat.getByteCount().getValue());
         assertEquals(DUMMY_DURATION_SEC, groupStat.getDuration().getSecond().getValue());
@@ -189,12 +202,13 @@ public class MultipartReplyTranslatorTest {
     public void testTranslateGroupDesc() {
         DeviceContext mockedDeviceContext = mock(DeviceContext.class);
 
-        MultipartReplyMessage multipartReplyMessage = prepareMocks(mockedDeviceContext, prepareMultipartReplyGroupDesc(), MultipartType.OFPMPGROUPDESC);
+        MultipartReplyMessage multipartReplyMessage =
+                prepareMocks(mockedDeviceContext, prepareMultipartReplyGroupDesc(), MultipartType.OFPMPGROUPDESC);
 
         DataContainer result = MultipartReplyTranslatorUtil.translate(
             multipartReplyMessage,
             mockedDeviceContext.getDeviceInfo(),
-            convertorManager,
+                CONVERTOR_MANAGER,
             mockedDeviceContext.oook()).get();
 
         DataContainer dataObject = validateOutput(result);
@@ -204,24 +218,23 @@ public class MultipartReplyTranslatorTest {
         assertEquals(1, groupDescStats.size());
         GroupDescStats groupDescStat = groupDescStats.get(0);
         assertEquals(DUMMY_GROUP_ID.getValue(),groupDescStat.getGroupId().getValue());
-        assertEquals(DUMMY_GROUPS_TYPE,groupDescStat.getGroupType() );
+        assertEquals(DUMMY_GROUPS_TYPE,groupDescStat.getGroupType());
     }
 
     private MultipartReplyBody prepareMultipartReplyGroupDesc() {
-        MultipartReplyGroupDescCaseBuilder multipartReplyGroupDescCaseBuilder = new MultipartReplyGroupDescCaseBuilder();
-        MultipartReplyGroupDescBuilder multipartReplyGroupDescBuilder = new MultipartReplyGroupDescBuilder();
         GroupDescBuilder groupDescBuilder = new GroupDescBuilder();
         groupDescBuilder.setGroupId(DUMMY_GROUP_ID);
         groupDescBuilder.setBucketsList(Collections.<BucketsList>emptyList());
         groupDescBuilder.setType(DUMMY_GROUP_TYPE);
+        MultipartReplyGroupDescBuilder multipartReplyGroupDescBuilder = new MultipartReplyGroupDescBuilder();
         multipartReplyGroupDescBuilder.setGroupDesc(Lists.newArrayList(groupDescBuilder.build()));
+        MultipartReplyGroupDescCaseBuilder multipartReplyGroupDescCaseBuilder =
+                new MultipartReplyGroupDescCaseBuilder();
         multipartReplyGroupDescCaseBuilder.setMultipartReplyGroupDesc(multipartReplyGroupDescBuilder.build());
         return multipartReplyGroupDescCaseBuilder.build();
     }
 
     private MultipartReplyBody prepareMultipartReplyGroup() {
-        MultipartReplyGroupCaseBuilder multipartReplyGroupCaseBuilder = new MultipartReplyGroupCaseBuilder();
-        MultipartReplyGroupBuilder multipartReplyGroupBuilder = new MultipartReplyGroupBuilder();
         GroupStatsBuilder groupStatsBuilder = new GroupStatsBuilder();
         groupStatsBuilder.setByteCount(DUMMY_BYTE_COUNT);
         groupStatsBuilder.setBucketStats(Collections.<BucketStats>emptyList());
@@ -230,16 +243,14 @@ public class MultipartReplyTranslatorTest {
         groupStatsBuilder.setGroupId(DUMMY_GROUP_ID);
         groupStatsBuilder.setPacketCount(DUMMY_PACKET_COUNT);
         groupStatsBuilder.setRefCount(DUMMY_REF_COUNT);
-
-
+        MultipartReplyGroupBuilder multipartReplyGroupBuilder = new MultipartReplyGroupBuilder();
         multipartReplyGroupBuilder.setGroupStats(Lists.newArrayList(groupStatsBuilder.build()));
+        MultipartReplyGroupCaseBuilder multipartReplyGroupCaseBuilder = new MultipartReplyGroupCaseBuilder();
         multipartReplyGroupCaseBuilder.setMultipartReplyGroup(multipartReplyGroupBuilder.build());
         return multipartReplyGroupCaseBuilder.build();
     }
 
     private MultipartReplyBody prepareMultipartReplyPortStats() {
-        MultipartReplyPortStatsCaseBuilder multipartReplyPortStatsCaseBuilder = new MultipartReplyPortStatsCaseBuilder();
-        MultipartReplyPortStatsBuilder multipartReplyPortStatsBuilder = new MultipartReplyPortStatsBuilder();
         PortStatsBuilder dummyPortStatBuilder = new PortStatsBuilder();
         dummyPortStatBuilder.setPortNo(DUMMY_PORT_NO);
         dummyPortStatBuilder.setRxBytes(DUMMY_RX_BYTES);
@@ -254,19 +265,22 @@ public class MultipartReplyTranslatorTest {
         dummyPortStatBuilder.setRxOverErr(DUMMY_OVER_ERR);
         dummyPortStatBuilder.setTxDropped(DUMMY_TX_DROPPED);
         dummyPortStatBuilder.setTxErrors(DUMMY_TX_ERRORS);
-
+        MultipartReplyPortStatsBuilder multipartReplyPortStatsBuilder = new MultipartReplyPortStatsBuilder();
         multipartReplyPortStatsBuilder.setPortStats(Lists.newArrayList(dummyPortStatBuilder.build()));
+        MultipartReplyPortStatsCaseBuilder multipartReplyPortStatsCaseBuilder =
+                new MultipartReplyPortStatsCaseBuilder();
         multipartReplyPortStatsCaseBuilder.setMultipartReplyPortStats(multipartReplyPortStatsBuilder.build());
         return multipartReplyPortStatsCaseBuilder.build();
     }
 
 
     private MultipartReplyBody prepareMultipartReplyAggregate() {
-        MultipartReplyAggregateCaseBuilder multipartReplyAggregateCaseBuilder = new MultipartReplyAggregateCaseBuilder();
         MultipartReplyAggregateBuilder multipartReplyAggregateBuilder = new MultipartReplyAggregateBuilder();
         multipartReplyAggregateBuilder.setByteCount(DUMMY_BYTE_COUNT);
         multipartReplyAggregateBuilder.setPacketCount(DUMMY_PACKET_COUNT);
         multipartReplyAggregateBuilder.setFlowCount(DUMMY_FLOW_COUNT);
+        MultipartReplyAggregateCaseBuilder multipartReplyAggregateCaseBuilder =
+                new MultipartReplyAggregateCaseBuilder();
         multipartReplyAggregateCaseBuilder.setMultipartReplyAggregate(multipartReplyAggregateBuilder.build());
         return multipartReplyAggregateCaseBuilder.build();
     }
@@ -279,7 +293,9 @@ public class MultipartReplyTranslatorTest {
         return multipartReplyFlowCaseBuilder.build();
     }
 
-    private MultipartReplyMessage prepareMocks(DeviceContext mockedDeviceContext, MultipartReplyBody multipartReplyBody, final MultipartType multipartType) {
+    private MultipartReplyMessage prepareMocks(DeviceContext mockedDeviceContext,
+                                               MultipartReplyBody multipartReplyBody,
+                                               final MultipartType multipartType) {
         ConnectionContext mockedConnectionContext = mock(ConnectionContext.class);
         FeaturesReply mockedFeaturesReply = mock(FeaturesReply.class);
         when(mockedFeaturesReply.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
@@ -301,7 +317,6 @@ public class MultipartReplyTranslatorTest {
         when(multipartReplyMessage.getMultipartReplyBody()).thenReturn(multipartReplyBody);
         return multipartReplyMessage;
     }
-
 
     private DataContainer validateOutput(DataContainer dataObject) {
         return dataObject;

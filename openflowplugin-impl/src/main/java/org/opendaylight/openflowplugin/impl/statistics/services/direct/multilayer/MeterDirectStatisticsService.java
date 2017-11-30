@@ -52,7 +52,8 @@ public class MeterDirectStatisticsService extends AbstractMeterDirectStatisticsS
             for (final MultipartReply mpReply : input) {
                 final MultipartReplyMeterCase caseBody = (MultipartReplyMeterCase) mpReply.getMultipartReplyBody();
                 final MultipartReplyMeter replyBody = caseBody.getMultipartReplyMeter();
-                final Optional<List<MeterStats>> meterStatsList = getConvertorExecutor().convert(replyBody.getMeterStats(), data);
+                final Optional<List<MeterStats>> meterStatsList =
+                        getConvertorExecutor().convert(replyBody.getMeterStats(), data);
                 meterStatsList.ifPresent(meterStats::addAll);
             }
         }

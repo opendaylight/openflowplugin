@@ -34,7 +34,12 @@ public class StatisticsGatheringOnTheFlyServiceTest extends ServiceMocking {
     @Override
     protected void setup() {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        statisticsGatheringService = new StatisticsGatheringOnTheFlyService<>(mockedRequestContextStack, mockedDeviceContext, convertorManager, MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext));
+        statisticsGatheringService =
+                new StatisticsGatheringOnTheFlyService<>(mockedRequestContextStack,
+                                                         mockedDeviceContext,
+                                                         convertorManager,
+                                                         MultipartWriterProviderFactory
+                                                                 .createDefaultProvider(mockedDeviceContext));
         Mockito.doReturn(NODE_ID).when(mockedPrimConnectionContext).getNodeId();
         Mockito.when(mockedDeviceInfo.getNodeId()).thenReturn(NODE_ID);
         Mockito.when(mockedDeviceContext.getDeviceInfo().getNodeId()).thenReturn(NODE_ID);

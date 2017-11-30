@@ -11,9 +11,6 @@ package org.opendaylight.openflowplugin.impl.registry.flow;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -21,16 +18,10 @@ import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKe
 import org.opendaylight.openflowplugin.impl.util.MatchNormalizationUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeTableFlow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeTableFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionList;
-import org.opendaylight.yangtools.yang.binding.Augmentation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class FlowRegistryKeyFactory {
-    private static final Logger LOG = LoggerFactory.getLogger(FlowRegistryKeyFactory.class);
+public final class FlowRegistryKeyFactory {
 
     private FlowRegistryKeyFactory() {
         // Hide implicit constructor
@@ -152,12 +143,12 @@ public class FlowRegistryKeyFactory {
 
         @Override
         public String toString() {
-            return "FlowRegistryKeyDto{" +
-                    "tableId=" + tableId +
-                    ", priority=" + priority +
-                    ", cookie=" + cookie +
-                    ", match=" + match +
-                    '}';
+            return "FlowRegistryKeyDto{"
+                    + "tableId=" + tableId
+                    + ", priority=" + priority
+                    + ", cookie=" + cookie
+                    + ", match=" + match
+                    + '}';
         }
 
         @Override

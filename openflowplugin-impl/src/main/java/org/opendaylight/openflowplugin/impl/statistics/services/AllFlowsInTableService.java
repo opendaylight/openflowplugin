@@ -36,13 +36,17 @@ public class AllFlowsInTableService extends AbstractCompatibleStatService<GetAll
 
     private final ConvertorExecutor convertorExecutor;
 
-    public AllFlowsInTableService(final RequestContextStack requestContextStack, final DeviceContext deviceContext, AtomicLong compatibilityXidSeed, ConvertorExecutor convertorExecutor) {
+    public AllFlowsInTableService(final RequestContextStack requestContextStack,
+                                  final DeviceContext deviceContext,
+                                  AtomicLong compatibilityXidSeed,
+                                  ConvertorExecutor convertorExecutor) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
         this.convertorExecutor = convertorExecutor;
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final GetAllFlowStatisticsFromFlowTableInput input) throws ServiceException {
+    protected OfHeader buildRequest(final Xid xid,
+                                    final GetAllFlowStatisticsFromFlowTableInput input) throws ServiceException {
         final MultipartRequestFlowBuilder mprFlowRequestBuilder = new MultipartRequestFlowBuilder();
         mprFlowRequestBuilder.setTableId(input.getTableId().getValue());
         mprFlowRequestBuilder.setOutPort(OFConstants.OFPP_ANY);
@@ -73,6 +77,10 @@ public class AllFlowsInTableService extends AbstractCompatibleStatService<GetAll
 
     @Override
     public FlowsStatisticsUpdate transformToNotification(List<MultipartReply> mpResult, TransactionId emulatedTxId) {
-        return FlowStatisticsToNotificationTransformer.transformToNotification(mpResult, getDeviceInfo(), getOfVersion(), emulatedTxId, convertorExecutor);
+        return FlowStatisticsToNotificationTransformer.transformToNotification(mpResult,
+                                                                               getDeviceInfo(),
+                                                                               getOfVersion(),
+                                                                               emulatedTxId,
+                                                                               convertorExecutor);
     }
 }

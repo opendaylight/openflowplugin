@@ -30,8 +30,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.GetAllQueuesStatisticsFromAllPortsOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.QueueStatisticsUpdate;
 
-final class AllQueuesAllPortsService
-        extends AbstractCompatibleStatService<GetAllQueuesStatisticsFromAllPortsInput, GetAllQueuesStatisticsFromAllPortsOutput, QueueStatisticsUpdate> {
+final class AllQueuesAllPortsService extends AbstractCompatibleStatService<GetAllQueuesStatisticsFromAllPortsInput,
+                                                                           GetAllQueuesStatisticsFromAllPortsOutput,
+                                                                           QueueStatisticsUpdate> {
 
     private static final MultipartRequestQueueCase QUEUE_CASE;
 
@@ -47,12 +48,15 @@ final class AllQueuesAllPortsService
         QUEUE_CASE = caseBuilder.build();
     }
 
-    public AllQueuesAllPortsService(RequestContextStack requestContextStack, DeviceContext deviceContext, AtomicLong compatibilityXidSeed) {
+    AllQueuesAllPortsService(RequestContextStack requestContextStack,
+                                    DeviceContext deviceContext,
+                                    AtomicLong compatibilityXidSeed) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final GetAllQueuesStatisticsFromAllPortsInput input) throws ServiceException {
+    protected OfHeader buildRequest(final Xid xid,
+                                    final GetAllQueuesStatisticsFromAllPortsInput input) throws ServiceException {
         // Set request body to main multipart request
         MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                 MultipartType.OFPMPQUEUE, xid.getValue(), getVersion());
@@ -67,6 +71,9 @@ final class AllQueuesAllPortsService
 
     @Override
     public QueueStatisticsUpdate transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
-        return QueueStatisticsToNotificationTransformer.transformToNotification(result, getDeviceInfo(), getOfVersion(), emulatedTxId);
+        return QueueStatisticsToNotificationTransformer.transformToNotification(result,
+                                                                                getDeviceInfo(),
+                                                                                getOfVersion(),
+                                                                                emulatedTxId);
     }
 }

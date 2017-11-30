@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.common.util.concurrent.MoreExecutors;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.List;
@@ -150,7 +151,8 @@ public class StatisticsManagerImplTest {
                         .setMaximumTimerDelay(new NonZeroUint32Type(maximumTimerDelay))
                         .setIsStatisticsPollingOn(false)
                         .build(), rpcProviderRegistry,
-                convertorManager);
+                convertorManager,
+                MoreExecutors.newDirectExecutorService());
     }
 
     private static Map<DeviceInfo, StatisticsContext> getContextsMap(final StatisticsManagerImpl statisticsManager)
@@ -174,7 +176,6 @@ public class StatisticsManagerImplTest {
     /**
      * switching to {@link StatisticsWorkMode#FULLYDISABLED}; no pollTimeout and no lifecycleRegistry.
      *
-     * @throws Exception
      */
     @Test
     public void testChangeStatisticsWorkMode1() throws Exception {
@@ -203,7 +204,6 @@ public class StatisticsManagerImplTest {
     /**
      * Switching to {@link StatisticsWorkMode#FULLYDISABLED}; with pollTimeout and lifecycleRegistry.
      *
-     * @throws Exception
      */
     @Test
     public void testChangeStatisticsWorkMode2() throws Exception {
@@ -223,10 +223,9 @@ public class StatisticsManagerImplTest {
     }
 
     /**
-     * switching to {@link StatisticsWorkMode#FULLYDISABLED} and back
-     * to {@link StatisticsWorkMode#COLLECTALL}; with lifecycleRegistry and pollTimeout
+     * Tests switching to {@link StatisticsWorkMode#FULLYDISABLED} and back
+     * to {@link StatisticsWorkMode#COLLECTALL}; with lifecycleRegistry and pollTimeout.
      *
-     * @throws Exception
      */
     @Test
     public void testChangeStatisticsWorkMode3() throws Exception {

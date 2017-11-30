@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * dumping all exceptions to log
+ * dumping all exceptions to log.
  */
 public class ErrorHandlerSimpleImpl implements ErrorHandler {
 
@@ -22,11 +22,11 @@ public class ErrorHandlerSimpleImpl implements ErrorHandler {
             .getLogger(ErrorHandlerSimpleImpl.class);
 
     @Override
-    public void handleException(Throwable e) {
-        if (e instanceof ConnectionException) {
-            LOG.warn("exception -> {}", e.getMessage(), e);
+    public void handleException(Throwable throwable) {
+        if (throwable instanceof ConnectionException) {
+            LOG.warn("exception -> {}", throwable.getMessage(), throwable);
         } else {
-            LOG.error("exception -> {}", e.getMessage(), e);
+            LOG.error("exception -> {}", throwable.getMessage(), throwable);
         }
     }
 }

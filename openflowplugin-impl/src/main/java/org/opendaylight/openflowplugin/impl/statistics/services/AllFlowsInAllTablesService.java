@@ -1,10 +1,11 @@
-/**
- * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+/*
+ * Copyright (c) 2015 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
+
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
 import java.util.List;
@@ -32,13 +33,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestFlowCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlowBuilder;
 
-public final class AllFlowsInAllTablesService extends AbstractCompatibleStatService<GetAllFlowsStatisticsFromAllFlowTablesInput,
-        GetAllFlowsStatisticsFromAllFlowTablesOutput, FlowsStatisticsUpdate> {
+public final class AllFlowsInAllTablesService extends
+        AbstractCompatibleStatService<GetAllFlowsStatisticsFromAllFlowTablesInput,
+                GetAllFlowsStatisticsFromAllFlowTablesOutput, FlowsStatisticsUpdate> {
     private final MultipartRequestFlowCase flowCase;
     private final ConvertorExecutor convertorExecutor;
 
     public AllFlowsInAllTablesService(final RequestContextStack requestContextStack, final DeviceContext deviceContext,
-                                      final AtomicLong compatibilityXidSeed, final ConvertorExecutor convertorExecutor) {
+                                      final AtomicLong compatibilityXidSeed,
+                                      final ConvertorExecutor convertorExecutor) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
         this.convertorExecutor = convertorExecutor;
 
@@ -56,9 +59,10 @@ public final class AllFlowsInAllTablesService extends AbstractCompatibleStatServ
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final GetAllFlowsStatisticsFromAllFlowTablesInput input) throws ServiceException {
-        final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
-                MultipartType.OFPMPFLOW, xid.getValue(), getVersion());
+    protected OfHeader buildRequest(final Xid xid,
+                                    final GetAllFlowsStatisticsFromAllFlowTablesInput input) throws ServiceException {
+        final MultipartRequestInputBuilder mprInput = RequestInputUtils
+                .createMultipartHeader(MultipartType.OFPMPFLOW, xid.getValue(), getVersion());
         mprInput.setMultipartRequestBody(flowCase);
 
         return mprInput.build();
@@ -71,6 +75,7 @@ public final class AllFlowsInAllTablesService extends AbstractCompatibleStatServ
 
     @Override
     public FlowsStatisticsUpdate transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
-        return FlowStatisticsToNotificationTransformer.transformToNotification(result, getDeviceInfo(), getOfVersion(), emulatedTxId, convertorExecutor);
+        return FlowStatisticsToNotificationTransformer
+                .transformToNotification(result, getDeviceInfo(), getOfVersion(), emulatedTxId, convertorExecutor);
     }
 }

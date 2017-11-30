@@ -13,7 +13,10 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExte
 /**
  * Util class for injecting new deserializers into OpenflowJava.
  */
-public class DeserializerInjector {
+public final class DeserializerInjector {
+
+    private DeserializerInjector() {
+    }
 
     /**
      * Injects deserializers into provided.

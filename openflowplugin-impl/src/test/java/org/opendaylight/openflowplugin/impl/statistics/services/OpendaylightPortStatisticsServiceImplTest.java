@@ -37,7 +37,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 /**
- * Test for {@link OpendaylightPortStatisticsServiceImpl}
+ * Test for {@link OpendaylightPortStatisticsServiceImpl}.
  */
 public class OpendaylightPortStatisticsServiceImplTest extends AbstractSingleStatsServiceTest {
 
