@@ -29,3 +29,4 @@ maven-metadata-local.xml
 .tox/
 nbactions.xml
 nb-configuration.xml
+.fbExcludeFilterFile
