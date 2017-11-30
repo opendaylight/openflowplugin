@@ -138,7 +138,7 @@ public final class FlowUtil {
      * @return batch flow operation output of given type containing list of flow-ids and corresponding success flag
      */
     private static <T extends BatchFlowOutputListGrouping> RpcResultBuilder<T> createCumulativeRpcResult(
-            final @Nullable RpcResult<List<BatchFailedFlowsOutput>> batchFlowsCumulativeResult,
+            final RpcResult<List<BatchFailedFlowsOutput>> batchFlowsCumulativeResult,
             final T batchOutput) {
         final RpcResultBuilder<T> resultBld;
         if (batchFlowsCumulativeResult.isSuccessful()) {
