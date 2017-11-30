@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.impl.statistics;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.AsyncFunction;
+import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.text.SimpleDateFormat;
@@ -25,6 +26,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainClosedException;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -205,13 +207,15 @@ public final class StatisticsGatheringUtils {
             return;
         }
 
-        final ReadOnlyTransaction readTx = txFacade.getReadTransaction();
+        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> future;
+        try (ReadOnlyTransaction readTx = txFacade.getReadTransaction()) {
+            future = readTx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier);
+        }
 
         try {
             Futures.transform(Futures
-                    .withFallback(readTx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier), t -> {
+                    .withFallback(future, t -> {
                         // we wish to close readTx for fallBack
-                        readTx.close();
                         return Futures.immediateFailedFuture(t);
                     }), (Function<Optional<FlowCapableNode>, Void>)
                     flowCapNodeOpt -> {
@@ -225,7 +229,6 @@ public final class StatisticsGatheringUtils {
                             }
                         }
 
-                        readTx.close();
                         return null;
                     }).get();
         } catch (InterruptedException | ExecutionException ex) {
