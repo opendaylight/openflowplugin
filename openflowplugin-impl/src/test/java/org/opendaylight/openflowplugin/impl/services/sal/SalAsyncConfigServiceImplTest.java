@@ -15,7 +15,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.Future;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
@@ -39,8 +38,8 @@ public class SalAsyncConfigServiceImplTest extends ServiceMocking {
 
     private SalAsyncConfigServiceImpl salAsyncConfigService;
 
-    @Before
-    public void setUp() throws Exception {
+    @Override
+    public void setup() throws Exception {
         salAsyncConfigService = new SalAsyncConfigServiceImpl(
                 mockedRequestContextStack, mockedDeviceContext);
     }
