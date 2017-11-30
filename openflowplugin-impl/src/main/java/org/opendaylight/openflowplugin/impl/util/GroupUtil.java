@@ -150,22 +150,22 @@ public final class GroupUtil {
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionType supportedActions
                 : actionsSupported) {
             long supportActionBitmap = 0;
-            supportActionBitmap |= supportedActions.isOFPATOUTPUT() ? (1) : 0;
-            supportActionBitmap |= supportedActions.isOFPATCOPYTTLOUT() ? (1 << 11) : 0;
-            supportActionBitmap |= supportedActions.isOFPATCOPYTTLIN() ? (1 << 12) : 0;
-            supportActionBitmap |= supportedActions.isOFPATSETMPLSTTL() ? (1 << 15) : 0;
-            supportActionBitmap |= supportedActions.isOFPATDECMPLSTTL() ? (1 << 16) : 0;
-            supportActionBitmap |= supportedActions.isOFPATPUSHVLAN() ? (1 << 17) : 0;
-            supportActionBitmap |= supportedActions.isOFPATPOPVLAN() ? (1 << 18) : 0;
-            supportActionBitmap |= supportedActions.isOFPATPUSHMPLS() ? (1 << 19) : 0;
-            supportActionBitmap |= supportedActions.isOFPATPOPMPLS() ? (1 << 20) : 0;
-            supportActionBitmap |= supportedActions.isOFPATSETQUEUE() ? (1 << 21) : 0;
-            supportActionBitmap |= supportedActions.isOFPATGROUP() ? (1 << 22) : 0;
-            supportActionBitmap |= supportedActions.isOFPATSETNWTTL() ? (1 << 23) : 0;
-            supportActionBitmap |= supportedActions.isOFPATDECNWTTL() ? (1 << 24) : 0;
-            supportActionBitmap |= supportedActions.isOFPATSETFIELD() ? (1 << 25) : 0;
-            supportActionBitmap |= supportedActions.isOFPATPUSHPBB() ? (1 << 26) : 0;
-            supportActionBitmap |= supportedActions.isOFPATPOPPBB() ? (1 << 27) : 0;
+            supportActionBitmap |= supportedActions.isOFPATOUTPUT() ? 1 : 0;
+            supportActionBitmap |= supportedActions.isOFPATCOPYTTLOUT() ? 1 << 11 : 0;
+            supportActionBitmap |= supportedActions.isOFPATCOPYTTLIN() ? 1 << 12 : 0;
+            supportActionBitmap |= supportedActions.isOFPATSETMPLSTTL() ? 1 << 15 : 0;
+            supportActionBitmap |= supportedActions.isOFPATDECMPLSTTL() ? 1 << 16 : 0;
+            supportActionBitmap |= supportedActions.isOFPATPUSHVLAN() ? 1 << 17 : 0;
+            supportActionBitmap |= supportedActions.isOFPATPOPVLAN() ? 1 << 18 : 0;
+            supportActionBitmap |= supportedActions.isOFPATPUSHMPLS() ? 1 << 19 : 0;
+            supportActionBitmap |= supportedActions.isOFPATPOPMPLS() ? 1 << 20 : 0;
+            supportActionBitmap |= supportedActions.isOFPATSETQUEUE() ? 1 << 21 : 0;
+            supportActionBitmap |= supportedActions.isOFPATGROUP() ? 1 << 22 : 0;
+            supportActionBitmap |= supportedActions.isOFPATSETNWTTL() ? 1 << 23 : 0;
+            supportActionBitmap |= supportedActions.isOFPATDECNWTTL() ? 1 << 24 : 0;
+            supportActionBitmap |= supportedActions.isOFPATSETFIELD() ? 1 << 25 : 0;
+            supportActionBitmap |= supportedActions.isOFPATPUSHPBB() ? 1 << 26 : 0;
+            supportActionBitmap |= supportedActions.isOFPATPOPPBB() ? 1 << 27 : 0;
             supportActionByGroups.add(supportActionBitmap);
         }
         return supportActionByGroups;
@@ -213,7 +213,6 @@ public final class GroupUtil {
      * @return batch group operation output of given type containing list of group-ids and corresponding success flag
      */
     private static <T extends BatchGroupOutputListGrouping> RpcResultBuilder<T> createCumulativeRpcResult(
-        @Nullable
         final RpcResult<List<BatchFailedGroupsOutput>> batchGroupsCumulativeResult, final T batchOutput) {
         final RpcResultBuilder<T> resultBld;
         if (batchGroupsCumulativeResult.isSuccessful()) {
