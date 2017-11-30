@@ -67,10 +67,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 /**
  * Util class for injecting new match serializers into OpenflowJava.
  */
-public final class MatchSerializerInjector {
-
-    private MatchSerializerInjector() {
-    }
+class MatchSerializerInjector {
 
     /**
      * Injects match serializers into provided

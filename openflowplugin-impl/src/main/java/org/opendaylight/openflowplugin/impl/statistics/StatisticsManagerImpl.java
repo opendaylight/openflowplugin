@@ -78,7 +78,6 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                 switch (targetWorkMode) {
                     case COLLECTALL:
                         context.enableGathering();
-                        // FIXME: is it a genuine fall through or an error?
                     case FULLYDISABLED:
                         context.disableGathering();
                         break;
@@ -104,8 +103,8 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                 .createDefaultProvider(deviceContext);
 
         final StatisticsContext statisticsContext =
-                deviceContext.canUseSingleLayerSerialization()
-                        ? new StatisticsContextImpl<MultipartReply>(
+                deviceContext.canUseSingleLayerSerialization() ?
+                        new StatisticsContextImpl<MultipartReply>(
                                 deviceContext,
                                 converterExecutor,
                                 statisticsWriterProvider,

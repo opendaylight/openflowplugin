@@ -29,10 +29,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 /**
  * Multipart writer provider factory.
  */
-public final class MultipartWriterProviderFactory {
-
-    private MultipartWriterProviderFactory() {
-    }
+public class MultipartWriterProviderFactory {
 
     /**
      * Create default #{@link MultipartWriterProvider}.

@@ -19,8 +19,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public abstract class MessageFactory {
 
     /**
-     * Creates hello input.
-     *
      * @param helloVersion openflow version for hello message to send to switch
      * @param helloXid     transaction id for hello message
      * @return HelloInput without elements
@@ -30,8 +28,19 @@ public abstract class MessageFactory {
     }
 
     /**
-     * Creates hello input.
-     *
+     * @param highestVersion highest openflow version
+     * @param xid            transaction id
+     * @return builder with prepared header
+     */
+    private static HelloInputBuilder prepareHelloInputBuilder(
+            short highestVersion, long xid) {
+        HelloInputBuilder helloInputbuilder = new HelloInputBuilder();
+        helloInputbuilder.setVersion(highestVersion);
+        helloInputbuilder.setXid(xid);
+        return helloInputbuilder;
+    }
+
+    /**
      * @param helloVersion openflow version for hello message to send to switch
      * @param helloXid     transaction id for hello message
      * @param versionOrder list of openflow version in order
@@ -70,23 +79,6 @@ public abstract class MessageFactory {
     }
 
     /**
-     * Builder.
-     *
-     * @param highestVersion highest openflow version
-     * @param xid            transaction id
-     * @return builder with prepared header
-     */
-    private static HelloInputBuilder prepareHelloInputBuilder(
-            short highestVersion, long xid) {
-        HelloInputBuilder helloInputbuilder = new HelloInputBuilder();
-        helloInputbuilder.setVersion(highestVersion);
-        helloInputbuilder.setXid(xid);
-        return helloInputbuilder;
-    }
-
-    /**
-     *  Lists all versions.
-     *
      * @param elements list of versions
      * @return version boolean list
      */

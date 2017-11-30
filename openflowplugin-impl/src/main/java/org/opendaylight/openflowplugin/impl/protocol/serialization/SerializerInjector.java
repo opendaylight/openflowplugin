@@ -13,10 +13,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtens
 /**
  * Util class for injecting new serializers into OpenflowJava.
  */
-public final class SerializerInjector {
-
-    private SerializerInjector() {
-    }
+public class SerializerInjector {
 
     /**
      * Injects serializers into provided

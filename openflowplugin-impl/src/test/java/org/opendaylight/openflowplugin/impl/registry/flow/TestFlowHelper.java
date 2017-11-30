@@ -20,11 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 /**
  * Flow building helper.
  */
-public final class TestFlowHelper {
-
-    private TestFlowHelper() {
-    }
-
+public class TestFlowHelper {
     /**
      * Creates flow and statistics builder.
      * @param index data seed

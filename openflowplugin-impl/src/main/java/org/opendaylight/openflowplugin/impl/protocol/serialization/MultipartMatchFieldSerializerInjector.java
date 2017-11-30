@@ -105,10 +105,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.f
 /**
  * Util class for injecting new multipart match field serializers into OpenflowJava.
  */
-final class MultipartMatchFieldSerializerInjector {
-
-    private MultipartMatchFieldSerializerInjector() {
-    }
+class MultipartMatchFieldSerializerInjector {
 
     /**
      * Injects multipart match field serializers into provided

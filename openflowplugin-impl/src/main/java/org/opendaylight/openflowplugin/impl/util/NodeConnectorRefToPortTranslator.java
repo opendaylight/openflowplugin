@@ -29,11 +29,7 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 /**
  * Created by Tomas Slusny on 23.3.2016.
  */
-public final class NodeConnectorRefToPortTranslator {
-
-    private NodeConnectorRefToPortTranslator() {
-    }
-
+public class NodeConnectorRefToPortTranslator {
     /**
      * Converts {@link PacketIn} to {@link NodeConnectorRef}.
      * @param packetIn Packet input

@@ -18,10 +18,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 /**
  * Utility class for instruction serialization.
  */
-public final class InstructionUtil {
-
-    private InstructionUtil() {
-    }
+public class InstructionUtil {
 
     /**
      * Serialize instruction.

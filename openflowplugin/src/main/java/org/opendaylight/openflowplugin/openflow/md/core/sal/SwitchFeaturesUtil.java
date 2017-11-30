@@ -32,7 +32,7 @@ public final class SwitchFeaturesUtil {
     }
 
     /**
-     * Get singleton instance.
+     * Get singleton instance
      *
      * @return instance
      */
@@ -41,13 +41,11 @@ public final class SwitchFeaturesUtil {
     }
 
     /**
-     * Returns the features of the switch.
-     *
-     * @param features
-     * {@link org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput}
+     * @param features {@link org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput}
      * @return switch features
      */
     public SwitchFeatures buildSwitchFeatures(GetFeaturesOutput features) {
+
         if (swFeaturesBuilders.containsKey(features.getVersion())) {
             LOG.debug("map contains version {}", features.getVersion());
             try {
@@ -59,6 +57,8 @@ public final class SwitchFeaturesUtil {
         } else {
             LOG.warn("unknown version: {}", features.getVersion());
         }
+
         return null;
     }
+
 }

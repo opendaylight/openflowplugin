@@ -50,10 +50,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.multi
 /**
  * Util class for injecting new multipart serializers into OpenflowJava.
  */
-final class MultipartSerializerInjector {
-
-    private MultipartSerializerInjector() {
-    }
+class MultipartSerializerInjector {
 
     /**
      * Injects multipart serializers into provided

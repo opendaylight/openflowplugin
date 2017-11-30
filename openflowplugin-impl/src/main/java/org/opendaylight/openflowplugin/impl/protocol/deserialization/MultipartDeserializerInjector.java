@@ -33,10 +33,7 @@ import org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 
-final class MultipartDeserializerInjector {
-
-    private MultipartDeserializerInjector() {
-    }
+class MultipartDeserializerInjector {
 
     /**
      * Injects message deserializers into provided

@@ -32,10 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 /**
  * Util class for injecting new instruction serializers into OpenflowJava.
  */
-public final class  InstructionSerializerInjector {
-
-    private InstructionSerializerInjector() {
-    }
+class InstructionSerializerInjector {
 
     /**
      * Injects serializers into provided

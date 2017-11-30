@@ -16,8 +16,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 /**
  * Purpose: utility class providing path and {@link InstanceIdentifier} tools.
  */
-public final class PathUtil {
-
+public class PathUtil {
     private PathUtil() {
         throw new IllegalStateException("This class should not be instantiated.");
     }

@@ -48,10 +48,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 /**
  * Util class for injecting new multipart table features serializers into OpenflowJava.
  */
-final class MultipartTableFeaturesSerializerInjector {
-
-    private MultipartTableFeaturesSerializerInjector() {
-    }
+class MultipartTableFeaturesSerializerInjector {
 
     /**
      * Injects multipart table features serializers into provided

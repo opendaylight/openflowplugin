@@ -16,9 +16,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
 
 /**
- * Tests for setting switch features for different version of OF plugin.
+ * Tests for setting switch features for different version of OF plugin
  *
  * @author jsebin
+ *
  */
 public class SwitchFeaturesUtilTest {
 
@@ -27,10 +28,9 @@ public class SwitchFeaturesUtilTest {
 
 
     /**
-     * Initialization of
-     * {@link org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
-     * .GetFeaturesOutputBuilder GetFeaturesOutputBuilder}
-     * and {@link SwitchFeaturesUtil SwitchFeaturesUtil}.
+     * initialization of {@link org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder GetFeaturesOutputBuilder}
+     * and {@link SwitchFeaturesUtil SwitchFeaturesUtil}
+     * @throws Exception
      */
     @Before
     public void setUp() throws Exception {
@@ -38,6 +38,9 @@ public class SwitchFeaturesUtilTest {
         swUtil = SwitchFeaturesUtil.getInstance();
     }
 
+    /**
+     * @throws Exception
+     */
     @After
     public void tearDown() throws Exception {
         featuresOutputBuilder = null;
@@ -47,7 +50,7 @@ public class SwitchFeaturesUtilTest {
     /**
      * Test method for
      * {@link SwitchFeaturesUtil#buildSwitchFeatures} for OF 1.0 version
-     * and switch feature capabilities.
+     * and switch feature capabilities
      * .
      */
     @Test
