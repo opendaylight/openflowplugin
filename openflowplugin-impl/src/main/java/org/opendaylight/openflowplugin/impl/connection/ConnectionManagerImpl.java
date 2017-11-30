@@ -80,10 +80,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
                                                     final HandshakeListener handshakeListener) {
         HandshakeManagerImpl handshakeManager = new HandshakeManagerImpl(connectionAdapter,
                 OFConstants.VERSION_ORDER.get(0),
-                OFConstants.VERSION_ORDER);
-        handshakeManager.setUseVersionBitmap(BITMAP_NEGOTIATION_ENABLED);
-        handshakeManager.setHandshakeListener(handshakeListener);
-        handshakeManager.setErrorHandler(new ErrorHandlerSimpleImpl());
+                OFConstants.VERSION_ORDER, new ErrorHandlerSimpleImpl(), handshakeListener, BITMAP_NEGOTIATION_ENABLED);
 
         return handshakeManager;
     }
