@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "7a1969be_14f9b64d",
+        "filename": "openflowplugin-api/pom.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-11-30T09:58:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a1969be_97580bfc",
+      "revId": "4ea531dcb8ee2ece14b351faaf2b7ebf3254981c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a1969be_5705f3c0",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
         "patchSetId": 6
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "7a1969be_349312fc",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-11-30T09:58:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a1969be_5705f3c0",
+      "revId": "4ea531dcb8ee2ece14b351faaf2b7ebf3254981c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a1969be_176c1b9c",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
         "patchSetId": 6
@@ -47,6 +83,24 @@
       "writtenOn": "2017-11-29T17:14:49Z",
       "side": 1,
       "message": "would some sort of logging like this be possibly useful for debugging in the future:\n\nLOG.info(\"onSystemBootReady() received, now going to startSwitchConnections()...\");",
+      "revId": "4ea531dcb8ee2ece14b351faaf2b7ebf3254981c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a1969be_d4855eae",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-11-30T09:58:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a1969be_176c1b9c",
       "revId": "4ea531dcb8ee2ece14b351faaf2b7ebf3254981c",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
