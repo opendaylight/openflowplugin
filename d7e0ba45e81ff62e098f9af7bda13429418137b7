@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a1969be_08a7d550",
+        "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/LLDPLinkAger.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-12-01T04:23:54Z",
+      "side": 1,
+      "message": "checkstyle : remove the blank line here",
+      "revId": "d7e0ba45e81ff62e098f9af7bda13429418137b7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a1969be_a86de106",
+        "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/LLDPLinkAger.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-12-01T04:23:54Z",
+      "side": 1,
+      "message": "Either we implement the property change or we should log the info, saying runtime change for the property is not supported.\n\nIncase you plan to implement the logic that will take care of the property change, we should not support runtime change for LLDP_SECURE_KEY. Remaining two intervals can be allowed to change at runtime. Apart from that we need to handle the runtime configuration change in the 3 node cluster setup (like user end updating the configuration in one node only, or there is a delay in updating the configuration in all the nodes). We need to make sure that plugin takes cares of these situation. \n\nAs of now i would suggest to just log to message, because we don\u0027t allow runtime configuration for most of the properties.",
+      "range": {
+        "startLine": 91,
+        "startChar": 0,
+        "endLine": 108,
+        "endChar": 5
+      },
+      "revId": "d7e0ba45e81ff62e098f9af7bda13429418137b7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a1969be_8872a5e3",
+        "filename": "applications/topology-lldp-discovery/src/main/resources/org/opendaylight/blueprint/topology-lldp-discovery.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-12-01T04:23:54Z",
+      "side": 1,
+      "message": "i think we should move it to property file as well.",
+      "range": {
+        "startLine": 10,
+        "startChar": 2,
+        "endLine": 17,
+        "endChar": 29
+      },
+      "revId": "d7e0ba45e81ff62e098f9af7bda13429418137b7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
