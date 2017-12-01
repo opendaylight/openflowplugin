@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a1969be_6831290b",
+        "filename": "openflowjava/openflow-protocol-api/src/main/yang/openflow-types.yang",
+        "patchSetId": 10
+      },
+      "lineNbr": 881,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-12-01T04:56:15Z",
+      "side": 1,
+      "message": "i was just wondering if you really need to expose it through the yang model? I was thinking of using the value directly in the code if the group_add_mod is enabled.",
+      "revId": "ad3811bb9a5021205b3ddb250d98b013fc139556",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a1969be_c85add4f",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
+        "patchSetId": 10
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-12-01T04:56:15Z",
+      "side": 1,
+      "message": "It\u0027s good to add some of the details from spec here.",
+      "revId": "ad3811bb9a5021205b3ddb250d98b013fc139556",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
