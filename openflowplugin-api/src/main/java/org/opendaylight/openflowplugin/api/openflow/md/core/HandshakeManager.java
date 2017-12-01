@@ -17,24 +17,6 @@ public interface HandshakeManager {
     Short getVersion();
 
     /**
-     * Setter.
-     * @param errorHandler the errorHandler to set
-     */
-    void setErrorHandler(ErrorHandler errorHandler);
-
-    /**
-     * Setter.
-     * @param handshakeListener the handshakeListener to set
-     */
-    void setHandshakeListener(HandshakeListener handshakeListener);
-
-    /**
-     * should use negotiation bit map.
-     * @param isBitmapNegotiationEnable yes/no
-     */
-    void setUseVersionBitmap(boolean isBitmapNegotiationEnable);
-
-    /**
      * process current handshake step.
      * @param receivedHello message from device we need to act upon
      */
