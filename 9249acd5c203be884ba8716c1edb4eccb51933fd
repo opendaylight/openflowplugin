@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a1969be_098d177c",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2017-12-01T16:16:36Z",
+      "side": 1,
+      "message": "this new field almost certainly should be private instead of public.  You should also mark it as volatile, for multi thread safety.",
+      "revId": "9249acd5c203be884ba8716c1edb4eccb51933fd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a1969be_49eeef23",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2017-12-01T16:16:36Z",
+      "side": 1,
+      "message": "these two appear to be constants so much be marked final, and upper-case, and have to be moved up under the other constants, after OPENFLOW_SERVICE_NAME, not interspersed with fields.",
+      "revId": "9249acd5c203be884ba8716c1edb4eccb51933fd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a1969be_a9f32309",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2017-12-01T16:16:36Z",
+      "side": 1,
+      "message": "what is the point in this being a new field of this class instead of just a local variable inside method getApplicationNetworkState() ?",
+      "revId": "9249acd5c203be884ba8716c1edb4eccb51933fd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a1969be_6982cb53",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2017-12-01T16:16:36Z",
+      "side": 1,
+      "message": "does this new method have to be public or could it be kept private?",
+      "revId": "9249acd5c203be884ba8716c1edb4eccb51933fd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a1969be_c992df9e",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2017-12-01T16:16:36Z",
+      "side": 1,
+      "message": "LOG.error(\"Failed to close socket: {}\", socket, ex);",
+      "revId": "9249acd5c203be884ba8716c1edb4eccb51933fd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
