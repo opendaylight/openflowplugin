@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.registry.flow;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
@@ -27,6 +28,7 @@ public class FlowDescriptorDtoTest {
     }
 
     @Test(expected = Exception.class)
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION") // that is the point of this test
     public void testCreateNegative1() throws Exception {
         FlowDescriptorFactory.create((short) 1, null);
     }
