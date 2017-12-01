@@ -48,7 +48,7 @@ public class ConnectionContextImpl implements ConnectionContext {
     private OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration;
     private HandshakeContext handshakeContext;
     private DeviceInfo deviceInfo;
-    private List<PortStatusMessage> portStatusMessages = new ArrayList<>();
+    private final List<PortStatusMessage> portStatusMessages = new ArrayList<>();
 
     /**
      * Constructor.
@@ -288,7 +288,7 @@ public class ConnectionContextImpl implements ConnectionContext {
         return result;
     }
 
-    private class DeviceInfoImpl implements DeviceInfo {
+    private static class DeviceInfoImpl implements DeviceInfo {
 
         private final NodeId nodeId;
         private final KeyedInstanceIdentifier<Node, NodeKey> nodeII;
@@ -348,10 +348,10 @@ public class ConnectionContextImpl implements ConnectionContext {
 
             DeviceInfoImpl that = (DeviceInfoImpl) object;
 
-            return  (nodeId.equals(that.nodeId)
+            return  nodeId.equals(that.nodeId)
                     && nodeII.equals(that.nodeII)
                     && version.equals(that.version)
-                    && datapathId.equals(that.datapathId));
+                    && datapathId.equals(that.datapathId);
 
         }
 

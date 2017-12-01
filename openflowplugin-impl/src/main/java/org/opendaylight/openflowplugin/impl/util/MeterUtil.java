@@ -182,7 +182,7 @@ public final class MeterUtil {
      */
     private static <T extends BatchMeterOutputListGrouping>
         RpcResultBuilder<T> createCumulativeRpcResult(
-            final @Nullable RpcResult<List<BatchFailedMetersOutput>> batchMetersCumulativeResult,
+            final RpcResult<List<BatchFailedMetersOutput>> batchMetersCumulativeResult,
             final T batchOutput) {
         final RpcResultBuilder<T> resultBld;
         if (batchMetersCumulativeResult.isSuccessful()) {

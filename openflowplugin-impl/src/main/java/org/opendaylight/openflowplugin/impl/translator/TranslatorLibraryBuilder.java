@@ -28,7 +28,7 @@ public class TranslatorLibraryBuilder {
         return new TranslatorLibraryImpl(translators);
     }
 
-    private final class TranslatorLibraryImpl implements TranslatorLibrary {
+    private static final class TranslatorLibraryImpl implements TranslatorLibrary {
         private final Map<TranslatorKey, MessageTranslator<?, ?>> translators;
 
         TranslatorLibraryImpl(final Map<TranslatorKey, MessageTranslator<?, ?>> translators) {
