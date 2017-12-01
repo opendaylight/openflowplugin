@@ -62,7 +62,7 @@ public class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<FlowCapab
                 iiToTopologyRemovedNode = provideIIToTopologyNode(nodeId);
         if (iiToTopologyRemovedNode != null) {
             operationProcessor.enqueueOperation(manager -> {
-                manager.addDeleteOperationTotTxChain(LogicalDatastoreType.OPERATIONAL, iiToTopologyRemovedNode);
+                manager.addDeleteOperationToTxChain(LogicalDatastoreType.OPERATIONAL, iiToTopologyRemovedNode);
                 TopologyManagerUtil.removeAffectedLinks(nodeId, manager, II_TO_TOPOLOGY);
             });
         } else {

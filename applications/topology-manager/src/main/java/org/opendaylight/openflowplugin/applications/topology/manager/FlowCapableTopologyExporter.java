@@ -74,7 +74,7 @@ class FlowCapableTopologyExporter implements FlowTopologyDiscoveryListener {
                     LOG.debug("Error occurred when trying to read Link.. ", e);
                 }
                 if (linkOptional.isPresent()) {
-                    manager.addDeleteOperationTotTxChain(LogicalDatastoreType.OPERATIONAL,
+                    manager.addDeleteOperationToTxChain(LogicalDatastoreType.OPERATIONAL,
                             TopologyManagerUtil.linkPath(toTopologyLink(notification), iiToTopology));
                 }
             }
