@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "7a1969be_a9a5e305",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/OpenFlowPluginProvider.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2017-12-01T16:10:54Z",
+      "side": 1,
+      "message": "I was just wondering if by mistake you forgot about and didn\u0027t see this feedback, or there was some reason why it\u0027s not possible to only add implements SystemReadyListener to OpenFlowPluginProviderImpl instead of here? \n\nNot a problem if it\u0027s not possible (although I don\u0027t see why; should be easy?), but best is to provide feedback in reply here, instead of replying \"Done\" to 3/4 points but ignore 1... ;-)\n\nPS: Ignore my PS feedback re. dependency in the POM.",
+      "parentUuid": "7a1969be_d7f8c3c6",
+      "range": {
+        "startLine": 16,
+        "startChar": 3,
+        "endLine": 17,
+        "endChar": 80
+      },
+      "revId": "3096604b3d148dd6deddf79227c1b7b2c10e8a3a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a1969be_7ad101cd",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
         "patchSetId": 5
