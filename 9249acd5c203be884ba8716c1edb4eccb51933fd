@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "7a1969be_dee734e3",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-12-04T07:07:33Z",
+      "side": 1,
+      "message": "Done. This field is not needed. Removing it.",
+      "parentUuid": "7a1969be_098d177c",
+      "revId": "9249acd5c203be884ba8716c1edb4eccb51933fd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a1969be_49eeef23",
         "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
         "patchSetId": 4
@@ -30,6 +48,24 @@
       "writtenOn": "2017-12-01T16:16:36Z",
       "side": 1,
       "message": "these two appear to be constants so much be marked final, and upper-case, and have to be moved up under the other constants, after OPENFLOW_SERVICE_NAME, not interspersed with fields.",
+      "revId": "9249acd5c203be884ba8716c1edb4eccb51933fd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a1969be_be3a3834",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-12-04T07:07:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a1969be_49eeef23",
       "revId": "9249acd5c203be884ba8716c1edb4eccb51933fd",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "7a1969be_beecf8c8",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-12-04T07:07:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a1969be_a9f32309",
+      "revId": "9249acd5c203be884ba8716c1edb4eccb51933fd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a1969be_6982cb53",
         "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
         "patchSetId": 4
@@ -70,6 +124,24 @@
     },
     {
       "key": {
+        "uuid": "7a1969be_fecdd05e",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-12-04T07:07:33Z",
+      "side": 1,
+      "message": "Made it private.",
+      "parentUuid": "7a1969be_6982cb53",
+      "revId": "9249acd5c203be884ba8716c1edb4eccb51933fd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a1969be_c992df9e",
         "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
         "patchSetId": 4
@@ -81,6 +153,24 @@
       "writtenOn": "2017-12-01T16:16:36Z",
       "side": 1,
       "message": "LOG.error(\"Failed to close socket: {}\", socket, ex);",
+      "revId": "9249acd5c203be884ba8716c1edb4eccb51933fd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a1969be_1ef8ac7b",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-12-04T07:07:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a1969be_c992df9e",
       "revId": "9249acd5c203be884ba8716c1edb4eccb51933fd",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
