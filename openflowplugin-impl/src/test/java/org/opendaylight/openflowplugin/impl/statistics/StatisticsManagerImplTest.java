@@ -43,6 +43,9 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
+import org.opendaylight.openflowplugin.api.openflow.registry.ItemLifeCycleRegistry;
+import org.opendaylight.openflowplugin.api.openflow.rpc.ItemLifeCycleSource;
+import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
@@ -92,6 +95,10 @@ public class StatisticsManagerImplTest {
     @Mock
     private MultiMsgCollector multiMagCollector;
     @Mock
+    private ItemLifeCycleRegistry itemLifeCycleRegistry;
+    @Captor
+    private ArgumentCaptor<ItemLifecycleListener> itemLifeCycleListenerCapt;
+    @Mock
     private BindingAwareBroker.RpcRegistration<StatisticsManagerControlService> serviceControlRegistration;
     @Mock
     private DeviceInfo deviceInfo;
@@ -136,6 +143,7 @@ public class StatisticsManagerImplTest {
                     return multiMagCollector;
                 }
         );
+        when(mockedDeviceContext.getItemLifeCycleSourceRegistry()).thenReturn(itemLifeCycleRegistry);
         when(rpcProviderRegistry.addRpcImplementation(
                 Matchers.eq(StatisticsManagerControlService.class),
                 Matchers.<StatisticsManagerControlService>any())).thenReturn(serviceControlRegistration);
@@ -176,6 +184,9 @@ public class StatisticsManagerImplTest {
     @Test
     public void testChangeStatisticsWorkMode1() throws Exception {
         final StatisticsContext statisticContext = Mockito.mock(StatisticsContext.class);
+        when(itemLifeCycleRegistry.getLifeCycleSources()).thenReturn(
+                Collections.<ItemLifeCycleSource>emptyList());
+
         when(statisticContext.gainDeviceContext()).thenReturn(mockedDeviceContext);
         when(statisticContext.gainDeviceState()).thenReturn(mockedDeviceState);
 
@@ -189,6 +200,7 @@ public class StatisticsManagerImplTest {
                 .changeStatisticsWorkMode(changeStatisticsWorkModeInputBld.build());
 
         checkWorkModeChangeOutcome(workMode);
+        verify(itemLifeCycleRegistry).getLifeCycleSources();
         verify(statisticContext).stopGatheringData();
     }
 
@@ -206,7 +218,10 @@ public class StatisticsManagerImplTest {
     @Test
     public void testChangeStatisticsWorkMode2() throws Exception {
         final Timeout pollTimeout = Mockito.mock(Timeout.class);
+        final ItemLifeCycleSource itemLifecycleSource = Mockito.mock(ItemLifeCycleSource.class);
         final StatisticsContext statisticContext = Mockito.mock(StatisticsContext.class);
+        when(itemLifeCycleRegistry.getLifeCycleSources()).thenReturn(
+                Collections.singletonList(itemLifecycleSource));
 
         getContextsMap(statisticsManager).put(deviceInfo, statisticContext);
 
@@ -221,7 +236,9 @@ public class StatisticsManagerImplTest {
         Future<RpcResult<Void>> workMode = statisticsManager.changeStatisticsWorkMode(changeStatisticsWorkModeInputBld.build());
         checkWorkModeChangeOutcome(workMode);
 
+        verify(itemLifeCycleRegistry).getLifeCycleSources();
         verify(statisticContext).stopGatheringData();
+        verify(itemLifecycleSource).setItemLifecycleListener(Matchers.<ItemLifecycleListener>any());
     }
 
     /**
@@ -233,12 +250,21 @@ public class StatisticsManagerImplTest {
     @Test
     public void testChangeStatisticsWorkMode3() throws Exception {
         final Timeout pollTimeout = Mockito.mock(Timeout.class);
+        final ItemLifeCycleSource itemLifecycleSource = Mockito.mock(ItemLifeCycleSource.class);
+        Mockito.doNothing().when(itemLifecycleSource)
+                .setItemLifecycleListener(itemLifeCycleListenerCapt.capture());
+
         final StatisticsContext statisticContext = Mockito.mock(StatisticsContext.class);
+        when(statisticContext.getItemLifeCycleListener()).thenReturn(
+                Mockito.mock(ItemLifecycleListener.class));
+        when(itemLifeCycleRegistry.getLifeCycleSources()).thenReturn(
+                Collections.singletonList(itemLifecycleSource));
 
         getContextsMap(statisticsManager).put(deviceInfo, statisticContext);
 
         when(statisticContext.gainDeviceContext()).thenReturn(mockedDeviceContext);
         when(statisticContext.gainDeviceState()).thenReturn(mockedDeviceState);
+//        when(lifecycleService.getDeviceContext()).thenReturn(mockedDeviceContext);
 
         final ChangeStatisticsWorkModeInputBuilder changeStatisticsWorkModeInputBld =
                 new ChangeStatisticsWorkModeInputBuilder()
@@ -254,8 +280,14 @@ public class StatisticsManagerImplTest {
                 changeStatisticsWorkModeInputBld.build());
         checkWorkModeChangeOutcome(workMode);
 
+        verify(itemLifeCycleRegistry, times(2)).getLifeCycleSources();
         verify(statisticContext).stopGatheringData();
-     }
+
+        final List<ItemLifecycleListener> itemLifeCycleListenerValues = itemLifeCycleListenerCapt.getAllValues();
+        Assert.assertEquals(2, itemLifeCycleListenerValues.size());
+        Assert.assertNotNull(itemLifeCycleListenerValues.get(0));
+        Assert.assertNull(itemLifeCycleListenerValues.get(1));
+    }
 
     @Test
     public void testClose() throws Exception {

@@ -25,10 +25,8 @@ public class DeviceGroupRegistryImpl implements DeviceGroupRegistry {
 
     @Override
     public void store(final GroupId groupId) {
-        if(!groupIds.contains(groupId)){
-            marks.remove(groupId);
-            groupIds.add(groupId);
-        }
+        marks.remove(groupId);
+        groupIds.add(groupId);
     }
 
     @Override

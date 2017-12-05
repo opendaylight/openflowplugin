@@ -36,10 +36,12 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.MastershipChangeListener;
+import org.opendaylight.openflowplugin.api.openflow.rpc.listener.ItemLifecycleListener;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
+import org.opendaylight.openflowplugin.impl.rpc.listener.ItemLifecycleListenerImpl;
 import org.opendaylight.openflowplugin.impl.services.util.RequestContextUtil;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringOnTheFlyService;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringService;
@@ -54,6 +56,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsContextImpl.class);
     private static final String CONNECTION_CLOSED = "Connection closed.";
 
+    private final ItemLifecycleListener itemLifeCycleListener;
     private final Collection<RequestContext<?>> requestContexts = new HashSet<>();
     private final DeviceContext deviceContext;
     private final DeviceState devState;
@@ -86,6 +89,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         statisticsGatheringService = new StatisticsGatheringService<>(this, deviceContext);
         statisticsGatheringOnTheFlyService = new StatisticsGatheringOnTheFlyService<>(this,
             deviceContext, convertorExecutor, statisticsWriterProvider);
+        itemLifeCycleListener = new ItemLifecycleListenerImpl(deviceContext);
         statListForCollectingInitialization();
         this.state = CONTEXT_STATE.INITIALIZATION;
         this.deviceInfo = deviceContext.getDeviceInfo();
@@ -290,6 +294,10 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         this.statisticsGatheringOnTheFlyService = statisticsGatheringOnTheFlyService;
     }
 
+    @Override
+    public ItemLifecycleListener getItemLifeCycleListener () {
+        return itemLifeCycleListener;
+    }
 
     @Override
     public DeviceInfo getDeviceInfo() {

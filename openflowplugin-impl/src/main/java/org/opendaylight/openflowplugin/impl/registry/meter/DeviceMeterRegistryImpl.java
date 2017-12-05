@@ -25,11 +25,8 @@ public class DeviceMeterRegistryImpl implements DeviceMeterRegistry {
 
     @Override
     public void store(final MeterId meterId) {
-       if(!meterIds.contains(meterId)){
-           marks.remove(meterId);
-           meterIds.add(meterId);
-       }
-
+        marks.remove(meterId);
+        meterIds.add(meterId);
     }
 
     @Override
