@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl.services.sal;
 
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -32,9 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.gro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.UpdatedGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.UpdatedGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+
 
 public class SalGroupServiceImplTest extends ServiceMocking {
 
@@ -79,7 +76,8 @@ public class SalGroupServiceImplTest extends ServiceMocking {
     private void updateGroup() {
         final UpdatedGroup updatedGroup = new UpdatedGroupBuilder().setGroupId(new GroupId(DUMMY_GROUP_ID)).build();
         final OriginalGroup originalGroup = new OriginalGroupBuilder().setGroupId(new GroupId(DUMMY_GROUP_ID)).build();
-        final UpdateGroupInput updateGroupInput = new UpdateGroupInputBuilder().setUpdatedGroup(updatedGroup).setOriginalGroup(originalGroup).build();
+        final UpdateGroupInput updateGroupInput = new UpdateGroupInputBuilder()
+                .setUpdatedGroup(updatedGroup).setOriginalGroup(originalGroup).build();
 
         this.<UpdateGroupOutput>mockSuccessfulFuture();
 
@@ -93,7 +91,7 @@ public class SalGroupServiceImplTest extends ServiceMocking {
         removeGroup();
     }
 
-       private void removeGroup() throws Exception {
+    private void removeGroup() throws Exception {
         final GroupId dummyGroupId = new GroupId(DUMMY_GROUP_ID);
         RemoveGroupInput removeGroupInput = new RemoveGroupInputBuilder().setGroupId(dummyGroupId).build();
 
