@@ -25,7 +25,7 @@ public class DeviceGroupRegistryImpl implements DeviceGroupRegistry {
 
     @Override
     public void store(final GroupId groupId) {
-        if(!groupIds.contains(groupId)){
+        if (!groupIds.contains(groupId)) {
             marks.remove(groupId);
             groupIds.add(groupId);
         }
@@ -33,7 +33,10 @@ public class DeviceGroupRegistryImpl implements DeviceGroupRegistry {
 
     @Override
     public void addMark(final GroupId groupId) {
-        marks.add(groupId);
+        if (!marks.contains(groupId)) {
+            marks.add(groupId);
+            groupIds.remove(groupId);
+        }
     }
 
     @Override

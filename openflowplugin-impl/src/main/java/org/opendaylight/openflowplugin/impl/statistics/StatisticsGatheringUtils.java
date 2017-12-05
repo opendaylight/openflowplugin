@@ -159,11 +159,14 @@ public final class StatisticsGatheringUtils {
                 break;
             case OFPMPMETERCONFIG:
                 LOG.debug("deleteAllKnownMeters device {}",deviceInfo);
+                deviceRegistry.getDeviceMeterRegistry().processMarks();
                 deleteAllKnownMeters(txFacade, instanceIdentifier, deviceRegistry.getDeviceMeterRegistry());
                 deviceRegistry.getDeviceMeterRegistry().processMarks();
                 break;
             case OFPMPGROUPDESC:
-                LOG.debug("deleteAllKnownGroups OFPMPGROUPDESC device {}, group size - {}, ",deviceInfo,deviceRegistry.getDeviceGroupRegistry().size());
+                LOG.debug("deleteAllKnownGroups OFPMPGROUPDESC device {}," +
+                        " group size - {}, ",deviceInfo,deviceRegistry.getDeviceGroupRegistry().size());
+                deviceRegistry.getDeviceGroupRegistry().processMarks();
                 deleteAllKnownGroups(txFacade, instanceIdentifier, deviceRegistry.getDeviceGroupRegistry());
                 deviceRegistry.getDeviceGroupRegistry().processMarks();
                 break;

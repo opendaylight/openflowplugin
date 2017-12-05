@@ -141,8 +141,9 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
 
             lastDataGathering = collectingStatType.stream().reduce(
                     lastDataGathering,
-                    (future, multipartType) -> statChainFuture(future, multipartType),
-                    (a, b) -> Futures.transform(a, (AsyncFunction<Boolean, Boolean>) result -> b));
+                (future, multipartType) -> statChainFuture(future, multipartType),
+                (input, resultFunction) -> Futures.transform(input, (AsyncFunction<Boolean, Boolean>)
+                    result -> resultFunction));
 
             // write end timestamp to state snapshot container
             Futures.addCallback(lastDataGathering, new FutureCallback<Boolean>() {
@@ -152,8 +153,8 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
                 }
 
                 @Override
-                public void onFailure(final Throwable t) {
-                    if (!(t instanceof TransactionChainClosedException)) {
+                public void onFailure(final Throwable throwable) {
+                    if (!(throwable instanceof TransactionChainClosedException)) {
                         StatisticsGatheringUtils.markDeviceStateSnapshotEnd(deviceContext, false);
                     }
                 }
@@ -163,7 +164,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         return lastDataGathering;
     }
 
-    private ListenableFuture<Boolean> chooseStat(final MultipartType multipartType){
+    private ListenableFuture<Boolean> chooseStat(final MultipartType multipartType) {
         ListenableFuture<Boolean> result = Futures.immediateCheckedFuture(Boolean.TRUE);
 
         switch (multipartType) {
@@ -214,7 +215,8 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     public void close() {
         if (CONTEXT_STATE.TERMINATION.equals(state)) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("StatisticsContext for node {} is already in TERMINATION state.", getDeviceInfo().getLOGValue());
+                LOG.debug("StatisticsContext for node {} is already in TERMINATION state.",
+                        getDeviceInfo().getLOGValue());
             }
         } else {
             this.state = CONTEXT_STATE.TERMINATION;
@@ -240,7 +242,8 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         this.pollTimeout = pollTimeout;
     }
 
-    private ListenableFuture<Boolean> statChainFuture(final ListenableFuture<Boolean> prevFuture, final MultipartType multipartType) {
+    private ListenableFuture<Boolean> statChainFuture(final ListenableFuture<Boolean> prevFuture,
+                                                      final MultipartType multipartType) {
         return Futures.transform(deviceConnectionCheck(), (AsyncFunction<Boolean, Boolean>) connectionResult -> Futures
                 .transform(prevFuture, (AsyncFunction<Boolean, Boolean>) result -> {
                     LOG.debug("Status of previous stat iteration for node {}: {}", deviceInfo.getLOGValue(), result);
@@ -254,7 +257,8 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
 
     @VisibleForTesting
     ListenableFuture<Boolean> deviceConnectionCheck() {
-        if (ConnectionContext.CONNECTION_STATE.RIP.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
+        if (ConnectionContext.CONNECTION_STATE.RIP.equals(deviceContext.getPrimaryConnectionContext()
+                .getConnectionState())) {
             final String errMsg = String
                     .format("Device connection for node %s doesn't exist anymore. Primary connection status : %s",
                             getDeviceInfo().getNodeId(),
@@ -286,7 +290,8 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     }
 
     @VisibleForTesting
-    void setStatisticsGatheringOnTheFlyService(final StatisticsGatheringOnTheFlyService<T> statisticsGatheringOnTheFlyService) {
+    void setStatisticsGatheringOnTheFlyService(final StatisticsGatheringOnTheFlyService<T>
+                                                       statisticsGatheringOnTheFlyService) {
         this.statisticsGatheringOnTheFlyService = statisticsGatheringOnTheFlyService;
     }
 
@@ -346,7 +351,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
 
         Futures.addCallback(this.gatherDynamicData(), new FutureCallback<Boolean>() {
             @Override
-            public void onSuccess(@Nullable Boolean aBoolean) {
+            public void onSuccess(@Nullable Boolean resultValue) {
                 mastershipChangeListener.onMasterRoleAcquired(
                         deviceInfo,
                         ContextChainMastershipState.INITIAL_GATHERING
