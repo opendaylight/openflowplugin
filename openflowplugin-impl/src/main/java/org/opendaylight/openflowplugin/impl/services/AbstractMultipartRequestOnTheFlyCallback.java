@@ -10,6 +10,8 @@ package org.opendaylight.openflowplugin.impl.services;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+
+import org.opendaylight.controller.md.sal.common.api.data.TransactionChainClosedException;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext.CONTEXT_STATE;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -32,7 +34,8 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeader> extends AbstractMultipartRequestCallback<T> {
+public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeader>
+        extends AbstractMultipartRequestCallback<T> {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractMultipartRequestOnTheFlyCallback.class);
     private final DeviceInfo deviceInfo;
     private final EventIdentifier doneEventIdentifier;
@@ -49,7 +52,8 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
                                                     final ConvertorExecutor convertorExecutor) {
         super(context, requestType, deviceContext, eventIdentifier);
         deviceInfo = deviceContext.getDeviceInfo();
-        doneEventIdentifier = new EventIdentifier(getMultipartType().name(), deviceContext.getDeviceInfo().getNodeId().toString());
+        doneEventIdentifier = new EventIdentifier(getMultipartType().name(),
+                deviceContext.getDeviceInfo().getNodeId().toString());
         txFacade = deviceContext;
         deviceRegistry = deviceContext;
         this.statisticsWriterProvider = statisticsWriterProvider;
@@ -84,26 +88,19 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
                 startCollecting();
             }
 
-            try {
-                MultipartReplyTranslatorUtil
+           //add try catch
+            MultipartReplyTranslatorUtil
                         .translate(resultCast, deviceInfo, convertorExecutor, null)
                         .ifPresent(reply -> {
                             try {
                                 statisticsWriterProvider
                                         .lookup(getMultipartType())
                                         .ifPresent(writer -> writer.write(reply, false));
-                            } catch (final Exception ex) {
+                            } catch (final TransactionChainClosedException ex) {
                                 LOG.warn("Stats processing of type {} for node {} failed during write-to-tx step",
                                         getMultipartType(), deviceInfo.getLOGValue(), ex);
                             }
                         });
-            } catch (final Exception ex) {
-                LOG.warn("Unexpected exception occurred while translating response: {}.", result.getClass(), ex);
-                setResult(RpcResultBuilder.<List<T>>failed().withError(RpcError.ErrorType.APPLICATION,
-                        String.format("Unexpected exception occurred while translating response: %s. %s", result.getClass(), ex)).build());
-                endCollecting(false);
-                return;
-            }
 
             if (!isReqMore(resultCast)) {
                 endCollecting(true);
@@ -111,7 +108,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
         }
     }
 
-    /**
+    /*
      * Get tx facade
      * @return tx facade
      */
@@ -119,7 +116,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
         return txFacade;
     }
 
-    /**
+    /*
      * Starts collecting of multipart data
      */
     private synchronized void startCollecting() {
@@ -138,6 +135,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
                         deviceRegistry.getDeviceFlowRegistry());
                 break;
             case OFPMPMETERCONFIG:
+                deviceRegistry.getDeviceMeterRegistry().processMarks();
                 StatisticsGatheringUtils.deleteAllKnownMeters(
                         getTxFacade(),
                         instanceIdentifier,
@@ -145,16 +143,19 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
                 deviceRegistry.getDeviceMeterRegistry().processMarks();
                 break;
             case OFPMPGROUPDESC:
+                deviceRegistry.getDeviceGroupRegistry().processMarks();
                 StatisticsGatheringUtils.deleteAllKnownGroups(
                         getTxFacade(),
                         instanceIdentifier,
                         deviceRegistry.getDeviceGroupRegistry());
                 deviceRegistry.getDeviceGroupRegistry().processMarks();
                 break;
+            default:
+                //no op
         }
     }
 
-    /**
+    /*
      * Ends collecting of multipart data
      * @param setResult set empty success result
      */
@@ -180,10 +181,12 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
             case OFPMPGROUPDESC:
                 deviceRegistry.getDeviceGroupRegistry().processMarks();
                 break;
+            default:
+                //no op
         }
     }
 
-    /**
+    /*
      * Get multipart type
      * @return multipart type
      */

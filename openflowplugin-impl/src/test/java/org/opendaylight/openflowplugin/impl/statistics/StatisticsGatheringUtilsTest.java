@@ -276,7 +276,6 @@ public class StatisticsGatheringUtilsTest {
         final KeyedInstanceIdentifier<Group, GroupKey> groupPath = dummyNodePath.augmentation(FlowCapableNode.class).child(Group.class, new GroupKey(storedGroupId));
 
         verify(deviceContext, Mockito.never()).addDeleteToTxChain(Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.<InstanceIdentifier<?>> any());
-        verify(deviceGroupRegistry).processMarks();
         verify(deviceGroupRegistry).store(storedGroupId);
         verify(deviceContext).writeToTransaction(
                 Matchers.eq(LogicalDatastoreType.OPERATIONAL), Matchers.eq(groupPath), Matchers.any(Group.class));
