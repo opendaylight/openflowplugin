@@ -10,10 +10,8 @@ package org.opendaylight.openflowplugin.impl.statistics;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.CheckedFuture;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
@@ -22,6 +20,10 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
@@ -54,8 +56,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Utils for gathering statistics.
@@ -76,33 +82,53 @@ public final class StatisticsGatheringUtils {
             final ConvertorExecutor convertorExecutor, final MultipartWriterProvider statisticsWriterProvider,
             final ListeningExecutorService executorService) {
         return Futures.transformAsync(statisticsGatheringService.getStatisticsOfType(
-           new EventIdentifier(QUEUE2_REQCTX + type.toString(), deviceInfo.getNodeId().toString()), type),
-            rpcResult -> executorService.submit(() -> {
-                final boolean rpcResultIsNull = rpcResult == null;
+                new EventIdentifier(QUEUE2_REQCTX + type.toString(), deviceInfo.getNodeId().toString()), type),
+                new AsyncFunction<RpcResult<List<T>>, Boolean>() {
+                    @Nullable
+                    @Override
+                    @SuppressWarnings("checkstyle:IllegalCatch")
+                    public ListenableFuture<Boolean> apply(@Nonnull final RpcResult<List<T>> rpcResult) {
+                        boolean isMultipartProcessed = Boolean.TRUE;
 
-                if (!rpcResultIsNull && rpcResult.isSuccessful()) {
-                    LOG.debug("Stats reply successfully received for node {} of type {}", deviceInfo.getNodeId(), type);
-                    // TODO: in case the result value is null then multipart data probably got processed
-                    // TODO: on the fly. This contract should by clearly stated and enforced.
-                    // TODO: Now simple true value is returned
-                    if (Objects.nonNull(rpcResult.getResult()) && !rpcResult.getResult().isEmpty()) {
-                        final List<DataContainer> allMultipartData = rpcResult.getResult().stream()
-                                .map(reply -> MultipartReplyTranslatorUtil
-                                        .translate(reply, deviceInfo, convertorExecutor, null))
-                                .filter(java.util.Optional::isPresent).map(java.util.Optional::get)
-                                .collect(Collectors.toList());
+                        if (rpcResult.isSuccessful()) {
+                            LOG.debug("Stats reply successfully received for node {} of type {}", deviceInfo.getNodeId(), type);
+                            // TODO: in case the result value is null then multipart data probably got processed
+                            // TODO: on the fly. This contract should by clearly stated and enforced.
+                            // TODO: Now simple true value is returned
+                            if (Objects.nonNull(rpcResult.getResult()) && !rpcResult.getResult().isEmpty()) {
+                                try {
+                                    final List<DataContainer> allMultipartData = rpcResult
+                                            .getResult()
+                                            .stream()
+                                            .map(reply -> MultipartReplyTranslatorUtil
+                                                    .translate(reply, deviceInfo, convertorExecutor, null))
+                                            .filter(java.util.Optional::isPresent)
+                                            .map(java.util.Optional::get)
+                                            .collect(Collectors.toList());
 
-                        return processStatistics(type, allMultipartData, txFacade, registry, deviceInfo,
-                                                 statisticsWriterProvider);
-                    } else {
-                        LOG.debug("Stats reply was empty for node {} of type {}", deviceInfo.getNodeId(), type);
+                                    return Futures.immediateFuture(processStatistics(
+                                            type,
+                                            allMultipartData,
+                                            txFacade,
+                                            registry,
+                                            deviceInfo,
+                                            statisticsWriterProvider));
+                                } catch (final TransactionChainClosedException e) {
+                                    LOG.warn("Stats processing of type {} for node {} failed with error: {}",
+                                            type, deviceInfo, e);
+                                    return Futures.immediateFailedFuture(e);
+                                }
+                            } else {
+                                LOG.debug("Stats reply was empty for node {} of type {}", deviceInfo.getNodeId(), type);
+                            }
+                        } else {
+                            LOG.warn("Stats reply FAILED for node {} of type {}: {}", deviceInfo.getNodeId(), type,
+                                    rpcResult.isSuccessful() ? "" : rpcResult.getErrors());
+                            isMultipartProcessed = Boolean.FALSE;
+                        }
+                        return Futures.immediateFuture(isMultipartProcessed);
                     }
-                } else {
-                    LOG.warn("Stats reply FAILED for node {} of type {}: {}", deviceInfo.getNodeId(), type,
-                             rpcResultIsNull ? "" : rpcResult.getErrors());
-                }
-                return false;
-            }));
+                });
     }
 
     private static boolean processStatistics(final MultipartType type, final List<? extends DataContainer> statistics,
@@ -114,13 +140,21 @@ public final class StatisticsGatheringUtils {
 
         switch (type) {
             case OFPMPFLOW:
+                deviceRegistry.getDeviceFlowRegistry().processMarks();
                 deleteAllKnownFlows(txFacade, instanceIdentifier, deviceRegistry.getDeviceFlowRegistry());
                 break;
             case OFPMPMETERCONFIG:
+                LOG.debug("deleteAllKnownMeters device {}", deviceInfo);
+                deviceRegistry.getDeviceMeterRegistry().processMarks();
                 deleteAllKnownMeters(txFacade, instanceIdentifier, deviceRegistry.getDeviceMeterRegistry());
+                deviceRegistry.getDeviceMeterRegistry().processMarks();
                 break;
             case OFPMPGROUPDESC:
+                LOG.debug("deleteAllKnownGroups OFPMPGROUPDESC device {},"
+                        + " group size - {}, ", deviceInfo, deviceRegistry.getDeviceGroupRegistry().size());
+                deviceRegistry.getDeviceGroupRegistry().processMarks();
                 deleteAllKnownGroups(txFacade, instanceIdentifier, deviceRegistry.getDeviceGroupRegistry());
+                deviceRegistry.getDeviceGroupRegistry().processMarks();
                 break;
             default:
                 // no operation
@@ -128,21 +162,6 @@ public final class StatisticsGatheringUtils {
 
         if (writeStatistics(type, statistics, deviceInfo, statisticsWriterProvider)) {
             txFacade.submitTransaction();
-
-            switch (type) {
-                case OFPMPFLOW:
-                    deviceRegistry.getDeviceFlowRegistry().processMarks();
-                    break;
-                case OFPMPMETERCONFIG:
-                    deviceRegistry.getDeviceMeterRegistry().processMarks();
-                    break;
-                case OFPMPGROUPDESC:
-                    deviceRegistry.getDeviceGroupRegistry().processMarks();
-                    break;
-                default:
-                    // no operation
-            }
-
             LOG.debug("Stats reply added to transaction for node {} of type {}", deviceInfo.getNodeId(), type);
             return true;
         }
@@ -167,7 +186,7 @@ public final class StatisticsGatheringUtils {
             }));
         } catch (final Exception ex) {
             LOG.warn("Stats processing of type {} for node {} " + "failed during write-to-tx step", type, deviceInfo,
-                     ex);
+                    ex);
         }
 
         return result.get();
@@ -189,18 +208,18 @@ public final class StatisticsGatheringUtils {
             Futures.transform(Futures.catchingAsync(future, Throwable.class, throwable -> {
                 return Futures.immediateFailedFuture(throwable);
             }), (Function<Optional<FlowCapableNode>, Void>) flowCapNodeOpt -> {
-                    // we have to read actual tables with all information before we set empty Flow list,
-                    // merge is expensive and not applicable for lists
-                    if (flowCapNodeOpt != null && flowCapNodeOpt.isPresent()) {
-                        for (final Table tableData : flowCapNodeOpt.get().getTable()) {
-                            final Table table = new TableBuilder(tableData).setFlow(Collections.emptyList()).build();
-                            final InstanceIdentifier<Table> iiToTable = instanceIdentifier
-                                    .child(Table.class, tableData.getKey());
-                            txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);
-                        }
+                // we have to read actual tables with all information before we set empty Flow list,
+                // merge is expensive and not applicable for lists
+                if (flowCapNodeOpt != null && flowCapNodeOpt.isPresent()) {
+                    for (final Table tableData : flowCapNodeOpt.get().getTable()) {
+                        final Table table = new TableBuilder(tableData).setFlow(Collections.emptyList()).build();
+                        final InstanceIdentifier<Table> iiToTable = instanceIdentifier
+                                .child(Table.class, tableData.getKey());
+                        txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);
                     }
-                    return null;
-                }).get();
+                }
+                return null;
+            }).get();
         } catch (InterruptedException | ExecutionException ex) {
             LOG.debug("Failed to delete {} flows, exception: {}", deviceFlowRegistry.size(), ex);
         }
@@ -209,17 +228,26 @@ public final class StatisticsGatheringUtils {
     public static void deleteAllKnownMeters(final TxFacade txFacade,
                                             final InstanceIdentifier<FlowCapableNode> instanceIdentifier,
                                             final DeviceMeterRegistry meterRegistry) {
-        meterRegistry.forEach(meterId -> txFacade.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL,
-                                                                     instanceIdentifier.child(Meter.class,
-                                                                                              new MeterKey(meterId))));
+        meterRegistry.forEach(meterId -> {
+            txFacade
+                    .addDeleteToTxChain(
+                            LogicalDatastoreType.OPERATIONAL,
+                            instanceIdentifier.child(Meter.class, new MeterKey(meterId)));
+            meterRegistry.addMark(meterId);
+        });
     }
 
     public static void deleteAllKnownGroups(final TxFacade txFacade,
                                             final InstanceIdentifier<FlowCapableNode> instanceIdentifier,
                                             final DeviceGroupRegistry groupRegistry) {
-        groupRegistry.forEach(groupId -> txFacade.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL,
-                                                                     instanceIdentifier.child(Group.class,
-                                                                                              new GroupKey(groupId))));
+        LOG.debug("deleteAllKnownGroups on device targetType {}", instanceIdentifier.getTargetType());
+        groupRegistry.forEach(groupId -> {
+            txFacade
+                    .addDeleteToTxChain(
+                            LogicalDatastoreType.OPERATIONAL,
+                            instanceIdentifier.child(Group.class, new GroupKey(groupId)));
+            groupRegistry.addMark(groupId);
+        });
     }
 
     /**
@@ -235,8 +263,8 @@ public final class StatisticsGatheringUtils {
         final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AND_TIME_FORMAT);
         final FlowCapableStatisticsGatheringStatus gatheringStatus = new FlowCapableStatisticsGatheringStatusBuilder()
                 .setSnapshotGatheringStatusStart(new SnapshotGatheringStatusStartBuilder()
-                                                         .setBegin(new DateAndTime(simpleDateFormat.format(new Date())))
-                                                         .build())
+                        .setBegin(new DateAndTime(simpleDateFormat.format(new Date())))
+                        .build())
                 .setSnapshotGatheringStatusEnd(null) // TODO: reconsider if really need to clean end mark here
                 .build();
         try {
