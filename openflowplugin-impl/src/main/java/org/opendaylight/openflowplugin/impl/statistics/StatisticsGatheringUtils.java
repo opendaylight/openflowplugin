@@ -62,7 +62,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Utils for gathering statistics
+ * Utils for gathering statistics.
  */
 public final class StatisticsGatheringUtils {
 
@@ -74,13 +74,15 @@ public final class StatisticsGatheringUtils {
         throw new IllegalStateException("This class should not be instantiated.");
     }
 
-    static <T extends OfHeader>ListenableFuture<Boolean> gatherStatistics(final StatisticsGatherer<T> statisticsGatheringService,
+    static <T extends OfHeader> ListenableFuture<Boolean> gatherStatistics(final StatisticsGatherer<T>
+                                                                                   statisticsGatheringService,
                                                                           final DeviceInfo deviceInfo,
                                                                           final MultipartType type,
                                                                           final TxFacade txFacade,
                                                                           final DeviceRegistry registry,
                                                                           final ConvertorExecutor convertorExecutor,
-                                                                          final MultipartWriterProvider statisticsWriterProvider) {
+                                                                          final MultipartWriterProvider
+                                                                                   statisticsWriterProvider) {
         return Futures.transform(
                 statisticsGatheringService.getStatisticsOfType(
                         new EventIdentifier(QUEUE2_REQCTX + type.toString(), deviceInfo.getNodeId().toString()),
@@ -92,10 +94,13 @@ public final class StatisticsGatheringUtils {
                         boolean isMultipartProcessed = Boolean.TRUE;
 
                         if (rpcResult.isSuccessful()) {
-                            LOG.debug("Stats reply successfully received for node {} of type {}", deviceInfo.getNodeId(), type);
+                            LOG.debug("Stats reply successfully received for node {} of type {}",
+                                    deviceInfo.getNodeId(), type);
 
-                            // TODO: in case the result value is null then multipart data probably got processed on the fly -
-                            // TODO: this contract should by clearly stated and enforced - now simple true value is returned
+                            // TODO: in case the result value is null
+                            // then multipart data probably got processed on the fly -
+                            // TODO: this contract should by clearly stated
+                            // and enforced - now simple true value is returned
                             if (Objects.nonNull(rpcResult.getResult()) && !rpcResult.getResult().isEmpty()) {
                                 final List<DataContainer> allMultipartData;
 
