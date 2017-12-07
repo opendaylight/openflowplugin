@@ -8,9 +8,11 @@
 package org.opendaylight.openflowplugin.impl.services;
 
 import com.google.common.util.concurrent.Service;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceRegistry;
@@ -33,7 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeader>
-                                                        extends AbstractMultipartRequestCallback<T> {
+        extends AbstractMultipartRequestCallback<T> {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractMultipartRequestOnTheFlyCallback.class);
     private final DeviceInfo deviceInfo;
     private final EventIdentifier doneEventIdentifier;
@@ -103,8 +105,8 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
                 LOG.warn("Unexpected exception occurred while translating response: {}.", result.getClass(), ex);
                 setResult(RpcResultBuilder.<List<T>>failed().withError(RpcError.ErrorType.APPLICATION,
                         String.format("Unexpected exception occurred while translating response: %s. %s",
-                                      result.getClass(),
-                                      ex)).build());
+                                result.getClass(),
+                                ex)).build());
                 endCollecting(false);
                 return;
             }
@@ -117,6 +119,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
 
     /**
      * Get tx facade.
+     *
      * @return tx facade
      */
     protected TxFacade getTxFacade() {
@@ -142,16 +145,19 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
                         deviceRegistry.getDeviceFlowRegistry());
                 break;
             case OFPMPMETERCONFIG:
+                deviceRegistry.getDeviceMeterRegistry().processMarks();
                 StatisticsGatheringUtils.deleteAllKnownMeters(
                         getTxFacade(),
                         instanceIdentifier,
                         deviceRegistry.getDeviceMeterRegistry());
+                deviceRegistry.getDeviceMeterRegistry().processMarks();
                 break;
             case OFPMPGROUPDESC:
                 StatisticsGatheringUtils.deleteAllKnownGroups(
                         getTxFacade(),
                         instanceIdentifier,
                         deviceRegistry.getDeviceGroupRegistry());
+                deviceRegistry.getDeviceGroupRegistry().processMarks();
                 break;
             default:
                 // no operation
@@ -160,6 +166,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
 
     /**
      * Ends collecting of multipart data.
+     *
      * @param setResult set empty success result
      */
     private void endCollecting(final boolean setResult) {
@@ -191,6 +198,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
 
     /**
      * Get multipart type.
+     *
      * @return multipart type
      */
     protected abstract MultipartType getMultipartType();

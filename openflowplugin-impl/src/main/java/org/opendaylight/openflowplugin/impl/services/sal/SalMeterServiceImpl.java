@@ -84,7 +84,6 @@ public class SalMeterServiceImpl implements SalMeterService {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Meter add with id={} finished without error", input.getMeterId());
                     }
-                    deviceContext.getDeviceMeterRegistry().store(input.getMeterId());
                 } else {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Meter add with id={} failed, errors={}", input.getMeterId(),
@@ -147,7 +146,7 @@ public class SalMeterServiceImpl implements SalMeterService {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Meter remove with id={} finished without error", input.getMeterId());
                     }
-                    removeMeter.getDeviceRegistry().getDeviceMeterRegistry().addMark(input.getMeterId());
+                    deviceContext.getDeviceMeterRegistry().addMark(input.getMeterId());
                 } else {
                     LOG.warn("Meter remove with id={} failed, errors={}", input.getMeterId(),
                         ErrorUtil.errorsToString(result.getErrors()));
