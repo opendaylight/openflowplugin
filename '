@@ -1,0 +1,25 @@
+Bug 7826
+Identified the root cause for issue TransactionCommitFailed for group during statistic collection.
+
+Change-Id: I3498850def4cdd19a81af85552afb5151cb4160d
+Signed-off-by: sunilkumarms <sunil.g.kumar@ericsson.com>
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# Date:      Thu Dec 7 16:16:56 2017 +0530
+#
+# On branch stable/nitrogen
+# Your branch is ahead of 'origin/stable/nitrogen' by 1 commit.
+#   (use "git push" to publish your local commits)
+#
+# Changes to be committed:
+#	modified:   openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/group/DeviceGroupRegistryImpl.java
+#	modified:   openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/AbstractMultipartRequestOnTheFlyCallback.java
+#	modified:   openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/sal/SalGroupServiceImpl.java
+#	modified:   openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/sal/SalMeterServiceImpl.java
+#	modified:   openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsGatheringUtils.java
+#	modified:   openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/services/sal/SalGroupServiceImplTest.java
+#	modified:   openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/services/sal/SalMeterServiceImplTest.java
+#	modified:   openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsGatheringUtilsTest.java
+#
