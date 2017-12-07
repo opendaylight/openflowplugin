@@ -7,13 +7,12 @@
  */
 package org.opendaylight.openflowplugin.impl.services.sal;
 
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.Test;
 import org.mockito.Mock;
-import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
+import org.opendaylight.openflowplugin.impl.registry.meter.DeviceMeterRegistryImpl;
 import org.opendaylight.openflowplugin.impl.services.ServiceMocking;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
@@ -37,7 +36,7 @@ public class SalMeterServiceImplTest extends ServiceMocking {
     private static final Long DUMMY_METTER_ID = 2000L;
 
     @Mock
-    DeviceMeterRegistry mockedDeviceMeterRegistry;
+    DeviceMeterRegistryImpl mockedDeviceMeterRegistry;
 
     SalMeterServiceImpl salMeterService;
 
@@ -53,10 +52,6 @@ public class SalMeterServiceImplTest extends ServiceMocking {
         addMeter();
     }
 
-    @Test
-    public void testAddMeterWithItemLifecycle() throws Exception {
-        addMeter();
-    }
 
     private void addMeter() {
         final MeterId dummyMeterId = new MeterId(DUMMY_METER_ID);
@@ -66,16 +61,10 @@ public class SalMeterServiceImplTest extends ServiceMocking {
 
         salMeterService.addMeter(addMeterInput);
         verify(mockedRequestContextStack).createRequestContext();
-        verify(mockedDeviceMeterRegistry).store(eq(dummyMeterId));
     }
 
     @Test
     public void testUpdateMeter() throws Exception {
-        updateMeter();
-    }
-
-    @Test
-    public void testUpdateMeterWithItemLifecycle() throws Exception {
         updateMeter();
     }
 
@@ -99,11 +88,6 @@ public class SalMeterServiceImplTest extends ServiceMocking {
         removeMeter();
     }
 
-    @Test
-    public void testRemoveMeterWithItemLifecycle() throws Exception {
-        removeMeter();
-    }
-
     private void removeMeter() throws Exception {
         final MeterId dummyMeterId = new MeterId(DUMMY_METER_ID);
         RemoveMeterInput removeMeterInput = new RemoveMeterInputBuilder().setMeterId(dummyMeterId).build();
@@ -112,6 +96,5 @@ public class SalMeterServiceImplTest extends ServiceMocking {
 
         salMeterService.removeMeter(removeMeterInput);
         verify(mockedRequestContextStack).createRequestContext();
-        verify(mockedDeviceMeterRegistry).addMark(eq(dummyMeterId));
     }
 }
