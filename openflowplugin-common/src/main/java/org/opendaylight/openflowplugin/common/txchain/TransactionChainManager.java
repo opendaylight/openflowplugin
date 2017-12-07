@@ -156,6 +156,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
         transactionChain = null;
     }
 
+    @GuardedBy("txLock")
     public boolean submitTransaction() {
         synchronized (txLock) {
             if (!submitIsEnabled) {
