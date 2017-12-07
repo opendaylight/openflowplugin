@@ -43,6 +43,11 @@
                                <type>cfg</type>
                                <classifier>config</classifier>
                            </artifact>
+                           <artifact>
+                               <file>${project.build.directory}/classes/initial/openflow-provider-config.xml</file>
+                               <type>xml</type>
+                               <classifier>config</classifier>
+                           </artifact>
                        </artifacts>
                    </configuration>
                </execution>

@@ -26,8 +26,8 @@
     <reference id="mastershipChangeServiceManager"
                interface="org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager"/>
 
-    <odl:clustered-app-config id="openflowProviderConfig"
-                              binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig"/>
+    <!--<odl:clustered-app-config id="openflowProviderConfig"-->
+                              <!--binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig"/>-->
 
     <bean id="configurationService"
           factory-ref="configurationServiceFactory"
@@ -68,5 +68,11 @@
             <value>org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider</value>
         </interfaces>
     </service>
+
+    <odl:clustered-app-config id="openflowProviderConfig"
+                              binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig"
+                              default-config-file-name="openflow-provider-config.xml"
+                              update-strategy="none">
+    </odl:clustered-app-config>
 
 </blueprint>
