@@ -53,10 +53,6 @@ public class SalGroupServiceImplTest extends ServiceMocking {
         addGroup();
     }
 
-    @Test
-    public void testAddGroupWithItemLifecycle() throws Exception {
-        addGroup();
-    }
 
     private void addGroup() {
         final GroupId dummyGroupId = new GroupId(DUMMY_GROUP_ID);
@@ -66,7 +62,6 @@ public class SalGroupServiceImplTest extends ServiceMocking {
 
         salGroupService.addGroup(addGroupInput);
         verify(mockedRequestContextStack).createRequestContext();
-        verify(mockedDeviceGroupRegistry).store(eq(dummyGroupId));
     }
 
     @Test
@@ -74,10 +69,6 @@ public class SalGroupServiceImplTest extends ServiceMocking {
         updateGroup();
     }
 
-    @Test
-    public void testUpdateGroupWithItemLifecycle() throws Exception {
-        updateGroup();
-    }
 
     private void updateGroup() {
         final UpdatedGroup updatedGroup = new UpdatedGroupBuilder().setGroupId(new GroupId(DUMMY_GROUP_ID)).build();
@@ -92,11 +83,6 @@ public class SalGroupServiceImplTest extends ServiceMocking {
 
     @Test
     public void testRemoveGroup() throws Exception {
-        removeGroup();
-    }
-
-    @Test
-    public void testRemoveGroupWithItemLifecycle() throws Exception {
         removeGroup();
     }
 
