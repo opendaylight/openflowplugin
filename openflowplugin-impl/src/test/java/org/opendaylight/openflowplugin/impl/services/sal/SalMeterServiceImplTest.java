@@ -7,8 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl.services.sal;
 
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -73,10 +71,13 @@ public class SalMeterServiceImplTest extends ServiceMocking {
     }
 
     private void updateMeter() throws Exception {
-        final UpdatedMeter dummyUpdatedMeter = new UpdatedMeterBuilder().setMeterId(new MeterId(DUMMY_METTER_ID)).build();
-        final OriginalMeter dummyOriginalMeter = new OriginalMeterBuilder().setMeterId(new MeterId(DUMMY_METTER_ID)).build();
+        final UpdatedMeter dummyUpdatedMeter = new UpdatedMeterBuilder()
+                .setMeterId(new MeterId(DUMMY_METTER_ID)).build();
+        final OriginalMeter dummyOriginalMeter = new OriginalMeterBuilder()
+                .setMeterId(new MeterId(DUMMY_METTER_ID)).build();
 
-        final UpdateMeterInput updateMeterInput = new UpdateMeterInputBuilder().setUpdatedMeter(dummyUpdatedMeter).setOriginalMeter(dummyOriginalMeter).build();
+        final UpdateMeterInput updateMeterInput = new UpdateMeterInputBuilder()
+                .setUpdatedMeter(dummyUpdatedMeter).setOriginalMeter(dummyOriginalMeter).build();
 
         this.<AddMeterOutput>mockSuccessfulFuture();
 

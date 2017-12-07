@@ -32,7 +32,8 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeader> extends AbstractMultipartRequestCallback<T> {
+public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeader>
+        extends AbstractMultipartRequestCallback<T> {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractMultipartRequestOnTheFlyCallback.class);
     private final DeviceInfo deviceInfo;
     private final EventIdentifier doneEventIdentifier;
@@ -49,7 +50,8 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
                                                     final ConvertorExecutor convertorExecutor) {
         super(context, requestType, deviceContext, eventIdentifier);
         deviceInfo = deviceContext.getDeviceInfo();
-        doneEventIdentifier = new EventIdentifier(getMultipartType().name(), deviceContext.getDeviceInfo().getNodeId().toString());
+        doneEventIdentifier = new EventIdentifier(getMultipartType().name(),
+                deviceContext.getDeviceInfo().getNodeId().toString());
         txFacade = deviceContext;
         deviceRegistry = deviceContext;
         this.statisticsWriterProvider = statisticsWriterProvider;
@@ -57,7 +59,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "checkstyle:IllegalCatch"})
     public void onSuccess(final OfHeader result) {
         if (Objects.isNull(result)) {
             LOG.warn("Response received was null.");
@@ -100,7 +102,8 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
             } catch (final Exception ex) {
                 LOG.warn("Unexpected exception occurred while translating response: {}.", result.getClass(), ex);
                 setResult(RpcResultBuilder.<List<T>>failed().withError(RpcError.ErrorType.APPLICATION,
-                        String.format("Unexpected exception occurred while translating response: %s. %s", result.getClass(), ex)).build());
+                        String.format("Unexpected exception occurred while "
+                                + "translating response: %s. %s", result.getClass(), ex)).build());
                 endCollecting(false);
                 return;
             }
@@ -112,7 +115,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
     }
 
     /**
-     * Get tx facade
+     * Get tx facade.
      * @return tx facade
      */
     protected TxFacade getTxFacade() {
@@ -120,7 +123,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
     }
 
     /**
-     * Starts collecting of multipart data
+     * Starts collecting of multipart data.
      */
     private synchronized void startCollecting() {
         EventsTimeCounter.markStart(doneEventIdentifier);
@@ -138,6 +141,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
                         deviceRegistry.getDeviceFlowRegistry());
                 break;
             case OFPMPMETERCONFIG:
+                deviceRegistry.getDeviceMeterRegistry().processMarks();
                 StatisticsGatheringUtils.deleteAllKnownMeters(
                         getTxFacade(),
                         instanceIdentifier,
@@ -145,17 +149,20 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
                 deviceRegistry.getDeviceMeterRegistry().processMarks();
                 break;
             case OFPMPGROUPDESC:
+                deviceRegistry.getDeviceGroupRegistry().processMarks();
                 StatisticsGatheringUtils.deleteAllKnownGroups(
                         getTxFacade(),
                         instanceIdentifier,
                         deviceRegistry.getDeviceGroupRegistry());
                 deviceRegistry.getDeviceGroupRegistry().processMarks();
                 break;
+            default:
+                //no op
         }
     }
 
     /**
-     * Ends collecting of multipart data
+     * Ends collecting of multipart data.
      * @param setResult set empty success result
      */
     private void endCollecting(final boolean setResult) {
@@ -180,11 +187,13 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
             case OFPMPGROUPDESC:
                 deviceRegistry.getDeviceGroupRegistry().processMarks();
                 break;
+            default:
+                //no op
         }
     }
 
     /**
-     * Get multipart type
+     * Get multipart type.
      * @return multipart type
      */
     protected abstract MultipartType getMultipartType();
