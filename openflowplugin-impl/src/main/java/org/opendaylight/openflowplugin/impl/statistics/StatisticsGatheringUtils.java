@@ -15,7 +15,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
-
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
@@ -24,7 +23,6 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
-
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
@@ -79,21 +77,21 @@ public final class StatisticsGatheringUtils {
             final ConvertorExecutor convertorExecutor, final MultipartWriterProvider statisticsWriterProvider,
             final ListeningExecutorService executorService) {
         return Futures.transformAsync(statisticsGatheringService.getStatisticsOfType(
-                new EventIdentifier(QUEUE2_REQCTX + type.toString(), deviceInfo.getNodeId().toString()), type),
+           new EventIdentifier(QUEUE2_REQCTX + type.toString(), deviceInfo.getNodeId().toString()), type),
             rpcResult -> executorService.submit(() -> {
                 final boolean rpcResultIsNull = rpcResult == null;
+
                 if (!rpcResultIsNull && rpcResult.isSuccessful()) {
-                    LOG.debug("Stats reply successfully received for node {} of type {}",
-                                deviceInfo.getNodeId(), type);
-                        // TODO: in case the result value is null then multipart data probably got processed
-                        // TODO: on the fly. This contract should by clearly stated and enforced.
-                        // TODO: Now simple true value is returned
+                    LOG.debug("Stats reply successfully received for node {} of type {}", deviceInfo.getNodeId(), type);
+                    // TODO: in case the result value is null then multipart data probably got processed
+                    // TODO: on the fly. This contract should by clearly stated and enforced.
+                    // TODO: Now simple true value is returned
                     if (Objects.nonNull(rpcResult.getResult()) && !rpcResult.getResult().isEmpty()) {
                         final List<DataContainer> allMultipartData = rpcResult.getResult().stream()
-                                    .map(reply -> MultipartReplyTranslatorUtil
-                                            .translate(reply, deviceInfo, convertorExecutor, null))
-                                    .filter(java.util.Optional::isPresent).map(java.util.Optional::get)
-                                    .collect(Collectors.toList());
+                                .map(reply -> MultipartReplyTranslatorUtil
+                                        .translate(reply, deviceInfo, convertorExecutor, null))
+                                .filter(java.util.Optional::isPresent).map(java.util.Optional::get)
+                                .collect(Collectors.toList());
 
                         return processStatistics(type, allMultipartData, txFacade, registry, deviceInfo,
                                     statisticsWriterProvider);
@@ -183,8 +181,8 @@ public final class StatisticsGatheringUtils {
             Futures.transform(Futures.catchingAsync(future, Throwable.class, throwable -> {
                 return Futures.immediateFailedFuture(throwable);
             }), (Function<Optional<FlowCapableNode>, Void>) flowCapNodeOpt -> {
-                // we have to read actual tables with all information before we set empty Flow list,
-                // merge is expensive and not applicable for lists
+                    // we have to read actual tables with all information before we set empty Flow list,
+                    // merge is expensive and not applicable for lists
                     if (flowCapNodeOpt != null && flowCapNodeOpt.isPresent()) {
                         for (final Table tableData : flowCapNodeOpt.get().getTable()) {
                             final Table table = new TableBuilder(tableData).setFlow(Collections.emptyList()).build();
@@ -238,8 +236,8 @@ public final class StatisticsGatheringUtils {
         final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AND_TIME_FORMAT);
         final FlowCapableStatisticsGatheringStatus gatheringStatus = new FlowCapableStatisticsGatheringStatusBuilder()
                 .setSnapshotGatheringStatusStart(new SnapshotGatheringStatusStartBuilder()
-                        .setBegin(new DateAndTime(simpleDateFormat.format(new Date())))
-                        .build())
+                                                         .setBegin(new DateAndTime(simpleDateFormat.format(new Date())))
+                                                         .build())
                 .setSnapshotGatheringStatusEnd(null) // TODO: reconsider if really need to clean end mark here
                 .build();
         try {
