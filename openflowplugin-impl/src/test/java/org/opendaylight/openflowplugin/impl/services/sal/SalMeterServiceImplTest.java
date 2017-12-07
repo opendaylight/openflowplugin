@@ -53,10 +53,6 @@ public class SalMeterServiceImplTest extends ServiceMocking {
         addMeter();
     }
 
-    @Test
-    public void testAddMeterWithItemLifecycle() throws Exception {
-        addMeter();
-    }
 
     private void addMeter() {
         final MeterId dummyMeterId = new MeterId(DUMMY_METER_ID);
@@ -66,16 +62,10 @@ public class SalMeterServiceImplTest extends ServiceMocking {
 
         salMeterService.addMeter(addMeterInput);
         verify(mockedRequestContextStack).createRequestContext();
-        verify(mockedDeviceMeterRegistry).store(eq(dummyMeterId));
     }
 
     @Test
     public void testUpdateMeter() throws Exception {
-        updateMeter();
-    }
-
-    @Test
-    public void testUpdateMeterWithItemLifecycle() throws Exception {
         updateMeter();
     }
 
@@ -96,11 +86,6 @@ public class SalMeterServiceImplTest extends ServiceMocking {
 
     @Test
     public void testRemoveMeter() throws Exception {
-        removeMeter();
-    }
-
-    @Test
-    public void testRemoveMeterWithItemLifecycle() throws Exception {
         removeMeter();
     }
 
