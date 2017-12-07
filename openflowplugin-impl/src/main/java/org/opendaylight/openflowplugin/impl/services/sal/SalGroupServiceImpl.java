@@ -13,8 +13,8 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
-import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerGroupService;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerGroupService;
+import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerGroupService;
 import org.opendaylight.openflowplugin.impl.util.ErrorUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
@@ -37,21 +37,30 @@ public class SalGroupServiceImpl implements SalGroupService {
     private final SingleLayerGroupService<AddGroupOutput> addGroupMessage;
     private final SingleLayerGroupService<UpdateGroupOutput> updateGroupMessage;
     private final SingleLayerGroupService<RemoveGroupOutput> removeGroupMessage;
+    private final DeviceContext deviceContext;
 
+    public SalGroupServiceImpl(final RequestContextStack requestContextStack,
+                               final DeviceContext deviceContext, final ConvertorExecutor convertorExecutor) {
+        addGroup = new MultiLayerGroupService<>(requestContextStack, deviceContext,
+                AddGroupOutput.class, convertorExecutor);
+        updateGroup = new MultiLayerGroupService<>(requestContextStack, deviceContext,
+                UpdateGroupOutput.class, convertorExecutor);
+        removeGroup = new MultiLayerGroupService<>(requestContextStack, deviceContext,
+                RemoveGroupOutput.class, convertorExecutor);
 
-    public SalGroupServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext, final ConvertorExecutor convertorExecutor) {
-        addGroup = new MultiLayerGroupService<>(requestContextStack, deviceContext, AddGroupOutput.class, convertorExecutor);
-        updateGroup = new MultiLayerGroupService<>(requestContextStack, deviceContext, UpdateGroupOutput.class, convertorExecutor);
-        removeGroup = new MultiLayerGroupService<>(requestContextStack, deviceContext, RemoveGroupOutput.class, convertorExecutor);
-
-        addGroupMessage = new SingleLayerGroupService<>(requestContextStack, deviceContext, AddGroupOutput.class);
-        updateGroupMessage = new SingleLayerGroupService<>(requestContextStack, deviceContext, UpdateGroupOutput.class);
-        removeGroupMessage = new SingleLayerGroupService<>(requestContextStack, deviceContext, RemoveGroupOutput.class);
+        addGroupMessage = new SingleLayerGroupService<>(requestContextStack,
+                deviceContext, AddGroupOutput.class);
+        updateGroupMessage = new SingleLayerGroupService<>(requestContextStack,
+                deviceContext, UpdateGroupOutput.class);
+        removeGroupMessage = new SingleLayerGroupService<>(requestContextStack,
+                deviceContext, RemoveGroupOutput.class);
+        this.deviceContext = deviceContext;
     }
 
     @Override
     public Future<RpcResult<AddGroupOutput>> addGroup(final AddGroupInput input) {
-        final ListenableFuture<RpcResult<AddGroupOutput>> resultFuture = addGroupMessage.canUseSingleLayerSerialization()
+        final ListenableFuture<RpcResult<AddGroupOutput>> resultFuture = addGroupMessage
+                .canUseSingleLayerSerialization()
             ? addGroupMessage.handleServiceCall(input)
             : addGroup.handleServiceCall(input);
 
@@ -72,8 +81,9 @@ public class SalGroupServiceImpl implements SalGroupService {
             }
 
             @Override
-            public void onFailure(Throwable t) {
-                LOG.warn("Service call for adding group={} failed, reason: {}", input.getGroupId().getValue(), t);
+            public void onFailure(Throwable throwable) {
+                LOG.warn("Service call for adding group={} failed, reason: {}", input.getGroupId().getValue(),
+                        throwable);
             }
         });
         return resultFuture;
@@ -82,7 +92,8 @@ public class SalGroupServiceImpl implements SalGroupService {
 
     @Override
     public Future<RpcResult<UpdateGroupOutput>> updateGroup(final UpdateGroupInput input) {
-        final ListenableFuture<RpcResult<UpdateGroupOutput>> resultFuture = updateGroupMessage.canUseSingleLayerSerialization()
+        final ListenableFuture<RpcResult<UpdateGroupOutput>> resultFuture = updateGroupMessage
+                .canUseSingleLayerSerialization()
             ? updateGroupMessage.handleServiceCall(input.getUpdatedGroup())
             : updateGroup.handleServiceCall(input.getUpdatedGroup());
 
@@ -102,9 +113,9 @@ public class SalGroupServiceImpl implements SalGroupService {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Throwable throwable) {
                 LOG.warn("Service call for updating group={} failed, reason: {}",
-                        input.getOriginalGroup().getGroupId(), t);
+                        input.getOriginalGroup().getGroupId(), throwable);
             }
         });
         return resultFuture;
@@ -112,7 +123,8 @@ public class SalGroupServiceImpl implements SalGroupService {
 
     @Override
     public Future<RpcResult<RemoveGroupOutput>> removeGroup(final RemoveGroupInput input) {
-        final ListenableFuture<RpcResult<RemoveGroupOutput>> resultFuture = removeGroupMessage.canUseSingleLayerSerialization()
+        final ListenableFuture<RpcResult<RemoveGroupOutput>> resultFuture = removeGroupMessage
+                .canUseSingleLayerSerialization()
             ? removeGroupMessage.handleServiceCall(input)
             : removeGroup.handleServiceCall(input);
 
@@ -123,6 +135,7 @@ public class SalGroupServiceImpl implements SalGroupService {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Group remove with id={} finished without error", input.getGroupId().getValue());
                     }
+                    deviceContext.getDeviceGroupRegistry().addMark(input.getGroupId());
                 } else {
                     LOG.warn("Group remove with id={} failed, errors={}", input.getGroupId().getValue(),
                         ErrorUtil.errorsToString(result.getErrors()));
@@ -131,9 +144,9 @@ public class SalGroupServiceImpl implements SalGroupService {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Throwable throwable) {
                 LOG.warn("Service call for removing group={} failed, reason: {}",
-                        input.getGroupId().getValue(), t);
+                        input.getGroupId().getValue(), throwable);
             }
         });
         return resultFuture;
