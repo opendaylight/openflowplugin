@@ -22,6 +22,7 @@ import java.util.function.Function;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationListener;
+import org.opendaylight.openflowplugin.api.openflow.configuration.OpenflowConfig;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationProperty;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationServiceFactory;
@@ -52,6 +53,8 @@ public class ConfigurationServiceFactoryImpl implements ConfigurationServiceFact
                     .<String, String>builder()
                     .put(ConfigurationProperty.RPC_REQUESTS_QUOTA.toString(),
                             providerConfig.getRpcRequestsQuota().getValue().toString())
+//                    .put(ConfigurationProperty.GROUP_ADD_MOD_ENABLED.toString(),
+//                            OpenflowConfig.getConfigurationService().toString())
                     .put(ConfigurationProperty.GLOBAL_NOTIFICATION_QUOTA.toString(),
                             providerConfig.getGlobalNotificationQuota().toString())
                     .put(ConfigurationProperty.SWITCH_FEATURES_MANDATORY.toString(),

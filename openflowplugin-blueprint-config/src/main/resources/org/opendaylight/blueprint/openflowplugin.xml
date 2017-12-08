@@ -62,6 +62,11 @@
         <argument ref="diagStatusService"/>
     </bean>
 
+    <bean id="openflowConfig" class="org.opendaylight.openflowplugin.api.openflow.configuration.OpenflowConfig"
+          factory-method="newInstance">
+        <argument ref="configurationService"/>
+    </bean>
+
     <service ref="openflowPluginProvider" odl:type="openflow-plugin-provider-impl">
         <interfaces>
             <value>org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider</value>
