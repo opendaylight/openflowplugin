@@ -15,5 +15,5 @@ import org.osgi.framework.BundleContext;
  */
 public interface ConfigurationServiceFactory {
     ConfigurationService newInstance(OpenflowProviderConfig providerConfig,
-                                     BundleContext bundleContext);
+            BundleContext bundleContext);
 }
