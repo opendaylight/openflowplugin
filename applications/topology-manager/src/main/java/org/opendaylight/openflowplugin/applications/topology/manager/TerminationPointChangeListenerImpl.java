@@ -79,7 +79,7 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
                 }
                 if (nodeOptional.isPresent()) {
                     TopologyManagerUtil.removeAffectedLinks(terminationPointId, manager, II_TO_TOPOLOGY);
-                    manager.addDeleteOperationTotTxChain(LogicalDatastoreType.OPERATIONAL, iiToTopologyTerminationPoint);
+                    manager.addDeleteOperationToTxChain(LogicalDatastoreType.OPERATIONAL, iiToTopologyTerminationPoint);
                 }
             });
         } else {

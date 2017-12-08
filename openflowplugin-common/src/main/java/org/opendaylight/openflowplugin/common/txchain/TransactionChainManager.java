@@ -210,8 +210,8 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
         return true;
     }
 
-    public <T extends DataObject> void addDeleteOperationTotTxChain(final LogicalDatastoreType store,
-                                                                    final InstanceIdentifier<T> path){
+    public <T extends DataObject> void addDeleteOperationToTxChain(final LogicalDatastoreType store,
+                                                                   final InstanceIdentifier<T> path){
         synchronized (txLock) {
             ensureTransaction();
             if (wTx == null) {

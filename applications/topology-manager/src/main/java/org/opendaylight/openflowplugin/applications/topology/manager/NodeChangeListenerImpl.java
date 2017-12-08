@@ -59,7 +59,7 @@ public class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<FlowCapab
         final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node> iiToTopologyRemovedNode = provideIIToTopologyNode(nodeId);
         if (iiToTopologyRemovedNode != null) {
             operationProcessor.enqueueOperation(manager -> {
-                manager.addDeleteOperationTotTxChain(LogicalDatastoreType.OPERATIONAL, iiToTopologyRemovedNode);
+                manager.addDeleteOperationToTxChain(LogicalDatastoreType.OPERATIONAL, iiToTopologyRemovedNode);
                 TopologyManagerUtil.removeAffectedLinks(nodeId, manager, II_TO_TOPOLOGY);
             });
         } else {

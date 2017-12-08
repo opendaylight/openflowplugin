@@ -50,7 +50,7 @@ class TopologyManagerUtil {
         for (Link link : linkList) {
             if (id.equals(link.getSource().getSourceNode()) ||
                     id.equals(link.getDestination().getDestNode())) {
-                manager.addDeleteOperationTotTxChain(LogicalDatastoreType.OPERATIONAL, linkPath(link, topology));
+                manager.addDeleteOperationToTxChain(LogicalDatastoreType.OPERATIONAL, linkPath(link, topology));
             }
         }
     }
@@ -78,7 +78,7 @@ class TopologyManagerUtil {
         for (Link link : linkList) {
             if (id.equals(link.getSource().getSourceTp()) ||
                     id.equals(link.getDestination().getDestTp())) {
-                manager.addDeleteOperationTotTxChain(LogicalDatastoreType.OPERATIONAL, linkPath(link, topology));
+                manager.addDeleteOperationToTxChain(LogicalDatastoreType.OPERATIONAL, linkPath(link, topology));
             }
         }
     }

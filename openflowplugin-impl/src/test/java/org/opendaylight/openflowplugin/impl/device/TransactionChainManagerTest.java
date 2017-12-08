@@ -180,7 +180,7 @@ public class TransactionChainManagerTest {
 
     @Test
     public void testAddDeleteOperationTotTxChain() throws Exception {
-        txChainManager.addDeleteOperationTotTxChain(LogicalDatastoreType.CONFIGURATION, path);
+        txChainManager.addDeleteOperationToTxChain(LogicalDatastoreType.CONFIGURATION, path);
 
         Mockito.verify(txChain).newReadWriteTransaction();
         Mockito.verify(writeTx).delete(LogicalDatastoreType.CONFIGURATION, path);
