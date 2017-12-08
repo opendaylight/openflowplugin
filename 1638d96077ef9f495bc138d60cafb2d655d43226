@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a1969be_c7cf55af",
+        "filename": "applications/lldp-speaker/src/main/java/org/opendaylight/openflowplugin/applications/lldpspeaker/DeviceOwnershipStatusService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-12-08T21:13:04Z",
+      "side": 1,
+      "message": "make it warn level",
+      "revId": "1638d96077ef9f495bc138d60cafb2d655d43226",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a1969be_e741b10c",
+        "filename": "applications/lldp-speaker/src/main/java/org/opendaylight/openflowplugin/applications/lldpspeaker/DeviceOwnershipStatusService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-12-08T21:13:04Z",
+      "side": 1,
+      "message": "given that you are listening on generic entity, you will also get change notification about the other non-openflow entities as well, because those are registered as generic entity as well, so better to ignore those entities, in the ownershipChanged method.",
+      "range": {
+        "startLine": 54,
+        "startChar": 8,
+        "endLine": 54,
+        "endChar": 28
+      },
+      "revId": "1638d96077ef9f495bc138d60cafb2d655d43226",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a1969be_c75d95eb",
+        "filename": "applications/lldp-speaker/src/main/java/org/opendaylight/openflowplugin/applications/lldpspeaker/LLDPSpeaker.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 212,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-12-08T21:13:04Z",
+      "side": 1,
+      "message": "you don\u0027t need incrementAndGet(), it should be increment.",
+      "range": {
+        "startLine": 212,
+        "startChar": 27,
+        "endLine": 212,
+        "endChar": 45
+      },
+      "revId": "1638d96077ef9f495bc138d60cafb2d655d43226",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
