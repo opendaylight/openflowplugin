@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "7a1969be_4746c5c0",
+        "filename": "openflowjava/openflow-protocol-api/src/main/yang/openflow-types.yang",
+        "patchSetId": 10
+      },
+      "lineNbr": 881,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-12-08T22:11:25Z",
+      "side": 1,
+      "message": "The reason i was thinking not to put in the yang models is because yang models contains all the models that is officially supported by openflow 1.3 spec. ADD_OR_MOD is not officially supported feature by openflow spec, it\u0027s a one off implementation that OVS provides. So by adding it here we don\u0027t want to confuse user to program against it, given that it will work for specific device.",
+      "parentUuid": "7a1969be_31c1592f",
+      "revId": "ad3811bb9a5021205b3ddb250d98b013fc139556",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a1969be_c85add4f",
         "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
         "patchSetId": 10
