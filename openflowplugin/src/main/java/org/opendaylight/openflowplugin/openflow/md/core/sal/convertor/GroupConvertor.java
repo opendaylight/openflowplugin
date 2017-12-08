@@ -17,6 +17,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
+import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationProperty;
+import org.opendaylight.openflowplugin.api.openflow.configuration.OpenflowConfig;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
@@ -142,12 +144,23 @@ public class GroupConvertor extends Convertor<Group, GroupModInputBuilder, Versi
     @Override
     public GroupModInputBuilder convert(Group source, VersionDatapathIdConvertorData data) {
         GroupModInputBuilder groupModInputBuilder = new GroupModInputBuilder();
-        if (source instanceof AddGroupInput) {
-            groupModInputBuilder.setCommand(GroupModCommand.OFPGCADD);
-        } else if (source instanceof RemoveGroupInput) {
-            groupModInputBuilder.setCommand(GroupModCommand.OFPGCDELETE);
-        } else if (source instanceof UpdatedGroup) {
-            groupModInputBuilder.setCommand(GroupModCommand.OFPGCMODIFY);
+        boolean isGroupAddModEnabled = OpenflowConfig.getConfigurationService().getProperty(
+                ConfigurationProperty.GROUP_ADD_MOD_ENABLED.toString(), Boolean::valueOf);
+
+        if(isGroupAddModEnabled) {
+            if ((source instanceof AddGroupInput) || (source instanceof UpdatedGroup)) {
+                groupModInputBuilder.setCommand(GroupModCommand.OFPGCADDORMOD);
+            } else if ((source instanceof RemoveGroupInput)) {
+                groupModInputBuilder.setCommand(GroupModCommand.OFPGCDELETE);
+            }
+        } else {
+            if (source instanceof AddGroupInput) {
+                groupModInputBuilder.setCommand(GroupModCommand.OFPGCADD);
+            } else if (source instanceof RemoveGroupInput) {
+                groupModInputBuilder.setCommand(GroupModCommand.OFPGCDELETE);
+            } else if (source instanceof UpdatedGroup) {
+                groupModInputBuilder.setCommand(GroupModCommand.OFPGCMODIFY);
+            }
         }
 
         if (GroupTypes.GroupAll.equals(source.getGroupType())) {

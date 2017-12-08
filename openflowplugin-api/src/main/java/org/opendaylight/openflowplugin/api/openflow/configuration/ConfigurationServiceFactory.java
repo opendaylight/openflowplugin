@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.configuration;
 
+import org.opendaylight.openflowplugin.openflow.md.util.OpenflowConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.osgi.framework.BundleContext;
 
@@ -15,5 +16,5 @@ import org.osgi.framework.BundleContext;
  */
 public interface ConfigurationServiceFactory {
     ConfigurationService newInstance(OpenflowProviderConfig providerConfig,
-                                     BundleContext bundleContext);
+            BundleContext bundleContext);
 }
