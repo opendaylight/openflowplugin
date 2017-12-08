@@ -242,7 +242,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     public <T extends DataObject> void addDeleteToTxChain(final LogicalDatastoreType store,
                                                           final InstanceIdentifier<T> path) {
         if (initialized.get()) {
-            transactionChainManager.addDeleteOperationTotTxChain(store, path);
+            transactionChainManager.addDeleteOperationToTxChain(store, path);
         }
     }
 
