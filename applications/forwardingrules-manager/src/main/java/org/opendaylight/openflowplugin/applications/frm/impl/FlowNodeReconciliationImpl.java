@@ -173,7 +173,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         (counter <= provider.getReconciliationRetryCount())) { //also check if the counter has not crossed the threshold
 
                     if (toBeInstalledGroups.isEmpty() && !suspectedGroups.isEmpty()) {
-                        LOG.error("These Groups are pointing to node-connectors that are not up yet {}", suspectedGroups.toString());
+                        LOG.debug("These Groups are pointing to node-connectors that are not up yet {}", suspectedGroups.toString());
                         toBeInstalledGroups.addAll(suspectedGroups);
                         break;
                     }
@@ -200,7 +200,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                                     String nodeConnectorUri = ((OutputActionCase) (action.getAction()))
                                             .getOutputAction().getOutputNodeConnector().getValue();
 
-                                    LOG.warn("Installing the group for node connector {}", nodeConnectorUri);
+                                    LOG.debug("Installing the group for node connector {}", nodeConnectorUri);
 
                                     //check if the nodeconnector is there in the multimap
                                     boolean isPresent = provider.getFlowNodeConnectorInventoryTranslatorImpl()
@@ -212,7 +212,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                                     }//else put it in a different list and still set okToInstall = true
                                     else {
                                         suspectedGroups.add(group);
-                                        LOG.error("Not yet received the node-connector updated for {} " +
+                                        LOG.debug("Not yet received the node-connector updated for {} " +
                                                 "for the group with id {}", nodeConnectorUri, group.getGroupId().toString());
                                         break;
                                     }
@@ -254,7 +254,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             /* installation of suspected groups*/
                 if (!toBeInstalledGroups.isEmpty()) {
                     for (Group group : toBeInstalledGroups) {
-                        LOG.error("Installing the group {} finally although the port is not up after checking for {} times "
+                        LOG.debug("Installing the group {} finally although the port is not up after checking for {} times "
                                 , group.getGroupId().toString(), provider.getReconciliationRetryCount());
                         addGroup(groupFutures, group);
                     }
