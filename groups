@@ -1,4 +1,4 @@
-# UUID                                                                  	Group Name
+# UUID                                                                        	Group Name
 #
-c9025ab9ddc1e3171919e085449f22c54f8f7b54                                	GitHub Replication
-ldap:cn=gerrit-openflowplugin-commiters,ou=Groups,dc=opendaylight,dc=org	ldap/gerrit-openflowplugin-commiters
+c9025ab9ddc1e3171919e085449f22c54f8f7b54                                      	GitHub Replication
+ldap:cn=odl-gerrit-openflowplugin-committers,ou=Groups,dc=freestandards,dc=org	ldap/odl-gerrit-openflowplugin-committers
