@@ -17,7 +17,6 @@ import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerGroupS
 import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerGroupService;
 import org.opendaylight.openflowplugin.impl.util.ErrorUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
@@ -26,11 +25,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.Sal
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -166,10 +160,4 @@ public class SalGroupServiceImpl implements SalGroupService {
         return resultFuture;
     }
 
-    private static KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn
-            .opendaylight.group.types.rev131018.groups.Group, GroupKey>
-        createGroupPath(final GroupId groupId, final KeyedInstanceIdentifier<Node, NodeKey> nodePath) {
-        return nodePath.augmentation(FlowCapableNode.class).child(org.opendaylight.yang.gen.v1.urn
-                .opendaylight.group.types.rev131018.groups.Group.class, new GroupKey(groupId));
-    }
 }
