@@ -14,3 +14,4 @@ Contents:
    :maxdepth: 2
 
    specs/index
+   testplans/index
