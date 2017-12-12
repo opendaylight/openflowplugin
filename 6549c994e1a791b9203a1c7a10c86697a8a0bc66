@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a1969be_471d25bd",
+        "filename": "docs/specs/group-add-mod.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-12-12T21:06:09Z",
+      "side": 1,
+      "message": "please also mention the performance aspect and the atomicity aspect of the operation, as those are the critical requirement for any production environment and this feature helps us with that.",
+      "revId": "6549c994e1a791b9203a1c7a10c86697a8a0bc66",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
