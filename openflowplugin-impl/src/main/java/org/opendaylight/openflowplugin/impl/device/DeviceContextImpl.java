@@ -358,12 +358,12 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
         if (initialized.get()) {
             try {
-                LOG.warn("writePortStatusMessage");
                 writePortStatusMessage(portStatus);
-                LOG.warn("submit transaction for write port status message");
+                LOG.debug("processPortStatusMessage ::  submit transaction for write port status message {} ",
+                        portStatus);
                 submitTransaction();
             } catch (final Exception e) {
-                LOG.warn("Error processing port status message for port {} on device {}",
+                LOG.error("Error processing port status message for port {} on device {}",
                         portStatus.getPortNo(), getDeviceInfo().getLOGValue(), e);
             }
         } else if (!hasState.get()) {
@@ -596,7 +596,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 txChainShuttingDown.get(TX_CHAIN_CLOSE_TIMEOUT, TimeUnit.MILLISECONDS);
             } catch (InterruptedException | ExecutionException | TimeoutException e) {
                 txChainShuttingDown.cancel(true);
-                LOG.warn("Failed to shut down transaction chain for device {}: {}", deviceInfo, e);
+                LOG.error("Failed to shut down transaction chain for device {}: {}", deviceInfo, e);
             }
 
             transactionChainManager.close();
