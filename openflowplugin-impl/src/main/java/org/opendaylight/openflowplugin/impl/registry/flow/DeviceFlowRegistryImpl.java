@@ -56,7 +56,8 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     private final List<ListenableFuture<List<Optional<FlowCapableNode>>>> lastFillFutures = new ArrayList<>();
     private final Consumer<Flow> flowConsumer;
 
-    public DeviceFlowRegistryImpl(final short version, final DataBroker dataBroker, final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier) {
+    public DeviceFlowRegistryImpl(final short version, final DataBroker dataBroker,
+                                  final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier) {
         this.dataBroker = dataBroker;
         this.instanceIdentifier = instanceIdentifier;
 
@@ -82,22 +83,26 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
         final InstanceIdentifier<FlowCapableNode> path = instanceIdentifier.augmentation(FlowCapableNode.class);
 
         // First, try to fill registry with flows from DS/Configuration
-        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> configFuture = fillFromDatastore(LogicalDatastoreType.CONFIGURATION, path);
+        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> configFuture =
+                fillFromDatastore(LogicalDatastoreType.CONFIGURATION, path);
 
         // Now, try to fill registry with flows from DS/Operational
         // in case of cluster fail over, when clients are not using DS/Configuration
         // for adding flows, but only RPCs
-        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> operationalFuture = fillFromDatastore(LogicalDatastoreType.OPERATIONAL, path);
+        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> operationalFuture =
+                fillFromDatastore(LogicalDatastoreType.OPERATIONAL, path);
 
         // And at last, chain and return futures created above.
         // Also, cache this future, so call to DeviceFlowRegistry.close() will be able
         // to cancel this future immediately if it will be still in progress
-        final ListenableFuture<List<Optional<FlowCapableNode>>> lastFillFuture = Futures.allAsList(Arrays.asList(configFuture, operationalFuture));
+        final ListenableFuture<List<Optional<FlowCapableNode>>> lastFillFuture = Futures
+                .allAsList(Arrays.asList(configFuture, operationalFuture));
         lastFillFutures.add(lastFillFuture);
         return lastFillFuture;
     }
 
-    private CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> fillFromDatastore(final LogicalDatastoreType logicalDatastoreType, final InstanceIdentifier<FlowCapableNode> path) {
+    private CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> fillFromDatastore(
+            final LogicalDatastoreType logicalDatastoreType, final InstanceIdentifier<FlowCapableNode> path) {
         // Create new read-only transaction
         final ReadOnlyTransaction transaction = dataBroker.newReadOnlyTransaction();
 
@@ -136,7 +141,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Throwable throwable) {
                 // Even when read operation failed, close the transaction
                 transaction.close();
             }
@@ -172,7 +177,8 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
             addToFlowRegistry(flowRegistryKey, flowDescriptor);
         } catch (IllegalArgumentException ex) {
             if (LOG.isWarnEnabled()) {
-                LOG.warn("Flow with flow ID {} already exists in table {}, generating alien flow ID", flowDescriptor.getFlowId().getValue(),
+                LOG.warn("Flow with flow ID {} already exists in table {}, "
+                                + "generating alien flow ID", flowDescriptor.getFlowId().getValue(),
                         flowDescriptor.getTableKey().getId());
             }
 
@@ -257,7 +263,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     // which it can receive the extensions back from switch can differ and that lead to a different hashcode. In that
     // scenario, hashcode won't match and flowRegistry return the  related key. To overcome this issue, these methods
     // make sure that key is stored only if it doesn't equals to any existing key.
-    private void addToFlowRegistry (final FlowRegistryKey flowRegistryKey, final FlowDescriptor flowDescriptor) {
+    private void addToFlowRegistry(final FlowRegistryKey flowRegistryKey, final FlowDescriptor flowDescriptor) {
         FlowRegistryKey existingFlowRegistryKey = getExistingKey(flowRegistryKey);
         if (existingFlowRegistryKey == null) {
             flowRegistry.put(flowRegistryKey, flowDescriptor);
@@ -266,28 +272,30 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
         }
     }
 
-    private void removeFromFlowRegistry (final FlowRegistryKey flowRegistryKey) {
+    private void removeFromFlowRegistry(final FlowRegistryKey flowRegistryKey) {
         FlowRegistryKey existingFlowRegistryKey = getExistingKey(flowRegistryKey);
-        if(existingFlowRegistryKey != null) {
+        if (existingFlowRegistryKey != null) {
             flowRegistry.remove(existingFlowRegistryKey);
         } else {
             flowRegistry.remove(flowRegistryKey);
         }
     }
 
-    private FlowRegistryKey getExistingKey (final FlowRegistryKey flowRegistryKey) {
-        if (flowRegistryKey.getMatch().getAugmentation(GeneralAugMatchNodesNodeTableFlow.class) == null) {
-            if (flowRegistry.containsKey(flowRegistryKey)) {
-                return flowRegistryKey;
-            }
-        } else {
-            for (Map.Entry<FlowRegistryKey, FlowDescriptor> keyValueSet : flowRegistry.entrySet()) {
-                if (keyValueSet.getKey().equals(flowRegistryKey)) {
-                    return keyValueSet.getKey();
+    private FlowRegistryKey getExistingKey(final FlowRegistryKey flowRegistryKey) {
+        synchronized (flowRegistry) {
+            if (flowRegistryKey.getMatch().getAugmentation(GeneralAugMatchNodesNodeTableFlow.class) == null) {
+                if (flowRegistry.containsKey(flowRegistryKey)) {
+                    return flowRegistryKey;
+                }
+            } else {
+                for (Map.Entry<FlowRegistryKey, FlowDescriptor> keyValueSet : flowRegistry.entrySet()) {
+                    if (keyValueSet.getKey().equals(flowRegistryKey)) {
+                        return keyValueSet.getKey();
+                    }
                 }
             }
+            return null;
         }
-        return null;
     }
 
     @VisibleForTesting
