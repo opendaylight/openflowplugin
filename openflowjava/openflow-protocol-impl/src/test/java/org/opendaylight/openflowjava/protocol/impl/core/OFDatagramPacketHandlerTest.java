@@ -32,6 +32,8 @@ import org.opendaylight.openflowjava.util.ByteBufUtils;
  * @author madamjak
  */
 public class OFDatagramPacketHandlerTest {
+
+    private static final int CHANNEL_OUTBOUND_QUEUE_SIZE = 1024;
     @Mock ChannelHandlerContext ctxMock;
     @Mock SwitchConnectionHandler switchConnHandler;
     @Mock MessageConsumer consumerMock;
@@ -48,7 +50,7 @@ public class OFDatagramPacketHandlerTest {
      */
     @Test
     public void test() throws Exception {
-        OFDatagramPacketHandler handler = new OFDatagramPacketHandler(switchConnHandler);
+        OFDatagramPacketHandler handler = new OFDatagramPacketHandler(switchConnHandler, CHANNEL_OUTBOUND_QUEUE_SIZE);
         byte version = EncodeConstants.OF13_VERSION_ID;
         ByteBuf messageBuffer = ByteBufUtils.hexStringToByteBuf("04 02 00 08 01 02 03 04");
         InetSocketAddress recipientISA = InetSocketAddress.createUnresolved("localhost", 9876);
