@@ -34,6 +34,11 @@ module openflow-switch-connection-config {
             mandatory true;
         }
 
+        leaf channel-outbound-queue-size {
+            description "Channel outbound queue size";
+            type uint16;
+        }
+
         leaf address {
             description "address of local listening interface";
             type ietf-inet:ip-address;
