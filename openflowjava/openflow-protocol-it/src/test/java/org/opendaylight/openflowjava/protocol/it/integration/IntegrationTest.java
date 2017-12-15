@@ -50,6 +50,7 @@ public class IntegrationTest {
 
     private static int port;
     private TlsConfiguration tlsConfiguration;
+    private static final int CHANNEL_OUTBOUND_QUEUE_SIZE = 1024;
     private static final int SWITCH_IDLE_TIMEOUT = 2000;
     private static final long CONNECTION_TIMEOUT = 2000;
     private InetAddress startupAddress;
@@ -77,7 +78,8 @@ public class IntegrationTest {
                     "/selfSignedController", PathType.CLASSPATH,
                     new ArrayList<String>());
         }
-        connConfig = new ConnectionConfigurationImpl(startupAddress, 0, tlsConfiguration, SWITCH_IDLE_TIMEOUT, true, false);
+        connConfig = new ConnectionConfigurationImpl(startupAddress, 0, tlsConfiguration, SWITCH_IDLE_TIMEOUT, true,
+                false, CHANNEL_OUTBOUND_QUEUE_SIZE);
         connConfig.setTransferProtocol(protocol);
         mockPlugin = new MockPlugin();
 

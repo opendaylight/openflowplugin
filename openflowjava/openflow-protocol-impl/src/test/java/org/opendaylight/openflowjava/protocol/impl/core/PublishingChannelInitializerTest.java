@@ -46,6 +46,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.P
  */
 public class PublishingChannelInitializerTest {
 
+    private static final int CHANNEL_OUTBOUND_QUEUE_SIZE = 1024;
     @Mock SocketChannel mockSocketCh ;
     @Mock ChannelPipeline mockChPipeline ;
     @Mock SwitchConnectionHandler mockSwConnHandler ;
@@ -57,7 +58,6 @@ public class PublishingChannelInitializerTest {
 
     @Mock SerializationFactory mockSerializationFactory ;
     @Mock DeserializationFactory mockDeserializationFactory ;
-
     TlsConfiguration tlsConfiguration ;
     InetSocketAddress inetSockAddr;
     TcpChannelInitializer pubChInitializer  ;
@@ -75,13 +75,14 @@ public class PublishingChannelInitializerTest {
         pubChInitializer.setSwitchIdleTimeout(1) ;
         pubChInitializer.getConnectionIterator() ;
         pubChInitializer.setUseBarrier(true);
+        pubChInitializer.setChannelOutboundQueueSize(CHANNEL_OUTBOUND_QUEUE_SIZE);
 
         when( mockChGrp.size()).thenReturn(1) ;
         pubChInitializer.setSwitchConnectionHandler( mockSwConnHandler ) ;
 
         inetSockAddr = new InetSocketAddress(InetAddress.getLocalHost(), 8675 ) ;
 
-        when(mockConnAdaptorFactory.createConnectionFacade(mockSocketCh, null, true))
+        when(mockConnAdaptorFactory.createConnectionFacade(mockSocketCh, null, true, CHANNEL_OUTBOUND_QUEUE_SIZE))
         .thenReturn(mockConnFacade);
         when(mockSocketCh.remoteAddress()).thenReturn(inetSockAddr) ;
         when(mockSocketCh.localAddress()).thenReturn(inetSockAddr) ;
@@ -93,7 +94,6 @@ public class PublishingChannelInitializerTest {
                 KeystoreType.JKS, "/selfSignedController", PathType.CLASSPATH,
                 Lists.newArrayList("TLS_RSA_WITH_AES_128_CBC_SHA", "TLS_RSA_WITH_AES_128_CBC_SHA256"));
     }
-
 
     /**
      * Test channel initialization with encryption config set
