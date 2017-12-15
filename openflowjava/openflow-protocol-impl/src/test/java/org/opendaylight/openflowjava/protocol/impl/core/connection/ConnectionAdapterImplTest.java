@@ -65,6 +65,7 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 public class ConnectionAdapterImplTest {
 
     private static final int RPC_RESPONSE_EXPIRATION = 1;
+    private static final int CHANNEL_OUTBOUND_QUEUE_SIZE = 1024;
     private static final RemovalListener<RpcResponseKey, ResponseExpectedRpcListener<?>> REMOVAL_LISTENER =
             new RemovalListener<RpcResponseKey, ResponseExpectedRpcListener<?>>() {
         @Override
@@ -92,7 +93,8 @@ public class ConnectionAdapterImplTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         when(channel.pipeline()).thenReturn(pipeline);
-        adapter = new ConnectionAdapterImpl(channel, InetSocketAddress.createUnresolved("10.0.0.1", 6653), true);
+        adapter = new ConnectionAdapterImpl(channel, InetSocketAddress.createUnresolved("10.0.0.1", 6653), true,
+                CHANNEL_OUTBOUND_QUEUE_SIZE);
         adapter.setMessageListener(messageListener);
         adapter.setSystemListener(systemListener);
         adapter.setConnectionReadyListener(readyListener);
@@ -183,9 +185,10 @@ public class ConnectionAdapterImplTest {
         final int port = 9876;
         final String host ="localhost";
         final InetSocketAddress inetSockAddr = InetSocketAddress.createUnresolved(host, port);
-        final ConnectionAdapterImpl connAddapter = new ConnectionAdapterImpl(channel, inetSockAddr, true);
-        Assert.assertEquals("Wrong - diffrence between channel.isOpen() and ConnectionAdapterImpl.isAlive()", channel.isOpen(), connAddapter.isAlive());
-
+        final ConnectionAdapterImpl connAddapter = new ConnectionAdapterImpl(channel, inetSockAddr, true,
+                CHANNEL_OUTBOUND_QUEUE_SIZE);
+        Assert.assertEquals("Wrong - diffrence between channel.isOpen() and ConnectionAdapterImpl.isAlive()",
+                channel.isOpen(), connAddapter.isAlive());
         connAddapter.disconnect();
         Assert.assertFalse("Wrong - ConnectionAdapterImpl can not be alive after disconnet.", connAddapter.isAlive());
     }
@@ -198,7 +201,8 @@ public class ConnectionAdapterImplTest {
         final int port = 9876;
         final String host ="localhost";
         final InetSocketAddress inetSockAddr = InetSocketAddress.createUnresolved(host, port);
-        final ConnectionAdapterImpl connAddapter = new ConnectionAdapterImpl(channel, inetSockAddr, true);
+        final ConnectionAdapterImpl connAddapter = new ConnectionAdapterImpl(channel, inetSockAddr, true,
+                CHANNEL_OUTBOUND_QUEUE_SIZE);
         connAddapter.setSystemListener(null);
         connAddapter.setMessageListener(null);
         connAddapter.setConnectionReadyListener(null);
