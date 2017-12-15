@@ -30,6 +30,11 @@ public interface ConnectionConfiguration {
     Object getTransferProtocol();
 
     /**
+     * @return Configurable queue size
+     */
+    int getChannelOutboundQueueSize();
+
+    /**
      * @return TLS configuration object
      */
     TlsConfiguration getTlsConfiguration();

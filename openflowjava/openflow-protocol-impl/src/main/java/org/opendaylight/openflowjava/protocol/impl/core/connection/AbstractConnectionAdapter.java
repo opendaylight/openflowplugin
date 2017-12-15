@@ -77,7 +77,6 @@ abstract class AbstractConnectionAdapter implements ConnectionAdapter {
      * Default depth of write queue, e.g. we allow these many messages
      * to be queued up before blocking producers.
      */
-    private static final int DEFAULT_QUEUE_DEPTH = 1024;
 
     protected static final RemovalListener<RpcResponseKey, ResponseExpectedRpcListener<?>> REMOVAL_LISTENER = new RemovalListener<RpcResponseKey, ResponseExpectedRpcListener<?>>() {
         @Override
@@ -92,18 +91,22 @@ abstract class AbstractConnectionAdapter implements ConnectionAdapter {
     protected final InetSocketAddress address;
     protected boolean disconnectOccured = false;
     protected final ChannelOutboundQueue output;
+    protected final int channelOutboundQueueSize;
 
     /** expiring cache for future rpcResponses */
     protected Cache<RpcResponseKey, ResponseExpectedRpcListener<?>> responseCache;
 
 
-    AbstractConnectionAdapter(@Nonnull final Channel channel, @Nullable final InetSocketAddress address) {
+    AbstractConnectionAdapter(@Nonnull final Channel channel, @Nullable final InetSocketAddress address,
+                              @Nullable final int channelOutboundQueueSize) {
         this.channel = Preconditions.checkNotNull(channel);
         this.address = address;
+        this.channelOutboundQueueSize = channelOutboundQueueSize;
 
         responseCache = CacheBuilder.newBuilder().concurrencyLevel(1)
                 .expireAfterWrite(RPC_RESPONSE_EXPIRATION, TimeUnit.MINUTES).removalListener(REMOVAL_LISTENER).build();
-        this.output = new ChannelOutboundQueue(channel, DEFAULT_QUEUE_DEPTH, address);
+        LOG.info("The channel outbound queue size:{}", channelOutboundQueueSize);
+        this.output = new ChannelOutboundQueue(channel, channelOutboundQueueSize, address);
         channel.pipeline().addLast(output);
     }
 
