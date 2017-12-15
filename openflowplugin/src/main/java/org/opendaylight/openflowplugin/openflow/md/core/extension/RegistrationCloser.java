@@ -9,11 +9,11 @@ package org.opendaylight.openflowplugin.openflow.md.core.extension;
 
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey;
+import org.opendaylight.openflowplugin.extension.api.ConverterMessageToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
-import org.opendaylight.openflowplugin.extension.api.ConverterMessageToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.api.path.AugmentationPath;
@@ -83,7 +83,7 @@ public abstract class RegistrationCloser<KEY, CONVERTER> implements ObjectRegist
             RegistrationCloser<ConverterExtensionKey<? extends ExtensionKey>, ConvertorToOFJava<TO>> {
 
         @Override
-        public void close() throws Exception {
+        public void close() {
             getRegistrator().unregister(getKey(), getConverter());
         }
     }
@@ -96,7 +96,7 @@ public abstract class RegistrationCloser<KEY, CONVERTER> implements ObjectRegist
     public static class RegistrationCloserFromOFJava<FROM extends DataContainer, PATH extends AugmentationPath> extends RegistrationCloser<MessageTypeKey<?>, ConvertorFromOFJava<FROM, PATH>> {
 
         @Override
-        public void close() throws Exception {
+        public void close() {
             getRegistrator().unregister(getKey(), getConverter());
         }
     }
@@ -109,7 +109,7 @@ public abstract class RegistrationCloser<KEY, CONVERTER> implements ObjectRegist
             RegistrationCloser<TypeVersionKey<? extends Action>, ConvertorActionToOFJava<Action, TO>> {
 
         @Override
-        public void close() throws Exception {
+        public void close() {
             getRegistrator().unregister(getKey(), getConverter());
         }
     }
@@ -123,7 +123,7 @@ public abstract class RegistrationCloser<KEY, CONVERTER> implements ObjectRegist
             RegistrationCloser<MessageTypeKey<?>, ConvertorActionFromOFJava<FROM, PATH>> {
 
         @Override
-        public void close() throws Exception {
+        public void close() {
             getRegistrator().unregister(getKey(), getConverter());
         }
     }
@@ -137,7 +137,7 @@ public abstract class RegistrationCloser<KEY, CONVERTER> implements ObjectRegist
             RegistrationCloser<TypeVersionKey<K>, ConverterMessageToOFJava<K, TO>> {
 
         @Override
-        public void close() throws Exception {
+        public void close() {
             getRegistrator().unregister(getKey(), getConverter());
         }
     }
@@ -152,7 +152,7 @@ public abstract class RegistrationCloser<KEY, CONVERTER> implements ObjectRegist
             RegistrationCloser<MessageTypeKey<?>, ConvertorMessageFromOFJava<FROM, PATH>> {
 
         @Override
-        public void close() throws Exception {
+        public void close() {
             getRegistrator().unregister(getKey(), getConverter());
         }
     }
