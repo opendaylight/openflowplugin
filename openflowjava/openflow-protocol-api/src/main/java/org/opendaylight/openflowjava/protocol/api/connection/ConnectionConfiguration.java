@@ -79,4 +79,9 @@ public interface ConnectionConfiguration {
      * @return true if group add mod messages are enabled
      */
     boolean isGroupAddModEnabled();
+
+    /**
+     * @return Configurable queue size
+     */
+    int getChannelOutboundQueueSize();
 }
