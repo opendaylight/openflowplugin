@@ -40,6 +40,7 @@ public class SwitchConnectionProviderImplTest {
 
     private static final int SWITCH_IDLE_TIMEOUT = 2000;
     private static final int WAIT_TIMEOUT = 2000;
+    private static final int CHANNEL_OUTBOUND_QUEUE_SIZE = 1024;
     private TlsConfiguration tlsConfiguration;
     private SwitchConnectionProviderImpl provider;
     private ConnectionConfigurationImpl config;
@@ -67,7 +68,8 @@ public class SwitchConnectionProviderImplTest {
                     "/selfSignedController", PathType.CLASSPATH,
                     Lists.newArrayList("TLS_RSA_WITH_AES_128_CBC_SHA", "TLS_RSA_WITH_AES_128_CBC_SHA256")) ;
         }
-        config = new ConnectionConfigurationImpl(startupAddress, 0, tlsConfiguration, SWITCH_IDLE_TIMEOUT, true, false);
+        config = new ConnectionConfigurationImpl(startupAddress, 0, tlsConfiguration, SWITCH_IDLE_TIMEOUT, true,
+                false, CHANNEL_OUTBOUND_QUEUE_SIZE);
         config.setTransferProtocol(protocol);
     }
 
