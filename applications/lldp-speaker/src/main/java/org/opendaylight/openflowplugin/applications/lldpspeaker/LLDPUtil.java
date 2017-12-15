@@ -33,6 +33,9 @@ public final class LLDPUtil {
     private static final Logger LOG = LoggerFactory.getLogger(LLDPUtil.class);
     private static final String OF_URI_PREFIX = "openflow:";
 
+    private LLDPUtil() {
+    }
+
     static byte[] buildLldpFrame(final NodeId nodeId, final NodeConnectorId nodeConnectorId, final MacAddress src,
                                  final Long outPortNo, final MacAddress destinationAddress) {
         // Create discovery pkt

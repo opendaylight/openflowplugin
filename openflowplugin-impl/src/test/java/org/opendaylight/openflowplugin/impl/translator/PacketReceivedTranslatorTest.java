@@ -69,8 +69,6 @@ public class PacketReceivedTranslatorTest {
     @Mock
     DeviceInfo deviceInfo;
     @Mock
-    List<PhyPort> phyPorts;
-    @Mock
     PhyPort phyPort;
 
     ConvertorManager convertorManager;

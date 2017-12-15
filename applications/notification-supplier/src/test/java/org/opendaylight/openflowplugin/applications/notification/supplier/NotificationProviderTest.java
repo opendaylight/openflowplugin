@@ -22,7 +22,6 @@ import org.opendaylight.openflowplugin.applications.notification.supplier.tools.
 public class NotificationProviderTest {
 
     private NotificationProviderService notificationProviderService;
-    private NotificationProviderConfig config;
     private DataBroker dataBroker;
 
     @Before
@@ -32,26 +31,22 @@ public class NotificationProviderTest {
     }
 
     @Test
-    public void testCreateAllSuppliers() {
+    public void testCreateAllSuppliers() throws Exception {
         final NotificationProviderConfig config = createAllConfigSupplier();
-        final NotificationProvider provider = new NotificationProvider(notificationProviderService, dataBroker,
-                                                                       config.isFlowSupport(), config.isMeterSupport(),
-                                                                       config.isGroupSupport(),
-                                                                       config.isNodeConnectorStatSupport(),
-                                                                       config.isFlowStatSupport(),
-                                                                       config.isFlowTableStatSupport(),
-                                                                       config.isMeterStatSupport(),
-                                                                       config.isGroupStatSupport(),
-                                                                       config.isQueueStatSupport());
-        provider.start();
-        final List<NotificationSupplierDefinition<?>> listSuppliers = provider.getSupplierList();
-        int nrOfSuppliers = 0;
-        for (final NotificationSupplierDefinition<?> supplier : listSuppliers) {
-            if (supplier != null) {
-                nrOfSuppliers++;
+        try (NotificationProvider provider = new NotificationProvider(notificationProviderService, dataBroker,
+                config.isFlowSupport(), config.isMeterSupport(), config.isGroupSupport(),
+                config.isNodeConnectorStatSupport(), config.isFlowStatSupport(), config.isFlowTableStatSupport(),
+                config.isMeterStatSupport(), config.isGroupStatSupport(), config.isQueueStatSupport())) {
+            provider.start();
+            final List<NotificationSupplierDefinition<?>> listSuppliers = provider.getSupplierList();
+            int nrOfSuppliers = 0;
+            for (final NotificationSupplierDefinition<?> supplier : listSuppliers) {
+                if (supplier != null) {
+                    nrOfSuppliers++;
+                }
             }
+            assertEquals(11, nrOfSuppliers);
         }
-        assertEquals(11, nrOfSuppliers);
     }
 
     @Test

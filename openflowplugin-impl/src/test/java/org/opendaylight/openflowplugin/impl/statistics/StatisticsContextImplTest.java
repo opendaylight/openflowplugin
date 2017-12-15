@@ -78,7 +78,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
     @Test
     @SuppressWarnings("checkstyle:IllegalCatch")
     public void testClose() throws Exception {
-        final StatisticsContextImpl<MultipartReply> statisticsContext =
+        statisticsContext =
                 new StatisticsContextImpl<>(mockedDeviceContext,
                                             convertorManager,
                                             MultipartWriterProviderFactory

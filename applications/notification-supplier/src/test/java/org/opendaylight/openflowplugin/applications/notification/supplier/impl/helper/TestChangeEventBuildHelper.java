@@ -11,7 +11,7 @@ package org.opendaylight.openflowplugin.applications.notification.supplier.impl.
 import java.util.Collection;
 import java.util.Collections;
 
-public class TestChangeEventBuildHelper {
+public final class TestChangeEventBuildHelper {
 
     private TestChangeEventBuildHelper() {
         throw new UnsupportedOperationException("Test utility class");

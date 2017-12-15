@@ -37,7 +37,6 @@ import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
@@ -145,8 +144,9 @@ public class DeviceContextImplTest {
     private OutboundQueueProvider outboundQueueProvider;
     @Mock
     private ConnectionAdapter connectionAdapter;
-    private NodeId nodeId = new NodeId("h2g2:42");
-    private KeyedInstanceIdentifier<Node, NodeKey> nodeKeyIdent = DeviceStateUtil.createNodeInstanceIdentifier(nodeId);
+    private final NodeId nodeId = new NodeId("h2g2:42");
+    private final KeyedInstanceIdentifier<Node, NodeKey> nodeKeyIdent =
+            DeviceStateUtil.createNodeInstanceIdentifier(nodeId);
     @Mock
     private TranslatorLibrary translatorLibrary;
     @Mock
@@ -258,7 +258,7 @@ public class DeviceContextImplTest {
 
     @Test
     public void testGetReadTransaction() {
-        final ReadTransaction readTx = deviceContext.getReadTransaction();
+        readTx = deviceContext.getReadTransaction();
         assertNotNull(readTx);
         assertEquals(this.readTx, readTx);
     }

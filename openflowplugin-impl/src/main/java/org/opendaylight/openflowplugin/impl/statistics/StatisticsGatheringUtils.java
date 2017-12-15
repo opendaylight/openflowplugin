@@ -14,6 +14,7 @@ import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
@@ -102,7 +103,7 @@ public final class StatisticsGatheringUtils {
                              rpcResultIsNull ? "" : rpcResult.getErrors());
                 }
                 return false;
-            }));
+            }), MoreExecutors.directExecutor());
     }
 
     private static boolean processStatistics(final MultipartType type, final List<? extends DataContainer> statistics,

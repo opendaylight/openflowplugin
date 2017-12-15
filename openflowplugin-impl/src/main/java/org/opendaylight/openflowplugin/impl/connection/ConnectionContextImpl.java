@@ -101,8 +101,8 @@ public class ConnectionContextImpl implements ConnectionContext {
     }
 
     @Override
-    public void setFeatures(final FeaturesReply featuresReply) {
-        this.featuresReply = featuresReply;
+    public void setFeatures(final FeaturesReply newFeaturesReply) {
+        this.featuresReply = newFeaturesReply;
     }
 
     @Override
@@ -186,9 +186,9 @@ public class ConnectionContextImpl implements ConnectionContext {
     }
 
     @Override
-    public void setOutboundQueueHandleRegistration(OutboundQueueHandlerRegistration<OutboundQueueProvider>
-                                                               outboundQueueHandlerRegistration) {
-        this.outboundQueueHandlerRegistration = outboundQueueHandlerRegistration;
+    public void setOutboundQueueHandleRegistration(
+            OutboundQueueHandlerRegistration<OutboundQueueProvider> newRegistration) {
+        this.outboundQueueHandlerRegistration = newRegistration;
     }
 
     private void unregisterOutboundQueue() {

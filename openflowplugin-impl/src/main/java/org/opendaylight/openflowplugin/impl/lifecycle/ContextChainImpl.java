@@ -232,18 +232,18 @@ public class ContextChainImpl implements ContextChain {
         deviceRemovedHandlers.add(deviceRemovedHandler);
     }
 
-    private void changeMastershipState(final ContextChainState contextChainState) {
+    private void changeMastershipState(final ContextChainState newContextChainState) {
         if (ContextChainState.CLOSED.equals(this.contextChainState.get())) {
             return;
         }
 
         boolean propagate = ContextChainState.UNDEFINED.equals(this.contextChainState.get());
-        this.contextChainState.set(contextChainState);
+        this.contextChainState.set(newContextChainState);
 
         if (propagate) {
             contexts.forEach(context -> {
                 if (context.map(ContextChainStateListener.class::isInstance)) {
-                    context.map(ContextChainStateListener.class::cast).onStateAcquired(contextChainState);
+                    context.map(ContextChainStateListener.class::cast).onStateAcquired(newContextChainState);
                 }
             });
         }

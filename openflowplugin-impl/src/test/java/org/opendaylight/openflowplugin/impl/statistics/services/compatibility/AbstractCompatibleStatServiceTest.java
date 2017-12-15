@@ -148,8 +148,8 @@ public class AbstractCompatibleStatServiceTest extends AbstractStatsServiceTest 
                 service.handleAndNotify(input, notificationPublishService);
 
         Assert.assertTrue(resultFuture.isDone());
-        final RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput> rpcResult = resultFuture.get();
-        Assert.assertTrue(rpcResult.isSuccessful());
+        final RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput> result = resultFuture.get();
+        Assert.assertTrue(result.isSuccessful());
         Assert.assertEquals(MultipartType.OFPMPAGGREGATE, requestInput.getValue().getType());
         Mockito.verify(notificationPublishService, Mockito.timeout(500))
                 .offerNotification(Matchers.any(AggregateFlowStatisticsUpdate.class));

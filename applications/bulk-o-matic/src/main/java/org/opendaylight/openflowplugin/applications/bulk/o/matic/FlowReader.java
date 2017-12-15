@@ -63,14 +63,14 @@ public final class FlowReader implements Runnable, FlowCounterMBean {
 
     @Override
     public void run() {
-        readFlowsX(dpnCount, flowsPerDpn, verbose);
+        readFlowsX();
     }
 
-    private void readFlowsX(Integer dpnCount, Integer flowsPerDPN, boolean verbose) {
+    private void readFlowsX() {
         readOpStatus.set(FlowCounter.OperationStatus.IN_PROGRESS.status());
         for (int i = 1; i <= dpnCount; i++) {
             String dpId = BulkOMaticUtils.DEVICE_TYPE_PREFIX + i;
-            for (int j = 0; j < flowsPerDPN; j++) {
+            for (int j = 0; j < flowsPerDpn; j++) {
                 short tableRollover = (short) (endTableId - startTableId + 1);
                 short tableId = (short) (j % tableRollover + startTableId);
 

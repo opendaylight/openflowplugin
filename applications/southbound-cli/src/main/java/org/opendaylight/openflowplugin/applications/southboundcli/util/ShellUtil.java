@@ -30,10 +30,13 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ShellUtil {
+public final class ShellUtil {
     private static final Logger LOG = LoggerFactory.getLogger(ShellUtil.class);
 
     public static final String NODE_PREFIX = "openflow:";
+
+    private ShellUtil() {
+    }
 
     public static List<OFNode> getAllNodes(final DataBroker broker) {
         List<Node> nodes = null;

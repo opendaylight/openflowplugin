@@ -107,7 +107,7 @@ public class DeviceFlowRegistryImplTest {
                 .build();
 
         final Map<FlowRegistryKey, FlowDescriptor> allFlowDescriptors = fillRegistry(path, flowCapableNode);
-        final FlowRegistryKey key = FlowRegistryKeyFactory.create(OFConstants.OFP_VERSION_1_3, flow);
+        key = FlowRegistryKeyFactory.create(OFConstants.OFP_VERSION_1_3, flow);
 
         InOrder order = inOrder(dataBroker, readOnlyTransaction);
         order.verify(dataBroker).newReadOnlyTransaction();
@@ -240,7 +240,7 @@ public class DeviceFlowRegistryImplTest {
     @Test
     public void testForEach() throws Exception {
         final AtomicInteger counter = new AtomicInteger(0);
-        deviceFlowRegistry.forEach(key -> counter.incrementAndGet());
+        deviceFlowRegistry.forEach(k -> counter.incrementAndGet());
         Assert.assertEquals(1, counter.get());
     }
 

@@ -11,7 +11,7 @@ package org.opendaylight.openflowplugin.applications.notification.supplier.tools
 /**
  * Class is designed as ConfigSubsystem settings holder.
  */
-public class NotificationProviderConfig {
+public final class NotificationProviderConfig {
 
     private final boolean flowSupport;
     private final boolean meterSupport;
