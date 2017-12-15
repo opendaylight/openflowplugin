@@ -25,6 +25,7 @@ public class ChannelInitializerFactory {
     private TlsConfiguration tlsConfig;
     private SwitchConnectionHandler switchConnectionHandler;
     private boolean useBarrier;
+    private int channelOutboundQueueSize;
 
     /**
      * @return PublishingChannelInitializer that initializes new channels
@@ -37,6 +38,7 @@ public class ChannelInitializerFactory {
         initializer.setTlsConfiguration(tlsConfig);
         initializer.setSwitchConnectionHandler(switchConnectionHandler);
         initializer.setUseBarrier(useBarrier);
+        initializer.setChannelOutboundQueueSize(channelOutboundQueueSize);
         return initializer;
     }
 
@@ -92,5 +94,12 @@ public class ChannelInitializerFactory {
      */
     public void setUseBarrier(final boolean useBarrier) {
         this.useBarrier = useBarrier;
+    }
+
+    /**
+     * @param channelOutboundQueueSize
+     */
+    public void setChannelOutboundQueueSize(final int channelOutboundQueueSize) {
+        this.channelOutboundQueueSize = channelOutboundQueueSize;
     }
 }
