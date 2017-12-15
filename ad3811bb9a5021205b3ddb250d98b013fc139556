@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "ad3cd449_9a816deb",
+        "filename": "openflowjava/openflow-protocol-api/src/main/yang/openflow-types.yang",
+        "patchSetId": 10
+      },
+      "lineNbr": 881,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-12-15T05:10:28Z",
+      "side": 1,
+      "message": "If I don\u0027t keep the OFPGC_ADD_OR_MOD in GroupModCommand enum here, it wont be possible to set the \"groupmodcommand\" type in GroupMessageBuilder and it has to be set somewhere like in \"GroupMessageSerializer\" during serialization which wouldn\u0027t look clean. Is there a better way to do this?",
+      "parentUuid": "7a1969be_4746c5c0",
+      "revId": "ad3811bb9a5021205b3ddb250d98b013fc139556",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a1969be_c85add4f",
         "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
         "patchSetId": 10
