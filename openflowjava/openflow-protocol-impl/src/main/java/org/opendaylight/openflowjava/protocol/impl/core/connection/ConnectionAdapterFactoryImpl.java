@@ -22,7 +22,7 @@ public class ConnectionAdapterFactoryImpl implements ConnectionAdapterFactory {
 
     @Override
     public ConnectionFacade createConnectionFacade(final Channel ch, final InetSocketAddress address,
-            final boolean useBarrier) {
-        return new ConnectionAdapterImpl(ch, address, useBarrier);
+                                                   final boolean useBarrier, final int channelOutboundQueueSize) {
+        return new ConnectionAdapterImpl(ch, address, useBarrier, channelOutboundQueueSize);
     }
 }

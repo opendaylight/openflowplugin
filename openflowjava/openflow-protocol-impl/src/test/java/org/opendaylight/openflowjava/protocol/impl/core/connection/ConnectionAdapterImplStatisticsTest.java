@@ -68,6 +68,7 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 public class ConnectionAdapterImplStatisticsTest {
 
     private static final int RPC_RESPONSE_EXPIRATION = 1;
+    private static final int CHANNEL_OUTBOUND_QUEUE_SIZE = 1024;
     private static final RemovalListener<RpcResponseKey, ResponseExpectedRpcListener<?>> REMOVAL_LISTENER =
         notification -> notification.getValue().discard();
 
@@ -137,7 +138,8 @@ public class ConnectionAdapterImplStatisticsTest {
             Assert.fail("Counter " + CounterEventTypes.DS_FLOW_MODS_ENTERED + " is not enabled");
         }
         final EmbeddedChannel embChannel = new EmbeddedChannel(new EmbededChannelHandler());
-        adapter = new ConnectionAdapterImpl(embChannel, InetSocketAddress.createUnresolved("localhost", 9876), true);
+        adapter = new ConnectionAdapterImpl(embChannel, InetSocketAddress.createUnresolved("localhost", 9876), true,
+                CHANNEL_OUTBOUND_QUEUE_SIZE);
         cache = CacheBuilder.newBuilder().concurrencyLevel(1)
                 .expireAfterWrite(RPC_RESPONSE_EXPIRATION, TimeUnit.MINUTES).removalListener(REMOVAL_LISTENER).build();
         adapter.setResponseCache(cache);
@@ -195,7 +197,8 @@ public class ConnectionAdapterImplStatisticsTest {
             Assert.fail("Counter " + CounterEventTypes.US_MESSAGE_PASS + " is not enabled");
         }
         when(channel.pipeline()).thenReturn(pipeline);
-        adapter = new ConnectionAdapterImpl(channel, InetSocketAddress.createUnresolved("10.0.0.1", 6653), true);
+        adapter = new ConnectionAdapterImpl(channel, InetSocketAddress.createUnresolved("10.0.0.1", 6653), true,
+                CHANNEL_OUTBOUND_QUEUE_SIZE);
         adapter.setMessageListener(messageListener);
         adapter.setSystemListener(systemListener);
         adapter.setConnectionReadyListener(readyListener);

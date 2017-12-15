@@ -30,6 +30,7 @@ public abstract class ProtocolChannelInitializer<C extends Channel>
     private DeserializationFactory deserializationFactory;
     private TlsConfiguration tlsConfiguration;
     private boolean useBarrier;
+    private int channelOutboundQueueSize;
 
     /**
      * Sets the SwitchConnectionHandler.
@@ -87,5 +88,19 @@ public abstract class ProtocolChannelInitializer<C extends Channel>
 
     public boolean useBarrier() {
         return useBarrier;
+    }
+
+    /**
+     * @param channelOutboundQueueSize
+     */
+    public void setChannelOutboundQueueSize(final int channelOutboundQueueSize) {
+        this.channelOutboundQueueSize = channelOutboundQueueSize;
+    }
+
+    /**
+     * @return channelOutboundQueueSize
+     */
+    public int getChannelOutboundQueueSize()  {
+        return channelOutboundQueueSize;
     }
 }

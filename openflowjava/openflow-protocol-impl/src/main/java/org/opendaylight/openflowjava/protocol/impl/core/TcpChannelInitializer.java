@@ -69,7 +69,8 @@ public class TcpChannelInitializer extends ProtocolChannelInitializer<SocketChan
         LOG.debug("Incoming connection accepted - building pipeline");
         allChannels.add(ch);
         ConnectionFacade connectionFacade = null;
-        connectionFacade = connectionAdapterFactory.createConnectionFacade(ch, null, useBarrier());
+        connectionFacade = connectionAdapterFactory.createConnectionFacade(ch, null, useBarrier(),
+                getChannelOutboundQueueSize());
         try {
             LOG.debug("Calling OF plugin: {}", getSwitchConnectionHandler());
             getSwitchConnectionHandler().onSwitchConnected(connectionFacade);

@@ -25,6 +25,7 @@ import org.mockito.MockitoAnnotations;
  */
 public class ConnectionAdapterFactoryImplTest {
 
+    private static final int CHANNEL_OUTBOUND_QUEUE_SIZE = 1024;
     @Mock ChannelPipeline channnelPipe;
     @Mock Channel channel;
     @Mock InetSocketAddress address;
@@ -38,7 +39,8 @@ public class ConnectionAdapterFactoryImplTest {
     @Test
     public void test() {
         final ConnectionAdapterFactoryImpl connAdapterFactory = new ConnectionAdapterFactoryImpl();
-        final ConnectionFacade connFacade = connAdapterFactory.createConnectionFacade(channel, address, true);
+        final ConnectionFacade connFacade = connAdapterFactory.createConnectionFacade(channel, address, true,
+                CHANNEL_OUTBOUND_QUEUE_SIZE);
         Assert.assertNotNull("Wrong - ConnectionFacade has not created.", connFacade);
         Assert.assertEquals("Wrong - diffrence between channel.isOpen() and ConnectionFacade.isAlive()",
                 channel.isOpen(), connFacade.isAlive());

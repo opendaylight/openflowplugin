@@ -20,7 +20,7 @@ public class UdpChannelInitializer extends ProtocolChannelInitializer<DatagramCh
     @Override
     protected void initChannel(DatagramChannel ch) throws Exception {
         ch.pipeline().addLast(PipelineHandlers.OF_DATAGRAMPACKET_HANDLER.name(),
-                new OFDatagramPacketHandler(getSwitchConnectionHandler()));
+                new OFDatagramPacketHandler(getSwitchConnectionHandler(), getChannelOutboundQueueSize()));
         OFDatagramPacketDecoder ofDatagramPacketDecoder = new OFDatagramPacketDecoder();
         ofDatagramPacketDecoder.setDeserializationFactory(getDeserializationFactory());
         ch.pipeline().addLast(PipelineHandlers.OF_DATAGRAMPACKET_DECODER.name(),
