@@ -50,6 +50,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  */
 public class ConnectionAdapterImpl02Test {
     private static final int RPC_RESPONSE_EXPIRATION = 1;
+    private static final int CHANNEL_OUTBOUND_QUEUE_SIZE = 1024;
     private static final RemovalListener<RpcResponseKey, ResponseExpectedRpcListener<?>> REMOVAL_LISTENER =
             new RemovalListener<RpcResponseKey, ResponseExpectedRpcListener<?>>() {
         @Override
@@ -103,7 +104,8 @@ public class ConnectionAdapterImpl02Test {
     @Test
     public void testRcp() {
         final EmbeddedChannel embChannel = new EmbeddedChannel(new EmbededChannelHandler());
-        adapter = new ConnectionAdapterImpl(embChannel, InetSocketAddress.createUnresolved("localhost", 9876), true);
+        adapter = new ConnectionAdapterImpl(embChannel, InetSocketAddress.createUnresolved("localhost", 9876), true,
+                CHANNEL_OUTBOUND_QUEUE_SIZE);
         cache = CacheBuilder.newBuilder().concurrencyLevel(1).expireAfterWrite(RPC_RESPONSE_EXPIRATION, TimeUnit.MINUTES)
                 .removalListener(REMOVAL_LISTENER).build();
         adapter.setResponseCache(cache);

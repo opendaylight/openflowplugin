@@ -61,8 +61,9 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
      *                as there is no need to store address over tcp (stable channel))
      * @param useBarrier value is configurable by configSubsytem
      */
-    public ConnectionAdapterImpl(final Channel channel, final InetSocketAddress address, final boolean useBarrier) {
-        super(channel, address);
+    public ConnectionAdapterImpl(final Channel channel, final InetSocketAddress address, final boolean useBarrier,
+                                 final int channelOutboundQueueSize) {
+        super(channel, address, channelOutboundQueueSize);
         this.useBarrier = useBarrier;
         LOG.debug("ConnectionAdapter created");
     }
