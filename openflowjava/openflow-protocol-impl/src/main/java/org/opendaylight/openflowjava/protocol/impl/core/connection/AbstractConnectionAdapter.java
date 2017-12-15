@@ -71,12 +71,6 @@ abstract class AbstractConnectionAdapter implements ConnectionAdapter {
 
     private static final Exception QUEUE_FULL_EXCEPTION = new RejectedExecutionException("Output queue is full");
 
-    /**
-     * Default depth of write queue, e.g. we allow these many messages
-     * to be queued up before blocking producers.
-     */
-    private static final int DEFAULT_QUEUE_DEPTH = 1024;
-
     protected static final RemovalListener<RpcResponseKey, ResponseExpectedRpcListener<?>> REMOVAL_LISTENER =
         notification -> {
             if (!notification.getCause().equals(RemovalCause.EXPLICIT)) {
@@ -93,13 +87,15 @@ abstract class AbstractConnectionAdapter implements ConnectionAdapter {
     protected Cache<RpcResponseKey, ResponseExpectedRpcListener<?>> responseCache;
 
 
-    AbstractConnectionAdapter(@Nonnull final Channel channel, @Nullable final InetSocketAddress address) {
+    AbstractConnectionAdapter(@Nonnull final Channel channel, @Nullable final InetSocketAddress address,
+                              @Nullable final int channelOutboundQueueSize) {
         this.channel = Preconditions.checkNotNull(channel);
         this.address = address;
 
         responseCache = CacheBuilder.newBuilder().concurrencyLevel(1)
                 .expireAfterWrite(RPC_RESPONSE_EXPIRATION, TimeUnit.MINUTES).removalListener(REMOVAL_LISTENER).build();
-        this.output = new ChannelOutboundQueue(channel, DEFAULT_QUEUE_DEPTH, address);
+        LOG.info("The channel outbound queue size:{}", channelOutboundQueueSize);
+        this.output = new ChannelOutboundQueue(channel, channelOutboundQueueSize, address);
         channel.pipeline().addLast(output);
     }
 
