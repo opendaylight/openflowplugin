@@ -22,8 +22,10 @@ public interface ConnectionAdapterFactory {
      * @param ch {@link Channel} channel
      * @param address {@link InetSocketAddress}
      * @param useBarrier
+     * @param channelOutboundQueueSize
      * @return connection adapter tcp-implementation
      */
-    ConnectionFacade createConnectionFacade(Channel ch, InetSocketAddress address, boolean useBarrier);
+    ConnectionFacade createConnectionFacade(Channel ch, InetSocketAddress address, boolean useBarrier,
+                                            int channelOutboundQueueSize);
 
 }

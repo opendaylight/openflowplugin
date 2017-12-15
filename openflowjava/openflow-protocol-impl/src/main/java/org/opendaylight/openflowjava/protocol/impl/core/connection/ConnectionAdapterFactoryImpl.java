@@ -20,12 +20,13 @@ public class ConnectionAdapterFactoryImpl implements ConnectionAdapterFactory {
 
     /**
      * @param ch
+     * @param channelOutboundQueueSize
      * @return connection adapter tcp-implementation
      */
-	@Override
+    @Override
     public ConnectionFacade createConnectionFacade(final Channel ch, final InetSocketAddress address,
-            final boolean useBarrier) {
-        return new ConnectionAdapterImpl(ch, address, useBarrier);
+                                                   final boolean useBarrier, final int channelOutboundQueueSize) {
+        return new ConnectionAdapterImpl(ch, address, useBarrier, channelOutboundQueueSize);
     }
 
 }
