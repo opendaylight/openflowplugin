@@ -26,6 +26,7 @@ public class ConnectionAdapterFactoryImplTest {
     @Mock ChannelPipeline channnelPipe;
     @Mock Channel channel;
     @Mock InetSocketAddress address;
+    @Mock int channelOutboundQueueSize;
 
     @Before
     public void startUp(){
@@ -36,7 +37,7 @@ public class ConnectionAdapterFactoryImplTest {
     @Test
     public void test(){
         final ConnectionAdapterFactoryImpl connAdapterFactory = new ConnectionAdapterFactoryImpl();
-        final ConnectionFacade connFacade = connAdapterFactory.createConnectionFacade(channel, address, true);
+        final ConnectionFacade connFacade = connAdapterFactory.createConnectionFacade(channel, address, true, channelOutboundQueueSize);
         Assert.assertNotNull("Wrong - ConnectionFacade has not created.", connFacade);
         Assert.assertEquals("Wrong - diffrence between channel.isOpen() and ConnectionFacade.isAlive()", channel.isOpen(), connFacade.isAlive());
     }
