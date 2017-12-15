@@ -35,6 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  */
 public class ChannelOutboundQueue02Test {
     private static int counter;
+    private static final int CHANNEL_OUTBOUND_QUEUE_SIZE = 1024;
     private static final int RPC_RESPONSE_EXPIRATION = 1;
     private static final RemovalListener<RpcResponseKey, ResponseExpectedRpcListener<?>> REMOVAL_LISTENER =
         notification -> notification.getValue().discard();
@@ -70,7 +71,8 @@ public class ChannelOutboundQueue02Test {
     @Test
     public void test01() throws Exception {
         final EmbeddedChannel ec = new EmbeddedChannel(new EmbededChannelHandler());
-        adapter = new ConnectionAdapterImpl(ec, InetSocketAddress.createUnresolved("localhost", 9876), true);
+        adapter = new ConnectionAdapterImpl(ec, InetSocketAddress.createUnresolved("localhost", 9876), true,
+                CHANNEL_OUTBOUND_QUEUE_SIZE);
         cache = CacheBuilder.newBuilder().concurrencyLevel(1).expireAfterWrite(
                 RPC_RESPONSE_EXPIRATION, TimeUnit.MINUTES).removalListener(REMOVAL_LISTENER).build();
         adapter.setResponseCache(cache);
@@ -96,7 +98,8 @@ public class ChannelOutboundQueue02Test {
     @Test
     public void test02() {
         final ChangeWritableEmbededChannel ec = new ChangeWritableEmbededChannel(new EmbededChannelHandler());
-        adapter = new ConnectionAdapterImpl(ec, InetSocketAddress.createUnresolved("localhost", 9876), true);
+        adapter = new ConnectionAdapterImpl(ec, InetSocketAddress.createUnresolved("localhost", 9876), true,
+                CHANNEL_OUTBOUND_QUEUE_SIZE);
         cache = CacheBuilder.newBuilder().concurrencyLevel(1).expireAfterWrite(
                 RPC_RESPONSE_EXPIRATION, TimeUnit.MINUTES) .removalListener(REMOVAL_LISTENER).build();
         adapter.setResponseCache(cache);

@@ -89,6 +89,11 @@ public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProv
         }
 
         @Override
+        public int getChannelOutboundQueueSize() {
+            return config.getChannelOutboundQueueSize();
+        }
+
+        @Override
         public TlsConfiguration getTlsConfiguration() {
             final Tls tlsConfig = config.getTls();
             if (tlsConfig == null || !TransportProtocol.TLS.equals(getTransferProtocol())) {
