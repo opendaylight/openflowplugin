@@ -81,7 +81,7 @@ public class PublishingChannelInitializerTest {
 
         inetSockAddr = new InetSocketAddress(InetAddress.getLocalHost(), 8675 ) ;
 
-        when(mockConnAdaptorFactory.createConnectionFacade(mockSocketCh, null, true))
+        when(mockConnAdaptorFactory.createConnectionFacade(mockSocketCh, null, true, getChannelOutboundQueueSize()))
         .thenReturn(mockConnFacade);
         when(mockSocketCh.remoteAddress()).thenReturn(inetSockAddr) ;
         when(mockSocketCh.localAddress()).thenReturn(inetSockAddr) ;
@@ -94,6 +94,9 @@ public class PublishingChannelInitializerTest {
                 Lists.newArrayList("TLS_RSA_WITH_AES_128_CBC_SHA", "TLS_RSA_WITH_AES_128_CBC_SHA256"));
     }
 
+    private int getChannelOutboundQueueSize() {
+        return getChannelOutboundQueueSize();
+    }
 
     /**
      * Test channel initialization with encryption config set

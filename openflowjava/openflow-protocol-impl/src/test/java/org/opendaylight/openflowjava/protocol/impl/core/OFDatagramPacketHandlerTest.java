@@ -36,6 +36,7 @@ public class OFDatagramPacketHandlerTest {
     @Mock SwitchConnectionHandler switchConnHandler;
     @Mock MessageConsumer consumerMock;
     @Mock Channel channelMock;
+    @Mock int channelOutboundQueueSize;
 
     @Before
     public void startUp(){
@@ -48,7 +49,7 @@ public class OFDatagramPacketHandlerTest {
      */
     @Test
     public void test(){
-        OFDatagramPacketHandler handler = new OFDatagramPacketHandler(switchConnHandler);
+        OFDatagramPacketHandler handler = new OFDatagramPacketHandler(switchConnHandler, channelOutboundQueueSize);
         byte version = EncodeConstants.OF13_VERSION_ID;
         ByteBuf messageBuffer = ByteBufUtils.hexStringToByteBuf("04 02 00 08 01 02 03 04");
         InetSocketAddress recipientISA = InetSocketAddress.createUnresolved("localhost", 9876);

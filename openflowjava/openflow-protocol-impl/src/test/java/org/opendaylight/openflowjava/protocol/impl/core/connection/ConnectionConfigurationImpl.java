@@ -27,6 +27,7 @@ public class ConnectionConfigurationImpl implements ConnectionConfiguration {
     private final long switchIdleTimeout;
     private ThreadConfiguration threadConfig;
     private final boolean useBarrier;
+    private final int channelOutboundQueueSize;
 
     /**
      * Creates {@link ConnectionConfigurationImpl}
@@ -38,12 +39,13 @@ public class ConnectionConfigurationImpl implements ConnectionConfiguration {
      * @param useBarrier
      */
     public ConnectionConfigurationImpl(final InetAddress address, final int port, final TlsConfiguration tlsConfig,
-            final long switchIdleTimeout, final boolean useBarrier) {
+            final long switchIdleTimeout, final boolean useBarrier, final int channelOutboundQueueSize) {
         this.address = address;
         this.port = port;
         this.tlsConfig = tlsConfig;
         this.switchIdleTimeout = switchIdleTimeout;
         this.useBarrier = useBarrier;
+        this.channelOutboundQueueSize = channelOutboundQueueSize;
     }
 
     @Override
@@ -59,6 +61,11 @@ public class ConnectionConfigurationImpl implements ConnectionConfiguration {
     @Override
     public Object getTransferProtocol() {
         return transferProtocol;
+    }
+
+    @Override
+    public int getChannelOutboundQueueSize() {
+        return channelOutboundQueueSize;
     }
 
     /**
