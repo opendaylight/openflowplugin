@@ -9,6 +9,7 @@
 package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -64,7 +65,7 @@ import org.slf4j.LoggerFactory;
  * {@link AbstractConnectionAdapter} class contains direct RPC processing from OpenflowProtocolService
  * {@link org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolService}
  */
-abstract class AbstractConnectionAdapter implements ConnectionAdapter {
+abstract class AbstractConnectionAdapter implements ConnectionAdapter{
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractConnectionAdapter.class);
 
@@ -92,18 +93,21 @@ abstract class AbstractConnectionAdapter implements ConnectionAdapter {
     protected final InetSocketAddress address;
     protected boolean disconnectOccured = false;
     protected final ChannelOutboundQueue output;
+    protected final Integer channelOutboundQueueSize;
 
     /** expiring cache for future rpcResponses */
     protected Cache<RpcResponseKey, ResponseExpectedRpcListener<?>> responseCache;
 
 
-    AbstractConnectionAdapter(@Nonnull final Channel channel, @Nullable final InetSocketAddress address) {
+    AbstractConnectionAdapter(@Nonnull final Channel channel, @Nullable final InetSocketAddress address, @Nullable final Integer channelOutboundQueueSize) {
         this.channel = Preconditions.checkNotNull(channel);
         this.address = address;
+        this.channelOutboundQueueSize = channelOutboundQueueSize;
 
         responseCache = CacheBuilder.newBuilder().concurrencyLevel(1)
                 .expireAfterWrite(RPC_RESPONSE_EXPIRATION, TimeUnit.MINUTES).removalListener(REMOVAL_LISTENER).build();
-        this.output = new ChannelOutboundQueue(channel, DEFAULT_QUEUE_DEPTH, address);
+        this.output = new ChannelOutboundQueue(channel, MoreObjects.firstNonNull(channelOutboundQueueSize,DEFAULT_QUEUE_DEPTH), address);
+        LOG.info("The queue size:{}",channelOutboundQueueSize);
         channel.pipeline().addLast(output);
     }
 
@@ -232,7 +236,7 @@ abstract class AbstractConnectionAdapter implements ConnectionAdapter {
     public InetSocketAddress getRemoteAddress() {
         return (InetSocketAddress) channel.remoteAddress();
     }
-
+    
     /**
      * Used only for testing purposes
      * @param cache replacement

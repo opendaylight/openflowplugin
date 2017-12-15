@@ -49,6 +49,7 @@ public class ChannelOutboundQueue02Test {
     @Mock BarrierInput barrierInput;
     @Mock EchoReplyInput echoReplyInput;
     @Mock ExperimenterInput experimenterInput;
+    @Mock Integer channelOutboundQueueSize;
     private ConnectionAdapterImpl adapter;
     private Cache<RpcResponseKey, ResponseExpectedRpcListener<?>> cache;
     /**
@@ -75,7 +76,7 @@ public class ChannelOutboundQueue02Test {
     @Test
     public void test01() throws Exception {
         final EmbeddedChannel ec = new EmbeddedChannel(new EmbededChannelHandler());
-        adapter = new ConnectionAdapterImpl(ec, InetSocketAddress.createUnresolved("localhost", 9876), true);
+        adapter = new ConnectionAdapterImpl(ec, InetSocketAddress.createUnresolved("localhost", 9876), true, channelOutboundQueueSize);
         cache = CacheBuilder.newBuilder().concurrencyLevel(1).expireAfterWrite(RPC_RESPONSE_EXPIRATION, TimeUnit.MINUTES)
                 .removalListener(REMOVAL_LISTENER).build();
         adapter.setResponseCache(cache);
@@ -100,7 +101,7 @@ public class ChannelOutboundQueue02Test {
     @Test
     public void test02(){
         final ChangeWritableEmbededChannel ec = new ChangeWritableEmbededChannel(new EmbededChannelHandler());
-        adapter = new ConnectionAdapterImpl(ec, InetSocketAddress.createUnresolved("localhost", 9876), true);
+        adapter = new ConnectionAdapterImpl(ec, InetSocketAddress.createUnresolved("localhost", 9876), true, channelOutboundQueueSize);
         cache = CacheBuilder.newBuilder().concurrencyLevel(1).expireAfterWrite(RPC_RESPONSE_EXPIRATION, TimeUnit.MINUTES)
                 .removalListener(REMOVAL_LISTENER).build();
         adapter.setResponseCache(cache);

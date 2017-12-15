@@ -23,6 +23,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.T
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow._switch.connection.config.rev160506.SwitchConnectionConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow._switch.connection.config.rev160506._switch.connection.config.Threads;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow._switch.connection.config.rev160506._switch.connection.config.Tls;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of the SwitchConnectionProviderFactory interface.
@@ -31,8 +33,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
  */
 public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProviderFactory {
 
+    private static final Logger LOG = LoggerFactory.getLogger(SwitchConnectionProviderFactoryImpl.class);
+
     @Override
     public SwitchConnectionProvider newInstance(SwitchConnectionConfig config) {
+        LOG.info("The SwitchConnection Config includes:{}",config);
         SwitchConnectionProviderImpl switchConnectionProviderImpl = new SwitchConnectionProviderImpl();
         switchConnectionProviderImpl.setConfiguration(new ConnectionConfigurationImpl(config));
         return switchConnectionProviderImpl;
@@ -87,6 +92,11 @@ public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProv
         @Override
         public Object getTransferProtocol() {
             return config.getTransportProtocol();
+        }
+
+        @Override
+        public Integer getChannelOutboundQueueSize() {
+            return config.getChannelOutboundQueueSize();
         }
 
         @Override

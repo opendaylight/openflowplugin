@@ -81,6 +81,7 @@ public class ConnectionAdapterImplTest {
     @Mock ConnectionReadyListener readyListener;
     @Mock Cache<RpcResponseKey, ResponseExpectedRpcListener<?>> mockCache;
     @Mock ChannelFuture channelFuture;
+    @Mock Integer channelOutboundQueueSize;
 
     private ConnectionAdapterImpl adapter;
     private Cache<RpcResponseKey, ResponseExpectedRpcListener<?>> cache;
@@ -92,7 +93,7 @@ public class ConnectionAdapterImplTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         when(channel.pipeline()).thenReturn(pipeline);
-        adapter = new ConnectionAdapterImpl(channel, InetSocketAddress.createUnresolved("10.0.0.1", 6653), true);
+        adapter = new ConnectionAdapterImpl(channel, InetSocketAddress.createUnresolved("10.0.0.1", 6653), true, channelOutboundQueueSize);
         adapter.setMessageListener(messageListener);
         adapter.setSystemListener(systemListener);
         adapter.setConnectionReadyListener(readyListener);
@@ -183,7 +184,7 @@ public class ConnectionAdapterImplTest {
         final int port = 9876;
         final String host ="localhost";
         final InetSocketAddress inetSockAddr = InetSocketAddress.createUnresolved(host, port);
-        final ConnectionAdapterImpl connAddapter = new ConnectionAdapterImpl(channel, inetSockAddr, true);
+        final ConnectionAdapterImpl connAddapter = new ConnectionAdapterImpl(channel, inetSockAddr, true, channelOutboundQueueSize);
         Assert.assertEquals("Wrong - diffrence between channel.isOpen() and ConnectionAdapterImpl.isAlive()", channel.isOpen(), connAddapter.isAlive());
 
         connAddapter.disconnect();
@@ -198,7 +199,7 @@ public class ConnectionAdapterImplTest {
         final int port = 9876;
         final String host ="localhost";
         final InetSocketAddress inetSockAddr = InetSocketAddress.createUnresolved(host, port);
-        final ConnectionAdapterImpl connAddapter = new ConnectionAdapterImpl(channel, inetSockAddr, true);
+        final ConnectionAdapterImpl connAddapter = new ConnectionAdapterImpl(channel, inetSockAddr, true, channelOutboundQueueSize);
         connAddapter.setSystemListener(null);
         connAddapter.setMessageListener(null);
         connAddapter.setConnectionReadyListener(null);

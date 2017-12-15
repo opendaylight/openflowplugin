@@ -38,14 +38,17 @@ public class OFDatagramPacketHandler extends MessageToMessageDecoder<DatagramPac
     private static final byte LENGTH_INDEX_IN_HEADER = 2;
     private ConnectionAdapterFactory adapterFactory = new ConnectionAdapterFactoryImpl();
     private SwitchConnectionHandler connectionHandler;
+    private Integer queueSize;
 
     /**
      * Default constructor
      * @param sch the switchConnectionHandler that decides
      * what to do with incomming message / channel
+     * @param channelOutboundQueueSize
      */
-    public OFDatagramPacketHandler(SwitchConnectionHandler sch) {
+    public OFDatagramPacketHandler(SwitchConnectionHandler sch, Integer channelOutboundQueueSize) {
         this.connectionHandler = sch;
+        this.queueSize = channelOutboundQueueSize;
     }
 
     @Override
@@ -57,12 +60,13 @@ public class OFDatagramPacketHandler extends MessageToMessageDecoder<DatagramPac
 
     @Override
     protected void decode(ChannelHandlerContext ctx, DatagramPacket msg,
-            List<Object> out) throws Exception {
+                          List<Object> out) throws Exception {
         LOG.debug("OFDatagramPacketFramer");
         MessageConsumer consumer = UdpConnectionMap.getMessageConsumer(msg.sender());
         if (consumer == null) {
             ConnectionFacade connectionFacade =
-                    adapterFactory.createConnectionFacade(ctx.channel(), msg.sender(), false);
+                    adapterFactory.createConnectionFacade(ctx.channel(), msg.sender(), false ,queueSize);
+            LOG.info("The queue size: {}",queueSize);
             connectionHandler.onSwitchConnected(connectionFacade);
             connectionFacade.checkListeners();
             UdpConnectionMap.addConnection(msg.sender(), connectionFacade);
@@ -101,4 +105,6 @@ public class OFDatagramPacketHandler extends MessageToMessageDecoder<DatagramPac
         }
         bb.skipBytes(bb.readableBytes());
     }
+
+
 }

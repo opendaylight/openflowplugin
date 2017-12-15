@@ -35,6 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.T
 public class SwitchConnectionProviderImplTest {
 
     @Mock SwitchConnectionHandler handler;
+    @Mock Integer channelOutboundQueueSize;
 
     private static final int SWITCH_IDLE_TIMEOUT = 2000;
     private static final int WAIT_TIMEOUT = 2000;
@@ -69,7 +70,7 @@ public class SwitchConnectionProviderImplTest {
                     "/selfSignedController", PathType.CLASSPATH,
                     Lists.newArrayList("TLS_RSA_WITH_AES_128_CBC_SHA", "TLS_RSA_WITH_AES_128_CBC_SHA256")) ;
         }
-        config = new ConnectionConfigurationImpl(startupAddress, 0, tlsConfiguration, SWITCH_IDLE_TIMEOUT, true);
+        config = new ConnectionConfigurationImpl(startupAddress, 0, tlsConfiguration, SWITCH_IDLE_TIMEOUT, true, channelOutboundQueueSize);
         config.setTransferProtocol(protocol);
     }
 

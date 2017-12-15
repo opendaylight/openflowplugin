@@ -56,6 +56,7 @@ public class IntegrationTest {
     private MockPlugin mockPlugin;
     private SwitchConnectionProviderImpl switchConnectionProvider;
     private ConnectionConfigurationImpl connConfig;
+    private Integer channelOutboundQueueSize;
 
     private Thread t;
 
@@ -77,7 +78,7 @@ public class IntegrationTest {
                     "/selfSignedController", PathType.CLASSPATH,
                     new ArrayList<String>());
         }
-        connConfig = new ConnectionConfigurationImpl(startupAddress, 0, tlsConfiguration, SWITCH_IDLE_TIMEOUT, true);
+        connConfig = new ConnectionConfigurationImpl(startupAddress, 0, tlsConfiguration, SWITCH_IDLE_TIMEOUT, true, channelOutboundQueueSize);
         connConfig.setTransferProtocol(protocol);
         mockPlugin = new MockPlugin();
 

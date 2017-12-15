@@ -102,6 +102,7 @@ public class ConnectionAdapterImplStatisticsTest {
     @Mock TableModInput tableModInput;
     @Mock GetAsyncInput getAsyncInput;
     @Mock SetAsyncInput setAsyncInput;
+    @Mock Integer channelOutboundQueueSize;
 
     private ConnectionAdapterImpl adapter;
     private Cache<RpcResponseKey, ResponseExpectedRpcListener<?>> cache;
@@ -142,7 +143,7 @@ public class ConnectionAdapterImplStatisticsTest {
             Assert.fail("Counter " + CounterEventTypes.DS_FLOW_MODS_ENTERED + " is not enabled");
         }
         final EmbeddedChannel embChannel = new EmbeddedChannel(new EmbededChannelHandler());
-        adapter = new ConnectionAdapterImpl(embChannel, InetSocketAddress.createUnresolved("localhost", 9876), true);
+        adapter = new ConnectionAdapterImpl(embChannel, InetSocketAddress.createUnresolved("localhost", 9876), true, channelOutboundQueueSize);
         cache = CacheBuilder.newBuilder().concurrencyLevel(1).expireAfterWrite(RPC_RESPONSE_EXPIRATION, TimeUnit.MINUTES)
                 .removalListener(REMOVAL_LISTENER).build();
         adapter.setResponseCache(cache);
@@ -198,7 +199,7 @@ public class ConnectionAdapterImplStatisticsTest {
             Assert.fail("Counter " + CounterEventTypes.US_MESSAGE_PASS + " is not enabled");
         }
         when(channel.pipeline()).thenReturn(pipeline);
-        adapter = new ConnectionAdapterImpl(channel, InetSocketAddress.createUnresolved("10.0.0.1", 6653), true);
+        adapter = new ConnectionAdapterImpl(channel, InetSocketAddress.createUnresolved("10.0.0.1", 6653), true, channelOutboundQueueSize);
         adapter.setMessageListener(messageListener);
         adapter.setSystemListener(systemListener);
         adapter.setConnectionReadyListener(readyListener);

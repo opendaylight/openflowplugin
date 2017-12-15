@@ -78,6 +78,7 @@ public class ConnectionAdapterImp02lTest {
     @Mock TableModInput tableModInput;
     @Mock GetAsyncInput getAsyncInput;
     @Mock SetAsyncInput setAsyncInput;
+    @Mock Integer channelOutboundQueueSize;
     private ConnectionAdapterImpl adapter;
     private Cache<RpcResponseKey, ResponseExpectedRpcListener<?>> cache;
     private OfHeader responseOfCall;
@@ -103,7 +104,7 @@ public class ConnectionAdapterImp02lTest {
     @Test
     public void testRcp() {
         final EmbeddedChannel embChannel = new EmbeddedChannel(new EmbededChannelHandler());
-        adapter = new ConnectionAdapterImpl(embChannel, InetSocketAddress.createUnresolved("localhost", 9876), true);
+        adapter = new ConnectionAdapterImpl(embChannel, InetSocketAddress.createUnresolved("localhost", 9876), true, channelOutboundQueueSize);
         cache = CacheBuilder.newBuilder().concurrencyLevel(1).expireAfterWrite(RPC_RESPONSE_EXPIRATION, TimeUnit.MINUTES)
                 .removalListener(REMOVAL_LISTENER).build();
         adapter.setResponseCache(cache);

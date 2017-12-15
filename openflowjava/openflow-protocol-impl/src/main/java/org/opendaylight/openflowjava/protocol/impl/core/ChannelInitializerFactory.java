@@ -12,6 +12,8 @@ import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHan
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfiguration;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializationFactory;
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializationFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author michal.polkorab
@@ -25,7 +27,8 @@ public class ChannelInitializerFactory {
     private TlsConfiguration tlsConfig;
     private SwitchConnectionHandler switchConnectionHandler;
     private boolean useBarrier;
-
+    private Integer channelOutboundQueueSize;
+    private static final Logger LOG = LoggerFactory.getLogger(ChannelInitializerFactory.class);
     /**
      * @return PublishingChannelInitializer that initializes new channels
      */
@@ -37,6 +40,8 @@ public class ChannelInitializerFactory {
         initializer.setTlsConfiguration(tlsConfig);
         initializer.setSwitchConnectionHandler(switchConnectionHandler);
         initializer.setUseBarrier(useBarrier);
+        initializer.setChannelOutboundQueueSize(channelOutboundQueueSize);
+        LOG.info("The queue size: {}",channelOutboundQueueSize);
         return initializer;
     }
 
@@ -93,4 +98,11 @@ public class ChannelInitializerFactory {
     public void setUseBarrier(final boolean useBarrier) {
         this.useBarrier = useBarrier;
     }
+
+    /**
+     * @param channelOutboundQueueSize
+     */
+    public void setChannelOutboundQueueSize(final Integer channelOutboundQueueSize) {
+        LOG.info("The queue size: {}",channelOutboundQueueSize);
+        this.channelOutboundQueueSize = channelOutboundQueueSize; }
 }

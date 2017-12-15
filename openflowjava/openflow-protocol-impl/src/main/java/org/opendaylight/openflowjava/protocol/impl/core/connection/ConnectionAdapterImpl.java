@@ -54,18 +54,22 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
 
     private final boolean useBarrier;
 
+
+
     /**
      * Default constructor.
      * @param channel the channel to be set - used for communication
      * @param address client address (used only in case of UDP communication,
      *                as there is no need to store address over tcp (stable channel))
      * @param useBarrier value is configurable by configSubsytem
+
      */
-    public ConnectionAdapterImpl(final Channel channel, final InetSocketAddress address, final boolean useBarrier) {
-        super(channel, address);
+    public ConnectionAdapterImpl(final Channel channel, final InetSocketAddress address, final boolean useBarrier,final Integer channelOutboundQueueSize){
+        super(channel, address, channelOutboundQueueSize);
         this.useBarrier = useBarrier;
         LOG.debug("ConnectionAdapter created");
     }
+
 
     @Override
     public void setMessageListener(final OpenflowProtocolListener messageListener) {
@@ -75,6 +79,12 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
     @Override
     public void setConnectionReadyListener(final ConnectionReadyListener connectionReadyListener) {
         this.connectionReadyListener = connectionReadyListener;
+    }
+
+    @Override
+    public Integer getChannelOutboundQueueSize(final Integer channelOutboundQueueSize) {
+        LOG.info("The queue size:{}",channelOutboundQueueSize);
+        return channelOutboundQueueSize;
     }
 
     @Override

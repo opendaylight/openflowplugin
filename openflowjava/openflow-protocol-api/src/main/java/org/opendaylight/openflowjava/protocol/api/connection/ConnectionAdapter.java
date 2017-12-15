@@ -82,6 +82,9 @@ public interface ConnectionAdapter extends OpenflowProtocolService {
      */
     boolean isAutoRead();
 
+
+    Integer getChannelOutboundQueueSize(Integer channelOutboundQueueSize);
+
     /**
      * Registers a new bypass outbound queue
      * @param <T> handler type

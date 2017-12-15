@@ -30,8 +30,8 @@ abstract class AbstractConnectionAdapterStatistics extends AbstractConnectionAda
 
     private final StatisticsCounters statisticsCounters;
 
-    AbstractConnectionAdapterStatistics(final Channel channel, final InetSocketAddress address) {
-        super(channel, address);
+    AbstractConnectionAdapterStatistics(final Channel channel, final InetSocketAddress address,final Integer channelOutboundQueueSize) {
+        super(channel, address, channelOutboundQueueSize);
         statisticsCounters = StatisticsCounters.getInstance();
     }
 
