@@ -16,6 +16,24 @@
       "revId": "fa80d01a4bd1be01c3cc2020f50f3aef05311ffc",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "acf76f46_f8da2396",
+        "filename": "applications/topology-lldp-discovery/src/main/yang/topology-lldp-discovery-config.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-18T05:21:02Z",
+      "side": 1,
+      "message": "Removed it from yang and provided via xml. Reverted the changes. Done",
+      "parentUuid": "7a1969be_07a04d8f",
+      "revId": "fa80d01a4bd1be01c3cc2020f50f3aef05311ffc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
