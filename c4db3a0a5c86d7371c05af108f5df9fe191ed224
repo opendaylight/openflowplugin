@@ -36,6 +36,29 @@
     },
     {
       "key": {
+        "uuid": "da2a55be_195d12ea",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-07-26T10:46:00Z",
+      "side": 1,
+      "message": "AtomicLong wouldn\u0027t be better than radnom ?",
+      "range": {
+        "startLine": 124,
+        "startChar": 59,
+        "endLine": 124,
+        "endChar": 81
+      },
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da2a55be_1bcfc2b1",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
         "patchSetId": 5
@@ -373,6 +396,29 @@
         "startChar": 20,
         "endLine": 80,
         "endChar": 44
+      },
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_d909bade",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/ForwardingRulesManagerImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-07-26T10:46:00Z",
+      "side": 1,
+      "message": "copy paste :)",
+      "range": {
+        "startLine": 110,
+        "startChar": 21,
+        "endLine": 110,
+        "endChar": 36
       },
       "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
