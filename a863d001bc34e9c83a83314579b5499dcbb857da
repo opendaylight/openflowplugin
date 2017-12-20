@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "617369e4_2b008d4a",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/ChannelInitializerFactory.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-19T03:33:43Z",
+      "side": 1,
+      "message": "checkstyle",
+      "range": {
+        "startLine": 103,
+        "startChar": 65,
+        "endLine": 103,
+        "endChar": 67
+      },
+      "revId": "a863d001bc34e9c83a83314579b5499dcbb857da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ce8864f4_04cf8b37",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/connection/AbstractConnectionAdapter.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-19T03:33:43Z",
+      "side": 1,
+      "message": "fix tab space",
+      "revId": "a863d001bc34e9c83a83314579b5499dcbb857da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fe980921_ef04871e",
+        "filename": "openflowjava/openflow-protocol-impl/src/test/java/org/opendaylight/openflowjava/protocol/impl/core/PublishingChannelInitializerTest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-19T03:33:43Z",
+      "side": 1,
+      "message": "can you explain this?",
+      "range": {
+        "startLine": 97,
+        "startChar": 0,
+        "endLine": 99,
+        "endChar": 5
+      },
+      "revId": "a863d001bc34e9c83a83314579b5499dcbb857da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ecd82237_cb8dfcb8",
+        "filename": "openflowjava/openflow-protocol-impl/src/test/java/org/opendaylight/openflowjava/protocol/impl/core/connection/SwitchConnectionProviderImpl02Test.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-19T03:33:43Z",
+      "side": 1,
+      "message": "why this int is mocked ?",
+      "range": {
+        "startLine": 71,
+        "startChar": 14,
+        "endLine": 71,
+        "endChar": 38
+      },
+      "revId": "a863d001bc34e9c83a83314579b5499dcbb857da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
