@@ -15,6 +15,8 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.Nullable;
+
+import com.google.common.util.concurrent.MoreExecutors;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -82,7 +84,7 @@ public abstract class AbstractCompatibleStatService<I extends DataContainer, O, 
                 LOG.debug("compatibility callback crashed - NOT emitting notification: {}",
                         input.getClass().getSimpleName(), throwable);
             }
-        });
+        }, MoreExecutors.directExecutor());
 
         return RpcResultBuilder.<O>success(buildTxCapableResult(emulatedTxId)).buildFuture();
     }

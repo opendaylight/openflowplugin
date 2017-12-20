@@ -25,6 +25,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import com.google.common.util.concurrent.MoreExecutors;
 import org.opendaylight.mdsal.common.api.TransactionChainClosedException;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.ConnectionException;
@@ -177,7 +179,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         }
 
         collectingStatType = ImmutableList.copyOf(statListForCollecting);
-        Futures.addCallback(gatherDynamicData(), new InitialSubmitCallback());
+        Futures.addCallback(gatherDynamicData(), new InitialSubmitCallback(), MoreExecutors.directExecutor());
     }
 
     @Override
@@ -199,7 +201,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
                 requestContexts.forEach(requestContext -> RequestContextUtil
                         .closeRequestContextWithRpcError(requestContext, CONNECTION_CLOSED));
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     private ListenableFuture<Boolean> gatherDynamicData() {
@@ -235,7 +237,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
                         StatisticsGatheringUtils.markDeviceStateSnapshotEnd(deviceInfo, deviceContext, false);
                     }
                 }
-            });
+            }, MoreExecutors.directExecutor());
 
             return newDataGathering;
         });

@@ -11,6 +11,8 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.Future;
+
+import com.google.common.util.concurrent.MoreExecutors;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerMeterService;
@@ -91,7 +93,7 @@ public class SalMeterServiceImpl implements SalMeterService {
             public void onFailure(Throwable throwable) {
                 LOG.warn("Service call for adding meter={} failed, reason: {}", input.getMeterId(), throwable);
             }
-        });
+        }, MoreExecutors.directExecutor());
         return resultFuture;
     }
 
@@ -123,7 +125,7 @@ public class SalMeterServiceImpl implements SalMeterService {
                 LOG.warn("Service call for updating meter={} failed, reason: {}",
                         input.getOriginalMeter().getMeterId(),throwable);
             }
-        });
+        }, MoreExecutors.directExecutor());
         return resultFuture;
     }
 
@@ -153,7 +155,7 @@ public class SalMeterServiceImpl implements SalMeterService {
             public void onFailure(Throwable throwable) {
                 LOG.warn("Service call for removing meter={} failed, reason: {}",input.getMeterId(),throwable);
             }
-        });
+        }, MoreExecutors.directExecutor());
         return resultFuture;
     }
 
