@@ -178,7 +178,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         }
 
         collectingStatType = ImmutableList.copyOf(statListForCollecting);
-        Futures.addCallback(gatherDynamicData(), new InitialSubmitCallback());
+        Futures.addCallback(gatherDynamicData(), new InitialSubmitCallback(), MoreExecutors.directExecutor());
     }
 
     @Override
@@ -236,7 +236,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
                         StatisticsGatheringUtils.markDeviceStateSnapshotEnd(deviceInfo, deviceContext, false);
                     }
                 }
-            });
+            }, MoreExecutors.directExecutor());
 
             return newDataGathering;
         });

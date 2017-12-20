@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.services;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
 import java.util.Collection;
@@ -92,7 +93,7 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
                 LOG.info("onFailure - getGenerationIdFromDevice RPC error {}", throwable);
                 finalFuture.setException(new ExecutionException(throwable));
             }
-        });
+        }, MoreExecutors.directExecutor());
         return finalFuture;
     }
 
@@ -142,7 +143,7 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
                         getDeviceInfo().getNodeId(), ofpRole, throwable);
                 finalFuture.setException(throwable);
             }
-        });
+        }, MoreExecutors.directExecutor());
         return finalFuture;
     }
 
