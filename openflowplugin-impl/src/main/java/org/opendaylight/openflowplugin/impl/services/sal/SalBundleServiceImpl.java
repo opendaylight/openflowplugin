@@ -13,6 +13,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;
 import java.util.List;
@@ -103,7 +104,7 @@ public class SalBundleServiceImpl implements SalBundleService {
                 RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.failed();
                 result.set(rpcResultBuilder.build());
             }
-        });
+        }, MoreExecutors.directExecutor());
         return result;
     }
 }

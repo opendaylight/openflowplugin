@@ -15,6 +15,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -177,7 +178,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         }
 
         collectingStatType = ImmutableList.copyOf(statListForCollecting);
-        Futures.addCallback(gatherDynamicData(), new InitialSubmitCallback());
+        Futures.addCallback(gatherDynamicData(), new InitialSubmitCallback(), MoreExecutors.directExecutor());
     }
 
     @Override
@@ -199,7 +200,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
                 requestContexts.forEach(requestContext -> RequestContextUtil
                         .closeRequestContextWithRpcError(requestContext, CONNECTION_CLOSED));
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     private ListenableFuture<Boolean> gatherDynamicData() {
@@ -235,7 +236,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
                         StatisticsGatheringUtils.markDeviceStateSnapshotEnd(deviceInfo, deviceContext, false);
                     }
                 }
-            });
+            }, MoreExecutors.directExecutor());
 
             return newDataGathering;
         });

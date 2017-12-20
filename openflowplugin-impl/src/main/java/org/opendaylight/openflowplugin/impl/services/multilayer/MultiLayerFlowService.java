@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.services.multilayer;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -95,7 +96,7 @@ public final class MultiLayerFlowService<O extends DataObject> extends AbstractS
                 RpcResultBuilder<O> rpcResultBuilder = RpcResultBuilder.failed();
                 finalFuture.set(rpcResultBuilder.build());
             }
-        });
+        }, MoreExecutors.directExecutor());
 
         return finalFuture;
     }

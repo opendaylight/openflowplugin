@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.impl.statistics.services.compatibility;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -82,7 +83,7 @@ public abstract class AbstractCompatibleStatService<I extends DataContainer, O, 
                 LOG.debug("compatibility callback crashed - NOT emitting notification: {}",
                         input.getClass().getSimpleName(), throwable);
             }
-        });
+        }, MoreExecutors.directExecutor());
 
         return RpcResultBuilder.<O>success(buildTxCapableResult(emulatedTxId)).buildFuture();
     }

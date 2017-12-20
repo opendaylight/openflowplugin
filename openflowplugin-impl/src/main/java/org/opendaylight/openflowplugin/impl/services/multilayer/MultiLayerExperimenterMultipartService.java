@@ -12,6 +12,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;
 import java.util.List;
@@ -165,7 +166,7 @@ public class MultiLayerExperimenterMultipartService extends AbstractExperimenter
             }
         }
 
-        Futures.addCallback(multipartFuture, new CallBackImpl());
+        Futures.addCallback(multipartFuture, new CallBackImpl(), MoreExecutors.directExecutor());
 
         return finalFuture;
     }

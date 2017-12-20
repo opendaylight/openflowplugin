@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.services.singlelayer;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
 import java.util.List;
@@ -108,7 +109,7 @@ public class SingleLayerTableMultipartService extends AbstractTableMultipartServ
                 finalFuture.set(RpcResultBuilder.<UpdateTableOutput>failed()
                     .withError(ErrorType.RPC, "Future error", throwable).build());
             }
-        });
+        }, MoreExecutors.directExecutor());
 
         return finalFuture;
     }
