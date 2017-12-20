@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "7a1969be_196f1bc7",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-07T09:57:13Z",
+      "side": 1,
+      "message": "Created jira and updated the same in details.\nhttps://jira.opendaylight.org/browse/OPNFLWPLUG-963\n\nPort reason has been added under flow-node-connector\n\nhttps://git.opendaylight.org/gerrit/#/c/51498/7/model/model-flow-service/src/main/yang/flow-node-inventory.yang",
+      "parentUuid": "7a1969be_684ac984",
+      "revId": "edcc17ffb22cdbef0fe8b70314c6c7a74303bd76",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a1969be_484f0d93",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
         "patchSetId": 5
@@ -30,6 +48,24 @@
       "writtenOn": "2017-12-01T04:39:35Z",
       "side": 1,
       "message": "it will write port status in the data store even if port is removed, which is not correct. I believe you want to trigger separate data change notification from data store if port is deleted because it went down?",
+      "revId": "edcc17ffb22cdbef0fe8b70314c6c7a74303bd76",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a1969be_50c4c891",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 335,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-07T09:57:13Z",
+      "side": 1,
+      "message": "First it will update the NodeConnector, mainly the update happens for the PortReason Flag (Update -\u003e Delete)\n\nThen delete the NodeConnector from the datatstore.\n\nOne extra step for updating the portReason flag is required.",
+      "parentUuid": "7a1969be_484f0d93",
       "revId": "edcc17ffb22cdbef0fe8b70314c6c7a74303bd76",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
