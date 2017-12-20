@@ -1,0 +1,504 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "82d17f54_602fb405",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-18T06:56:24Z",
+      "side": 1,
+      "message": "explain clearly what queue is configurable",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 30
+      },
+      "revId": "2c24abe89ee4bc38b590c0d8232457a3da2aec59",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ea40b645_b809cd87",
+        "filename": "openflowjava/openflow-protocol-api/src/main/java/org/opendaylight/openflowjava/protocol/api/connection/ConnectionConfiguration.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-18T06:56:24Z",
+      "side": 1,
+      "message": "import java.lang.Integer and just keep Integer here",
+      "range": {
+        "startLine": 35,
+        "startChar": 4,
+        "endLine": 35,
+        "endChar": 20
+      },
+      "revId": "2c24abe89ee4bc38b590c0d8232457a3da2aec59",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e091a239_5f31bd26",
+        "filename": "openflowjava/openflow-protocol-api/src/main/java/org/opendaylight/openflowjava/protocol/api/connection/ConnectionConfiguration.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-18T06:56:24Z",
+      "side": 1,
+      "message": "Remove extra line",
+      "range": {
+        "startLine": 36,
+        "startChar": 0,
+        "endLine": 36,
+        "endChar": 0
+      },
+      "revId": "2c24abe89ee4bc38b590c0d8232457a3da2aec59",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a0cd9e8d_c59ba7aa",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/ChannelInitializerFactory.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-18T06:56:24Z",
+      "side": 1,
+      "message": "not required",
+      "range": {
+        "startLine": 31,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 95
+      },
+      "revId": "2c24abe89ee4bc38b590c0d8232457a3da2aec59",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a6047b67_3f14fbd4",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/ChannelInitializerFactory.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-18T06:56:24Z",
+      "side": 1,
+      "message": "not required",
+      "range": {
+        "startLine": 44,
+        "startChar": 0,
+        "endLine": 44,
+        "endChar": 64
+      },
+      "revId": "2c24abe89ee4bc38b590c0d8232457a3da2aec59",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ac2805a0_f966f6ff",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/ChannelInitializerFactory.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-18T06:56:24Z",
+      "side": 1,
+      "message": "this log statement not required",
+      "range": {
+        "startLine": 106,
+        "startChar": 0,
+        "endLine": 106,
+        "endChar": 64
+      },
+      "revId": "2c24abe89ee4bc38b590c0d8232457a3da2aec59",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "15d93213_07ed4fd7",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/OFDatagramPacketHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-18T06:56:24Z",
+      "side": 1,
+      "message": "not required",
+      "range": {
+        "startLine": 69,
+        "startChar": 0,
+        "endLine": 69,
+        "endChar": 53
+      },
+      "revId": "2c24abe89ee4bc38b590c0d8232457a3da2aec59",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "46807210_cf6b4254",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/OFDatagramPacketHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-18T06:56:24Z",
+      "side": 1,
+      "message": "remove extra lines",
+      "range": {
+        "startLine": 108,
+        "startChar": 0,
+        "endLine": 108,
+        "endChar": 0
+      },
+      "revId": "2c24abe89ee4bc38b590c0d8232457a3da2aec59",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "38494678_ce779473",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/ProtocolChannelInitializer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-18T06:56:24Z",
+      "side": 1,
+      "message": "not required",
+      "range": {
+        "startLine": 34,
+        "startChar": 0,
+        "endLine": 34,
+        "endChar": 96
+      },
+      "revId": "2c24abe89ee4bc38b590c0d8232457a3da2aec59",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d9c9d0b0_fb8adce6",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/ProtocolChannelInitializer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-18T06:56:24Z",
+      "side": 1,
+      "message": "not required",
+      "range": {
+        "startLine": 124,
+        "startChar": 0,
+        "endLine": 124,
+        "endChar": 65
+      },
+      "revId": "2c24abe89ee4bc38b590c0d8232457a3da2aec59",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cc42e906_d3a2866f",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/SwitchConnectionProviderFactoryImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-18T06:56:24Z",
+      "side": 1,
+      "message": "not req",
+      "range": {
+        "startLine": 40,
+        "startChar": 0,
+        "endLine": 40,
+        "endChar": 67
+      },
+      "revId": "2c24abe89ee4bc38b590c0d8232457a3da2aec59",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "81b4eae9_f638fd67",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/SwitchConnectionProviderFactoryImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-18T06:56:24Z",
+      "side": 1,
+      "message": "why Integer? can\u0027t we have int ?",
+      "range": {
+        "startLine": 98,
+        "startChar": 15,
+        "endLine": 98,
+        "endChar": 22
+      },
+      "revId": "2c24abe89ee4bc38b590c0d8232457a3da2aec59",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "03cee3ef_8b07402e",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/TcpChannelInitializer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-18T06:56:24Z",
+      "side": 1,
+      "message": "line crosses more than 120 char",
+      "range": {
+        "startLine": 71,
+        "startChar": 96,
+        "endLine": 71,
+        "endChar": 101
+      },
+      "revId": "2c24abe89ee4bc38b590c0d8232457a3da2aec59",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d7f60626_1a9301f3",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/UdpChannelInitializer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-18T06:56:24Z",
+      "side": 1,
+      "message": "give space",
+      "range": {
+        "startLine": 22,
+        "startChar": 71,
+        "endLine": 22,
+        "endChar": 74
+      },
+      "revId": "2c24abe89ee4bc38b590c0d8232457a3da2aec59",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d13ea1a8_b0643edb",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/connection/AbstractConnectionAdapter.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-18T06:56:24Z",
+      "side": 1,
+      "message": "you can remove this as well",
+      "range": {
+        "startLine": 109,
+        "startChar": 106,
+        "endLine": 109,
+        "endChar": 125
+      },
+      "revId": "2c24abe89ee4bc38b590c0d8232457a3da2aec59",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d9f2ab3c_c359b2f8",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/connection/AbstractConnectionAdapter.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-18T06:56:24Z",
+      "side": 1,
+      "message": "give proper details in the log message and move the line above the creation of channeloutboundqueue and give space after ,. And you can remove nonNull check",
+      "range": {
+        "startLine": 110,
+        "startChar": 0,
+        "endLine": 110,
+        "endChar": 63
+      },
+      "revId": "2c24abe89ee4bc38b590c0d8232457a3da2aec59",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ce674b31_2353cf33",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/connection/AbstractConnectionAdapter.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 239,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-18T06:56:24Z",
+      "side": 1,
+      "message": "fix tab space",
+      "revId": "2c24abe89ee4bc38b590c0d8232457a3da2aec59",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7b9a04d7_525fb155",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/connection/AbstractConnectionAdapterStatistics.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-18T06:56:24Z",
+      "side": 1,
+      "message": "give space and this line contains more than 120 char",
+      "range": {
+        "startLine": 33,
+        "startChar": 92,
+        "endLine": 33,
+        "endChar": 98
+      },
+      "revId": "2c24abe89ee4bc38b590c0d8232457a3da2aec59",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4d0d4dea_12a66e8c",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/connection/ConnectionAdapterFactory.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-18T06:56:24Z",
+      "side": 1,
+      "message": "checkstyle more than 120 char",
+      "range": {
+        "startLine": 28,
+        "startChar": 97,
+        "endLine": 28,
+        "endChar": 108
+      },
+      "revId": "2c24abe89ee4bc38b590c0d8232457a3da2aec59",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5e0f86c7_d8659e3e",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/connection/ConnectionAdapterFactoryImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-18T06:56:24Z",
+      "side": 1,
+      "message": "fix checkstyle error",
+      "range": {
+        "startLine": 26,
+        "startChar": 0,
+        "endLine": 26,
+        "endChar": 10
+      },
+      "revId": "2c24abe89ee4bc38b590c0d8232457a3da2aec59",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a9a042f8_4ff9d313",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/connection/ConnectionAdapterImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-18T06:56:24Z",
+      "side": 1,
+      "message": "remove extra line in this whole file",
+      "range": {
+        "startLine": 57,
+        "startChar": 0,
+        "endLine": 57,
+        "endChar": 0
+      },
+      "revId": "2c24abe89ee4bc38b590c0d8232457a3da2aec59",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "64814a83_efb6e0e2",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/connection/ConnectionAdapterImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-18T06:56:24Z",
+      "side": 1,
+      "message": "not required",
+      "range": {
+        "startLine": 86,
+        "startChar": 0,
+        "endLine": 86,
+        "endChar": 63
+      },
+      "revId": "2c24abe89ee4bc38b590c0d8232457a3da2aec59",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
