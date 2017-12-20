@@ -11,6 +11,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.math.BigInteger;
 import java.util.concurrent.Callable;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
@@ -119,7 +120,7 @@ public class DropTestRpcSender extends AbstractDropTest {
             public void onFailure(final Throwable throwable) {
                 countFutureError();
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     /**

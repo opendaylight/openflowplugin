@@ -14,6 +14,7 @@ import com.google.common.base.Optional;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -336,7 +337,7 @@ public class OFPluginFlowTest {
             public void onFailure(Throwable throwable) {
                 LOG.error("Write of flow on device failed.", throwable);
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     //TODO move to separate test util class
