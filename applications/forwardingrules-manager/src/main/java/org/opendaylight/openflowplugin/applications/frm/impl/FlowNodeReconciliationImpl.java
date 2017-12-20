@@ -16,6 +16,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -486,7 +487,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                             + ", id=" + groupId;
                     LOG.debug(msg, cause);
                 }
-            });
+            }, MoreExecutors.directExecutor());
 
             map.put(groupId, future);
         }
@@ -690,7 +691,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             public void onFailure(Throwable throwable) {
                 LOG.debug("Stale entity removal failed {}", throwable);
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     private Flow getDeleteAllFlow() {

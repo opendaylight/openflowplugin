@@ -11,6 +11,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
@@ -174,7 +175,7 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
             public void onFailure(Throwable throwable) {
                 LOG.error("Stale Meter creation failed {}", throwable);
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     private InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819
