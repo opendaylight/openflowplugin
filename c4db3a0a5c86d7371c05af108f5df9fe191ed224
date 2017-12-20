@@ -2,6 +2,173 @@
   "comments": [
     {
       "key": {
+        "uuid": "da2a55be_4f9fb850",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/ForwardingRulesProperty.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T00:30:47Z",
+      "side": 1,
+      "message": "please feel free to use full works \"RECONCILIATION\" :)",
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_afae3483",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T00:30:47Z",
+      "side": 1,
+      "message": "please make it final.",
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_1bcfc2b1",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T16:49:41Z",
+      "side": 1,
+      "message": "I think info is better, as this is the only log that you should dump when you do reconciliation, rest all log for reconciliation should be debug.",
+      "parentUuid": "da2a55be_a0eda3f1",
+      "range": {
+        "startLine": 148,
+        "startChar": 16,
+        "endLine": 148,
+        "endChar": 20
+      },
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_8fa9b07d",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T00:30:47Z",
+      "side": 1,
+      "message": "please rephrase is to \"Bundle based reconciliation status : {}\" provider.isBundleBasedReconEnabled()?\"Enable\":\"Disable\"",
+      "range": {
+        "startLine": 154,
+        "startChar": 22,
+        "endLine": 154,
+        "endChar": 101
+      },
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_cfba88bf",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T00:30:47Z",
+      "side": 1,
+      "message": "make it final.",
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_2fb244e6",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T00:30:47Z",
+      "side": 1,
+      "message": "create the read transaction just before the try block. The moment you create read transaction, it takes the data store view for this transaction, so any delay between creation of transaction and firing the transaction, can change the data store view.",
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_0fb5c0cc",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T00:30:47Z",
+      "side": 1,
+      "message": "nitpick : no need to use \"ID\" as such.",
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_6fcb9c53",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T00:30:47Z",
+      "side": 1,
+      "message": "please rephrase it to \"Error occurred while reading the configuration data store for node {}\", nodeIdentity,e)",
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_dbd40a49",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T16:49:41Z",
+      "side": 1,
+      "message": "You don\u0027t need the second {}, because LOgger automatically takes the exception and log it.",
+      "parentUuid": "da2a55be_a0c4835f",
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da2a55be_4fc6984a",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
         "patchSetId": 5
@@ -42,6 +209,40 @@
     },
     {
       "key": {
+        "uuid": "da2a55be_efde6c10",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T00:30:47Z",
+      "side": 1,
+      "message": "same as above.",
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_cf08c893",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 673,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T00:30:47Z",
+      "side": 1,
+      "message": "do you need it to be static? I think that\u0027s not required.\nplease rename the method to --\u003e getDeleteAllFlow() to be more clear.",
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da2a55be_2f008466",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
         "patchSetId": 5
@@ -53,6 +254,69 @@
       "writtenOn": "2017-07-27T00:30:47Z",
       "side": 1,
       "message": "also please make it final.",
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_0f030074",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 679,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T00:30:47Z",
+      "side": 1,
+      "message": "same as above, i think you can get rid of static and rename the method to getDeleteAllGroup()",
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_6ff9dc7f",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 680,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T00:30:47Z",
+      "side": 1,
+      "message": "make it final.",
+      "range": {
+        "startLine": 680,
+        "startChar": 8,
+        "endLine": 680,
+        "endChar": 9
+      },
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_4ff4d886",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 686,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T00:30:47Z",
+      "side": 1,
+      "message": "please make the parameter final.",
+      "range": {
+        "startLine": 686,
+        "startChar": 41,
+        "endLine": 686,
+        "endChar": 93
+      },
       "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -127,6 +391,40 @@
       "writtenOn": "2017-07-27T00:30:47Z",
       "side": 1,
       "message": "mark it final.",
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_0feca0c6",
+        "filename": "applications/forwardingrules-manager/src/test/java/test/mock/util/SalBundleServiceMock.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T00:30:47Z",
+      "side": 1,
+      "message": "mark it final.",
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_afdc7413",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
+        "patchSetId": 5
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T00:30:47Z",
+      "side": 1,
+      "message": "Please also add that, if user enableds this feature, they should also make sure that \"disable-reconicliation is set to false. Otherwise reconciliation won\u0027t be triggered.",
       "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
