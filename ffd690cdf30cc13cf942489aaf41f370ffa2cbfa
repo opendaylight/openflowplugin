@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "ba1f61a0_faf7a78a",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-08-03T08:57:26Z",
+      "side": 1,
+      "message": "Please use guava futures transform not completable future.",
+      "range": {
+        "startLine": 214,
+        "startChar": 15,
+        "endLine": 223,
+        "endChar": 19
+      },
+      "revId": "ffd690cdf30cc13cf942489aaf41f370ffa2cbfa",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba1f61a0_34be6e00",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
         "patchSetId": 10
@@ -19,6 +42,29 @@
         "startChar": 15,
         "endLine": 223,
         "endChar": 19
+      },
+      "revId": "ffd690cdf30cc13cf942489aaf41f370ffa2cbfa",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_9a030b73",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-08-03T08:57:26Z",
+      "side": 1,
+      "message": "Please use guava futures transform not completable future.",
+      "range": {
+        "startLine": 239,
+        "startChar": 0,
+        "endLine": 247,
+        "endChar": 5
       },
       "revId": "ffd690cdf30cc13cf942489aaf41f370ffa2cbfa",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
