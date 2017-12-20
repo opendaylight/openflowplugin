@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "da2a55be_75c4065f",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 6592
+      },
+      "writtenOn": "2017-07-29T13:39:52Z",
+      "side": 1,
+      "message": "Anil, \nWe are creating object of AtomicLong and using the object in the BundleBasedReconciliationTask inner class run() method and it is named as bundleId. Please refer run() method in BundleBasedReconciliaitonTask class",
+      "parentUuid": "da2a55be_8a6d159b",
+      "range": {
+        "startLine": 126,
+        "startChar": 36,
+        "endLine": 126,
+        "endChar": 47
+      },
+      "revId": "9c6bf5e6022f9fef1feea3df8df27f1f0765a88c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba1f61a0_b4ac2537",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
         "patchSetId": 7
