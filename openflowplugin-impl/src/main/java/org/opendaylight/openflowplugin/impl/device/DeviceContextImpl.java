@@ -11,6 +11,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import io.netty.util.HashedWheelTimer;
 import java.util.Collection;
 import java.util.Collections;
@@ -422,7 +423,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 LOG.trace("notification offer failed..", throwable);
                 packetInLimiter.releasePermit();
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     @Override
@@ -572,7 +573,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     transactionChainManager.close();
                     transactionChainManager = null;
                 }
-            });
+            }, MoreExecutors.directExecutor());
         }
 
         requestContexts.forEach(requestContext -> RequestContextUtil
@@ -633,7 +634,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         final ListenableFuture<List<com.google.common.base.Optional<FlowCapableNode>>> deviceFlowRegistryFill =
                 getDeviceFlowRegistry().fill();
         Futures.addCallback(deviceFlowRegistryFill,
-                new DeviceFlowRegistryCallback(deviceFlowRegistryFill, contextChainMastershipWatcher));
+                new DeviceFlowRegistryCallback(deviceFlowRegistryFill, contextChainMastershipWatcher),
+                MoreExecutors.directExecutor());
     }
 
     @VisibleForTesting

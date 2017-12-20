@@ -14,6 +14,7 @@ import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -171,7 +172,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                 LOG.warn("Request of type {} for static info of node {} failed.",
                         type, deviceContext.getDeviceInfo());
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     /**

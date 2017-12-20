@@ -12,6 +12,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.List;
@@ -154,7 +155,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
                     LOG.info("hello sending seriously failed [{}]", nextHelloXid);
                     LOG.trace("detail of hello send problem", throwable);
                 }
-            });
+            }, MoreExecutors.directExecutor());
         } else {
             stepByStepVersionSubStep(remoteVersion, lastProposedVersion);
         }
@@ -221,7 +222,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
                 public void onFailure(Throwable throwable) {
                     // NOOP
                 }
-            });
+            }, MoreExecutors.directExecutor());
             LOG.trace("next proposal [{}] with versionBitmap hooked ..", nexHelloXid);
         } else {
             LOG.trace("ret - DONE - versionBitmap");
@@ -353,7 +354,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
                 resultFtr.cancel(false);
                 handshakeListener.onHandshakeFailure();
             }
-        });
+        }, MoreExecutors.directExecutor());
         LOG.trace("sending hello message [{}] - result hooked ..", helloXid);
         return resultFtr;
     }
@@ -411,7 +412,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
                                  connectionAdapter.getRemoteAddress(), throwable.getMessage());
                         LOG.trace("DETAIL of sending of hello failure:", throwable);
                     }
-                });
+                }, MoreExecutors.directExecutor());
         LOG.debug("future features [{}] hooked ..", xid);
     }
 
