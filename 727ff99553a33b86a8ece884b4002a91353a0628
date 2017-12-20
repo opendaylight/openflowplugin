@@ -1,0 +1,205 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da2a55be_fffd9a3c",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-07-18T07:09:07Z",
+      "side": 1,
+      "message": "Remove * imports",
+      "revId": "727ff99553a33b86a8ece884b4002a91353a0628",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_dfa09645",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-07-18T07:09:07Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 69,
+        "startChar": 0,
+        "endLine": 69,
+        "endChar": 109
+      },
+      "revId": "727ff99553a33b86a8ece884b4002a91353a0628",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_7f99aa1e",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-07-18T07:09:07Z",
+      "side": 1,
+      "message": "provide nodeID",
+      "range": {
+        "startLine": 169,
+        "startChar": 6,
+        "endLine": 169,
+        "endChar": 74
+      },
+      "revId": "727ff99553a33b86a8ece884b4002a91353a0628",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_bfa3224e",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 270,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-07-18T07:09:07Z",
+      "side": 1,
+      "message": "why the entire package structure is used",
+      "range": {
+        "startLine": 264,
+        "startChar": 14,
+        "endLine": 270,
+        "endChar": 80
+      },
+      "revId": "727ff99553a33b86a8ece884b4002a91353a0628",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_ff847ab2",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 664,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-07-18T07:09:07Z",
+      "side": 1,
+      "message": "Provide proper logging statement and also move it to debug level",
+      "range": {
+        "startLine": 664,
+        "startChar": 6,
+        "endLine": 664,
+        "endChar": 59
+      },
+      "revId": "727ff99553a33b86a8ece884b4002a91353a0628",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_3f8f32ce",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 672,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-07-18T07:09:07Z",
+      "side": 1,
+      "message": "Provide proper logging statement and also move it to debug level",
+      "range": {
+        "startLine": 672,
+        "startChar": 0,
+        "endLine": 672,
+        "endChar": 60
+      },
+      "revId": "727ff99553a33b86a8ece884b4002a91353a0628",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_9fbd7e6b",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 702,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-07-18T07:09:07Z",
+      "side": 1,
+      "message": "Provide proper logging statement and also move it to debug level\n\nPlease check, how big is the size of messages, when we have millions flows.\n\nMaybe you can provide number of messages or optmize",
+      "range": {
+        "startLine": 702,
+        "startChar": 0,
+        "endLine": 702,
+        "endChar": 59
+      },
+      "revId": "727ff99553a33b86a8ece884b4002a91353a0628",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_7fc08ae0",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/ForwardingRulesManagerImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 216,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-07-18T07:09:07Z",
+      "side": 1,
+      "message": "Check the alignment",
+      "range": {
+        "startLine": 216,
+        "startChar": 4,
+        "endLine": 216,
+        "endChar": 78
+      },
+      "revId": "727ff99553a33b86a8ece884b4002a91353a0628",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_dfb7f684",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
+        "patchSetId": 2
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-07-18T07:09:07Z",
+      "side": 1,
+      "message": "provide comments",
+      "range": {
+        "startLine": 127,
+        "startChar": 1,
+        "endLine": 127,
+        "endChar": 33
+      },
+      "revId": "727ff99553a33b86a8ece884b4002a91353a0628",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
