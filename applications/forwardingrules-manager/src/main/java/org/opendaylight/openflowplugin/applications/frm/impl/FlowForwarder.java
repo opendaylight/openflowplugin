@@ -11,6 +11,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -232,7 +233,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
             public void onFailure(Throwable throwable) {
                 LOG.error("Stale Flow creation failed {}", throwable);
             }
-        });
+        }, MoreExecutors.directExecutor());
 
     }
 
