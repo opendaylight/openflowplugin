@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.services.sal;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -93,7 +94,7 @@ public class SalGroupServiceImpl implements SalGroupService {
                           input.getGroupId().getValue(),
                           throwable);
             }
-        });
+        }, MoreExecutors.directExecutor());
         return resultFuture;
     }
 
@@ -125,7 +126,7 @@ public class SalGroupServiceImpl implements SalGroupService {
                 LOG.warn("Service call for updating group={} failed, reason: {}",
                         input.getOriginalGroup().getGroupId(), throwable);
             }
-        });
+        }, MoreExecutors.directExecutor());
         return resultFuture;
     }
 
@@ -156,7 +157,7 @@ public class SalGroupServiceImpl implements SalGroupService {
                 LOG.warn("Service call for removing group={} failed, reason: {}",
                         input.getGroupId().getValue(), throwable);
             }
-        });
+        }, MoreExecutors.directExecutor());
         return resultFuture;
     }
 

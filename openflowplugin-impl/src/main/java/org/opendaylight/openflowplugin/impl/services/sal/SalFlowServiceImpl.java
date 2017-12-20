@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.services.sal;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;
 import java.util.List;
@@ -88,10 +89,10 @@ public class SalFlowServiceImpl implements SalFlowService {
 
         if (flowAddMessage.canUseSingleLayerSerialization()) {
             future = flowAddMessage.handleServiceCall(input);
-            Futures.addCallback(future, new AddFlowCallback(input, flowRegistryKey));
+            Futures.addCallback(future, new AddFlowCallback(input, flowRegistryKey), MoreExecutors.directExecutor());
         } else {
             future = flowAdd.processFlowModInputBuilders(flowAdd.toFlowModInputs(input));
-            Futures.addCallback(future, new AddFlowCallback(input, flowRegistryKey));
+            Futures.addCallback(future, new AddFlowCallback(input, flowRegistryKey), MoreExecutors.directExecutor());
 
         }
         return future;
@@ -103,11 +104,11 @@ public class SalFlowServiceImpl implements SalFlowService {
 
         if (flowRemoveMessage.canUseSingleLayerSerialization()) {
             future = flowRemoveMessage.handleServiceCall(input);
-            Futures.addCallback(future, new RemoveFlowCallback(input));
+            Futures.addCallback(future, new RemoveFlowCallback(input), MoreExecutors.directExecutor());
 
         } else {
             future = flowRemove.processFlowModInputBuilders(flowRemove.toFlowModInputs(input));
-            Futures.addCallback(future, new RemoveFlowCallback(input));
+            Futures.addCallback(future, new RemoveFlowCallback(input), MoreExecutors.directExecutor());
         }
 
         return future;
@@ -160,7 +161,7 @@ public class SalFlowServiceImpl implements SalFlowService {
                         RpcResultBuilder<UpdateFlowOutput> rpcResultBuilder = RpcResultBuilder.failed();
                         objectSettableFuture.set(rpcResultBuilder.build());
                     }
-                });
+                }, MoreExecutors.directExecutor());
 
                 future = objectSettableFuture;
             } else {
@@ -186,7 +187,7 @@ public class SalFlowServiceImpl implements SalFlowService {
             future = flowUpdate.processFlowModInputBuilders(allFlowMods);
         }
 
-        Futures.addCallback(future, new UpdateFlowCallback(input));
+        Futures.addCallback(future, new UpdateFlowCallback(input), MoreExecutors.directExecutor());
         return future;
     }
 

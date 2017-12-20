@@ -13,6 +13,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.List;
 import java.util.concurrent.Future;
 import javax.annotation.Nonnull;
@@ -91,7 +92,7 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
                 LOG.warn("Error occurred in preparation node {} for protocol 1.0", deviceInfo);
                 LOG.trace("Error for node {} : ", deviceInfo, throwable);
             }
-        });
+        }, MoreExecutors.directExecutor());
 
         return Futures.transform(future, new Function<Boolean, Void>() {
             @Nullable

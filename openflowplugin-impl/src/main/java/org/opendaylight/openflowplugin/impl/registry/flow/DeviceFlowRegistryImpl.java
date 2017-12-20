@@ -16,6 +16,7 @@ import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -147,7 +148,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
                 // Even when read operation failed, close the transaction
                 transaction.close();
             }
-        });
+        }, MoreExecutors.directExecutor());
 
         return future;
     }

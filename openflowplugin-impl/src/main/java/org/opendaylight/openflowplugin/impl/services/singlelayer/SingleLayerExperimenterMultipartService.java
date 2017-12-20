@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.services.singlelayer;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -90,7 +91,7 @@ public class SingleLayerExperimenterMultipartService extends AbstractExperimente
                 future.set(RpcResultBuilder.<SendExperimenterMpRequestOutput>failed()
                         .withError(ErrorType.RPC, "Future error", throwable).build());
             }
-        });
+        }, MoreExecutors.directExecutor());
 
         return future;
     }

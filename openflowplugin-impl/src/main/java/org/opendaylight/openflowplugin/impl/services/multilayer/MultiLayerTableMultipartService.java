@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.impl.services.multilayer;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -126,7 +127,7 @@ public class MultiLayerTableMultipartService extends AbstractTableMultipartServi
             }
         }
 
-        Futures.addCallback(multipartFuture, new CallBackImpl());
+        Futures.addCallback(multipartFuture, new CallBackImpl(), MoreExecutors.directExecutor());
 
         return finalFuture;
     }
