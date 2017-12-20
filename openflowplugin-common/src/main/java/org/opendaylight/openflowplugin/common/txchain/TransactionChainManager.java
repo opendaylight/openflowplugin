@@ -138,7 +138,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                     public void onFailure(@Nonnull final Throwable throwable) {
                         closeTransactionChain();
                     }
-                });
+                }, MoreExecutors.directExecutor());
             } else {
                 // ignoring redundant deactivate invocation
                 future = Futures.immediateFuture(null);

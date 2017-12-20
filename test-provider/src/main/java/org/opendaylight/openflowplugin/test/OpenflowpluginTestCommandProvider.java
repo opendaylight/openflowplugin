@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.test;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -3251,7 +3252,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
                 LOG.error(throwable.getMessage(), throwable);
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     /**
@@ -3292,7 +3293,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
                 LOG.error(throwable.getMessage(), throwable);
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     public void _modifyMDFlow(final CommandInterpreter ci) {
