@@ -32,6 +32,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
+
+import com.google.common.util.concurrent.MoreExecutors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
@@ -486,7 +488,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                             + ", id=" + groupId;
                     LOG.debug(msg, cause);
                 }
-            });
+            }, MoreExecutors.directExecutor());
 
             map.put(groupId, future);
         }
@@ -690,7 +692,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             public void onFailure(Throwable throwable) {
                 LOG.debug("Stale entity removal failed {}", throwable);
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     private Flow getDeleteAllFlow() {

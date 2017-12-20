@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 import javax.annotation.Nullable;
+
+import com.google.common.util.concurrent.MoreExecutors;
 import org.opendaylight.openflowplugin.applications.frsync.SyncPlanPushStrategy;
 import org.opendaylight.openflowplugin.applications.frsync.util.ItemSyncBox;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
@@ -145,7 +147,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
 
                 if (LOG.isDebugEnabled()) {
                     Futures.addCallback(JdkFutureAdapters.listenInPoolThread(rpcResultFuture),
-                            createCounterCallback(batchBag, batchOrder, counters));
+                            createCounterCallback(batchBag, batchOrder, counters), MoreExecutors.directExecutor());
                 }
 
                 return Futures.transform(JdkFutureAdapters.listenInPoolThread(rpcResultFuture),

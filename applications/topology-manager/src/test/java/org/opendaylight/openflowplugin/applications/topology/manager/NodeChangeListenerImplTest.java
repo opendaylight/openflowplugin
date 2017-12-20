@@ -132,7 +132,7 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
             };
 
         ReadWriteTransaction mockTx = mock(ReadWriteTransaction.class);
-        doReturn(Futures.immediateCheckedFuture(Optional.absent())).when(mockTx)
+        doReturn(ListenableFutures.immediateCheckedFuture(Optional.absent())).when(mockTx)
                 .read(LogicalDatastoreType.OPERATIONAL, topologyIID);
         final CountDownLatch submitLatch = setupStubbedSubmit(mockTx);
 
