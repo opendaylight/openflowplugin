@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "da2a55be_61c56c8d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 6839
+      },
+      "writtenOn": "2017-12-20T19:40:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da2a55be_a0680388",
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da2a55be_4f9fb850",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/ForwardingRulesProperty.java",
         "patchSetId": 5
@@ -48,6 +66,24 @@
       "writtenOn": "2017-07-27T00:30:47Z",
       "side": 1,
       "message": "please feel free to use full works \"RECONCILIATION\" :)",
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_a1e80411",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/ForwardingRulesProperty.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 6839
+      },
+      "writtenOn": "2017-12-20T19:40:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da2a55be_4f9fb850",
       "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -71,6 +107,24 @@
     },
     {
       "key": {
+        "uuid": "da2a55be_5e73e77f",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 6839
+      },
+      "writtenOn": "2017-12-20T19:40:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da2a55be_afae3483",
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da2a55be_195d12ea",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
         "patchSetId": 5
@@ -82,6 +136,30 @@
       "writtenOn": "2017-07-26T10:46:00Z",
       "side": 1,
       "message": "AtomicLong wouldn\u0027t be better than radnom ?",
+      "range": {
+        "startLine": 124,
+        "startChar": 59,
+        "endLine": 124,
+        "endChar": 81
+      },
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_413dc8ba",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 6839
+      },
+      "writtenOn": "2017-12-20T19:40:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da2a55be_195d12ea",
       "range": {
         "startLine": 124,
         "startChar": 59,
@@ -305,6 +383,24 @@
     },
     {
       "key": {
+        "uuid": "da2a55be_3ef553cb",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 6839
+      },
+      "writtenOn": "2017-12-20T19:40:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da2a55be_6fcb9c53",
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da2a55be_4fc6984a",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
         "patchSetId": 5
@@ -363,6 +459,24 @@
       "writtenOn": "2017-07-27T00:30:47Z",
       "side": 1,
       "message": "you can directly return the future coming from addBundleMessages.",
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_7effcbaa",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 6839
+      },
+      "writtenOn": "2017-12-20T19:40:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da2a55be_8fc0902b",
       "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -450,6 +564,24 @@
       "writtenOn": "2017-07-27T00:30:47Z",
       "side": 1,
       "message": "also please make it final.",
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_1e284f33",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 674,
+      "author": {
+        "id": 6839
+      },
+      "writtenOn": "2017-12-20T19:40:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da2a55be_2f008466",
       "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -602,6 +734,24 @@
     },
     {
       "key": {
+        "uuid": "da2a55be_9e1b9f1a",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 687,
+      "author": {
+        "id": 6839
+      },
+      "writtenOn": "2017-12-20T19:40:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da2a55be_8feed0b2",
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da2a55be_aff3d49c",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
         "patchSetId": 5
@@ -630,6 +780,30 @@
       "writtenOn": "2017-07-27T00:30:47Z",
       "side": 1,
       "message": "bundlebasedresyncenabled -\u003e bundleBasedResyncEnabled",
+      "range": {
+        "startLine": 80,
+        "startChar": 20,
+        "endLine": 80,
+        "endChar": 44
+      },
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_1edfaf3c",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/ForwardingRulesManagerImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 6839
+      },
+      "writtenOn": "2017-12-20T19:40:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da2a55be_cfe1e8d1",
       "range": {
         "startLine": 80,
         "startChar": 20,
@@ -770,6 +944,24 @@
       "writtenOn": "2017-07-27T00:30:47Z",
       "side": 1,
       "message": "Please also add that, if user enableds this feature, they should also make sure that \"disable-reconicliation is set to false. Otherwise reconciliation won\u0027t be triggered.",
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_bed78322",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
+        "patchSetId": 5
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 6839
+      },
+      "writtenOn": "2017-12-20T19:40:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da2a55be_afdc7413",
       "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
