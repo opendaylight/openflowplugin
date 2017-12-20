@@ -14,6 +14,8 @@ import com.google.common.util.concurrent.Futures;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.google.common.util.concurrent.MoreExecutors;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -762,7 +764,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
             public void onFailure(Throwable throwable) {
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     private void deleteGroup(final CommandInterpreter ci, Group group, Group group1) {
@@ -788,7 +790,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
             public void onFailure(Throwable throwable) {
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     private GroupBuilder createTestGroup(String actiontype, String type, String mod, String iD) {

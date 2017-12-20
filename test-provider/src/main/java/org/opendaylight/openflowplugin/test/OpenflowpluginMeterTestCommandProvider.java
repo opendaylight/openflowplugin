@@ -13,6 +13,8 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.google.common.util.concurrent.MoreExecutors;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -240,7 +242,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
             public void onFailure(Throwable throwable) {
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     public void _removeMeters(final CommandInterpreter ci) {
@@ -321,7 +323,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
             public void onFailure(Throwable throwable) {
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     public void _addMeter(CommandInterpreter ci) {
@@ -393,7 +395,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
             public void onFailure(Throwable throwable) {
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     private void writeMeter(final CommandInterpreter ci, Meter meter, Meter meter1) {
@@ -418,7 +420,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
             public void onFailure(Throwable throwable) {
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     public void _modifyMeter(CommandInterpreter ci) {

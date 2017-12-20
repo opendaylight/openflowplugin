@@ -14,6 +14,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import com.google.common.util.concurrent.MoreExecutors;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -598,7 +600,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
             public void onFailure(Throwable throwable) {
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     public void _modifyTable(CommandInterpreter ci) {

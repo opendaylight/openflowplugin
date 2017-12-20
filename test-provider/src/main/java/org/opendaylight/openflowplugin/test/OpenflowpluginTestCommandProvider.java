@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import com.google.common.util.concurrent.MoreExecutors;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -3251,7 +3253,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
                 LOG.error(throwable.getMessage(), throwable);
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     /**
@@ -3292,7 +3294,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
                 LOG.error(throwable.getMessage(), throwable);
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     public void _modifyMDFlow(final CommandInterpreter ci) {

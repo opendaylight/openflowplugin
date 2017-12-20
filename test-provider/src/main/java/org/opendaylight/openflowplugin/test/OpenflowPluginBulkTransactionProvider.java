@@ -14,6 +14,8 @@ import com.google.common.util.concurrent.Futures;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.google.common.util.concurrent.MoreExecutors;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -687,7 +689,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
                 LOG.error(throwable.getMessage(), throwable);
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
-        });
+        }, MoreExecutors.directExecutor());
 
     }
 
@@ -736,7 +738,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
                 LOG.error(throwable.getMessage(), throwable);
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     /**

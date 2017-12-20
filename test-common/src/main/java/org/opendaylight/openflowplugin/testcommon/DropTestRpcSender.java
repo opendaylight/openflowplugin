@@ -13,6 +13,8 @@ import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.math.BigInteger;
 import java.util.concurrent.Callable;
+
+import com.google.common.util.concurrent.MoreExecutors;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
@@ -119,7 +121,7 @@ public class DropTestRpcSender extends AbstractDropTest {
             public void onFailure(final Throwable throwable) {
                 countFutureError();
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     /**
