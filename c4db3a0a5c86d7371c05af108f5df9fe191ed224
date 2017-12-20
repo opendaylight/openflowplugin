@@ -1,0 +1,135 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da2a55be_4fc6984a",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 189,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T00:30:47Z",
+      "side": 1,
+      "message": "DPN-\u003eDatapath",
+      "range": {
+        "startLine": 189,
+        "startChar": 48,
+        "endLine": 189,
+        "endChar": 51
+      },
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_8fc0902b",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T00:30:47Z",
+      "side": 1,
+      "message": "you can directly return the future coming from addBundleMessages.",
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_2f008466",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 674,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T00:30:47Z",
+      "side": 1,
+      "message": "also please make it final.",
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_8feed0b2",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 687,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T00:30:47Z",
+      "side": 1,
+      "message": "mark this method final, given that you are not modifying this collection outside of this method.",
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_aff3d49c",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 695,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T00:30:47Z",
+      "side": 1,
+      "message": "you need to add support for meters as well, given that user can configure meters.",
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_cfe1e8d1",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/ForwardingRulesManagerImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T00:30:47Z",
+      "side": 1,
+      "message": "bundlebasedresyncenabled -\u003e bundleBasedResyncEnabled",
+      "range": {
+        "startLine": 80,
+        "startChar": 20,
+        "endLine": 80,
+        "endChar": 44
+      },
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_2fe9a4b8",
+        "filename": "applications/forwardingrules-manager/src/test/java/test/mock/util/SalBundleServiceMock.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-27T00:30:47Z",
+      "side": 1,
+      "message": "mark it final.",
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
