@@ -11,6 +11,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
@@ -181,7 +182,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
             public void onFailure(Throwable throwable) {
                 LOG.error("Stale Group creation failed {}", throwable);
             }
-        });
+        }, MoreExecutors.directExecutor());
 
     }
 
