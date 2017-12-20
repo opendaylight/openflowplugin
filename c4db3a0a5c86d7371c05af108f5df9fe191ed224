@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "da2a55be_4a84c60b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2017-07-27T08:10:33Z",
+      "side": 1,
+      "message": "Assuming that this implements what the spec attached to https://bugs.opendaylight.org/show_bug.cgi?id\u003d8873 outlines, could you add bug prefix (so \"Bug 8873: Review for bundle based reconciliation\") here... FYI Gerrit will automatically link it!",
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da2a55be_4f9fb850",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/ForwardingRulesProperty.java",
         "patchSetId": 5
