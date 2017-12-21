@@ -101,7 +101,7 @@ public final class MessageFactoryInitializer {
         registryHelper.registerSerializer(GetConfigInput.class, new GetConfigInputMessageFactory());
         registryHelper.registerSerializer(GetFeaturesInput.class, new GetFeaturesInputMessageFactory());
         registryHelper.registerSerializer(GetQueueConfigInput.class, new GetQueueConfigInputMessageFactory());
-        registryHelper.registerSerializer(GroupModInput.class, new GroupModInputMessageFactory());
+        registryHelper.registerSerializer(GroupModInput.class, new GroupModInputMessageFactory(serializerRegistry.getConnConfig()));
         registryHelper.registerSerializer(HelloInput.class, new HelloInputMessageFactory());
         registryHelper.registerSerializer(MeterModInput.class, new MeterModInputMessageFactory());
         registryHelper.registerSerializer(MultipartRequestInput.class, new MultipartRequestInputFactory());

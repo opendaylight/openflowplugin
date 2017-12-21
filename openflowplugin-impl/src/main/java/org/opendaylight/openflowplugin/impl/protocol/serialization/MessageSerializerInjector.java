@@ -11,10 +11,13 @@ package org.opendaylight.openflowplugin.impl.protocol.serialization;
 import com.google.common.annotations.VisibleForTesting;
 import java.util.function.Consumer;
 import java.util.function.Function;
+
+import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.messages.AsyncConfigMessageSerializer;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.messages.FlowMessageSerializer;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.messages.GroupMessageSerializer;
@@ -42,8 +45,9 @@ final class MessageSerializerInjector {
      * {@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}.
      *
      * @param provider OpenflowJava serializer extension provider
+     * @param configuration
      */
-    static void injectSerializers(final SerializerExtensionProvider provider) {
+    static void injectSerializers(final SerializerExtensionProvider provider, ConnectionConfiguration configuration) {
         // Inject new message serializers here using injector created by createInjector method
         final Function<Class<?>, Consumer<OFSerializer<? extends OfHeader>>> injector =
                 createInjector(provider, EncodeConstants.OF13_VERSION_ID);
@@ -51,7 +55,7 @@ final class MessageSerializerInjector {
         injector.apply(FlowMessage.class).accept(new FlowMessageSerializer());
         injector.apply(MeterMessage.class).accept(new MeterMessageSerializer());
         injector.apply(PortMessage.class).accept(new PortMessageSerializer());
-        injector.apply(GroupMessage.class).accept(new GroupMessageSerializer());
+        injector.apply(GroupMessage.class).accept(new GroupMessageSerializer(configuration));
         injector.apply(MultipartRequest.class).accept(new MultipartRequestMessageSerializer());
         injector.apply(AsyncConfigMessage.class).accept(new AsyncConfigMessageSerializer());
     }

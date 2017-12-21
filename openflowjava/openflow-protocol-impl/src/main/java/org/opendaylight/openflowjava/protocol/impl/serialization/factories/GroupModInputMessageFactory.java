@@ -10,6 +10,7 @@ package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
 import java.util.List;
+import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
@@ -17,6 +18,7 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.ListSerializer;
 import org.opendaylight.openflowjava.protocol.impl.util.TypeKeyMakerFactory;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupModCommand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupMod;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.grouping.BucketsList;
 
@@ -31,12 +33,25 @@ public class GroupModInputMessageFactory implements OFSerializer<GroupMod>, Seri
     private static final byte PADDING_IN_GROUP_MOD_MESSAGE = 1;
     private static final byte PADDING_IN_BUCKET = 4;
     private SerializerRegistry registry;
+    private final ConnectionConfiguration connConfig;
+
+    public GroupModInputMessageFactory(ConnectionConfiguration connConfig) {
+        this.connConfig = connConfig;
+    }
 
     @Override
     public void serialize(GroupMod message, ByteBuf outBuffer) {
         int index = outBuffer.writerIndex();
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
-        outBuffer.writeShort(message.getCommand().getIntValue());
+        if(connConfig.isGroupAddModEnabled()) {
+            if(message.getCommand() == GroupModCommand.OFPGCADD || message.getCommand() == GroupModCommand.OFPGCMODIFY) {
+                outBuffer.writeShort(32768);
+            } else {
+                outBuffer.writeShort(message.getCommand().getIntValue());
+            }
+        } else {
+            outBuffer.writeShort(message.getCommand().getIntValue());
+        }
         outBuffer.writeByte(message.getType().getIntValue());
         outBuffer.writeZero(PADDING_IN_GROUP_MOD_MESSAGE);
         outBuffer.writeInt(message.getGroupId().getValue().intValue());

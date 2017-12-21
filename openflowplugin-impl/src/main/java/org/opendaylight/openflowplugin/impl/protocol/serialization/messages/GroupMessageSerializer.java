@@ -12,6 +12,7 @@ import com.google.common.base.MoreObjects;
 import io.netty.buffer.ByteBuf;
 import java.util.Comparator;
 import java.util.Optional;
+import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -30,6 +31,7 @@ public class GroupMessageSerializer extends AbstractMessageSerializer<GroupMessa
         SerializerRegistryInjector {
     private static final byte PADDING_IN_GROUP_MOD_MESSAGE = 1;
     private static final byte PADDING_IN_BUCKET = 4;
+    private final boolean isGroupAddModEnabled;
 
     private static final Comparator<Bucket> COMPARATOR = (bucket1, bucket2) -> {
         if (bucket1.getBucketId() == null || bucket2.getBucketId() == null) {
@@ -40,11 +42,23 @@ public class GroupMessageSerializer extends AbstractMessageSerializer<GroupMessa
 
     private SerializerRegistry registry;
 
-    @Override
+        public GroupMessageSerializer(ConnectionConfiguration configuration) {
+                isGroupAddModEnabled =  configuration.isGroupAddModEnabled();
+        }
+
+        @Override
     public void serialize(GroupMessage message, ByteBuf outBuffer) {
         final int index = outBuffer.writerIndex();
         super.serialize(message, outBuffer);
-        outBuffer.writeShort(message.getCommand().getIntValue());
+        if (isGroupAddModEnabled) {
+                if (message.getCommand().equals(GroupModCommand.OFPGCADD) || message.getCommand().equals(GroupModCommand.OFPGCMODIFY)) {
+                        outBuffer.writeShort(message.getCommand().getIntValue());
+                } else {
+                        outBuffer.writeShort(32768);
+                }
+        } else {
+                outBuffer.writeShort(message.getCommand().getIntValue());
+        }
         outBuffer.writeByte(message.getGroupType().getIntValue());
         outBuffer.writeZero(PADDING_IN_GROUP_MOD_MESSAGE);
         outBuffer.writeInt(message.getGroupId().getValue().intValue());

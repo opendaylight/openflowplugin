@@ -35,8 +35,8 @@ public abstract class AbstractSerializerTest {
     public void setUp() throws Exception {
         registry = new SerializerRegistryImpl();
         registry.init();
-        provider = new SerializerExtensionProviderImpl(registry);
-        SerializerInjector.injectSerializers(provider);
+//        provider = new SerializerExtensionProviderImpl(registry);
+//       SerializerInjector.injectSerializers(provider);
         init();
     }
 

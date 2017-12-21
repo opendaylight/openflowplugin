@@ -24,10 +24,10 @@ import com.google.common.util.concurrent.ListenableFuture;
 public interface SwitchConnectionProvider extends AutoCloseable,
         SerializerExtensionProvider, DeserializerExtensionProvider {
 
+    void init();
     /**
      * @param configuration [protocol, port, address and supported features]
      */
-    void setConfiguration(ConnectionConfiguration configuration);
 
     /**
      * return the connection configuration
