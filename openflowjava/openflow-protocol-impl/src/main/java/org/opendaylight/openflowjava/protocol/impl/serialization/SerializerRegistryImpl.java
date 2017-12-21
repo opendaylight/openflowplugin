@@ -39,6 +39,8 @@ public class SerializerRegistryImpl implements SerializerRegistry {
     private static final short OF13 = EncodeConstants.OF13_VERSION_ID;
     private Map<MessageTypeKey<?>, OFGeneralSerializer> registry;
 
+    private boolean isGroupAddModEnabled = false;
+
     @Override
     public void init() {
         registry = new HashMap<>();
@@ -58,6 +60,15 @@ public class SerializerRegistryImpl implements SerializerRegistry {
         ActionsInitializer.registerActionSerializers(this);
         // instruction serializers
         InstructionsInitializer.registerInstructionSerializers(this);
+    }
+
+    public void setConnectionConfiguration(boolean isGroupAddModEnabled) {
+        this.isGroupAddModEnabled = isGroupAddModEnabled;
+    }
+
+    @Override
+    public boolean isGroupAddModEnabled() {
+        return isGroupAddModEnabled;
     }
 
     /**

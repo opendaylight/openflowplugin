@@ -33,8 +33,7 @@ public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProv
 
     @Override
     public SwitchConnectionProvider newInstance(SwitchConnectionConfig config) {
-        SwitchConnectionProviderImpl switchConnectionProviderImpl = new SwitchConnectionProviderImpl();
-        switchConnectionProviderImpl.setConfiguration(new ConnectionConfigurationImpl(config));
+        SwitchConnectionProviderImpl switchConnectionProviderImpl = new SwitchConnectionProviderImpl(new ConnectionConfigurationImpl(config));
         return switchConnectionProviderImpl;
     }
 
@@ -173,6 +172,11 @@ public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProv
         @Override
         public boolean useBarrier() {
             return config.isUseBarrier();
+        }
+
+        @Override
+        public boolean isGroupAddModEnabled() {
+            return config.isGroupAddModEnabled();
         }
     }
 }

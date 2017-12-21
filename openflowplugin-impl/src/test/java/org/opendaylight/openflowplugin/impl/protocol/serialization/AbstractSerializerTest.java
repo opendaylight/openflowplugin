@@ -9,6 +9,8 @@
 package org.opendaylight.openflowplugin.impl.protocol.serialization;
 
 import org.junit.Before;
+import org.mockito.Mock;
+import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFGeneralSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider;
@@ -30,13 +32,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public abstract class AbstractSerializerTest {
     private SerializerExtensionProvider provider;
     private SerializerRegistry registry;
+    private ConnectionConfiguration connectionConfiguration;
 
     @Before
     public void setUp() throws Exception {
         registry = new SerializerRegistryImpl();
         registry.init();
         provider = new SerializerExtensionProviderImpl(registry);
-        SerializerInjector.injectSerializers(provider);
+        SerializerInjector.injectSerializers(provider, false);
         init();
     }
 

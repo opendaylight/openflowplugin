@@ -64,16 +64,20 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
             .getLogger(SwitchConnectionProviderImpl.class);
     private SwitchConnectionHandler switchConnectionHandler;
     private ServerFacade serverFacade;
-    private ConnectionConfiguration connConfig;
+    private final ConnectionConfiguration connConfig;
     private final SerializationFactory serializationFactory;
     private final SerializerRegistry serializerRegistry;
     private final DeserializerRegistry deserializerRegistry;
     private final DeserializationFactory deserializationFactory;
     private TcpConnectionInitializer connectionInitializer;
 
-    /** Constructor */
-    public SwitchConnectionProviderImpl() {
+    public SwitchConnectionProviderImpl(
+            ConnectionConfiguration connConfig) {
         serializerRegistry = new SerializerRegistryImpl();
+        this.connConfig = connConfig;
+        if(connConfig != null) {
+            serializerRegistry.setConnectionConfiguration(connConfig.isGroupAddModEnabled());
+        }
         serializerRegistry.init();
         serializationFactory = new SerializationFactory();
         serializationFactory.setSerializerTable(serializerRegistry);
@@ -81,11 +85,6 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
         deserializerRegistry.init();
         deserializationFactory = new DeserializationFactory();
         deserializationFactory.setRegistry(deserializerRegistry);
-    }
-
-    @Override
-    public void setConfiguration(final ConnectionConfiguration connConfig) {
-        this.connConfig = connConfig;
     }
 
     @Override
