@@ -27,7 +27,6 @@ public interface SwitchConnectionProvider extends AutoCloseable,
     /**
      * @param configuration [protocol, port, address and supported features]
      */
-    void setConfiguration(ConnectionConfiguration configuration);
 
     /**
      * return the connection configuration

@@ -2,7 +2,8 @@
   <instance-name>openflow-switch-connection-provider-legacy-impl</instance-name>
   <port>6633</port>
   <transport-protocol>TCP</transport-protocol>
-  <tls>
+    <group-add-mod-enabled>false</group-add-mod-enabled>
+    <tls>
      <keystore>configuration/ssl/ctl.jks</keystore>
      <keystore-type>JKS</keystore-type>
      <keystore-path-type>PATH</keystore-path-type>

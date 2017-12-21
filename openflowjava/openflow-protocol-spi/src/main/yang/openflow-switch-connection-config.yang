@@ -45,6 +45,12 @@ module openflow-switch-connection-config {
             default true;
         }
 
+        leaf group-add-mod-enabled {
+            description "Group Add Mod Enabled";
+            type boolean;
+            default false;
+        }
+
         leaf switch-idle-timeout {
             description "idle timeout in [ms]";
             type uint32;

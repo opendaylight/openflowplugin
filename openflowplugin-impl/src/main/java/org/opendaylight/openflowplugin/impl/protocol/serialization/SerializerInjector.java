@@ -21,15 +21,16 @@ public final class SerializerInjector {
     /**
      * Injects serializers into provided
      * {@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}.
-     *
-     * @param provider OpenflowJava serializer extension provider
+     *  @param provider OpenflowJava serializer extension provider
+     *  @param isGroupAddModEnabled config to enale/disable GroupAddMod Message
      */
-    public static void injectSerializers(final SerializerExtensionProvider provider) {
+    public static void injectSerializers(final SerializerExtensionProvider provider,
+            boolean isGroupAddModEnabled) {
         // Inject new serializers here
         MatchSerializerInjector.injectSerializers(provider);
         ActionSerializerInjector.injectSerializers(provider);
         InstructionSerializerInjector.injectSerializers(provider);
         MultipartSerializerInjector.injectSerializers(provider);
-        MessageSerializerInjector.injectSerializers(provider);
+        MessageSerializerInjector.injectSerializers(provider, isGroupAddModEnabled);
     }
 }
