@@ -40,7 +40,7 @@ public class GroupModInputMessageFactoryTest {
     private static final byte MESSAGE_TYPE = 15;
     private static final byte PADDING_IN_GROUP_MOD_MESSAGE = 1;
     private SerializerRegistry registry;
-    private OFSerializer<GroupModInput> groupModFactory;
+    private GroupModInputMessageFactory groupModFactory;
 
     /**
      * Initializes serializer registry and stores correct factory in field
@@ -49,8 +49,7 @@ public class GroupModInputMessageFactoryTest {
     public void startUp() {
         registry = new SerializerRegistryImpl();
         registry.init();
-        groupModFactory = registry.getSerializer(
-                new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, GroupModInput.class));
+        groupModFactory = new GroupModInputMessageFactory(false);
     }
 
     /**
@@ -76,7 +75,6 @@ public class GroupModInputMessageFactoryTest {
         out.writeShort(3);
 
         groupModFactory.serialize(message, out);
-
         // read parent message
         out.readInt();
         out.skipBytes(2);

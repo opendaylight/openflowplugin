@@ -53,7 +53,7 @@ public class SwitchConnectionProviderImplTest {
         if (protocol != null) {
             createConfig(protocol);
         }
-        provider = new SwitchConnectionProviderImpl();
+        provider = new SwitchConnectionProviderImpl(config);
     }
 
     private void createConfig(final TransportProtocol protocol) {
@@ -69,7 +69,7 @@ public class SwitchConnectionProviderImplTest {
                     "/selfSignedController", PathType.CLASSPATH,
                     Lists.newArrayList("TLS_RSA_WITH_AES_128_CBC_SHA", "TLS_RSA_WITH_AES_128_CBC_SHA256")) ;
         }
-        config = new ConnectionConfigurationImpl(startupAddress, 0, tlsConfiguration, SWITCH_IDLE_TIMEOUT, true);
+        config = new ConnectionConfigurationImpl(startupAddress, 0, tlsConfiguration, SWITCH_IDLE_TIMEOUT, true, false);
         config.setTransferProtocol(protocol);
     }
 
@@ -78,7 +78,7 @@ public class SwitchConnectionProviderImplTest {
      */
     @Test
     public void testStartup1() {
-        provider = new SwitchConnectionProviderImpl();
+        provider = new SwitchConnectionProviderImpl(config);
         final ListenableFuture<Boolean> future = provider.startup();
         try {
             future.get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS);
@@ -108,7 +108,6 @@ public class SwitchConnectionProviderImplTest {
     @Test
     public void testStartup3() {
         startUp(TransportProtocol.TCP);
-        provider.setConfiguration(config);
         final ListenableFuture<Boolean> future = provider.startup();
         try {
             future.get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS);
@@ -124,7 +123,6 @@ public class SwitchConnectionProviderImplTest {
     @Test
     public void testStartup4() {
         startUp(TransportProtocol.TCP);
-        provider.setConfiguration(config);
         provider.setSwitchConnectionHandler(handler);
         try {
             Assert.assertTrue("Failed to start", provider.startup().get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS));
@@ -139,7 +137,6 @@ public class SwitchConnectionProviderImplTest {
     @Test
     public void testStartup5() {
         startUp(TransportProtocol.TLS);
-        provider.setConfiguration(config);
         provider.setSwitchConnectionHandler(handler);
         try {
             Assert.assertTrue("Failed to start", provider.startup().get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS));
@@ -154,7 +151,6 @@ public class SwitchConnectionProviderImplTest {
     @Test
     public void testStartup6() {
         startUp(TransportProtocol.UDP);
-        provider.setConfiguration(config);
         provider.setSwitchConnectionHandler(handler);
         try {
             Assert.assertTrue("Failed to start", provider.startup().get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS));
@@ -169,7 +165,6 @@ public class SwitchConnectionProviderImplTest {
     @Test
     public void testShutdown() {
         startUp(TransportProtocol.TCP);
-        provider.setConfiguration(config);
         provider.setSwitchConnectionHandler(handler);
         try {
             Assert.assertTrue("Failed to start", provider.startup().get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS));
