@@ -40,10 +40,10 @@ final class MessageSerializerInjector {
     /**
      * Injects message serializers into provided
      * {@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}.
-     *
      * @param provider OpenflowJava serializer extension provider
+     * @param isGroupAddModEnabled config to enale/disable GroupAddMod Message
      */
-    static void injectSerializers(final SerializerExtensionProvider provider) {
+    static void injectSerializers(final SerializerExtensionProvider provider, boolean isGroupAddModEnabled) {
         // Inject new message serializers here using injector created by createInjector method
         final Function<Class<?>, Consumer<OFSerializer<? extends OfHeader>>> injector =
                 createInjector(provider, EncodeConstants.OF13_VERSION_ID);
@@ -51,7 +51,7 @@ final class MessageSerializerInjector {
         injector.apply(FlowMessage.class).accept(new FlowMessageSerializer());
         injector.apply(MeterMessage.class).accept(new MeterMessageSerializer());
         injector.apply(PortMessage.class).accept(new PortMessageSerializer());
-        injector.apply(GroupMessage.class).accept(new GroupMessageSerializer());
+        injector.apply(GroupMessage.class).accept(new GroupMessageSerializer(isGroupAddModEnabled));
         injector.apply(MultipartRequest.class).accept(new MultipartRequestMessageSerializer());
         injector.apply(AsyncConfigMessage.class).accept(new AsyncConfigMessageSerializer());
     }

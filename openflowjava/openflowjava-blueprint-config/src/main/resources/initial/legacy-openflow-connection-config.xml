@@ -1,7 +1,8 @@
 <switch-connection-config xmlns="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:config">
-  <instance-name>openflow-switch-connection-provider-legacy-impl</instance-name>
-  <port>6633</port>
+  <instance-name>openflow-switch-connection-provider-default-impl</instance-name>
+  <port>6653</port>
   <transport-protocol>TCP</transport-protocol>
+  <group-add-mod-enabled>false</group-add-mod-enabled>
   <tls>
      <keystore>configuration/ssl/ctl.jks</keystore>
      <keystore-type>JKS</keystore-type>

@@ -158,7 +158,8 @@ public class OpenFlowPluginProviderImpl implements
         Futures.addCallback(Futures.allAsList(switchConnectionProviders.stream().map(switchConnectionProvider -> {
             // Inject OpenFlowPlugin custom serializers and deserializers into OpenFlowJava
             if (config.isUseSingleLayerSerialization()) {
-                SerializerInjector.injectSerializers(switchConnectionProvider);
+                SerializerInjector.injectSerializers(switchConnectionProvider,
+                        switchConnectionProvider.getConfiguration().isGroupAddModEnabled());
                 DeserializerInjector.injectDeserializers(switchConnectionProvider);
             } else {
                 DeserializerInjector.revertDeserializers(switchConnectionProvider);

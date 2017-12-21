@@ -27,6 +27,7 @@ public class ConnectionConfigurationImpl implements ConnectionConfiguration {
     private final long switchIdleTimeout;
     private ThreadConfiguration threadConfig;
     private final boolean useBarrier;
+    private final boolean isGroupAddModEnabled;
 
     /**
      * Creates {@link ConnectionConfigurationImpl}
@@ -38,12 +39,13 @@ public class ConnectionConfigurationImpl implements ConnectionConfiguration {
      * @param useBarrier
      */
     public ConnectionConfigurationImpl(final InetAddress address, final int port, final TlsConfiguration tlsConfig,
-            final long switchIdleTimeout, final boolean useBarrier) {
+            final long switchIdleTimeout, final boolean useBarrier, final boolean isGroupAddModEnabled) {
         this.address = address;
         this.port = port;
         this.tlsConfig = tlsConfig;
         this.switchIdleTimeout = switchIdleTimeout;
         this.useBarrier = useBarrier;
+        this.isGroupAddModEnabled = isGroupAddModEnabled;
     }
 
     @Override
@@ -100,5 +102,10 @@ public class ConnectionConfigurationImpl implements ConnectionConfiguration {
     @Override
     public boolean useBarrier() {
         return useBarrier;
+    }
+
+    @Override
+    public boolean isGroupAddModEnabled() {
+        return isGroupAddModEnabled;
     }
 }
