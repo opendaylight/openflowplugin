@@ -16,7 +16,6 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
  * @author michal.polkorab
  */
 public interface SerializerRegistry {
-
     /**
      * Serializer registry provisioning
      */
@@ -53,4 +52,16 @@ public interface SerializerRegistry {
      *  false if no serializer was found under specified key
      */
     <K> boolean unregisterSerializer(MessageTypeKey<K> key);
+
+    /**
+     * Checks if group add mod messages are enabled.
+     * @return true if group add mod messages are enabled
+     */
+    boolean isGroupAddModEnabled();
+
+    /**
+     *
+     * @param isGroupAddModEnabled true if group add mod messages are enabled
+     */
+    void setGroupAddModConfig(boolean isGroupAddModEnabled);
 }

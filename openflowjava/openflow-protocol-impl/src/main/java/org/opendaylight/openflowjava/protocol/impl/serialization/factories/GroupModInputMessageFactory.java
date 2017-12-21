@@ -17,6 +17,7 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.ListSerializer;
 import org.opendaylight.openflowjava.protocol.impl.util.TypeKeyMakerFactory;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupModCommand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupMod;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.grouping.BucketsList;
 
@@ -30,13 +31,28 @@ public class GroupModInputMessageFactory implements OFSerializer<GroupMod>, Seri
     private static final byte MESSAGE_TYPE = 15;
     private static final byte PADDING_IN_GROUP_MOD_MESSAGE = 1;
     private static final byte PADDING_IN_BUCKET = 4;
+    private static final int GROUP_ADD_MOD = 32768;
     private SerializerRegistry registry;
+    private final boolean isGroupAddModEnaled;
+
+    public GroupModInputMessageFactory(final boolean isGroupAddModEnaled) {
+        this.isGroupAddModEnaled = isGroupAddModEnaled;
+    }
 
     @Override
     public void serialize(GroupMod message, ByteBuf outBuffer) {
         int index = outBuffer.writerIndex();
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
-        outBuffer.writeShort(message.getCommand().getIntValue());
+        if (isGroupAddModEnaled) {
+            if (message.getCommand().equals(GroupModCommand.OFPGCADD)
+                    || message.getCommand().equals(GroupModCommand.OFPGCMODIFY)) {
+                outBuffer.writeShort(GROUP_ADD_MOD);
+            } else {
+                outBuffer.writeShort(message.getCommand().getIntValue());
+            }
+        } else {
+            outBuffer.writeShort(message.getCommand().getIntValue());
+        }
         outBuffer.writeByte(message.getType().getIntValue());
         outBuffer.writeZero(PADDING_IN_GROUP_MOD_MESSAGE);
         outBuffer.writeInt(message.getGroupId().getValue().intValue());
