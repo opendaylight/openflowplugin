@@ -10,6 +10,7 @@ package org.opendaylight.openflowjava.protocol.impl.serialization;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFGeneralSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
@@ -38,6 +39,17 @@ public class SerializerRegistryImpl implements SerializerRegistry {
     private static final short OF10 = EncodeConstants.OF10_VERSION_ID;
     private static final short OF13 = EncodeConstants.OF13_VERSION_ID;
     private Map<MessageTypeKey<?>, OFGeneralSerializer> registry;
+
+    private ConnectionConfiguration connConfig;
+
+    public void setConnectionConfiguration(ConnectionConfiguration connConfig) {
+        this.connConfig = connConfig;
+    }
+
+    @Override
+    public ConnectionConfiguration getConnConfig() {
+        return connConfig;
+    }
 
     @Override
     public void init() {

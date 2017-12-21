@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowjava.protocol.api.extensibility;
 
+import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 
 /**
@@ -17,6 +18,7 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
  */
 public interface SerializerRegistry {
 
+    void setConnectionConfiguration(ConnectionConfiguration connconfig);
     /**
      * Serializer registry provisioning
      */
@@ -53,4 +55,6 @@ public interface SerializerRegistry {
      *  false if no serializer was found under specified key
      */
     <K> boolean unregisterSerializer(MessageTypeKey<K> key);
+
+    ConnectionConfiguration getConnConfig();
 }

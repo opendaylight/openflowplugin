@@ -36,13 +36,16 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializationFactory;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializerRegistryImpl;
-import org.opendaylight.openflowjava.protocol.impl.serialization.SerializationFactory;
-import org.opendaylight.openflowjava.protocol.impl.serialization.SerializerRegistryImpl;
+import org.opendaylight.openflowjava.protocol.impl.serialization.*;
 import org.opendaylight.openflowjava.protocol.api.keys.TypeToClassKey;
+import org.opendaylight.openflowjava.protocol.impl.util.OF10MatchSerializer;
+import org.opendaylight.openflowjava.protocol.impl.util.OF13MatchSerializer;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.TransportProtocol;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandExperimenterCase;
@@ -50,6 +53,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeatureProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
 
 /**
  * Exposed class for server handling<br>
@@ -65,14 +70,15 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     private SwitchConnectionHandler switchConnectionHandler;
     private ServerFacade serverFacade;
     private ConnectionConfiguration connConfig;
-    private final SerializationFactory serializationFactory;
-    private final SerializerRegistry serializerRegistry;
-    private final DeserializerRegistry deserializerRegistry;
-    private final DeserializationFactory deserializationFactory;
+    private SerializationFactory serializationFactory;
+    private SerializerRegistry serializerRegistry;
+    private DeserializerRegistry deserializerRegistry;
+    private DeserializationFactory deserializationFactory;
     private TcpConnectionInitializer connectionInitializer;
 
-    /** Constructor */
-    public SwitchConnectionProviderImpl() {
+    public SwitchConnectionProviderImpl(
+            ConnectionConfiguration connConfig) {
+        this.connConfig = connConfig;
         serializerRegistry = new SerializerRegistryImpl();
         serializerRegistry.init();
         serializationFactory = new SerializationFactory();
@@ -84,8 +90,16 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     }
 
     @Override
-    public void setConfiguration(final ConnectionConfiguration connConfig) {
-        this.connConfig = connConfig;
+    public void init() {
+        serializerRegistry = new SerializerRegistryImpl();
+        serializerRegistry.setConnectionConfiguration(connConfig);
+        serializerRegistry.init();
+        serializationFactory = new SerializationFactory();
+        serializationFactory.setSerializerTable(serializerRegistry);
+        deserializerRegistry = new DeserializerRegistryImpl();
+        deserializerRegistry.init();
+        deserializationFactory = new DeserializationFactory();
+        deserializationFactory.setRegistry(deserializerRegistry);
     }
 
     @Override

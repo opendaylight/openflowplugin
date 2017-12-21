@@ -84,7 +84,7 @@ public class SwitchConnectionProviderImpl02Test {
         if (protocol != null) {
             createConfig(protocol);
         }
-        provider = new SwitchConnectionProviderImpl();
+        provider = new SwitchConnectionProviderImpl(config);
     }
 
     private void createConfig(final TransportProtocol protocol) {
@@ -100,7 +100,7 @@ public class SwitchConnectionProviderImpl02Test {
                     "/selfSignedController", PathType.CLASSPATH,
                     Lists.newArrayList("TLS_RSA_WITH_AES_128_CBC_SHA", "TLS_RSA_WITH_AES_128_CBC_SHA256")) ;
         }
-        config = new ConnectionConfigurationImpl(startupAddress, 0, tlsConfiguration, SWITCH_IDLE_TIMEOUT, true);
+        config = new ConnectionConfigurationImpl(startupAddress, 0, tlsConfiguration, SWITCH_IDLE_TIMEOUT, true, false);
         config.setTransferProtocol(protocol);
     }
 
@@ -111,7 +111,6 @@ public class SwitchConnectionProviderImpl02Test {
     @Test
     public void testServerFacade(){
         startUp(TransportProtocol.TCP);
-        provider.setConfiguration(config);
         final ListenableFuture<Boolean> future = provider.startup();
         final ServerFacade serverFacade = provider.getServerFacade();
         Assert.assertNotNull("Wrong -- getServerFacade return null",serverFacade);
@@ -131,7 +130,6 @@ public class SwitchConnectionProviderImpl02Test {
     @Test
     public void testUnregisterWrongKeys(){
         startUp(TransportProtocol.TCP);
-        provider.setConfiguration(config);
         final ExperimenterInstructionSerializerKey testSerKey
             = new ExperimenterInstructionSerializerKey(EncodeConstants.OF10_VERSION_ID,42L);
         Assert.assertFalse("Wrong -- unregisterSerializer",provider.unregisterSerializer(testSerKey));
@@ -146,7 +144,6 @@ public class SwitchConnectionProviderImpl02Test {
     @Test
     public void testUnregisterExistingKeys(){
         startUp(TransportProtocol.TCP);
-        provider.setConfiguration(config);
         // -- registerActionSerializer
         final ExperimenterActionSerializerKey key1
             = new ExperimenterActionSerializerKey(EncodeConstants.OF10_VERSION_ID, 42L, TestSubType.class);
