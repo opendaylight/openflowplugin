@@ -55,4 +55,10 @@ public interface ConnectionConfiguration {
      * @return boolean value for usability of Barrier
      */
     boolean useBarrier();
+
+    /**
+     * Checks if group add mod messages are enabled.
+     * @return true if group add mod messages are enabled
+     */
+    boolean isGroupAddModEnabled();
 }
