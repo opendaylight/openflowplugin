@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "08864408_f50b6cad",
+        "filename": "openflowjava/openflow-protocol-impl/src/test/java/org/opendaylight/openflowjava/protocol/impl/core/OFDatagramPacketHandlerTest.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-22T05:29:02Z",
+      "side": 1,
+      "message": "move static variable to the top of the variable list",
+      "range": {
+        "startLine": 39,
+        "startChar": 0,
+        "endLine": 39,
+        "endChar": 64
+      },
+      "revId": "0ac99e46c68bd7ceaa92cf69803687638c49ea63",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "97a3e101_9878b57d",
+        "filename": "openflowjava/openflow-protocol-impl/src/test/java/org/opendaylight/openflowjava/protocol/impl/core/PublishingChannelInitializerTest.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-22T05:29:02Z",
+      "side": 1,
+      "message": "move static variable to the top of the variable list",
+      "range": {
+        "startLine": 60,
+        "startChar": 4,
+        "endLine": 60,
+        "endChar": 64
+      },
+      "revId": "0ac99e46c68bd7ceaa92cf69803687638c49ea63",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
