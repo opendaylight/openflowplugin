@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "e1ecce88_b163b5aa",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-12-26T07:30:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d8e81dc6_2710ec9e",
+      "revId": "69c3416c251ffe8c4b4e77ab87235335c0825654",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6a10ecea_8a78ff13",
         "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/serialization/factories/GroupModInputMessageFactory.java",
         "patchSetId": 4
@@ -30,6 +48,30 @@
       "writtenOn": "2017-12-26T05:57:58Z",
       "side": 1,
       "message": "OFPGC_ADD_OR_MOD",
+      "range": {
+        "startLine": 34,
+        "startChar": 29,
+        "endLine": 34,
+        "endChar": 50
+      },
+      "revId": "69c3416c251ffe8c4b4e77ab87235335c0825654",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8dc2037f_a8674c71",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/serialization/factories/GroupModInputMessageFactory.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-12-26T07:30:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6a10ecea_8a78ff13",
       "range": {
         "startLine": 34,
         "startChar": 29,
@@ -65,6 +107,30 @@
     },
     {
       "key": {
+        "uuid": "959fb801_bf497523",
+        "filename": "openflowjava/openflow-protocol-spi/src/main/java/org/opendaylight/openflowjava/protocol/spi/connection/SwitchConnectionProvider.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-12-26T07:30:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "54b15859_3f80aa07",
+      "range": {
+        "startLine": 27,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 7
+      },
+      "revId": "69c3416c251ffe8c4b4e77ab87235335c0825654",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "aac17122_82a84b13",
         "filename": "openflowjava/openflowjava-blueprint-config/src/main/resources/initial/default-openflow-connection-config.xml",
         "patchSetId": 4
@@ -76,6 +142,30 @@
       "writtenOn": "2017-12-26T05:57:58Z",
       "side": 1,
       "message": "alignment",
+      "range": {
+        "startLine": 4,
+        "startChar": 2,
+        "endLine": 7,
+        "endChar": 9
+      },
+      "revId": "69c3416c251ffe8c4b4e77ab87235335c0825654",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "86cf16cf_106d969d",
+        "filename": "openflowjava/openflowjava-blueprint-config/src/main/resources/initial/default-openflow-connection-config.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-12-26T07:30:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aac17122_82a84b13",
       "range": {
         "startLine": 4,
         "startChar": 2,
@@ -111,6 +201,30 @@
     },
     {
       "key": {
+        "uuid": "484fa8e4_490af13d",
+        "filename": "openflowjava/openflowjava-blueprint-config/src/main/resources/initial/legacy-openflow-connection-config.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-12-26T07:30:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d12e4583_c0ab69e2",
+      "range": {
+        "startLine": 4,
+        "startChar": 2,
+        "endLine": 5,
+        "endChar": 10
+      },
+      "revId": "69c3416c251ffe8c4b4e77ab87235335c0825654",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cb1120a4_d40a4068",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/serialization/MessageSerializerInjector.java",
         "patchSetId": 4
@@ -122,6 +236,30 @@
       "writtenOn": "2017-12-26T05:57:58Z",
       "side": 1,
       "message": "alignment",
+      "range": {
+        "startLine": 43,
+        "startChar": 7,
+        "endLine": 43,
+        "endChar": 12
+      },
+      "revId": "69c3416c251ffe8c4b4e77ab87235335c0825654",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "68f2e191_ba6cb0be",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/serialization/MessageSerializerInjector.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-12-26T07:30:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cb1120a4_d40a4068",
       "range": {
         "startLine": 43,
         "startChar": 7,
@@ -157,6 +295,30 @@
     },
     {
       "key": {
+        "uuid": "36a13ca8_1ef93f1f",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/serialization/SerializerInjector.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-12-26T07:30:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "998ae7a4_4dcc7063",
+      "range": {
+        "startLine": 24,
+        "startChar": 7,
+        "endLine": 25,
+        "endChar": 8
+      },
+      "revId": "69c3416c251ffe8c4b4e77ab87235335c0825654",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5191e869_860b1d91",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/serialization/messages/GroupMessageSerializer.java",
         "patchSetId": 4
@@ -180,6 +342,30 @@
     },
     {
       "key": {
+        "uuid": "f0685353_24e90b9a",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/serialization/messages/GroupMessageSerializer.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-12-26T07:30:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5191e869_860b1d91",
+      "range": {
+        "startLine": 33,
+        "startChar": 29,
+        "endLine": 33,
+        "endChar": 50
+      },
+      "revId": "69c3416c251ffe8c4b4e77ab87235335c0825654",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9e7c7416_e18821c1",
         "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/protocol/serialization/AbstractSerializerTest.java",
         "patchSetId": 4
@@ -191,6 +377,30 @@
       "writtenOn": "2017-12-26T05:57:58Z",
       "side": 1,
       "message": "why this variable required ?\n\neven import statements as well",
+      "range": {
+        "startLine": 34,
+        "startChar": 4,
+        "endLine": 34,
+        "endChar": 60
+      },
+      "revId": "69c3416c251ffe8c4b4e77ab87235335c0825654",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a7cef723_d64649c9",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/protocol/serialization/AbstractSerializerTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2017-12-26T07:30:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9e7c7416_e18821c1",
       "range": {
         "startLine": 34,
         "startChar": 4,
