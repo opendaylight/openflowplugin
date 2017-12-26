@@ -2,6 +2,75 @@
   "comments": [
     {
       "key": {
+        "uuid": "4baf906d_f0538c9e",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/ChannelInitializerFactory.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-26T06:12:01Z",
+      "side": 1,
+      "message": "checkstyle",
+      "range": {
+        "startLine": 103,
+        "startChar": 64,
+        "endLine": 103,
+        "endChar": 67
+      },
+      "revId": "0ac99e46c68bd7ceaa92cf69803687638c49ea63",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cecf67a8_9f63c2d8",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/ProtocolChannelInitializer.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-26T06:12:01Z",
+      "side": 1,
+      "message": "checkstyle",
+      "range": {
+        "startLine": 121,
+        "startChar": 64,
+        "endLine": 121,
+        "endChar": 67
+      },
+      "revId": "0ac99e46c68bd7ceaa92cf69803687638c49ea63",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f32f3da5_350ffd0f",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/ProtocolChannelInitializer.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-12-26T06:12:01Z",
+      "side": 1,
+      "message": "checkstyle",
+      "range": {
+        "startLine": 126,
+        "startChar": 47,
+        "endLine": 126,
+        "endChar": 81
+      },
+      "revId": "0ac99e46c68bd7ceaa92cf69803687638c49ea63",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "08864408_f50b6cad",
         "filename": "openflowjava/openflow-protocol-impl/src/test/java/org/opendaylight/openflowjava/protocol/impl/core/OFDatagramPacketHandlerTest.java",
         "patchSetId": 7
