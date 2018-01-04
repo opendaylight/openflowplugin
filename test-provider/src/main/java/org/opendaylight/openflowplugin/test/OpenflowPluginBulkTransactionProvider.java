@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.test;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -116,8 +117,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-//import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.M
 
 public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
@@ -687,7 +686,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
                 LOG.error(throwable.getMessage(), throwable);
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
-        });
+        }, MoreExecutors.directExecutor());
 
     }
 
@@ -736,7 +735,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
                 LOG.error(throwable.getMessage(), throwable);
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     /**

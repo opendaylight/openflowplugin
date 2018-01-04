@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.test;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -105,8 +106,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-//import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.M
 
 public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvider {
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowPluginBulkGroupTransactionProvider.class);
@@ -762,7 +761,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
             public void onFailure(Throwable throwable) {
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     private void deleteGroup(final CommandInterpreter ci, Group group, Group group1) {
@@ -788,7 +787,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
             public void onFailure(Throwable throwable) {
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     private GroupBuilder createTestGroup(String actiontype, String type, String mod, String iD) {
