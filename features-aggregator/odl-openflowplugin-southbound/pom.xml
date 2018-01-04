@@ -80,6 +80,10 @@
             <artifactId>openflowplugin-extension-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-extension-onf</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>liblldp</artifactId>
             <version>${lldp.version}</version>
