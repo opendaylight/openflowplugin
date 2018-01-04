@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.applications.frsync.impl;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.Objects;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -54,7 +55,8 @@ public class SyncReactorGuardDecorator implements SyncReactor {
             LOG.debug("Syncup guard acquired and running for {} ", nodeId.getValue());
         }
         final ListenableFuture<Boolean> endResult = delegate.syncup(flowcapableNodePath, syncupEntry);
-        Futures.addCallback(endResult, createSyncupCallback(guard, stampBeforeGuard, stampAfterGuard, nodeId));
+        Futures.addCallback(endResult, createSyncupCallback(guard, stampBeforeGuard, stampAfterGuard, nodeId),
+                MoreExecutors.directExecutor());
         return endResult;
     }
 
