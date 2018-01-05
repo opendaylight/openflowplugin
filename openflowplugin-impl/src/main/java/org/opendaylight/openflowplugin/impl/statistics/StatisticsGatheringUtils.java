@@ -22,6 +22,8 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+
+import com.google.common.util.concurrent.MoreExecutors;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
@@ -102,7 +104,7 @@ public final class StatisticsGatheringUtils {
                              rpcResultIsNull ? "" : rpcResult.getErrors());
                 }
                 return false;
-            }));
+            }), MoreExecutors.directExecutor());
     }
 
     private static boolean processStatistics(final MultipartType type, final List<? extends DataContainer> statistics,

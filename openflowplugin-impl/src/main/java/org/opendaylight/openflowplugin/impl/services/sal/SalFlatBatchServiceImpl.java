@@ -15,6 +15,8 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
+
+import com.google.common.util.concurrent.MoreExecutors;
 import org.opendaylight.openflowplugin.impl.services.batch.BatchPlanStep;
 import org.opendaylight.openflowplugin.impl.services.batch.BatchStepJob;
 import org.opendaylight.openflowplugin.impl.services.batch.FlatBatchFlowAdapters;
@@ -98,7 +100,8 @@ public class SalFlatBatchServiceImpl implements SalFlatBatchService {
         for (int i = 0; i < batchJobsChain.size(); i++)  {
             batchJob = batchJobsChain.get(i);
             // wire actual job with chain
-            firedJobs.add(Futures.transformAsync(chainSummaryResult, batchJob.getStepFunction()));
+            firedJobs.add(Futures.transformAsync(chainSummaryResult, batchJob.getStepFunction(),
+                    MoreExecutors.directExecutor()));
             // if barrier after actual job is needed or it is the last job -> merge fired job results with chain result
             if ((batchJob.getPlanStep().isBarrierAfter()) || (i == batchJobsChain.size() - 1)) {
                 firedJobs.add(0, chainSummaryResult);
