@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b8e56d5a_37eabcf4",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-01-05T07:04:16Z",
+      "side": 1,
+      "message": "provide heading and then followed by explanation\n\nAlso, create a jira ticket and update the same here",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 51
+      },
+      "revId": "fe62b6f9cb81d19dc371ff6b1117a1e0b12ed460",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
