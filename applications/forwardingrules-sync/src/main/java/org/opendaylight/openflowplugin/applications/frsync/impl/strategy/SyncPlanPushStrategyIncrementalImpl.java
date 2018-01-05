@@ -12,6 +12,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -91,7 +92,8 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 return addMissingGroups(nodeId, nodeIdent, diffInput.getGroupsToAddOrUpdate(), counters);
             }
         });
-        Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "addMissingGroups"));
+        Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "addMissingGroups"),
+                MoreExecutors.directExecutor());
         resultVehicle = Futures.transformAsync(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
@@ -101,7 +103,8 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 return addMissingMeters(nodeId, nodeIdent, diffInput.getMetersToAddOrUpdate(), counters);
             }
         });
-        Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "addMissingMeters"));
+        Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "addMissingMeters"),
+                MoreExecutors.directExecutor());
         resultVehicle = Futures.transformAsync(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
@@ -111,7 +114,8 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 return addMissingFlows(nodeId, nodeIdent, diffInput.getFlowsToAddOrUpdate(), counters);
             }
         });
-        Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "addMissingFlows"));
+        Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "addMissingFlows"),
+                MoreExecutors.directExecutor());
 
 
         resultVehicle = Futures.transformAsync(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
@@ -123,7 +127,8 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 return removeRedundantFlows(nodeId, nodeIdent, diffInput.getFlowsToRemove(), counters);
             }
         });
-        Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "removeRedundantFlows"));
+        Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "removeRedundantFlows"),
+                MoreExecutors.directExecutor());
         resultVehicle = Futures.transformAsync(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
@@ -133,7 +138,8 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 return removeRedundantMeters(nodeId, nodeIdent, diffInput.getMetersToRemove(), counters);
             }
         });
-        Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "removeRedundantMeters"));
+        Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "removeRedundantMeters"),
+                MoreExecutors.directExecutor());
         resultVehicle = Futures.transformAsync(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
@@ -143,7 +149,8 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 return removeRedundantGroups(nodeId, nodeIdent, diffInput.getGroupsToRemove(), counters);
             }
         });
-        Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "removeRedundantGroups"));
+        Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "removeRedundantGroups"),
+                MoreExecutors.directExecutor());
         return resultVehicle;
     }
 
