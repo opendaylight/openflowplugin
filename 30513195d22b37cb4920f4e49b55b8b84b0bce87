@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "917a88b0_d48f2816",
+        "filename": "openflowjava/openflow-protocol-impl/src/test/java/org/opendaylight/openflowjava/protocol/impl/core/connection/SwitchConnectionProviderImpl02Test.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-01-05T06:35:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "45bbfa09_f8ce28d6",
+      "range": {
+        "startLine": 76,
+        "startChar": 3,
+        "endLine": 76,
+        "endChar": 40
+      },
+      "revId": "30513195d22b37cb4920f4e49b55b8b84b0bce87",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "218c1805_721daeea",
         "filename": "openflowjava/openflow-protocol-spi/src/main/java/org/opendaylight/openflowjava/protocol/spi/connection/SwitchConnectionProvider.java",
         "patchSetId": 6
@@ -36,6 +60,24 @@
       "writtenOn": "2018-01-05T06:14:29Z",
       "side": 1,
       "message": "tab space",
+      "revId": "30513195d22b37cb4920f4e49b55b8b84b0bce87",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bc8fffd8_d5633be3",
+        "filename": "openflowjava/openflow-protocol-spi/src/main/java/org/opendaylight/openflowjava/protocol/spi/connection/SwitchConnectionProvider.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-01-05T06:35:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "218c1805_721daeea",
       "revId": "30513195d22b37cb4920f4e49b55b8b84b0bce87",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -65,6 +107,30 @@
     },
     {
       "key": {
+        "uuid": "e12320d3_2d177722",
+        "filename": "openflowjava/openflowjava-blueprint-config/src/main/resources/initial/legacy-openflow-connection-config.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-01-05T06:35:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d7933758_cfb9293c",
+      "range": {
+        "startLine": 2,
+        "startChar": 53,
+        "endLine": 2,
+        "endChar": 60
+      },
+      "revId": "30513195d22b37cb4920f4e49b55b8b84b0bce87",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "faf01e39_2a097fe1",
         "filename": "openflowjava/openflowjava-blueprint-config/src/main/resources/initial/legacy-openflow-connection-config.xml",
         "patchSetId": 6
@@ -76,6 +142,30 @@
       "writtenOn": "2018-01-05T06:14:29Z",
       "side": 1,
       "message": "6633",
+      "range": {
+        "startLine": 3,
+        "startChar": 7,
+        "endLine": 3,
+        "endChar": 13
+      },
+      "revId": "30513195d22b37cb4920f4e49b55b8b84b0bce87",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "165e803b_18eccd6b",
+        "filename": "openflowjava/openflowjava-blueprint-config/src/main/resources/initial/legacy-openflow-connection-config.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-01-05T06:35:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "faf01e39_2a097fe1",
       "range": {
         "startLine": 3,
         "startChar": 7,
