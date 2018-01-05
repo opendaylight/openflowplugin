@@ -11,6 +11,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.math.BigInteger;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext.CONNECTION_STATE;
@@ -91,7 +92,7 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
             final Future<RpcResult<SetRoleOutput>> submitRoleFuture =
                     roleService.submitRoleChange(role, getVersion(), nextGenerationId);
             return JdkFutureAdapters.listenInPoolThread(submitRoleFuture);
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     private static BigInteger getNextGenerationId(final BigInteger generationId) {

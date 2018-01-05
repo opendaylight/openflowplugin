@@ -221,7 +221,8 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
             // build statistics gathering future
             final ListenableFuture<Boolean> newDataGathering = collectingStatType.stream()
                     .reduce(lastDataGathering, this::statChainFuture,
-                        (listenableFuture, asyn) -> Futures.transformAsync(listenableFuture, result -> asyn));
+                        (listenableFuture, asyn) -> Futures.transformAsync(listenableFuture, result -> asyn,
+                                MoreExecutors.directExecutor()));
 
             // write end timestamp to state snapshot container
             Futures.addCallback(newDataGathering, new FutureCallback<Boolean>() {
@@ -266,7 +267,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
                                       getDeviceInfo(), multipartType, deviceContext, deviceContext, convertorExecutor,
                                       statisticsWriterProvider, executorService) : Futures
                     .immediateFuture(Boolean.FALSE);
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     private void startGatheringData() {
