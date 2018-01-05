@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.applications.frsync.util;
 import com.google.common.base.Splitter;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -76,7 +77,8 @@ public class ReconcileUtilTest {
     public void testChainBarrierFlush() throws Exception {
         SettableFuture<RpcResult<Void>> testRabbit = SettableFuture.create();
         final ListenableFuture<RpcResult<Void>> vehicle =
-                Futures.transformAsync(testRabbit, ReconcileUtil.chainBarrierFlush(NODE_IDENT, flowCapableService));
+                Futures.transformAsync(testRabbit, ReconcileUtil.chainBarrierFlush(NODE_IDENT, flowCapableService),
+                        MoreExecutors.directExecutor());
         Mockito.when(flowCapableService.sendBarrier(barrierInputCaptor.capture()))
                 .thenReturn(RpcResultBuilder.<Void>success().buildFuture());
 

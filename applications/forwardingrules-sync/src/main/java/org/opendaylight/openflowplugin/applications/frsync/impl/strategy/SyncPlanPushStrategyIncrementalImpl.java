@@ -91,7 +91,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 }
                 return addMissingGroups(nodeId, nodeIdent, diffInput.getGroupsToAddOrUpdate(), counters);
             }
-        });
+        }, MoreExecutors.directExecutor());
         Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "addMissingGroups"),
                 MoreExecutors.directExecutor());
         resultVehicle = Futures.transformAsync(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
@@ -102,7 +102,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 }
                 return addMissingMeters(nodeId, nodeIdent, diffInput.getMetersToAddOrUpdate(), counters);
             }
-        });
+        }, MoreExecutors.directExecutor());
         Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "addMissingMeters"),
                 MoreExecutors.directExecutor());
         resultVehicle = Futures.transformAsync(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
@@ -113,7 +113,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 }
                 return addMissingFlows(nodeId, nodeIdent, diffInput.getFlowsToAddOrUpdate(), counters);
             }
-        });
+        }, MoreExecutors.directExecutor());
         Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "addMissingFlows"),
                 MoreExecutors.directExecutor());
 
@@ -126,7 +126,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 }
                 return removeRedundantFlows(nodeId, nodeIdent, diffInput.getFlowsToRemove(), counters);
             }
-        });
+        }, MoreExecutors.directExecutor());
         Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "removeRedundantFlows"),
                 MoreExecutors.directExecutor());
         resultVehicle = Futures.transformAsync(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
@@ -137,7 +137,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 }
                 return removeRedundantMeters(nodeId, nodeIdent, diffInput.getMetersToRemove(), counters);
             }
-        });
+        }, MoreExecutors.directExecutor());
         Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "removeRedundantMeters"),
                 MoreExecutors.directExecutor());
         resultVehicle = Futures.transformAsync(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
@@ -148,7 +148,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 }
                 return removeRedundantGroups(nodeId, nodeIdent, diffInput.getGroupsToRemove(), counters);
             }
-        });
+        }, MoreExecutors.directExecutor());
         Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "removeRedundantGroups"),
                 MoreExecutors.directExecutor());
         return resultVehicle;
@@ -240,7 +240,8 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
         final ListenableFuture<RpcResult<Void>> singleVoidResult = Futures.transform(
                 Futures.allAsList(allResults), ReconcileUtil.<RemoveFlowOutput>createRpcResultCondenser("flow remove"));
         return Futures.transformAsync(singleVoidResult,
-                ReconcileUtil.chainBarrierFlush(PathUtil.digNodePath(nodeIdent), transactionService));
+                ReconcileUtil.chainBarrierFlush(PathUtil.digNodePath(nodeIdent), transactionService),
+                MoreExecutors.directExecutor());
 
     }
 
@@ -305,7 +306,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
 
                                 return result;
                             }
-                        });
+                        }, MoreExecutors.directExecutor());
             }
         } catch (IllegalStateException e) {
             chainedResult = RpcResultBuilder.<Void>failed()
@@ -330,7 +331,8 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 ReconcileUtil.<RemoveGroupOutput>createRpcResultCondenser("group remove"));
 
         return Futures.transformAsync(singleVoidResult,
-                ReconcileUtil.chainBarrierFlush(PathUtil.digNodePath(nodeIdent), transactionService));
+                ReconcileUtil.chainBarrierFlush(PathUtil.digNodePath(nodeIdent), transactionService),
+                MoreExecutors.directExecutor());
     }
 
     ListenableFuture<RpcResult<Void>> updateTableFeatures(final InstanceIdentifier<FlowCapableNode> nodeIdent,
@@ -360,7 +362,8 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 ReconcileUtil.<UpdateTableOutput>createRpcResultCondenser("table update"));
 
         return Futures.transformAsync(singleVoidResult,
-                ReconcileUtil.chainBarrierFlush(PathUtil.digNodePath(nodeIdent), transactionService));
+                ReconcileUtil.chainBarrierFlush(PathUtil.digNodePath(nodeIdent), transactionService),
+                MoreExecutors.directExecutor());
     }
 
     private ListenableFuture<RpcResult<Void>> flushAddGroupPortionAndBarrier(
@@ -397,7 +400,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
 
 
         return Futures.transformAsync(summaryResult, ReconcileUtil.chainBarrierFlush(
-                PathUtil.digNodePath(nodeIdent), transactionService));
+                PathUtil.digNodePath(nodeIdent), transactionService), MoreExecutors.directExecutor());
     }
 
     ListenableFuture<RpcResult<Void>> addMissingMeters(final NodeId nodeId,
@@ -483,7 +486,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
 
                                     return result;
                                 }
-                            });
+                            }, MoreExecutors.directExecutor());
                 }
             } else {
                 chainedResult = RpcResultBuilder.<Void>success().buildFuture();

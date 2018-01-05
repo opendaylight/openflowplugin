@@ -214,7 +214,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                                         .listenInPoolThread(salBundleService.addBundleMessages(addBundleMessagesInput));
                             }
                             return Futures.immediateFuture(null);
-                        });
+                        }, MoreExecutors.directExecutor());
                 ListenableFuture<RpcResult<Void>> commitBundleFuture = Futures.transformAsync(addBundleMessagesFuture,
                     rpcResult -> {
                         if (rpcResult.isSuccessful()) {
@@ -222,7 +222,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                                     .listenInPoolThread(salBundleService.controlBundle(commitBundleInput));
                         }
                         return Futures.immediateFuture(null);
-                    });
+                    }, MoreExecutors.directExecutor());
 
                 /* Bundles not supported for meters */
                 List<Meter> meters = flowNode.get().getMeter() != null ? flowNode.get().getMeter()
@@ -237,7 +237,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                             }
                         }
                         return Futures.immediateFuture(null);
-                    });
+                    }, MoreExecutors.directExecutor());
 
                 trans.close();
                 try {

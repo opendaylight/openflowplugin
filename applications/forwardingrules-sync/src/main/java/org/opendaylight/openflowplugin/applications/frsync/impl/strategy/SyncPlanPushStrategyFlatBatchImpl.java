@@ -152,7 +152,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                 return Futures.transform(JdkFutureAdapters.listenInPoolThread(rpcResultFuture),
                         ReconcileUtil.<ProcessFlatBatchOutput>createRpcResultToVoidFunction("flat-batch"));
             }
-        });
+        }, MoreExecutors.directExecutor());
         return resultVehicle;
     }
 
