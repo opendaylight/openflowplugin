@@ -23,8 +23,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class SingleLayerFlowService<O extends DataObject> extends AbstractSilentErrorService<Flow, O> {
+    private static final Logger LOG = LoggerFactory.getLogger(SingleLayerFlowService.class);
     public SingleLayerFlowService(final RequestContextStack requestContextStack,
                                   final DeviceContext deviceContext,
                                   final Class<O> clazz) {
@@ -35,6 +38,9 @@ public final class SingleLayerFlowService<O extends DataObject> extends Abstract
     protected OfHeader buildRequest(final Xid xid, final Flow input) throws ServiceException {
         final FlowMessageBuilder flowMessageBuilder = new FlowMessageBuilder(input);
         final Class<? extends DataContainer> clazz = input.getImplementedInterface();
+
+        LOG.error("Programming flow for the table {} " + input.getTableId());
+        LOG.error("Flow details: ", input.getOutPort(), input.getFlowName(), input.getInstructions());
 
         if (clazz.equals(AddFlowInput.class)
                 || clazz.equals(UpdatedFlow.class)) {

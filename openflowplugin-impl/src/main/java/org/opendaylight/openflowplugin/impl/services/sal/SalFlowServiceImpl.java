@@ -83,6 +83,9 @@ public class SalFlowServiceImpl implements SalFlowService {
 
     @Override
     public Future<RpcResult<AddFlowOutput>> addFlow(final AddFlowInput input) {
+        LOG.error("Salflowservice: tableId {}", input.getTableId());
+        LOG.error("Salflowservice Flow details: ", input.getOutPort(), input.getFlowName(), input.getInstructions());
+
         final FlowRegistryKey flowRegistryKey =
                 FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), input);
         final ListenableFuture<RpcResult<AddFlowOutput>> future;
