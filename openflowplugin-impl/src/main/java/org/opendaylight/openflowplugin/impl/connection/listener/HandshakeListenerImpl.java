@@ -12,6 +12,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import javax.annotation.Nullable;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionStatus;
@@ -61,7 +62,7 @@ public class HandshakeListenerImpl implements HandshakeListener {
 
         // fire barrier in order to sweep all handshake and posthandshake messages before continue
         final ListenableFuture<RpcResult<BarrierOutput>> barrier = fireBarrier(version, 0L);
-        Futures.addCallback(barrier, addBarrierCallback());
+        Futures.addCallback(barrier, addBarrierCallback(), MoreExecutors.directExecutor());
     }
 
     private FutureCallback<RpcResult<BarrierOutput>> addBarrierCallback() {

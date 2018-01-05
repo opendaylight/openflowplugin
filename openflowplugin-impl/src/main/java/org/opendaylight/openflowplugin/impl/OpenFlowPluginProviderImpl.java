@@ -161,7 +161,7 @@ public class OpenFlowPluginProviderImpl implements
             public void onFailure(@Nonnull final Throwable throwable) {
                 LOG.warn("Some switchConnectionProviders failed to start.", throwable);
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     private ListenableFuture<List<Boolean>> shutdownSwitchConnections() {
@@ -186,7 +186,7 @@ public class OpenFlowPluginProviderImpl implements
             public void onFailure(@Nonnull final Throwable throwable) {
                 LOG.warn("Some switchConnectionProviders failed to shutdown.", throwable);
             }
-        });
+        }, MoreExecutors.directExecutor());
 
         return listListenableFuture;
     }
