@@ -81,8 +81,8 @@ public class RoleContextImpl implements RoleContext {
     }
 
     @Override
-    public void registerMastershipWatcher(@Nonnull final ContextChainMastershipWatcher contextChainMastershipWatcher) {
-        this.contextChainMastershipWatcher = contextChainMastershipWatcher;
+    public void registerMastershipWatcher(@Nonnull final ContextChainMastershipWatcher newWatcher) {
+        this.contextChainMastershipWatcher = newWatcher;
     }
 
     @Override

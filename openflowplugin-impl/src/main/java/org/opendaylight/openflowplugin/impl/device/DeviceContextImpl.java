@@ -276,7 +276,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     public void processReply(final OfHeader ofHeader) {
         messageSpy.spyMessage(
                 ofHeader.getImplementedInterface(),
-                (ofHeader instanceof Error)
+                ofHeader instanceof Error
                         ? MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_FAILURE
                         : MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_SUCCESS);
     }
@@ -285,7 +285,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     public void processReply(final Xid xid, final List<? extends OfHeader> ofHeaderList) {
         ofHeaderList.forEach(header -> messageSpy.spyMessage(
                 header.getImplementedInterface(),
-                (header instanceof Error)
+                header instanceof Error
                         ? MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_FAILURE
                         : MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_SUCCESS));
     }
@@ -541,8 +541,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void registerMastershipWatcher(@Nonnull final ContextChainMastershipWatcher contextChainMastershipWatcher) {
-        this.contextChainMastershipWatcher = contextChainMastershipWatcher;
+    public void registerMastershipWatcher(@Nonnull final ContextChainMastershipWatcher newWatcher) {
+        this.contextChainMastershipWatcher = newWatcher;
     }
 
     @Nonnull
@@ -588,7 +588,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     // TODO: exception handling should be fixed by using custom checked exception, never RuntimeExceptions
     @Override
-    @SuppressWarnings({"checkstyle:IllegalCatch", "checkstyle:AvoidHidingCauseExceptionCheck"})
+    @SuppressWarnings({"checkstyle:IllegalCatch"})
     public void instantiateServiceInstance() {
         lazyTransactionManagerInitialization();
 
@@ -600,8 +600,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             submitTransaction();
         } catch (final Exception ex) {
             throw new RuntimeException(String.format("Error processing port status messages from device %s: %s",
-                    deviceInfo.toString(),
-                    ex.toString()));
+                    deviceInfo.toString(), ex.toString()), ex);
         }
 
         final Optional<AbstractDeviceInitializer> initializer = deviceInitializerProvider
@@ -617,13 +616,10 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             } catch (TimeoutException ex) {
                 initialize.cancel(true);
                 throw new RuntimeException(String.format("Failed to initialize device %s in %ss: %s",
-                        deviceInfo.toString(),
-                        String.valueOf(DEVICE_INIT_TIMEOUT / 1000),
-                        ex.toString()));
+                        deviceInfo.toString(), String.valueOf(DEVICE_INIT_TIMEOUT / 1000), ex.toString()), ex);
             } catch (ExecutionException | InterruptedException ex) {
-                throw new RuntimeException(String.format("Device %s cannot be initialized: %s",
-                        deviceInfo.toString(),
-                        ex.toString()));
+                throw new RuntimeException(
+                        String.format("Device %s cannot be initialized: %s", deviceInfo.toString(), ex.toString()), ex);
             }
         } else {
             throw new RuntimeException(String.format("Unsupported version %s for device %s",

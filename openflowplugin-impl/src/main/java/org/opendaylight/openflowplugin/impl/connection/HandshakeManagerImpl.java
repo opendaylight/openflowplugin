@@ -143,7 +143,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
                 @Override
                 public void onSuccess(Void result) {
                     try {
-                        stepByStepVersionSubStep(remoteVersion, lastProposedVersion);
+                        stepByStepVersionSubStep(remoteVersion);
                     } catch (Exception e) {
                         errorHandler.handleException(e);
                         handshakeListener.onHandshakeFailure();
@@ -157,18 +157,18 @@ public class HandshakeManagerImpl implements HandshakeManager {
                 }
             }, MoreExecutors.directExecutor());
         } else {
-            stepByStepVersionSubStep(remoteVersion, lastProposedVersion);
+            stepByStepVersionSubStep(remoteVersion);
         }
     }
 
-    private void stepByStepVersionSubStep(Short remoteVersion, Short lastProposedVersion) throws Exception {
+    private void stepByStepVersionSubStep(Short remoteVersion) throws Exception {
         if (remoteVersion.equals(lastProposedVersion)) {
             postHandshake(lastProposedVersion, getNextXid());
             LOG.trace("ret - OK - switch answered with lastProposedVersion");
         } else {
             checkNegotiationStalling(remoteVersion);
 
-            if (remoteVersion > (lastProposedVersion == null ? highestVersion : this.lastProposedVersion)) {
+            if (remoteVersion > (lastProposedVersion == null ? highestVersion : lastProposedVersion)) {
                 // wait for next version
                 LOG.trace("ret - wait");
             } else {

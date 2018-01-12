@@ -39,24 +39,24 @@ public class FlowWriterSequential implements FlowCounterMBean {
         LOG.info("Using Sequential implementation of Flow Writer.");
     }
 
-    public void addFlows(Integer dpnCount, Integer flowsPerDPN, int batchSize, int sleepMillis, short startTableId,
+    public void addFlows(Integer count, Integer flowsPerDPN, int batchSize, int sleepMillis, short startTableId,
             short endTableId, boolean isCreateParents) {
         LOG.info("Using Sequential implementation of Flow Writer.");
-        this.dpnCount = dpnCount;
-        countDpnWriteCompletion.set(dpnCount);
+        this.dpnCount = count;
+        countDpnWriteCompletion.set(count);
         startTime = System.nanoTime();
-        for (int i = 1; i <= dpnCount; i++) {
+        for (int i = 1; i <= count; i++) {
             FlowHandlerTask task = new FlowHandlerTask(Integer.toString(i), flowsPerDPN, true, batchSize, sleepMillis,
                     startTableId, endTableId, isCreateParents);
             flowPusher.execute(task);
         }
     }
 
-    public void deleteFlows(Integer dpnCount, Integer flowsPerDPN, int batchSize, short startTableId,
+    public void deleteFlows(Integer count, Integer flowsPerDPN, int batchSize, short startTableId,
             short endTableId) {
         LOG.info("Using Sequential implementation of Flow Writer.");
-        countDpnWriteCompletion.set(dpnCount);
-        for (int i = 1; i <= dpnCount; i++) {
+        countDpnWriteCompletion.set(count);
+        for (int i = 1; i <= count; i++) {
             FlowHandlerTask task = new FlowHandlerTask(Integer.toString(i), flowsPerDPN, false, batchSize, 0,
                     startTableId, endTableId, false);
             flowPusher.execute(task);

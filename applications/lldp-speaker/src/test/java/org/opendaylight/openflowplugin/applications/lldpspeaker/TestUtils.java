@@ -25,7 +25,10 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 /**
  * Helper methods that are used by multiple tests.
  */
-public class TestUtils {
+public final class TestUtils {
+    private TestUtils() {
+    }
+
     static InstanceIdentifier<NodeConnector> createNodeConnectorId(String nodeKey, String nodeConnectorKey) {
         return InstanceIdentifier.builder(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId(nodeKey)))

@@ -43,7 +43,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  */
 public class MultipartRequestInputFactoryTest {
 
-    private long xid = 42L;
+    private final long xid = 42L;
     private short ofVersion;
 
     @Before
@@ -57,7 +57,7 @@ public class MultipartRequestInputFactoryTest {
         MultipartType mpType = MultipartType.OFPMPDESC;
         final MultipartRequestInput mpRqInput =
             (MultipartRequestInput) MultipartRequestInputFactory.makeMultipartRequest(xid, ofVersion, mpType, false);
-        checkHeader(mpRqInput, mpType, ofVersion);
+        checkHeader(mpRqInput, mpType);
         checkEmptyBody(mpRqInput.getMultipartRequestBody(), MultipartRequestDescCase.class);
     }
 
@@ -66,7 +66,7 @@ public class MultipartRequestInputFactoryTest {
         final MultipartType mpType = MultipartType.OFPMPFLOW;
         final MultipartRequestInput mpRqInput =
             (MultipartRequestInput) MultipartRequestInputFactory.makeMultipartRequest(xid, ofVersion, mpType, false);
-        checkHeader(mpRqInput, mpType, ofVersion);
+        checkHeader(mpRqInput, mpType);
         final MultipartRequestBody mpRqBody = mpRqInput.getMultipartRequestBody();
         Assert.assertTrue(mpRqBody instanceof MultipartRequestFlowCase);
 
@@ -91,7 +91,7 @@ public class MultipartRequestInputFactoryTest {
         ofVersion = OFConstants.OFP_VERSION_1_0;
         final MultipartRequestInput mpRqInput =
             (MultipartRequestInput) MultipartRequestInputFactory.makeMultipartRequest(xid, ofVersion, mpType, false);
-        checkHeader(mpRqInput, mpType, ofVersion);
+        checkHeader(mpRqInput, mpType);
         final MultipartRequestBody mpRqBody = mpRqInput.getMultipartRequestBody();
         Assert.assertTrue(mpRqBody instanceof MultipartRequestFlowCase);
 
@@ -110,7 +110,7 @@ public class MultipartRequestInputFactoryTest {
         MultipartType mpType = MultipartType.OFPMPAGGREGATE;
         final MultipartRequestInput mpRqInput =
             (MultipartRequestInput) MultipartRequestInputFactory.makeMultipartRequest(xid, ofVersion, mpType, false);
-        checkHeader(mpRqInput, mpType, ofVersion);
+        checkHeader(mpRqInput, mpType);
         checkEmptyBody(mpRqInput.getMultipartRequestBody(), MultipartRequestAggregateCase.class);
     }
 
@@ -119,7 +119,7 @@ public class MultipartRequestInputFactoryTest {
         MultipartType mpType = MultipartType.OFPMPTABLE;
         final MultipartRequestInput mpRqInput =
             (MultipartRequestInput) MultipartRequestInputFactory.makeMultipartRequest(xid, ofVersion, mpType, false);
-        checkHeader(mpRqInput, mpType, ofVersion);
+        checkHeader(mpRqInput, mpType);
         checkEmptyBody(mpRqInput.getMultipartRequestBody(), MultipartRequestTableCase.class);
     }
 
@@ -128,7 +128,7 @@ public class MultipartRequestInputFactoryTest {
         final MultipartType mpType = MultipartType.OFPMPPORTSTATS;
         final MultipartRequestInput mpRqInput =
             (MultipartRequestInput) MultipartRequestInputFactory.makeMultipartRequest(xid, ofVersion, mpType, false);
-        checkHeader(mpRqInput, mpType, ofVersion);
+        checkHeader(mpRqInput, mpType);
         final MultipartRequestBody mpRqBody = mpRqInput.getMultipartRequestBody();
         Assert.assertTrue(mpRqBody instanceof MultipartRequestPortStatsCase);
 
@@ -141,7 +141,7 @@ public class MultipartRequestInputFactoryTest {
         final MultipartType mpType = MultipartType.OFPMPQUEUE;
         final MultipartRequestInput mpRqInput =
             (MultipartRequestInput) MultipartRequestInputFactory.makeMultipartRequest(xid, ofVersion, mpType, false);
-        checkHeader(mpRqInput, mpType, ofVersion);
+        checkHeader(mpRqInput, mpType);
         final MultipartRequestBody mpRqBody = mpRqInput.getMultipartRequestBody();
         Assert.assertTrue(mpRqBody instanceof MultipartRequestQueueCase);
 
@@ -155,7 +155,7 @@ public class MultipartRequestInputFactoryTest {
         final MultipartType mpType = MultipartType.OFPMPGROUP;
         final MultipartRequestInput mpRqInput =
             (MultipartRequestInput) MultipartRequestInputFactory.makeMultipartRequest(xid, ofVersion, mpType, false);
-        checkHeader(mpRqInput, mpType, ofVersion);
+        checkHeader(mpRqInput, mpType);
         final MultipartRequestBody mpRqBody = mpRqInput.getMultipartRequestBody();
         Assert.assertTrue(mpRqBody instanceof MultipartRequestGroupCase);
 
@@ -168,7 +168,7 @@ public class MultipartRequestInputFactoryTest {
         MultipartType mpType = MultipartType.OFPMPGROUPDESC;
         final MultipartRequestInput mpRqInput =
             (MultipartRequestInput) MultipartRequestInputFactory.makeMultipartRequest(xid, ofVersion, mpType, false);
-        checkHeader(mpRqInput, mpType, ofVersion);
+        checkHeader(mpRqInput, mpType);
         checkEmptyBody(mpRqInput.getMultipartRequestBody(), MultipartRequestGroupDescCase.class);
     }
 
@@ -177,7 +177,7 @@ public class MultipartRequestInputFactoryTest {
         MultipartType mpType = MultipartType.OFPMPGROUPFEATURES;
         final MultipartRequestInput mpRqInput =
             (MultipartRequestInput) MultipartRequestInputFactory.makeMultipartRequest(xid, ofVersion, mpType, false);
-        checkHeader(mpRqInput, mpType, ofVersion);
+        checkHeader(mpRqInput, mpType);
         checkEmptyBody(mpRqInput.getMultipartRequestBody(), MultipartRequestGroupFeaturesCase.class);
     }
 
@@ -186,7 +186,7 @@ public class MultipartRequestInputFactoryTest {
         final MultipartType mpType = MultipartType.OFPMPMETER;
         final MultipartRequestInput mpRqInput =
             (MultipartRequestInput) MultipartRequestInputFactory.makeMultipartRequest(xid, ofVersion, mpType, false);
-        checkHeader(mpRqInput, mpType, ofVersion);
+        checkHeader(mpRqInput, mpType);
         final MultipartRequestBody mpRqBody = mpRqInput.getMultipartRequestBody();
         Assert.assertTrue(mpRqBody instanceof MultipartRequestMeterCase);
 
@@ -199,7 +199,7 @@ public class MultipartRequestInputFactoryTest {
         final MultipartType mpType = MultipartType.OFPMPMETERCONFIG;
         final MultipartRequestInput mpRqInput =
             (MultipartRequestInput) MultipartRequestInputFactory.makeMultipartRequest(xid, ofVersion, mpType, false);
-        checkHeader(mpRqInput, mpType, ofVersion);
+        checkHeader(mpRqInput, mpType);
         final MultipartRequestBody mpRqBody = mpRqInput.getMultipartRequestBody();
         Assert.assertTrue(mpRqBody instanceof MultipartRequestMeterConfigCase);
 
@@ -213,7 +213,7 @@ public class MultipartRequestInputFactoryTest {
         MultipartType mpType = MultipartType.OFPMPMETERFEATURES;
         final MultipartRequestInput mpRqInput =
             (MultipartRequestInput) MultipartRequestInputFactory.makeMultipartRequest(xid, ofVersion, mpType, false);
-        checkHeader(mpRqInput, mpType, ofVersion);
+        checkHeader(mpRqInput, mpType);
         checkEmptyBody(mpRqInput.getMultipartRequestBody(), MultipartRequestMeterFeaturesCase.class);
     }
 
@@ -222,7 +222,7 @@ public class MultipartRequestInputFactoryTest {
         final MultipartType mpType = MultipartType.OFPMPTABLEFEATURES;
         final MultipartRequestInput mpRqInput =
             (MultipartRequestInput) MultipartRequestInputFactory.makeMultipartRequest(xid, ofVersion, mpType, false);
-        checkHeader(mpRqInput, mpType, ofVersion);
+        checkHeader(mpRqInput, mpType);
         final MultipartRequestBody mpRqBody = mpRqInput.getMultipartRequestBody();
         Assert.assertTrue(mpRqBody instanceof MultipartRequestTableFeaturesCase);
 
@@ -236,7 +236,7 @@ public class MultipartRequestInputFactoryTest {
         MultipartType mpType = MultipartType.OFPMPPORTDESC;
         final MultipartRequestInput mpRqInput =
             (MultipartRequestInput) MultipartRequestInputFactory.makeMultipartRequest(xid, ofVersion, mpType, false);
-        checkHeader(mpRqInput, mpType, ofVersion);
+        checkHeader(mpRqInput, mpType);
         checkEmptyBody(mpRqInput.getMultipartRequestBody(), MultipartRequestPortDescCase.class);
     }
 
@@ -245,11 +245,11 @@ public class MultipartRequestInputFactoryTest {
         MultipartType mpType = MultipartType.OFPMPEXPERIMENTER;
         final MultipartRequestInput mpRqInput =
             (MultipartRequestInput) MultipartRequestInputFactory.makeMultipartRequest(xid, ofVersion, mpType, false);
-        checkHeader(mpRqInput, mpType, ofVersion);
+        checkHeader(mpRqInput, mpType);
         checkEmptyBody(mpRqInput.getMultipartRequestBody(), MultipartRequestExperimenterCase.class);
     }
 
-    private void checkHeader(MultipartRequestInput mpRqInput, MultipartType mpType, short ofVersion) {
+    private void checkHeader(MultipartRequestInput mpRqInput, MultipartType mpType) {
         Assert.assertFalse(mpRqInput.getFlags().isOFPMPFREQMORE());
         Assert.assertEquals(ofVersion, mpRqInput.getVersion().shortValue());
         Assert.assertEquals(mpType, mpRqInput.getType());

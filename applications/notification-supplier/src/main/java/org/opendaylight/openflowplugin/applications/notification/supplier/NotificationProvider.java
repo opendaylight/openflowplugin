@@ -113,25 +113,26 @@ public class NotificationProvider implements AutoCloseable {
     /**
      * Method to initialize NotificationProviderConfig.
      */
-    private NotificationProviderConfig initializeNotificationProviderConfig(boolean flowSupp, boolean meterSupp,
-                                                                            boolean groupSupp,
-                                                                            boolean connectorStatSupp,
-                                                                            boolean flowStatSupp,
-                                                                            boolean flowTableStatSupp,
-                                                                            boolean meterStatSupp,
-                                                                            boolean groupStatSupp,
-                                                                            boolean queueStatSupp) {
+    private NotificationProviderConfig initializeNotificationProviderConfig(boolean hasFlowSupp,
+                                                                            boolean hasMeterSupp,
+                                                                            boolean hasGroupSupp,
+                                                                            boolean hasConnectorStatSupp,
+                                                                            boolean hasFlowStatSupp,
+                                                                            boolean hasFlowTableStatSupp,
+                                                                            boolean hasMeterStatSupp,
+                                                                            boolean hasGroupStatSupp,
+                                                                            boolean hasQueueStatSupp) {
         NotificationProviderConfig.NotificationProviderConfigBuilder notif
                 = new NotificationProviderConfig.NotificationProviderConfigBuilder();
-        notif.setFlowSupport(flowSupp);
-        notif.setMeterSupport(meterSupp);
-        notif.setGroupSupport(groupSupp);
-        notif.setNodeConnectorStatSupport(connectorStatSupp);
-        notif.setFlowStatSupport(flowStatSupp);
-        notif.setFlowTableStatSupport(flowTableStatSupp);
-        notif.setMeterStatSupport(meterStatSupp);
-        notif.setGroupStatSupport(groupStatSupp);
-        notif.setQueueStatSupport(queueStatSupp);
+        notif.setFlowSupport(hasFlowSupp);
+        notif.setMeterSupport(hasMeterSupp);
+        notif.setGroupSupport(hasGroupSupp);
+        notif.setNodeConnectorStatSupport(hasConnectorStatSupp);
+        notif.setFlowStatSupport(hasFlowStatSupp);
+        notif.setFlowTableStatSupport(hasFlowTableStatSupp);
+        notif.setMeterStatSupport(hasMeterStatSupp);
+        notif.setGroupStatSupport(hasGroupStatSupp);
+        notif.setQueueStatSupport(hasQueueStatSupp);
         return notif.build();
     }
 

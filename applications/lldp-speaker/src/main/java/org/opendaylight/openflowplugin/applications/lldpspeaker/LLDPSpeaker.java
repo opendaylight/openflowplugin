@@ -110,9 +110,6 @@ public class LLDPSpeaker implements AutoCloseable, NodeConnectorEventsObserver, 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void nodeConnectorAdded(final InstanceIdentifier<NodeConnector> nodeConnectorInstanceId,
                                    final FlowCapableNodeConnector flowConnector) {
@@ -154,9 +151,6 @@ public class LLDPSpeaker implements AutoCloseable, NodeConnectorEventsObserver, 
         packetProcessingService.transmitPacket(packet);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void nodeConnectorRemoved(final InstanceIdentifier<NodeConnector> nodeConnectorInstanceId) {
         nodeConnectorMap.remove(nodeConnectorInstanceId);

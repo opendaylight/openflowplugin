@@ -14,7 +14,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 
-public class TestSupplierVerifyHelper {
+public final class TestSupplierVerifyHelper {
 
     private TestSupplierVerifyHelper() {
         throw new UnsupportedOperationException("Test utility class");

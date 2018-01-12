@@ -66,8 +66,8 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     private final long maximumPollingDelay;
     private final boolean isUsingReconciliationFramework;
     private final AtomicBoolean schedulingEnabled = new AtomicBoolean(true);
-    private final AtomicReference<ListenableFuture<Boolean>> lastDataGathering = new AtomicReference<>();
-    private final AtomicReference<StatisticsPollingService> statisticsPollingService = new AtomicReference<>();
+    private final AtomicReference<ListenableFuture<Boolean>> lastDataGatheringRef = new AtomicReference<>();
+    private final AtomicReference<StatisticsPollingService> statisticsPollingServiceRef = new AtomicReference<>();
     private List<MultipartType> collectingStatType;
     private StatisticsGatheringService<T> statisticsGatheringService;
     private StatisticsGatheringOnTheFlyService<T> statisticsGatheringOnTheFlyService;
@@ -108,8 +108,8 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     }
 
     @Override
-    public void registerMastershipWatcher(@Nonnull final ContextChainMastershipWatcher contextChainMastershipWatcher) {
-        this.contextChainMastershipWatcher = contextChainMastershipWatcher;
+    public void registerMastershipWatcher(@Nonnull final ContextChainMastershipWatcher newWatcher) {
+        this.contextChainMastershipWatcher = newWatcher;
     }
 
     @Override
@@ -209,7 +209,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
             return Futures.immediateFuture(Boolean.TRUE);
         }
 
-        return this.lastDataGathering.updateAndGet(future -> {
+        return this.lastDataGatheringRef.updateAndGet(future -> {
             // write start timestamp to state snapshot container
             StatisticsGatheringUtils.markDeviceStateSnapshotStart(deviceInfo, deviceContext);
 
@@ -283,19 +283,19 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
 
         schedulingEnabled.set(true);
         statisticsPollingService.startAsync();
-        this.statisticsPollingService.set(statisticsPollingService);
+        this.statisticsPollingServiceRef.set(statisticsPollingService);
     }
 
     private ListenableFuture<Void> stopGatheringData() {
         LOG.info("Stopping running statistics gathering for node {}", deviceInfo);
         cancelLastDataGathering();
 
-        return Optional.ofNullable(statisticsPollingService.getAndSet(null)).map(StatisticsPollingService::stop)
+        return Optional.ofNullable(statisticsPollingServiceRef.getAndSet(null)).map(StatisticsPollingService::stop)
                 .orElseGet(() -> Futures.immediateFuture(null));
     }
 
     private void cancelLastDataGathering() {
-        final ListenableFuture<Boolean> future = lastDataGathering.getAndSet(null);
+        final ListenableFuture<Boolean> future = lastDataGatheringRef.getAndSet(null);
 
         if (Objects.nonNull(future) && !future.isDone() && !future.isCancelled()) {
             future.cancel(true);

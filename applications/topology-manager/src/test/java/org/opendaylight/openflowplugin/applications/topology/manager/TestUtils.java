@@ -18,7 +18,6 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 
 import com.google.common.base.Optional;
-import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.SettableFuture;
 import com.google.common.util.concurrent.Uninterruptibles;
@@ -28,11 +27,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
@@ -49,7 +45,10 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
-public class TestUtils {
+public final class TestUtils {
+    private TestUtils() {
+    }
+
     static void verifyMockTx(ReadWriteTransaction mockTx) {
         InOrder inOrder = inOrder(mockTx);
         inOrder.verify(mockTx, atLeast(0)).submit();
@@ -88,12 +87,9 @@ public class TestUtils {
 
     static CountDownLatch setupStubbedSubmit(ReadWriteTransaction mockTx) {
         final CountDownLatch latch = new CountDownLatch(1);
-        doAnswer(new Answer<CheckedFuture<Void, TransactionCommitFailedException>>() {
-            @Override
-            public CheckedFuture<Void, TransactionCommitFailedException> answer(InvocationOnMock invocation) {
-                latch.countDown();
-                return Futures.immediateCheckedFuture(null);
-            }
+        doAnswer(invocation -> {
+            latch.countDown();
+            return Futures.immediateCheckedFuture(null);
         }).when(mockTx).submit();
 
         return latch;
@@ -102,12 +98,9 @@ public class TestUtils {
     @SuppressWarnings("rawtypes")
     static void setupStubbedDeletes(ReadWriteTransaction mockTx, ArgumentCaptor<InstanceIdentifier> deletedLinkIDs,
                                     final CountDownLatch latch) {
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) {
-                latch.countDown();
-                return null;
-            }
+        doAnswer(invocation -> {
+            latch.countDown();
+            return null;
         }).when(mockTx).delete(eq(LogicalDatastoreType.OPERATIONAL), deletedLinkIDs.capture());
     }
 
