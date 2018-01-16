@@ -9,7 +9,7 @@
 /**
  *
  */
-package org.opendaylight.controller.liblldp;
+package org.opendaylight.openflowplugin.libraries.liblldp;
 
 import java.util.Arrays;
 

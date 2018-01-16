@@ -8,7 +8,7 @@
         </layout>
     </appender>
 
-    <logger name="org.opendaylight.controller.liblldp" additivity="false">
+    <logger name="org.opendaylight.openflowplugin.libraries.liblldp" additivity="false">
         <level value="DEBUG" />
         <appender-ref ref="console" />
     </logger>

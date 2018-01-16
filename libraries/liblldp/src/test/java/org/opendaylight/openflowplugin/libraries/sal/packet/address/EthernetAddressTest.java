@@ -13,12 +13,12 @@
  *
  * Unit Tests for EthernetAddress class
  */
-package org.opendaylight.controller.sal.packet.address;
+package org.opendaylight.openflowplugin.libraries.sal.packet.address;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.opendaylight.controller.liblldp.ConstructionException;
-import org.opendaylight.controller.liblldp.EthernetAddress;
+import org.opendaylight.openflowplugin.libraries.liblldp.ConstructionException;
+import org.opendaylight.openflowplugin.libraries.liblldp.EthernetAddress;
 
 public class EthernetAddressTest {
     @Test
