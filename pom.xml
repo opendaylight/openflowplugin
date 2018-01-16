@@ -23,6 +23,7 @@
     <modules>
         <module>artifacts</module>
         <module>parent</module>
+        <module>libraries</module>
         <module>openflowjava</module>
         <module>openflowplugin-api</module>
         <module>openflowplugin</module>

@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.controller.liblldp;
+package org.opendaylight.openflowplugin.libraries.liblldp;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.LoggerFactory;

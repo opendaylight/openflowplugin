@@ -5,7 +5,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.controller.liblldp;
+package org.opendaylight.openflowplugin.libraries.liblldp;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -33,7 +33,7 @@ public class LLDPTLVTest {
 
     /**
      * Test method for
-     * {@link org.opendaylight.controller.liblldp.LLDPTLV#createCustomTLVValue(java.lang.String)}
+     * {@link org.opendaylight.openflowplugin.libraries.liblldp.LLDPTLV#createCustomTLVValue(java.lang.String)}
      * .
      */
     @Test
@@ -58,7 +58,7 @@ public class LLDPTLVTest {
 
     /**
      * Test method for
-     * {@link org.opendaylight.controller.liblldp.LLDPTLV#getCustomString(byte[], int)}
+     * {@link org.opendaylight.openflowplugin.libraries.liblldp.LLDPTLV#getCustomString(byte[], int)}
      * .
      * @throws Exception
      */

@@ -16,7 +16,7 @@
  *
  *
  */
-package org.opendaylight.controller.liblldp;
+package org.opendaylight.openflowplugin.libraries.liblldp;
 
 public class ConstructionException extends Exception {
     private static final long serialVersionUID = 1L;
