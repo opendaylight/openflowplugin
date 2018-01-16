@@ -6,11 +6,11 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.controller.sal.packet;
+package org.opendaylight.openflowplugin.libraries.sal.packet;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.opendaylight.controller.liblldp.BitBufferHelper;
+import org.opendaylight.openflowplugin.libraries.liblldp.BitBufferHelper;
 
 public class BitBufferHelperTest {
 
