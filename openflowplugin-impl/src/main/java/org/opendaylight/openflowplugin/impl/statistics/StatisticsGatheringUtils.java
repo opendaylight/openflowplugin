@@ -12,9 +12,9 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
-import java.text.SimpleDateFormat;
+import java.time.Clock;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -60,9 +60,10 @@ import org.slf4j.LoggerFactory;
  */
 public final class StatisticsGatheringUtils {
 
-    private static final String DATE_AND_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsGatheringUtils.class);
     private static final String QUEUE2_REQCTX = "QUEUE2REQCTX-";
+    private static final DateTimeFormatter DATE_AND_TIME_FORMAT =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 
     private StatisticsGatheringUtils() {
         throw new IllegalStateException("This class should not be instantiated.");
@@ -226,11 +227,9 @@ public final class StatisticsGatheringUtils {
     static void markDeviceStateSnapshotStart(final DeviceInfo deviceInfo, final TxFacade txFacade) {
         final InstanceIdentifier<FlowCapableStatisticsGatheringStatus> statusPath = deviceInfo
                 .getNodeInstanceIdentifier().augmentation(FlowCapableStatisticsGatheringStatus.class);
-
-        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AND_TIME_FORMAT);
         final FlowCapableStatisticsGatheringStatus gatheringStatus = new FlowCapableStatisticsGatheringStatusBuilder()
                 .setSnapshotGatheringStatusStart(new SnapshotGatheringStatusStartBuilder()
-                        .setBegin(new DateAndTime(simpleDateFormat.format(new Date())))
+                        .setBegin(dateAndTimeNow())
                         .build())
                 .setSnapshotGatheringStatusEnd(null) // TODO: reconsider if really need to clean end mark here
                 .build();
@@ -257,9 +256,8 @@ public final class StatisticsGatheringUtils {
                 .getNodeInstanceIdentifier().augmentation(FlowCapableStatisticsGatheringStatus.class)
                 .child(SnapshotGatheringStatusEnd.class);
 
-        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AND_TIME_FORMAT);
         final SnapshotGatheringStatusEnd gatheringStatus = new SnapshotGatheringStatusEndBuilder()
-                .setEnd(new DateAndTime(simpleDateFormat.format(new Date())))
+                .setEnd(dateAndTimeNow())
                 .setSucceeded(succeeded)
                 .build();
         try {
@@ -270,5 +268,9 @@ public final class StatisticsGatheringUtils {
         }
 
         txFacade.submitTransaction();
+    }
+
+    private static DateAndTime dateAndTimeNow() {
+        return new DateAndTime(DATE_AND_TIME_FORMAT.format(Clock.systemDefaultZone().instant()));
     }
 }
