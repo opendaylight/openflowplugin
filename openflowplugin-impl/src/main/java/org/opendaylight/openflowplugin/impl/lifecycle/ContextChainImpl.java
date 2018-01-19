@@ -13,7 +13,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -45,7 +45,7 @@ public class ContextChainImpl implements ContextChain {
     private final List<DeviceRemovedHandler> deviceRemovedHandlers = new CopyOnWriteArrayList<>();
     private final List<GuardedContext> contexts = new CopyOnWriteArrayList<>();
     private final List<ConnectionContext> auxiliaryConnections = new CopyOnWriteArrayList<>();
-    private final ExecutorService executorService;
+    private final Executor executor;
     private final ContextChainMastershipWatcher contextChainMastershipWatcher;
     private final DeviceInfo deviceInfo;
     private final ConnectionContext primaryConnection;
@@ -55,11 +55,11 @@ public class ContextChainImpl implements ContextChain {
 
     ContextChainImpl(@NonNull final ContextChainMastershipWatcher contextChainMastershipWatcher,
                      @NonNull final ConnectionContext connectionContext,
-                     @NonNull final ExecutorService executorService) {
+                     @NonNull final Executor executor) {
         this.contextChainMastershipWatcher = contextChainMastershipWatcher;
         this.primaryConnection = connectionContext;
         this.deviceInfo = connectionContext.getDeviceInfo();
-        this.executorService = executorService;
+        this.executor = executor;
     }
 
     @Override
@@ -76,7 +76,7 @@ public class ContextChainImpl implements ContextChain {
             LOG.info("Started clustering services for node {}", deviceInfo);
         } catch (final Exception ex) {
             LOG.error("Not able to start clustering services for node {}", deviceInfo);
-            executorService.execute(() -> contextChainMastershipWatcher
+            executor.execute(() -> contextChainMastershipWatcher
                     .onNotAbleToStartMastershipMandatory(deviceInfo, ex.toString()));
         }
     }
@@ -90,11 +90,11 @@ public class ContextChainImpl implements ContextChain {
             .map(OFPContext::closeServiceInstance)
             .collect(Collectors.toList()));
 
-        return Futures.transform(servicesToBeClosed, (input) -> {
+        return Futures.transform(servicesToBeClosed, input -> {
             OF_EVENT_LOG.debug("Closing clustering Services, Node: {}", deviceInfo);
             LOG.info("Closed clustering services for node {}", deviceInfo);
             return null;
-        }, executorService);
+        }, executor);
     }
 
     @NonNull

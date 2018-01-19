@@ -7,19 +7,20 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import org.eclipse.jdt.annotation.NonNull;
@@ -55,7 +56,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext, De
     private final Collection<RequestContext<?>> requestContexts = ConcurrentHashMap.newKeySet();
     private final DeviceContext deviceContext;
     private final DeviceState devState;
-    private final ListeningExecutorService executorService;
+    private final Executor executorService;
     private final boolean isStatisticsPollingOn;
     private final ConvertorExecutor convertorExecutor;
     private final MultipartWriterProvider statisticsWriterProvider;
@@ -76,12 +77,12 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext, De
     StatisticsContextImpl(@NonNull final DeviceContext deviceContext,
                           @NonNull final ConvertorExecutor convertorExecutor,
                           @NonNull final MultipartWriterProvider statisticsWriterProvider,
-                          @NonNull final ListeningExecutorService executorService,
+                          @NonNull final Executor executorService,
                           @NonNull final OpenflowProviderConfig config,
                           final boolean isStatisticsPollingOn,
                           final boolean isUsingReconciliationFramework) {
         this.deviceContext = deviceContext;
-        this.devState = Preconditions.checkNotNull(deviceContext.getDeviceState());
+        this.devState = requireNonNull(deviceContext.getDeviceState());
         this.executorService = executorService;
         this.isStatisticsPollingOn = isStatisticsPollingOn;
         this.config = config;

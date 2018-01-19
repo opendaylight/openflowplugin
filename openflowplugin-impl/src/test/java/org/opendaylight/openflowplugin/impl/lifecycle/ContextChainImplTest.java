@@ -67,7 +67,7 @@ public class ContextChainImplTest {
                 .thenReturn(clusterSingletonServiceRegistration);
 
         contextChain = new ContextChainImpl(contextChainMastershipWatcher, connectionContext,
-                MoreExecutors.newDirectExecutorService());
+                MoreExecutors.directExecutor());
         contextChain.addContext(statisticsContext);
         contextChain.addContext(rpcContext);
         contextChain.addContext(deviceContext);
