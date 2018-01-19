@@ -74,7 +74,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
         LOG.trace("connection ballet finished");
     }
 
-    private HandshakeManager createHandshakeManager(final ConnectionAdapter connectionAdapter,
+    private static HandshakeManager createHandshakeManager(final ConnectionAdapter connectionAdapter,
                                                     final HandshakeListener handshakeListener) {
         HandshakeManagerImpl handshakeManager = new HandshakeManagerImpl(connectionAdapter,
                 OFConstants.VERSION_ORDER.get(0),

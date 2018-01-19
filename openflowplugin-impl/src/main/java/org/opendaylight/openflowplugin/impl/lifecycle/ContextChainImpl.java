@@ -13,7 +13,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -45,7 +45,7 @@ public class ContextChainImpl implements ContextChain {
     private final List<DeviceRemovedHandler> deviceRemovedHandlers = new CopyOnWriteArrayList<>();
     private final List<GuardedContext> contexts = new CopyOnWriteArrayList<>();
     private final List<ConnectionContext> auxiliaryConnections = new CopyOnWriteArrayList<>();
-    private final ExecutorService executorService;
+    private final Executor executor;
     private final ContextChainMastershipWatcher contextChainMastershipWatcher;
     private final DeviceInfo deviceInfo;
     private final ConnectionContext primaryConnection;
@@ -55,11 +55,11 @@ public class ContextChainImpl implements ContextChain {
 
     ContextChainImpl(@Nonnull final ContextChainMastershipWatcher contextChainMastershipWatcher,
                      @Nonnull final ConnectionContext connectionContext,
-                     @Nonnull final ExecutorService executorService) {
+                     @Nonnull final Executor executor) {
         this.contextChainMastershipWatcher = contextChainMastershipWatcher;
         this.primaryConnection = connectionContext;
         this.deviceInfo = connectionContext.getDeviceInfo();
-        this.executorService = executorService;
+        this.executor = executor;
     }
 
     @Override
@@ -75,7 +75,7 @@ public class ContextChainImpl implements ContextChain {
             LOG.info("Started clustering services for node {}", deviceInfo);
         } catch (final Exception ex) {
             LOG.warn("Not able to start clustering services for node {}", deviceInfo);
-            executorService.submit(() -> contextChainMastershipWatcher
+            executor.execute(() -> contextChainMastershipWatcher
                     .onNotAbleToStartMastershipMandatory(deviceInfo, ex.toString()));
         }
     }
@@ -94,7 +94,7 @@ public class ContextChainImpl implements ContextChain {
         return Futures.transform(servicesToBeClosed, (input) -> {
             LOG.info("Closed clustering services for node {}", deviceInfo);
             return null;
-        }, executorService);
+        }, executor);
     }
 
     @Nonnull
@@ -157,8 +157,8 @@ public class ContextChainImpl implements ContextChain {
     }
 
     @Override
-    public boolean isMastered(@Nonnull ContextChainMastershipState mastershipState,
-                              boolean inReconciliationFrameworkStep) {
+    public boolean isMastered(@Nonnull final ContextChainMastershipState mastershipState,
+                              final boolean inReconciliationFrameworkStep) {
         switch (mastershipState) {
             case INITIAL_SUBMIT:
                 LOG.debug("Device {}, initial submit OK.", deviceInfo);
@@ -216,14 +216,14 @@ public class ContextChainImpl implements ContextChain {
     }
 
     @Override
-    public boolean addAuxiliaryConnection(@Nonnull ConnectionContext connectionContext) {
-        return (connectionContext.getFeatures().getAuxiliaryId() != 0)
-                && (!ConnectionContext.CONNECTION_STATE.RIP.equals(primaryConnection.getConnectionState()))
+    public boolean addAuxiliaryConnection(@Nonnull final ConnectionContext connectionContext) {
+        return connectionContext.getFeatures().getAuxiliaryId() != 0
+                && !ConnectionContext.CONNECTION_STATE.RIP.equals(primaryConnection.getConnectionState())
                 && auxiliaryConnections.add(connectionContext);
     }
 
     @Override
-    public boolean auxiliaryConnectionDropped(@Nonnull ConnectionContext connectionContext) {
+    public boolean auxiliaryConnectionDropped(@Nonnull final ConnectionContext connectionContext) {
         return auxiliaryConnections.remove(connectionContext);
     }
 
