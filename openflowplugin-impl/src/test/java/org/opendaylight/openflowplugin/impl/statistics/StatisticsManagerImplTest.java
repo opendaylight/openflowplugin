@@ -122,7 +122,7 @@ public class StatisticsManagerImplTest {
                         .setIsStatisticsPollingOn(false)
                         .build(), rpcProviderRegistry,
                 convertorManager,
-                MoreExecutors.newDirectExecutorService());
+                MoreExecutors.directExecutor());
     }
 
     private static Map<DeviceInfo, StatisticsContext> getContextsMap(final StatisticsManagerImpl statisticsManager)
