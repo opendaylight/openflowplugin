@@ -72,7 +72,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
         statisticsContext = new StatisticsContextImpl<>(mockedDeviceContext, convertorManager,
                 MultipartWriterProviderFactory
                         .createDefaultProvider(mockedDeviceContext),
-                MoreExecutors.newDirectExecutorService(),
+                MoreExecutors.directExecutor(),
                 config,
                 true,
                 false);
@@ -100,7 +100,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
                         convertorManager,
                         MultipartWriterProviderFactory
                                 .createDefaultProvider(mockedDeviceContext),
-                        MoreExecutors.newDirectExecutorService(),
+                        MoreExecutors.directExecutor(),
                         config,
                         true,
                         false);
