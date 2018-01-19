@@ -9,9 +9,9 @@ package org.opendaylight.openflowplugin.impl.statistics;
 
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Semaphore;
 import javax.annotation.Nonnull;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
@@ -43,22 +43,22 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     private final OpenflowProviderConfig config;
     private final ConvertorExecutor converterExecutor;
+    private final Executor executor;
     private final ConcurrentMap<DeviceInfo, StatisticsContext> contexts = new ConcurrentHashMap<>();
     private final Semaphore workModeGuard = new Semaphore(1, true);
     private final ObjectRegistration<StatisticsManagerControlService> controlServiceRegistration;
-    private final ListeningExecutorService executorService;
     private final StatisticsWorkMode workMode = StatisticsWorkMode.COLLECTALL;
     private boolean isStatisticsFullyDisabled;
 
     public StatisticsManagerImpl(@Nonnull final OpenflowProviderConfig config,
                                  @Nonnull final RpcProviderService rpcProviderRegistry,
                                  final ConvertorExecutor convertorExecutor,
-                                 @Nonnull final ListeningExecutorService executorService) {
+                                 @Nonnull final Executor executor) {
         this.config = config;
         this.converterExecutor = convertorExecutor;
         this.controlServiceRegistration = Preconditions.checkNotNull(rpcProviderRegistry
                 .registerRpcImplementation(StatisticsManagerControlService.class, this));
-        this.executorService = executorService;
+        this.executor = executor;
     }
 
     @Override
@@ -109,7 +109,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                 deviceContext,
                 converterExecutor,
                 statisticsWriterProvider,
-                executorService,
+                executor,
                 config,
                 !isStatisticsFullyDisabled && config.isIsStatisticsPollingOn(),
                 useReconciliationFramework);

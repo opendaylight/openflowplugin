@@ -14,7 +14,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,11 +21,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import org.opendaylight.mdsal.binding.api.TransactionChainClosedException;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.ConnectionException;
@@ -58,7 +57,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     private final Collection<RequestContext<?>> requestContexts = ConcurrentHashMap.newKeySet();
     private final DeviceContext deviceContext;
     private final DeviceState devState;
-    private final ListeningExecutorService executorService;
+    private final Executor executorService;
     private final boolean isStatisticsPollingOn;
     private final ConvertorExecutor convertorExecutor;
     private final MultipartWriterProvider statisticsWriterProvider;
@@ -79,7 +78,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     StatisticsContextImpl(@Nonnull final DeviceContext deviceContext,
                           @Nonnull final ConvertorExecutor convertorExecutor,
                           @Nonnull final MultipartWriterProvider statisticsWriterProvider,
-                          @Nonnull final ListeningExecutorService executorService,
+                          @Nonnull final Executor executorService,
                           @Nonnull final OpenflowProviderConfig config,
                           boolean isStatisticsPollingOn,
                           boolean isUsingReconciliationFramework) {
