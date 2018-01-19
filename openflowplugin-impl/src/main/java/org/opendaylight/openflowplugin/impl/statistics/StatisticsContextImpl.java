@@ -76,9 +76,9 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     StatisticsContextImpl(@Nonnull final DeviceContext deviceContext,
                           @Nonnull final ConvertorExecutor convertorExecutor,
                           @Nonnull final MultipartWriterProvider statisticsWriterProvider,
-                          @Nonnull final ListeningExecutorService executorService, boolean isStatisticsPollingOn,
-                          boolean isUsingReconciliationFramework, long statisticsPollingInterval,
-                          long maximumPollingDelay) {
+                          @Nonnull final ListeningExecutorService executorService, final boolean isStatisticsPollingOn,
+                          final boolean isUsingReconciliationFramework, final long statisticsPollingInterval,
+                          final long maximumPollingDelay) {
         this.deviceContext = deviceContext;
         this.devState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         this.executorService = executorService;
