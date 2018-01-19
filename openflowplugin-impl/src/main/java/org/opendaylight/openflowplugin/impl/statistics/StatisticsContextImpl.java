@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
@@ -205,7 +204,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
 
     private ListenableFuture<Boolean> gatherDynamicData() {
         if (!isStatisticsPollingOn || !schedulingEnabled.get()) {
-            LOG.debug("Statistics for device {} are not enabled.", getDeviceInfo().getNodeId().getValue());
+            LOG.debug("Statistics for device {} are not enabled.", deviceInfo.getNodeId().getValue());
             return Futures.immediateFuture(Boolean.TRUE);
         }
 
@@ -246,26 +245,24 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
                                                       final MultipartType multipartType) {
         if (ConnectionContext.CONNECTION_STATE.RIP
                 .equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
-            final String errMsg = String
-                    .format("Device connection for node %s doesn't exist anymore. Primary connection status : %s",
-                            getDeviceInfo().getNodeId(),
-                            deviceContext.getPrimaryConnectionContext().getConnectionState());
-
+            final String errMsg = String.format(
+                "Device connection for node %s doesn't exist anymore. Primary connection status : %s",
+                deviceInfo.getNodeId(), deviceContext.getPrimaryConnectionContext().getConnectionState());
             return Futures.immediateFailedFuture(new ConnectionException(errMsg));
         }
 
         return Futures.transformAsync(prevFuture, result -> {
             LOG.debug("Status of previous stat iteration for node {}: {}", deviceInfo, result);
             LOG.debug("Stats iterating to next type for node {} of type {}", deviceInfo, multipartType);
-            final boolean onTheFly = MultipartType.OFPMPFLOW.equals(multipartType);
-            final boolean supported = collectingStatType.contains(multipartType);
+            if (!collectingStatType.contains(multipartType)) {
+                return Futures.immediateFuture(Boolean.FALSE);
+            }
 
+            final boolean onTheFly = MultipartType.OFPMPFLOW.equals(multipartType);
             // TODO: Refactor twice sending deviceContext into gatheringStatistics
-            return supported ? StatisticsGatheringUtils
-                    .gatherStatistics(onTheFly ? statisticsGatheringOnTheFlyService : statisticsGatheringService,
-                                      getDeviceInfo(), multipartType, deviceContext, deviceContext, convertorExecutor,
-                                      statisticsWriterProvider, executorService) : Futures
-                    .immediateFuture(Boolean.FALSE);
+            return StatisticsGatheringUtils.gatherStatistics(
+                onTheFly ? statisticsGatheringOnTheFlyService : statisticsGatheringService, deviceInfo, multipartType,
+                        deviceContext, deviceContext, convertorExecutor, statisticsWriterProvider, executorService);
         }, MoreExecutors.directExecutor());
     }
 
@@ -290,14 +287,13 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         LOG.info("Stopping running statistics gathering for node {}", deviceInfo);
         cancelLastDataGathering();
 
-        return Optional.ofNullable(statisticsPollingServiceRef.getAndSet(null)).map(StatisticsPollingService::stop)
-                .orElseGet(() -> Futures.immediateFuture(null));
+        final StatisticsPollingService service = statisticsPollingServiceRef.getAndSet(null);
+        return service != null ? service.stop() : Futures.immediateFuture(null);
     }
 
     private void cancelLastDataGathering() {
         final ListenableFuture<Boolean> future = lastDataGatheringRef.getAndSet(null);
-
-        if (Objects.nonNull(future) && !future.isDone() && !future.isCancelled()) {
+        if (future != null) {
             future.cancel(true);
         }
     }
