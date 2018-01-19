@@ -19,7 +19,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
@@ -68,19 +68,19 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     private final Map<DeviceInfo, ? super ConnectionContext> connectingDevices = new ConcurrentHashMap<>();
     private final EntityOwnershipListenerRegistration eosListenerRegistration;
     private final ClusterSingletonServiceProvider singletonServiceProvider;
-    private final ExecutorService executorService;
+    private final Executor executor;
     private final OwnershipChangeListener ownershipChangeListener;
     private DeviceManager deviceManager;
     private RpcManager rpcManager;
     private StatisticsManager statisticsManager;
     private RoleManager roleManager;
 
-    public ContextChainHolderImpl(final ExecutorService executorService,
+    public ContextChainHolderImpl(final Executor executor,
                                   final ClusterSingletonServiceProvider singletonServiceProvider,
                                   final EntityOwnershipService entityOwnershipService,
                                   final OwnershipChangeListener ownershipChangeListener) {
         this.singletonServiceProvider = singletonServiceProvider;
-        this.executorService = executorService;
+        this.executor = executor;
         this.ownershipChangeListener = ownershipChangeListener;
         this.ownershipChangeListener.setMasterChecker(this);
         this.eosListenerRegistration = Objects
@@ -125,7 +125,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         roleContext.registerMastershipWatcher(this);
         LOG.debug("Role" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfo);
 
-        final ContextChain contextChain = new ContextChainImpl(this, connectionContext, executorService);
+        final ContextChain contextChain = new ContextChainImpl(this, connectionContext, executor);
         contextChain.registerDeviceRemovedHandler(deviceManager);
         contextChain.registerDeviceRemovedHandler(rpcManager);
         contextChain.registerDeviceRemovedHandler(statisticsManager);
