@@ -9,9 +9,9 @@
 package org.opendaylight.openflowplugin.impl.statistics;
 
 import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.ListeningExecutorService;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
@@ -43,7 +43,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     private final OpenflowProviderConfig config;
     private final ConvertorExecutor converterExecutor;
-    private final ListeningExecutorService executorService;
+    private final Executor executor;
 
     @GuardedBy("this")
     private final Map<DeviceInfo, StatisticsContext> contexts = new HashMap<>();
@@ -58,12 +58,12 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     public StatisticsManagerImpl(@Nonnull final OpenflowProviderConfig config,
                                  @Nonnull final RpcProviderRegistry rpcProviderRegistry,
                                  final ConvertorExecutor convertorExecutor,
-                                 @Nonnull final ListeningExecutorService executorService) {
+                                 @Nonnull final Executor executor) {
         this.config = config;
         this.converterExecutor = convertorExecutor;
         this.controlServiceRegistration = Preconditions.checkNotNull(rpcProviderRegistry
                 .addRpcImplementation(StatisticsManagerControlService.class, this));
-        this.executorService = executorService;
+        this.executor = executor;
     }
 
     @Override
@@ -117,7 +117,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
         final StatisticsContext statisticsContext = new StatisticsContextImpl<>(
                 deviceContext, converterExecutor,
-                statisticsWriterProvider, executorService,
+                statisticsWriterProvider, executor,
                 enabled && config.isIsStatisticsPollingOn(),
                 useReconciliationFramework,
                 config.getBasicTimerDelay().getValue(), config.getMaximumTimerDelay().getValue());

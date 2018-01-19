@@ -12,7 +12,7 @@ import com.google.common.base.Preconditions;
 import java.net.InetSocketAddress;
 import java.util.Date;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
@@ -38,12 +38,11 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
     @VisibleForTesting
     static final long MAX_ECHO_REPLY_TIMEOUT = 2000;
     private final long echoReplyTimeout;
-    private final ExecutorService executorService;
+    private final Executor executor;
 
     public SystemNotificationsListenerImpl(@Nonnull final ConnectionContext connectionContext,
-                                           long echoReplyTimeout,
-                                           @Nonnull final ExecutorService executorService) {
-        this.executorService = executorService;
+                                           final long echoReplyTimeout, @Nonnull final Executor executor) {
+        this.executor = Preconditions.checkNotNull(executor);
         this.connectionContext = Preconditions.checkNotNull(connectionContext);
         this.echoReplyTimeout = echoReplyTimeout;
     }
@@ -57,7 +56,7 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
 
     @Override
     public void onSwitchIdleEvent(final SwitchIdleEvent notification) {
-        executorService.execute(this::executeOnSwitchIdleEvent);
+        executor.execute(this::executeOnSwitchIdleEvent);
     }
 
     @SuppressWarnings("checkstyle:IllegalCatch")
@@ -110,7 +109,7 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
         }
     }
 
-    private void logErrors(InetSocketAddress remoteAddress, RpcResult<EchoOutput> echoReplyValue) {
+    private static void logErrors(final InetSocketAddress remoteAddress, final RpcResult<EchoOutput> echoReplyValue) {
         for (RpcError replyError : echoReplyValue.getErrors()) {
             Throwable cause = replyError.getCause();
             if (LOG.isWarnEnabled()) {

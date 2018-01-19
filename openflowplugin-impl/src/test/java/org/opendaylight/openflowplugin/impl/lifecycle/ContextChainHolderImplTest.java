@@ -84,14 +84,14 @@ public class ContextChainHolderImplTest {
 
     private ContextChainHolderImpl contextChainHolder;
     private ReconciliationFrameworkRegistration registration;
-    private MastershipChangeServiceManager manager = new MastershipChangeServiceManagerImpl();
+    private final MastershipChangeServiceManager manager = new MastershipChangeServiceManagerImpl();
 
     @Before
     public void setUp() throws Exception {
         Mockito.doAnswer(invocation -> {
             invocation.getArgumentAt(0, Runnable.class).run();
             return null;
-        }).when(executorService).submit(Mockito.<Runnable>any());
+        }).when(executorService).execute(Mockito.<Runnable>any());
 
 
         Mockito.when(connectionContext.getDeviceInfo()).thenReturn(deviceInfo);

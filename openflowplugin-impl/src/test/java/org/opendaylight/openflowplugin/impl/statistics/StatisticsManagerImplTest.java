@@ -151,7 +151,7 @@ public class StatisticsManagerImplTest {
                         .setIsStatisticsPollingOn(false)
                         .build(), rpcProviderRegistry,
                 convertorManager,
-                MoreExecutors.newDirectExecutorService());
+                MoreExecutors.directExecutor());
     }
 
     private static Map<DeviceInfo, StatisticsContext> getContextsMap(final StatisticsManagerImpl statisticsManager)
@@ -193,7 +193,7 @@ public class StatisticsManagerImplTest {
         verify(statisticContext).disableGathering();
     }
 
-    private static void checkWorkModeChangeOutcome(Future<RpcResult<Void>> workMode)
+    private static void checkWorkModeChangeOutcome(final Future<RpcResult<Void>> workMode)
             throws InterruptedException, ExecutionException {
         Assert.assertTrue(workMode.isDone());
         Assert.assertTrue(workMode.get().isSuccessful());

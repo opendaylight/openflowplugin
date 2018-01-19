@@ -57,8 +57,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
         statisticsContext = new StatisticsContextImpl<>(mockedDeviceContext, convertorManager,
                                                         MultipartWriterProviderFactory
                                                                 .createDefaultProvider(mockedDeviceContext),
-                                                        MoreExecutors.newDirectExecutorService(), true, false, 3000,
-                                                        50000);
+                                                        MoreExecutors.directExecutor(), true, false, 3000, 50000);
 
         statisticsContext.setStatisticsGatheringService(mockedStatisticsGatheringService);
         statisticsContext.setStatisticsGatheringOnTheFlyService(mockedStatisticsOnFlyGatheringService);
@@ -83,7 +82,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
                                             convertorManager,
                                             MultipartWriterProviderFactory
                                                     .createDefaultProvider(mockedDeviceContext),
-                                            MoreExecutors.newDirectExecutorService(),
+                                            MoreExecutors.directExecutor(),
                                             true,
                                             false,
                                             3000,50000);
