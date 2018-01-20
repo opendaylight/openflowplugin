@@ -20,15 +20,16 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Decodes incoming messages into message frames.
+ *
  * @author michal.polkorab
  */
 public class OFFrameDecoder extends ByteToMessageDecoder {
 
-    /** Length of OpenFlow header */
+    /** Length of OpenFlow header. */
     public static final byte LENGTH_OF_HEADER = 8;
     private static final byte LENGTH_INDEX_IN_HEADER = 2;
     private static final Logger LOG = LoggerFactory.getLogger(OFFrameDecoder.class);
-    private ConnectionFacade connectionFacade;
+    private final ConnectionFacade connectionFacade;
     private boolean firstTlsPass = false;
 
     /**

@@ -24,7 +24,8 @@ import org.slf4j.LoggerFactory;
  * A MessageHolder (used in queue) and the actual listener. It is not a thing of beauty,
  * but it keeps us from allocating unnecessary objects in the egress path.
  */
-abstract class AbstractRpcListener<T> implements GenericFutureListener<Future<Void>>, ChannelOutboundQueue.MessageHolder<Object> {
+abstract class AbstractRpcListener<T> implements GenericFutureListener<Future<Void>>,
+        ChannelOutboundQueue.MessageHolder<Object> {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractRpcListener.class);
     private static final String APPLICATION_TAG = "OPENFLOW_LIBRARY";
     private static final String TAG = "OPENFLOW";
@@ -33,12 +34,13 @@ abstract class AbstractRpcListener<T> implements GenericFutureListener<Future<Vo
     private Object message;
 
     /**
-     * Create RcpError object
-     * @param info
+     * Create RcpError object.
+     *
+     * @param info error info
      * @param severity - error severity
-     * @param message
+     * @param message error message
      * @param cause - details of reason
-     * @return
+     * @return RpcError
      */
     static RpcError buildRpcError(final String info, final String message, final Throwable cause) {
         return RpcResultBuilder.newError(ErrorType.RPC, TAG, message, APPLICATION_TAG, info, cause);

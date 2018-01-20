@@ -19,8 +19,9 @@ import org.opendaylight.openflowjava.protocol.impl.deserialization.instruction.W
 import org.opendaylight.openflowjava.protocol.impl.util.InstructionDeserializerRegistryHelper;
 
 /**
- * @author michal.polkorab
+ * Utilities for registering nstruction deserializer initializers.
  *
+ * @author michal.polkorab
  */
 public final class InstructionDeserializerInitializer {
 
@@ -29,7 +30,8 @@ public final class InstructionDeserializerInitializer {
     }
 
     /**
-     * Registers instruction deserializers
+     * Registers instruction deserializers.
+     *
      * @param registry registry to be filled with deserializers
      */
     public static void registerDeserializers(DeserializerRegistry registry) {

@@ -12,11 +12,15 @@ package org.opendaylight.openflowjava.protocol.impl.core.connection;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
 /**
+ * Interface for a message consumer.
+ *
  * @author mirehak
  */
 public interface MessageConsumer {
 
     /**
+     * Invoked to consume a message.
+     *
      * @param message to process
      */
     void consume(DataObject message);

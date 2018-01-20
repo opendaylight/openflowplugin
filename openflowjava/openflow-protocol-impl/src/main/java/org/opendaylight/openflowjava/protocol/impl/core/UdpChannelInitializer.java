@@ -11,8 +11,9 @@ package org.opendaylight.openflowjava.protocol.impl.core;
 import io.netty.channel.socket.DatagramChannel;
 
 /**
- * @author michal.polkorab
+ * UDP implementation of ChannelInitializer.
  *
+ * @author michal.polkorab
  */
 public class UdpChannelInitializer extends ProtocolChannelInitializer<DatagramChannel> {
 

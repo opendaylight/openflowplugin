@@ -11,14 +11,11 @@ package org.opendaylight.openflowjava.protocol.impl.core.connection;
 import java.net.InetSocketAddress;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandler;
 
-/**
- *
- * @param <T>
- */
 public class OutboundQueueManagerNoBarrier<T extends OutboundQueueHandler> extends
         AbstractOutboundQueueManager<T, StackedOutboundQueueNoBarrier> {
 
-    OutboundQueueManagerNoBarrier(final ConnectionAdapterImpl parent, final InetSocketAddress address, final T handler) {
+    OutboundQueueManagerNoBarrier(final ConnectionAdapterImpl parent, final InetSocketAddress address,
+            final T handler) {
         super(parent, address, handler);
     }
 

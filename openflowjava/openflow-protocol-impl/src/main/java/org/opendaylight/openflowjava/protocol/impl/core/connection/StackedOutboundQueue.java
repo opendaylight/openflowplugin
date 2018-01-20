@@ -8,18 +8,16 @@
 package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
 import com.google.common.util.concurrent.FutureCallback;
-
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 import java.util.function.Function;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 final class StackedOutboundQueue extends AbstractStackedOutboundQueue {
     private static final Logger LOG = LoggerFactory.getLogger(StackedOutboundQueue.class);
-    private static final AtomicLongFieldUpdater<StackedOutboundQueue> BARRIER_XID_UPDATER = AtomicLongFieldUpdater.newUpdater(StackedOutboundQueue.class, "barrierXid");
+    private static final AtomicLongFieldUpdater<StackedOutboundQueue> BARRIER_XID_UPDATER =
+            AtomicLongFieldUpdater.newUpdater(StackedOutboundQueue.class, "barrierXid");
 
     private volatile long barrierXid = -1;
 

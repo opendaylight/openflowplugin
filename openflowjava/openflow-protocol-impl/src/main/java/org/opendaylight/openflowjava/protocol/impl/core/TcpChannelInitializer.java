@@ -13,7 +13,6 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
 import java.net.InetAddress;
 import java.util.Iterator;
 import java.util.List;
@@ -39,25 +38,27 @@ public class TcpChannelInitializer extends ProtocolChannelInitializer<SocketChan
      * Default constructor.
      */
     public TcpChannelInitializer() {
-        this( new DefaultChannelGroup("netty-receiver", null), new ConnectionAdapterFactoryImpl() );
+        this(new DefaultChannelGroup("netty-receiver", null), new ConnectionAdapterFactoryImpl());
     }
 
     /**
      * Testing constructor.
      */
-    protected TcpChannelInitializer( final DefaultChannelGroup channelGroup, final ConnectionAdapterFactory connAdaptorFactory ) {
-	allChannels = channelGroup ;
-	connectionAdapterFactory = connAdaptorFactory ;
+    protected TcpChannelInitializer(final DefaultChannelGroup channelGroup,
+            final ConnectionAdapterFactory connAdaptorFactory) {
+        allChannels = channelGroup;
+        connectionAdapterFactory = connAdaptorFactory;
     }
 
     @Override
+    @SuppressWarnings("checkstyle:IllegalCatch")
     protected void initChannel(final SocketChannel ch) {
         if (ch.remoteAddress() != null) {
             final InetAddress switchAddress = ch.remoteAddress().getAddress();
             final int port = ch.localAddress().getPort();
             final int remotePort = ch.remoteAddress().getPort();
             LOG.debug("Incoming connection from (remote address): {}:{} --> :{}",
-			    switchAddress.toString(), remotePort, port);
+                switchAddress.toString(), remotePort, port);
 
             if (!getSwitchConnectionHandler().accept(switchAddress)) {
                 ch.disconnect();
@@ -94,12 +95,7 @@ public class TcpChannelInitializer extends ProtocolChannelInitializer<SocketChan
                 final SslHandler ssl = new SslHandler(engine);
                 final Future<Channel> handshakeFuture = ssl.handshakeFuture();
                 final ConnectionFacade finalConnectionFacade = connectionFacade;
-                handshakeFuture.addListener(new GenericFutureListener<Future<? super Channel>>() {
-                    @Override
-                    public void operationComplete(final Future<? super Channel> future) throws Exception {
-                        finalConnectionFacade.fireConnectionReadyNotification();
-                    }
-                });
+                handshakeFuture.addListener(future -> finalConnectionFacade.fireConnectionReadyNotification());
                 ch.pipeline().addLast(PipelineHandlers.SSL_HANDLER.name(), ssl);
             }
             ch.pipeline().addLast(PipelineHandlers.OF_FRAME_DECODER.name(),
@@ -116,13 +112,15 @@ public class TcpChannelInitializer extends ProtocolChannelInitializer<SocketChan
             if (!tlsPresent) {
                 connectionFacade.fireConnectionReadyNotification();
             }
-        } catch (final Exception e) {
+        } catch (RuntimeException e) {
             LOG.warn("Failed to initialize channel", e);
             ch.close();
         }
     }
 
     /**
+     * Returns the connection iterator.
+     *
      * @return iterator through active connections
      */
     public Iterator<Channel> getConnectionIterator() {
@@ -130,6 +128,8 @@ public class TcpChannelInitializer extends ProtocolChannelInitializer<SocketChan
     }
 
     /**
+     * Returns the number of active channels.
+     *
      * @return amount of active channels
      */
     public int size() {

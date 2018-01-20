@@ -41,8 +41,9 @@ import org.opendaylight.openflowjava.protocol.impl.deserialization.action.OF13Se
 import org.opendaylight.openflowjava.protocol.impl.util.ActionDeserializerRegistryHelper;
 
 /**
- * @author michal.polkorab
+ * Helper for registering action deserializer initializers.
  *
+ * @author michal.polkorab
  */
 public final class ActionDeserializerInitializer {
 
@@ -51,7 +52,8 @@ public final class ActionDeserializerInitializer {
     }
 
     /**
-     * Registers action deserializers
+     * Registers action deserializers.
+     *
      * @param registry registry to be filled with deserializers
      */
     public static void registerDeserializers(DeserializerRegistry registry) {

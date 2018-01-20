@@ -16,6 +16,8 @@ import org.opendaylight.openflowjava.protocol.impl.deserialization.Deserializati
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializationFactory;
 
 /**
+ * Initializer for protocol channels.
+ *
  * @param <C> Channel type
  * @author michal.polkorab
  */
@@ -30,6 +32,8 @@ public abstract class ProtocolChannelInitializer<C extends Channel>
     private boolean useBarrier;
 
     /**
+     * Sets the SwitchConnectionHandler.
+     *
      * @param switchConnectionHandler the switchConnectionHandler to set
      */
     public void setSwitchConnectionHandler(final SwitchConnectionHandler switchConnectionHandler) {
@@ -37,78 +41,50 @@ public abstract class ProtocolChannelInitializer<C extends Channel>
     }
 
     /**
+     * Sets the switch idle timeout.
+     *
      * @param switchIdleTimeout the switchIdleTimeout to set
      */
     public void setSwitchIdleTimeout(final long switchIdleTimeout) {
         this.switchIdleTimeout = switchIdleTimeout;
     }
 
-    /**
-     * @param serializationFactory
-     */
     public void setSerializationFactory(final SerializationFactory serializationFactory) {
         this.serializationFactory = serializationFactory;
     }
 
-    /**
-     * @param deserializationFactory
-     */
     public void setDeserializationFactory(final DeserializationFactory deserializationFactory) {
         this.deserializationFactory = deserializationFactory;
     }
 
-    /**
-     * @param tlsConfiguration
-     */
     public void setTlsConfiguration(final TlsConfiguration tlsConfiguration) {
         this.tlsConfiguration = tlsConfiguration;
     }
 
-    /**
-     * @return switch connection handler
-     */
     public SwitchConnectionHandler getSwitchConnectionHandler() {
         return switchConnectionHandler;
     }
 
-    /**
-     * @return switch idle timeout
-     */
     public long getSwitchIdleTimeout() {
         return switchIdleTimeout;
     }
 
-    /**
-     * @return serialization factory
-     */
     public SerializationFactory getSerializationFactory() {
         return serializationFactory;
     }
 
-    /**
-     * @return deserialization factory
-     */
     public DeserializationFactory getDeserializationFactory() {
         return deserializationFactory;
     }
 
-    /**
-     * @return TLS configuration
-     */
     public TlsConfiguration getTlsConfiguration() {
         return tlsConfiguration;
     }
 
-    /**
-     * @param useBarrier
-     */
     public void setUseBarrier(final boolean useBarrier) {
         this.useBarrier = useBarrier;
     }
 
-    /**
-     * @return useBarrrier
-     */
     public boolean useBarrier() {
         return useBarrier;
     }

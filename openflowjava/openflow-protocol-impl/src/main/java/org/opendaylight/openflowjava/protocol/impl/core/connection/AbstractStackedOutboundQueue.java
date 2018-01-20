@@ -11,31 +11,24 @@ package org.opendaylight.openflowjava.protocol.impl.core.connection;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import com.google.common.util.concurrent.FutureCallback;
-
 import io.netty.channel.Channel;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
-import java.util.function.Function;
-
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.GuardedBy;
-
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueException;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 abstract class AbstractStackedOutboundQueue implements OutboundQueue {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractStackedOutboundQueue.class);
-    protected static final AtomicLongFieldUpdater<AbstractStackedOutboundQueue> LAST_XID_OFFSET_UPDATER = AtomicLongFieldUpdater
-            .newUpdater(AbstractStackedOutboundQueue.class, "lastXid");
+    protected static final AtomicLongFieldUpdater<AbstractStackedOutboundQueue> LAST_XID_OFFSET_UPDATER =
+            AtomicLongFieldUpdater.newUpdater(AbstractStackedOutboundQueue.class, "lastXid");
 
     @GuardedBy("unflushedSegments")
     protected volatile StackedSegment firstSegment;
@@ -70,10 +63,12 @@ abstract class AbstractStackedOutboundQueue implements OutboundQueue {
     @GuardedBy("unflushedSegments")
     protected void ensureSegment(final StackedSegment first, final int offset) {
         final int segmentOffset = offset / StackedSegment.SEGMENT_SIZE;
-        LOG.debug("Queue {} slow offset {} maps to {} segments {}", this, offset, segmentOffset, unflushedSegments.size());
+        LOG.debug("Queue {} slow offset {} maps to {} segments {}", this, offset, segmentOffset,
+                unflushedSegments.size());
 
         for (int i = unflushedSegments.size(); i <= segmentOffset; ++i) {
-            final StackedSegment newSegment = StackedSegment.create(first.getBaseXid() + (StackedSegment.SEGMENT_SIZE * i));
+            final StackedSegment newSegment = StackedSegment.create(first.getBaseXid()
+                    + StackedSegment.SEGMENT_SIZE * i);
             LOG.debug("Adding segment {}", newSegment);
             unflushedSegments.add(newSegment);
         }
@@ -127,7 +122,7 @@ abstract class AbstractStackedOutboundQueue implements OutboundQueue {
      * in the corresponding EventLoop.
      *
      * @param channel Channel onto which we are writing
-     * @param now
+     * @param now time stamp
      * @return Number of entries written out
      */
     int writeEntries(@Nonnull final Channel channel, final long now) {
@@ -138,7 +133,8 @@ abstract class AbstractStackedOutboundQueue implements OutboundQueue {
         while (channel.isWritable()) {
             final OutboundQueueEntry entry = segment.getEntry(flushOffset);
             if (!entry.isCommitted()) {
-                LOG.debug("Queue {} XID {} segment {} offset {} not committed yet", this, segment.getBaseXid() + flushOffset, segment, flushOffset);
+                LOG.debug("Queue {} XID {} segment {} offset {} not committed yet", this, segment.getBaseXid()
+                        + flushOffset, segment, flushOffset);
                 break;
             }
 
@@ -279,7 +275,8 @@ abstract class AbstractStackedOutboundQueue implements OutboundQueue {
 
     /**
      * Checks if the shutdown is in final phase -> all allowed entries (number of entries < shutdownOffset) are flushed
-     * and fails all not completed entries (if in final phase)
+     * and fails all not completed entries (if in final phase).
+     *
      * @param channel netty channel
      * @return true if in final phase, false if a flush is needed
      */
@@ -303,7 +300,8 @@ abstract class AbstractStackedOutboundQueue implements OutboundQueue {
     protected OutboundQueueEntry getEntry(final Long xid) {
         final StackedSegment fastSegment = firstSegment;
         final long calcOffset = xid - fastSegment.getBaseXid();
-        Preconditions.checkArgument(calcOffset >= 0, "Commit of XID %s does not match up with base XID %s", xid, fastSegment.getBaseXid());
+        Preconditions.checkArgument(calcOffset >= 0, "Commit of XID %s does not match up with base XID %s",
+                xid, fastSegment.getBaseXid());
 
         Verify.verify(calcOffset <= Integer.MAX_VALUE);
         final int fastOffset = (int) calcOffset;
@@ -324,14 +322,16 @@ abstract class AbstractStackedOutboundQueue implements OutboundQueue {
             }
 
             final int segOffset = slowOffset % StackedSegment.SEGMENT_SIZE;
-            LOG.debug("Queue {} slow commit of XID {} completed at offset {} (segment {} offset {})", this, xid, slowOffset, segment, segOffset);
+            LOG.debug("Queue {} slow commit of XID {} completed at offset {} (segment {} offset {})", this,
+                    xid, slowOffset, segment, segOffset);
             return segment.getEntry(segOffset);
         }
         return fastSegment.getEntry(fastOffset);
     }
 
     /**
-     * Fails not completed entries in segments and frees completed segments
+     * Fails not completed entries in segments and frees completed segments.
+     *
      * @param iterator list of segments to be failed
      * @return number of failed entries
      */
@@ -352,5 +352,4 @@ abstract class AbstractStackedOutboundQueue implements OutboundQueue {
 
         return entries;
     }
-
 }

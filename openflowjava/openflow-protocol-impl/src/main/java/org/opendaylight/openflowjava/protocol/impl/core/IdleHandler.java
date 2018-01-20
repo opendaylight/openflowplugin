@@ -10,15 +10,14 @@ package org.opendaylight.openflowjava.protocol.impl.core;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.timeout.ReadTimeoutHandler;
-
 import java.util.concurrent.TimeUnit;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SwitchIdleEventBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Detects idle state of switch and informs upper layers
+ * Detects idle state of switch and informs upper layers.
+ *
  * @author michal.polkorab
  */
 public class IdleHandler extends ReadTimeoutHandler {
@@ -27,8 +26,7 @@ public class IdleHandler extends ReadTimeoutHandler {
     private boolean first = true;
 
     /**
-     * @param readerIdleTime
-     * @param unit
+     * Constructor.
      */
     public IdleHandler(final long readerIdleTime, final TimeUnit unit) {
         super(readerIdleTime, unit);
