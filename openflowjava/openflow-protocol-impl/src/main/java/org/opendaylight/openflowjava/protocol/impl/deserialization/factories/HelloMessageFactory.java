@@ -21,8 +21,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.ElementsBuilder;
 
 /**
- * Translates Hello messages.
- * OF protocol versions: 1.3, 1.4, 1.5.
+ * Translates Hello messages. OF protocol versions: 1.3, 1.4, 1.5.
+ *
  * @author michal.polkorab
  * @author timotej.kubas
  */
@@ -66,12 +66,11 @@ public class HelloMessageFactory extends VersionAssignableFactory implements OFD
         return elementsList;
     }
 
-    private static List<Boolean> readVersionBitmap(int[] input){
+    private static List<Boolean> readVersionBitmap(int[] input) {
         List<Boolean> versionBitmapList = new ArrayList<>();
-        for (int i = 0; i < input.length; i++) {
-            int mask = input[i];
+        for (int mask : input) {
             for (int j = 0; j < Integer.SIZE; j++) {
-                    versionBitmapList.add((mask & (1 << j)) != 0);
+                versionBitmapList.add((mask & 1 << j) != 0);
             }
         }
         return versionBitmapList;

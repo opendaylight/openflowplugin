@@ -9,10 +9,8 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.action;
 
 import io.netty.buffer.ByteBuf;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -26,8 +24,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 
 /**
- * @author michal.polkorab
+ * OF13SetFieldActionDeserializer.
  *
+ * @author michal.polkorab
  */
 public class OF13SetFieldActionDeserializer extends AbstractActionDeserializer
         implements DeserializerRegistryInjector {
@@ -36,10 +35,11 @@ public class OF13SetFieldActionDeserializer extends AbstractActionDeserializer
 
     @Override
     public Action deserialize(ByteBuf input) {
-        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder builder = new ActionBuilder();
-        int startIndex = input.readerIndex();
+        final  org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping
+            .ActionBuilder builder = new ActionBuilder();
+        final int startIndex = input.readerIndex();
         input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
-        SetFieldCaseBuilder caseBuilder = new SetFieldCaseBuilder();
+        final SetFieldCaseBuilder caseBuilder = new SetFieldCaseBuilder();
         SetFieldActionBuilder actionBuilder = new SetFieldActionBuilder();
         int oxmClass = input.getUnsignedShort(input.readerIndex());
         // get oxm_field & hasMask byte and extract the field value

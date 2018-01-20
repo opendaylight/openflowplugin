@@ -20,6 +20,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
 
 /**
+ * Translates ExperimenterMessages.
+ *
  * @author michal.polkorab
  */
 public class VendorMessageFactory implements OFDeserializer<ExperimenterMessage>,
@@ -45,7 +47,7 @@ public class VendorMessageFactory implements OFDeserializer<ExperimenterMessage>
     }
 
     @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
-        this.deserializerRegistry = deserializerRegistry;
+    public void injectDeserializerRegistry(DeserializerRegistry registry) {
+        this.deserializerRegistry = registry;
     }
 }

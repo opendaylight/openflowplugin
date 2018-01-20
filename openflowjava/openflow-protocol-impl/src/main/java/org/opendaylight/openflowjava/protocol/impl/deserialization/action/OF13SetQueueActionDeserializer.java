@@ -9,7 +9,6 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.action;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.ActionChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetQueueCaseBuilder;
@@ -18,14 +17,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 
 /**
- * @author michal.polkorab
+ * OF13SetQueueActionDeserializer.
  *
+ * @author michal.polkorab
  */
 public class OF13SetQueueActionDeserializer extends AbstractActionDeserializer {
 
     @Override
     public Action deserialize(ByteBuf input) {
-        ActionBuilder builder = new ActionBuilder();
+        final ActionBuilder builder = new ActionBuilder();
         input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
         SetQueueCaseBuilder caseBuilder = new SetQueueCaseBuilder();
         SetQueueActionBuilder actionBuilder = new SetQueueActionBuilder();

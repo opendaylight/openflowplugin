@@ -9,7 +9,6 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.action;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.ActionChoice;
@@ -20,14 +19,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 
 /**
- * @author michal.polkorab
+ * OF10SetTpDstActionDeserializer.
  *
+ * @author michal.polkorab
  */
 public class OF10SetTpDstActionDeserializer extends AbstractActionDeserializer {
 
     @Override
     public Action deserialize(ByteBuf input) {
-        ActionBuilder builder = new ActionBuilder();
+        final ActionBuilder builder = new ActionBuilder();
         input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
         SetTpDstCaseBuilder caseBuilder = new SetTpDstCaseBuilder();
         SetTpDstActionBuilder actionBuilder = new SetTpDstActionBuilder();

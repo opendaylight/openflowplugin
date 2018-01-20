@@ -22,8 +22,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInputBuilder;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Translates PacketOutInput messages.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class OF10PacketOutInputMessageFactory implements OFDeserializer<PacketOutInput>, DeserializerRegistryInjector {
 
@@ -41,7 +42,7 @@ public class OF10PacketOutInputMessageFactory implements OFDeserializer<PacketOu
         builder.setXid(rawMessage.readUnsignedInt());
         builder.setBufferId(rawMessage.readUnsignedInt());
         builder.setInPort(new PortNumber((long) rawMessage.readUnsignedShort()));
-        int actions_len = rawMessage.readShort();
+        final int actions_len = rawMessage.readShort();
         CodeKeyMaker keyMaker = CodeKeyMakerFactory.createActionsKeyMaker(EncodeConstants.OF10_VERSION_ID);
         List<Action> actions = ListDeserializer.deserializeList(EncodeConstants.OF10_VERSION_ID, actions_len,
                 rawMessage, keyMaker, registry);

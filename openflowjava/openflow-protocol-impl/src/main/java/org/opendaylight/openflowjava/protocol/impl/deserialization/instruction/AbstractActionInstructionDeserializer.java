@@ -9,9 +9,7 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.instruction;
 
 import io.netty.buffer.ByteBuf;
-
 import java.util.List;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -23,9 +21,9 @@ import org.opendaylight.openflowjava.protocol.impl.util.ListDeserializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction;
 
-/**
- * @author michal.polkorab
+/** Base class for an action instruction deserializer.
  *
+ * @author michal.polkorab
  */
 public abstract class AbstractActionInstructionDeserializer implements OFDeserializer<Instruction>,
         DeserializerRegistryInjector {
