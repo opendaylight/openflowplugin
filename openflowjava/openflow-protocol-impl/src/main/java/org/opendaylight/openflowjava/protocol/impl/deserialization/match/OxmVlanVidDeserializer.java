@@ -8,7 +8,6 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
@@ -21,8 +20,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.vlan.vid._case.VlanVidBuilder;
 
 /**
- * @author michal.polkorab
+ * Translates OxmVlanVid messages.
  *
+ * @author michal.polkorab
  */
 public class OxmVlanVidDeserializer extends AbstractOxmMatchEntryDeserializer
         implements OFDeserializer<MatchEntry> {
@@ -35,11 +35,11 @@ public class OxmVlanVidDeserializer extends AbstractOxmMatchEntryDeserializer
     }
 
     private static void addVlanVidValue(ByteBuf input, MatchEntryBuilder builder) {
-        VlanVidCaseBuilder caseBuilder = new VlanVidCaseBuilder();
+        final VlanVidCaseBuilder caseBuilder = new VlanVidCaseBuilder();
         VlanVidBuilder vlanBuilder = new VlanVidBuilder();
         int vidEntryValue = input.readUnsignedShort();
-        vlanBuilder.setCfiBit((vidEntryValue & (1 << 12)) != 0); // cfi is 13-th bit
-        vlanBuilder.setVlanVid(vidEntryValue & ((1 << 12) - 1)); // value without 13-th bit
+        vlanBuilder.setCfiBit((vidEntryValue & 1 << 12) != 0); // cfi is 13-th bit
+        vlanBuilder.setVlanVid(vidEntryValue & (1 << 12) - 1); // value without 13-th bit
         if (builder.isHasMask()) {
             vlanBuilder.setMask(OxmDeserializerHelper
                     .convertMask(input, EncodeConstants.SIZE_OF_SHORT_IN_BYTES));

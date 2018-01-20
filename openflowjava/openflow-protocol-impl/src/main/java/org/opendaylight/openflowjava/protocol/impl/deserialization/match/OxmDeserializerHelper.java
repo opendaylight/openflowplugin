@@ -13,8 +13,9 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 
 /**
- * @author michal.polkorab
+ * Utilities for Oxm deserialization.
  *
+ * @author michal.polkorab
  */
 public final class OxmDeserializerHelper {
 
@@ -23,7 +24,8 @@ public final class OxmDeserializerHelper {
     }
 
     /**
-     * Converts binary data into binary mask (for match entries)
+     * Converts binary data into binary mask (for match entries).
+     *
      * @param input input ByteBuf
      * @param matchEntryLength mask length
      * @return binary mask
@@ -35,7 +37,8 @@ public final class OxmDeserializerHelper {
     }
 
     /**
-     * Converts binary data into mac address
+     * Converts binary data into mac address.
+     *
      * @param input input ByteBuf
      * @return mac address
      */

@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Stores and handles serializers<br>
+ * Stores and handles serializers. <br>
  * K - {@link MessageTypeKey} type<br>
  * S - returned serializer type
  *
@@ -61,7 +61,9 @@ public class SerializerRegistryImpl implements SerializerRegistry {
     }
 
     /**
-     * @param msgTypeKey
+     * Gets the encoder for the given message type key.
+     *
+     * @param msgTypeKey the message type key
      * @return encoder for current type of message (msgTypeKey)
      */
     @Override
@@ -78,7 +80,7 @@ public class SerializerRegistryImpl implements SerializerRegistry {
 
     @Override
     public <K> void registerSerializer(MessageTypeKey<K> msgTypeKey, OFGeneralSerializer serializer) {
-        if ((msgTypeKey == null) || (serializer == null)) {
+        if (msgTypeKey == null || serializer == null) {
             throw new IllegalArgumentException("MessageTypeKey or Serializer is null");
         }
         OFGeneralSerializer serInRegistry = registry.put(msgTypeKey, serializer);
