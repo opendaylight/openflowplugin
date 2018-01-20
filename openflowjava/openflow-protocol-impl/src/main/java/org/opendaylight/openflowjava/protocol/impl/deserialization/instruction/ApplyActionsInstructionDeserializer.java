@@ -9,7 +9,6 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.instruction;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
@@ -19,15 +18,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.InstructionBuilder;
 
 /**
- * @author michal.polkorab
+ * Deserializer for apply actions instruction.
  *
+ * @author michal.polkorab
  */
 public class ApplyActionsInstructionDeserializer extends AbstractActionInstructionDeserializer
         implements HeaderDeserializer<Instruction> {
 
     @Override
     public Instruction deserialize(ByteBuf input) {
-        InstructionBuilder builder = new InstructionBuilder();
+        final InstructionBuilder builder = new InstructionBuilder();
         input.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
         int instructionLength = input.readUnsignedShort();
         input.skipBytes(InstructionConstants.PADDING_IN_ACTIONS_INSTRUCTION);

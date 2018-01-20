@@ -16,8 +16,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableModInputBuilder;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Translates TableModInput messages.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class TableModInputMessageFactory implements OFDeserializer<TableModInput> {
 

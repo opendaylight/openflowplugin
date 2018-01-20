@@ -28,7 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 
 /**
- * Translates FlowModInput messages
+ * Translates FlowModInput messages.
  */
 public class FlowModInputMessageFactory implements OFDeserializer<FlowModInput>, DeserializerRegistryInjector {
 
@@ -43,9 +43,9 @@ public class FlowModInputMessageFactory implements OFDeserializer<FlowModInput>,
         byte[] cookie = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
         rawMessage.readBytes(cookie);
         builder.setCookie(new BigInteger(1, cookie));
-        byte[] cookie_mask = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-        rawMessage.readBytes(cookie_mask);
-        builder.setCookieMask(new BigInteger(1, cookie_mask));
+        final byte[] cookieMask = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+        rawMessage.readBytes(cookieMask);
+        builder.setCookieMask(new BigInteger(1, cookieMask));
         builder.setTableId(new TableId((long) rawMessage.readUnsignedByte()));
         builder.setCommand(FlowModCommand.forValue(rawMessage.readUnsignedByte()));
         builder.setIdleTimeout(rawMessage.readUnsignedShort());
@@ -66,12 +66,13 @@ public class FlowModInputMessageFactory implements OFDeserializer<FlowModInput>,
         return builder.build();
     }
 
+    @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
     private static FlowModFlags createFlowModFlagsFromBitmap(int input) {
-        final Boolean _oFPFFSENDFLOWREM = (input & (1 << 0)) > 0;
-        final Boolean _oFPFFCHECKOVERLAP = (input & (1 << 1)) > 0;
-        final Boolean _oFPFFRESETCOUNTS = (input & (1 << 2)) > 0;
-        final Boolean _oFPFFNOPKTCOUNTS = (input & (1 << 3)) > 0;
-        final Boolean _oFPFFNOBYTCOUNTS = (input & (1 << 4)) > 0;
+        final Boolean _oFPFFSENDFLOWREM = (input & 1 << 0) > 0;
+        final Boolean _oFPFFCHECKOVERLAP = (input & 1 << 1) > 0;
+        final Boolean _oFPFFRESETCOUNTS = (input & 1 << 2) > 0;
+        final Boolean _oFPFFNOPKTCOUNTS = (input & 1 << 3) > 0;
+        final Boolean _oFPFFNOBYTCOUNTS = (input & 1 << 4) > 0;
         return new FlowModFlags(_oFPFFCHECKOVERLAP, _oFPFFNOBYTCOUNTS, _oFPFFNOPKTCOUNTS, _oFPFFRESETCOUNTS,
                 _oFPFFSENDFLOWREM);
     }

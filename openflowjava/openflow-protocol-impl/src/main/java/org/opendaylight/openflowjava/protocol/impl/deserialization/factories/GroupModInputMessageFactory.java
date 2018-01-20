@@ -28,8 +28,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.grouping.BucketsListBuilder;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Translates GroupModInput messages.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class GroupModInputMessageFactory implements OFDeserializer<GroupModInput>, DeserializerRegistryInjector {
 
@@ -55,7 +56,7 @@ public class GroupModInputMessageFactory implements OFDeserializer<GroupModInput
         List<BucketsList> bucketsList = new ArrayList<>();
         while (rawMessage.readableBytes() > 0) {
             BucketsListBuilder bucketsBuilder = new BucketsListBuilder();
-            int bucketsLength = rawMessage.readUnsignedShort();
+            final int bucketsLength = rawMessage.readUnsignedShort();
             bucketsBuilder.setWeight(rawMessage.readUnsignedShort());
             bucketsBuilder.setWatchPort(new PortNumber(rawMessage.readUnsignedInt()));
             bucketsBuilder.setWatchGroup(rawMessage.readUnsignedInt());

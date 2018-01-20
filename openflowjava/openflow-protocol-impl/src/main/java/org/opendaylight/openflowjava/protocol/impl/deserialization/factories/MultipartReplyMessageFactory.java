@@ -140,7 +140,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeaturePropertiesBuilder;
 
 /**
- * Translates MultipartReply messages
+ * Translates MultipartReply messages.
  *
  * @author timotej.kubas
  * @author michal.polkorab
@@ -244,7 +244,7 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
     }
 
     private static MultipartReplyDescCase setDesc(final ByteBuf input) {
-        MultipartReplyDescCaseBuilder caseBuilder = new MultipartReplyDescCaseBuilder();
+        final MultipartReplyDescCaseBuilder caseBuilder = new MultipartReplyDescCaseBuilder();
         MultipartReplyDescBuilder descBuilder = new MultipartReplyDescBuilder();
         byte[] mfrDescBytes = new byte[DESC_STR_LEN];
         input.readBytes(mfrDescBytes);
@@ -311,17 +311,18 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
         return caseBuilder.build();
     }
 
+    @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
     private static FlowModFlags createFlowModFlagsFromBitmap(final int input) {
-        final Boolean fmfSENDFLOWREM = (input & (1 << 0)) != 0;
-        final Boolean fmfCHECKOVERLAP = (input & (1 << 1)) != 0;
-        final Boolean fmfRESETCOUNTS = (input & (1 << 2)) != 0;
-        final Boolean fmfNOPKTCOUNTS = (input & (1 << 3)) != 0;
-        final Boolean fmfNOBYTCOUNTS = (input & (1 << 4)) != 0;
+        final Boolean fmfSENDFLOWREM = (input & 1 << 0) != 0;
+        final Boolean fmfCHECKOVERLAP = (input & 1 << 1) != 0;
+        final Boolean fmfRESETCOUNTS = (input & 1 << 2) != 0;
+        final Boolean fmfNOPKTCOUNTS = (input & 1 << 3) != 0;
+        final Boolean fmfNOBYTCOUNTS = (input & 1 << 4) != 0;
         return new FlowModFlags(fmfCHECKOVERLAP, fmfNOBYTCOUNTS, fmfNOPKTCOUNTS, fmfRESETCOUNTS, fmfSENDFLOWREM);
     }
 
     private static MultipartReplyAggregateCase setAggregate(final ByteBuf input) {
-        MultipartReplyAggregateCaseBuilder caseBuilder = new MultipartReplyAggregateCaseBuilder();
+        final MultipartReplyAggregateCaseBuilder caseBuilder = new MultipartReplyAggregateCaseBuilder();
         MultipartReplyAggregateBuilder builder = new MultipartReplyAggregateBuilder();
         byte[] packetCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
         input.readBytes(packetCount);
@@ -363,7 +364,7 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
         List<TableFeatures> features = new ArrayList<>();
         while (input.readableBytes() > 0) {
             TableFeaturesBuilder featuresBuilder = new TableFeaturesBuilder();
-            int length = input.readUnsignedShort();
+            final int length = input.readUnsignedShort();
             featuresBuilder.setTableId(input.readUnsignedByte());
             input.skipBytes(PADDING_IN_MULTIPART_REPLY_TABLE_FEATURES);
             featuresBuilder.setName(ByteBufUtils.decodeNullTerminatedString(input, MAX_TABLE_NAME_LENGTH));
@@ -402,7 +403,8 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
             tableFeaturesLength -= propertyLength;
             if (type.equals(TableFeaturesPropType.OFPTFPTINSTRUCTIONS)
                     || type.equals(TableFeaturesPropType.OFPTFPTINSTRUCTIONSMISS)) {
-                InstructionRelatedTableFeaturePropertyBuilder insBuilder = new InstructionRelatedTableFeaturePropertyBuilder();
+                InstructionRelatedTableFeaturePropertyBuilder insBuilder =
+                        new InstructionRelatedTableFeaturePropertyBuilder();
                 CodeKeyMaker keyMaker = CodeKeyMakerFactory.createInstructionsKeyMaker(EncodeConstants.OF13_VERSION_ID);
                 List<Instruction> instructions = ListDeserializer.deserializeHeaders(EncodeConstants.OF13_VERSION_ID,
                         propertyLength - COMMON_PROPERTY_LENGTH, input, keyMaker, registry);
@@ -411,7 +413,8 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
             } else if (type.equals(TableFeaturesPropType.OFPTFPTNEXTTABLES)
                     || type.equals(TableFeaturesPropType.OFPTFPTNEXTTABLESMISS)) {
                 propertyLength -= COMMON_PROPERTY_LENGTH;
-                NextTableRelatedTableFeaturePropertyBuilder tableBuilder = new NextTableRelatedTableFeaturePropertyBuilder();
+                NextTableRelatedTableFeaturePropertyBuilder tableBuilder =
+                        new NextTableRelatedTableFeaturePropertyBuilder();
                 List<NextTableIds> ids = new ArrayList<>();
                 while (propertyLength > 0) {
                     NextTableIdsBuilder nextTableIdsBuilder = new NextTableIdsBuilder();
@@ -549,7 +552,7 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
         List<GroupStats> groupStatsList = new ArrayList<>();
         while (input.readableBytes() > 0) {
             GroupStatsBuilder groupStatsBuilder = new GroupStatsBuilder();
-            int bodyLength = input.readUnsignedShort();
+            final int bodyLength = input.readUnsignedShort();
             input.skipBytes(PADDING_IN_GROUP_HEADER_01);
             groupStatsBuilder.setGroupId(new GroupId(input.readUnsignedInt()));
             groupStatsBuilder.setRefCount(input.readUnsignedInt());
@@ -584,7 +587,7 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
     }
 
     private static MultipartReplyMeterFeaturesCase setMeterFeatures(final ByteBuf input) {
-        MultipartReplyMeterFeaturesCaseBuilder caseBuilder = new MultipartReplyMeterFeaturesCaseBuilder();
+        final MultipartReplyMeterFeaturesCaseBuilder caseBuilder = new MultipartReplyMeterFeaturesCaseBuilder();
         MultipartReplyMeterFeaturesBuilder builder = new MultipartReplyMeterFeaturesBuilder();
         builder.setMaxMeter(input.readUnsignedInt());
         builder.setBandTypes(createMeterBandsBitmap(input.readUnsignedInt()));
@@ -596,17 +599,19 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
         return caseBuilder.build();
     }
 
+    @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
     private static MeterFlags createMeterFlags(final long input) {
-        final Boolean mfKBPS = (input & (1 << 0)) != 0;
-        final Boolean mfPKTPS = (input & (1 << 1)) != 0;
-        final Boolean mfBURST = (input & (1 << 2)) != 0;
-        final Boolean mfSTATS = (input & (1 << 3)) != 0;
+        final Boolean mfKBPS = (input & 1 << 0) != 0;
+        final Boolean mfPKTPS = (input & 1 << 1) != 0;
+        final Boolean mfBURST = (input & 1 << 2) != 0;
+        final Boolean mfSTATS = (input & 1 << 3) != 0;
         return new MeterFlags(mfBURST, mfKBPS, mfPKTPS, mfSTATS);
     }
 
+    @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
     private static MeterBandTypeBitmap createMeterBandsBitmap(final long input) {
-        final Boolean mbtDROP = (input & (1 << 1)) != 0;
-        final Boolean mbtDSCPREMARK = (input & (1 << 2)) != 0;
+        final Boolean mbtDROP = (input & 1 << 1) != 0;
+        final Boolean mbtDSCPREMARK = (input & 1 << 2) != 0;
         return new MeterBandTypeBitmap(mbtDROP, mbtDSCPREMARK);
     }
 
@@ -617,7 +622,7 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
         while (input.readableBytes() > 0) {
             MeterStatsBuilder meterStatsBuilder = new MeterStatsBuilder();
             meterStatsBuilder.setMeterId(new MeterId(input.readUnsignedInt()));
-            int meterStatsBodyLength = input.readUnsignedShort();
+            final int meterStatsBodyLength = input.readUnsignedShort();
             input.skipBytes(PADDING_IN_METER_STATS_HEADER);
             meterStatsBuilder.setFlowCount(input.readUnsignedInt());
             byte[] packetInCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
@@ -666,7 +671,7 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
                 int bandType = input.readUnsignedShort();
                 switch (bandType) {
                     case 1:
-                        MeterBandDropCaseBuilder bandDropCaseBuilder = new MeterBandDropCaseBuilder();
+                        final MeterBandDropCaseBuilder bandDropCaseBuilder = new MeterBandDropCaseBuilder();
                         MeterBandDropBuilder bandDropBuilder = new MeterBandDropBuilder();
                         bandDropBuilder.setType(MeterBandType.forValue(bandType));
                         actualLength += input.readUnsignedShort();
@@ -677,7 +682,8 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
                         bandsBuilder.setMeterBand(bandDropCaseBuilder.build());
                         break;
                     case 2:
-                        MeterBandDscpRemarkCaseBuilder bandDscpRemarkCaseBuilder = new MeterBandDscpRemarkCaseBuilder();
+                        final MeterBandDscpRemarkCaseBuilder bandDscpRemarkCaseBuilder =
+                            new MeterBandDscpRemarkCaseBuilder();
                         MeterBandDscpRemarkBuilder bandDscpRemarkBuilder = new MeterBandDscpRemarkBuilder();
                         bandDscpRemarkBuilder.setType(MeterBandType.forValue(bandType));
                         actualLength += input.readUnsignedShort();
@@ -690,7 +696,8 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
                         break;
                     case 0xFFFF:
                         actualLength += input.readUnsignedShort();
-                        long expId = input.getUnsignedInt(input.readerIndex() + 2 * EncodeConstants.SIZE_OF_INT_IN_BYTES);
+                        final long expId = input.getUnsignedInt(input.readerIndex()
+                                + 2 * EncodeConstants.SIZE_OF_INT_IN_BYTES);
                         input.readerIndex(bandStartIndex);
                         OFDeserializer<MeterBandExperimenterCase> deserializer = registry.getDeserializer(
                                 ExperimenterDeserializerKeyFactory.createMeterBandDeserializerKey(
@@ -722,8 +729,8 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
                 .setExperimenter(new ExperimenterId(expId))
                 .setExpType(expType)
                 .setExperimenterDataOfChoice(deserializer.deserialize(input));
-        final MultipartReplyExperimenterCaseBuilder mpReplyExperimenterCaseBld = new MultipartReplyExperimenterCaseBuilder()
-                .setMultipartReplyExperimenter(mpExperimenterBld.build());
+        final MultipartReplyExperimenterCaseBuilder mpReplyExperimenterCaseBld =
+                new MultipartReplyExperimenterCaseBuilder().setMultipartReplyExperimenter(mpExperimenterBld.build());
         return mpReplyExperimenterCaseBld.build();
     }
 
@@ -754,43 +761,43 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
     }
 
     private static PortConfig createPortConfig(final long input) {
-        final Boolean pcPortDown = ((input) & (1 << 0)) != 0;
-        final Boolean pcNRecv = ((input) & (1 << 2)) != 0;
-        final Boolean pcNFwd = ((input) & (1 << 5)) != 0;
-        final Boolean pcNPacketIn = ((input) & (1 << 6)) != 0;
+        final Boolean pcPortDown = (input & 1 << 0) != 0;
+        final Boolean pcNRecv = (input & 1 << 2) != 0;
+        final Boolean pcNFwd = (input & 1 << 5) != 0;
+        final Boolean pcNPacketIn = (input & 1 << 6) != 0;
         return new PortConfig(pcNFwd, pcNPacketIn, pcNRecv, pcPortDown);
     }
 
     private static PortState createPortState(final long input) {
-        final Boolean psLinkDown = ((input) & (1 << 0)) != 0;
-        final Boolean psBlocked = ((input) & (1 << 1)) != 0;
-        final Boolean psLive = ((input) & (1 << 2)) != 0;
+        final Boolean psLinkDown = (input & 1 << 0) != 0;
+        final Boolean psBlocked = (input & 1 << 1) != 0;
+        final Boolean psLive = (input & 1 << 2) != 0;
         return new PortState(psBlocked, psLinkDown, psLive);
     }
 
     private static PortFeatures createPortFeatures(final long input) {
-        final Boolean pf10mbHd = ((input) & (1 << 0)) != 0;
-        final Boolean pf10mbFd = ((input) & (1 << 1)) != 0;
-        final Boolean pf100mbHd = ((input) & (1 << 2)) != 0;
-        final Boolean pf100mbFd = ((input) & (1 << 3)) != 0;
-        final Boolean pf1gbHd = ((input) & (1 << 4)) != 0;
-        final Boolean pf1gbFd = ((input) & (1 << 5)) != 0;
-        final Boolean pf10gbFd = ((input) & (1 << 6)) != 0;
-        final Boolean pf40gbFd = ((input) & (1 << 7)) != 0;
-        final Boolean pf100gbFd = ((input) & (1 << 8)) != 0;
-        final Boolean pf1tbFd = ((input) & (1 << 9)) != 0;
-        final Boolean pfOther = ((input) & (1 << 10)) != 0;
-        final Boolean pfCopper = ((input) & (1 << 11)) != 0;
-        final Boolean pfFiber = ((input) & (1 << 12)) != 0;
-        final Boolean pfAutoneg = ((input) & (1 << 13)) != 0;
-        final Boolean pfPause = ((input) & (1 << 14)) != 0;
-        final Boolean pfPauseAsym = ((input) & (1 << 15)) != 0;
+        final Boolean pf10mbHd = (input & 1 << 0) != 0;
+        final Boolean pf10mbFd = (input & 1 << 1) != 0;
+        final Boolean pf100mbHd = (input & 1 << 2) != 0;
+        final Boolean pf100mbFd = (input & 1 << 3) != 0;
+        final Boolean pf1gbHd = (input & 1 << 4) != 0;
+        final Boolean pf1gbFd = (input & 1 << 5) != 0;
+        final Boolean pf10gbFd = (input & 1 << 6) != 0;
+        final Boolean pf40gbFd = (input & 1 << 7) != 0;
+        final Boolean pf100gbFd = (input & 1 << 8) != 0;
+        final Boolean pf1tbFd = (input & 1 << 9) != 0;
+        final Boolean pfOther = (input & 1 << 10) != 0;
+        final Boolean pfCopper = (input & 1 << 11) != 0;
+        final Boolean pfFiber = (input & 1 << 12) != 0;
+        final Boolean pfAutoneg = (input & 1 << 13) != 0;
+        final Boolean pfPause = (input & 1 << 14) != 0;
+        final Boolean pfPauseAsym = (input & 1 << 15) != 0;
         return new PortFeatures(pf100gbFd, pf100mbFd, pf100mbHd, pf10gbFd, pf10mbFd, pf10mbHd, pf1gbFd,
                 pf1gbHd, pf1tbFd, pf40gbFd, pfAutoneg, pfCopper, pfFiber, pfOther, pfPause, pfPauseAsym);
     }
 
     private static MultipartReplyGroupFeaturesCase setGroupFeatures(final ByteBuf rawMessage) {
-        MultipartReplyGroupFeaturesCaseBuilder caseBuilder = new MultipartReplyGroupFeaturesCaseBuilder();
+        final MultipartReplyGroupFeaturesCaseBuilder caseBuilder = new MultipartReplyGroupFeaturesCaseBuilder();
         MultipartReplyGroupFeaturesBuilder featuresBuilder = new MultipartReplyGroupFeaturesBuilder();
         featuresBuilder.setTypes(createGroupType(rawMessage.readUnsignedInt()));
         featuresBuilder.setCapabilities(createCapabilities(rawMessage.readUnsignedInt()));
@@ -808,23 +815,24 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
         return caseBuilder.build();
     }
 
+    @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
     private static ActionType createActionBitmap(final long input) {
-        final Boolean atOutput = ((input) & (1 << 0)) != 0;
-        final Boolean atCopyTTLout = ((input) & (1 << 11)) != 0;
-        final Boolean atCopyTTLin = ((input) & (1 << 12)) != 0;
-        final Boolean atSetMplsTTL = ((input) & (1 << 15)) != 0;
-        final Boolean atDecMplsTTL = ((input) & (1 << 16)) != 0;
-        final Boolean atPushVLAN = ((input) & (1 << 17)) != 0;
-        final Boolean atPopVLAN = ((input) & (1 << 18)) != 0;
-        final Boolean atPushMPLS = ((input) & (1 << 19)) != 0;
-        final Boolean atPopMPLS = ((input) & (1 << 20)) != 0;
-        final Boolean atSetQueue = ((input) & (1 << 21)) != 0;
-        final Boolean atGroup = ((input) & (1 << 22)) != 0;
-        final Boolean atSetNWTTL = ((input) & (1 << 23)) != 0;
-        final Boolean atDecNWTTL = ((input) & (1 << 24)) != 0;
-        final Boolean atSetField = ((input) & (1 << 25)) != 0;
-        final Boolean atPushPBB = ((input) & (1 << 26)) != 0;
-        final Boolean atPopPBB = ((input) & (1 << 27)) != 0;
+        final Boolean atOutput = (input & 1 << 0) != 0;
+        final Boolean atCopyTTLout = (input & 1 << 11) != 0;
+        final Boolean atCopyTTLin = (input & 1 << 12) != 0;
+        final Boolean atSetMplsTTL = (input & 1 << 15) != 0;
+        final Boolean atDecMplsTTL = (input & 1 << 16) != 0;
+        final Boolean atPushVLAN = (input & 1 << 17) != 0;
+        final Boolean atPopVLAN = (input & 1 << 18) != 0;
+        final Boolean atPushMPLS = (input & 1 << 19) != 0;
+        final Boolean atPopMPLS = (input & 1 << 20) != 0;
+        final Boolean atSetQueue = (input & 1 << 21) != 0;
+        final Boolean atGroup = (input & 1 << 22) != 0;
+        final Boolean atSetNWTTL = (input & 1 << 23) != 0;
+        final Boolean atDecNWTTL = (input & 1 << 24) != 0;
+        final Boolean atSetField = (input & 1 << 25) != 0;
+        final Boolean atPushPBB = (input & 1 << 26) != 0;
+        final Boolean atPopPBB = (input & 1 << 27) != 0;
         final Boolean atExperimenter = false;
         return new ActionType(atCopyTTLin, atCopyTTLout, atDecMplsTTL,
                 atDecNWTTL, atExperimenter, atGroup, atOutput, atPopMPLS,
@@ -833,18 +841,18 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
     }
 
     private static GroupCapabilities createCapabilities(final long input) {
-        final Boolean gcSelectWeight = ((input) & (1 << 0)) != 0;
-        final Boolean gcSelectLiveness = ((input) & (1 << 1)) != 0;
-        final Boolean gcChaining = ((input) & (1 << 2)) != 0;
-        final Boolean gcChainingChecks = ((input) & (1 << 3)) != 0;
+        final Boolean gcSelectWeight = (input & 1 << 0) != 0;
+        final Boolean gcSelectLiveness = (input & 1 << 1) != 0;
+        final Boolean gcChaining = (input & 1 << 2) != 0;
+        final Boolean gcChainingChecks = (input & 1 << 3) != 0;
         return new GroupCapabilities(gcChaining, gcChainingChecks, gcSelectLiveness, gcSelectWeight);
     }
 
     private static GroupTypes createGroupType(final long input) {
-        final Boolean gtAll = ((input) & (1 << 0)) != 0;
-        final Boolean gtSelect = ((input) & (1 << 1)) != 0;
-        final Boolean gtIndirect = ((input) & (1 << 2)) != 0;
-        final Boolean gtFF = ((input) & (1 << 3)) != 0;
+        final Boolean gtAll = (input & 1 << 0) != 0;
+        final Boolean gtSelect = (input & 1 << 1) != 0;
+        final Boolean gtIndirect = (input & 1 << 2) != 0;
+        final Boolean gtFF = (input & 1 << 3) != 0;
         return new GroupTypes(gtAll, gtFF, gtIndirect, gtSelect);
     }
 
@@ -854,7 +862,7 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
         List<GroupDesc> groupDescsList = new ArrayList<>();
         while (input.readableBytes() > 0) {
             GroupDescBuilder groupDescBuilder = new GroupDescBuilder();
-            int bodyLength = input.readUnsignedShort();
+            final int bodyLength = input.readUnsignedShort();
             groupDescBuilder.setType(GroupType.forValue(input.readUnsignedByte()));
             input.skipBytes(PADDING_IN_GROUP_DESC_HEADER);
             groupDescBuilder.setGroupId(new GroupId(input.readUnsignedInt()));
@@ -862,7 +870,7 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
             List<BucketsList> bucketsList = new ArrayList<>();
             while (actualLength < bodyLength) {
                 BucketsListBuilder bucketsBuilder = new BucketsListBuilder();
-                int bucketsLength = input.readUnsignedShort();
+                final int bucketsLength = input.readUnsignedShort();
                 bucketsBuilder.setWeight(input.readUnsignedShort());
                 bucketsBuilder.setWatchPort(new PortNumber(input.readUnsignedInt()));
                 bucketsBuilder.setWatchGroup(input.readUnsignedInt());
