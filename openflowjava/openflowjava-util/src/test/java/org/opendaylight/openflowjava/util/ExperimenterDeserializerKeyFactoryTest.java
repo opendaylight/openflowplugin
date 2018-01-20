@@ -20,6 +20,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeatureProperties;
 
 /**
+ * Unit tests for ExperimenterDeserializerKeyFactory.
+ *
  * @author michal.polkorab
  */
 public class ExperimenterDeserializerKeyFactoryTest {

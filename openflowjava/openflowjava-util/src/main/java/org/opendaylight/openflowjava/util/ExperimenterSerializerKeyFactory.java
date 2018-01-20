@@ -17,11 +17,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeatureProperties;
 
 /**
+ * Factory for creating experimenter serializer keys.
+ *
  * @author michal.polkorab
  */
 public abstract class ExperimenterSerializerKeyFactory {
 
     /**
+     * Creates an experimenter message serializer key.
+     *
      * @param msgVersion openflow wire version
      * @param experimenterId experimenter / vendor ID
      * @param type experimenter type according to vendor implementation
@@ -33,6 +37,8 @@ public abstract class ExperimenterSerializerKeyFactory {
     }
 
     /**
+     * Creates a multi-part request serializer key.
+     *
      * @param msgVersion openflow wire version
      * @param experimenterId experimenter / vendor ID
      * @param type experimenter type according to vendor implementation
@@ -44,6 +50,8 @@ public abstract class ExperimenterSerializerKeyFactory {
     }
 
     /**
+     * Creates a multi-part request TF serializer key.
+     *
      * @param msgVersion openflow wire version
      * @param experimenterId experimenter / vendor ID
      * @return key instance
@@ -54,18 +62,21 @@ public abstract class ExperimenterSerializerKeyFactory {
     }
 
     /**
+     * Creates a meter band serializer key.
+     *
      * @param msgVersion openflow wire version
      * @param experimenterId experimenter / vendor ID
      * @return key instance
      */
     public static ExperimenterIdSerializerKey<MeterBandExperimenterCase> createMeterBandSerializerKey(
             short msgVersion, long experimenterId) {
-        return new ExperimenterIdMeterSubTypeSerializerKey<>(msgVersion, experimenterId, MeterBandExperimenterCase.class, null);
+        return new ExperimenterIdMeterSubTypeSerializerKey<>(msgVersion, experimenterId,
+                MeterBandExperimenterCase.class, null);
     }
 
     public static ExperimenterIdSerializerKey<MeterBandExperimenterCase> createMeterBandSerializerKey(
             short msgVersion, long experimenterId, Class<? extends ExperimenterMeterBandSubType> meterSubType) {
-        return new ExperimenterIdMeterSubTypeSerializerKey<>(msgVersion, experimenterId, MeterBandExperimenterCase.class, meterSubType);
+        return new ExperimenterIdMeterSubTypeSerializerKey<>(msgVersion, experimenterId,
+                MeterBandExperimenterCase.class, meterSubType);
     }
-
 }
