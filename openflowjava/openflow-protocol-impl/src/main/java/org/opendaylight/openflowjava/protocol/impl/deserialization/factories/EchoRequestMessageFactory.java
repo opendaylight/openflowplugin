@@ -20,7 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author michal.polkorab
  * @author timotej.kubas
  */
-public class EchoRequestMessageFactory extends VersionAssignableFactory implements OFDeserializer<EchoRequestMessage>{
+public class EchoRequestMessageFactory extends VersionAssignableFactory implements OFDeserializer<EchoRequestMessage> {
 
     @Override
     public EchoRequestMessage deserialize(ByteBuf rawMessage) {

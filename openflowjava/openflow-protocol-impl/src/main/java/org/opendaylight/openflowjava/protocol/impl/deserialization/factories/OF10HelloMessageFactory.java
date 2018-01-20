@@ -9,14 +9,14 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessageBuilder;
 
 /**
- * Translates Hello messages (OpenFlow v1.0)
+ * Translates Hello messages (OpenFlow v1.0).
+ *
  * @author michal.polkorab
  */
 public class OF10HelloMessageFactory implements OFDeserializer<HelloMessage> {

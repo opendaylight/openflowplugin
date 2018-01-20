@@ -25,8 +25,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.async.body.grouping.PortStatusMaskBuilder;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Translates SetAsyncInput messages.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class SetAsyncInputMessageFactory implements OFDeserializer<SetAsyncInput> {
 
@@ -56,13 +57,13 @@ public class SetAsyncInputMessageFactory implements OFDeserializer<SetAsyncInput
 
     private static List<PacketInReason> decodePacketInReasons(long input) {
         List<PacketInReason> reasons = new ArrayList<>();
-        if ((input & (1 << 0)) != 0) {
+        if ((input & 1 << 0) != 0) {
             reasons.add(PacketInReason.OFPRNOMATCH);
         }
-        if ((input & (1 << 1)) != 0) {
+        if ((input & 1 << 1) != 0) {
             reasons.add(PacketInReason.OFPRACTION);
         }
-        if ((input & (1 << 2)) != 0) {
+        if ((input & 1 << 2) != 0) {
             reasons.add(PacketInReason.OFPRINVALIDTTL);
         }
         return reasons;
@@ -81,13 +82,13 @@ public class SetAsyncInputMessageFactory implements OFDeserializer<SetAsyncInput
 
     private static List<PortReason> decodePortReasons(long input) {
         List<PortReason> reasons = new ArrayList<>();
-        if ((input & (1 << 0)) != 0) {
+        if ((input & 1 << 0) != 0) {
             reasons.add(PortReason.OFPPRADD);
         }
-        if ((input & (1 << 1)) != 0) {
+        if ((input & 1 << 1) != 0) {
             reasons.add(PortReason.OFPPRDELETE);
         }
-        if ((input & (1 << 2)) != 0) {
+        if ((input & 1 << 2) != 0) {
             reasons.add(PortReason.OFPPRMODIFY);
         }
         return reasons;
@@ -106,16 +107,16 @@ public class SetAsyncInputMessageFactory implements OFDeserializer<SetAsyncInput
 
     private static List<FlowRemovedReason> decodeFlowRemovedReasons(long input) {
         List<FlowRemovedReason> reasons = new ArrayList<>();
-        if ((input & (1 << 0)) != 0) {
+        if ((input & 1 << 0) != 0) {
             reasons.add(FlowRemovedReason.OFPRRIDLETIMEOUT);
         }
-        if ((input & (1 << 1)) != 0) {
+        if ((input & 1 << 1) != 0) {
             reasons.add(FlowRemovedReason.OFPRRHARDTIMEOUT);
         }
-        if ((input & (1 << 2)) != 0) {
+        if ((input & 1 << 2) != 0) {
             reasons.add(FlowRemovedReason.OFPRRDELETE);
         }
-        if ((input & (1 << 3)) != 0) {
+        if ((input & 1 << 3) != 0) {
             reasons.add(FlowRemovedReason.OFPRRGROUPDELETE);
         }
         return reasons;

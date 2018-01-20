@@ -22,8 +22,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInputBuilder;
 
 public class PacketOutInputMessageFactory implements OFDeserializer<PacketOutInput>, DeserializerRegistryInjector {
+    private static final byte PADDING = 6;
+
     private DeserializerRegistry registry;
-    private final byte PADDING = 6;
 
     @Override
     public PacketOutInput deserialize(ByteBuf rawMessage) {
@@ -32,10 +33,10 @@ public class PacketOutInputMessageFactory implements OFDeserializer<PacketOutInp
         builder.setXid(rawMessage.readUnsignedInt());
         builder.setBufferId(rawMessage.readUnsignedInt());
         builder.setInPort(new PortNumber(rawMessage.readUnsignedInt()));
-        int actions_len = rawMessage.readShort();
+        int actionsLen = rawMessage.readShort();
         rawMessage.skipBytes(PADDING);
         CodeKeyMaker keyMaker = CodeKeyMakerFactory.createActionsKeyMaker(EncodeConstants.OF13_VERSION_ID);
-        List<Action> actions = ListDeserializer.deserializeList(EncodeConstants.OF13_VERSION_ID, actions_len,
+        List<Action> actions = ListDeserializer.deserializeList(EncodeConstants.OF13_VERSION_ID, actionsLen,
                 rawMessage, keyMaker, registry);
         builder.setAction(actions);
         byte[] data = new byte[rawMessage.readableBytes()];

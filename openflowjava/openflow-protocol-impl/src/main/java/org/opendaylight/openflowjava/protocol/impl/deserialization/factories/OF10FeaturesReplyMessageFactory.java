@@ -24,7 +24,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.features.reply.PhyPortBuilder;
 
 /**
- * Translates FeaturesReply messages (OpenFlow v1.0)
+ * Translates FeaturesReply messages (OpenFlow v1.0).
+ *
  * @author michal.polkorab
  */
 public class OF10FeaturesReplyMessageFactory implements OFDeserializer<GetFeaturesOutput> {
@@ -53,32 +54,32 @@ public class OF10FeaturesReplyMessageFactory implements OFDeserializer<GetFeatur
     }
 
     private static CapabilitiesV10 createCapabilitiesV10(final long input) {
-        final Boolean flowStats = (input & (1 << 0)) != 0;
-        final Boolean tableStats = (input & (1 << 1)) != 0;
-        final Boolean portStats = (input & (1 << 2)) != 0;
-        final Boolean stp = (input & (1 << 3)) != 0;
-        final Boolean reserved = (input & (1 << 4)) != 0;
-        final Boolean ipReasm = (input & (1 << 5)) != 0;
-        final Boolean queueStats = (input & (1 << 6)) != 0;
-        final Boolean arpMatchIp = (input & (1 << 7)) != 0;
+        final Boolean flowStats = (input & 1 << 0) != 0;
+        final Boolean tableStats = (input & 1 << 1) != 0;
+        final Boolean portStats = (input & 1 << 2) != 0;
+        final Boolean stp = (input & 1 << 3) != 0;
+        final Boolean reserved = (input & 1 << 4) != 0;
+        final Boolean ipReasm = (input & 1 << 5) != 0;
+        final Boolean queueStats = (input & 1 << 6) != 0;
+        final Boolean arpMatchIp = (input & 1 << 7) != 0;
         return new CapabilitiesV10(arpMatchIp, flowStats, ipReasm,
                 portStats, queueStats, reserved, stp, tableStats);
     }
 
     private static ActionTypeV10 createActionsV10(final long input) {
-        final Boolean output = (input & (1 << 0)) != 0;
-        final Boolean setVLANvid = (input & (1 << 1)) != 0;
-        final Boolean setVLANpcp = (input & (1 << 2)) != 0;
-        final Boolean stripVLAN = (input & (1 << 3)) != 0;
-        final Boolean setDLsrc = (input & (1 << 4)) != 0;
-        final Boolean setDLdst = (input & (1 << 5)) != 0;
-        final Boolean setNWsrc = (input & (1 << 6)) != 0;
-        final Boolean setNWdst = (input & (1 << 7)) != 0;
-        final Boolean setNWtos = (input & (1 << 8)) != 0;
-        final Boolean setTPsrc = (input & (1 << 9)) != 0;
-        final Boolean setTPdst = (input & (1 << 10)) != 0;
-        final Boolean enqueue = (input & (1 << 11)) != 0;
-        final Boolean vendor = (input & (1 << 12)) != 0;
+        final Boolean output = (input & 1 << 0) != 0;
+        final Boolean setVLANvid = (input & 1 << 1) != 0;
+        final Boolean setVLANpcp = (input & 1 << 2) != 0;
+        final Boolean stripVLAN = (input & 1 << 3) != 0;
+        final Boolean setDLsrc = (input & 1 << 4) != 0;
+        final Boolean setDLdst = (input & 1 << 5) != 0;
+        final Boolean setNWsrc = (input & 1 << 6) != 0;
+        final Boolean setNWdst = (input & 1 << 7) != 0;
+        final Boolean setNWtos = (input & 1 << 8) != 0;
+        final Boolean setTPsrc = (input & 1 << 9) != 0;
+        final Boolean setTPdst = (input & 1 << 10) != 0;
+        final Boolean enqueue = (input & 1 << 11) != 0;
+        final Boolean vendor = (input & 1 << 12) != 0;
         return new ActionTypeV10(enqueue, output, setDLdst, setDLsrc,
                 setNWdst, setNWsrc, setNWtos, setTPdst, setTPsrc,
                 setVLANpcp, setVLANvid, stripVLAN, vendor);

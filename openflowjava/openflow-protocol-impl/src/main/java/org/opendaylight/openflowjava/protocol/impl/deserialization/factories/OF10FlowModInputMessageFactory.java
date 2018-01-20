@@ -27,8 +27,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Translates FlowModInput messages.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class OF10FlowModInputMessageFactory implements OFDeserializer<FlowModInput>, DeserializerRegistryInjector {
 
@@ -65,10 +66,11 @@ public class OF10FlowModInputMessageFactory implements OFDeserializer<FlowModInp
         return builder.build();
     }
 
+    @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
     private static FlowModFlagsV10 createFlowModFlagsFromBitmap(int input) {
-        final Boolean _oFPFFSENDFLOWREM = (input & (1 << 0)) > 0;
-        final Boolean _oFPFFCHECKOVERLAP = (input & (1 << 1)) > 0;
-        final Boolean _oFPFFEMERG = (input & (1 << 2)) > 0;
+        final Boolean _oFPFFSENDFLOWREM = (input & 1 << 0) > 0;
+        final Boolean _oFPFFCHECKOVERLAP = (input & 1 << 1) > 0;
+        final Boolean _oFPFFEMERG = (input & 1 << 2) > 0;
         return new FlowModFlagsV10(_oFPFFCHECKOVERLAP, _oFPFFEMERG, _oFPFFSENDFLOWREM);
     }
 
