@@ -13,12 +13,15 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 
 /**
- * Parent for Ipv4 address based match entry serializers
+ * Parent for Ipv4 address based match entry serializers.
+ *
  * @author michal.polkorab
  */
 public abstract class AbstractOxmIpv4AddressSerializer extends AbstractOxmMatchEntrySerializer {
 
     /**
+     * Deprecated.
+     *
      * @deprecated Use {@link #writeIpv4Address(Ipv4Address, ByteBuf)} instead.
      */
     @Deprecated

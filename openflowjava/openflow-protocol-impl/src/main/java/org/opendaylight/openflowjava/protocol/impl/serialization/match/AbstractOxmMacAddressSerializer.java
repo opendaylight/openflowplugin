@@ -12,7 +12,8 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 
 /**
- * Parent for MAC address based match entry serializers
+ * Parent for MAC address based match entry serializers.
+ *
  * @author michal.polkorab
  */
 public abstract class AbstractOxmMacAddressSerializer extends AbstractOxmMatchEntrySerializer {

@@ -14,8 +14,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ArpTpaCase;
 
 /**
- * @author michal.polkorab
+ * OxmArpTpa match entry serializer.
  *
+ * @author michal.polkorab
  */
 public class OxmArpTpaSerializer extends AbstractOxmIpv4AddressSerializer {
 

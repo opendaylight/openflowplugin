@@ -9,15 +9,15 @@
 package org.opendaylight.openflowjava.protocol.impl.serialization.instruction;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction;
 
 /**
- * @author michal.polkorab
+ * Base class for an instruction serializer.
  *
+ * @author michal.polkorab
  */
 public abstract class AbstractInstructionSerializer implements OFSerializer<Instruction>,
         HeaderSerializer<Instruction> {
@@ -29,7 +29,7 @@ public abstract class AbstractInstructionSerializer implements OFSerializer<Inst
     }
 
     /**
-     * @return numeric representation of action type
+     * Returns the numeric representation of action type.
      */
     protected abstract int getType();
 
