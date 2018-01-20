@@ -57,10 +57,6 @@
                  <propertyExpansion>checkstyle.violationSeverity=error</propertyExpansion>
              </configuration>
          </plugin>
-         <plugin>
-             <groupId>org.opendaylight.yangtools</groupId>
-             <artifactId>yang-maven-plugin</artifactId>
-         </plugin>
      </plugins>
     </build>
 </project>
