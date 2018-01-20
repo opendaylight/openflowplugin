@@ -9,63 +9,83 @@
 package org.opendaylight.openflowjava.protocol.api.connection;
 
 import java.util.List;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.KeystoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.PathType;
 
 
 /**
- * @author michal.polkorab
+ * Tls configuration.
  *
+ * @author michal.polkorab
  */
 public interface TlsConfiguration {
 
     /**
-     * @return keystore location
+     * Returns the key store location.
+     *
+     * @return key store location
      */
     String getTlsKeystore();
 
     /**
-     * @return keystore type
+     * Returns the key store type.
+     *
+     * @return key store type
      */
     KeystoreType getTlsKeystoreType();
 
     /**
-     * @return truststore location
+     * Returns the trust store location.
+     *
+     * @return trust store location
      */
     String getTlsTruststore();
 
     /**
-     * @return truststore type
+     * Returns the trust store type.
+     *
+     * @return trust store type
      */
     KeystoreType getTlsTruststoreType();
 
     /**
-     * @return keystore path type (CLASSPATH or PATH)
+     * Returns the key store path type.
+     *
+     * @return key store path type (CLASSPATH or PATH)
      */
     PathType getTlsKeystorePathType();
 
     /**
-     * @return truststore path type (CLASSPATH or PATH)
+     * Returns the trust store path type.
+     *
+     * @return trust store path type (CLASSPATH or PATH)
      */
     PathType getTlsTruststorePathType();
 
     /**
-     * @return password protecting specified keystore
+     * Returns the password protecting the key store.
+     *
+     * @return password protecting the specified key store
      */
     String getKeystorePassword();
 
     /**
+     * Returns the password protecting the certificate.
+     *
      * @return password protecting certificate
      */
     String getCertificatePassword();
 
     /**
-     * @return password protecting specified truststore
+     * Returns the password protecting the trust store.
+     *
+     * @return password protecting specified trust store
      */
     String getTruststorePassword();
 
     /**
+     * Returns the list of cipher suites for TLS connection.
+     *
      * @return list of cipher suites for TLS connection
      */
     List<String> getCipherSuites();

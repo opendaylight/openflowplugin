@@ -7,8 +7,9 @@
  */
 package org.opendaylight.openflowjava.protocol.api.extensibility;
 
-
 /**
+ * Unifying super interface for a general deserializer.
+ *
  * @author michal.polkorab
  */
 public interface OFGeneralDeserializer {

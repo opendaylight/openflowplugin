@@ -13,6 +13,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmC
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 
 /**
+ * Key for a match entry serializer.
+ *
  * @author michal.polkorab
  * @param <C> oxm_class (see specification)
  * @param <F> oxm_field (see specification)
@@ -20,11 +22,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 public final class MatchEntrySerializerKey<C extends OxmClassBase, F extends MatchField>
         extends MessageTypeKey<MatchEntry> implements ExperimenterSerializerKey {
 
-    private Class<C> oxmClass;
-    private Class<F> oxmField;
+    private final Class<C> oxmClass;
+    private final Class<F> oxmField;
     private Long experimenterId;
 
     /**
+     * Constructor.
+     *
      * @param msgVersion protocol wire version
      * @param oxmClass oxm_class (see specification)
      * @param oxmField oxm_field (see specification)
@@ -37,6 +41,8 @@ public final class MatchEntrySerializerKey<C extends OxmClassBase, F extends Mat
     }
 
     /**
+     * Sets the experimenter id.
+     *
      * @param experimenterId experimenter / vendor ID
      */
     public void setExperimenterId(Long experimenterId) {
@@ -47,9 +53,9 @@ public final class MatchEntrySerializerKey<C extends OxmClassBase, F extends Mat
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + ((experimenterId == null) ? 0 : experimenterId.hashCode());
-        result = prime * result + ((oxmClass == null) ? 0 : oxmClass.hashCode());
-        result = prime * result + ((oxmField == null) ? 0 : oxmField.hashCode());
+        result = prime * result + (experimenterId == null ? 0 : experimenterId.hashCode());
+        result = prime * result + (oxmClass == null ? 0 : oxmClass.hashCode());
+        result = prime * result + (oxmField == null ? 0 : oxmField.hashCode());
         return result;
     }
 

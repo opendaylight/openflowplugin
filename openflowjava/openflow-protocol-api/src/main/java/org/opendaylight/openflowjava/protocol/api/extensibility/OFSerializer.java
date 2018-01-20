@@ -12,7 +12,8 @@ import io.netty.buffer.ByteBuf;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
- * Uniform interface for serializers
+ * Uniform interface for serializers.
+ *
  * @author michal.polkorab
  * @author timotej.kubas
  * @param <T> message type

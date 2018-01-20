@@ -17,20 +17,21 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm0
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
 
 /**
- * @author michal.polkorab
+ * Unit tests for MatchEntrySerializerKey.
  *
+ * @author michal.polkorab
  */
 public class MatchEntrySerializerKeyTest {
 
     /**
-     * Test MatchEntrySerializerKey equals and hashCode
+     * Test MatchEntrySerializerKey equals and hashCode.
      */
     @Test
     public void test() {
-        MatchEntrySerializerKey<?, ?> key1 = new MatchEntrySerializerKey<>
-                (EncodeConstants.OF13_VERSION_ID, OpenflowBasicClass.class, InPort.class);
-        MatchEntrySerializerKey<?, ?> key2 = new MatchEntrySerializerKey<>
-                (EncodeConstants.OF13_VERSION_ID, OpenflowBasicClass.class, InPort.class);
+        MatchEntrySerializerKey<?, ?> key1 = new MatchEntrySerializerKey<>(
+                EncodeConstants.OF13_VERSION_ID, OpenflowBasicClass.class, InPort.class);
+        MatchEntrySerializerKey<?, ?> key2 = new MatchEntrySerializerKey<>(
+                EncodeConstants.OF13_VERSION_ID, OpenflowBasicClass.class, InPort.class);
         Assert.assertTrue("Wrong equals", key1.equals(key2));
         Assert.assertTrue("Wrong hashCode", key1.hashCode() == key2.hashCode());
         key2 = new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID,
@@ -58,10 +59,10 @@ public class MatchEntrySerializerKeyTest {
     }
 
     /**
-     * Test MatchEntrySerializerKey equals - additional test
+     * Test MatchEntrySerializerKey equals - additional test.
      */
     @Test
-    public void testEquals(){
+    public void testEquals() {
         MatchEntrySerializerKey<?, ?> key1;
         MatchEntrySerializerKey<?, ?> key2;
         key1 = new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, OpenflowBasicClass.class, InPort.class);
@@ -69,12 +70,13 @@ public class MatchEntrySerializerKeyTest {
         Assert.assertTrue("Wrong equal to identical object.", key1.equals(key1));
         Assert.assertFalse("Wrong equal to different class.", key1.equals(new Object()));
 
-        Long expId1 = 987654331L;
         Long expId2 = 123456789L;
 
         key1.setExperimenterId(null);
         key2.setExperimenterId(expId2);
         Assert.assertFalse("Wrong equal by experimenterId", key1.equals(key2));
+
+        Long expId1 = 987654331L;
         key1.setExperimenterId(expId1);
         Assert.assertFalse("Wrong equal by experimenterId", key1.equals(key2));
         key1 = new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, null, InPort.class);
@@ -92,10 +94,10 @@ public class MatchEntrySerializerKeyTest {
     }
 
     /**
-     * Test MatchEntrySerializerKey toString()
+     * Test MatchEntrySerializerKey toString().
      */
     @Test
-    public void testToString(){
+    public void testToString() {
         MatchEntrySerializerKey<?, ?> key1;
         key1 = new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, OpenflowBasicClass.class, InPort.class);
 

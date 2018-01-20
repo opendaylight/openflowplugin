@@ -8,16 +8,18 @@
 package org.opendaylight.openflowjava.protocol.api.keys;
 
 /**
- * @author michal.polkorab
+ * Key for a class type.
  *
+ * @author michal.polkorab
  */
 public class TypeToClassKey {
 
-    private short version;
-    private int type;
+    private final short version;
+    private final int type;
 
     /**
-     * Constructor
+     * Constructor.
+     *
      * @param version wire protocol version
      * @param type message type / code
      */

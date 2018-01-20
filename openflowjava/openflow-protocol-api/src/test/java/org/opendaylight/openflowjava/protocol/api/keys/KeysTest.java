@@ -17,12 +17,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.InPo
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
 
 /**
+ * Unit tests for keys.
+ *
  * @author michal.polkorab
  */
 public class KeysTest {
 
     /**
-     * Testing equals() and hashcode() methods of extension deserializer's keys
+     * Testing equals() and hashcode() methods of extension deserializer's keys.
      */
     @Test
     public void testEqualsAndHashcodeOfDeserializerKeys() {
@@ -35,7 +37,8 @@ public class KeysTest {
 
         InstructionDeserializerKey instructionDeserializerKey = new InstructionDeserializerKey(
                 EncodeConstants.OF13_VERSION_ID, EncodeConstants.EXPERIMENTER_VALUE, 1L);
-        ExperimenterInstructionDeserializerKey experimenterInstructionDeserializerKey = new ExperimenterInstructionDeserializerKey(
+        ExperimenterInstructionDeserializerKey experimenterInstructionDeserializerKey =
+                new ExperimenterInstructionDeserializerKey(
                 EncodeConstants.OF13_VERSION_ID, 1L);
         Assert.assertEquals(instructionDeserializerKey, experimenterInstructionDeserializerKey);
         Assert.assertEquals(instructionDeserializerKey.hashCode(), experimenterInstructionDeserializerKey.hashCode());
@@ -49,7 +52,7 @@ public class KeysTest {
     }
 
     /**
-     * Testing equals() and hashcode() methods of extension serializer's keys
+     * Testing equals() and hashcode() methods of extension serializer's keys.
      */
     @Test
     public void testEqualsAndHashcodeOfActionDeserializerKeys() {
@@ -61,11 +64,12 @@ public class KeysTest {
         Assert.assertFalse(experimenterActionSerializerKey.equals(actionSerializerKey));
 
         InstructionSerializerKey<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225
-        .instruction.container.instruction.choice.ExperimenterIdCase> instructionSerializerKey =
+            .instruction.container.instruction.choice.ExperimenterIdCase> instructionSerializerKey =
                 new InstructionSerializerKey<>(EncodeConstants.OF13_VERSION_ID, org.opendaylight.yang.gen.v1.urn
                         .opendaylight.openflow.augments.rev150225.instruction.container.instruction.choice
                         .ExperimenterIdCase.class, 1L);
-        ExperimenterInstructionSerializerKey experimenterInstructionSerializerKey = new ExperimenterInstructionSerializerKey(EncodeConstants.OF13_VERSION_ID, 1L);
+        ExperimenterInstructionSerializerKey experimenterInstructionSerializerKey =
+                new ExperimenterInstructionSerializerKey(EncodeConstants.OF13_VERSION_ID, 1L);
         Assert.assertEquals(instructionSerializerKey, experimenterInstructionSerializerKey);
         Assert.assertEquals(instructionSerializerKey.hashCode(), experimenterInstructionSerializerKey.hashCode());
 

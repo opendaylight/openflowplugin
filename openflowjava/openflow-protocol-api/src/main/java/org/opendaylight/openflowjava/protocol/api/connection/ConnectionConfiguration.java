@@ -10,31 +10,43 @@ package org.opendaylight.openflowjava.protocol.api.connection;
 import java.net.InetAddress;
 
 /**
+ * Configuration for a switch connection.
+ *
  * @author mirehak
  */
 public interface ConnectionConfiguration {
 
     /**
+     * Returns address to bind.
+     *
      * @return address to bind, if null, all available interfaces will be used
      */
     InetAddress getAddress();
 
     /**
+     * Returns the port to bind.
+     *
      * @return port to bind
      */
     int getPort();
 
     /**
+     * Returns the transport protocol to use.
+     *
      * @return transport protocol to use
      */
     Object getTransferProtocol();
 
     /**
+     * Returns the TLS configuration.
+     *
      * @return TLS configuration object
      */
     TlsConfiguration getTlsConfiguration();
 
     /**
+     * Returns the swicth idle timeout.
+     *
      * @return silence time (in milliseconds) - after this time
      *         {@link org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SwitchIdleEvent}
      *         message is sent upstream
@@ -42,16 +54,22 @@ public interface ConnectionConfiguration {
     long getSwitchIdleTimeout();
 
     /**
+     * Returns the SSL context.
+     *
      * @return seed for {@link javax.net.ssl.SSLEngine}
      */
     Object getSslContext();
 
     /**
+     * Returns the thread configuration.
+     *
      * @return thread numbers for TcpHandler's eventloopGroups
      */
     ThreadConfiguration getThreadConfiguration();
 
     /**
+     * Determines if a barrier shoild be used.
+     *
      * @return boolean value for usability of Barrier
      */
     boolean useBarrier();

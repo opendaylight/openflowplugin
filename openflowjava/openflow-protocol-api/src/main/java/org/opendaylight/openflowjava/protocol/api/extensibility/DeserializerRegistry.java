@@ -9,19 +9,21 @@ package org.opendaylight.openflowjava.protocol.api.extensibility;
 
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 
-
 /**
- * @author michal.polkorab
+ * Registry for deserializers.
  *
+ * @author michal.polkorab
  */
 public interface DeserializerRegistry {
 
     /**
-     * Initializes deserializers
+     * Initializes deserializers.
      */
     void init();
 
     /**
+     * Gets the deserializer for the given key.
+     *
      * @param <T> type of particular deserializer
      * @param key used for deserializer lookup
      * @return deserializer found
@@ -30,10 +32,11 @@ public interface DeserializerRegistry {
             T getDeserializer(MessageCodeKey key);
 
     /**
-     * Registers deserializer.
+     * Registers a deserializer.
      * Throws IllegalStateException when there is
      * a deserializer already registered under given key.
      *
+     * <p>
      * If the deserializer implements {@link DeserializerRegistryInjector} interface,
      * the deserializer is injected with DeserializerRegistry instance.
      *
@@ -44,10 +47,11 @@ public interface DeserializerRegistry {
             OFGeneralDeserializer deserializer);
 
     /**
-     * Unregisters deserializer
+     * Unregisters a deserializer.
+     *
      * @param key used for deserializer lookup
      * @return true if deserializer was removed,
-     *  false if no deserializer was found under specified key
+     *     false if no deserializer was found under specified key
      */
     boolean unregisterDeserializer(MessageCodeKey key);
 }
