@@ -9,7 +9,6 @@
 package org.opendaylight.openflowjava.protocol.impl.serialization.action;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
@@ -24,8 +23,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Expe
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 
 /**
- * @author michal.polkorab
+ * Serializes OF 1.3 SetField actions.
  *
+ * @author michal.polkorab
  */
 public class OF13SetFieldActionSerializer implements OFSerializer<Action>,
         HeaderSerializer<Action>, SerializerRegistryInjector {
@@ -34,9 +34,9 @@ public class OF13SetFieldActionSerializer implements OFSerializer<Action>,
 
     @Override
     public void serialize(Action action, ByteBuf outBuffer) {
-        int startIndex = outBuffer.writerIndex();
+        final int startIndex = outBuffer.writerIndex();
         outBuffer.writeShort(ActionConstants.SET_FIELD_CODE);
-        int lengthIndex = outBuffer.writerIndex();
+        final int lengthIndex = outBuffer.writerIndex();
         outBuffer.writeShort(EncodeConstants.EMPTY_LENGTH);
         MatchEntry entry = ((SetFieldCase) action.getActionChoice()).getSetFieldAction()
                 .getMatchEntry().get(0);

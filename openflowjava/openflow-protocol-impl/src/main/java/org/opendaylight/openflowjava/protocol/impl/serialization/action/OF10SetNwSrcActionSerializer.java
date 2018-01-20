@@ -15,8 +15,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 
 /**
- * @author michal.polkorab
+ * Serializes OF 1.0 SetNwSrc actions.
  *
+ * @author michal.polkorab
  */
 public class OF10SetNwSrcActionSerializer extends AbstractActionSerializer {
 
