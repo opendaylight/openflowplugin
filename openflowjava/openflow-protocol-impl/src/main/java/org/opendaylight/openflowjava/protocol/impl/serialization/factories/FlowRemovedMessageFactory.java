@@ -18,8 +18,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Translates FlowRemoved messages.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class FlowRemovedMessageFactory implements OFSerializer<FlowRemovedMessage>, SerializerRegistryInjector {
 
@@ -33,7 +34,7 @@ public class FlowRemovedMessageFactory implements OFSerializer<FlowRemovedMessag
 
     @Override
     public void serialize(FlowRemovedMessage message, ByteBuf outBuffer) {
-        int index = outBuffer.writerIndex();
+        final int index = outBuffer.writerIndex();
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         outBuffer.writeLong(message.getCookie().longValue());
         outBuffer.writeShort(message.getPriority());
@@ -45,8 +46,8 @@ public class FlowRemovedMessageFactory implements OFSerializer<FlowRemovedMessag
         outBuffer.writeShort(message.getHardTimeout());
         outBuffer.writeLong(message.getPacketCount().longValue());
         outBuffer.writeLong(message.getByteCount().longValue());
-        OFSerializer<Match> matchSerializer = registry
-                .<Match, OFSerializer<Match>> getSerializer(new MessageTypeKey<>(message.getVersion(), Match.class));
+        OFSerializer<Match> matchSerializer = registry.<Match, OFSerializer<Match>>getSerializer(
+                new MessageTypeKey<>(message.getVersion(), Match.class));
         matchSerializer.serialize(message.getMatch(), outBuffer);
         ByteBufUtils.updateOFHeaderLength(outBuffer, index);
     }

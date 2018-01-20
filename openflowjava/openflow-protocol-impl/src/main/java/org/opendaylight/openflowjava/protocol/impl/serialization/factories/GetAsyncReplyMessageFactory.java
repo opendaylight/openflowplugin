@@ -23,10 +23,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.async.body.grouping.PortStatusMask;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Translates GetAsyncOutput messages.
  *
+ * @author giuseppex.petralia@intel.com
  */
-
 public class GetAsyncReplyMessageFactory implements OFSerializer<GetAsyncOutput> {
     private static final byte MESSAGE_TYPE = 27;
 
