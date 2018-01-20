@@ -9,7 +9,6 @@
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
@@ -25,7 +24,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 
 /**
- * Translates FlowMod messages
+ * Translates FlowMod messages.
+ *
  * @author michal.polkorab
  */
 public class OF10FlowModInputMessageFactory implements OFSerializer<FlowModInput>, SerializerRegistryInjector {

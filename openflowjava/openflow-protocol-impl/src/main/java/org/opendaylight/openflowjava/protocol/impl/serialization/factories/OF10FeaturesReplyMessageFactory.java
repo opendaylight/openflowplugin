@@ -23,8 +23,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.features.reply.PhyPort;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Translates FeaturesReply messages.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class OF10FeaturesReplyMessageFactory implements OFSerializer<GetFeaturesOutput> {
 
@@ -125,18 +126,17 @@ public class OF10FeaturesReplyMessageFactory implements OFSerializer<GetFeatures
         byte[] nameBytes = name.getBytes();
         if (nameBytes.length < 16) {
             byte[] nameBytesPadding = new byte[16];
-            int i = 0;
+            int index = 0;
             for (byte b : nameBytes) {
-                nameBytesPadding[i] = b;
-                i++;
+                nameBytesPadding[index] = b;
+                index++;
             }
-            for (; i < 16; i++) {
-                nameBytesPadding[i] = 0x0;
+            for (; index < 16; index++) {
+                nameBytesPadding[index] = 0x0;
             }
             outBuffer.writeBytes(nameBytesPadding);
         } else {
             outBuffer.writeBytes(nameBytes);
         }
-
     }
 }

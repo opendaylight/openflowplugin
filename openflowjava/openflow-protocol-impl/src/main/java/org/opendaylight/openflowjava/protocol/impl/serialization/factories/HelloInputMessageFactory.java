@@ -9,7 +9,6 @@
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
@@ -18,13 +17,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.Elements;
 
 /**
- * Translates Hello messages
+ * Translates Hello messages.
+ *
  * @author michal.polkorab
  * @author timotej.kubas
  */
-public class HelloInputMessageFactory implements OFSerializer<HelloInput>{
+public class HelloInputMessageFactory implements OFSerializer<HelloInput> {
 
-    /** Code type of Hello message */
+    /** Code type of Hello message. */
     private static final byte MESSAGE_TYPE = 0;
     private static final byte HELLO_ELEMENT_HEADER_SIZE = 4;
 
@@ -35,11 +35,11 @@ public class HelloInputMessageFactory implements OFSerializer<HelloInput>{
                 int elementStartIndex = output.writerIndex();
                 output.writeShort(currElement.getType().getIntValue());
                 if (currElement.getType().equals(HelloElementType.VERSIONBITMAP)) {
-                    int elementLengthIndex = output.writerIndex();
+                    final int elementLengthIndex = output.writerIndex();
                     output.writeShort(EncodeConstants.EMPTY_LENGTH);
                     versionBitmap = ByteBufUtils.fillBitMaskFromList(currElement.getVersionBitmap());
-                    for (int i = 0; i < versionBitmap.length; i++) {
-                        output.writeInt(versionBitmap[i]);
+                    for (int element : versionBitmap) {
+                        output.writeInt(element);
                     }
                     int length = output.writerIndex() - elementStartIndex;
                     int padding = length - versionBitmap.length * 4 - HELLO_ELEMENT_HEADER_SIZE;

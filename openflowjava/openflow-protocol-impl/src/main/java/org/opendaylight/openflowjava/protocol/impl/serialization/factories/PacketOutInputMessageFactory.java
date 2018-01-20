@@ -9,7 +9,6 @@
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
@@ -20,13 +19,14 @@ import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
 
 /**
- * Translates PacketOut messages
+ * Translates PacketOut messages.
+ *
  * @author michal.polkorab
  * @author timotej.kubas
  */
 public class PacketOutInputMessageFactory implements OFSerializer<PacketOutInput>, SerializerRegistryInjector {
 
-    /** Code type of PacketOut message */
+    /** Code type of PacketOut message. */
     private static final byte MESSAGE_TYPE = 13;
     private static final byte PADDING_IN_PACKET_OUT_MESSAGE = 6;
     private SerializerRegistry registry;
@@ -36,7 +36,7 @@ public class PacketOutInputMessageFactory implements OFSerializer<PacketOutInput
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         outBuffer.writeInt(message.getBufferId().intValue());
         outBuffer.writeInt(message.getInPort().getValue().intValue());
-        int actionsLengthIndex = outBuffer.writerIndex();
+        final int actionsLengthIndex = outBuffer.writerIndex();
         outBuffer.writeShort(EncodeConstants.EMPTY_LENGTH);
         outBuffer.writeZero(PADDING_IN_PACKET_OUT_MESSAGE);
         int actionsStartIndex = outBuffer.writerIndex();

@@ -19,8 +19,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Translates FeaturesReply messages (both OpenFlow v1.0 and OpenFlow v1.3).
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class GetFeaturesOutputFactory implements OFSerializer<GetFeaturesOutput>, SerializerRegistryInjector {
 

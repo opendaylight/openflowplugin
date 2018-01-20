@@ -18,8 +18,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Translates FlowRemoved messages.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class OF10FlowRemovedMessageFactory implements OFSerializer<FlowRemovedMessage>, SerializerRegistryInjector {
 
