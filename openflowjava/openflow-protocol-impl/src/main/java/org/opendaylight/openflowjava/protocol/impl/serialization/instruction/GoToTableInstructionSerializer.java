@@ -9,14 +9,14 @@
 package org.opendaylight.openflowjava.protocol.impl.serialization.instruction;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.GotoTableCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction;
 
 /**
- * @author michal.polkorab
+ * GotoTable instruction serializer.
  *
+ * @author michal.polkorab
  */
 public class GoToTableInstructionSerializer extends AbstractInstructionSerializer {
 

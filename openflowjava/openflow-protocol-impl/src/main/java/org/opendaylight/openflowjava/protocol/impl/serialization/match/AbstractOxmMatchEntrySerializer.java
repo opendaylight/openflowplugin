@@ -8,17 +8,17 @@
 package org.opendaylight.openflowjava.protocol.impl.serialization.match;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 
 /**
- * Parent for all match entry serializers
+ * Parent for all match entry serializers.
+ *
  * @author michal.polkorab
  */
 public abstract class AbstractOxmMatchEntrySerializer
-    implements OFSerializer<MatchEntry>, HeaderSerializer<MatchEntry>{
+        implements OFSerializer<MatchEntry>, HeaderSerializer<MatchEntry> {
 
     @Override
     public void serialize(MatchEntry entry, ByteBuf outBuffer) {
@@ -34,8 +34,8 @@ public abstract class AbstractOxmMatchEntrySerializer
 
     protected static void writeMask(byte[] mask, ByteBuf out, int length) {
         if (mask != null && mask.length != length) {
-            throw new IllegalArgumentException("incorrect length of mask: "+
-                    mask.length + ", expected: " + length);
+            throw new IllegalArgumentException("incorrect length of mask: "
+                    + mask.length + ", expected: " + length);
         }
         out.writeBytes(mask);
     }
@@ -52,17 +52,17 @@ public abstract class AbstractOxmMatchEntrySerializer
     }
 
     /**
-     * @return numeric representation of oxm_field
+     * Returns the numeric representation of oxm_field.
      */
     protected abstract int getOxmFieldCode();
 
     /**
-     * @return numeric representation of oxm_class
+     * Returns the numeric representation of oxm_class.
      */
     protected abstract int getOxmClassCode();
 
     /**
-     * @return match entry value length (without mask length)
+     * Returns the match entry value length (without mask length).
      */
     protected abstract int getValueLength();
 

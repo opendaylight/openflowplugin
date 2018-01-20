@@ -14,8 +14,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv4SrcCase;
 
 /**
- * @author michal.polkorab
+ * OxmIpv4Src match entry serializer.
  *
+ * @author michal.polkorab
  */
 public class OxmIpv4SrcSerializer extends AbstractOxmIpv4AddressSerializer {
 
