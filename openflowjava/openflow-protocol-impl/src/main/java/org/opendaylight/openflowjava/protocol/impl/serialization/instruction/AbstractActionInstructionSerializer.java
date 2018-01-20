@@ -9,9 +9,7 @@
 package org.opendaylight.openflowjava.protocol.impl.serialization.instruction;
 
 import io.netty.buffer.ByteBuf;
-
 import java.util.List;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -22,8 +20,9 @@ import org.opendaylight.openflowjava.protocol.impl.util.TypeKeyMakerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 
 /**
- * @author michal.polkorab
+ * Base class for an action instruction serializer.
  *
+ * @author michal.polkorab
  */
 public abstract class AbstractActionInstructionSerializer extends AbstractInstructionSerializer
         implements SerializerRegistryInjector {
@@ -34,7 +33,7 @@ public abstract class AbstractActionInstructionSerializer extends AbstractInstru
     private SerializerRegistry registry;
 
     protected void writeActions(final List<Action> actions, final ByteBuf outBuffer, int startIndex) {
-        int lengthIndex = outBuffer.writerIndex();
+        final int lengthIndex = outBuffer.writerIndex();
         outBuffer.writeShort(EncodeConstants.EMPTY_LENGTH);
         outBuffer.writeZero(InstructionConstants.PADDING_IN_ACTIONS_INSTRUCTION);
         ListSerializer.serializeList(actions, ACTION_KEY_MAKER, getRegistry(), outBuffer);
