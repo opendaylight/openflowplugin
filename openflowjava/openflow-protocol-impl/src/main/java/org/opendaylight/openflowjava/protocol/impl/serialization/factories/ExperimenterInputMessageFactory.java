@@ -19,7 +19,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
 
 /**
- * Translates Experimenter messages (both: symmetric request and single reply)
+ * Translates Experimenter messages (both: symmetric request and single reply).
+ *
  * @author michal.polkorab
  */
 public class ExperimenterInputMessageFactory implements OFSerializer<ExperimenterOfMessage>,
@@ -27,13 +28,13 @@ public class ExperimenterInputMessageFactory implements OFSerializer<Experimente
 
     private SerializerRegistry registry;
 
-    /** Code type of symmetric Experimenter message */
+    /** Code type of symmetric Experimenter message. */
     private static final byte MESSAGE_TYPE = 4;
 
     @Override
     public void serialize(ExperimenterOfMessage message, ByteBuf outBuffer) {
         long expId = message.getExperimenter().getValue();
-        OFSerializer<ExperimenterDataOfChoice> serializer = registry.getSerializer(
+        final OFSerializer<ExperimenterDataOfChoice> serializer = registry.getSerializer(
                 ExperimenterSerializerKeyFactory.createExperimenterMessageSerializerKey(
                         EncodeConstants.OF13_VERSION_ID, expId, message.getExpType().longValue()));
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);

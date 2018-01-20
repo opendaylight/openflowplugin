@@ -18,7 +18,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
 
 /**
- * Translates Vendor messages (OF-1.0 limited version - skipping experimenter type)
+ * Translates Vendor messages (OF-1.0 limited version - skipping experimenter type).
+ *
  * @author michal.polkorab
  */
 public class VendorInputMessageFactory implements OFSerializer<ExperimenterOfMessage>,

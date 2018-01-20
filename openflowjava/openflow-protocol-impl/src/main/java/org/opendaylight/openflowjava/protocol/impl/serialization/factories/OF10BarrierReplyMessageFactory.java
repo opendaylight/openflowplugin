@@ -14,8 +14,9 @@ import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Translates BarrierReply messages.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class OF10BarrierReplyMessageFactory implements OFSerializer<BarrierOutput> {
 

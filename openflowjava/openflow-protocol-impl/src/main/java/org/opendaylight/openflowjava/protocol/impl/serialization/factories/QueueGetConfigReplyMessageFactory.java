@@ -19,8 +19,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.queue.property.header.QueueProperty;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Translates GetQueueConfig messages.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class QueueGetConfigReplyMessageFactory implements OFSerializer<GetQueueConfigOutput> {
 
@@ -51,18 +52,18 @@ public class QueueGetConfigReplyMessageFactory implements OFSerializer<GetQueueC
                 propertyBuff.writeShort(EncodeConstants.EMPTY_LENGTH);
                 propertyBuff.writeZero(PROPERTY_HEADER_PADDING);
                 switch (property.getProperty()) {
-                case OFPQTMINRATE:
-                    serializeRateBody(property.getAugmentation(RateQueueProperty.class), propertyBuff);
-                    break;
-                case OFPQTMAXRATE:
-                    serializeRateBody(property.getAugmentation(RateQueueProperty.class), propertyBuff);
-                    break;
-                case OFPQTEXPERIMENTER:
-                    serializeExperimenterBody(property.getAugmentation(ExperimenterIdQueueProperty.class),
-                            propertyBuff);
-                    break;
-                default:
-                    break;
+                    case OFPQTMINRATE:
+                        serializeRateBody(property.getAugmentation(RateQueueProperty.class), propertyBuff);
+                        break;
+                    case OFPQTMAXRATE:
+                        serializeRateBody(property.getAugmentation(RateQueueProperty.class), propertyBuff);
+                        break;
+                    case OFPQTEXPERIMENTER:
+                        serializeExperimenterBody(property.getAugmentation(ExperimenterIdQueueProperty.class),
+                                propertyBuff);
+                        break;
+                    default:
+                        break;
                 }
                 propertyBuff.setShort(PROPERTY_LENGTH_INDEX, propertyBuff.readableBytes());
                 queueBuff.writeBytes(propertyBuff);

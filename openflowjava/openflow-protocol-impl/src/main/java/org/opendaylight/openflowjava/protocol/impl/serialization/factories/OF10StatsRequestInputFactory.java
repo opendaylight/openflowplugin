@@ -35,7 +35,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.queue._case.MultipartRequestQueue;
 
 /**
- * Translates StatsRequest messages
+ * Translates StatsRequest messages.
+ *
  * @author michal.polkorab
  */
 public class OF10StatsRequestInputFactory implements OFSerializer<MultipartRequestInput>, SerializerRegistryInjector {
@@ -75,18 +76,10 @@ public class OF10StatsRequestInputFactory implements OFSerializer<MultipartReque
         return ByteBufUtils.fillBitMask(0, flags.isOFPMPFREQMORE());
     }
 
-    /**
-     * @param multipartRequestBody
-     * @param output
-     */
     private void serializeDescBody() {
         // The body of MultiPartRequestDesc is empty
     }
 
-    /**
-     * @param multipartRequestBody
-     * @param out
-     */
     private void serializeTableBody() {
      // The body of MultiPartTable is empty
     }
