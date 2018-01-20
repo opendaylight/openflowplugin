@@ -9,7 +9,6 @@ package org.opendaylight.openflowjava.protocol.impl.serialization.match.ext;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowjava.protocol.impl.serialization.match.AbstractOxmMatchEntrySerializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
@@ -52,7 +51,7 @@ public abstract class AbstractOxmExperimenterMatchEntrySerializer extends Abstra
     }
 
     /**
-     * @return Experimenter match entry ID
+     * Returns the Experimenter match entry ID.
      */
     protected abstract long getExperimenterId();
 }

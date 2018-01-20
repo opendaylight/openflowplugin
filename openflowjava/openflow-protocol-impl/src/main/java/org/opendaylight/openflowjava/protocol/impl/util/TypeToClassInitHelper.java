@@ -11,16 +11,18 @@ import java.util.Map;
 import org.opendaylight.openflowjava.protocol.api.keys.TypeToClassKey;
 
 /**
- * @author michal.polkorab
+ * Helper for initializing type to class mappings.
  *
+ * @author michal.polkorab
  */
 public class TypeToClassInitHelper {
 
-    private short version;
-    private Map<TypeToClassKey, Class<?>> messageClassMap;
+    private final short version;
+    private final Map<TypeToClassKey, Class<?>> messageClassMap;
 
     /**
-     * Constructor
+     * Constructor.
+     *
      * @param version protocol wire version
      * @param messageClassMap map which stores type to class mapping
      */
@@ -31,7 +33,8 @@ public class TypeToClassInitHelper {
     }
 
     /**
-     * Registers Class int the type to class mapping
+     * Registers Class int the type to class mapping.
+     *
      * @param type code value for message type / class
      * @param clazz class corresponding to the code
      */

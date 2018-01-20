@@ -13,16 +13,20 @@ import org.opendaylight.openflowjava.protocol.api.keys.ActionSerializerKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.ActionChoice;
 
 /**
+ * Helper for registering serializers.
+ *
  * @author michal.polkorab
  */
 public class ActionSerializerRegistryHelper {
 
-    private short version;
-    private SerializerRegistry serializerRegistry;
+    private final short version;
+    private final SerializerRegistry serializerRegistry;
 
     /**
+     * Constructor.
+     *
      * @param version Openflow wire version
-     * @param serializerRegistry
+     * @param serializerRegistry registry to be filled with message serializers
      */
     public ActionSerializerRegistryHelper(short version, SerializerRegistry serializerRegistry) {
         this.version = version;
@@ -30,9 +34,10 @@ public class ActionSerializerRegistryHelper {
     }
 
     /**
-     * Registers given serializer
-     * @param actionType
-     * @param serializer
+     * Registers given serializer.
+     *
+     * @param actionType action type
+     * @param serializer serializer instance
      */
     public <T extends ActionChoice> void registerSerializer(Class<T> actionType,
             OFGeneralSerializer serializer) {

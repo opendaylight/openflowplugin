@@ -9,7 +9,6 @@
 package org.opendaylight.openflowjava.protocol.impl.util;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.protocol.api.keys.ActionDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterActionDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterInstructionDeserializerKey;
@@ -19,18 +18,16 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 
 /**
- * @author michal.polkorab
+ * Factory for creating CodeKeyMaker instances.
  *
+ * @author michal.polkorab
  */
-public abstract class CodeKeyMakerFactory {
+public final class CodeKeyMakerFactory {
 
     private CodeKeyMakerFactory() {
         //not called
     }
-    /**
-     * @param version
-     * @return
-     */
+
     public static CodeKeyMaker createMatchEntriesKeyMaker(short version) {
         return new AbstractCodeKeyMaker(version) {
             @Override
@@ -52,10 +49,6 @@ public abstract class CodeKeyMakerFactory {
         };
     }
 
-    /**
-     * @param version
-     * @return
-     */
     public static CodeKeyMaker createActionsKeyMaker(short version) {
         return new AbstractCodeKeyMaker(version) {
             @Override
@@ -72,10 +65,6 @@ public abstract class CodeKeyMakerFactory {
         };
     }
 
-    /**
-     * @param version
-     * @return
-     */
     public static CodeKeyMaker createInstructionsKeyMaker(short version) {
         return new AbstractCodeKeyMaker(version) {
             @Override

@@ -9,26 +9,26 @@
 package org.opendaylight.openflowjava.protocol.impl.util;
 
 import io.netty.buffer.ByteBuf;
-
 import java.util.List;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
 /**
- * Serializes list items and their headers
+ * Serializes list items and their headers.
+ *
  * @author michal.polkorab
  */
-public abstract class ListSerializer {
+public final class ListSerializer {
 
     private ListSerializer() {
         //not called
     }
 
     /**
-     * Serializes item list
+     * Serializes item list.
+     *
      * @param list list of items to be serialized
      * @param keyMaker creates key for registry lookup
      * @param registry stores serializers
@@ -45,7 +45,8 @@ public abstract class ListSerializer {
     }
 
     /**
-     * Serializes headers of items in list
+     * Serializes headers of items in list.
+     *
      * @param list list of items to be serialized
      * @param keyMaker creates key for registry lookup
      * @param registry stores serializers
@@ -60,5 +61,4 @@ public abstract class ListSerializer {
             }
         }
     }
-
 }

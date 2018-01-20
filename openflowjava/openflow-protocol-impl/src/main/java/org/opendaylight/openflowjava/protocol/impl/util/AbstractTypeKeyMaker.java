@@ -10,14 +10,18 @@ package org.opendaylight.openflowjava.protocol.impl.util;
 
 
 /**
+ * Base class for a TypeKeyMaker.
+ *
  * @author michal.polkorab
  * @param <T> type the key maker is based on
  */
 public abstract class AbstractTypeKeyMaker<T> implements TypeKeyMaker<T> {
 
-    private short version;
+    private final short version;
 
     /**
+     * Constructor.
+     *
      * @param version openflow wire version
      */
     public AbstractTypeKeyMaker(short version) {
@@ -26,10 +30,9 @@ public abstract class AbstractTypeKeyMaker<T> implements TypeKeyMaker<T> {
     }
 
     /**
-     * @return the version
+     * Returns the version.
      */
     public short getVersion() {
         return version;
     }
-
 }
