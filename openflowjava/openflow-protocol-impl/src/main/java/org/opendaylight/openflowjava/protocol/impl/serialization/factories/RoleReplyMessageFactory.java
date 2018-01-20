@@ -14,8 +14,9 @@ import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestOutput;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Translates RoleReply messages.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class RoleReplyMessageFactory implements OFSerializer<RoleRequestOutput> {
     private static final byte MESSAGE_TYPE = 25;
@@ -29,5 +30,4 @@ public class RoleReplyMessageFactory implements OFSerializer<RoleRequestOutput> 
         outBuffer.writeLong(message.getGenerationId().longValue());
         ByteBufUtils.updateOFHeaderLength(outBuffer);
     }
-
 }

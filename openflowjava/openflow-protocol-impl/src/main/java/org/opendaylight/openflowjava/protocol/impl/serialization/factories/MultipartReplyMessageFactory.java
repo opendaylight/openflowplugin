@@ -100,8 +100,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeatureProperties;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Translates MultipartReply messages.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class MultipartReplyMessageFactory implements OFSerializer<MultipartReplyMessage>, SerializerRegistryInjector {
 
@@ -157,51 +158,53 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
         writeFlags(message.getFlags(), outBuffer);
         outBuffer.writeZero(PADDING);
         switch (message.getType()) {
-        case OFPMPDESC:
-            serializeDescBody(message.getMultipartReplyBody(), outBuffer);
-            break;
-        case OFPMPFLOW:
-            serializeFlowBody(message.getMultipartReplyBody(), outBuffer, message);
-            break;
-        case OFPMPAGGREGATE:
-            serializeAggregateBody(message.getMultipartReplyBody(), outBuffer);
-            break;
-        case OFPMPTABLE:
-            serializeTableBody(message.getMultipartReplyBody(), outBuffer);
-            break;
-        case OFPMPPORTSTATS:
-            serializePortStatsBody(message.getMultipartReplyBody(), outBuffer);
-            break;
-        case OFPMPQUEUE:
-            serializeQueueBody(message.getMultipartReplyBody(), outBuffer);
-            break;
-        case OFPMPGROUP:
-            serializeGroupBody(message.getMultipartReplyBody(), outBuffer);
-            break;
-        case OFPMPGROUPDESC:
-            serializeGroupDescBody(message.getMultipartReplyBody(), outBuffer, message);
-            break;
-        case OFPMPGROUPFEATURES:
-            serializeGroupFeaturesBody(message.getMultipartReplyBody(), outBuffer);
-            break;
-        case OFPMPMETER:
-            serializeMeterBody(message.getMultipartReplyBody(), outBuffer);
-            break;
-        case OFPMPMETERCONFIG:
-            serializeMeterConfigBody(message.getMultipartReplyBody(), outBuffer);
-            break;
-        case OFPMPMETERFEATURES:
-            serializeMeterFeaturesBody(message.getMultipartReplyBody(), outBuffer);
-            break;
-        case OFPMPTABLEFEATURES:
-            serializeTableFeaturesBody(message.getMultipartReplyBody(), outBuffer);
-            break;
-        case OFPMPPORTDESC:
-            serializePortDescBody(message.getMultipartReplyBody(), outBuffer);
-            break;
-        case OFPMPEXPERIMENTER:
-            serializeExperimenterBody(message.getMultipartReplyBody(), outBuffer);
-            break;
+            case OFPMPDESC:
+                serializeDescBody(message.getMultipartReplyBody(), outBuffer);
+                break;
+            case OFPMPFLOW:
+                serializeFlowBody(message.getMultipartReplyBody(), outBuffer, message);
+                break;
+            case OFPMPAGGREGATE:
+                serializeAggregateBody(message.getMultipartReplyBody(), outBuffer);
+                break;
+            case OFPMPTABLE:
+                serializeTableBody(message.getMultipartReplyBody(), outBuffer);
+                break;
+            case OFPMPPORTSTATS:
+                serializePortStatsBody(message.getMultipartReplyBody(), outBuffer);
+                break;
+            case OFPMPQUEUE:
+                serializeQueueBody(message.getMultipartReplyBody(), outBuffer);
+                break;
+            case OFPMPGROUP:
+                serializeGroupBody(message.getMultipartReplyBody(), outBuffer);
+                break;
+            case OFPMPGROUPDESC:
+                serializeGroupDescBody(message.getMultipartReplyBody(), outBuffer, message);
+                break;
+            case OFPMPGROUPFEATURES:
+                serializeGroupFeaturesBody(message.getMultipartReplyBody(), outBuffer);
+                break;
+            case OFPMPMETER:
+                serializeMeterBody(message.getMultipartReplyBody(), outBuffer);
+                break;
+            case OFPMPMETERCONFIG:
+                serializeMeterConfigBody(message.getMultipartReplyBody(), outBuffer);
+                break;
+            case OFPMPMETERFEATURES:
+                serializeMeterFeaturesBody(message.getMultipartReplyBody(), outBuffer);
+                break;
+            case OFPMPTABLEFEATURES:
+                serializeTableFeaturesBody(message.getMultipartReplyBody(), outBuffer);
+                break;
+            case OFPMPPORTDESC:
+                serializePortDescBody(message.getMultipartReplyBody(), outBuffer);
+                break;
+            case OFPMPEXPERIMENTER:
+                serializeExperimenterBody(message.getMultipartReplyBody(), outBuffer);
+                break;
+            default:
+                break;
         }
         ByteBufUtils.updateOFHeaderLength(outBuffer);
     }
@@ -236,54 +239,57 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
             tableFeatureBuff.writeInt(tableFeature.getMaxEntries().intValue());
             for (TableFeatureProperties tableFeatureProp : tableFeature.getTableFeatureProperties()) {
                 switch (tableFeatureProp.getType()) {
-                case OFPTFPTINSTRUCTIONS:
-                    writeInstructionRelatedTableProperty(tableFeatureBuff, tableFeatureProp, INSTRUCTIONS_CODE);
-                    break;
-                case OFPTFPTINSTRUCTIONSMISS:
-                    writeInstructionRelatedTableProperty(tableFeatureBuff, tableFeatureProp, INSTRUCTIONS_MISS_CODE);
-                    break;
-                case OFPTFPTNEXTTABLES:
-                    writeNextTableRelatedTableProperty(tableFeatureBuff, tableFeatureProp, NEXT_TABLE_CODE);
-                    break;
-                case OFPTFPTNEXTTABLESMISS:
-                    writeNextTableRelatedTableProperty(tableFeatureBuff, tableFeatureProp, NEXT_TABLE_MISS_CODE);
-                    break;
-                case OFPTFPTWRITEACTIONS:
-                    writeActionsRelatedTableProperty(tableFeatureBuff, tableFeatureProp, WRITE_ACTIONS_CODE);
-                    break;
-                case OFPTFPTWRITEACTIONSMISS:
-                    writeActionsRelatedTableProperty(tableFeatureBuff, tableFeatureProp, WRITE_ACTIONS_MISS_CODE);
-                    break;
-                case OFPTFPTAPPLYACTIONS:
-                    writeActionsRelatedTableProperty(tableFeatureBuff, tableFeatureProp, APPLY_ACTIONS_CODE);
-                    break;
-                case OFPTFPTAPPLYACTIONSMISS:
-                    writeActionsRelatedTableProperty(tableFeatureBuff, tableFeatureProp, APPLY_ACTIONS_MISS_CODE);
-                    break;
-                case OFPTFPTMATCH:
-                    writeOxmRelatedTableProperty(tableFeatureBuff, tableFeatureProp, MATCH_CODE);
-                    break;
-                case OFPTFPTWILDCARDS:
-                    writeOxmRelatedTableProperty(tableFeatureBuff, tableFeatureProp, WILDCARDS_CODE);
-                    break;
-                case OFPTFPTWRITESETFIELD:
-                    writeOxmRelatedTableProperty(tableFeatureBuff, tableFeatureProp, WRITE_SETFIELD_CODE);
-                    break;
-                case OFPTFPTWRITESETFIELDMISS:
-                    writeOxmRelatedTableProperty(tableFeatureBuff, tableFeatureProp, WRITE_SETFIELD_MISS_CODE);
-                    break;
-                case OFPTFPTAPPLYSETFIELD:
-                    writeOxmRelatedTableProperty(tableFeatureBuff, tableFeatureProp, APPLY_SETFIELD_CODE);
-                    break;
-                case OFPTFPTAPPLYSETFIELDMISS:
-                    writeOxmRelatedTableProperty(tableFeatureBuff, tableFeatureProp, APPLY_SETFIELD_MISS_CODE);
-                    break;
-                case OFPTFPTEXPERIMENTER:
-                    writeExperimenterRelatedTableProperty(tableFeatureBuff, tableFeatureProp);
-                    break;
-                case OFPTFPTEXPERIMENTERMISS:
-                    writeExperimenterRelatedTableProperty(tableFeatureBuff, tableFeatureProp);
-                    break;
+                    case OFPTFPTINSTRUCTIONS:
+                        writeInstructionRelatedTableProperty(tableFeatureBuff, tableFeatureProp, INSTRUCTIONS_CODE);
+                        break;
+                    case OFPTFPTINSTRUCTIONSMISS:
+                        writeInstructionRelatedTableProperty(tableFeatureBuff, tableFeatureProp,
+                                INSTRUCTIONS_MISS_CODE);
+                        break;
+                    case OFPTFPTNEXTTABLES:
+                        writeNextTableRelatedTableProperty(tableFeatureBuff, tableFeatureProp, NEXT_TABLE_CODE);
+                        break;
+                    case OFPTFPTNEXTTABLESMISS:
+                        writeNextTableRelatedTableProperty(tableFeatureBuff, tableFeatureProp, NEXT_TABLE_MISS_CODE);
+                        break;
+                    case OFPTFPTWRITEACTIONS:
+                        writeActionsRelatedTableProperty(tableFeatureBuff, tableFeatureProp, WRITE_ACTIONS_CODE);
+                        break;
+                    case OFPTFPTWRITEACTIONSMISS:
+                        writeActionsRelatedTableProperty(tableFeatureBuff, tableFeatureProp, WRITE_ACTIONS_MISS_CODE);
+                        break;
+                    case OFPTFPTAPPLYACTIONS:
+                        writeActionsRelatedTableProperty(tableFeatureBuff, tableFeatureProp, APPLY_ACTIONS_CODE);
+                        break;
+                    case OFPTFPTAPPLYACTIONSMISS:
+                        writeActionsRelatedTableProperty(tableFeatureBuff, tableFeatureProp, APPLY_ACTIONS_MISS_CODE);
+                        break;
+                    case OFPTFPTMATCH:
+                        writeOxmRelatedTableProperty(tableFeatureBuff, tableFeatureProp, MATCH_CODE);
+                        break;
+                    case OFPTFPTWILDCARDS:
+                        writeOxmRelatedTableProperty(tableFeatureBuff, tableFeatureProp, WILDCARDS_CODE);
+                        break;
+                    case OFPTFPTWRITESETFIELD:
+                        writeOxmRelatedTableProperty(tableFeatureBuff, tableFeatureProp, WRITE_SETFIELD_CODE);
+                        break;
+                    case OFPTFPTWRITESETFIELDMISS:
+                        writeOxmRelatedTableProperty(tableFeatureBuff, tableFeatureProp, WRITE_SETFIELD_MISS_CODE);
+                        break;
+                    case OFPTFPTAPPLYSETFIELD:
+                        writeOxmRelatedTableProperty(tableFeatureBuff, tableFeatureProp, APPLY_SETFIELD_CODE);
+                        break;
+                    case OFPTFPTAPPLYSETFIELDMISS:
+                        writeOxmRelatedTableProperty(tableFeatureBuff, tableFeatureProp, APPLY_SETFIELD_MISS_CODE);
+                        break;
+                    case OFPTFPTEXPERIMENTER:
+                        writeExperimenterRelatedTableProperty(tableFeatureBuff, tableFeatureProp);
+                        break;
+                    case OFPTFPTEXPERIMENTERMISS:
+                        writeExperimenterRelatedTableProperty(tableFeatureBuff, tableFeatureProp);
+                        break;
+                    default:
+                        break;
                 }
             }
             tableFeatureBuff.setShort(TABLE_FEATURES_LENGTH_INDEX, tableFeatureBuff.readableBytes());
@@ -300,7 +306,7 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
 
     private void writeOxmRelatedTableProperty(final ByteBuf output, final TableFeatureProperties property,
             final byte code) {
-        int startIndex = output.writerIndex();
+        final int startIndex = output.writerIndex();
         output.writeShort(code);
         int lengthIndex = output.writerIndex();
         output.writeShort(EncodeConstants.EMPTY_LENGTH);
@@ -317,7 +323,7 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
 
     private void writeActionsRelatedTableProperty(final ByteBuf output, final TableFeatureProperties property,
             final byte code) {
-        int startIndex = output.writerIndex();
+        final int startIndex = output.writerIndex();
         output.writeShort(code);
         int lengthIndex = output.writerIndex();
         output.writeShort(EncodeConstants.EMPTY_LENGTH);
@@ -333,7 +339,7 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
 
     private static void writeNextTableRelatedTableProperty(final ByteBuf output, final TableFeatureProperties property,
             final byte code) {
-        int startIndex = output.writerIndex();
+        final int startIndex = output.writerIndex();
         output.writeShort(code);
         int lengthIndex = output.writerIndex();
         output.writeShort(EncodeConstants.EMPTY_LENGTH);
@@ -351,7 +357,7 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
 
     private void writeInstructionRelatedTableProperty(final ByteBuf output, final TableFeatureProperties property,
             final byte code) {
-        int startIndex = output.writerIndex();
+        final int startIndex = output.writerIndex();
         output.writeShort(code);
         int lengthIndex = output.writerIndex();
         output.writeShort(EncodeConstants.EMPTY_LENGTH);
@@ -526,7 +532,8 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
         outBuffer.writeInt(bitmap);
     }
 
-    private void serializeGroupDescBody(final MultipartReplyBody body, final ByteBuf outBuffer, final MultipartReplyMessage message) {
+    private void serializeGroupDescBody(final MultipartReplyBody body, final ByteBuf outBuffer,
+            final MultipartReplyMessage message) {
         MultipartReplyGroupDescCase groupDescCase = (MultipartReplyGroupDescCase) body;
         MultipartReplyGroupDesc group = groupDescCase.getMultipartReplyGroupDesc();
         for (GroupDesc groupDesc : group.getGroupDesc()) {
@@ -633,7 +640,8 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
         outBuffer.writeZero(AGGREGATE_PADDING);
     }
 
-    private void serializeFlowBody(final MultipartReplyBody body, final ByteBuf outBuffer, final MultipartReplyMessage message) {
+    private void serializeFlowBody(final MultipartReplyBody body, final ByteBuf outBuffer,
+            final MultipartReplyMessage message) {
         MultipartReplyFlowCase flowCase = (MultipartReplyFlowCase) body;
         MultipartReplyFlow flow = flowCase.getMultipartReplyFlow();
         for (FlowStats flowStats : flow.getFlowStats()) {
@@ -650,7 +658,7 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
             flowStatsBuff.writeLong(flowStats.getCookie().longValue());
             flowStatsBuff.writeLong(flowStats.getPacketCount().longValue());
             flowStatsBuff.writeLong(flowStats.getByteCount().longValue());
-            OFSerializer<Match> matchSerializer = registry.<Match, OFSerializer<Match>> getSerializer(
+            OFSerializer<Match> matchSerializer = registry.<Match, OFSerializer<Match>>getSerializer(
                     new MessageTypeKey<>(message.getVersion(), Match.class));
             matchSerializer.serialize(flowStats.getMatch(), flowStatsBuff);
             ListSerializer.serializeList(flowStats.getInstruction(),
@@ -675,13 +683,13 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
         byte[] nameBytes = toWrite.getBytes();
         if (nameBytes.length < 256) {
             byte[] nameBytesPadding = new byte[256];
-            int i = 0;
+            int index = 0;
             for (byte b : nameBytes) {
-                nameBytesPadding[i] = b;
-                i++;
+                nameBytesPadding[index] = b;
+                index++;
             }
-            for (; i < 256; i++) {
-                nameBytesPadding[i] = 0x0;
+            for (; index < 256; index++) {
+                nameBytesPadding[index] = 0x0;
             }
             outBuffer.writeBytes(nameBytesPadding);
         } else {
@@ -693,13 +701,13 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
         byte[] nameBytes = toWrite.getBytes();
         if (nameBytes.length < 32) {
             byte[] nameBytesPadding = new byte[32];
-            int i = 0;
+            int index = 0;
             for (byte b : nameBytes) {
-                nameBytesPadding[i] = b;
-                i++;
+                nameBytesPadding[index] = b;
+                index++;
             }
-            for (; i < 32; i++) {
-                nameBytesPadding[i] = 0x0;
+            for (; index < 32; index++) {
+                nameBytesPadding[index] = 0x0;
             }
             outBuffer.writeBytes(nameBytesPadding);
         } else {
@@ -732,13 +740,13 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
         byte[] nameBytes = name.getBytes();
         if (nameBytes.length < 16) {
             byte[] nameBytesPadding = new byte[16];
-            int i = 0;
+            int index = 0;
             for (byte b : nameBytes) {
-                nameBytesPadding[i] = b;
-                i++;
+                nameBytesPadding[index] = b;
+                index++;
             }
-            for (; i < 16; i++) {
-                nameBytesPadding[i] = 0x0;
+            for (; index < 16; index++) {
+                nameBytesPadding[index] = 0x0;
             }
             outBuffer.writeBytes(nameBytesPadding);
         } else {

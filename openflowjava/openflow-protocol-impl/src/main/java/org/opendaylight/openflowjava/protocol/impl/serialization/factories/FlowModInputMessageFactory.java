@@ -24,8 +24,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowMod;
 
 /**
- * Translates FlowMod messages.
- * OF protocol versions: 1.3.
+ * Translates FlowMod messages. OF protocol versions: 1.3.
+ *
  * @author timotej.kubas
  * @author michal.polkorab
  */
@@ -38,7 +38,7 @@ public class FlowModInputMessageFactory implements OFSerializer<FlowMod>, Serial
 
     @Override
     public void serialize(final FlowMod message, final ByteBuf outBuffer) {
-        int index = outBuffer.writerIndex();
+        final int index = outBuffer.writerIndex();
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         outBuffer.writeLong(message.getCookie().longValue());
         outBuffer.writeLong(message.getCookieMask().longValue());

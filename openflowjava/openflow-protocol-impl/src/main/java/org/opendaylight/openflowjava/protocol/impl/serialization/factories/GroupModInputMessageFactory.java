@@ -21,8 +21,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.grouping.BucketsList;
 
 /**
- * Translates GroupMod messages.
- * OF protocol versions: 1.3.
+ * Translates GroupMod messages. OF protocol versions: 1.3.
+ *
  * @author timotej.kubas
  * @author michal.polkorab
  */
@@ -34,7 +34,7 @@ public class GroupModInputMessageFactory implements OFSerializer<GroupMod>, Seri
 
     @Override
     public void serialize(GroupMod message, ByteBuf outBuffer) {
-        int index = outBuffer.writerIndex();
+        final int index = outBuffer.writerIndex();
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         outBuffer.writeShort(message.getCommand().getIntValue());
         outBuffer.writeByte(message.getType().getIntValue());
@@ -47,7 +47,7 @@ public class GroupModInputMessageFactory implements OFSerializer<GroupMod>, Seri
     private void serializerBuckets(List<BucketsList> buckets, ByteBuf outBuffer) {
         if (buckets != null) {
             for (BucketsList currentBucket : buckets) {
-                int bucketLengthIndex = outBuffer.writerIndex();
+                final int bucketLengthIndex = outBuffer.writerIndex();
                 outBuffer.writeShort(EncodeConstants.EMPTY_LENGTH);
                 outBuffer.writeShort(currentBucket.getWeight().shortValue());
                 outBuffer.writeInt(currentBucket.getWatchPort().getValue().intValue());

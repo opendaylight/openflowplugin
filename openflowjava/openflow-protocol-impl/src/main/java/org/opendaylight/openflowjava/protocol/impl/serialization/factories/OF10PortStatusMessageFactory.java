@@ -20,8 +20,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Translates PortStatus messages.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class OF10PortStatusMessageFactory implements OFSerializer<PortStatusMessage> {
 
@@ -94,13 +95,13 @@ public class OF10PortStatusMessageFactory implements OFSerializer<PortStatusMess
         byte[] nameBytes = name.getBytes();
         if (nameBytes.length < 16) {
             byte[] nameBytesPadding = new byte[16];
-            int i = 0;
+            int index = 0;
             for (byte b : nameBytes) {
-                nameBytesPadding[i] = b;
-                i++;
+                nameBytesPadding[index] = b;
+                index++;
             }
-            for (; i < 16; i++) {
-                nameBytesPadding[i] = 0x0;
+            for (; index < 16; index++) {
+                nameBytesPadding[index] = 0x0;
             }
             outBuffer.writeBytes(nameBytesPadding);
         } else {

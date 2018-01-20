@@ -14,8 +14,9 @@ import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Translates ErrorMessage messages (both OpenFlow v1.0 and OpenFlow v1.3).
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class ErrorMessageFactory implements OFSerializer<ErrorMessage> {
 

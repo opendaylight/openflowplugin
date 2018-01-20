@@ -18,7 +18,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 
 /**
- * Translates PacketIn messages
+ * Translates PacketIn messages.
  */
 public class PacketInMessageFactory implements OFSerializer<PacketInMessage>, SerializerRegistryInjector {
     private static final byte PADDING = 2;
@@ -33,8 +33,8 @@ public class PacketInMessageFactory implements OFSerializer<PacketInMessage>, Se
         outBuffer.writeByte(message.getReason().getIntValue());
         outBuffer.writeByte(message.getTableId().getValue().byteValue());
         outBuffer.writeLong(message.getCookie().longValue());
-        OFSerializer<Match> matchSerializer = registry
-                .<Match, OFSerializer<Match>> getSerializer(new MessageTypeKey<>(message.getVersion(), Match.class));
+        OFSerializer<Match> matchSerializer = registry.<Match, OFSerializer<Match>>getSerializer(
+                new MessageTypeKey<>(message.getVersion(), Match.class));
         matchSerializer.serialize(message.getMatch(), outBuffer);
         outBuffer.writeZero(PADDING);
 

@@ -46,8 +46,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table._case.multipart.reply.table.TableStats;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Translates StatsReply messages.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReplyMessage>, SerializerRegistryInjector {
 
@@ -75,29 +76,29 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
         outBuffer.writeShort(message.getType().getIntValue());
         writeFlags(message.getFlags(), outBuffer);
         switch (message.getType()) {
-        case OFPMPDESC:
-            serializeDescBody(message.getMultipartReplyBody(), outBuffer);
-            break;
-        case OFPMPFLOW:
-            serializeFlowBody(message.getMultipartReplyBody(), outBuffer, message);
-            break;
-        case OFPMPAGGREGATE:
-            serializeAggregateBody(message.getMultipartReplyBody(), outBuffer);
-            break;
-        case OFPMPTABLE:
-            serializeTableBody(message.getMultipartReplyBody(), outBuffer);
-            break;
-        case OFPMPPORTSTATS:
-            serializePortStatsBody(message.getMultipartReplyBody(), outBuffer);
-            break;
-        case OFPMPQUEUE:
-            serializeQueueBody(message.getMultipartReplyBody(), outBuffer);
-            break;
-        case OFPMPEXPERIMENTER:
-            serializeExperimenterBody(message.getMultipartReplyBody(), outBuffer);
-            break;
-        default:
-            break;
+            case OFPMPDESC:
+                serializeDescBody(message.getMultipartReplyBody(), outBuffer);
+                break;
+            case OFPMPFLOW:
+                serializeFlowBody(message.getMultipartReplyBody(), outBuffer, message);
+                break;
+            case OFPMPAGGREGATE:
+                serializeAggregateBody(message.getMultipartReplyBody(), outBuffer);
+                break;
+            case OFPMPTABLE:
+                serializeTableBody(message.getMultipartReplyBody(), outBuffer);
+                break;
+            case OFPMPPORTSTATS:
+                serializePortStatsBody(message.getMultipartReplyBody(), outBuffer);
+                break;
+            case OFPMPQUEUE:
+                serializeQueueBody(message.getMultipartReplyBody(), outBuffer);
+                break;
+            case OFPMPEXPERIMENTER:
+                serializeExperimenterBody(message.getMultipartReplyBody(), outBuffer);
+                break;
+            default:
+                break;
         }
         ByteBufUtils.updateOFHeaderLength(outBuffer);
     }
@@ -232,13 +233,13 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
         byte[] nameBytes = toWrite.getBytes();
         if (nameBytes.length < 256) {
             byte[] nameBytesPadding = new byte[256];
-            int i = 0;
+            int index = 0;
             for (byte b : nameBytes) {
-                nameBytesPadding[i] = b;
-                i++;
+                nameBytesPadding[index] = b;
+                index++;
             }
-            for (; i < 256; i++) {
-                nameBytesPadding[i] = 0x0;
+            for (; index < 256; index++) {
+                nameBytesPadding[index] = 0x0;
             }
             outBuffer.writeBytes(nameBytesPadding);
         } else {
@@ -250,13 +251,13 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
         byte[] nameBytes = toWrite.getBytes();
         if (nameBytes.length < 16) {
             byte[] nameBytesPadding = new byte[16];
-            int i = 0;
+            int index = 0;
             for (byte b : nameBytes) {
-                nameBytesPadding[i] = b;
-                i++;
+                nameBytesPadding[index] = b;
+                index++;
             }
-            for (; i < 16; i++) {
-                nameBytesPadding[i] = 0x0;
+            for (; index < 16; index++) {
+                nameBytesPadding[index] = 0x0;
             }
             outBuffer.writeBytes(nameBytesPadding);
         } else {
@@ -268,13 +269,13 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
         byte[] nameBytes = toWrite.getBytes();
         if (nameBytes.length < 32) {
             byte[] nameBytesPadding = new byte[32];
-            int i = 0;
+            int index = 0;
             for (byte b : nameBytes) {
-                nameBytesPadding[i] = b;
-                i++;
+                nameBytesPadding[index] = b;
+                index++;
             }
-            for (; i < 32; i++) {
-                nameBytesPadding[i] = 0x0;
+            for (; index < 32; index++) {
+                nameBytesPadding[index] = 0x0;
             }
             outBuffer.writeBytes(nameBytesPadding);
         } else {
