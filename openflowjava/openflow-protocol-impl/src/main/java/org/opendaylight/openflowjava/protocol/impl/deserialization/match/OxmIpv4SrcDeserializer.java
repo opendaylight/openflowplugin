@@ -21,8 +21,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ipv4.src._case.Ipv4SrcBuilder;
 
 /**
- * @author michal.polkorab
+ * Translates OxmIpv4Src messages.
  *
+ * @author michal.polkorab
  */
 public class OxmIpv4SrcDeserializer extends AbstractOxmMatchEntryDeserializer
         implements OFDeserializer<MatchEntry> {

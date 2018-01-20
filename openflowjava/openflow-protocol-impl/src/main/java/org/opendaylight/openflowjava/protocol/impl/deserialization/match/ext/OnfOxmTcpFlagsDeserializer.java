@@ -37,7 +37,8 @@ public class OnfOxmTcpFlagsDeserializer extends AbstractOxmExperimenterMatchEntr
 
     }
 
-    private static void addTcpFlagsAugmentation(ByteBuf input, ExperimenterIdCaseBuilder expCaseBuilder, boolean hasMask) {
+    private static void addTcpFlagsAugmentation(ByteBuf input, ExperimenterIdCaseBuilder expCaseBuilder,
+            boolean hasMask) {
         TcpFlagsContainerBuilder flagsContainerBuilder = new TcpFlagsContainerBuilder();
         TcpFlagsBuilder flagsBuilder = new TcpFlagsBuilder();
         flagsBuilder.setFlags(input.readUnsignedShort());
@@ -51,7 +52,7 @@ public class OnfOxmTcpFlagsDeserializer extends AbstractOxmExperimenterMatchEntr
     }
 
     /**
-     * @return oxm_field class
+     * Return the oxm_field class.
      */
     @Override
     protected Class<? extends MatchField> getOxmField() {
@@ -59,7 +60,7 @@ public class OnfOxmTcpFlagsDeserializer extends AbstractOxmExperimenterMatchEntr
     }
 
     /**
-     * @return oxm_class class
+     * Return the oxm_class class.
      */
     @Override
     protected Class<? extends OxmClassBase> getOxmClass() {

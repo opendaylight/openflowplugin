@@ -25,8 +25,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.WriteMetadataCase;
 
 /**
- * @author michal.polkorab
+ * Initializes serializer registry with instruction serializers.
  *
+ * @author michal.polkorab
  */
 public final class InstructionsInitializer {
 
@@ -35,12 +36,13 @@ public final class InstructionsInitializer {
     }
 
     /**
-     * Registers instruction serializers into provided registry
+     * Registers instruction serializers into provided registry.
+     *
      * @param serializerRegistry registry to be initialized with instruction serializers
      */
     public static void registerInstructionSerializers(SerializerRegistry serializerRegistry) {
         // register OF v1.3 instruction serializers
-        InstructionSerializerRegistryHelper helper= new InstructionSerializerRegistryHelper(
+        InstructionSerializerRegistryHelper helper = new InstructionSerializerRegistryHelper(
                 EncodeConstants.OF13_VERSION_ID, serializerRegistry);
         helper.registerSerializer(GotoTableCase.class, new GoToTableInstructionSerializer());
         helper.registerSerializer(WriteMetadataCase.class, new WriteMetadataInstructionSerializer());
