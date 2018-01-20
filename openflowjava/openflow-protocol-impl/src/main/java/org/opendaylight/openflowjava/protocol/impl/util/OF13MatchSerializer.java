@@ -9,9 +9,7 @@
 package org.opendaylight.openflowjava.protocol.impl.util;
 
 import io.netty.buffer.ByteBuf;
-
 import java.util.List;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
@@ -27,7 +25,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Serializes ofp_match (OpenFlow v1.3)
+ * Serializes ofp_match (OpenFlow v1.3).
+ *
  * @author michal.polkorab
  * @author timotej.kubas
  */
@@ -43,7 +42,7 @@ public class OF13MatchSerializer implements OFSerializer<Match>, SerializerRegis
             LOG.debug("Match is null");
             return;
         }
-        int matchStartIndex = outBuffer.writerIndex();
+        final int matchStartIndex = outBuffer.writerIndex();
         serializeType(match, outBuffer);
         int matchLengthIndex = outBuffer.writerIndex();
         outBuffer.writeShort(EncodeConstants.EMPTY_LENGTH);
@@ -66,7 +65,8 @@ public class OF13MatchSerializer implements OFSerializer<Match>, SerializerRegis
     }
 
     /**
-     * Serializes MatchEntries
+     * Serializes MatchEntries.
+     *
      * @param matchEntries list of match entries (oxm_fields)
      * @param out output ByteBuf
      */
@@ -94,5 +94,4 @@ public class OF13MatchSerializer implements OFSerializer<Match>, SerializerRegis
     public void injectSerializerRegistry(SerializerRegistry serializerRegistry) {
         this.registry = serializerRegistry;
     }
-
 }

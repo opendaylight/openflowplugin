@@ -12,15 +12,18 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.OFGeneralDeseria
 import org.opendaylight.openflowjava.protocol.api.keys.InstructionDeserializerKey;
 
 /**
- * @author michal.polkorab
+ * Helper class for registering instruction deserializers.
  *
+ * @author michal.polkorab
  */
 public class InstructionDeserializerRegistryHelper {
 
-    private short version;
-    private DeserializerRegistry registry;
+    private final short version;
+    private final DeserializerRegistry registry;
 
     /**
+     * Constructor.
+     *
      * @param version wire protocol version
      * @param deserializerRegistry registry to be filled with message deserializers
      */
@@ -30,6 +33,8 @@ public class InstructionDeserializerRegistryHelper {
     }
 
     /**
+     * Registers a deserializer.
+     *
      * @param code code / value to distinguish between deserializers
      * @param deserializer deserializer instance
      */

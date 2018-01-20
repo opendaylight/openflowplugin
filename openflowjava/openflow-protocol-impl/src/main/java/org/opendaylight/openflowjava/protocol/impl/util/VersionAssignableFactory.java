@@ -17,18 +17,20 @@ public abstract class VersionAssignableFactory {
     private Short version;
 
     /**
-     * @param version OpenFlow protocol version
+     * Assigns the version.
+     *
+     * @param newVersion OpenFlow protocol version
      */
-    public void assignVersion(@Nonnull final Short version) {
+    public void assignVersion(@Nonnull final Short newVersion) {
         if (this.version == null) {
-            this.version = version;
+            this.version = newVersion;
         } else {
             throw new IllegalStateException("Version already assigned: " + this.version);
         }
     }
 
     /**
-     * @return OpenFlow protocol version
+     * Returns the OpenFlow protocol version.
      */
     protected Short getVersion() {
         return this.version;

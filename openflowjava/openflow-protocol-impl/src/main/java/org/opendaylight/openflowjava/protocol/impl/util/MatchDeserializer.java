@@ -9,9 +9,7 @@
 package org.opendaylight.openflowjava.protocol.impl.util;
 
 import io.netty.buffer.ByteBuf;
-
 import java.util.List;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -23,7 +21,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder;
 
 /**
- * Deserializes ofp_match (OpenFlow v1.3) and its oxm_fields structures
+ * Deserializes ofp_match (OpenFlow v1.3) and its oxm_fields structures.
+ *
  * @author timotej.kubas
  * @author michal.polkorab
  */
@@ -39,14 +38,14 @@ public class MatchDeserializer implements OFDeserializer<Match>,
             int type = input.readUnsignedShort();
             int length = input.readUnsignedShort();
             switch (type) {
-            case 0:
-                builder.setType(StandardMatchType.class);
-                break;
-            case 1:
-                builder.setType(OxmMatchType.class);
-                break;
-            default:
-                break;
+                case 0:
+                    builder.setType(StandardMatchType.class);
+                    break;
+                case 1:
+                    builder.setType(OxmMatchType.class);
+                    break;
+                default:
+                    break;
             }
             CodeKeyMaker keyMaker = CodeKeyMakerFactory
                     .createMatchEntriesKeyMaker(EncodeConstants.OF13_VERSION_ID);

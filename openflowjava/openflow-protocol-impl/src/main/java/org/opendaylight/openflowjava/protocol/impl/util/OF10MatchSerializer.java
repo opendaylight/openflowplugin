@@ -17,7 +17,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10;
 
 /**
- * Serializes ofp_match (OpenFlow v1.0) structure
+ * Serializes ofp_match (OpenFlow v1.0) structure.
+ *
  * @author michal.polkorab
  */
 public class OF10MatchSerializer implements OFSerializer<MatchV10> {
@@ -28,7 +29,8 @@ public class OF10MatchSerializer implements OFSerializer<MatchV10> {
     private static final byte NW_DST_SHIFT = 14;
 
     /**
-     * Serializes ofp_match (OpenFlow v1.0)
+     * Serializes ofp_match (OpenFlow v1.0).
+     *
      * @param outBuffer output ByteBuf
      * @param match match to be serialized
      */
@@ -64,9 +66,8 @@ public class OF10MatchSerializer implements OFSerializer<MatchV10> {
         bitmask |= ByteBufUtils.fillBitMask(20,
                 wildcards.isDLVLANPCP(),
                 wildcards.isNWTOS());
-        bitmask |= ((32 - srcMask) << NW_SRC_SHIFT);
-        bitmask |= ((32 - dstMask) << NW_DST_SHIFT);
+        bitmask |= 32 - srcMask << NW_SRC_SHIFT;
+        bitmask |= 32 - dstMask << NW_DST_SHIFT;
         return bitmask;
     }
-
 }
