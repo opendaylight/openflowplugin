@@ -6,7 +6,6 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-
 package org.opendaylight.openflowjava.util;
 
 import com.google.common.base.Preconditions;
@@ -28,7 +27,9 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 
-/** Class for common operations on ByteBuf
+/**
+ *  Class for common operations on ByteBuf.
+ *
  * @author michal.polkorab
  * @author timotej.kubas
  */
@@ -44,20 +45,22 @@ public abstract class ByteBufUtils {
     }
 
     /**
-     * Converts ByteBuf into String
+     * Converts ByteBuf into String.
+     *
      * @param bb input ByteBuf
      * @return String
      */
     public static String byteBufToHexString(final ByteBuf bb) {
         StringBuilder sb = new StringBuilder();
-        for (int i = bb.readerIndex(); i < (bb.readerIndex() + bb.readableBytes()); i++) {
+        for (int i = bb.readerIndex(); i < bb.readerIndex() + bb.readableBytes(); i++) {
             sb.append(String.format(" %02x", bb.getUnsignedByte(i)));
         }
         return sb.toString().trim();
     }
 
     /**
-     * Converts String into byte[]
+     * Converts String into byte[].
+     *
      * @param hexSrc input String
      * @return byte[] filled with input data
      */
@@ -66,7 +69,8 @@ public abstract class ByteBufUtils {
     }
 
     /**
-     * Converts String into byte[]
+     * Converts String into byte[].
+     *
      * @param hexSrc input String
      * @param withSpaces if there are spaces in string
      * @return byte[] filled with input data
@@ -75,16 +79,17 @@ public abstract class ByteBufUtils {
         final Splitter splitter = withSpaces ? HEXSTRING_SPLITTER : HEXSTRING_NOSPACE_SPLITTER;
         List<String> byteChips = Lists.newArrayList(splitter.split(hexSrc));
         byte[] result = new byte[byteChips.size()];
-        int i = 0;
+        int index = 0;
         for (String chip : byteChips) {
-            result[i] = (byte) Short.parseShort(chip, 16);
-            i++;
+            result[index] = (byte) Short.parseShort(chip, 16);
+            index++;
         }
         return result;
     }
 
     /**
-     * Creates ByteBuf filled with specified data
+     * Creates ByteBuf filled with specified data.
+     *
      * @param hexSrc input String of bytes in hex format
      * @return ByteBuf with specified hexString converted
      */
@@ -95,7 +100,8 @@ public abstract class ByteBufUtils {
     }
 
     /**
-     * Creates ByteBuf filled with specified data
+     * Creates ByteBuf filled with specified data.
+     *
      * @param hexSrc input String of bytes in hex format
      * @param out ByteBuf with specified hexString converted
      */
@@ -104,8 +110,9 @@ public abstract class ByteBufUtils {
     }
 
     /**
-     * Fills specified ByteBuf with 0 (zeros) of desired length, used for padding
-     * @param length
+     * Fills specified ByteBuf with 0 (zeros) of desired length, used for padding.
+     *
+     * @param length the desired length
      * @param out ByteBuf to be padded
      * @deprecated Use {@link ByteBuf#writeZero(int)} directly.
      */
@@ -115,13 +122,15 @@ public abstract class ByteBufUtils {
     }
 
     /**
-     * Create standard OF header
+     * Create standard OF header.
+     *
      * @param msgType message code
      * @param message POJO
      * @param out writing buffer
      * @param length ofheader length
      */
-    public static <E extends OfHeader> void writeOFHeader(final byte msgType, final E message, final ByteBuf out, final int length) {
+    public static <E extends OfHeader> void writeOFHeader(final byte msgType, final E message, final ByteBuf out,
+            final int length) {
         out.writeByte(message.getVersion());
         out.writeByte(msgType);
         out.writeShort(length);
@@ -129,7 +138,8 @@ public abstract class ByteBufUtils {
     }
 
     /**
-     * Write length standard OF header
+     * Write length standard OF header.
+     *
      * @param out writing buffer
      */
     public static void updateOFHeaderLength(final ByteBuf out) {
@@ -137,7 +147,8 @@ public abstract class ByteBufUtils {
     }
 
     /**
-     * Write length OF header
+     * Write length OF header.
+     *
      * @param out writing buffer
      * @param index writing index
      */
@@ -146,7 +157,8 @@ public abstract class ByteBufUtils {
     }
 
     /**
-     * Fills the bitmask from boolean map where key is bit position
+     * Fills the bitmask from boolean map where key is bit position.
+     *
      * @param booleanMap bit to boolean mapping
      * @return bit mask
      */
@@ -171,19 +183,20 @@ public abstract class ByteBufUtils {
     public static int fillBitMask(final int offset, final boolean... values) {
         int bitmask = 0;
 
-        int i = offset;
+        int index = offset;
         for (boolean v : values) {
             if (v) {
-                bitmask |= 1 << i;
+                bitmask |= 1 << index;
             }
-            ++i;
+            ++index;
         }
 
         return bitmask;
     }
 
     /**
-     * Fills the bitmask from boolean list where key is bit position
+     * Fills the bitmask from boolean list where key is bit position.
+     *
      * @param booleanList bit to boolean mapping
      * @return bit mask
      */
@@ -191,7 +204,7 @@ public abstract class ByteBufUtils {
         int[] bitmask;
         int index = 0;
         int arrayIndex = 0;
-        if ((booleanList.size() % Integer.SIZE) != 0) {
+        if (booleanList.size() % Integer.SIZE != 0) {
             bitmask = new int[booleanList.size() / Integer.SIZE + 1];
         } else {
             bitmask = new int[booleanList.size() / Integer.SIZE];
@@ -207,7 +220,8 @@ public abstract class ByteBufUtils {
     }
 
     /**
-     * Converts byte array into String
+     * Converts byte array into String.
+     *
      * @param array input byte array
      * @return String
      */
@@ -219,27 +233,28 @@ public abstract class ByteBufUtils {
         return sb.toString().trim();
     }
 
-    private static int hexValue(final char c) {
-        if (c >= '0' && c <= '9') {
-            return c - '0';
+    private static int hexValue(final char ch) {
+        if (ch >= '0' && ch <= '9') {
+            return ch - '0';
         }
-        if (c >= 'a' && c <= 'f') {
-            return c - 'a' + 10;
+        if (ch >= 'a' && ch <= 'f') {
+            return ch - 'a' + 10;
         }
-        if (c >= 'A' && c <= 'F') {
-            return c - 'A' + 10;
+        if (ch >= 'A' && ch <= 'F') {
+            return ch - 'A' + 10;
         }
 
-        throw new IllegalArgumentException(String.format("Invalid character '%s' encountered", c));
+        throw new IllegalArgumentException(String.format("Invalid character '%s' encountered", ch));
     }
 
     /**
      * Converts macAddress to byte array.
      * See also {@link org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress}.
      *
-     * @param macAddress
+     * @param macAddress the mac address to convert
      * @return byte representation of mac address
      */
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public static byte[] macAddressToBytes(final String macAddress) {
         final byte[] result = new byte[EncodeConstants.MAC_ADDRESS_LENGTH];
         final char[] mac = macAddress.toCharArray();
@@ -252,40 +267,40 @@ public abstract class ByteBufUtils {
                     offset++;
                 } else {
                     result[i] = UnsignedBytes.checkedCast(
-                            (hexValue(mac[offset]) << 4) | hexValue(mac[offset +1]));
+                            hexValue(mac[offset]) << 4 | hexValue(mac[offset + 1]));
                     offset += 2;
                 }
                 Preconditions.checkArgument(mac[offset] == ':', "Invalid value: %s", macAddress);
                 offset++;
             }
 
-            if (offset == (mac.length - 1)) {
+            if (offset == mac.length - 1) {
                 result[EncodeConstants.MAC_ADDRESS_LENGTH - 1] = UnsignedBytes.checkedCast(hexValue(mac[offset]));
             } else {
                 result[EncodeConstants.MAC_ADDRESS_LENGTH - 1] =
-                        UnsignedBytes.checkedCast(hexValue(mac[offset]) << 4 | hexValue(mac[offset +1]));
+                        UnsignedBytes.checkedCast(hexValue(mac[offset]) << 4 | hexValue(mac[offset + 1]));
                 offset++;
             }
-            if (offset != (mac.length -1)) {
+            if (offset != mac.length - 1) {
                 throw new IllegalArgumentException("Incorrect MAC address length");
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             throw new IllegalArgumentException("Unable to serialize MAC address for input: " + macAddress
                     + ". \n" + e);
         }
         return result;
     }
 
-    private static final void appendHexByte(final StringBuilder sb, final byte b) {
-        final int v = UnsignedBytes.toInt(b);
+    private static void appendHexByte(final StringBuilder sb, final byte value) {
+        final int v = UnsignedBytes.toInt(value);
         sb.append(HEX_CHARS[v >>> 4]);
         sb.append(HEX_CHARS[v &  15]);
     }
 
     private static void appendHexUnsignedShort(final StringBuilder sb, final int val) {
-        sb.append(ByteBufUtils.HEX_CHARS[(val >>> 12) & 15]);
-        sb.append(ByteBufUtils.HEX_CHARS[(val >>>  8) & 15]);
-        sb.append(ByteBufUtils.HEX_CHARS[(val >>>  4) & 15]);
+        sb.append(ByteBufUtils.HEX_CHARS[val >>> 12 & 15]);
+        sb.append(ByteBufUtils.HEX_CHARS[val >>>  8 & 15]);
+        sb.append(ByteBufUtils.HEX_CHARS[val >>>  4 & 15]);
         sb.append(ByteBufUtils.HEX_CHARS[ val         & 15]);
     }
 
@@ -293,7 +308,7 @@ public abstract class ByteBufUtils {
      * Converts a MAC address represented in bytes to String.
      * See also {@link org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress}.
      *
-     * @param address
+     * @param address the MAC address to convert
      * @return String representation of a MAC address
      */
     public static String macAddressToString(final byte[] address) {
@@ -311,8 +326,9 @@ public abstract class ByteBufUtils {
     }
 
     /**
-     * Reads and parses null-terminated string from ByteBuf
-     * @param rawMessage
+     * Reads and parses null-terminated string from ByteBuf.
+     *
+     * @param rawMessage the message to parse
      * @param length maximal length of String
      * @return String with name of port
      */
@@ -378,10 +394,10 @@ public abstract class ByteBufUtils {
         return IetfYangUtil.INSTANCE.macAddressFor(tmp);
     }
 
-    public static byte[] serializeList(final List<Short> list) throws IOException{
+    public static byte[] serializeList(final List<Short> list) throws IOException {
         ByteBuffer byteBuffer = ByteBuffer.allocate(list.size() * 2);
-        for (Short aShort : list) {
-            byteBuffer.putShort(aShort);
+        for (Short shortValue : list) {
+            byteBuffer.putShort(shortValue);
         }
         return byteBuffer.array();
     }
