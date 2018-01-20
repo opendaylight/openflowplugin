@@ -8,7 +8,6 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MplsTc;
@@ -20,8 +19,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.mpls.tc._case.MplsTcBuilder;
 
 /**
- * @author michal.polkorab
+ * Translates OxmMplsTc messages.
  *
+ * @author michal.polkorab
  */
 public class OxmMplsTcDeserializer extends AbstractOxmMatchEntryDeserializer
         implements OFDeserializer<MatchEntry> {

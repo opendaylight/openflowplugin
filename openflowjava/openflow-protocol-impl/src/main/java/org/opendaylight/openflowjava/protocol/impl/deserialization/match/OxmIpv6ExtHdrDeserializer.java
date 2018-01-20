@@ -8,7 +8,6 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Ipv6ExthdrFlags;
@@ -22,8 +21,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ipv6.exthdr._case.Ipv6ExthdrBuilder;
 
 /**
- * @author michal.polkorab
+ * Translates OxmIpv6Ext messages.
  *
+ * @author michal.polkorab
  */
 public class OxmIpv6ExtHdrDeserializer extends AbstractOxmMatchEntryDeserializer
         implements OFDeserializer<MatchEntry> {
@@ -49,15 +49,15 @@ public class OxmIpv6ExtHdrDeserializer extends AbstractOxmMatchEntryDeserializer
 
     private static Ipv6ExthdrFlags convertPseudofields(ByteBuf input) {
         int bitmap = input.readUnsignedShort();
-        final Boolean nonext = ((bitmap) & (1<<0)) != 0;
-        final Boolean esp = ((bitmap) & (1<<1)) != 0;
-        final Boolean auth = ((bitmap) & (1<<2)) != 0;
-        final Boolean dest = ((bitmap) & (1<<3)) != 0;
-        final Boolean frag = ((bitmap) & (1<<4)) != 0;
-        final Boolean router = ((bitmap) & (1<<5)) != 0;
-        final Boolean hop = ((bitmap) & (1<<6)) != 0;
-        final Boolean unrep = ((bitmap) & (1<<7)) != 0;
-        final Boolean unseq = ((bitmap) & (1<<8)) != 0;
+        final Boolean nonext = (bitmap & 1 << 0) != 0;
+        final Boolean esp = (bitmap & 1 << 1) != 0;
+        final Boolean auth = (bitmap & 1 << 2) != 0;
+        final Boolean dest = (bitmap & 1 << 3) != 0;
+        final Boolean frag = (bitmap & 1 << 4) != 0;
+        final Boolean router = (bitmap & 1 << 5) != 0;
+        final Boolean hop = (bitmap & 1 << 6) != 0;
+        final Boolean unrep = (bitmap & 1 << 7) != 0;
+        final Boolean unseq = (bitmap & 1 << 8) != 0;
         return new Ipv6ExthdrFlags(auth, dest, esp, frag, hop, nonext, router, unrep, unseq);
     }
 

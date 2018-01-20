@@ -21,8 +21,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ipv6.src._case.Ipv6SrcBuilder;
 
 /**
- * @author michal.polkorab
+ * Translates OxmIpv6Src messages.
  *
+ * @author michal.polkorab
  */
 public class OxmIpv6SrcDeserializer extends AbstractOxmMatchEntryDeserializer
         implements OFDeserializer<MatchEntry> {
@@ -39,7 +40,8 @@ public class OxmIpv6SrcDeserializer extends AbstractOxmMatchEntryDeserializer
         Ipv6SrcBuilder ipv6Builder = new Ipv6SrcBuilder();
         ipv6Builder.setIpv6Address(ByteBufUtils.readIetfIpv6Address(input));
         if (builder.isHasMask()) {
-            ipv6Builder.setMask(OxmDeserializerHelper.convertMask(input, EncodeConstants.SIZE_OF_IPV6_ADDRESS_IN_BYTES));
+            ipv6Builder.setMask(OxmDeserializerHelper.convertMask(
+                    input, EncodeConstants.SIZE_OF_IPV6_ADDRESS_IN_BYTES));
         }
         caseBuilder.setIpv6Src(ipv6Builder.build());
         builder.setMatchEntryValue(caseBuilder.build());

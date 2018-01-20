@@ -51,17 +51,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestOutput;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Initializes serializer registry with additional action serializers.
  *
+ * @author giuseppex.petralia@intel.com
  */
-public class AdditionalMessageFactoryInitializer {
+public final class AdditionalMessageFactoryInitializer {
     private AdditionalMessageFactoryInitializer() {
         throw new UnsupportedOperationException("Utility class shouldn't be instantiated");
     }
 
     /**
-     * Registers message serializers implemented within NetIde project into
-     * provided registry
+     * Registers message serializers implemented within NetIde project into provided registry.
      *
      * @param serializerRegistry
      *            registry to be initialized with message serializers

@@ -21,8 +21,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.arp.spa._case.ArpSpaBuilder;
 
 /**
- * @author michal.polkorab
+ * Translates OxmArpSpa messages.
  *
+ * @author michal.polkorab
  */
 public class OxmArpSpaDeserializer extends AbstractOxmMatchEntryDeserializer
         implements OFDeserializer<MatchEntry> {
