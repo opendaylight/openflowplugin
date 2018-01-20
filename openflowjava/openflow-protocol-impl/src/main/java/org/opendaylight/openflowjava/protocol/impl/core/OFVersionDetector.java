@@ -22,12 +22,13 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Detects version of used OpenFlow Protocol and discards unsupported version messages.
+ *
  * @author michal.polkorab
  */
 public class OFVersionDetector extends ByteToMessageDecoder {
 
     private static final Logger LOG = LoggerFactory.getLogger(OFVersionDetector.class);
-    /** IDs of accepted OpenFlow protocol versions */
+    /** IDs of accepted OpenFlow protocol versions. */
     private static final List<Byte> OF_VERSIONS = new ArrayList<>(Arrays.asList(
             EncodeConstants.OF10_VERSION_ID,
             EncodeConstants.OF13_VERSION_ID

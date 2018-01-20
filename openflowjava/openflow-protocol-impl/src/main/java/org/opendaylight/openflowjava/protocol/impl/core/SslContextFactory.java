@@ -9,15 +9,16 @@
 package org.opendaylight.openflowjava.protocol.impl.core;
 
 import java.io.IOException;
+import java.security.KeyManagementException;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Security;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
-
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
-
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,12 +33,14 @@ public class SslContextFactory {
     // "TLS" - supports some version of TLS
     // Use "TLSv1", "TLSv1.1", "TLSv1.2" for specific TLS version
     private static final String PROTOCOL = "TLS";
-    private TlsConfiguration tlsConfig;
+    private final TlsConfiguration tlsConfig;
 
     private static final Logger LOG = LoggerFactory
             .getLogger(SslContextFactory.class);
 
     /**
+     * Sets the TlsConfiguration.
+     *
      * @param tlsConfig
      *            TLS configuration object, contains keystore locations +
      *            keystore types
@@ -46,9 +49,6 @@ public class SslContextFactory {
         this.tlsConfig = tlsConfig;
     }
 
-    /**
-     * @return servercontext
-     */
     public SSLContext getServerContext() {
         String algorithm = Security
                 .getProperty("ssl.KeyManagerFactory.algorithm");
@@ -80,7 +80,7 @@ public class SslContextFactory {
         } catch (CertificateException e) {
             LOG.warn("CertificateException - Unable to access certificate (check password)."
                     + " Failed to initialize the server-side SSLContext", e);
-        } catch (Exception e) {
+        } catch (KeyManagementException | KeyStoreException | UnrecoverableKeyException e) {
             LOG.warn("Exception - Failed to initialize the server-side SSLContext", e);
         }
         return serverContext;

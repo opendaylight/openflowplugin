@@ -16,48 +16,57 @@ package org.opendaylight.openflowjava.protocol.impl.core;
 public enum PipelineHandlers {
 
     /**
-     * Detects switch idle state
+     * Detects switch idle state.
      */
     IDLE_HANDLER,
+
     /**
-     * Component for handling TLS frames
+     * Component for handling TLS frames.
      */
     SSL_HANDLER,
+
     /**
-     * Decodes incoming messages into message frames
+     * Decodes incoming messages into message frames.
      */
     OF_FRAME_DECODER,
+
     /**
-     * Detects version of incoming OpenFlow Protocol message
+     * Detects version of incoming OpenFlow Protocol message.
      */
     OF_VERSION_DETECTOR,
+
     /**
-     * Transforms OpenFlow Protocol byte messages into POJOs
+     * Transforms OpenFlow Protocol byte messages into POJOs.
      */
     OF_DECODER,
+
     /**
-     * Transforms POJOs into OpenFlow Protocol byte messages
+     * Transforms POJOs into OpenFlow Protocol byte messages.
      */
     OF_ENCODER,
+
     /**
-     * Delegates translated POJOs into MessageConsumer
+     * Delegates translated POJOs into MessageConsumer.
      */
     DELEGATING_INBOUND_HANDLER,
+
     /**
-     * Performs configurable efficient flushing
+     * Performs configurable efficient flushing.
      */
     CHANNEL_OUTBOUND_QUEUE_MANAGER,
+
     /**
-     * Decodes incoming messages into message frames
-     * and filters them based on version supported
+     * Decodes incoming messages into message frames and filters them based on version supported.
      */
     OF_DATAGRAMPACKET_HANDLER,
+
     /**
-     * Transforms OpenFlow Protocol datagram messages into POJOs
+     * Transforms OpenFlow Protocol datagram messages into POJOs.
      */
     OF_DATAGRAMPACKET_DECODER,
+
     /**
-     * Transforms POJOs into OpenFlow Protocol datagrams
+     * Transforms POJOs into OpenFlow Protocol datagrams.
      */
     OF_DATAGRAMPACKET_ENCODER
 }

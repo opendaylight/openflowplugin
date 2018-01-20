@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowjava.protocol.impl.core;
 
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -17,17 +19,11 @@ import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
-import io.netty.util.concurrent.GenericFutureListener;
-
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-
 import org.opendaylight.openflowjava.protocol.api.connection.ThreadConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
 
 /**
  * Class implementing server over UDP for handling incoming connections.
@@ -70,16 +66,14 @@ public final class UdpHandler implements ServerFacade {
     public void run() {
         final ChannelFuture f;
         try {
-            Bootstrap b = new Bootstrap();
-            b.group(group)
-             .channel(datagramChannelClass)
-             .option(ChannelOption.SO_BROADCAST, false)
-             .handler(channelInitializer);
+            Bootstrap bootstrap = new Bootstrap();
+            bootstrap.group(group).channel(datagramChannelClass).option(ChannelOption.SO_BROADCAST, false)
+                .handler(channelInitializer);
 
             if (startupAddress != null) {
-                f = b.bind(startupAddress.getHostAddress(), port).sync();
+                f = bootstrap.bind(startupAddress.getHostAddress(), port).sync();
             } else {
-                f = b.bind(port).sync();
+                f = bootstrap.bind(port).sync();
             }
         } catch (InterruptedException e) {
             LOG.error("Interrupted while binding port {}", port, e);
@@ -107,17 +101,11 @@ public final class UdpHandler implements ServerFacade {
     @Override
     public ListenableFuture<Boolean> shutdown() {
         final SettableFuture<Boolean> result = SettableFuture.create();
-        group.shutdownGracefully().addListener(new GenericFutureListener<io.netty.util.concurrent.Future<Object>>() {
-
-            @Override
-            public void operationComplete(
-                    final io.netty.util.concurrent.Future<Object> downResult) throws Exception {
-                result.set(downResult.isSuccess());
-                if (downResult.cause() != null) {
-                    result.setException(downResult.cause());
-                }
+        group.shutdownGracefully().addListener(downResult -> {
+            result.set(downResult.isSuccess());
+            if (downResult.cause() != null) {
+                result.setException(downResult.cause());
             }
-
         });
         return result;
     }
@@ -127,16 +115,10 @@ public final class UdpHandler implements ServerFacade {
         return isOnlineFuture;
     }
 
-    /**
-     * @return the port
-     */
     public int getPort() {
         return port;
     }
 
-    /**
-     * @param channelInitializer
-     */
     public void setChannelInitializer(UdpChannelInitializer channelInitializer) {
         this.channelInitializer = channelInitializer;
     }
@@ -147,12 +129,13 @@ public final class UdpHandler implements ServerFacade {
     }
 
     /**
-     * Initiate event loop groups
+     * Initiate event loop groups.
+     *
      * @param threadConfiguration number of threads to be created, if not specified in threadConfig
      */
     public void initiateEventLoopGroups(ThreadConfiguration threadConfiguration, boolean isEpollEnabled) {
 
-        if(isEpollEnabled) {
+        if (isEpollEnabled) {
             initiateEpollEventLoopGroups(threadConfiguration);
         } else {
             initiateNioEventLoopGroups(threadConfiguration);
@@ -160,7 +143,8 @@ public final class UdpHandler implements ServerFacade {
     }
 
     /**
-     * Initiate Nio event loop groups
+     * Initiate Nio event loop groups.
+     *
      * @param threadConfiguration number of threads to be created, if not specified in threadConfig
      */
     public void initiateNioEventLoopGroups(ThreadConfiguration threadConfiguration) {
@@ -173,9 +157,11 @@ public final class UdpHandler implements ServerFacade {
     }
 
     /**
-     * Initiate Epoll event loop groups with Nio as fall back
-     * @param threadConfiguration
+     * Initiate Epoll event loop groups with Nio as fall back.
+     *
+     * @param threadConfiguration the ThreadConfiguration
      */
+    @SuppressWarnings("checkstyle:IllegalCatch")
     protected void initiateEpollEventLoopGroups(ThreadConfiguration threadConfiguration) {
         try {
             datagramChannelClass = EpollDatagramChannel.class;
@@ -185,7 +171,7 @@ public final class UdpHandler implements ServerFacade {
                 group = new EpollEventLoopGroup();
             }
             return;
-        } catch (Throwable ex) {
+        } catch (RuntimeException ex) {
             LOG.debug("Epoll initiation failed");
         }
 

@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Transforms OpenFlow Protocol messages to POJOs.
+ *
  * @author michal.polkorab
  */
 public class OFDecoder extends MessageToMessageDecoder<VersionMessageWrapper> {
@@ -33,11 +34,12 @@ public class OFDecoder extends MessageToMessageDecoder<VersionMessageWrapper> {
 
     public OFDecoder() {
         LOG.trace("Creating OFDecoder");
-	    // TODO: pass as argument
+        // TODO: pass as argument
         statisticsCounter = StatisticsCounters.getInstance();
     }
 
     @Override
+    @SuppressWarnings("checkstyle:IllegalCatch")
     protected void decode(ChannelHandlerContext ctx, VersionMessageWrapper msg, List<Object> out) throws Exception {
         statisticsCounter.incrementCounter(CounterEventTypes.US_RECEIVED_IN_OFJAVA);
         if (LOG.isDebugEnabled()) {
@@ -55,7 +57,7 @@ public class OFDecoder extends MessageToMessageDecoder<VersionMessageWrapper> {
                 out.add(dataObject);
                 statisticsCounter.incrementCounter(CounterEventTypes.US_DECODE_SUCCESS);
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             LOG.warn("Message deserialization failed", e);
             statisticsCounter.incrementCounter(CounterEventTypes.US_DECODE_FAIL);
         } finally {
@@ -63,9 +65,6 @@ public class OFDecoder extends MessageToMessageDecoder<VersionMessageWrapper> {
         }
     }
 
-    /**
-     * @param deserializationFactory
-     */
     public void setDeserializationFactory(DeserializationFactory deserializationFactory) {
         this.deserializationFactory = deserializationFactory;
     }

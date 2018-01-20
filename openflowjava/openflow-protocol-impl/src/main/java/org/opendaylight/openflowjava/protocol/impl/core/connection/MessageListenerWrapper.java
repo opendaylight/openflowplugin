@@ -10,7 +10,6 @@ package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 
 /**
@@ -21,10 +20,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  */
 public class MessageListenerWrapper {
 
-    private OfHeader msg;
-    private GenericFutureListener<Future<Void>> listener;
+    private final OfHeader msg;
+    private final GenericFutureListener<Future<Void>> listener;
 
     /**
+     * Constructor.
+     *
      * @param msg outgoing message
      * @param listener listener attached to channel.write(msg) Future
      */
@@ -34,6 +35,8 @@ public class MessageListenerWrapper {
     }
 
     /**
+     * Returns the outgoing message.
+     *
      * @return outgoing message (downstream)
      */
     public OfHeader getMsg() {
@@ -42,6 +45,8 @@ public class MessageListenerWrapper {
 
 
     /**
+     * Returns the listener listening on message sending success / failure.
+     *
      * @return listener listening on message sending success / failure
      */
     public GenericFutureListener<Future<Void>> getListener() {

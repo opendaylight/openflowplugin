@@ -19,6 +19,8 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
 /**
+ * Factory for deserialization.
+ *
  * @author michal.polkorab
  * @author timotej.kubas
  * @author giuseppex.petralia@intel.com
@@ -28,9 +30,6 @@ public class DeserializationFactory {
     private final Map<TypeToClassKey, Class<?>> messageClassMap = new ConcurrentHashMap<>();
     private DeserializerRegistry registry;
 
-    /**
-     * Constructor
-     */
     public DeserializationFactory() {
         TypeToClassMapInitializer.initializeTypeToClassMap(messageClassMap);
 
@@ -39,9 +38,9 @@ public class DeserializationFactory {
     }
 
     /**
-     * Transforms ByteBuf into correct POJO message
+     * Transforms ByteBuf into correct POJO message.
      *
-     * @param rawMessage
+     * @param rawMessage the message
      * @param version
      *            version decoded from OpenFlow protocol message
      * @return correct POJO as DataObject
@@ -57,7 +56,8 @@ public class DeserializationFactory {
     }
 
     /**
-     * Register new type to class mapping used to assign return type when deserializing message
+     * Register new type to class mapping used to assign return type when deserializing message.
+     *
      * @param key type to class key
      * @param clazz return class
      */
@@ -66,7 +66,8 @@ public class DeserializationFactory {
     }
 
     /**
-     * Unregister type to class mapping used to assign return type when deserializing message
+     * Unregister type to class mapping used to assign return type when deserializing message.
+     *
      * @param key type to class key
      * @return true if mapping was successfully removed
      */
@@ -78,9 +79,6 @@ public class DeserializationFactory {
         return messageClassMap.remove(key) != null;
     }
 
-    /**
-     * @param registry
-     */
     public void setRegistry(final DeserializerRegistry registry) {
         this.registry = registry;
     }

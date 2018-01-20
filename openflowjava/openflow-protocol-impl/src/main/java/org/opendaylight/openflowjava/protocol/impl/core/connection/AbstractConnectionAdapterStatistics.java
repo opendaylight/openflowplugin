@@ -42,8 +42,8 @@ abstract class AbstractConnectionAdapterStatistics extends AbstractConnectionAda
     }
 
     @Override
-    protected <IN extends OfHeader, OUT extends OfHeader> ListenableFuture<RpcResult<OUT>> sendToSwitchExpectRpcResultFuture(
-            final IN input, final Class<OUT> responseClazz, final String failureInfo) {
+    protected <I extends OfHeader, O extends OfHeader> ListenableFuture<RpcResult<O>> sendToSwitchExpectRpcResultFuture(
+            final I input, final Class<O> responseClazz, final String failureInfo) {
         statisticsCounters.incrementCounter(CounterEventTypes.DS_ENTERED_OFJAVA);
         return super.sendToSwitchExpectRpcResultFuture(input, responseClazz, failureInfo);
     }
@@ -69,7 +69,7 @@ abstract class AbstractConnectionAdapterStatistics extends AbstractConnectionAda
     /**
      * Method is equivalent to {@link MessageConsumer#consume(DataObject)} to prevent missing method
      * in every children of {@link AbstractConnectionAdapterStatistics} class, because we overriding
-     * original method for {@link StatisticsCounters}
+     * original method for {@link StatisticsCounters}.
      *
      * @param message from device to processing
      */

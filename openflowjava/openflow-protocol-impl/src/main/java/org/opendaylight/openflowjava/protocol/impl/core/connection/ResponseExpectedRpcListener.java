@@ -7,14 +7,12 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
+import com.google.common.base.Preconditions;
+import com.google.common.cache.Cache;
 import java.util.concurrent.TimeoutException;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
-import com.google.common.cache.Cache;
 
 final class ResponseExpectedRpcListener<T extends OfHeader> extends AbstractRpcListener<T> {
     private static final Logger LOG = LoggerFactory.getLogger(ResponseExpectedRpcListener.class);

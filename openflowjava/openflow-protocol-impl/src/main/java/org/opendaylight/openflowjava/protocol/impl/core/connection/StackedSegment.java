@@ -34,7 +34,7 @@ final class StackedSegment {
     }
 
     /**
-     * Size of each individual segment
+     * Size of each individual segment.
      */
     static final int SEGMENT_SIZE = 4096;
 
@@ -84,7 +84,8 @@ final class StackedSegment {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("baseXid", baseXid).add("endXid", endXid).add("completeCount", completeCount).toString();
+        return MoreObjects.toStringHelper(this).add("baseXid", baseXid).add("endXid", endXid)
+                .add("completeCount", completeCount).toString();
     }
 
     long getBaseXid() {
@@ -106,7 +107,8 @@ final class StackedSegment {
     private static boolean completeEntry(final OutboundQueueEntry entry, final OfHeader response) {
         if (response instanceof Error) {
             final Error err = (Error)response;
-            LOG.debug("Device-reported request XID {} failed {}:{}", response.getXid(), err.getTypeString(), err.getCodeString());
+            LOG.debug("Device-reported request XID {} failed {}:{}", response.getXid(), err.getTypeString(),
+                    err.getCodeString());
             entry.fail(new DeviceRequestFailedException("Device-side failure", err));
             return true;
         }
@@ -143,7 +145,8 @@ final class StackedSegment {
             //      If this assumption is changed, this logic will need to be expanded
             //      to ensure that the requests implied by the barrier are reported as
             //      completed *after* the barrier.
-            LOG.trace("Barrier XID {} completed, cascading completion to XIDs {} to {}", xid, baseXid + lastBarrierOffset + 1, xid - 1);
+            LOG.trace("Barrier XID {} completed, cascading completion to XIDs {} to {}", xid,
+                    baseXid + lastBarrierOffset + 1, xid - 1);
             completeRequests(offset);
             lastBarrierOffset = offset;
 

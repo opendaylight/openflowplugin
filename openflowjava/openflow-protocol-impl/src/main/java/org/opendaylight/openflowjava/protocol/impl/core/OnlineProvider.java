@@ -12,13 +12,11 @@ package org.opendaylight.openflowjava.protocol.impl.core;
 import com.google.common.util.concurrent.ListenableFuture;
 
 /**
+ * OnlineProvider.
+ *
  * @author mirehak
  */
 public interface OnlineProvider {
 
-    /**
-     * @return the isOnlineFuture
-     */
     ListenableFuture<Boolean> getIsOnlineFuture();
-
 }

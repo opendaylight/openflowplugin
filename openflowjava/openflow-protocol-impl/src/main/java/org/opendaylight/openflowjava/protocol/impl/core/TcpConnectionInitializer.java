@@ -8,6 +8,9 @@
 
 package org.opendaylight.openflowjava.protocol.impl.core;
 
+import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.EpollSocketChannel;
@@ -16,29 +19,26 @@ import org.opendaylight.openflowjava.protocol.api.connection.ThreadConfiguration
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
-
 /**
- * Initializes (TCP) connection to device
- * @author martin.uhlir
+ * Initializes (TCP) connection to device.
  *
+ * @author martin.uhlir
  */
 public class TcpConnectionInitializer implements ServerFacade,
         ConnectionInitializer {
 
     private static final Logger LOG = LoggerFactory
             .getLogger(TcpConnectionInitializer.class);
-    private EventLoopGroup workerGroup;
+    private final EventLoopGroup workerGroup;
     private ThreadConfiguration threadConfig;
 
     private TcpChannelInitializer channelInitializer;
-    private Bootstrap b;
-    private boolean isEpollEnabled;
+    private Bootstrap bootstrap;
+    private final boolean isEpollEnabled;
 
     /**
-     * Constructor
+     * Constructor.
+     *
      * @param workerGroup - shared worker group
      */
     public TcpConnectionInitializer(EventLoopGroup workerGroup, boolean isEpollEnabled) {
@@ -49,12 +49,12 @@ public class TcpConnectionInitializer implements ServerFacade,
 
     @Override
     public void run() {
-        b = new Bootstrap();
-        if(isEpollEnabled) {
-            b.group(workerGroup).channel(EpollSocketChannel.class)
+        bootstrap = new Bootstrap();
+        if (isEpollEnabled) {
+            bootstrap.group(workerGroup).channel(EpollSocketChannel.class)
                     .handler(channelInitializer);
         } else {
-            b.group(workerGroup).channel(NioSocketChannel.class)
+            bootstrap.group(workerGroup).channel(NioSocketChannel.class)
                     .handler(channelInitializer);
         }
     }
@@ -79,15 +79,12 @@ public class TcpConnectionInitializer implements ServerFacade,
     @Override
     public void initiateConnection(String host, int port) {
         try {
-            b.connect(host, port).sync();
+            bootstrap.connect(host, port).sync();
         } catch (InterruptedException e) {
             LOG.error("Unable to initiate connection", e);
         }
     }
 
-    /**
-     * @param channelInitializer
-     */
     public void setChannelInitializer(TcpChannelInitializer channelInitializer) {
         this.channelInitializer = channelInitializer;
     }

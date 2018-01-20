@@ -14,8 +14,9 @@ import org.opendaylight.openflowjava.protocol.impl.deserialization.Deserializati
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializationFactory;
 
 /**
- * @author michal.polkorab
+ * Factory for ChannelInitializer instances.
  *
+ * @author michal.polkorab
  */
 public class ChannelInitializerFactory {
 
@@ -27,6 +28,8 @@ public class ChannelInitializerFactory {
     private boolean useBarrier;
 
     /**
+     * Creates a TCP publishing channel initializer.
+     *
      * @return PublishingChannelInitializer that initializes new channels
      */
     public TcpChannelInitializer createPublishingChannelInitializer() {
@@ -41,6 +44,8 @@ public class ChannelInitializerFactory {
     }
 
     /**
+     * Creates a UDP channel initializer.
+     *
      * @return PublishingChannelInitializer that initializes new channels
      */
     public UdpChannelInitializer createUdpChannelInitializer() {
@@ -53,42 +58,52 @@ public class ChannelInitializerFactory {
     }
 
     /**
-     * @param switchIdleTimeOut
+     * Sets the switch idle timeout.
+     *
+     * @param timeout the timeout
      */
-    public void setSwitchIdleTimeout(final long switchIdleTimeOut) {
-        this.switchIdleTimeOut = switchIdleTimeOut;
+    public void setSwitchIdleTimeout(final long timeout) {
+        this.switchIdleTimeOut = timeout;
     }
 
     /**
-     * @param deserializationFactory
+     * Sets the DeserializationFactory.
+     *
+     * @param deserializationFactory the DeserializationFactory
      */
     public void setDeserializationFactory(final DeserializationFactory deserializationFactory) {
         this.deserializationFactory = deserializationFactory;
     }
 
     /**
-     * @param serializationFactory
+     * Sets the SerializationFactory.
+     *
+     * @param serializationFactory the SerializationFactory
      */
     public void setSerializationFactory(final SerializationFactory serializationFactory) {
         this.serializationFactory = serializationFactory;
     }
 
     /**
-     * @param tlsConfig
+     * Sets the TlsConfiguration.
+     *
+     * @param tlsConfig the TlsConfiguration
      */
     public void setTlsConfig(final TlsConfiguration tlsConfig) {
         this.tlsConfig = tlsConfig;
     }
 
     /**
-     * @param switchConnectionHandler
+     * Sets the SwitchConnectionHandler.
+     *
+     * @param switchConnectionHandler the SwitchConnectionHandler
      */
     public void setSwitchConnectionHandler(final SwitchConnectionHandler switchConnectionHandler) {
         this.switchConnectionHandler = switchConnectionHandler;
     }
 
     /**
-     * @param useBarrier
+     * Sets whether or not to use a barrier.
      */
     public void setUseBarrier(final boolean useBarrier) {
         this.useBarrier = useBarrier;

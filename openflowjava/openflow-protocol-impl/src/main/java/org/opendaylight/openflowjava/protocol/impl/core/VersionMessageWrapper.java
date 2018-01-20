@@ -12,7 +12,8 @@ import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 
 /**
- * Wraps received messages (includes version)
+ * Wraps received messages (includes version).
+ *
  * @author michal.polkorab
  */
 public class VersionMessageWrapper {
@@ -20,7 +21,8 @@ public class VersionMessageWrapper {
     private final ByteBuf messageBuffer;
 
     /**
-     * Constructor
+     * Constructor.
+     *
      * @param version version decoded in {@link OFVersionDetector}
      * @param messageBuffer message received from {@link OFFrameDecoder}
      */
@@ -30,6 +32,8 @@ public class VersionMessageWrapper {
     }
 
     /**
+     * Returns the version version decoded in {@link OFVersionDetector}.
+     *
      * @return the version version decoded in {@link OFVersionDetector}
      */
     public short getVersion() {
@@ -37,6 +41,8 @@ public class VersionMessageWrapper {
     }
 
     /**
+     * Returns the messageBuffer message received from {@link OFFrameDecoder}.
+     *
      * @return the messageBuffer message received from {@link OFFrameDecoder}
      */
     public ByteBuf getMessageBuffer() {
