@@ -8,7 +8,6 @@
 package org.opendaylight.openflowjava.protocol.impl.core;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Throwables;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -64,13 +63,13 @@ public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProv
         private final SwitchConnectionConfig config;
         private InetAddress address;
 
-        private ConnectionConfigurationImpl(SwitchConnectionConfig config) {
+        ConnectionConfigurationImpl(SwitchConnectionConfig config) {
             this.config = config;
 
             try {
                 address = extractIpAddressBin(config.getAddress());
-            } catch(UnknownHostException e) {
-                Throwables.propagate(e);
+            } catch (UnknownHostException e) {
+                throw new RuntimeException(e);
             }
         }
 
@@ -92,7 +91,7 @@ public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProv
         @Override
         public TlsConfiguration getTlsConfiguration() {
             final Tls tlsConfig = config.getTls();
-            if(tlsConfig == null || !(TransportProtocol.TLS.equals(getTransferProtocol()))) {
+            if (tlsConfig == null || !TransportProtocol.TLS.equals(getTransferProtocol())) {
                 return null;
             }
 
@@ -101,38 +100,49 @@ public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProv
                 public KeystoreType getTlsTruststoreType() {
                     return MoreObjects.firstNonNull(tlsConfig.getTruststoreType(), null);
                 }
+
                 @Override
                 public String getTlsTruststore() {
                     return MoreObjects.firstNonNull(tlsConfig.getTruststore(), null);
                 }
+
                 @Override
                 public KeystoreType getTlsKeystoreType() {
                     return MoreObjects.firstNonNull(tlsConfig.getKeystoreType(), null);
                 }
+
                 @Override
                 public String getTlsKeystore() {
                     return MoreObjects.firstNonNull(tlsConfig.getKeystore(), null);
                 }
+
                 @Override
-                public org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.PathType getTlsKeystorePathType() {
+                public org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.PathType
+                        getTlsKeystorePathType() {
                     return MoreObjects.firstNonNull(tlsConfig.getKeystorePathType(), null);
                 }
+
                 @Override
-                public org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.PathType getTlsTruststorePathType() {
+                public org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.PathType
+                        getTlsTruststorePathType() {
                     return MoreObjects.firstNonNull(tlsConfig.getTruststorePathType(), null);
                 }
+
                 @Override
                 public String getKeystorePassword() {
                     return MoreObjects.firstNonNull(tlsConfig.getKeystorePassword(), null);
                 }
+
                 @Override
                 public String getCertificatePassword() {
                     return MoreObjects.firstNonNull(tlsConfig.getCertificatePassword(), null);
                 }
+
                 @Override
                 public String getTruststorePassword() {
                     return MoreObjects.firstNonNull(tlsConfig.getTruststorePassword(), null);
                 }
+
                 @Override
                 public List<String> getCipherSuites() {
                     return tlsConfig.getCipherSuites();
@@ -153,7 +163,7 @@ public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProv
         @Override
         public ThreadConfiguration getThreadConfiguration() {
             final Threads threads = config.getThreads();
-            if(threads == null) {
+            if (threads == null) {
                 return null;
             }
 

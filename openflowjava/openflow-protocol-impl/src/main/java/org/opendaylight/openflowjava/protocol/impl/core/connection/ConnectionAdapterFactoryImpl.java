@@ -13,19 +13,16 @@ import io.netty.channel.Channel;
 import java.net.InetSocketAddress;
 
 /**
+ * Implementation of ConnectionAdapterFactory.
+ *
  * @author mirehak
  * @author michal.polkorab
  */
 public class ConnectionAdapterFactoryImpl implements ConnectionAdapterFactory {
 
-    /**
-     * @param ch
-     * @return connection adapter tcp-implementation
-     */
-	@Override
+    @Override
     public ConnectionFacade createConnectionFacade(final Channel ch, final InetSocketAddress address,
             final boolean useBarrier) {
         return new ConnectionAdapterImpl(ch, address, useBarrier);
     }
-
 }

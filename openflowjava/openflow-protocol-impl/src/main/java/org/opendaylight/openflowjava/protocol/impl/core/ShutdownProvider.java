@@ -13,13 +13,11 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 
 /**
+ * Shutdown provider interface.
+ *
  * @author mirehak
  */
 public interface ShutdownProvider {
 
-    /**
-     * @return shutdown future
-     */
     ListenableFuture<Boolean> shutdown();
-
 }

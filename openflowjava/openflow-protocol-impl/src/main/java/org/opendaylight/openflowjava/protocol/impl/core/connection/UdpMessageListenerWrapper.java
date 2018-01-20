@@ -10,7 +10,6 @@ package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
-
 import java.net.InetSocketAddress;
 
 /**
@@ -23,9 +22,11 @@ import java.net.InetSocketAddress;
  */
 public class UdpMessageListenerWrapper extends MessageListenerWrapper {
 
-    private InetSocketAddress address;
+    private final InetSocketAddress address;
 
     /**
+     * Constructor.
+     *
      * @param msg message to be sent
      * @param listener listener attached to channel.write(msg) Future
      * @param address recipient's address
@@ -37,7 +38,7 @@ public class UdpMessageListenerWrapper extends MessageListenerWrapper {
     }
 
     /**
-     * @return recipient address
+     * Returns recipient address.
      */
     public InetSocketAddress getAddress() {
         return address;

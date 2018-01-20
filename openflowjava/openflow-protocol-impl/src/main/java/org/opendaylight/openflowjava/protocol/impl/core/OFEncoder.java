@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Transforms OpenFlow Protocol messages to POJOs.
+ *
  * @author michal.polkorab
  * @author timotej.kubas
  */
@@ -31,23 +32,23 @@ public class OFEncoder extends MessageToByteEncoder<MessageListenerWrapper> {
     private SerializationFactory serializationFactory;
     private final StatisticsCounters statisticsCounters;
 
-    /** Constructor of class */
     public OFEncoder() {
         statisticsCounters = StatisticsCounters.getInstance();
         LOG.trace("Creating OFEncoder");
     }
 
     @Override
+    @SuppressWarnings("checkstyle:IllegalCatch")
     protected void encode(final ChannelHandlerContext ctx, final MessageListenerWrapper wrapper, final ByteBuf out)
             throws Exception {
         LOG.trace("Encoding");
         try {
             serializationFactory.messageToBuffer(wrapper.getMsg().getVersion(), out, wrapper.getMsg());
-            if(wrapper.getMsg() instanceof FlowModInput){
+            if (wrapper.getMsg() instanceof FlowModInput) {
                 statisticsCounters.incrementCounter(CounterEventTypes.DS_FLOW_MODS_SENT);
             }
             statisticsCounters.incrementCounter(CounterEventTypes.DS_ENCODE_SUCCESS);
-        } catch(final Exception e) {
+        } catch (RuntimeException e) {
             LOG.warn("Message serialization failed ", e);
             statisticsCounters.incrementCounter(CounterEventTypes.DS_ENCODE_FAIL);
             if (wrapper.getListener() != null) {
@@ -59,9 +60,6 @@ public class OFEncoder extends MessageToByteEncoder<MessageListenerWrapper> {
         }
     }
 
-    /**
-     * @param serializationFactory
-     */
     public void setSerializationFactory(final SerializationFactory serializationFactory) {
         this.serializationFactory = serializationFactory;
     }

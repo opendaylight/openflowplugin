@@ -9,33 +9,30 @@
 
 package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
-
-
 /**
+ * RPC response key.
+ *
  * @author mirehak
  */
 public class RpcResponseKey {
 
     private final long xid;
     private final String outputClazz;
-    /**
-     * @param xid
-     * @param outputClazz
-     */
+
     public RpcResponseKey(long xid, String outputClazz) {
         this.xid = xid;
         this.outputClazz = outputClazz;
     }
 
     /**
-     * @return the xid
+     * Returns the xid.
      */
     public long getXid() {
         return xid;
     }
 
     /**
-     * @return the outputClazz
+     * Return the outputClazz.
      */
     public String getOutputClazz() {
         return outputClazz;
@@ -46,7 +43,7 @@ public class RpcResponseKey {
         final int prime = 31;
         int result = 1;
         result = prime * result
-                + ((outputClazz == null) ? 0 : outputClazz.hashCode());
+                + (outputClazz == null ? 0 : outputClazz.hashCode());
         return result;
     }
 

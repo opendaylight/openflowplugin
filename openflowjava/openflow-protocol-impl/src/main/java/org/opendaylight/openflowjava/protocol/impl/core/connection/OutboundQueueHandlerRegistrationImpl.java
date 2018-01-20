@@ -11,7 +11,8 @@ import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandle
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
 import org.opendaylight.yangtools.concepts.AbstractObjectRegistration;
 
-abstract class OutboundQueueHandlerRegistrationImpl<T extends OutboundQueueHandler> extends AbstractObjectRegistration<T> implements OutboundQueueHandlerRegistration<T> {
+abstract class OutboundQueueHandlerRegistrationImpl<T extends OutboundQueueHandler>
+        extends AbstractObjectRegistration<T> implements OutboundQueueHandlerRegistration<T> {
     protected OutboundQueueHandlerRegistrationImpl(final T instance) {
         super(instance);
     }

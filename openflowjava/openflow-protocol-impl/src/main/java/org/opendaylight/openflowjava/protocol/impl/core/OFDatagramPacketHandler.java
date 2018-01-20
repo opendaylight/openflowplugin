@@ -12,9 +12,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.handler.codec.MessageToMessageDecoder;
-
 import java.util.List;
-
 import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.core.connection.ConnectionAdapterFactory;
@@ -26,23 +24,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author michal.polkorab
+ * Handler for datagram packets.
  *
+ * @author michal.polkorab
  */
 public class OFDatagramPacketHandler extends MessageToMessageDecoder<DatagramPacket> {
 
     private static final Logger LOG = LoggerFactory.getLogger(OFDatagramPacketHandler.class);
 
-    /** Length of OpenFlow 1.3 header */
+    /** Length of OpenFlow 1.3 header. */
     public static final byte LENGTH_OF_HEADER = 8;
     private static final byte LENGTH_INDEX_IN_HEADER = 2;
-    private ConnectionAdapterFactory adapterFactory = new ConnectionAdapterFactoryImpl();
-    private SwitchConnectionHandler connectionHandler;
+    private final ConnectionAdapterFactory adapterFactory = new ConnectionAdapterFactoryImpl();
+    private final SwitchConnectionHandler connectionHandler;
 
     /**
-     * Default constructor
-     * @param sch the switchConnectionHandler that decides
-     * what to do with incomming message / channel
+     * Default constructor.
+     *
+     * @param sch the switchConnectionHandler that decides what to do with incomming message / channel
      */
     public OFDatagramPacketHandler(SwitchConnectionHandler sch) {
         this.connectionHandler = sch;
@@ -91,7 +90,7 @@ public class OFDatagramPacketHandler extends MessageToMessageDecoder<DatagramPac
 
 
         byte version = bb.readByte();
-        if ((version == EncodeConstants.OF13_VERSION_ID) || (version == EncodeConstants.OF10_VERSION_ID)) {
+        if (version == EncodeConstants.OF13_VERSION_ID || version == EncodeConstants.OF10_VERSION_ID) {
             LOG.debug("detected version: {}", version);
             ByteBuf messageBuffer = bb.slice();
             out.add(new VersionMessageUdpWrapper(version, messageBuffer, msg.sender()));

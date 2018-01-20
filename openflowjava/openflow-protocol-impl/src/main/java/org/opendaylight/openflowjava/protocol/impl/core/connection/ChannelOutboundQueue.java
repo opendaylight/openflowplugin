@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
  * writes to be enqueued from any thread, it then schedules a task pipeline task,
  * which shuffles messages from the queue into the pipeline.
  *
+ * <p>
  * Note this is an *Inbound* handler, as it reacts to channel writability changing,
  * which in the Netty vocabulary is an inbound event. This has already changed in
  * the Netty 5.0.0 API, where Handlers are unified.
@@ -75,12 +76,7 @@ final class ChannelOutboundQueue extends ChannelInboundHandlerAdapter {
     private static final Logger LOG = LoggerFactory.getLogger(ChannelOutboundQueue.class);
 
     // Passed to executor to request triggering of flush
-    private final Runnable flushRunnable = new Runnable() {
-        @Override
-        public void run() {
-            ChannelOutboundQueue.this.flush();
-        }
-    };
+    private final Runnable flushRunnable = () -> ChannelOutboundQueue.this.flush();
 
     /*
      * Instead of using an AtomicBoolean object, we use these two. It saves us
@@ -95,7 +91,7 @@ final class ChannelOutboundQueue extends ChannelInboundHandlerAdapter {
     private final Channel channel;
     private final InetSocketAddress address;
 
-    public ChannelOutboundQueue(final Channel channel, final int queueDepth, final InetSocketAddress address) {
+    ChannelOutboundQueue(final Channel channel, final int queueDepth, final InetSocketAddress address) {
         Preconditions.checkArgument(queueDepth > 0, "Queue depth has to be positive");
 
         /*
@@ -156,6 +152,12 @@ final class ChannelOutboundQueue extends ChannelInboundHandlerAdapter {
         scheduleFlush(channel.pipeline().lastContext().executor());
     }
 
+    private void conditionalFlush(final ChannelHandlerContext ctx) {
+        Preconditions.checkState(ctx.channel().equals(channel),
+                "Inconsistent channel %s with context %s", channel, ctx);
+        conditionalFlush();
+    }
+
     /*
      * The synchronized keyword should be unnecessary, really, but it enforces
      * queue order should something go terribly wrong. It should be completely
@@ -200,7 +202,7 @@ final class ChannelOutboundQueue extends ChannelInboundHandlerAdapter {
              *      should be able to perform dynamic adjustments here.
              *      is that additional complexity needed, though?
              */
-            if ((messages % WORKTIME_RECHECK_MSGS) == 0 && System.nanoTime() >= deadline) {
+            if (messages % WORKTIME_RECHECK_MSGS == 0 && System.nanoTime() >= deadline) {
                 LOG.trace("Exceeded allotted work time {}us",
                         TimeUnit.NANOSECONDS.toMicros(maxWorkTime));
                 break;
@@ -231,11 +233,6 @@ final class ChannelOutboundQueue extends ChannelInboundHandlerAdapter {
             LOG.warn("Channel {} queue {} flusher found unscheduled", channel, queue);
         }
 
-        conditionalFlush();
-    }
-
-    private void conditionalFlush(final ChannelHandlerContext ctx) {
-        Preconditions.checkState(ctx.channel().equals(channel), "Inconsistent channel %s with context %s", channel, ctx);
         conditionalFlush();
     }
 

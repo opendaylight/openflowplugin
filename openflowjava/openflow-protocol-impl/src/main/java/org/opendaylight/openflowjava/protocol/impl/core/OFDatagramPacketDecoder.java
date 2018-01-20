@@ -18,20 +18,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author michal.polkorab
+ * Decoder for datagram packets.
  *
+ * @author michal.polkorab
  */
-public class OFDatagramPacketDecoder extends SimpleChannelInboundHandler<VersionMessageUdpWrapper>{
+public class OFDatagramPacketDecoder extends SimpleChannelInboundHandler<VersionMessageUdpWrapper> {
 
     private static final Logger LOG = LoggerFactory.getLogger(OFDatagramPacketDecoder.class);
     private DeserializationFactory deserializationFactory;
 
     @Override
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public void channelRead0(final ChannelHandlerContext ctx, final VersionMessageUdpWrapper msg)
             throws Exception {
         if (LOG.isDebugEnabled()) {
-                LOG.debug("UdpVersionMessageWrapper received");
-                LOG.debug("<< {}", ByteBufUtils.byteBufToHexString(msg.getMessageBuffer()));
+            LOG.debug("UdpVersionMessageWrapper received");
+            LOG.debug("<< {}", ByteBufUtils.byteBufToHexString(msg.getMessageBuffer()));
         }
 
         try {
@@ -42,7 +44,7 @@ public class OFDatagramPacketDecoder extends SimpleChannelInboundHandler<Version
                 MessageConsumer consumer = UdpConnectionMap.getMessageConsumer(msg.getAddress());
                 consumer.consume(dataObject);
             }
-        } catch(Exception e) {
+        } catch (RuntimeException e) {
             LOG.warn("Message deserialization failed", e);
             // TODO: delegate exception to allow easier deserialization
             // debugging / deserialization problem awareness
@@ -51,9 +53,6 @@ public class OFDatagramPacketDecoder extends SimpleChannelInboundHandler<Version
         }
     }
 
-    /**
-     * @param deserializationFactory
-     */
     public void setDeserializationFactory(final DeserializationFactory deserializationFactory) {
         this.deserializationFactory = deserializationFactory;
     }

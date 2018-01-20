@@ -11,12 +11,11 @@ package org.opendaylight.openflowjava.protocol.impl.core;
 import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.opendaylight.openflowjava.protocol.impl.core.connection.MessageConsumer;
 
 /**
  * As UDP communication is handled only by one channel, it is needed
- * to store MessageConsumers, so that we know which consumer handles which channel
+ * to store MessageConsumers, so that we know which consumer handles which channel.
 
  * @author michal.polkorab
  */
@@ -29,32 +28,38 @@ public final class UdpConnectionMap {
     }
 
     /**
+     * Gets the MessageConsumer for the given address.
+     *
      * @param address sender's address
      * @return corresponding MessageConsumer
      */
     public static MessageConsumer getMessageConsumer(InetSocketAddress address) {
-        if(address == null){
+        if (address == null) {
             throw new IllegalArgumentException("Address can not be null");
         }
         return connectionMap.get(address);
     }
 
     /**
+     * Adds a connection.
+     *
      * @param address sender's address
      * @param consumer MessageConsumer to be added / paired with specified address
      */
     public static void addConnection(InetSocketAddress address, MessageConsumer consumer) {
-        if(address == null){
+        if (address == null) {
             throw new IllegalArgumentException("Address can not be null");
         }
         connectionMap.put(address, consumer);
     }
 
     /**
+     * Removes a connection.
+     *
      * @param address sender's address
      */
     public static void removeConnection(InetSocketAddress address) {
-        if(address == null){
+        if (address == null) {
             throw new IllegalArgumentException("Address can not be null");
         }
         connectionMap.remove(address);
