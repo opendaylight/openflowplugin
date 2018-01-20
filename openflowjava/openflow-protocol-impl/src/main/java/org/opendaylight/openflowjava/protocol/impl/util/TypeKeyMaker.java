@@ -11,16 +11,18 @@ package org.opendaylight.openflowjava.protocol.impl.util;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 
 /**
+ * Interface for a type key maker.
+ *
  * @author michal.polkorab
- * @param <T>
+ * @param <T> type the key maker is based on
  */
 public interface TypeKeyMaker<T> {
 
     /**
-     * @param entry
-     * @return key that will be used for serializer lookup in
-     * the serializer registry
+     * Makes a MessageTypeKey.
+     *
+     * @param entry the entry for which to create the key
+     * @return key that will be used for serializer lookup in the serializer registry
      */
-    abstract MessageTypeKey<?> make(T entry);
-
+    MessageTypeKey<?> make(T entry);
 }

@@ -32,7 +32,7 @@ public class OnfOxmTcpFlagsSerializer extends AbstractOxmExperimenterMatchEntryS
     }
 
     /**
-     * @return Experimenter match entry ID
+     * Returns the Experimenter match entry ID.
      */
     @Override
     protected long getExperimenterId() {
@@ -40,7 +40,7 @@ public class OnfOxmTcpFlagsSerializer extends AbstractOxmExperimenterMatchEntryS
     }
 
     /**
-     * @return numeric representation of oxm_field
+     * Returns the numeric representation of oxm_field.
      */
     @Override
     protected int getOxmFieldCode() {
@@ -48,7 +48,7 @@ public class OnfOxmTcpFlagsSerializer extends AbstractOxmExperimenterMatchEntryS
     }
 
     /**
-     * @return numeric representation of oxm_class
+     * Returns the numeric representation of oxm_class.
      */
     @Override
     protected int getOxmClassCode() {
@@ -56,7 +56,7 @@ public class OnfOxmTcpFlagsSerializer extends AbstractOxmExperimenterMatchEntryS
     }
 
     /**
-     * @return match entry value length (without mask length)
+     * Returns the match entry value length (without mask length).
      */
     @Override
     protected int getValueLength() {

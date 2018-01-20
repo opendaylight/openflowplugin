@@ -21,18 +21,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Expe
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 
 /**
- * Creates KeyMakers
+ * Creates KeyMakers.
+ *
  * @author michal.polkorab
  */
-public abstract class TypeKeyMakerFactory {
+public final class TypeKeyMakerFactory {
 
     private TypeKeyMakerFactory() {
         //not called
     }
 
     /**
-     * @param version openflow wire version that shall be used
-     *  in lookup key
+     * Creates a key maker for MatchEntry instances.
+     *
+     * @param version openflow wire version that shall be used in lookup key
      * @return lookup key
      */
     public static TypeKeyMaker<MatchEntry> createMatchEntriesKeyMaker(short version) {
@@ -54,8 +56,9 @@ public abstract class TypeKeyMakerFactory {
     }
 
     /**
-     * @param version openflow wire version that shall be used
-     *  in lookup key
+     * Creates a key maker for Action instances.
+     *
+     * @param version openflow wire version that shall be used in lookup key
      * @return lookup key
      */
     public static TypeKeyMaker<Action> createActionKeyMaker(short version) {
@@ -74,8 +77,9 @@ public abstract class TypeKeyMakerFactory {
     }
 
     /**
-     * @param version openflow wire version that shall be used
-     *  in lookup key
+     * Creates a key maker for Instruction instances.
+     *
+     * @param version openflow wire version that shall be used in lookup key
      * @return lookup key
      */
     public static TypeKeyMaker<Instruction> createInstructionKeyMaker(short version) {

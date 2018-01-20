@@ -8,19 +8,21 @@
 
 package org.opendaylight.openflowjava.protocol.impl.util;
 
+import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 
-import io.netty.buffer.ByteBuf;
-
 /**
+ * Interface for making code keys.
+ *
  * @author michal.polkorab
  */
 public interface CodeKeyMaker {
 
     /**
+     * Makes a code key.
+     *
      * @param input buffer that will be the needed data gathered from
      * @return key for deserializer lookup
      */
-    abstract MessageCodeKey make(ByteBuf input);
-
+    MessageCodeKey make(ByteBuf input);
 }
