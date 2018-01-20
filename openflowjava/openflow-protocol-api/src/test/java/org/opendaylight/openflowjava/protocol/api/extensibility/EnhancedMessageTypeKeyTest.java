@@ -17,13 +17,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction;
 
 /**
- * @author michal.polkorab
+ * Unit tests for EnhancedMessageTypeKey.
  *
+ * @author michal.polkorab
  */
 public class EnhancedMessageTypeKeyTest {
 
     /**
-     * Test EnhancedMessageTypeKey equals and hashCode
+     * Test EnhancedMessageTypeKey equals and hashCode.
      */
     @Test
     public void test() {
@@ -51,7 +52,7 @@ public class EnhancedMessageTypeKeyTest {
     }
 
     /**
-     * Test EnhancedMessageTypeKey equals - additional test
+     * Test EnhancedMessageTypeKey equals - additional test.
      */
     @Test
     public void testEquals() {
@@ -71,7 +72,7 @@ public class EnhancedMessageTypeKeyTest {
     }
 
     /**
-     * Test EnhancedMessageTypeKey toString()
+     * Test EnhancedMessageTypeKey toString().
      */
     @Test
     public void testToString() {

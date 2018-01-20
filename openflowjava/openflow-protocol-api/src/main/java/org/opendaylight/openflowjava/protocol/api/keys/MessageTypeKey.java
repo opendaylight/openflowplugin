@@ -8,7 +8,8 @@
 package org.opendaylight.openflowjava.protocol.api.keys;
 
 /**
- * Class used as a key in {@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry}
+ * Class used as a key in {@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry}.
+ *
  * @author michal.polkorab
  * @author timotej.kubas
  * @param <E> message type (class)
@@ -19,6 +20,8 @@ public class MessageTypeKey<E> {
     private final short msgVersion;
 
     /**
+     * Constructor.
+     *
      * @param msgVersion protocol version
      * @param msgType type of message - class of serialized object
      */
@@ -36,7 +39,7 @@ public class MessageTypeKey<E> {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((msgType == null) ? 0 : msgType.hashCode());
+        result = prime * result + (msgType == null ? 0 : msgType.hashCode());
         result = prime * result + msgVersion;
         return result;
     }

@@ -8,16 +8,19 @@
 package org.opendaylight.openflowjava.protocol.api.keys;
 
 /**
+ * Key for a message code.
+ *
  * @author michal.polkorab
  */
 public class MessageCodeKey {
 
-    private short msgVersion;
-    private int msgType;
-    private Class<?> clazz;
+    private final short msgVersion;
+    private final int msgType;
+    private final Class<?> clazz;
 
     /**
-     * Constructor
+     * Constructor.
+     *
      * @param version wire protocol version
      * @param value used as distinguisher (read from binary data / buffer)
      * @param clazz class of object that is going to be deserialized
@@ -40,7 +43,7 @@ public class MessageCodeKey {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((clazz == null) ? 0 : clazz.hashCode());
+        result = prime * result + (clazz == null ? 0 : clazz.hashCode());
         result = prime * result + msgType;
         result = prime * result + msgVersion;
         return result;

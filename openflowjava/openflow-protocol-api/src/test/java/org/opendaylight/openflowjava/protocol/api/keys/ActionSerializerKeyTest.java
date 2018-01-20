@@ -15,13 +15,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.CopyTtlOutCase;
 
 /**
- * @author michal.polkorab
+ * Unit tests for ActionSerializerKey.
  *
+ * @author michal.polkorab
  */
 public class ActionSerializerKeyTest {
 
     /**
-     * Test ActionSerializerKey equals and hashCode
+     * Test ActionSerializerKey equals and hashCode.
      */
     @Test
     public void test() {
@@ -49,10 +50,10 @@ public class ActionSerializerKeyTest {
     }
 
     /**
-     * Test ActionSerializerKey equals - additional test
+     * Test ActionSerializerKey equals - additional test.
      */
     @Test
-    public void testEquals(){
+    public void testEquals() {
         ActionSerializerKey<?> key1 = new ActionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, null, 42L);
         ActionSerializerKey<?> key2 = new ActionSerializerKey<>(EncodeConstants.OF10_VERSION_ID,
                 CopyTtlInCase.class, 42L);
@@ -69,10 +70,10 @@ public class ActionSerializerKeyTest {
     }
 
     /**
-     * Test ActionSerializerKey toString()
+     * Test ActionSerializerKey toString().
      */
     @Test
-    public void testToString(){
+    public void testToString() {
         ActionSerializerKey<CopyTtlInCase> key1 = new ActionSerializerKey<>(EncodeConstants.OF10_VERSION_ID,
                 CopyTtlInCase.class, 42L);
 

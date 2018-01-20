@@ -12,16 +12,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction;
 
 /**
+ * Key for an instruction serializer.
+ *
  * @author michal.polkorab
  * @param <T> instruction type
  */
 public class InstructionSerializerKey<T extends InstructionChoice>
         extends MessageTypeKey<Instruction> implements ExperimenterSerializerKey {
 
-    private Class<T> instructionType;
-    private Long experimenterId;
+    private final Class<T> instructionType;
+    private final Long experimenterId;
 
     /**
+     * Constructor.
+     *
      * @param msgVersion protocol wire version
      * @param instructionType type of instruction
      * @param experimenterId experimenter / vendor ID
@@ -37,8 +41,8 @@ public class InstructionSerializerKey<T extends InstructionChoice>
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + ((experimenterId == null) ? 0 : experimenterId.hashCode());
-        result = prime * result + ((instructionType == null) ? 0 : instructionType.hashCode());
+        result = prime * result + (experimenterId == null ? 0 : experimenterId.hashCode());
+        result = prime * result + (instructionType == null ? 0 : instructionType.hashCode());
         return result;
     }
 

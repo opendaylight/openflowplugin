@@ -12,13 +12,17 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
+ * Key for an experimenter id deserializer.
+ *
  * @author michal.polkorab
  */
 public class ExperimenterIdDeserializerKey extends MessageCodeKey implements ExperimenterDeserializerKey {
 
-    private long experimenterId;
+    private final long experimenterId;
 
     /**
+     * Constructor.
+     *
      * @param <E> type of target experimenter object
      * @param version protocol wire version
      * @param experimenterId experimenter / vendor ID
@@ -31,7 +35,7 @@ public class ExperimenterIdDeserializerKey extends MessageCodeKey implements Exp
     }
 
     protected int hashCodeOfLong(long longValue) {
-        return (int) (longValue ^ (longValue >>> 32));
+        return (int) (longValue ^ longValue >>> 32);
     }
 
     @Override

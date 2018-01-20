@@ -11,12 +11,15 @@ package org.opendaylight.openflowjava.protocol.api.connection;
 import java.util.concurrent.Future;
 
 /**
- * for testing purposed
+ * For testing purposes.
+ *
  * @author mirehak
  */
 public interface ListeningStatusProvider {
 
     /**
+     * Determines if the plugin has successfully started.
+     *
      * @return future holding startup result of all library instances under plugin's control
      */
     Future<Boolean> isOnline();

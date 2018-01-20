@@ -9,7 +9,8 @@
 package org.opendaylight.openflowjava.protocol.api.keys;
 
 /**
- * Marker interface - marks keys appropriate for experimenter serializer registration
+ * Marker interface - marks keys appropriate for experimenter serializer registration.
+ *
  * @author michal.polkorab
  */
 public interface ExperimenterSerializerKey {

@@ -12,7 +12,8 @@ import io.netty.buffer.ByteBuf;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
- * Uniform interface for deserializing factories
+ * Uniform interface for deserializing factories.
+ *
  * @author michal.polkorab
  * @author timotej.kubas
  * @param <E> message code type

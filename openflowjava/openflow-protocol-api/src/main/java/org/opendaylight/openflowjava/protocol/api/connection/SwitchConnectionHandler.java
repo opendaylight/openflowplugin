@@ -12,6 +12,8 @@ package org.opendaylight.openflowjava.protocol.api.connection;
 import java.net.InetAddress;
 
 /**
+ * Handler for a swictch connection.
+ *
  * @author mirehak
  * @author michal.polkorab
  *
@@ -19,11 +21,15 @@ import java.net.InetAddress;
 public interface SwitchConnectionHandler {
 
     /**
+     * Invoked when a switch connects.
+     *
      * @param connection to switch proving message sending/receiving, connection management
      */
     void onSwitchConnected(ConnectionAdapter connection);
 
     /**
+     * Invoked to determine if a switch connection should be accepted.
+     *
      * @param switchAddress address of incoming connection (address + port)
      * @return true, if connection from switch having given address shell be accepted; false otherwise
      */

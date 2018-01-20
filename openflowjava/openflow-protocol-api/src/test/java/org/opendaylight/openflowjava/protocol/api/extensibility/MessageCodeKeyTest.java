@@ -16,13 +16,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
 
 /**
- * @author michal.polkorab
+ * Unit tests for MessageCodeKey.
  *
+ * @author michal.polkorab
  */
 public class MessageCodeKeyTest {
 
     /**
-     * Test MessageCodeKey equals and hashCode
+     * Test MessageCodeKey equals and hashCode.
      */
     @Test
     public void test() {
@@ -47,7 +48,7 @@ public class MessageCodeKeyTest {
     }
 
     /**
-     * Test MessageCodeKey equals - additional test
+     * Test MessageCodeKey equals - additional test.
      */
     @Test
     public void testEquals() {
@@ -66,7 +67,7 @@ public class MessageCodeKeyTest {
     }
 
     /**
-     * Test MessageCodeKey toString()
+     * Test MessageCodeKey toString().
      */
     @Test
     public void testToString() {

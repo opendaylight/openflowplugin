@@ -11,15 +11,19 @@ package org.opendaylight.openflowjava.protocol.api.keys;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
+ * Key for an experimenter id serializer.
+ *
  * @author michal.polkorab
  * @param <T> class of object to be serialized
  */
 public class ExperimenterIdSerializerKey<T extends DataContainer> extends MessageTypeKey<T>
         implements ExperimenterSerializerKey {
 
-    private long experimenterId;
+    private final long experimenterId;
 
     /**
+     * Constructor.
+     *
      * @param msgVersion protocol wire version
      * @param experimenterId experimenter / vendor ID
      * @param objectClass class of object to be serialized
@@ -39,7 +43,7 @@ public class ExperimenterIdSerializerKey<T extends DataContainer> extends Messag
     }
 
     protected int hashCodeOfLong(long longValue) {
-        return (int) (longValue ^ (longValue >>> 32));
+        return (int) (longValue ^ longValue >>> 32);
     }
 
     @Override

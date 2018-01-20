@@ -9,18 +9,23 @@
 package org.opendaylight.openflowjava.protocol.api.connection;
 
 /**
- * @author michal.polkorab
+ * Threading configuration.
  *
+ * @author michal.polkorab
  */
 public interface ThreadConfiguration {
 
     /**
-     * @return desired number of workerThreads processing the Openflow I/O
+     * Returns the desired number of Openflow I/O worker threads.
+     *
+     * @return desired number of worker threads processing the Openflow I/O
      */
     int getWorkerThreadCount();
 
     /**
-     * @return desired number of bossThreads registering incomming Openflow connections
+     * Returns the desired number of incoming Openflow connection threads.
+     *
+     * @return desired number of bossThreads registering incoming Openflow connections
      */
     int getBossThreadCount();
 }

@@ -16,13 +16,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
 
 /**
- * @author michal.polkorab
+ * Unit tests for MessageTypeKey.
  *
+ * @author michal.polkorab
  */
 public class MessageTypeKeyTest {
 
     /**
-     * Test MessageTypeKey equals and hashCode
+     * Test MessageTypeKey equals and hashCode.
      */
     @Test
     public void test() {
@@ -44,20 +45,18 @@ public class MessageTypeKeyTest {
     }
 
     /**
-     * Test MessageTypeKey equals - additional test
+     * Test MessageTypeKey equals - additional test.
      */
     @Test
     public void testEquals() {
-        MessageTypeKey<?> key1;
-        MessageTypeKey<?> key2;
-        key1 = new MessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, BarrierInput.class);
+        MessageTypeKey<?> key1 = new MessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, BarrierInput.class);
 
         Assert.assertTrue("Wrong equal to identical object.", key1.equals(key1));
         Assert.assertFalse("Wrong equal to null.", key1.equals(null));
         Assert.assertFalse("Wrong equal to different class.", key1.equals(new Object()));
 
         key1 = new MessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, null);
-        key2 = new MessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, BarrierInput.class);
+        MessageTypeKey<?> key2 = new MessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, BarrierInput.class);
         Assert.assertFalse("Wrong equal by msgType.", key1.equals(key2));
 
         key2 = new MessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, null);
@@ -65,7 +64,7 @@ public class MessageTypeKeyTest {
     }
 
     /**
-     * Test MessageTypeKey toString()
+     * Test MessageTypeKey toString().
      */
     @Test
     public void testToString() {

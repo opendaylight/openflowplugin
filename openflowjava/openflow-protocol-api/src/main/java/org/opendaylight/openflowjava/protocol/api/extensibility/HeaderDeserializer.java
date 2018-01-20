@@ -11,13 +11,15 @@ import io.netty.buffer.ByteBuf;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
+ * Deserializes headers.
+ *
  * @author michal.polkorab
  * @param <E> output message type
  */
 public interface HeaderDeserializer<E extends DataContainer> extends OFGeneralDeserializer {
 
     /**
-     * Deserializes byte message headers
+     * Deserializes a byte message headers.
      *
      * @param rawMessage message as bytes in ByteBuf
      * @return POJO/DTO

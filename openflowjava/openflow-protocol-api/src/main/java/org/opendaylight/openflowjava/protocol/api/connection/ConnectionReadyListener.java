@@ -9,13 +9,14 @@
 package org.opendaylight.openflowjava.protocol.api.connection;
 
 /**
- * @author mirehak
+ * Listener that is notified when a switch connection is ready.
  *
+ * @author mirehak
  */
 public interface ConnectionReadyListener {
 
     /**
-     * fired when connection becomes ready-to-use
+     * Fired when connection becomes ready-to-use.
      */
     void onConnectionReady();
 }

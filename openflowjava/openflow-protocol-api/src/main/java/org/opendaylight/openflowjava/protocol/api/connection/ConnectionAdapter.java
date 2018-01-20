@@ -16,74 +16,89 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
 
 /**
+ * Manages a switch connection.
+ *
  * @author mirehak
  * @author michal.polkorab
  */
 public interface ConnectionAdapter extends OpenflowProtocolService {
 
     /**
-     * disconnect corresponding switch
+     * Disconnect corresponding switch.
+     *
      * @return future set to true, when disconnect completed
      */
     Future<Boolean> disconnect();
 
     /**
+     * Determines if the connection to the switch is alive.
+     *
      * @return true, if connection to switch is alive
      */
     boolean isAlive();
 
     /**
+     * Returns the address of the connected switch.
+     *
      * @return address of the remote end - address of a switch if connected
      */
     InetSocketAddress getRemoteAddress();
 
     /**
+     * Sets the protocol message listener.
+     *
      * @param messageListener here will be pushed all messages from switch
      */
     void setMessageListener(OpenflowProtocolListener messageListener);
 
     /**
+     * Sets the system message listener.
+     *
      * @param systemListener here will be pushed all system messages from library
      */
     void setSystemListener(SystemNotificationsListener systemListener);
 
     /**
-     * Set handler for alien messages received from device
+     * Set handler for alien messages received from device.
+     *
      * @param alienMessageListener here will be pushed all alien messages from switch
      */
     void setAlienMessageListener(AlienMessageListener alienMessageListener);
 
     /**
-     * Throws exception if any of required listeners is missing
+     * Throws exception if any of required listeners is missing.
      */
     void checkListeners();
 
     /**
-     * notify listener about connection ready-to-use event
+     * Notify listener about connection ready-to-use event.
      */
     void fireConnectionReadyNotification();
 
     /**
-     * set listener for connection became ready-to-use event
+     * Set listener for connection became ready-to-use event.
+     *
      * @param connectionReadyListener listens to connection ready event
      */
     void setConnectionReadyListener(ConnectionReadyListener connectionReadyListener);
 
     /**
-     * sets option for automatic channel reading;
-     * if set to false, incoming messages won't be read
+     * Sets option for automatic channel reading - if set to false, incoming messages won't be read.
      *
      * @param autoRead target value to be switched to
      */
     void setAutoRead(boolean autoRead);
 
     /**
-     * @return true, if channel is configured to autoread
+     * Determines if the channel is configured to auto-read.
+     *
+     * @return true, if channel is configured to auto-read
      */
     boolean isAutoRead();
 
     /**
-     * Registers a new bypass outbound queue
+     * Registers a new bypass outbound queue.
+     *
      * @param <T> handler type
      * @param handler queue handler
      * @param maxQueueDepth max amount of not confirmed messaged in queue (i.e. edge for barrier message)

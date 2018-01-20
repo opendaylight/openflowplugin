@@ -11,12 +11,16 @@ package org.opendaylight.openflowjava.protocol.api.keys;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.instruction.container.instruction.choice.ExperimenterIdCase;
 
 /**
+ * Key for an experimenter instruction serializer.
+ *
  * @author michal.polkorab
  */
 public final class ExperimenterInstructionSerializerKey extends InstructionSerializerKey<ExperimenterIdCase>
         implements ExperimenterSerializerKey {
 
     /**
+     * Constructor.
+     *
      * @param msgVersion protocol wire version
      * @param experimenterId experimenter / vendor ID
      */
