@@ -9,18 +9,17 @@
 package org.opendaylight.openflowjava.protocol.impl.serialization.action;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 
 /**
- * @author michal.polkorab
+ * Base class for an action serializer.
  *
+ * @author michal.polkorab
  */
-public abstract class AbstractActionSerializer implements OFSerializer<Action>,
-        HeaderSerializer<Action>{
+public abstract class AbstractActionSerializer implements OFSerializer<Action>, HeaderSerializer<Action> {
 
     @Override
     public void serialize(Action input, ByteBuf outBuffer) {
@@ -35,12 +34,12 @@ public abstract class AbstractActionSerializer implements OFSerializer<Action>,
     }
 
     /**
-     * @return numeric representation of action type
+     * Returns the numeric representation of action type.
      */
     protected abstract int getType();
 
     /**
-     * @return action length
+     * Returns the action length.
      */
     protected abstract int getLength();
 

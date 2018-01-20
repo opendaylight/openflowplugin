@@ -68,7 +68,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 //import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.Group;
 
 /**
- * Initializes serializer registry with action serializers
+ * Initializes serializer registry with action serializers.
+ *
  * @author michal.polkorab
  */
 public final class ActionsInitializer {
@@ -78,7 +79,8 @@ public final class ActionsInitializer {
     }
 
     /**
-     * Registers action serializers into provided registry
+     * Registers action serializers into provided registry.
+     *
      * @param serializerRegistry registry to be initialized with action serializers
      */
     public static void registerActionSerializers(SerializerRegistry serializerRegistry) {

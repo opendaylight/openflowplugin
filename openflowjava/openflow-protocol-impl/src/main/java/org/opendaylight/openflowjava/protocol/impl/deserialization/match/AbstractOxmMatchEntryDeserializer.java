@@ -8,7 +8,6 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
@@ -17,8 +16,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 
 /**
- * @author michal.polkorab
+ * Base class for an Oxm match entry deserializer.
  *
+ * @author michal.polkorab
  */
 public abstract class AbstractOxmMatchEntryDeserializer implements HeaderDeserializer<MatchEntry> {
 
@@ -29,19 +29,20 @@ public abstract class AbstractOxmMatchEntryDeserializer implements HeaderDeseria
     }
 
     /**
-     * @return oxm_field class
+     * Returns the oxm_field class.
      */
     protected abstract Class<? extends MatchField> getOxmField();
 
     /**
-     * @return oxm_class class
+     * Returns the oxm_class class.
      */
     protected abstract Class<? extends OxmClassBase> getOxmClass();
 
     /**
      * Prepares match entry header - sets oxm_class, oxm_field, hasMask
      *  + sets the buffer.readerIndex() to the end of match entry
-     *  - where augmentation starts
+     *  - where augmentation starts.
+     *
      * @param oxmClass oxm class type
      * @param oxmField oxm field type
      * @param input input bytebuf

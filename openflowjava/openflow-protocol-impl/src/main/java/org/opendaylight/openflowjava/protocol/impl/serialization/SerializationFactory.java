@@ -9,13 +9,14 @@
 package org.opendaylight.openflowjava.protocol.impl.serialization;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
 /**
+ * Serializes messages.
+ *
  * @author michal.polkorab
  * @author timotej.kubas
  */
@@ -24,7 +25,8 @@ public class SerializationFactory {
     private SerializerRegistry registry;
 
     /**
-     * Transforms POJO message into ByteBuf
+     * Transforms POJO message into ByteBuf.
+     *
      * @param version version used for encoding received message
      * @param out ByteBuf for storing and sending transformed message
      * @param message POJO message
@@ -36,6 +38,8 @@ public class SerializationFactory {
     }
 
     /**
+     * Sets the SerializerRegistry.
+     *
      * @param serializerRegistry registry with serializers
      */
     public void setSerializerTable(SerializerRegistry serializerRegistry) {

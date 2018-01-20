@@ -8,7 +8,6 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
@@ -21,8 +20,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.metadata._case.MetadataBuilder;
 
 /**
- * @author michal.polkorab
+ * Translates OxmMetadata messages.
  *
+ * @author michal.polkorab
  */
 public class OxmMetadataDeserializer  extends AbstractOxmMatchEntryDeserializer
         implements OFDeserializer<MatchEntry> {
@@ -35,7 +35,7 @@ public class OxmMetadataDeserializer  extends AbstractOxmMatchEntryDeserializer
     }
 
     private static void addMetadataValue(ByteBuf input, MatchEntryBuilder builder) {
-        MetadataCaseBuilder caseBuilder = new MetadataCaseBuilder();
+        final MetadataCaseBuilder caseBuilder = new MetadataCaseBuilder();
         MetadataBuilder metadataBuilder = new MetadataBuilder();
         byte[] metadataBytes = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
         input.readBytes(metadataBytes);

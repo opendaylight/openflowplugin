@@ -20,8 +20,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ipv6.nd.target._case.Ipv6NdTargetBuilder;
 
 /**
- * @author michal.polkorab
+ * Translates OxmIpv6NdTarget messages.
  *
+ * @author michal.polkorab
  */
 public class OxmIpv6NdTargetDeserializer extends AbstractOxmMatchEntryDeserializer
         implements OFDeserializer<MatchEntry> {
