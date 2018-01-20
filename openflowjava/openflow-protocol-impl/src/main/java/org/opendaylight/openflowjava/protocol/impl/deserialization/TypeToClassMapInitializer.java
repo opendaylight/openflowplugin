@@ -8,9 +8,9 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization;
 
 import java.util.Map;
+import org.opendaylight.openflowjava.protocol.api.keys.TypeToClassKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.TypeToClassInitHelper;
-import org.opendaylight.openflowjava.protocol.api.keys.TypeToClassKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;

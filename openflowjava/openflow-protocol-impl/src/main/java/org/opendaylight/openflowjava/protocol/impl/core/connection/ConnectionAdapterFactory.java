@@ -13,15 +13,19 @@ import io.netty.channel.Channel;
 import java.net.InetSocketAddress;
 
 /**
+ * Factory for creating ConnectionFacade instances.
+ *
  * @author mirehak
  * @author michal.polkorab
  */
 public interface ConnectionAdapterFactory {
 
     /**
+     * Creates a ConnectionFacade.
+     *
      * @param ch {@link Channel} channel
      * @param address {@link InetSocketAddress}
-     * @param useBarrier
+     * @param useBarrier true to use a barrier, false otherwise
      * @return connection adapter tcp-implementation
      */
     ConnectionFacade createConnectionFacade(Channel ch, InetSocketAddress address, boolean useBarrier);

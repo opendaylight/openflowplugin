@@ -34,11 +34,11 @@ import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
+import org.opendaylight.openflowjava.protocol.api.keys.TypeToClassKey;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializationFactory;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializationFactory;
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializerRegistryImpl;
-import org.opendaylight.openflowjava.protocol.api.keys.TypeToClassKey;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.TransportProtocol;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
@@ -52,7 +52,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Exposed class for server handling<br>
+ * Exposed class for server handling. <br>
  * C - {@link MatchEntrySerializerKey} parameter representing oxm_class (see specification)<br>
  * F - {@link MatchEntrySerializerKey} parameter representing oxm_field (see specification)
  * @author mirehak
@@ -97,7 +97,7 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     @Override
     public ListenableFuture<Boolean> shutdown() {
         LOG.debug("Shutdown summoned");
-        if(serverFacade == null){
+        if (serverFacade == null) {
             LOG.warn("Can not shutdown - not configured or started");
             throw new IllegalStateException("SwitchConnectionProvider is not started or not configured.");
         }
@@ -105,6 +105,7 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     }
 
     @Override
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public ListenableFuture<Boolean> startup() {
         LOG.debug("Startup summoned");
         ListenableFuture<Boolean> result = null;
@@ -115,7 +116,7 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
             }
             new Thread(serverFacade).start();
             result = serverFacade.getIsOnlineFuture();
-        } catch (final Exception e) {
+        } catch (RuntimeException e) {
             final SettableFuture<Boolean> exResult = SettableFuture.create();
             exResult.setException(e);
             result = exResult;
@@ -123,9 +124,6 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
         return result;
     }
 
-    /**
-     * @return
-     */
     private ServerFacade createAndConfigureServer() {
         LOG.debug("Configuring ..");
         ServerFacade server = null;
@@ -142,7 +140,7 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
         // TODO : Add option to disable Epoll.
         boolean isEpollEnabled = Epoll.isAvailable();
 
-        if ((TransportProtocol.TCP.equals(transportProtocol) || TransportProtocol.TLS.equals(transportProtocol))) {
+        if (TransportProtocol.TCP.equals(transportProtocol) || TransportProtocol.TLS.equals(transportProtocol)) {
             server = new TcpHandler(connConfig.getAddress(), connConfig.getPort());
             final TcpChannelInitializer channelInitializer = factory.createPublishingChannelInitializer();
             ((TcpHandler) server).setChannelInitializer(channelInitializer);
@@ -152,7 +150,7 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
             connectionInitializer = new TcpConnectionInitializer(workerGroupFromTcpHandler, isEpollEnabled);
             connectionInitializer.setChannelInitializer(channelInitializer);
             connectionInitializer.run();
-        } else if (TransportProtocol.UDP.equals(transportProtocol)){
+        } else if (TransportProtocol.UDP.equals(transportProtocol)) {
             server = new UdpHandler(connConfig.getAddress(), connConfig.getPort());
             ((UdpHandler) server).initiateEventLoopGroups(connConfig.getThreadConfiguration(), isEpollEnabled);
             ((UdpHandler) server).setChannelInitializer(factory.createUdpChannelInitializer());
@@ -163,9 +161,6 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
         return server;
     }
 
-    /**
-     * @return servers
-     */
     public ServerFacade getServerFacade() {
         return serverFacade;
     }
@@ -210,8 +205,8 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     }
 
     @Override
-    public <C extends OxmClassBase, F extends MatchField> void registerMatchEntrySerializer(final MatchEntrySerializerKey<C, F> key,
-            final OFGeneralSerializer serializer) {
+    public <C extends OxmClassBase, F extends MatchField> void registerMatchEntrySerializer(
+            final MatchEntrySerializerKey<C, F> key, final OFGeneralSerializer serializer) {
         serializerRegistry.registerSerializer(key, serializer);
     }
 
@@ -229,13 +224,13 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
 
     @Override
     public void registerExperimenterMessageDeserializer(ExperimenterIdDeserializerKey key,
-                                                        OFDeserializer<? extends ExperimenterDataOfChoice> deserializer) {
+            OFDeserializer<? extends ExperimenterDataOfChoice> deserializer) {
         deserializerRegistry.registerDeserializer(key, deserializer);
     }
 
     @Override
     public void registerMultipartReplyMessageDeserializer(ExperimenterIdDeserializerKey key,
-                                                          OFDeserializer<? extends ExperimenterDataOfChoice> deserializer) {
+            OFDeserializer<? extends ExperimenterDataOfChoice> deserializer) {
         deserializerRegistry.registerDeserializer(key, deserializer);
     }
 
@@ -258,8 +253,9 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     }
 
     @Override
-    public void registerExperimenterMessageSerializer(ExperimenterIdSerializerKey<? extends ExperimenterDataOfChoice> key,
-                                                      OFSerializer<? extends ExperimenterDataOfChoice> serializer) {
+    public void registerExperimenterMessageSerializer(
+            ExperimenterIdSerializerKey<? extends ExperimenterDataOfChoice> key,
+            OFSerializer<? extends ExperimenterDataOfChoice> serializer) {
         serializerRegistry.registerSerializer(key, serializer);
     }
 
@@ -275,11 +271,13 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
         serializerRegistry.registerSerializer(key, serializer);
     }
 
-    @Override
     /**
-     * @deprecated Since we have used ExperimenterIdMeterSubTypeSerializerKey as MeterBandSerializer's key, in order to avoid
-     * the occurrence of an error, we should discard this function
+     * Deprecated.
+     *
+     * @deprecated Since we have used ExperimenterIdMeterSubTypeSerializerKey as MeterBandSerializer's key, in order
+     *     to avoid the occurrence of an error, we should discard this function.
      */
+    @Override
     @Deprecated
     public void registerMeterBandSerializer(final ExperimenterIdSerializerKey<MeterBandExperimenterCase> key,
             final OFSerializer<MeterBandExperimenterCase> serializer) {
@@ -287,8 +285,9 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     }
 
     @Override
-    public void registerMeterBandSerializer(final ExperimenterIdMeterSubTypeSerializerKey<MeterBandExperimenterCase> key,
-                                            final OFSerializer<MeterBandExperimenterCase> serializer) {
+    public void registerMeterBandSerializer(
+            final ExperimenterIdMeterSubTypeSerializerKey<MeterBandExperimenterCase> key,
+            final OFSerializer<MeterBandExperimenterCase> serializer) {
         serializerRegistry.registerSerializer(key, serializer);
     }
 
@@ -302,14 +301,14 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
         return this.connConfig;
     }
 
-     @Override
+    @Override
     public <K> void registerSerializer(MessageTypeKey<K> key, OFGeneralSerializer serializer) {
         serializerRegistry.registerSerializer(key, serializer);
     }
 
     @Override
     public void registerDeserializer(MessageCodeKey key, OFGeneralDeserializer deserializer) {
-       deserializerRegistry.registerDeserializer(key, deserializer);
+        deserializerRegistry.registerDeserializer(key, deserializer);
     }
 
     @Override

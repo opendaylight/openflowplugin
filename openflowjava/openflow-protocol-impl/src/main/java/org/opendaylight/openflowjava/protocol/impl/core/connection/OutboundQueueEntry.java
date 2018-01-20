@@ -45,22 +45,22 @@ final class OutboundQueueEntry {
     private OutboundQueueException lastException = null;
     private Function<OfHeader, Boolean> isCompletedFunction = DEFAULT_IS_COMPLETE;
 
-    void commit(final OfHeader message, final FutureCallback<OfHeader> callback) {
-        commit(message, callback, DEFAULT_IS_COMPLETE);
+    void commit(final OfHeader messageToCommit, final FutureCallback<OfHeader> commitCallback) {
+        commit(messageToCommit, commitCallback, DEFAULT_IS_COMPLETE);
     }
 
-    void commit(final OfHeader message, final FutureCallback<OfHeader> callback,
-            final Function<OfHeader, Boolean> isCompletedFunction) {
+    void commit(final OfHeader messageToCommit, final FutureCallback<OfHeader> commitCallback,
+            final Function<OfHeader, Boolean> isCommitCompletedFunction) {
         if (this.completed) {
             LOG.warn("Can't commit a completed message.");
-            if (callback != null) {
-                callback.onFailure(lastException);
+            if (commitCallback != null) {
+                commitCallback.onFailure(lastException);
             }
         } else {
-            this.message = message;
-            this.callback = callback;
-            this.barrier = message instanceof BarrierInput;
-            this.isCompletedFunction = isCompletedFunction;
+            this.message = messageToCommit;
+            this.callback = commitCallback;
+            this.barrier = messageToCommit instanceof BarrierInput;
+            this.isCompletedFunction = isCommitCompletedFunction;
 
             // Volatile write, needs to be last
             this.committed = true;

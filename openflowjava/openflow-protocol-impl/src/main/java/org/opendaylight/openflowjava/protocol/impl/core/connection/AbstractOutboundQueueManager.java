@@ -35,7 +35,7 @@ abstract class AbstractOutboundQueueManager<T extends OutboundQueueHandler, O ex
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractOutboundQueueManager.class);
 
-    private static enum PipelineState {
+    private enum PipelineState {
         /**
          * Netty thread is potentially idle, no assumptions
          * can be made about its state.
@@ -79,12 +79,7 @@ abstract class AbstractOutboundQueueManager<T extends OutboundQueueHandler, O ex
     protected boolean shuttingDown;
 
     // Passed to executor to request triggering of flush
-    protected final Runnable flushRunnable = new Runnable() {
-        @Override
-        public void run() {
-            flush();
-        }
-    };
+    protected final Runnable flushRunnable = () -> flush();
 
     AbstractOutboundQueueManager(final ConnectionAdapterImpl parent, final InetSocketAddress address, final T handler) {
         this.parent = Preconditions.checkNotNull(parent);
@@ -98,7 +93,7 @@ abstract class AbstractOutboundQueueManager<T extends OutboundQueueHandler, O ex
     }
 
     /**
-     * Method has to initialize some child of {@link AbstractStackedOutboundQueue}
+     * Method has to initialize some child of {@link AbstractStackedOutboundQueue}.
      *
      * @return correct implementation of StacketOutboundqueue
      */
@@ -224,15 +219,15 @@ abstract class AbstractOutboundQueueManager<T extends OutboundQueueHandler, O ex
         final PipelineState localState = state;
         LOG.debug("Synchronize on pipeline state {}", localState);
         switch (localState) {
-        case READING:
-            // Netty thread is currently reading, it will flush the pipeline once it
-            // finishes reading. This is a no-op situation.
-            break;
-        case WRITING:
-        case IDLE:
-        default:
-            // We cannot rely on the change being flushed, schedule a request
-            scheduleFlush();
+            case READING:
+                // Netty thread is currently reading, it will flush the pipeline once it
+                // finishes reading. This is a no-op situation.
+                break;
+            case WRITING:
+            case IDLE:
+            default:
+                // We cannot rely on the change being flushed, schedule a request
+                scheduleFlush();
         }
     }
 
@@ -251,9 +246,6 @@ abstract class AbstractOutboundQueueManager<T extends OutboundQueueHandler, O ex
      * Wraps outgoing message and includes listener attached to this message
      * which is send to OFEncoder for serialization. Correct wrapper is
      * selected by communication pipeline.
-     *
-     * @param message
-     * @param now
      */
     void writeMessage(final OfHeader message, final long now) {
         final Object wrapper = makeMessageListenerWrapper(message);
@@ -264,8 +256,6 @@ abstract class AbstractOutboundQueueManager<T extends OutboundQueueHandler, O ex
      * Wraps outgoing message and includes listener attached to this message
      * which is send to OFEncoder for serialization. Correct wrapper is
      * selected by communication pipeline.
-     *
-     * @return
      */
     protected Object makeMessageListenerWrapper(@Nonnull final OfHeader msg) {
         Preconditions.checkArgument(msg != null);
@@ -277,15 +267,9 @@ abstract class AbstractOutboundQueueManager<T extends OutboundQueueHandler, O ex
     }
 
     /* NPE are coming from {@link OFEncoder#encode} from catch block and we don't wish to lost it */
-    private static final GenericFutureListener<Future<Void>> LOG_ENCODER_LISTENER = new GenericFutureListener<Future<Void>>() {
-
-        private final Logger LOG = LoggerFactory.getLogger(GenericFutureListener.class);
-
-        @Override
-        public void operationComplete(final Future<Void> future) throws Exception {
-            if (future.cause() != null) {
-                LOG.warn("Message encoding fail !", future.cause());
-            }
+    private static final GenericFutureListener<Future<Void>> LOG_ENCODER_LISTENER = future -> {
+        if (future.cause() != null) {
+            LOG.warn("Message encoding fail !", future.cause());
         }
     };
 
@@ -302,10 +286,10 @@ abstract class AbstractOutboundQueueManager<T extends OutboundQueueHandler, O ex
         } else {
             close();
             if (currentQueue.finishShutdown(parent.getChannel())) {
-		LOG.debug("Channel {} shutdown complete", parent.getChannel());
+                LOG.debug("Channel {} shutdown complete", parent.getChannel());
             } else {
-		LOG.trace("Channel {} current queue not completely flushed yet", parent.getChannel());
-		rescheduleFlush();
+                LOG.trace("Channel {} current queue not completely flushed yet", parent.getChannel());
+                rescheduleFlush();
             }
         }
     }

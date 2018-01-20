@@ -12,13 +12,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.PathType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class for storing keys
+ * Class for storing keys.
  *
  * @author michal.polkorab
  */
@@ -31,7 +30,8 @@ public final class SslKeyStore {
     }
 
     /**
-     * InputStream instance of key - key location is on classpath
+     * InputStream instance of key - key location is on classpath.
+     *
      * @param filename keystore location
      * @param pathType keystore location type - "classpath" or "path"
      *
@@ -40,26 +40,26 @@ public final class SslKeyStore {
     public static InputStream asInputStream(String filename, PathType pathType) {
         InputStream in;
         switch (pathType) {
-        case CLASSPATH:
-            in = SslKeyStore.class.getResourceAsStream(filename);
-            if (in == null) {
-                throw new IllegalStateException("KeyStore file not found: "
-                        + filename);
-            }
-            break;
-        case PATH:
-            LOG.debug("Current dir using System:"
-                    + System.getProperty("user.dir"));
-            File keystorefile = new File(filename);
-            try {
-                in = new FileInputStream(keystorefile);
-            } catch (FileNotFoundException e) {
-                throw new IllegalStateException("KeyStore file not found: "
-                        + filename,e);
-            }
-            break;
-        default:
-            throw new IllegalArgumentException("Unknown path type: " + pathType);
+            case CLASSPATH:
+                in = SslKeyStore.class.getResourceAsStream(filename);
+                if (in == null) {
+                    throw new IllegalStateException("KeyStore file not found: "
+                            + filename);
+                }
+                break;
+            case PATH:
+                LOG.debug("Current dir using System:"
+                        + System.getProperty("user.dir"));
+                File keystorefile = new File(filename);
+                try {
+                    in = new FileInputStream(keystorefile);
+                } catch (FileNotFoundException e) {
+                    throw new IllegalStateException("KeyStore file not found: "
+                            + filename,e);
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown path type: " + pathType);
         }
         return in;
     }

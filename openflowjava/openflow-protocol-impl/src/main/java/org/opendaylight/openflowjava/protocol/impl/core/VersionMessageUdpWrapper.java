@@ -12,14 +12,16 @@ import io.netty.buffer.ByteBuf;
 import java.net.InetSocketAddress;
 
 /**
- * Wraps received messages (includes version) and sender address
-
+ * Wraps received messages (includes version) and sender address.
+ *
  * @author michal.polkorab
  */
 public class VersionMessageUdpWrapper extends VersionMessageWrapper {
     private final InetSocketAddress address;
 
     /**
+     * Constructor.
+     *
      * @param version Openflow wire version
      * @param messageBuffer ByteBuf containing binary message
      * @param address sender address
@@ -29,9 +31,6 @@ public class VersionMessageUdpWrapper extends VersionMessageWrapper {
         this.address = address;
     }
 
-    /**
-     * @return sender address
-     */
     public InetSocketAddress getAddress() {
         return address;
     }

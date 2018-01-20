@@ -14,12 +14,10 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalCause;
 import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
-import io.netty.util.concurrent.GenericFutureListener;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
@@ -68,7 +66,7 @@ abstract class AbstractConnectionAdapter implements ConnectionAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractConnectionAdapter.class);
 
-    /** after this time, RPC future response objects will be thrown away (in minutes) */
+    /** after this time, RPC future response objects will be thrown away (in minutes). */
     private static final int RPC_RESPONSE_EXPIRATION = 1;
 
     private static final Exception QUEUE_FULL_EXCEPTION = new RejectedExecutionException("Output queue is full");
@@ -79,21 +77,19 @@ abstract class AbstractConnectionAdapter implements ConnectionAdapter {
      */
     private static final int DEFAULT_QUEUE_DEPTH = 1024;
 
-    protected static final RemovalListener<RpcResponseKey, ResponseExpectedRpcListener<?>> REMOVAL_LISTENER = new RemovalListener<RpcResponseKey, ResponseExpectedRpcListener<?>>() {
-        @Override
-        public void onRemoval(final RemovalNotification<RpcResponseKey, ResponseExpectedRpcListener<?>> notification) {
+    protected static final RemovalListener<RpcResponseKey, ResponseExpectedRpcListener<?>> REMOVAL_LISTENER =
+        notification -> {
             if (!notification.getCause().equals(RemovalCause.EXPLICIT)) {
                 notification.getValue().discard();
             }
-        }
-    };
+        };
 
     protected final Channel channel;
     protected final InetSocketAddress address;
     protected boolean disconnectOccured = false;
     protected final ChannelOutboundQueue output;
 
-    /** expiring cache for future rpcResponses */
+    /** expiring cache for future rpcResponses. */
     protected Cache<RpcResponseKey, ResponseExpectedRpcListener<?>> responseCache;
 
 
@@ -234,7 +230,8 @@ abstract class AbstractConnectionAdapter implements ConnectionAdapter {
     }
 
     /**
-     * Used only for testing purposes
+     * Used only for testing purposes.
+     *
      * @param cache replacement
      */
     @VisibleForTesting
@@ -243,15 +240,14 @@ abstract class AbstractConnectionAdapter implements ConnectionAdapter {
     }
 
     /**
-     * Return cached RpcListener or {@code null} if not cached
-     * @return
+     * Return cached RpcListener or {@code null} if not cached.
      */
     protected ResponseExpectedRpcListener<?> findRpcResponse(final RpcResponseKey key) {
         return responseCache.getIfPresent(key);
     }
 
     /**
-     * sends given message to switch, sending result or switch response will be reported via return value
+     * Sends given message to switch, sending result or switch response will be reported via return value.
      *
      * @param input message to send
      * @param responseClazz type of response
@@ -269,16 +265,17 @@ abstract class AbstractConnectionAdapter implements ConnectionAdapter {
      *         </li>
      *         </ul>
      */
-    protected <IN extends OfHeader, OUT extends OfHeader> ListenableFuture<RpcResult<OUT>> sendToSwitchExpectRpcResultFuture(
-            final IN input, final Class<OUT> responseClazz, final String failureInfo) {
+    protected <I extends OfHeader, O extends OfHeader> ListenableFuture<RpcResult<O>>
+            sendToSwitchExpectRpcResultFuture(final I input, final Class<O> responseClazz,
+                    final String failureInfo) {
         final RpcResponseKey key = new RpcResponseKey(input.getXid(), responseClazz.getName());
-        final ResponseExpectedRpcListener<OUT> listener = new ResponseExpectedRpcListener<>(input, failureInfo,
+        final ResponseExpectedRpcListener<O> listener = new ResponseExpectedRpcListener<>(input, failureInfo,
                 responseCache, key);
         return enqueueMessage(listener);
     }
 
     /**
-     * sends given message to switch, sending result will be reported via return value
+     * Sends given message to switch, sending result will be reported via return value.
      *
      * @param input message to send
      * @param failureInfo describes, what type of message caused failure by sending
@@ -305,25 +302,14 @@ abstract class AbstractConnectionAdapter implements ConnectionAdapter {
         return promise.getResult();
     }
 
-    /**
-     * @param resultFuture
-     * @param failureInfo
-     * @param errorSeverity
-     * @param message
-     * @return
-     */
     private static SettableFuture<Boolean> handleTransportChannelFuture(final ChannelFuture resultFuture) {
 
         final SettableFuture<Boolean> transportResult = SettableFuture.create();
 
-        resultFuture.addListener(new GenericFutureListener<io.netty.util.concurrent.Future<? super Void>>() {
-
-            @Override
-            public void operationComplete(final io.netty.util.concurrent.Future<? super Void> future) throws Exception {
-                transportResult.set(future.isSuccess());
-                if (!future.isSuccess()) {
-                    transportResult.setException(future.cause());
-                }
+        resultFuture.addListener(future -> {
+            transportResult.set(future.isSuccess());
+            if (!future.isSuccess()) {
+                transportResult.setException(future.cause());
             }
         });
         return transportResult;

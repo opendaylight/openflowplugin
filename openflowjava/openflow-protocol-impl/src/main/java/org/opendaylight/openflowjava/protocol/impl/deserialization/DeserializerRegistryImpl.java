@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Stores and registers deserializers
+ * Stores and registers deserializers.
  *
  * @author michal.polkorab
  */
@@ -33,7 +33,7 @@ public class DeserializerRegistryImpl implements DeserializerRegistry {
     private Map<MessageCodeKey, OFGeneralDeserializer> registry;
 
     /**
-     * Decoder table provisioning
+     * Decoder table provisioning.
      */
     @Override
     public void init() {
@@ -74,7 +74,7 @@ public class DeserializerRegistryImpl implements DeserializerRegistry {
 
     @Override
     public void registerDeserializer(MessageCodeKey key, OFGeneralDeserializer deserializer) {
-        if ((key == null) || (deserializer == null)) {
+        if (key == null || deserializer == null) {
             throw new IllegalArgumentException("MessageCodeKey or Deserializer is null");
         }
         OFGeneralDeserializer desInRegistry = registry.put(key, deserializer);

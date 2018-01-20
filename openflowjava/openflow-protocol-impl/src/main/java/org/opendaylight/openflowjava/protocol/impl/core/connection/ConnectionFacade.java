@@ -12,6 +12,8 @@ package org.opendaylight.openflowjava.protocol.impl.core.connection;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 
 /**
+ * Unifying super interface for a connection.
+ *
  * @author michal.polkorab
  */
 public interface ConnectionFacade extends MessageConsumer, ConnectionAdapter {

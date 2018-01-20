@@ -9,13 +9,15 @@
 package org.opendaylight.openflowjava.protocol.impl.core;
 
 /**
- * @author martin.uhlir
+ * Interface for a connection initializer.
  *
+ * @author martin.uhlir
  */
 public interface ConnectionInitializer {
 
     /**
-     * Initiates connection towards device
+     * Initiates connection towards device.
+     *
      * @param host - host IP
      * @param port - port number
      */

@@ -10,7 +10,8 @@ package org.opendaylight.openflowjava.protocol.impl.deserialization;
 
 
 /**
- * Class used as a key in {@link DeserializerRegistryImpl}
+ * Class used as a key in {@link DeserializerRegistryImpl}.
+ *
  * @author michal.polkorab
  * @author timotej.kubas
  */
@@ -20,6 +21,8 @@ public class MessageTypeCodeKey {
     private final short msgVersion;
 
     /**
+     * Constructor.
+     *
      * @param msgVersion protocol version
      * @param msgType type code of message
      */
@@ -29,14 +32,14 @@ public class MessageTypeCodeKey {
     }
 
     /**
-     * @return the msgType
+     * Returns the msgType.
      */
     public short getMsgType() {
         return msgType;
     }
 
     /**
-     * @return the msgVersion
+     * Returns the msgVersion.
      */
     public short getMsgVersion() {
         return msgVersion;
