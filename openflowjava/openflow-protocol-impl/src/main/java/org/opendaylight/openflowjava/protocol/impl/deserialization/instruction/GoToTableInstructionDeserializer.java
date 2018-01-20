@@ -9,7 +9,6 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.instruction;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderDeserializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -20,15 +19,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.InstructionBuilder;
 
 /**
- * @author michal.polkorab
+ * Deserializer for goto table instructions.
  *
+ * @author michal.polkorab
  */
 public class GoToTableInstructionDeserializer  implements OFDeserializer<Instruction>,
         HeaderDeserializer<Instruction> {
 
     @Override
     public Instruction deserialize(ByteBuf input) {
-        InstructionBuilder builder = new InstructionBuilder();
+        final InstructionBuilder builder = new InstructionBuilder();
         GotoTableCaseBuilder caseBuilder = new GotoTableCaseBuilder();
         GotoTableBuilder instructionBuilder = new GotoTableBuilder();
         input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);

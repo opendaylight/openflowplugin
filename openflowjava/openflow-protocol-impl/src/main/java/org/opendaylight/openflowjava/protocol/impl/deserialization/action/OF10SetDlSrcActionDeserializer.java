@@ -19,14 +19,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 
 /**
- * @author michal.polkorab
+ * OF10SetDlSrcActionDeserializer.
  *
+ * @author michal.polkorab
  */
 public class OF10SetDlSrcActionDeserializer extends AbstractActionDeserializer {
 
     @Override
     public Action deserialize(final ByteBuf input) {
-        ActionBuilder builder = new ActionBuilder();
+        final ActionBuilder builder = new ActionBuilder();
         input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
         SetDlSrcCaseBuilder caseBuilder = new SetDlSrcCaseBuilder();
         SetDlSrcActionBuilder actionBuilder = new SetDlSrcActionBuilder();

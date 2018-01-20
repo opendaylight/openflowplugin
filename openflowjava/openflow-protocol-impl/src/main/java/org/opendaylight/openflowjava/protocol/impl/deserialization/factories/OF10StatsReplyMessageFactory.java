@@ -62,7 +62,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table._case.multipart.reply.table.TableStatsBuilder;
 
 /**
- * Translates StatsReply messages (OpenFlow v1.0)
+ * Translates StatsReply messages (OpenFlow v1.0).
  *
  * @author michal.polkorab
  */
@@ -119,7 +119,7 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
     }
 
     private static MultipartReplyDescCase setDesc(ByteBuf input) {
-        MultipartReplyDescCaseBuilder caseBuilder = new MultipartReplyDescCaseBuilder();
+        final MultipartReplyDescCaseBuilder caseBuilder = new MultipartReplyDescCaseBuilder();
         MultipartReplyDescBuilder descBuilder = new MultipartReplyDescBuilder();
         byte[] mfrDescBytes = new byte[DESC_STR_LEN];
         input.readBytes(mfrDescBytes);
@@ -151,7 +151,7 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
         List<FlowStats> flowStatsList = new ArrayList<>();
         while (input.readableBytes() > 0) {
             FlowStatsBuilder flowStatsBuilder = new FlowStatsBuilder();
-            int length = input.readUnsignedShort();
+            final int length = input.readUnsignedShort();
             flowStatsBuilder.setTableId(input.readUnsignedByte());
             input.skipBytes(PADDING_IN_FLOW_STATS_HEADER);
             OFDeserializer<MatchV10> matchDeserializer = registry.getDeserializer(
@@ -184,7 +184,7 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
     }
 
     private static MultipartReplyAggregateCase setAggregate(ByteBuf input) {
-        MultipartReplyAggregateCaseBuilder caseBuilder = new MultipartReplyAggregateCaseBuilder();
+        final MultipartReplyAggregateCaseBuilder caseBuilder = new MultipartReplyAggregateCaseBuilder();
         MultipartReplyAggregateBuilder builder = new MultipartReplyAggregateBuilder();
         byte[] packetCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
         input.readBytes(packetCount);
@@ -199,7 +199,7 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
     }
 
     private static MultipartReplyTableCase setTable(ByteBuf input) {
-        MultipartReplyTableCaseBuilder caseBuilder = new MultipartReplyTableCaseBuilder();
+        final MultipartReplyTableCaseBuilder caseBuilder = new MultipartReplyTableCaseBuilder();
         MultipartReplyTableBuilder builder = new MultipartReplyTableBuilder();
         List<TableStats> tableStatsList = new ArrayList<>();
         // TODO - replace ">= TABLE_STATS_LENGTH" with "> 0" after fix in OVS switch
@@ -306,14 +306,15 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
 
     private MultipartReplyExperimenterCase setExperimenter(ByteBuf input) {
         final long expId = input.readUnsignedInt();
-        final OFDeserializer<ExperimenterDataOfChoice> deserializer = registry.getDeserializer(ExperimenterDeserializerKeyFactory.createMultipartReplyVendorMessageDeserializerKey(
+        final OFDeserializer<ExperimenterDataOfChoice> deserializer = registry.getDeserializer(
+                ExperimenterDeserializerKeyFactory.createMultipartReplyVendorMessageDeserializerKey(
                 EncodeConstants.OF10_VERSION_ID, expId));
 
         final MultipartReplyExperimenterBuilder mpExperimenterBld = new MultipartReplyExperimenterBuilder()
                 .setExperimenter(new ExperimenterId(expId))
                 .setExperimenterDataOfChoice(deserializer.deserialize(input));
-        final MultipartReplyExperimenterCaseBuilder mpReplyExperimenterCaseBld = new MultipartReplyExperimenterCaseBuilder()
-                .setMultipartReplyExperimenter(mpExperimenterBld.build());
+        final MultipartReplyExperimenterCaseBuilder mpReplyExperimenterCaseBld =
+                new MultipartReplyExperimenterCaseBuilder().setMultipartReplyExperimenter(mpExperimenterBld.build());
         return mpReplyExperimenterCaseBld.build();
     }
 

@@ -9,7 +9,6 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.BadActionCodeV10;
@@ -23,7 +22,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessageBuilder;
 
 /**
- * Translates Error messages (OpenFlow v1.0)
+ * Translates Error messages (OpenFlow v1.0).
+ *
  * @author michal.polkorab
  */
 public class OF10ErrorMessageFactory implements OFDeserializer<ErrorMessage> {
@@ -64,69 +64,69 @@ public class OF10ErrorMessageFactory implements OFDeserializer<ErrorMessage> {
         int code = rawMessage.readUnsignedShort();
         if (type != null) {
             switch (type) {
-            case HELLOFAILED:
-            {
-                HelloFailedCodeV10 errorCode = HelloFailedCodeV10.forValue(code);
-                if (errorCode != null) {
-                    setCode(builder, errorCode.getIntValue(), errorCode.name());
-                } else {
-                    setUnknownCode(builder, code);
+                case HELLOFAILED:
+                {
+                    HelloFailedCodeV10 errorCode = HelloFailedCodeV10.forValue(code);
+                    if (errorCode != null) {
+                        setCode(builder, errorCode.getIntValue(), errorCode.name());
+                    } else {
+                        setUnknownCode(builder, code);
+                    }
+                    break;
                 }
-                break;
-            }
-            case BADREQUEST:
-            {
-                BadRequestCodeV10 errorCode = BadRequestCodeV10.forValue(code);
-                if (errorCode != null) {
-                    setCode(builder, errorCode.getIntValue(), errorCode.name());
-                } else {
-                    setUnknownCode(builder, code);
+                case BADREQUEST:
+                {
+                    BadRequestCodeV10 errorCode = BadRequestCodeV10.forValue(code);
+                    if (errorCode != null) {
+                        setCode(builder, errorCode.getIntValue(), errorCode.name());
+                    } else {
+                        setUnknownCode(builder, code);
+                    }
+                    break;
                 }
-                break;
-            }
-            case BADACTION:
-            {
-                BadActionCodeV10 errorCode = BadActionCodeV10.forValue(code);
-                if (errorCode != null) {
-                    setCode(builder, errorCode.getIntValue(), errorCode.name());
-                } else {
-                    setUnknownCode(builder, code);
+                case BADACTION:
+                {
+                    BadActionCodeV10 errorCode = BadActionCodeV10.forValue(code);
+                    if (errorCode != null) {
+                        setCode(builder, errorCode.getIntValue(), errorCode.name());
+                    } else {
+                        setUnknownCode(builder, code);
+                    }
+                    break;
                 }
-                break;
-            }
-            case FLOWMODFAILED:
-            {
-                FlowModFailedCodeV10 errorCode = FlowModFailedCodeV10.forValue(code);
-                if (errorCode != null) {
-                    setCode(builder, errorCode.getIntValue(), errorCode.name());
-                } else {
-                    setUnknownCode(builder, code);
+                case FLOWMODFAILED:
+                {
+                    FlowModFailedCodeV10 errorCode = FlowModFailedCodeV10.forValue(code);
+                    if (errorCode != null) {
+                        setCode(builder, errorCode.getIntValue(), errorCode.name());
+                    } else {
+                        setUnknownCode(builder, code);
+                    }
+                    break;
                 }
-                break;
-            }
-            case PORTMODFAILED:
-            {
-                PortModFailedCodeV10 errorCode = PortModFailedCodeV10.forValue(code);
-                if (errorCode != null) {
-                    setCode(builder, errorCode.getIntValue(), errorCode.name());
-                } else {
-                    setUnknownCode(builder, code);
+                case PORTMODFAILED:
+                {
+                    PortModFailedCodeV10 errorCode = PortModFailedCodeV10.forValue(code);
+                    if (errorCode != null) {
+                        setCode(builder, errorCode.getIntValue(), errorCode.name());
+                    } else {
+                        setUnknownCode(builder, code);
+                    }
+                    break;
                 }
-                break;
-            }
-            case QUEUEOPFAILED:
-            {
-                QueueOpFailedCodeV10 errorCode = QueueOpFailedCodeV10.forValue(code);
-                if (errorCode != null) {
-                    setCode(builder, errorCode.getIntValue(), errorCode.name());
-                } else {
-                    setUnknownCode(builder, code);
+                case QUEUEOPFAILED:
+                {
+                    QueueOpFailedCodeV10 errorCode = QueueOpFailedCodeV10.forValue(code);
+                    if (errorCode != null) {
+                        setCode(builder, errorCode.getIntValue(), errorCode.name());
+                    } else {
+                        setUnknownCode(builder, code);
+                    }
+                    break;
                 }
-                break;
-            }
-            default:
-                setUnknownCode(builder, code);
-                break;
+                default:
+                    setUnknownCode(builder, code);
+                    break;
             }
         } else {
             setUnknownCode(builder, code);

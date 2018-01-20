@@ -15,8 +15,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetQueueConfigInputBuilder;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Translates GetQueueConfigInput messages.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class GetQueueConfigInputMessageFactory implements OFDeserializer<GetQueueConfigInput> {
 
@@ -24,7 +25,7 @@ public class GetQueueConfigInputMessageFactory implements OFDeserializer<GetQueu
     public GetQueueConfigInput deserialize(ByteBuf rawMessage) {
         GetQueueConfigInputBuilder builder = new GetQueueConfigInputBuilder();
         builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid((rawMessage.readUnsignedInt()));
+        builder.setXid(rawMessage.readUnsignedInt());
         builder.setPort(new PortNumber(rawMessage.readUnsignedInt()));
         return builder.build();
     }

@@ -9,7 +9,6 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.instruction;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderDeserializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -20,18 +19,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.InstructionBuilder;
 
 /**
- * @author michal.polkorab
+ * Deserializer for write metadata instructions.
  *
+ * @author michal.polkorab
  */
 public class WriteMetadataInstructionDeserializer implements OFDeserializer<Instruction>,
         HeaderDeserializer<Instruction> {
 
     @Override
     public Instruction deserialize(ByteBuf input) {
-        InstructionBuilder builder = new InstructionBuilder();
+        final InstructionBuilder builder = new InstructionBuilder();
         input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
         input.skipBytes(InstructionConstants.PADDING_IN_WRITE_METADATA);
-        WriteMetadataCaseBuilder caseBuilder = new WriteMetadataCaseBuilder();
+        final WriteMetadataCaseBuilder caseBuilder = new WriteMetadataCaseBuilder();
         WriteMetadataBuilder metadataBuilder = new WriteMetadataBuilder();
         byte[] metadata = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
         input.readBytes(metadata);
