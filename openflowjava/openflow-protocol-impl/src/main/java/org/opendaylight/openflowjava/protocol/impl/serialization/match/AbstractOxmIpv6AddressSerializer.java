@@ -11,7 +11,8 @@ import com.google.common.net.InetAddresses;
 import io.netty.buffer.ByteBuf;
 
 /**
- * Parent for Ipv6 address based match entry serializers
+ * Parent for Ipv6 address based match entry serializers.
+ *
  * @author michal.polkorab
  */
 public abstract class AbstractOxmIpv6AddressSerializer extends AbstractOxmMatchEntrySerializer {
