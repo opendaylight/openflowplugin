@@ -9,18 +9,19 @@
 package org.opendaylight.openflowjava.statistics;
 
 import java.util.concurrent.atomic.AtomicLong;
+
 /**
- * Counts statistics
+ * Counts statistics.
  *
  * @author madamjak
  */
 public class Counter {
 
-    private AtomicLong counterValue;
-    private AtomicLong counterLastReadValue;
+    private final AtomicLong counterValue;
+    private final AtomicLong counterLastReadValue;
 
     /**
-     * Default constructor
+     * Default constructor.
      */
     public Counter() {
         counterValue = new AtomicLong(0L);
@@ -28,9 +29,9 @@ public class Counter {
     }
 
     /**
-     * Increment current counter value
+     * Increment current counter value.
      */
-    public void incrementCounter(){
+    public void incrementCounter() {
         counterValue.incrementAndGet();
     }
 
@@ -44,7 +45,8 @@ public class Counter {
     }
 
     /**
-     * get current value of counter and rewrite CounterLastReadValue by current value
+     * Gets current value of counter and rewrite CounterLastReadValue by current value.
+     *
      * @return  the current value of counter
      */
     public long getCounterValue() {
@@ -52,33 +54,34 @@ public class Counter {
     }
 
     /**
-     * get current counter value
+     * Gets current counter value.
+     *
      * @param modifyLastReadValue
      *      true - CounterLastReadValue will be rewritten by current CounterValue
      *      false - no change CounterLastReadValue
      * @return the current value of counter
      */
     public long getCounterValue(boolean modifyLastReadValue) {
-        if(modifyLastReadValue){
+        if (modifyLastReadValue) {
             counterLastReadValue.set(counterValue.get());
         }
         return counterValue.get();
     }
 
     /**
-     * set current counter value and CounterLastReadValue to 0 (zero)
+     * Sets current counter value and CounterLastReadValue to 0 (zero).
      */
-    public void reset(){
-        counterValue.set(0l);
-        counterLastReadValue.set(0l);
+    public void reset() {
+        counterValue.set(0L);
+        counterLastReadValue.set(0L);
     }
 
     /**
-     * @return last and current count for specified statistic
+     * Returns the last and current count for specified statistic.
      */
     public String getStat() {
         long cntPrevVal = getCounterLastReadValue();
         long cntCurValue = getCounterValue();
-        return String.format("+%d | %d",cntCurValue-cntPrevVal,cntCurValue);
+        return String.format("+%d | %d",cntCurValue - cntPrevVal,cntCurValue);
     }
 }

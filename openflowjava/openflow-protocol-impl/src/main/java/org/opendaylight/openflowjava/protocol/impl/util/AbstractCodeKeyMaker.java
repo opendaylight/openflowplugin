@@ -8,13 +8,17 @@
 package org.opendaylight.openflowjava.protocol.impl.util;
 
 /**
+ * Base class for a CodeKeyMaker.
+ *
  * @author michal.polkorab
  */
 public abstract class AbstractCodeKeyMaker implements CodeKeyMaker {
 
-    private short version;
+    private final short version;
 
     /**
+     * Constractor.
+     *
      * @param version openflow wire version
      */
     public AbstractCodeKeyMaker(short version) {
@@ -23,10 +27,9 @@ public abstract class AbstractCodeKeyMaker implements CodeKeyMaker {
     }
 
     /**
-     * @return the version
+     * Returns the version.
      */
     public short getVersion() {
         return version;
     }
-
 }

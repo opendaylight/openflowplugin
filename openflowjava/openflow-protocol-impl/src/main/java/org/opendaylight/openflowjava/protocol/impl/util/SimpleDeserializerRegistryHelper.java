@@ -13,14 +13,17 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 
 /**
  * Helper class for deserializer registration.
+ *
  * @author michal.polkorab
  */
 public class SimpleDeserializerRegistryHelper {
 
-    private short version;
-    private DeserializerRegistry registry;
+    private final short version;
+    private final DeserializerRegistry registry;
 
     /**
+     * Constructor.
+     *
      * @param version wire protocol version
      * @param deserializerRegistry registry to be filled with message deserializers
      */
@@ -43,5 +46,4 @@ public class SimpleDeserializerRegistryHelper {
             ((VersionAssignableFactory) deserializer).assignVersion(version);
         }
     }
-
 }

@@ -13,16 +13,20 @@ import org.opendaylight.openflowjava.protocol.api.keys.InstructionSerializerKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.InstructionChoice;
 
 /**
+ * Helper class for registering instruction serializers.
+ *
  * @author michal.polkorab
  */
 public class InstructionSerializerRegistryHelper {
 
-    private short version;
-    private SerializerRegistry serializerRegistry;
+    private final short version;
+    private final SerializerRegistry serializerRegistry;
 
     /**
+     * Constructor.
+     *
      * @param version Openflow wire version
-     * @param serializerRegistry
+     * @param serializerRegistry registry to be filled with message serializers
      */
     public InstructionSerializerRegistryHelper(short version, SerializerRegistry serializerRegistry) {
         this.version = version;
@@ -30,9 +34,10 @@ public class InstructionSerializerRegistryHelper {
     }
 
     /**
-     * Registers given serializer
-     * @param instructionType
-     * @param serializer
+     * Registers given serializer.
+     *
+     * @param instructionType instruction type
+     * @param serializer serializer instance
      */
     public <T extends InstructionChoice> void registerSerializer(Class<T> instructionType,
             OFGeneralSerializer serializer) {

@@ -10,18 +10,20 @@ package org.opendaylight.openflowjava.protocol.impl.util;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFGeneralSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
-import org.opendaylight.openflowjava.util.ExperimenterSerializerKeyFactory;
 
 /**
  * Helper class for serializer registration.
+ *
  * @author michal.polkorab
  */
 public class CommonMessageRegistryHelper {
 
-    private short version;
-    private SerializerRegistry serializerRegistry;
+    private final short version;
+    private final SerializerRegistry serializerRegistry;
 
     /**
+     * Constructor.
+     *
      * @param version wire protocol version
      * @param serializerRegistry registry to be filled with message serializers
      */
@@ -38,5 +40,4 @@ public class CommonMessageRegistryHelper {
     public void registerSerializer(Class<?> msgType, OFGeneralSerializer serializer) {
         serializerRegistry.registerSerializer(new MessageTypeKey<>(version, msgType), serializer);
     }
-
 }
