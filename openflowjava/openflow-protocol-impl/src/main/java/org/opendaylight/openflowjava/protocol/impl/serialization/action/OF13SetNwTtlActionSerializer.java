@@ -9,14 +9,14 @@
 package org.opendaylight.openflowjava.protocol.impl.serialization.action;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetNwTtlCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 
 /**
- * @author michal.polkorab
+ * Serializes OF 1.3 SetNwTtl actions.
  *
+ * @author michal.polkorab
  */
 public class OF13SetNwTtlActionSerializer extends AbstractActionSerializer {
 
