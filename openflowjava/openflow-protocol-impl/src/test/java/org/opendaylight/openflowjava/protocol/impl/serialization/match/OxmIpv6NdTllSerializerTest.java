@@ -10,9 +10,9 @@ package org.opendaylight.openflowjava.protocol.impl.serialization.match;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -25,15 +25,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ipv6.nd.tll._case.Ipv6NdTllBuilder;
 
 /**
- * @author michal.polkorab
+ * Unit tests for OxmIpv6NdTllSerializer.
  *
+ * @author michal.polkorab
  */
 public class OxmIpv6NdTllSerializerTest {
 
     OxmIpv6NdTllSerializer serializer = new OxmIpv6NdTllSerializer();
 
     /**
-     * Test correct serialization
+     * Test correct serialization.
      */
     @Test
     public void testSerialize() {
@@ -50,7 +51,7 @@ public class OxmIpv6NdTllSerializerTest {
     }
 
     /**
-     * Test correct header serialization
+     * Test correct header serialization.
      */
     @Test
     public void testSerializeHeader() {
@@ -64,7 +65,7 @@ public class OxmIpv6NdTllSerializerTest {
     }
 
     /**
-     * Test correct oxm-class return value
+     * Test correct oxm-class return value.
      */
     @Test
     public void testGetOxmClassCode() {
@@ -72,7 +73,7 @@ public class OxmIpv6NdTllSerializerTest {
     }
 
     /**
-     * Test correct oxm-field return value
+     * Test correct oxm-field return value.
      */
     @Test
     public void getOxmFieldCode() {
@@ -80,7 +81,7 @@ public class OxmIpv6NdTllSerializerTest {
     }
 
     /**
-     * Test correct value length return value
+     * Test correct value length return value.
      */
     @Test
     public void testGetValueLength() {
