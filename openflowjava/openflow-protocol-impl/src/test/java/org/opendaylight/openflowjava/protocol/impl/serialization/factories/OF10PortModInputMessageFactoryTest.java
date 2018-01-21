@@ -16,10 +16,10 @@ import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfigV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeaturesV10;
@@ -28,8 +28,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInputBuilder;
 
 /**
- * @author michal.polkorab
+ * Unit tests for OF10PortModInputMessageFactory.
  *
+ * @author michal.polkorab
  */
 public class OF10PortModInputMessageFactoryTest {
 
@@ -37,7 +38,7 @@ public class OF10PortModInputMessageFactoryTest {
     private OFSerializer<PortModInput> portModFactory;
 
     /**
-     * Initializes serializer registry and stores correct factory in field
+     * Initializes serializer registry and stores correct factory in field.
      */
     @Before
     public void startUp() {
@@ -48,8 +49,7 @@ public class OF10PortModInputMessageFactoryTest {
     }
 
     /**
-     * Testing of {@link OF10PortModInputMessageFactory} for correct translation from POJO
-     * @throws Exception
+     * Testing of {@link OF10PortModInputMessageFactory} for correct translation from POJO.
      */
     @Test
     public void testPortModInput() throws Exception {

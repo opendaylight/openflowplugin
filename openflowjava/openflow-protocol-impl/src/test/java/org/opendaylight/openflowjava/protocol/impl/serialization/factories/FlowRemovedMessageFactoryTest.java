@@ -39,8 +39,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessageBuilder;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Unit tests for FlowRemovedMessageFactory.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class FlowRemovedMessageFactoryTest {
     private OFSerializer<FlowRemovedMessage> factory;
@@ -70,7 +71,7 @@ public class FlowRemovedMessageFactoryTest {
         builder.setByteCount(BigInteger.valueOf(1234L));
         MatchBuilder matchBuilder = new MatchBuilder();
         matchBuilder.setType(OxmMatchType.class);
-        List<MatchEntry> entries = new ArrayList<>();
+        final List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
         entriesBuilder.setOxmClass(OpenflowBasicClass.class);
         entriesBuilder.setOxmMatchField(InPhyPort.class);
@@ -92,7 +93,7 @@ public class FlowRemovedMessageFactoryTest {
         entries.add(entriesBuilder.build());
         matchBuilder.setMatchEntry(entries);
         builder.setMatch(matchBuilder.build());
-        FlowRemovedMessage message = builder.build();
+        final FlowRemovedMessage message = builder.build();
         ByteBuf serializedBuffer = UnpooledByteBufAllocator.DEFAULT.buffer();
 
         // simulate parent message
