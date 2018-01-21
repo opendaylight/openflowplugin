@@ -8,10 +8,8 @@
 package org.opendaylight.openflowjava.protocol.impl.serialization.action;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,8 +34,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 
 /**
- * @author madamjak
+ * Unit tests for OF13SetFieldActionSerializer.
  *
+ * @author madamjak
  */
 public class OF13SetFieldActionSerializerTest {
 
@@ -45,7 +44,7 @@ public class OF13SetFieldActionSerializerTest {
     @Mock OFSerializer<MatchEntry> serializerMock;
 
     /**
-     * Initialize registry and mock
+     * Initialize registry and mock.
      */
     @Before
     public void startUp() {
@@ -55,13 +54,14 @@ public class OF13SetFieldActionSerializerTest {
     }
 
     /**
-     * Test identify ExperimenterClass serializer
+     * Test identify ExperimenterClass serializer.
      */
     @Test
-    public void test(){
+    public void test() {
         OF13SetFieldActionSerializer ser = new OF13SetFieldActionSerializer();
         ser.injectSerializerRegistry(registry);
-        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder actionBuilder = new ActionBuilder();
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping
+            .ActionBuilder actionBuilder = new ActionBuilder();
         long experimenterId = 12L;
         ExperimenterIdCaseBuilder expCaseBuilder = new ExperimenterIdCaseBuilder();
         ExperimenterBuilder expBuilder = new ExperimenterBuilder();
@@ -85,7 +85,8 @@ public class OF13SetFieldActionSerializerTest {
         registry.registerSerializer(key, serializerMock);
         ByteBuf out = UnpooledByteBufAllocator.DEFAULT.buffer();
         ser.serialize(actionBuilder.build(), out);
-        Mockito.verify(serializerMock, Mockito.times(1)).serialize((MatchEntry)Mockito.anyObject(), (ByteBuf)Mockito.anyObject());
+        Mockito.verify(serializerMock, Mockito.times(1)).serialize((MatchEntry)Mockito.anyObject(),
+                (ByteBuf)Mockito.anyObject());
         int lenght = out.readableBytes();
         Assert.assertEquals("Wrong - bad field code", ActionConstants.SET_FIELD_CODE, out.readUnsignedShort());
         Assert.assertEquals("Wrong - bad lenght", lenght, out.readUnsignedShort());

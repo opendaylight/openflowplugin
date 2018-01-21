@@ -15,9 +15,9 @@ import org.opendaylight.openflowjava.protocol.impl.util.OF13MatchSerializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match;
 
 /**
+ * Unit tests for SerializerRegistryImpl.
  *
  * @author madamjak
- *
  */
 public class SerializerRegistryImplTest {
 
@@ -25,20 +25,20 @@ public class SerializerRegistryImplTest {
     private static final short OF10 = EncodeConstants.OF10_VERSION_ID;
 
     /**
-     * Test - register serializer without arguments
+     * Test - register serializer without arguments.
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testRegisterSerializerNoArgs(){
+    public void testRegisterSerializerNoArgs() {
 
         SerializerRegistryImpl serReg = new SerializerRegistryImpl();
         serReg.registerSerializer(null, null);
     }
 
     /**
-     * Test - unregister serializer without MessageTypeKye
+     * Test - unregister serializer without MessageTypeKey.
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testUnRegisterSerializerNoMessageTypeKey(){
+    public void testUnRegisterSerializerNoMessageTypeKey() {
         SerializerRegistryImpl serReg = new SerializerRegistryImpl();
         serReg.init();
         serReg.registerSerializer(new MessageTypeKey<>(OF13, Match.class), new OF13MatchSerializer());
@@ -46,16 +46,18 @@ public class SerializerRegistryImplTest {
     }
 
     /**
-     * Test - unregister serializer
+     * Test - unregister serializer.
      */
     @Test
-    public void testUnRegisterSerializer(){
+    public void testUnRegisterSerializer() {
         SerializerRegistryImpl serReg = new SerializerRegistryImpl();
         serReg.init();
         serReg.registerSerializer(new MessageTypeKey<>(OF13, Match.class), new OF13MatchSerializer());
-        Assert.assertTrue("Wrong - unregister serializer",serReg.unregisterSerializer(new MessageTypeKey<>(OF13, Match.class)));
+        Assert.assertTrue("Wrong - unregister serializer",
+                serReg.unregisterSerializer(new MessageTypeKey<>(OF13, Match.class)));
 
         serReg.registerSerializer(new MessageTypeKey<>(OF13, Match.class), new OF13MatchSerializer());
-        Assert.assertFalse("Wrong - unregister serializer",serReg.unregisterSerializer(new MessageTypeKey<>(OF10, Match.class)));
+        Assert.assertFalse("Wrong - unregister serializer",
+                serReg.unregisterSerializer(new MessageTypeKey<>(OF10, Match.class)));
     }
 }

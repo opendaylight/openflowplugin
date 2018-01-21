@@ -9,22 +9,23 @@
 package org.opendaylight.openflowjava.protocol.impl.serialization;
 
 import static org.junit.Assert.assertEquals;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
-
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInputBuilder;
 
 /**
- * @author michal.polkorab
+ * Unit tests for SerializationFactory.
  *
+ * @author michal.polkorab
  */
 public class SerializationFactoryTest {
 
     /**
-     * Test serializer lookup & serialization
+     * Test serializer lookup & serialization.
      */
     @Test
     public void test() {
@@ -32,7 +33,7 @@ public class SerializationFactoryTest {
         registry.init();
         SerializationFactory factory = new SerializationFactory();
         factory.setSerializerTable(registry);
-        ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer();
+        final ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer();
         HelloInputBuilder helloBuilder = new HelloInputBuilder();
         helloBuilder.setVersion((short) EncodeConstants.OF10_VERSION_ID);
         helloBuilder.setXid(123456L);
@@ -42,15 +43,15 @@ public class SerializationFactoryTest {
     }
 
     /**
-     * Test serializer not found scenario
+     * Test serializer not found scenario.
      */
-    @Test(expected=IllegalStateException.class)
+    @Test(expected = IllegalStateException.class)
     public void testNotExistingSerializer() {
         SerializerRegistry registry = new SerializerRegistryImpl();
         registry.init();
         SerializationFactory factory = new SerializationFactory();
         factory.setSerializerTable(registry);
-        ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer();
+        final ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer();
         HelloInputBuilder helloBuilder = new HelloInputBuilder();
         helloBuilder.setVersion((short) EncodeConstants.OF10_VERSION_ID);
         helloBuilder.setXid(123456L);

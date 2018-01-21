@@ -9,7 +9,6 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
@@ -20,13 +19,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.MetadataCase;
 
 /**
- * @author michal.polkorab
+ * Unit tests for OxmMetadataDeserializer.
  *
+ * @author michal.polkorab
  */
 public class OxmMetadataDeserializerTest {
 
     /**
-     * Tests {@link OxmMetadataDeserializer#deserialize(ByteBuf)}
+     * Tests {@link OxmMetadataDeserializer#deserialize(ByteBuf)}.
      */
     @Test
     public void test() {

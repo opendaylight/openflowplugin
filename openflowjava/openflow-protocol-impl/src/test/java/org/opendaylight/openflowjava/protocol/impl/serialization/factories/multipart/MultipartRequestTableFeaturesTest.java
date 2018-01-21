@@ -9,11 +9,9 @@ package org.opendaylight.openflowjava.protocol.impl.serialization.factories.mult
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -76,8 +74,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeaturePropertiesBuilder;
 
 /**
- * @author michal.polkorab
+ * Unit tests for MultipartRequestTableFeatures.
  *
+ * @author michal.polkorab
  */
 @RunWith(MockitoJUnitRunner.class)
 public class MultipartRequestTableFeaturesTest {
@@ -91,12 +90,11 @@ public class MultipartRequestTableFeaturesTest {
     @Mock OFSerializer<TableFeatureProperties> serializer;
 
     /**
-     * Initializes serializer registry and stores correct factory in field
+     * Initializes serializer registry and stores correct factory in field.
      */
     @Before
     public void startUp() {
-        Mockito.when(mockRegistry.getSerializer((MessageTypeKey<?>)Matchers.any()))
-        .thenReturn(serializer);
+        Mockito.when(mockRegistry.getSerializer((MessageTypeKey<?>)Matchers.any())).thenReturn(serializer);
         registry = new SerializerRegistryImpl();
         registry.init();
         multipartFactory = registry.getSerializer(
@@ -104,8 +102,7 @@ public class MultipartRequestTableFeaturesTest {
     }
 
     /**
-     * @throws Exception
-     * Testing of {@link MultipartRequestInputFactory} for correct translation from POJO
+     * Testing of {@link MultipartRequestInputFactory} for correct translation from POJO.
      */
     @Test
     public void testMultipartRequestTableFeaturesMessageFactory() throws Exception {
@@ -113,17 +110,17 @@ public class MultipartRequestTableFeaturesTest {
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
         builder.setType(MultipartType.forValue(12));
         builder.setFlags(new MultipartRequestFlags(true));
-        MultipartRequestTableFeaturesCaseBuilder caseBuilder = new MultipartRequestTableFeaturesCaseBuilder();
-        MultipartRequestTableFeaturesBuilder featuresBuilder = new MultipartRequestTableFeaturesBuilder();
-        List<TableFeatures> tableFeaturesList = new ArrayList<>();
+        final MultipartRequestTableFeaturesCaseBuilder caseBuilder = new MultipartRequestTableFeaturesCaseBuilder();
+        final MultipartRequestTableFeaturesBuilder featuresBuilder = new MultipartRequestTableFeaturesBuilder();
         TableFeaturesBuilder tableFeaturesBuilder = new TableFeaturesBuilder();
         tableFeaturesBuilder.setTableId((short) 8);
         tableFeaturesBuilder.setName("AAAABBBBCCCCDDDDEEEEFFFFGGGG");
-        tableFeaturesBuilder.setMetadataMatch(new BigInteger(new byte[] {0x00, 0x01, 0x02, 0x03, 0x01, 0x04, 0x08, 0x01}));
-        tableFeaturesBuilder.setMetadataWrite(new BigInteger(new byte[] {0x00, 0x07, 0x01, 0x05, 0x01, 0x00, 0x03, 0x01}));
+        tableFeaturesBuilder.setMetadataMatch(new BigInteger(
+                new byte[] {0x00, 0x01, 0x02, 0x03, 0x01, 0x04, 0x08, 0x01}));
+        tableFeaturesBuilder.setMetadataWrite(new BigInteger(
+                new byte[] {0x00, 0x07, 0x01, 0x05, 0x01, 0x00, 0x03, 0x01}));
         tableFeaturesBuilder.setConfig(new TableConfig(true));
         tableFeaturesBuilder.setMaxEntries(65L);
-        List<TableFeatureProperties> properties = new ArrayList<>();
         TableFeaturePropertiesBuilder propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTNEXTTABLES);
         NextTableRelatedTableFeaturePropertyBuilder nextPropBuilder =
@@ -133,6 +130,7 @@ public class MultipartRequestTableFeaturesTest {
         nextIds.add(new NextTableIdsBuilder().setTableId((short) 2).build());
         nextPropBuilder.setNextTableIds(nextIds);
         propBuilder.addAugmentation(NextTableRelatedTableFeatureProperty.class, nextPropBuilder.build());
+        List<TableFeatureProperties> properties = new ArrayList<>();
         properties.add(propBuilder.build());
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTNEXTTABLESMISS);
@@ -143,8 +141,6 @@ public class MultipartRequestTableFeaturesTest {
         properties.add(propBuilder.build());
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTINSTRUCTIONS);
-        InstructionRelatedTableFeaturePropertyBuilder insPropBuilder =
-                new InstructionRelatedTableFeaturePropertyBuilder();
         List<Instruction> insIds = new ArrayList<>();
         InstructionBuilder insBuilder = new InstructionBuilder();
         insBuilder.setInstructionChoice(new WriteActionsCaseBuilder().build());
@@ -152,6 +148,8 @@ public class MultipartRequestTableFeaturesTest {
         insBuilder = new InstructionBuilder();
         insBuilder.setInstructionChoice(new GotoTableCaseBuilder().build());
         insIds.add(insBuilder.build());
+        InstructionRelatedTableFeaturePropertyBuilder insPropBuilder =
+                new InstructionRelatedTableFeaturePropertyBuilder();
         insPropBuilder.setInstruction(insIds);
         propBuilder.addAugmentation(InstructionRelatedTableFeatureProperty.class, insPropBuilder.build());
         properties.add(propBuilder.build());
@@ -178,12 +176,15 @@ public class MultipartRequestTableFeaturesTest {
         propBuilder.addAugmentation(InstructionRelatedTableFeatureProperty.class, insPropBuilder.build());
         properties.add(propBuilder.build());
         tableFeaturesBuilder.setTableFeatureProperties(properties);
+        List<TableFeatures> tableFeaturesList = new ArrayList<>();
         tableFeaturesList.add(tableFeaturesBuilder.build());
         tableFeaturesBuilder = new TableFeaturesBuilder();
         tableFeaturesBuilder.setTableId((short) 8);
         tableFeaturesBuilder.setName("AAAABBBBCCCCDDDDEEEEFFFFGGGG");
-        tableFeaturesBuilder.setMetadataMatch(new BigInteger(new byte[] {0x00, 0x01, 0x02, 0x03, 0x01, 0x04, 0x08, 0x01}));
-        tableFeaturesBuilder.setMetadataWrite(new BigInteger(new byte[] {0x00, 0x07, 0x01, 0x05, 0x01, 0x00, 0x03, 0x01}));
+        tableFeaturesBuilder.setMetadataMatch(new BigInteger(
+                new byte[] {0x00, 0x01, 0x02, 0x03, 0x01, 0x04, 0x08, 0x01}));
+        tableFeaturesBuilder.setMetadataWrite(new BigInteger(
+                new byte[] {0x00, 0x07, 0x01, 0x05, 0x01, 0x00, 0x03, 0x01}));
         tableFeaturesBuilder.setConfig(new TableConfig(true));
         tableFeaturesBuilder.setMaxEntries(67L);
         properties = new ArrayList<>();
@@ -220,18 +221,18 @@ public class MultipartRequestTableFeaturesTest {
         properties.add(propBuilder.build());
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTMATCH);
-        OxmRelatedTableFeaturePropertyBuilder oxmBuilder = new OxmRelatedTableFeaturePropertyBuilder();
-        List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
         entriesBuilder.setOxmClass(OpenflowBasicClass.class);
         entriesBuilder.setOxmMatchField(InPhyPort.class);
         entriesBuilder.setHasMask(false);
+        List<MatchEntry> entries = new ArrayList<>();
         entries.add(entriesBuilder.build());
         entriesBuilder = new MatchEntryBuilder();
         entriesBuilder.setOxmClass(OpenflowBasicClass.class);
         entriesBuilder.setOxmMatchField(InPort.class);
         entriesBuilder.setHasMask(false);
         entries.add(entriesBuilder.build());
+        OxmRelatedTableFeaturePropertyBuilder oxmBuilder = new OxmRelatedTableFeaturePropertyBuilder();
         oxmBuilder.setMatchEntry(entries);
         propBuilder.addAugmentation(OxmRelatedTableFeatureProperty.class, oxmBuilder.build());
         properties.add(propBuilder.build());
@@ -398,8 +399,7 @@ public class MultipartRequestTableFeaturesTest {
     }
 
     /**
-     * @throws Exception
-     * Testing of {@link MultipartRequestInputFactory} for correct translation from POJO
+     * Testing of {@link MultipartRequestInputFactory} for correct translation from POJO.
      */
     @Test
     public void testMultipartRequestTableFeaturesExperimenter() throws Exception {
@@ -409,22 +409,21 @@ public class MultipartRequestTableFeaturesTest {
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
         builder.setType(MultipartType.forValue(12));
         builder.setFlags(new MultipartRequestFlags(true));
-        MultipartRequestTableFeaturesCaseBuilder caseBuilder = new MultipartRequestTableFeaturesCaseBuilder();
-        MultipartRequestTableFeaturesBuilder featuresBuilder = new MultipartRequestTableFeaturesBuilder();
-        List<TableFeatures> tableFeaturesList = new ArrayList<>();
         TableFeaturesBuilder tableFeaturesBuilder = new TableFeaturesBuilder();
         tableFeaturesBuilder.setTableId((short) 8);
         tableFeaturesBuilder.setName("AAAABBBBCCCCDDDDEEEEFFFFGGGG");
-        tableFeaturesBuilder.setMetadataMatch(new BigInteger(new byte[] {0x00, 0x01, 0x02, 0x03, 0x01, 0x04, 0x08, 0x01}));
-        tableFeaturesBuilder.setMetadataWrite(new BigInteger(new byte[] {0x00, 0x07, 0x01, 0x05, 0x01, 0x00, 0x03, 0x01}));
+        tableFeaturesBuilder.setMetadataMatch(new BigInteger(
+                new byte[] {0x00, 0x01, 0x02, 0x03, 0x01, 0x04, 0x08, 0x01}));
+        tableFeaturesBuilder.setMetadataWrite(new BigInteger(
+                new byte[] {0x00, 0x07, 0x01, 0x05, 0x01, 0x00, 0x03, 0x01}));
         tableFeaturesBuilder.setConfig(new TableConfig(true));
         tableFeaturesBuilder.setMaxEntries(65L);
-        List<TableFeatureProperties> properties = new ArrayList<>();
         TableFeaturePropertiesBuilder propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTEXPERIMENTER);
         ExperimenterIdTableFeaturePropertyBuilder expBuilder = new ExperimenterIdTableFeaturePropertyBuilder();
         expBuilder.setExperimenter(new ExperimenterId(42L));
         propBuilder.addAugmentation(ExperimenterIdTableFeatureProperty.class, expBuilder.build());
+        List<TableFeatureProperties> properties = new ArrayList<>();
         properties.add(propBuilder.build());
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTEXPERIMENTERMISS);
@@ -433,8 +432,11 @@ public class MultipartRequestTableFeaturesTest {
         propBuilder.addAugmentation(ExperimenterIdTableFeatureProperty.class, expBuilder.build());
         properties.add(propBuilder.build());
         tableFeaturesBuilder.setTableFeatureProperties(properties);
+        List<TableFeatures> tableFeaturesList = new ArrayList<>();
         tableFeaturesList.add(tableFeaturesBuilder.build());
+        MultipartRequestTableFeaturesBuilder featuresBuilder = new MultipartRequestTableFeaturesBuilder();
         featuresBuilder.setTableFeatures(tableFeaturesList);
+        MultipartRequestTableFeaturesCaseBuilder caseBuilder = new MultipartRequestTableFeaturesCaseBuilder();
         caseBuilder.setMultipartRequestTableFeatures(featuresBuilder.build());
         builder.setMultipartRequestBody(caseBuilder.build());
         MultipartRequestInput message = builder.build();

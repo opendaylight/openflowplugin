@@ -33,8 +33,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.experimenter._case.MultipartRequestExperimenterBuilder;
 
 /**
- * @author michal.polkorab
+ * Unit tests for MultipartRequestExperimenter.
  *
+ * @author michal.polkorab
  */
 @RunWith(MockitoJUnitRunner.class)
 public class MultipartRequestExperimenterTest {
@@ -45,20 +46,19 @@ public class MultipartRequestExperimenterTest {
     @Mock ExperimenterDataOfChoice vendorData;
 
     /**
-     * Testing OF10StatsRequestInputFactory (Experimenter) for correct serialization
-     * @throws Exception
+     * Testing OF10StatsRequestInputFactory (Experimenter) for correct serialization.
      */
     @Test
     public void testExperimenter() throws Exception {
-        Mockito.when(mockRegistry.getSerializer(Matchers.<ExperimenterIdTypeSerializerKey<ExperimenterDataOfChoice>>any()))
-            .thenReturn(serializer);
+        Mockito.when(mockRegistry.getSerializer(
+                Matchers.<ExperimenterIdTypeSerializerKey<ExperimenterDataOfChoice>>any())).thenReturn(serializer);
         MultipartRequestInputFactory multipartFactory = new MultipartRequestInputFactory();
         multipartFactory.injectSerializerRegistry(mockRegistry);
         MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
         builder.setType(MultipartType.OFPMPEXPERIMENTER);
         builder.setFlags(new MultipartRequestFlags(false));
-        MultipartRequestExperimenterCaseBuilder caseBuilder = new MultipartRequestExperimenterCaseBuilder();
+        final MultipartRequestExperimenterCaseBuilder caseBuilder = new MultipartRequestExperimenterCaseBuilder();
         MultipartRequestExperimenterBuilder expBuilder = new MultipartRequestExperimenterBuilder();
         expBuilder.setExperimenter(new ExperimenterId(42L));
         expBuilder.setExpType(21L);
