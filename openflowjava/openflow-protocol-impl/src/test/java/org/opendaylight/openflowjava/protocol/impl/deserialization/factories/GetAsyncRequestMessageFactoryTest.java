@@ -19,8 +19,9 @@ import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetAsyncInput;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Unit tests for GetAsyncRequestMessageFactory.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class GetAsyncRequestMessageFactoryTest {
     private OFDeserializer<GetAsyncInput> factory;

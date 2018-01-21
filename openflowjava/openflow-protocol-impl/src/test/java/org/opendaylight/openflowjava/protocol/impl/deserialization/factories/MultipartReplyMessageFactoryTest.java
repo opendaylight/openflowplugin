@@ -9,9 +9,7 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
 import io.netty.buffer.ByteBuf;
-
 import java.math.BigInteger;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -69,15 +67,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Unit tests for MultipartReplyMessageFactory.
+ *
  * @author timotej.kubas
  * @author michal.polkorab
  */
 public class MultipartReplyMessageFactoryTest {
+    static final int DESC_STR_LEN = 256;
+    static final int SERIAL_NUM_LEN = 32;
 
     private OFDeserializer<MultipartReplyMessage> multipartFactory;
 
     /**
-     * Initializes deserializer registry and lookups correct deserializer
+     * Initializes deserializer registry and lookups correct deserializer.
      */
     @Before
     public void startUp() {
@@ -91,12 +93,10 @@ public class MultipartReplyMessageFactoryTest {
             .getLogger(MultipartReplyMessageFactoryTest.class);
 
     /**
-     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO
+     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO.
      */
     @Test
-    public void testMultipartReplyDescBody(){
-        final int DESC_STR_LEN = 256;
-        final int SERIAL_NUM_LEN = 32;
+    public void testMultipartReplyDescBody() {
         ByteBuf bb = BufferHelper.buildBuffer("00 00 00 01 00 00 00 00");
 
         String mfrDesc = "Manufacturer description";
@@ -144,16 +144,16 @@ public class MultipartReplyMessageFactoryTest {
     }
 
     /**
-     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO
+     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO.
      */
     @Test
-    public void testMultipartReplyAggregateBody(){
-        ByteBuf bb = BufferHelper.buildBuffer("00 02 00 01 00 00 00 00 "+
-                                              "FF 01 01 01 01 01 01 01 "+//packetCount
-                                              "0F 01 01 01 01 01 01 01 "+//byteCount
-                                              "00 00 00 08 "+//flowCount
-                                              "00 00 00 00"//pad
-                                              );
+    public void testMultipartReplyAggregateBody() {
+        ByteBuf bb = BufferHelper.buildBuffer("00 02 00 01 00 00 00 00 "
+                                            + "FF 01 01 01 01 01 01 01 " //packetCount
+                                            + "0F 01 01 01 01 01 01 01 " //byteCount
+                                            + "00 00 00 08 " //flowCount
+                                            + "00 00 00 00" //pad
+                                            );
 
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(multipartFactory, bb);
 
@@ -174,17 +174,17 @@ public class MultipartReplyMessageFactoryTest {
     }
 
     /**
-     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO
+     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO.
      */
     @Test
-    public void testMultipartReplyTableBody(){
-        ByteBuf bb = BufferHelper.buildBuffer("00 03 00 01 00 00 00 00 "+
-                                              "08 "+//tableId
-                                              "00 00 00 "+//pad
-                                              "00 00 00 10 "+//activeCount
-                                              "FF 01 01 01 01 01 01 01 "+//lookupCount
-                                              "AF 01 01 01 01 01 01 01"//matchedCount
-                                              );
+    public void testMultipartReplyTableBody() {
+        ByteBuf bb = BufferHelper.buildBuffer("00 03 00 01 00 00 00 00 "
+                                            + "08 " //tableId
+                                            + "00 00 00 " //pad
+                                            + "00 00 00 10 " //activeCount
+                                            + "FF 01 01 01 01 01 01 01 " //lookupCount
+                                            + "AF 01 01 01 01 01 01 01"//matchedCount
+                                            );
 
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(multipartFactory, bb);
 
@@ -205,28 +205,28 @@ public class MultipartReplyMessageFactoryTest {
     }
 
     /**
-     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO
+     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO.
      */
     @Test
-    public void testMultipartReplyPortStatsBody(){
-        ByteBuf bb = BufferHelper.buildBuffer("00 04 00 01 00 00 00 00 "+
-                                              "00 00 00 FF "+//portNo
-                                              "00 00 00 00 "+//pad
-                                              "FF 01 01 01 01 01 01 01 "+//rxPackets
-                                              "FF 02 02 02 02 02 02 02 "+//txPackets
-                                              "FF 02 03 02 03 02 03 02 "+//rxBytes
-                                              "FF 02 03 02 03 02 03 02 "+//txBytes
-                                              "FF 02 03 02 03 02 03 02 "+//rxDropped
-                                              "FF 02 03 02 03 02 03 02 "+//txDropped
-                                              "FF 02 03 02 03 02 03 02 "+//rxErrors
-                                              "FF 02 03 02 03 02 03 02 "+//txErrors
-                                              "FF 02 03 02 03 02 03 02 "+//rxFrameErr
-                                              "FF 02 03 02 03 02 03 02 "+//rxOverErr
-                                              "FF 02 03 02 03 02 03 02 "+//rxCrcErr
-                                              "FF 02 03 02 03 02 03 02 "+//collisions
-                                              "00 00 00 02 "+//durationSec
-                                              "00 00 00 04"//durationNsec
-                                              );
+    public void testMultipartReplyPortStatsBody() {
+        ByteBuf bb = BufferHelper.buildBuffer("00 04 00 01 00 00 00 00 "
+                                            + "00 00 00 FF " //portNo
+                                            + "00 00 00 00 " //pad
+                                            + "FF 01 01 01 01 01 01 01 " //rxPackets
+                                            + "FF 02 02 02 02 02 02 02 " //txPackets
+                                            + "FF 02 03 02 03 02 03 02 " //rxBytes
+                                            + "FF 02 03 02 03 02 03 02 " //txBytes
+                                            + "FF 02 03 02 03 02 03 02 " //rxDropped
+                                            + "FF 02 03 02 03 02 03 02 " //txDropped
+                                            + "FF 02 03 02 03 02 03 02 " //rxErrors
+                                            + "FF 02 03 02 03 02 03 02 " //txErrors
+                                            + "FF 02 03 02 03 02 03 02 " //rxFrameErr
+                                            + "FF 02 03 02 03 02 03 02 " //rxOverErr
+                                            + "FF 02 03 02 03 02 03 02 " //rxCrcErr
+                                            + "FF 02 03 02 03 02 03 02 " //collisions
+                                            + "00 00 00 02 " //durationSec
+                                            + "00 00 00 04"//durationNsec
+                                            );
 
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(multipartFactory, bb);
 
@@ -277,19 +277,19 @@ public class MultipartReplyMessageFactoryTest {
     }
 
     /**
-     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO
+     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO.
      */
     @Test
-    public void testMultipartReplyQueueBody(){
-        ByteBuf bb = BufferHelper.buildBuffer("00 05 00 01 00 00 00 00 "+
-                                              "00 00 00 FF "+//portNo
-                                              "00 00 00 10 "+//queueId
-                                              "FF 02 03 02 03 02 03 02 "+//txBytes
-                                              "FF 02 02 02 02 02 02 02 "+//txPackets
-                                              "FF 02 03 02 03 02 03 02 "+//txErrors
-                                              "00 00 00 02 "+//durationSec
-                                              "00 00 00 04"//durationNsec
-                                              );
+    public void testMultipartReplyQueueBody() {
+        ByteBuf bb = BufferHelper.buildBuffer("00 05 00 01 00 00 00 00 "
+                                            + "00 00 00 FF " //portNo
+                                            + "00 00 00 10 " //queueId
+                                            + "FF 02 03 02 03 02 03 02 " //txBytes
+                                            + "FF 02 02 02 02 02 02 02 " //txPackets
+                                            + "FF 02 03 02 03 02 03 02 " //txErrors
+                                            + "00 00 00 02 " //durationSec
+                                            + "00 00 00 04"//durationNsec
+                                            );
 
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(multipartFactory, bb);
 
@@ -314,38 +314,38 @@ public class MultipartReplyMessageFactoryTest {
     }
 
     /**
-     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO
+     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO.
      */
     @Test
-    public void testMultipartReplyGroupBody(){
-        ByteBuf bb = BufferHelper.buildBuffer("00 06 00 01 00 00 00 00 "+
-                                              "00 48 "+//length
-                                              "00 00 "+//pad1
-                                              "00 00 00 10 "+//groupId
-                                              "00 00 00 12 "+//refCount
-                                              "00 00 00 00 "+//pad2
-                                              "FF 01 01 01 01 01 01 01 "+//packetCount
-                                              "FF 01 01 01 01 01 01 01 "+//byteCount
-                                              "00 00 00 08 "+//durationSec
-                                              "00 00 00 09 "+//durationNsec
-                                              "FF 01 01 01 01 01 01 01 "+//packetCountBucket
-                                              "FF 01 01 01 01 01 01 01 "+//byteCountBucket
-                                              "FF 02 02 02 02 02 02 02 "+//packetCountBucket_2
-                                              "FF 02 02 02 02 02 02 02 "+//byteCountBucket_2
-                                              "00 48 "+//length_2
-                                              "00 00 "+//pad1.2
-                                              "00 00 00 10 "+//groupId_2
-                                              "00 00 00 12 "+//refCount_2
-                                              "00 00 00 00 "+//pad2.2
-                                              "FF 01 01 01 01 01 01 01 "+//packetCount_2
-                                              "FF 01 01 01 01 01 01 01 "+//byteCount_2
-                                              "00 00 00 08 "+//durationSec_2
-                                              "00 00 00 09 "+//durationNsec_2
-                                              "FF 01 01 01 01 01 01 01 "+//packetCountBucket_1.2
-                                              "FF 01 01 01 01 01 01 01 "+//byteCountBucket_1.2
-                                              "FF 02 02 02 02 02 02 02 "+//packetCountBucket_2.2
-                                              "FF 02 02 02 02 02 02 02"//byteCountBucket_2.2
-                                              );
+    public void testMultipartReplyGroupBody() {
+        ByteBuf bb = BufferHelper.buildBuffer("00 06 00 01 00 00 00 00 "
+                                            + "00 48 " //length
+                                            + "00 00 " //pad1
+                                            + "00 00 00 10 " //groupId
+                                            + "00 00 00 12 " //refCount
+                                            + "00 00 00 00 " //pad2
+                                            + "FF 01 01 01 01 01 01 01 " //packetCount
+                                            + "FF 01 01 01 01 01 01 01 " //byteCount
+                                            + "00 00 00 08 " //durationSec
+                                            + "00 00 00 09 " //durationNsec
+                                            + "FF 01 01 01 01 01 01 01 " //packetCountBucket
+                                            + "FF 01 01 01 01 01 01 01 " //byteCountBucket
+                                            + "FF 02 02 02 02 02 02 02 " //packetCountBucket_2
+                                            + "FF 02 02 02 02 02 02 02 " //byteCountBucket_2
+                                            + "00 48 " //length_2
+                                            + "00 00 " //pad1.2
+                                            + "00 00 00 10 " //groupId_2
+                                            + "00 00 00 12 " //refCount_2
+                                            + "00 00 00 00 " //pad2.2
+                                            + "FF 01 01 01 01 01 01 01 " //packetCount_2
+                                            + "FF 01 01 01 01 01 01 01 " //byteCount_2
+                                            + "00 00 00 08 " //durationSec_2
+                                            + "00 00 00 09 " //durationNsec_2
+                                            + "FF 01 01 01 01 01 01 01 " //packetCountBucket_1.2
+                                            + "FF 01 01 01 01 01 01 01 " //byteCountBucket_1.2
+                                            + "FF 02 02 02 02 02 02 02 " //packetCountBucket_2.2
+                                            + "FF 02 02 02 02 02 02 02"//byteCountBucket_2.2
+                                            );
 
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(multipartFactory, bb);
 
@@ -402,26 +402,26 @@ public class MultipartReplyMessageFactoryTest {
     }
 
     /**
-     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO
+     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO.
      */
     @Test
-    public void testMultipartReplyMeterBody(){
-        ByteBuf bb = BufferHelper.buildBuffer("00 09 00 01 00 00 00 00 "+
-                                              "00 00 00 09 "+//meterId
-                                              "00 58 "+//len
-                                              "00 00 00 00 00 00 "+//pad
-                                              "00 00 00 07 "+//flowCount
-                                              "FF 01 01 01 01 01 01 01 "+//packetInCount
-                                              "FF 01 01 01 01 01 01 01 "+//byteInCount
-                                              "00 00 00 05 "+//durationSec
-                                              "00 00 00 05 "+//durationNsec
-                                              "FF 01 01 01 01 01 01 01 "+//packetBandCount_01
-                                              "FF 01 01 01 01 01 01 01 "+//byteBandCount_01
-                                              "FF 02 02 02 02 02 02 02 "+//packetBandCount_02
-                                              "FF 02 02 02 02 02 02 02 "+//byteBandCount_02
-                                              "FF 03 03 03 03 03 03 03 "+//packetBandCount_03
-                                              "FF 03 03 03 03 03 03 03"//byteBandCount_03
-                                              );
+    public void testMultipartReplyMeterBody() {
+        ByteBuf bb = BufferHelper.buildBuffer("00 09 00 01 00 00 00 00 "
+                                            + "00 00 00 09 " //meterId
+                                            + "00 58 " //len
+                                            + "00 00 00 00 00 00 " //pad
+                                            + "00 00 00 07 " //flowCount
+                                            + "FF 01 01 01 01 01 01 01 " //packetInCount
+                                            + "FF 01 01 01 01 01 01 01 " //byteInCount
+                                            + "00 00 00 05 " //durationSec
+                                            + "00 00 00 05 " //durationNsec
+                                            + "FF 01 01 01 01 01 01 01 " //packetBandCount_01
+                                            + "FF 01 01 01 01 01 01 01 " //byteBandCount_01
+                                            + "FF 02 02 02 02 02 02 02 " //packetBandCount_02
+                                            + "FF 02 02 02 02 02 02 02 " //byteBandCount_02
+                                            + "FF 03 03 03 03 03 03 03 " //packetBandCount_03
+                                            + "FF 03 03 03 03 03 03 03" //byteBandCount_03
+                                            );
 
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(multipartFactory, bb);
 
@@ -465,40 +465,40 @@ public class MultipartReplyMessageFactoryTest {
     }
 
     /**
-     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO
+     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO.
      */
     @Test
-    public void testMultipartReplyMeterBodyMulti(){
-        ByteBuf bb = BufferHelper.buildBuffer("00 09 00 01 00 00 00 00 "+
-                                              "00 00 00 09 "+//meterId_0
-                                              "00 58 "+//len_0
-                                              "00 00 00 00 00 00 "+//pad_0
-                                              "00 00 00 07 "+//flowCount_0
-                                              "FF 01 01 01 01 01 01 01 "+//packetInCount_0
-                                              "FF 01 01 01 01 01 01 01 "+//byteInCount_0
-                                              "00 00 00 05 "+//durationSec_0
-                                              "00 00 00 05 "+//durationNsec_0
-                                              "FF 01 01 01 01 01 01 01 "+//packetBandCount_01
-                                              "FF 01 01 01 01 01 01 01 "+//byteBandCount_01
-                                              "FF 02 02 02 02 02 02 02 "+//packetBandCount_02
-                                              "FF 02 02 02 02 02 02 02 "+//byteBandCount_02
-                                              "FF 03 03 03 03 03 03 03 "+//packetBandCount_03
-                                              "FF 03 03 03 03 03 03 03 "+//byteBandCount_03
-                                              "00 00 00 08 "+//meterId_1
-                                              "00 58 "+//len_1
-                                              "00 00 00 00 00 00 "+//pad_1
-                                              "00 00 00 07 "+//flowCount_1
-                                              "FF 01 01 01 01 01 01 01 "+//packetInCount_1
-                                              "FF 01 01 01 01 01 01 01 "+//byteInCount_1
-                                              "00 00 00 05 "+//durationSec_1
-                                              "00 00 00 05 "+//durationNsec_1
-                                              "FF 01 01 01 01 01 01 01 "+//packetBandCount_11
-                                              "FF 01 01 01 01 01 01 01 "+//byteBandCount_11
-                                              "FF 02 02 02 02 02 02 02 "+//packetBandCount_12
-                                              "FF 02 02 02 02 02 02 02 "+//byteBandCount_12
-                                              "FF 03 03 03 03 03 03 03 "+//packetBandCount_13
-                                              "FF 03 03 03 03 03 03 03"//byteBandCount_13
-                                              );
+    public void testMultipartReplyMeterBodyMulti() {
+        ByteBuf bb = BufferHelper.buildBuffer("00 09 00 01 00 00 00 00 "
+                                            + "00 00 00 09 " //meterId_0
+                                            + "00 58 " //len_0
+                                            + "00 00 00 00 00 00 " //pad_0
+                                            + "00 00 00 07 " //flowCount_0
+                                            + "FF 01 01 01 01 01 01 01 " //packetInCount_0
+                                            + "FF 01 01 01 01 01 01 01 " //byteInCount_0
+                                            + "00 00 00 05 " //durationSec_0
+                                            + "00 00 00 05 " //durationNsec_0
+                                            + "FF 01 01 01 01 01 01 01 " //packetBandCount_01
+                                            + "FF 01 01 01 01 01 01 01 " //byteBandCount_01
+                                            + "FF 02 02 02 02 02 02 02 " //packetBandCount_02
+                                            + "FF 02 02 02 02 02 02 02 " //byteBandCount_02
+                                            + "FF 03 03 03 03 03 03 03 " //packetBandCount_03
+                                            + "FF 03 03 03 03 03 03 03 " //byteBandCount_03
+                                            + "00 00 00 08 " //meterId_1
+                                            + "00 58 " //len_1
+                                            + "00 00 00 00 00 00 " //pad_1
+                                            + "00 00 00 07 " //flowCount_1
+                                            + "FF 01 01 01 01 01 01 01 " //packetInCount_1
+                                            + "FF 01 01 01 01 01 01 01 " //byteInCount_1
+                                            + "00 00 00 05 " //durationSec_1
+                                            + "00 00 00 05 " //durationNsec_1
+                                            + "FF 01 01 01 01 01 01 01 " //packetBandCount_11
+                                            + "FF 01 01 01 01 01 01 01 " //byteBandCount_11
+                                            + "FF 02 02 02 02 02 02 02 " //packetBandCount_12
+                                            + "FF 02 02 02 02 02 02 02 " //byteBandCount_12
+                                            + "FF 03 03 03 03 03 03 03 " //packetBandCount_13
+                                            + "FF 03 03 03 03 03 03 03"//byteBandCount_13
+                                           );
 
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(multipartFactory, bb);
 
@@ -575,45 +575,48 @@ public class MultipartReplyMessageFactoryTest {
     }
 
     /**
-     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO
+     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO.
      */
     @Test
-    public void testMultipartReplyMeterConfigBody(){
-        ByteBuf bb = BufferHelper.buildBuffer("00 0A 00 01 00 00 00 00 "+
-                                              "00 28 "+//len
-                                              "00 0A "+//flags
-                                              "00 00 00 09 "+//meterId
-                                              "00 01 "+//meterBandDrop.type
-                                              "00 10 "+//meterBandDrop.len
-                                              "00 00 00 11 "+//meterBandDrop.rate
-                                              "00 00 00 20 "+//meterBandDrop.burstSize
-                                              "00 00 00 00 "+//meterBandDrop.pad
-                                              "00 02 "+//meterBandDscp.type
-                                              "00 10 "+//meterBandDscp.len
-                                              "00 00 00 11 "+//meterBandDscp.rate
-                                              "00 00 00 20 "+//meterBandDscp.burstSize
-                                              "04 "+//meterBandDscp.precLevel
-                                              "00 00 00");//meterBandDscp.pad
+    public void testMultipartReplyMeterConfigBody() {
+        ByteBuf bb = BufferHelper.buildBuffer("00 0A 00 01 00 00 00 00 "
+                                            + "00 28 " //len
+                                            + "00 0A " //flags
+                                            + "00 00 00 09 " //meterId
+                                            + "00 01 " //meterBandDrop.type
+                                            + "00 10 " //meterBandDrop.len
+                                            + "00 00 00 11 " //meterBandDrop.rate
+                                            + "00 00 00 20 " //meterBandDrop.burstSize
+                                            + "00 00 00 00 " //meterBandDrop.pad
+                                            + "00 02 " //meterBandDscp.type
+                                            + "00 10 " //meterBandDscp.len
+                                            + "00 00 00 11 " //meterBandDscp.rate
+                                            + "00 00 00 20 " //meterBandDscp.burstSize
+                                            + "04 " //meterBandDscp.precLevel
+                                            + "00 00 00");//meterBandDscp.pad
 
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(multipartFactory, bb);
 
         BufferHelper.checkHeaderV13(builtByFactory);
         Assert.assertEquals("Wrong type", 10, builtByFactory.getType().getIntValue());
         Assert.assertEquals("Wrong flag", true, builtByFactory.getFlags().isOFPMPFREQMORE());
-        MultipartReplyMeterConfigCase messageCase = (MultipartReplyMeterConfigCase) builtByFactory.getMultipartReplyBody();
+        MultipartReplyMeterConfigCase messageCase =
+                (MultipartReplyMeterConfigCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyMeterConfig message = messageCase.getMultipartReplyMeterConfig();
         Assert.assertEquals("Wrong flags", new MeterFlags(false, false, true, true),
                              message.getMeterConfig().get(0).getFlags());
         Assert.assertEquals("Wrong meterId", 9,
                              message.getMeterConfig().get(0).getMeterId().getValue().intValue());
 
-        MeterBandDropCase dropCase = (MeterBandDropCase) message.getMeterConfig().get(0).getBands().get(0).getMeterBand();
+        MeterBandDropCase dropCase =
+                (MeterBandDropCase) message.getMeterConfig().get(0).getBands().get(0).getMeterBand();
         MeterBandDrop meterBandDrop = dropCase.getMeterBandDrop();
         Assert.assertEquals("Wrong meterBandDrop.type", 1, meterBandDrop.getType().getIntValue());
         Assert.assertEquals("Wrong meterBandDrop.rate", 17, meterBandDrop.getRate().intValue());
         Assert.assertEquals("Wrong meterBandDrop.burstSize", 32, meterBandDrop.getBurstSize().intValue());
 
-        MeterBandDscpRemarkCase dscpCase = (MeterBandDscpRemarkCase) message.getMeterConfig().get(0).getBands().get(1).getMeterBand();
+        MeterBandDscpRemarkCase dscpCase =
+                (MeterBandDscpRemarkCase) message.getMeterConfig().get(0).getBands().get(1).getMeterBand();
         MeterBandDscpRemark meterBandDscp = dscpCase.getMeterBandDscpRemark();
         Assert.assertEquals("Wrong meterBandDscp.type", 2, meterBandDscp.getType().getIntValue());
         Assert.assertEquals("Wrong meterBandDscp.rate", 17, meterBandDscp.getRate().intValue());
@@ -622,56 +625,58 @@ public class MultipartReplyMessageFactoryTest {
     }
 
     /**
-     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO
+     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO.
      */
     @Test
-    public void testMultipartReplyMeterConfigBodyMulti(){
-        ByteBuf bb = BufferHelper.buildBuffer("00 0A 00 01 00 00 00 00 "+
-                                              "00 28 "+//len
-                                              "00 06 "+//flags
-                                              "00 00 00 09 "+//meterId
-                                              "00 01 "+//meterBandDrop.type
-                                              "00 10 "+//meterBandDrop.len
-                                              "00 00 00 11 "+//meterBandDrop.rate
-                                              "00 00 00 20 "+//meterBandDrop.burstSize
-                                              "00 00 00 00 "+//meterBandDrop.pad
-                                              "00 02 "+//meterBandDscp.type
-                                              "00 10 "+//meterBandDscp.len
-                                              "00 00 00 11 "+//meterBandDscp.rate
-                                              "00 00 00 20 "+//meterBandDscp.burstSize
-                                              "04 "+//meterBandDscp.precLevel
-                                              "00 00 00 "+//meterBandDscp.pad
-
-                                              "00 18 "+//len01
-                                              "00 03 "+//flags01
-                                              "00 00 00 07 "+//meterId01
-                                              "00 02 "+//meterBandDscp01.type
-                                              "00 10 "+//meterBandDscp01.len
-                                              "00 00 00 11 "+//meterBandDscp01.rate
-                                              "00 00 00 20 "+//meterBandDscp01.burstSize
-                                              "04 "+//meterBandDscp01.precLevel
-                                              "00 00 00"//meterBandDscp01.pad
-                                              );
+    public void testMultipartReplyMeterConfigBodyMulti() {
+        ByteBuf bb = BufferHelper.buildBuffer("00 0A 00 01 00 00 00 00 "
+                                            + "00 28 " //len
+                                            + "00 06 " //flags
+                                            + "00 00 00 09 " //meterId
+                                            + "00 01 " //meterBandDrop.type
+                                            + "00 10 " //meterBandDrop.len
+                                            + "00 00 00 11 " //meterBandDrop.rate
+                                            + "00 00 00 20 " //meterBandDrop.burstSize
+                                            + "00 00 00 00 " //meterBandDrop.pad
+                                            + "00 02 " //meterBandDscp.type
+                                            + "00 10 " //meterBandDscp.len
+                                            + "00 00 00 11 " //meterBandDscp.rate
+                                            + "00 00 00 20 " //meterBandDscp.burstSize
+                                            + "04 " //meterBandDscp.precLevel
+                                            + "00 00 00 " //meterBandDscp.pad
+                                            + "00 18 " //len01
+                                            + "00 03 " //flags01
+                                            + "00 00 00 07 " //meterId01
+                                            + "00 02 " //meterBandDscp01.type
+                                            + "00 10 " //meterBandDscp01.len
+                                            + "00 00 00 11 " //meterBandDscp01.rate
+                                            + "00 00 00 20 " //meterBandDscp01.burstSize
+                                            + "04 " //meterBandDscp01.precLevel
+                                            + "00 00 00"//meterBandDscp01.pad
+                                            );
 
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(multipartFactory, bb);
 
         BufferHelper.checkHeaderV13(builtByFactory);
         Assert.assertEquals("Wrong type", 10, builtByFactory.getType().getIntValue());
         Assert.assertEquals("Wrong flag", true, builtByFactory.getFlags().isOFPMPFREQMORE());
-        MultipartReplyMeterConfigCase messageCase = (MultipartReplyMeterConfigCase) builtByFactory.getMultipartReplyBody();
+        MultipartReplyMeterConfigCase messageCase =
+                (MultipartReplyMeterConfigCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyMeterConfig message = messageCase.getMultipartReplyMeterConfig();
         Assert.assertEquals("Wrong flags", new MeterFlags(true, false, true, false),
                              message.getMeterConfig().get(0).getFlags());
         Assert.assertEquals("Wrong meterId", 9,
                              message.getMeterConfig().get(0).getMeterId().getValue().intValue());
 
-        MeterBandDropCase dropCase = (MeterBandDropCase) message.getMeterConfig().get(0).getBands().get(0).getMeterBand();
+        MeterBandDropCase dropCase =
+                (MeterBandDropCase) message.getMeterConfig().get(0).getBands().get(0).getMeterBand();
         MeterBandDrop meterBandDrop = dropCase.getMeterBandDrop();
         Assert.assertEquals("Wrong meterBandDrop.type", 1, meterBandDrop.getType().getIntValue());
         Assert.assertEquals("Wrong meterBandDrop.rate", 17, meterBandDrop.getRate().intValue());
         Assert.assertEquals("Wrong meterBandDrop.burstSize", 32, meterBandDrop.getBurstSize().intValue());
 
-        MeterBandDscpRemarkCase dscpCase = (MeterBandDscpRemarkCase) message.getMeterConfig().get(0).getBands().get(1).getMeterBand();
+        MeterBandDscpRemarkCase dscpCase =
+                (MeterBandDscpRemarkCase) message.getMeterConfig().get(0).getBands().get(1).getMeterBand();
         MeterBandDscpRemark meterBandDscp = dscpCase.getMeterBandDscpRemark();
         Assert.assertEquals("Wrong meterBandDscp.type", 2, meterBandDscp.getType().getIntValue());
         Assert.assertEquals("Wrong meterBandDscp.rate", 17, meterBandDscp.getRate().intValue());
@@ -684,7 +689,8 @@ public class MultipartReplyMessageFactoryTest {
         Assert.assertEquals("Wrong meterId01", 7,
                              message.getMeterConfig().get(1).getMeterId().getValue().intValue());
 
-        MeterBandDscpRemarkCase dscpCase01 = (MeterBandDscpRemarkCase) message.getMeterConfig().get(1).getBands().get(0).getMeterBand();
+        MeterBandDscpRemarkCase dscpCase01 =
+                (MeterBandDscpRemarkCase) message.getMeterConfig().get(1).getBands().get(0).getMeterBand();
         MeterBandDscpRemark meterBandDscp01 = dscpCase01.getMeterBandDscpRemark();
         Assert.assertEquals("Wrong meterBandDscp01.type", 2, meterBandDscp01.getType().getIntValue());
         Assert.assertEquals("Wrong meterBandDscp01.rate", 17, meterBandDscp01.getRate().intValue());
@@ -694,33 +700,33 @@ public class MultipartReplyMessageFactoryTest {
     }
 
     /**
-     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO
-     * Test covers bodies of actions Output, Copy TTL Out, Copy TTL In
+     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO.
+     * Test covers bodies of actions Output, Copy TTL Out, Copy TTL In.
      */
     @Test
-    public void testMultipartReplyGroupDescBody01(){
-        ByteBuf bb = BufferHelper.buildBuffer("00 07 00 01 00 00 00 00 "+
-                                              "00 38 "+//len
-                                              "01 "+//type
-                                              "00 "+//pad
-                                              "00 00 00 08 "+//groupId
-                                              "00 30 "+//bucketLen
-                                              "00 06 "+//bucketWeight
-                                              "00 00 00 05 "+//bucketWatchPort
-                                              "00 00 00 04 "+//bucketWatchGroup
-                                              "00 00 00 00 "+//bucketPad
-                                              "00 00 "+//outputType
-                                              "00 10 "+//outputLen
-                                              "00 00 10 FF "+//outputPort
-                                              "FF FF "+//outputMaxLen
-                                              "00 00 00 00 00 00 "+//outputPad
-                                              "00 0B "+//copyTTLOutType
-                                              "00 08 "+//copyTTLOutLen
-                                              "00 00 00 00 "+//copyTTLOutPad
-                                              "00 0C "+//copyTTLIntType
-                                              "00 08 "+//copyTTLIntLen
-                                              "00 00 00 00"//copyTTLInPad
-                                              );
+    public void testMultipartReplyGroupDescBody01() {
+        ByteBuf bb = BufferHelper.buildBuffer("00 07 00 01 00 00 00 00 "
+                                            + "00 38 " //len
+                                            + "01 " //type
+                                            + "00 " //pad
+                                            + "00 00 00 08 " //groupId
+                                            + "00 30 " //bucketLen
+                                            + "00 06 " //bucketWeight
+                                            + "00 00 00 05 " //bucketWatchPort
+                                            + "00 00 00 04 " //bucketWatchGroup
+                                            + "00 00 00 00 " //bucketPad
+                                            + "00 00 " //outputType
+                                            + "00 10 " //outputLen
+                                            + "00 00 10 FF " //outputPort
+                                            + "FF FF " //outputMaxLen
+                                            + "00 00 00 00 00 00 " //outputPad
+                                            + "00 0B " //copyTTLOutType
+                                            + "00 08 " //copyTTLOutLen
+                                            + "00 00 00 00 " //copyTTLOutPad
+                                            + "00 0C " //copyTTLIntType
+                                            + "00 08 " //copyTTLIntLen
+                                            + "00 00 00 00"//copyTTLInPad
+                                            );
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(multipartFactory, bb);
 
         BufferHelper.checkHeaderV13(builtByFactory);
@@ -735,8 +741,7 @@ public class MultipartReplyMessageFactoryTest {
         Assert.assertEquals("Wrong bucketWeight", 6,
                 message.getGroupDesc().get(0).getBucketsList().get(0).getWeight().intValue());
         Assert.assertEquals("Wrong bucketWatchPort", 5,
-                message.getGroupDesc().get(0).getBucketsList().get(0).getWatchPort().
-                                                                        getValue().intValue());
+                message.getGroupDesc().get(0).getBucketsList().get(0).getWatchPort().getValue().intValue());
         Assert.assertEquals("Wrong bucketWatchGroup", 4,
                 message.getGroupDesc().get(0).getBucketsList().get(0).getWatchGroup().intValue());
 
@@ -759,41 +764,41 @@ public class MultipartReplyMessageFactoryTest {
     }
 
     /**
-     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO
-     * Test covers bodies of actions Set MPLS TTL , Dec MPLS TTL, Push VLAN. Push MPLS, Push PBB
+     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO.
+     * Test covers bodies of actions Set MPLS TTL , Dec MPLS TTL, Push VLAN. Push MPLS, Push PBB.
      */
     @Test
-    public void testMultipartReplyGroupDescBody02(){
-        ByteBuf bb = BufferHelper.buildBuffer("00 07 00 01 00 00 00 00 "+
-                                              "00 40 "+//len
-                                              "01 "+//type
-                                              "00 "+//pad
-                                              "00 00 00 08 "+//groupId
-                                              "00 38 "+//bucketLen
-                                              "00 06 "+//bucketWeight
-                                              "00 00 00 05 "+//bucketWatchPort
-                                              "00 00 00 04 "+//bucketWatchGroup
-                                              "00 00 00 00 "+//bucketPad
-                                              "00 0F "+//setMplsTtlType
-                                              "00 08 "+//setMplsTtlLen
-                                              "09 "+//setMplsTtlMPLS_TTL
-                                              "00 00 00 "+//setMplsTtlPad
-                                              "00 10 "+//decMplsTtlType
-                                              "00 08 "+//decMplsTtlLen
-                                              "00 00 00 00 "+//decMplsTtlPad
-                                              "00 11 "+//pushVlanType
-                                              "00 08 "+//pushVlanLen
-                                              "00 20 "+//pushVlanEthertype
-                                              "00 00 "+//pushVlanPad
-                                              "00 13 "+//pushMplsType
-                                              "00 08 "+//pushMplsLen
-                                              "00 FF "+//pushMplsEthertype
-                                              "00 00 "+//pushMplsPad
-                                              "00 1A "+//pushPbbType
-                                              "00 08 "+//pushPbbLen
-                                              "0F FF "+//pushPbbEthertype
-                                              "00 00"//pushPbbPad
-                                              );
+    public void testMultipartReplyGroupDescBody02() {
+        ByteBuf bb = BufferHelper.buildBuffer("00 07 00 01 00 00 00 00 "
+                                            + "00 40 " //len
+                                            + "01 " //type
+                                            + "00 " //pad
+                                            + "00 00 00 08 " //groupId
+                                            + "00 38 " //bucketLen
+                                            + "00 06 " //bucketWeight
+                                            + "00 00 00 05 " //bucketWatchPort
+                                            + "00 00 00 04 " //bucketWatchGroup
+                                            + "00 00 00 00 " //bucketPad
+                                            + "00 0F " //setMplsTtlType
+                                            + "00 08 " //setMplsTtlLen
+                                            + "09 " //setMplsTtlMPLS_TTL
+                                            + "00 00 00 " //setMplsTtlPad
+                                            + "00 10 " //decMplsTtlType
+                                            + "00 08 " //decMplsTtlLen
+                                            + "00 00 00 00 " //decMplsTtlPad
+                                            + "00 11 " //pushVlanType
+                                            + "00 08 " //pushVlanLen
+                                            + "00 20 " //pushVlanEthertype
+                                            + "00 00 " //pushVlanPad
+                                            + "00 13 " //pushMplsType
+                                            + "00 08 " //pushMplsLen
+                                            + "00 FF " //pushMplsEthertype
+                                            + "00 00 " //pushMplsPad
+                                            + "00 1A " //pushPbbType
+                                            + "00 08 " //pushPbbLen
+                                            + "0F FF " //pushPbbEthertype
+                                            + "00 00"//pushPbbPad
+                                            );
 
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(multipartFactory, bb);
 
@@ -837,41 +842,41 @@ public class MultipartReplyMessageFactoryTest {
     }
 
     /**
-     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO
-     * Test covers bodies of actions Pop VLAN, Pop PBB, Pop MPLS, Group, Dec NW TTL
+     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO.
+     * Test covers bodies of actions Pop VLAN, Pop PBB, Pop MPLS, Group, Dec NW TTL.
      */
     @Test
-    public void testMultipartReplyGroupDescBody03(){
-        ByteBuf bb = BufferHelper.buildBuffer("00 07 00 01 00 00 00 00 "+
-                                              "00 48 "+//len
-                                              "01 "+//type
-                                              "00 "+//pad
-                                              "00 00 00 08 "+//groupId
-                                              "00 40 "+//bucketLen
-                                              "00 06 "+//bucketWeight
-                                              "00 00 00 05 "+//bucketWatchPort
-                                              "00 00 00 04 "+//bucketWatchGroup
-                                              "00 00 00 00 "+//bucketPad
-                                              "00 12 "+//popVlanType
-                                              "00 08 "+//popVlanLen
-                                              "00 00 00 00 "+//popVlanPad
-                                              "00 1B "+//popPbbType
-                                              "00 08 "+//popPbbLen
-                                              "00 00 00 00 "+//popPbbPad
-                                              "00 14 "+//popMplsType
-                                              "00 08 "+//popMplsLen
-                                              "00 CF "+//popMplsEthertype
-                                              "00 00 "+//popMplsPad
-                                              "00 15 "+//setQueueType
-                                              "00 08 "+//setQueueLen
-                                              "00 CF 00 00 "+//setQueueQueueId
-                                              "00 16 "+//groupType
-                                              "00 08 "+//groupLen
-                                              "00 CF 00 00 "+//groupGroupId
-                                              "00 18 "+//decNwTtlType
-                                              "00 08 "+//decNwTtlLen
-                                              "00 00 00 00"//decNwTtlPad
-                                              );
+    public void testMultipartReplyGroupDescBody03() {
+        ByteBuf bb = BufferHelper.buildBuffer("00 07 00 01 00 00 00 00 "
+                                            + "00 48 " //len
+                                            + "01 " //type
+                                            + "00 " //pad
+                                            + "00 00 00 08 " //groupId
+                                            + "00 40 " //bucketLen
+                                            + "00 06 " //bucketWeight
+                                            + "00 00 00 05 " //bucketWatchPort
+                                            + "00 00 00 04 " //bucketWatchGroup
+                                            + "00 00 00 00 " //bucketPad
+                                            + "00 12 " //popVlanType
+                                            + "00 08 " //popVlanLen
+                                            + "00 00 00 00 " //popVlanPad
+                                            + "00 1B " //popPbbType
+                                            + "00 08 " //popPbbLen
+                                            + "00 00 00 00 " //popPbbPad
+                                            + "00 14 " //popMplsType
+                                            + "00 08 " //popMplsLen
+                                            + "00 CF " //popMplsEthertype
+                                            + "00 00 " //popMplsPad
+                                            + "00 15 " //setQueueType
+                                            + "00 08 " //setQueueLen
+                                            + "00 CF 00 00 " //setQueueQueueId
+                                            + "00 16 " //groupType
+                                            + "00 08 " //groupLen
+                                            + "00 CF 00 00 " //groupGroupId
+                                            + "00 18 " //decNwTtlType
+                                            + "00 08 " //decNwTtlLen
+                                            + "00 00 00 00"//decNwTtlPad
+                                            );
 
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(multipartFactory, bb);
 
@@ -912,33 +917,32 @@ public class MultipartReplyMessageFactoryTest {
     }
 
     /**
-     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO
-     * Test covers bodies of actions NW TTL, Experimenter
+     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO.
+     * Test covers bodies of actions NW TTL, Experimenter.
      */
     @Test
-    public void testMultipartReplyGroupDescBody04(){
-        ByteBuf bb = BufferHelper.buildBuffer("00 07 00 01 00 00 00 00 "+
-                                              "00 30 "+//len
-                                              "01 "+//type
-                                              "00 "+//pad
-                                              "00 00 00 08 "+//groupId
-                                              "00 28 "+//bucketLen
-                                              "00 06 "+//bucketWeight
-                                              "00 00 00 05 "+//bucketWatchPort
-                                              "00 00 00 04 "+//bucketWatchGroup
-                                              "00 00 00 00 "+//bucketPad
-                                              "00 17 "+//nwTTlType
-                                              "00 08 "+//nwTTlLen
-                                              "0E "+//nwTTlnwTTL
-                                              "00 00 00 "+//nwTTlPad
-                                              "00 19 "+//setFieldType
-                                              "00 10 "+//setFieldLen
-                                              "80 00 "+//setFieldOXMClass
-                                              "00 "+//setFieldOXMField
-                                              "04 "+//setFieldOXMLength
-                                              "00 00 00 FF "+ //setFieldPort
-                                              "00 00 00 00"
-                );
+    public void testMultipartReplyGroupDescBody04() {
+        ByteBuf bb = BufferHelper.buildBuffer("00 07 00 01 00 00 00 00 "
+                                            + "00 30 " //len
+                                            + "01 " //type
+                                            + "00 " //pad
+                                            + "00 00 00 08 " //groupId
+                                            + "00 28 " //bucketLen
+                                            + "00 06 " //bucketWeight
+                                            + "00 00 00 05 " //bucketWatchPort
+                                            + "00 00 00 04 " //bucketWatchGroup
+                                            + "00 00 00 00 " //bucketPad
+                                            + "00 17 " //nwTTlType
+                                            + "00 08 " //nwTTlLen
+                                            + "0E " //nwTTlnwTTL
+                                            + "00 00 00 " //nwTTlPad
+                                            + "00 19 " //setFieldType
+                                            + "00 10 " //setFieldLen
+                                            + "80 00 " //setFieldOXMClass
+                                            + "00 " //setFieldOXMField
+                                            + "04 " //setFieldOXMLength
+                                            + "00 00 00 FF " //setFieldPort
+                                            + "00 00 00 00");
 
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(multipartFactory, bb);
 
@@ -954,8 +958,7 @@ public class MultipartReplyMessageFactoryTest {
         Assert.assertEquals("Wrong bucketWeight", 6,
                 message.getGroupDesc().get(0).getBucketsList().get(0).getWeight().intValue());
         Assert.assertEquals("Wrong bucketWatchPort", 5,
-                message.getGroupDesc().get(0).getBucketsList().get(0).getWatchPort().
-                                                                        getValue().intValue());
+                message.getGroupDesc().get(0).getBucketsList().get(0).getWatchPort().getValue().intValue());
         Assert.assertEquals("Wrong bucketWatchGroup", 4,
                 message.getGroupDesc().get(0).getBucketsList().get(0).getWatchGroup().intValue());
 

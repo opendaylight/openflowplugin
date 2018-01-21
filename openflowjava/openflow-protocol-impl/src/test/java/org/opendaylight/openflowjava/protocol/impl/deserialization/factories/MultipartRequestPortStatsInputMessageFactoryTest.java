@@ -25,8 +25,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.port.stats._case.MultipartRequestPortStatsBuilder;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Unit tests for MultipartRequestPortStatsInputMessageFactory.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class MultipartRequestPortStatsInputMessageFactoryTest {
     private OFDeserializer<MultipartRequestInput> factory;

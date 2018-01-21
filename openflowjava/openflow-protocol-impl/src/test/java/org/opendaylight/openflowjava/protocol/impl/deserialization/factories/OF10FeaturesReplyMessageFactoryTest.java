@@ -9,16 +9,15 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
 import io.netty.buffer.ByteBuf;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionTypeV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.CapabilitiesV10;
@@ -29,15 +28,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.features.reply.PhyPort;
 
 /**
- * @author michal.polkorab
+ * Unit tests for OF10FeaturesReplyMessageFactory.
  *
+ * @author michal.polkorab
  */
 public class OF10FeaturesReplyMessageFactoryTest {
 
     private OFDeserializer<GetFeaturesOutput> featuresFactory;
 
     /**
-     * Initializes deserializer registry and lookups correct deserializer
+     * Initializes deserializer registry and lookups correct deserializer.
      */
     @Before
     public void startUp() {
@@ -48,7 +48,7 @@ public class OF10FeaturesReplyMessageFactoryTest {
     }
 
     /**
-     * Testing {@link OF10FeaturesReplyMessageFactory} for correct translation into POJO
+     * Testing {@link OF10FeaturesReplyMessageFactory} for correct translation into POJO.
      */
     @Test
     public void test() {
@@ -72,7 +72,8 @@ public class OF10FeaturesReplyMessageFactoryTest {
         Assert.assertEquals("Wrong port - name", new String("ALOHA"), port.getName());
         Assert.assertEquals("Wrong port - config", new PortConfigV10(true, true, true, true, true, true, true),
                 port.getConfigV10());
-        Assert.assertEquals("Wrong port - state",  new PortStateV10(false, false, false, false, true, false, true, false),
+        Assert.assertEquals("Wrong port - state",  new PortStateV10(false, false, false, false, true,
+                false, true, false),
                 port.getStateV10());
         Assert.assertEquals("Wrong port - curr", new PortFeaturesV10(true, true, true, true, true, true, true,
                 true, true, true, true, true), port.getCurrentFeaturesV10());
@@ -85,7 +86,7 @@ public class OF10FeaturesReplyMessageFactoryTest {
     }
 
     /**
-     * Testing {@link OF10FeaturesReplyMessageFactory} for correct translation into POJO
+     * Testing {@link OF10FeaturesReplyMessageFactory} for correct translation into POJO.
      */
     @Test
     public void testWithTwoPortsSet() {
@@ -108,12 +109,12 @@ public class OF10FeaturesReplyMessageFactoryTest {
         Assert.assertEquals("Wrong port - state",  new PortStateV10(false, true, false, true, true, true, false, true),
                 port.getStateV10());
         port = builtByFactory.getPhyPort().get(1);
-        Assert.assertEquals("Wrong port - state",  new PortStateV10(false, false, false, false, false, false, true, false),
-                port.getStateV10());
+        Assert.assertEquals("Wrong port - state",
+                new PortStateV10(false, false, false, false, false, false, true, false), port.getStateV10());
     }
 
     /**
-     * Testing {@link OF10FeaturesReplyMessageFactory} for correct translation into POJO
+     * Testing {@link OF10FeaturesReplyMessageFactory} for correct translation into POJO.
      */
     @Test
     public void testWithNoPortsSet() {
@@ -122,7 +123,8 @@ public class OF10FeaturesReplyMessageFactoryTest {
         GetFeaturesOutput builtByFactory = BufferHelper.deserialize(featuresFactory, bb);
 
         BufferHelper.checkHeaderV10(builtByFactory);
-        Assert.assertEquals("Wrong capabilities", new CapabilitiesV10(false, false, false, false, false, false, false, false),
+        Assert.assertEquals("Wrong capabilities",
+                new CapabilitiesV10(false, false, false, false, false, false, false, false),
                 builtByFactory.getCapabilitiesV10());
         Assert.assertEquals("Wrong actions", new ActionTypeV10(false, false, false, false, false, false, false,
                 false, false, false, false, false, false), builtByFactory.getActionsV10());

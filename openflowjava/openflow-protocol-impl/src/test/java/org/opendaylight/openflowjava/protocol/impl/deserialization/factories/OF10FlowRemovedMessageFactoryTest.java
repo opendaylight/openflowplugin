@@ -8,19 +8,20 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
 import io.netty.buffer.ByteBuf;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
 
 /**
+ * Unit tests for OF10FlowRemovedMessageFactory.
+ *
  * @author michal.polkorab
  */
 public class OF10FlowRemovedMessageFactoryTest {
@@ -28,7 +29,7 @@ public class OF10FlowRemovedMessageFactoryTest {
     private OFDeserializer<FlowRemovedMessage> flowFactory;
 
     /**
-     * Initializes deserializer registry and lookups correct deserializer
+     * Initializes deserializer registry and lookups correct deserializer.
      */
     @Before
     public void startUp() {
@@ -39,10 +40,10 @@ public class OF10FlowRemovedMessageFactoryTest {
     }
 
     /**
-     * Testing {@link OF10FlowRemovedMessageFactory} for correct translation into POJO
+     * Testing {@link OF10FlowRemovedMessageFactory} for correct translation into POJO.
      */
     @Test
-    public void test(){
+    public void test() {
         ByteBuf bb = BufferHelper.buildBuffer("00 24 08 D1 00 20 AA BB CC DD EE FF "
                 + "AA BB CC DD EE FF 00 05 10 00 00 08 07 06 00 00 10 11 12 13 01 02 03 04 "//36
                 + "50 50 20 20 "// match

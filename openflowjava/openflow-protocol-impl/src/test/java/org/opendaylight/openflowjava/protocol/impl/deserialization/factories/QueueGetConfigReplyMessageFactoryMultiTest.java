@@ -9,10 +9,8 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
 import io.netty.buffer.ByteBuf;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,6 +32,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.queue.property.header.QueuePropertyBuilder;
 
 /**
+ * Unit tests for QueueGetConfigReplyMessageFactoryMulti.
+ *
  * @author timotej.kubas
  * @author michal.polkorab
  */
@@ -42,7 +42,7 @@ public class QueueGetConfigReplyMessageFactoryMultiTest {
     private OFDeserializer<GetQueueConfigOutput> queueFactory;
 
     /**
-     * Initializes deserializer registry and lookups correct deserializer
+     * Initializes deserializer registry and lookups correct deserializer.
      */
     @Before
     public void startUp() {
@@ -54,7 +54,7 @@ public class QueueGetConfigReplyMessageFactoryMultiTest {
 
     /**
      * Testing of {@link QueueGetConfigReplyMessageFactory} for correct
-     * translation into POJO
+     * translation into POJO.
      */
     @Test
     public void test() {
@@ -101,7 +101,7 @@ public class QueueGetConfigReplyMessageFactoryMultiTest {
     }
 
     private static List<QueueProperty> createPropertiesList() {
-        List<QueueProperty> propertiesList = new ArrayList<>();
+        final List<QueueProperty> propertiesList = new ArrayList<>();
         QueuePropertyBuilder pb = new QueuePropertyBuilder();
         pb.setProperty(QueueProperties.forValue(2));
         RateQueuePropertyBuilder rateBuilder = new RateQueuePropertyBuilder();

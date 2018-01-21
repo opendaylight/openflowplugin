@@ -25,8 +25,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.group._case.MultipartRequestGroupBuilder;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Unit tests for MultipartRequestGroupInputMessageFactory.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class MultipartRequestGroupInputMessageFactoryTest {
     ByteBuf bb = BufferHelper.buildBuffer("00 06 00 01 00 00 00 00 00 00 08 d2 00 00 00 00");
