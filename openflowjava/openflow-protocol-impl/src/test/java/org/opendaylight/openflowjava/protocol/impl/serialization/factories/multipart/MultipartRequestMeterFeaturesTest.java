@@ -10,7 +10,6 @@ package org.opendaylight.openflowjava.protocol.impl.serialization.factories.mult
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,8 +28,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.meter.features._case.MultipartRequestMeterFeaturesBuilder;
 
 /**
- * @author michal.polkorab
+ * Unit tests for MultipartRequestMeterFeatures.
  *
+ * @author michal.polkorab
  */
 public class MultipartRequestMeterFeaturesTest {
 
@@ -38,7 +38,7 @@ public class MultipartRequestMeterFeaturesTest {
     private OFSerializer<MultipartRequestInput> multipartFactory;
 
     /**
-     * Initializes serializer registry and stores correct factory in field
+     * Initializes serializer registry and stores correct factory in field.
      */
     @Before
     public void startUp() {
@@ -49,8 +49,7 @@ public class MultipartRequestMeterFeaturesTest {
     }
 
     /**
-     * Tests {@link MultipartRequestInputFactory} - MeterFeatures case
-     * @throws Exception
+     * Tests {@link MultipartRequestInputFactory} - MeterFeatures case.
      */
     @Test
     public void test() throws Exception {

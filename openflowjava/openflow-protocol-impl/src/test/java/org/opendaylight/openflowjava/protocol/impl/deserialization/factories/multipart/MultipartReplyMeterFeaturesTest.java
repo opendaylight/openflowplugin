@@ -9,7 +9,6 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories.multipart;
 
 import io.netty.buffer.ByteBuf;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.factories.MultipartReplyMessageFactory;
@@ -21,19 +20,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter.features._case.MultipartReplyMeterFeatures;
 
 /**
- * @author michal.polkorab
+ * Unit tests for MultipartReplyMeterFeatures.
  *
+ * @author michal.polkorab
  */
 public class MultipartReplyMeterFeaturesTest {
 
-    private MultipartReplyMessageFactory factory = new MultipartReplyMessageFactory();
+    private final MultipartReplyMessageFactory factory = new MultipartReplyMessageFactory();
 
     /**
-     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO
+     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO.
      */
     @Test
-    public void testMultipartReplyMeterFeatures(){
-        ByteBuf bb = BufferHelper.buildBuffer("00 0B 00 01 00 00 00 00 "+
+    public void testMultipartReplyMeterFeatures() {
+        ByteBuf bb = BufferHelper.buildBuffer("00 0B 00 01 00 00 00 00 " + //
                                               "00 00 00 0A " + // maxMeter
                                               "00 00 00 06 " + // bandTypes
                                               "00 00 00 0F " + // capabilities
@@ -44,7 +44,8 @@ public class MultipartReplyMeterFeaturesTest {
         BufferHelper.checkHeaderV13(builtByFactory);
         Assert.assertEquals("Wrong type", 11, builtByFactory.getType().getIntValue());
         Assert.assertEquals("Wrong flag", true, builtByFactory.getFlags().isOFPMPFREQMORE());
-        MultipartReplyMeterFeaturesCase messageCase = (MultipartReplyMeterFeaturesCase) builtByFactory.getMultipartReplyBody();
+        MultipartReplyMeterFeaturesCase messageCase =
+                (MultipartReplyMeterFeaturesCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyMeterFeatures message = messageCase.getMultipartReplyMeterFeatures();
         Assert.assertEquals("Wrong maxMeter", 10, message.getMaxMeter().intValue());
         Assert.assertEquals("Wrong bandTypes", new MeterBandTypeBitmap(true, true), message.getBandTypes());
@@ -54,11 +55,11 @@ public class MultipartReplyMeterFeaturesTest {
     }
 
     /**
-     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO
+     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO.
      */
     @Test
-    public void testMultipartReplyMeterFeatures2(){
-        ByteBuf bb = BufferHelper.buildBuffer("00 0B 00 01 00 00 00 00 "+
+    public void testMultipartReplyMeterFeatures2() {
+        ByteBuf bb = BufferHelper.buildBuffer("00 0B 00 01 00 00 00 00 " + //
                                               "00 00 00 09 " + // maxMeter
                                               "00 00 00 00 " + // bandTypes
                                               "00 00 00 00 " + // capabilities
@@ -69,11 +70,13 @@ public class MultipartReplyMeterFeaturesTest {
         BufferHelper.checkHeaderV13(builtByFactory);
         Assert.assertEquals("Wrong type", 11, builtByFactory.getType().getIntValue());
         Assert.assertEquals("Wrong flag", true, builtByFactory.getFlags().isOFPMPFREQMORE());
-        MultipartReplyMeterFeaturesCase messageCase = (MultipartReplyMeterFeaturesCase) builtByFactory.getMultipartReplyBody();
+        MultipartReplyMeterFeaturesCase messageCase =
+                (MultipartReplyMeterFeaturesCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyMeterFeatures message = messageCase.getMultipartReplyMeterFeatures();
         Assert.assertEquals("Wrong maxMeter", 9, message.getMaxMeter().intValue());
         Assert.assertEquals("Wrong bandTypes", new MeterBandTypeBitmap(false, false), message.getBandTypes());
-        Assert.assertEquals("Wrong capabilities", new MeterFlags(false, false, false, false), message.getCapabilities());
+        Assert.assertEquals("Wrong capabilities",
+                new MeterFlags(false, false, false, false), message.getCapabilities());
         Assert.assertEquals("Wrong maxBands", 3, message.getMaxBands().intValue());
         Assert.assertEquals("Wrong maxColor", 4, message.getMaxColor().intValue());
     }

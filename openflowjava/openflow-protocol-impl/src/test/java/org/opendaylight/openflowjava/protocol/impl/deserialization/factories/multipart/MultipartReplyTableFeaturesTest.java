@@ -9,9 +9,7 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories.multipart;
 
 import io.netty.buffer.ByteBuf;
-
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.factories.MultipartReplyMessageFactory;
@@ -26,15 +24,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeatureProperties;
 
 /**
- * @author michal.polkorab
+ * Unit tests for MultipartReplyTableFeatures.
  *
+ * @author michal.polkorab
  */
 public class MultipartReplyTableFeaturesTest {
 
-    private MultipartReplyMessageFactory factory = new MultipartReplyMessageFactory();
+    private final MultipartReplyMessageFactory factory = new MultipartReplyMessageFactory();
 
     /**
-     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO
+     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO.
      */
     @Test
     public void testEmptyMultipartReplyTableFeatures() {
@@ -44,32 +43,33 @@ public class MultipartReplyTableFeaturesTest {
         BufferHelper.checkHeaderV13(builtByFactory);
         Assert.assertEquals("Wrong type", 12, builtByFactory.getType().getIntValue());
         Assert.assertEquals("Wrong flag", false, builtByFactory.getFlags().isOFPMPFREQMORE());
-        MultipartReplyTableFeaturesCase messageCase = (MultipartReplyTableFeaturesCase) builtByFactory.getMultipartReplyBody();
+        MultipartReplyTableFeaturesCase messageCase =
+                (MultipartReplyTableFeaturesCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyTableFeatures message = messageCase.getMultipartReplyTableFeatures();
         Assert.assertEquals("Wrong table features size", 0, message.getTableFeatures().size());
     }
 
     /**
-     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO
+     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO.
      */
     @Test
     public void testMultipartReplyTableFeatures() {
-        ByteBuf bb = BufferHelper.buildBuffer("00 0C 00 00 00 00 00 00 "+
+        ByteBuf bb = BufferHelper.buildBuffer("00 0C 00 00 00 00 00 00 " + //
                                               // first table feature
-                                              "00 40 01 00 00 00 00 00 "+// length, tableId, padding
-                                              "4F 70 65 6E 64 61 79 6C 69 67 68 74 00 00 00 00 00 00 00 "+
-                                              "00 00 00 00 00 00 00 00 00 00 00 00 00 "+// name
-                                              "00 00 00 00 00 00 00 01 "+// metadata match
-                                              "00 00 00 00 00 00 00 02 "+// metadata write
-                                              "00 00 00 00 "+// config
-                                              "00 00 00 2A "+// max entries
+                                              "00 40 01 00 00 00 00 00 " + // length, tableId, padding
+                                              "4F 70 65 6E 64 61 79 6C 69 67 68 74 00 00 00 00 00 00 00 " + //
+                                              "00 00 00 00 00 00 00 00 00 00 00 00 00 " + // name
+                                              "00 00 00 00 00 00 00 01 " + // metadata match
+                                              "00 00 00 00 00 00 00 02 " + // metadata write
+                                              "00 00 00 00 " + // config
+                                              "00 00 00 2A " + // max entries
                                               // second table feature
-                                              "00 40 02 00 00 00 00 00 "+// length, tableId, padding
+                                              "00 40 02 00 00 00 00 00 " + // length, tableId, padding
                                               "4F 70 65 6E 64 61 79 6C 69 67 68 74 00 00 00 00 00 00 00"
-                                              + " 00 00 00 00 00 00 00 00 00 00 00 00 00 "+// name
-                                              "00 00 00 00 00 00 00 03 "+// metadata match
-                                              "00 00 00 00 00 00 00 04 "+// metadata write
-                                              "00 00 00 03 "+// config
+                                              + " 00 00 00 00 00 00 00 00 00 00 00 00 00 " + // name
+                                              "00 00 00 00 00 00 00 03 " + // metadata match
+                                              "00 00 00 00 00 00 00 04 " + // metadata write
+                                              "00 00 00 03 " + // config
                                               "00 00 00 2B"  // max entries
                                               );
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(factory, bb);
@@ -77,51 +77,56 @@ public class MultipartReplyTableFeaturesTest {
         BufferHelper.checkHeaderV13(builtByFactory);
         Assert.assertEquals("Wrong type", 12, builtByFactory.getType().getIntValue());
         Assert.assertEquals("Wrong flag", false, builtByFactory.getFlags().isOFPMPFREQMORE());
-        MultipartReplyTableFeaturesCase messageCase = (MultipartReplyTableFeaturesCase) builtByFactory.getMultipartReplyBody();
+        MultipartReplyTableFeaturesCase messageCase =
+                (MultipartReplyTableFeaturesCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyTableFeatures message = messageCase.getMultipartReplyTableFeatures();
         Assert.assertEquals("Wrong table features size", 2, message.getTableFeatures().size());
         TableFeatures feature = message.getTableFeatures().get(0);
         Assert.assertEquals("Wrong table id", 1, feature.getTableId().intValue());
         Assert.assertEquals("Wrong name", "Opendaylight", feature.getName());
-        Assert.assertArrayEquals("Wrong metadata match", new byte[]{0, 0, 0, 0, 0, 0, 0, 1}, feature.getMetadataMatch());
-        Assert.assertArrayEquals("Wrong metadata write", new byte[]{0, 0, 0, 0, 0, 0, 0, 2}, feature.getMetadataWrite());
+        Assert.assertArrayEquals("Wrong metadata match",
+                new byte[]{0, 0, 0, 0, 0, 0, 0, 1}, feature.getMetadataMatch());
+        Assert.assertArrayEquals("Wrong metadata write",
+                new byte[]{0, 0, 0, 0, 0, 0, 0, 2}, feature.getMetadataWrite());
         Assert.assertEquals("Wrong config", false, feature.getConfig().isOFPTCDEPRECATEDMASK());
         Assert.assertEquals("Wrong max entries", 42, feature.getMaxEntries().intValue());
         feature = message.getTableFeatures().get(1);
         Assert.assertEquals("Wrong table id", 2, feature.getTableId().intValue());
         Assert.assertEquals("Wrong name", "Opendaylight", feature.getName());
-        Assert.assertArrayEquals("Wrong metadata match", new byte[]{0, 0, 0, 0, 0, 0, 0, 3}, feature.getMetadataMatch());
-        Assert.assertArrayEquals("Wrong metadata write", new byte[]{0, 0, 0, 0, 0, 0, 0, 4}, feature.getMetadataWrite());
+        Assert.assertArrayEquals("Wrong metadata match",
+                new byte[]{0, 0, 0, 0, 0, 0, 0, 3}, feature.getMetadataMatch());
+        Assert.assertArrayEquals("Wrong metadata write",
+                new byte[]{0, 0, 0, 0, 0, 0, 0, 4}, feature.getMetadataWrite());
         Assert.assertEquals("Wrong config", true, feature.getConfig().isOFPTCDEPRECATEDMASK());
         Assert.assertEquals("Wrong max entries", 43, feature.getMaxEntries().intValue());
     }
 
     /**
-     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO
+     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO.
      */
     @Test
     public void testMultipartReplyTableFeatures2() {
-        ByteBuf bb = BufferHelper.buildBuffer("00 0C 00 00 00 00 00 00 "+
-                                              "00 B0 01 00 00 00 00 00 "+// length, tableId, padding
-                                              "4F 70 65 6E 64 61 79 6C 69 67 68 74 00 00 00 00 00 00 00 "+
-                                              "00 00 00 00 00 00 00 00 00 00 00 00 00 "+// name
-                                              "00 00 00 00 00 00 00 01 "+// metadata match
-                                              "00 00 00 00 00 00 00 02 "+// metadata write
-                                              "00 00 00 00 "+// config
-                                              "00 00 00 2A "+// max entries
-                                              "00 00 00 04 00 00 00 00 "+
-                                              "00 01 00 04 00 00 00 00 "+
-                                              "00 02 00 08 01 02 03 04 "+
-                                              "00 03 00 07 05 06 07 00 "+
-                                              "00 04 00 04 00 00 00 00 "+
-                                              "00 05 00 04 00 00 00 00 "+
-                                              "00 06 00 04 00 00 00 00 "+
-                                              "00 07 00 04 00 00 00 00 "+
-                                              "00 08 00 04 00 00 00 00 "+
-                                              "00 0A 00 04 00 00 00 00 "+
-                                              "00 0C 00 04 00 00 00 00 "+
-                                              "00 0D 00 04 00 00 00 00 "+
-                                              "00 0E 00 04 00 00 00 00 "+
+        ByteBuf bb = BufferHelper.buildBuffer("00 0C 00 00 00 00 00 00 " + //
+                                              "00 B0 01 00 00 00 00 00 " + // length, tableId, padding
+                                              "4F 70 65 6E 64 61 79 6C 69 67 68 74 00 00 00 00 00 00 00 " + //
+                                              "00 00 00 00 00 00 00 00 00 00 00 00 00 " + // name
+                                              "00 00 00 00 00 00 00 01 " + // metadata match
+                                              "00 00 00 00 00 00 00 02 " + // metadata write
+                                              "00 00 00 00 " + // config
+                                              "00 00 00 2A " + // max entries
+                                              "00 00 00 04 00 00 00 00 " + //
+                                              "00 01 00 04 00 00 00 00 " + //
+                                              "00 02 00 08 01 02 03 04 " + //
+                                              "00 03 00 07 05 06 07 00 " + //
+                                              "00 04 00 04 00 00 00 00 " + //
+                                              "00 05 00 04 00 00 00 00 " + //
+                                              "00 06 00 04 00 00 00 00 " + //
+                                              "00 07 00 04 00 00 00 00 " + //
+                                              "00 08 00 04 00 00 00 00 " + //
+                                              "00 0A 00 04 00 00 00 00 " + //
+                                              "00 0C 00 04 00 00 00 00 " + //
+                                              "00 0D 00 04 00 00 00 00 " + //
+                                              "00 0E 00 04 00 00 00 00 " + //
                                               "00 0F 00 04 00 00 00 00"
                                               );
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(factory, bb);
@@ -129,14 +134,17 @@ public class MultipartReplyTableFeaturesTest {
         BufferHelper.checkHeaderV13(builtByFactory);
         Assert.assertEquals("Wrong type", 12, builtByFactory.getType().getIntValue());
         Assert.assertEquals("Wrong flag", false, builtByFactory.getFlags().isOFPMPFREQMORE());
-        MultipartReplyTableFeaturesCase messageCase = (MultipartReplyTableFeaturesCase) builtByFactory.getMultipartReplyBody();
+        MultipartReplyTableFeaturesCase messageCase =
+                (MultipartReplyTableFeaturesCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyTableFeatures message = messageCase.getMultipartReplyTableFeatures();
         Assert.assertEquals("Wrong table features size", 1, message.getTableFeatures().size());
         TableFeatures feature = message.getTableFeatures().get(0);
         Assert.assertEquals("Wrong table id", 1, feature.getTableId().intValue());
         Assert.assertEquals("Wrong name", "Opendaylight", feature.getName());
-        Assert.assertArrayEquals("Wrong metadata match", new byte[]{0, 0, 0, 0, 0, 0, 0, 1}, feature.getMetadataMatch());
-        Assert.assertArrayEquals("Wrong metadata write", new byte[]{0, 0, 0, 0, 0, 0, 0, 2}, feature.getMetadataWrite());
+        Assert.assertArrayEquals("Wrong metadata match",
+                new byte[]{0, 0, 0, 0, 0, 0, 0, 1}, feature.getMetadataMatch());
+        Assert.assertArrayEquals("Wrong metadata write",
+                new byte[]{0, 0, 0, 0, 0, 0, 0, 2}, feature.getMetadataWrite());
         Assert.assertEquals("Wrong config", false, feature.getConfig().isOFPTCDEPRECATEDMASK());
         Assert.assertEquals("Wrong max entries", 42, feature.getMaxEntries().intValue());
         Assert.assertEquals("Wrong properties size", 14, feature.getTableFeatureProperties().size());

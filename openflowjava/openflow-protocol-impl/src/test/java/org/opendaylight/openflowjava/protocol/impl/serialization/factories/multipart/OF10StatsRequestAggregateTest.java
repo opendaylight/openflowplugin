@@ -10,7 +10,6 @@ package org.opendaylight.openflowjava.protocol.impl.serialization.factories.mult
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,8 +32,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.aggregate._case.MultipartRequestAggregateBuilder;
 
 /**
- * @author michal.polkorab
+ * Unit tests for OF10StatsRequestAggregate.
  *
+ * @author michal.polkorab
  */
 public class OF10StatsRequestAggregateTest {
 
@@ -42,7 +42,7 @@ public class OF10StatsRequestAggregateTest {
     private OFSerializer<MultipartRequestInput> statsFactory;
 
     /**
-     * Initializes serializer registry and stores correct factory in field
+     * Initializes serializer registry and stores correct factory in field.
      */
     @Before
     public void startUp() {
@@ -53,8 +53,7 @@ public class OF10StatsRequestAggregateTest {
     }
 
     /**
-     * Tests {@link OF10StatsRequestInputFactory} for correct serialization
-     * @throws Exception
+     * Tests {@link OF10StatsRequestInputFactory} for correct serialization.
      */
     @Test
     public void test() throws Exception {
@@ -62,8 +61,8 @@ public class OF10StatsRequestAggregateTest {
         BufferHelper.setupHeader(builder, EncodeConstants.OF10_VERSION_ID);
         builder.setType(MultipartType.OFPMPAGGREGATE);
         builder.setFlags(new MultipartRequestFlags(false));
-        MultipartRequestAggregateCaseBuilder caseBuilder = new MultipartRequestAggregateCaseBuilder();
-        MultipartRequestAggregateBuilder aggBuilder = new MultipartRequestAggregateBuilder();
+        final MultipartRequestAggregateCaseBuilder caseBuilder = new MultipartRequestAggregateCaseBuilder();
+        final MultipartRequestAggregateBuilder aggBuilder = new MultipartRequestAggregateBuilder();
         MatchV10Builder matchBuilder = new MatchV10Builder();
         matchBuilder.setWildcards(new FlowWildcardsV10(true, true, true, true, true, true,
                 true, true, true, true));
