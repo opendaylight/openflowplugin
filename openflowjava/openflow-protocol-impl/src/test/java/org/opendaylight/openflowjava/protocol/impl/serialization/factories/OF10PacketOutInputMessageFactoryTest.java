@@ -10,10 +10,8 @@ package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,8 +32,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInputBuilder;
 
 /**
- * @author michal.polkorab
+ * Unit tests for OF10PacketOutInputMessageFactory.
  *
+ * @author michal.polkorab
  */
 public class OF10PacketOutInputMessageFactoryTest {
 
@@ -43,7 +42,7 @@ public class OF10PacketOutInputMessageFactoryTest {
     private OFSerializer<PacketOutInput> packetOutFactory;
 
     /**
-     * Initializes serializer registry and stores correct factory in field
+     * Initializes serializer registry and stores correct factory in field.
      */
     @Before
     public void startUp() {
@@ -54,8 +53,7 @@ public class OF10PacketOutInputMessageFactoryTest {
     }
 
     /**
-     * Testing of {@link OF10PacketOutInputMessageFactory} for correct translation from POJO
-     * @throws Exception
+     * Testing of {@link OF10PacketOutInputMessageFactory} for correct translation from POJO.
      */
     @Test
     public void testPacketOutInputMessage() throws Exception {
@@ -63,13 +61,13 @@ public class OF10PacketOutInputMessageFactoryTest {
         BufferHelper.setupHeader(builder, EncodeConstants.OF10_VERSION_ID);
         builder.setBufferId(256L);
         builder.setInPort(new PortNumber(257L));
-        List<Action> actions = new ArrayList<>();
-        ActionBuilder actionBuilder = new ActionBuilder();
+        final List<Action> actions = new ArrayList<>();
         OutputActionCaseBuilder caseBuilder = new OutputActionCaseBuilder();
         OutputActionBuilder outputBuilder = new OutputActionBuilder();
         outputBuilder.setPort(new PortNumber(42L));
         outputBuilder.setMaxLength(50);
         caseBuilder.setOutputAction(outputBuilder.build());
+        ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setActionChoice(caseBuilder.build());
         actions.add(actionBuilder.build());
         actionBuilder = new ActionBuilder();
@@ -101,8 +99,7 @@ public class OF10PacketOutInputMessageFactoryTest {
     }
 
     /**
-     * Testing of {@link OF10PacketOutInputMessageFactory} for correct translation from POJO
-     * @throws Exception
+     * Testing of {@link OF10PacketOutInputMessageFactory} for correct translation from POJO.
      */
     @Test
     public void testPacketOutInputWithNoData() throws Exception {

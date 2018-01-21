@@ -9,10 +9,8 @@ package org.opendaylight.openflowjava.protocol.impl.util;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,15 +55,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.in.port._case.InPortBuilder;
 
 /**
- * @author michal.polkorab
+ * Unit tests for OF13ActionsSerializer.
  *
+ * @author michal.polkorab
  */
 public class OF13ActionsSerializerTest {
 
     private SerializerRegistry registry;
 
     /**
-     * Initializes serializer table and stores correct factory in field
+     * Initializes serializer table and stores correct factory in field.
      */
     @Before
     public void startUp() {
@@ -74,18 +73,18 @@ public class OF13ActionsSerializerTest {
     }
 
     /**
-     * Testing correct serialization of actions
+     * Testing correct serialization of actions.
      */
     @Test
     public void test() {
-        List<Action> actions = new ArrayList<>();
-        ActionBuilder actionBuilder = new ActionBuilder();
         OutputActionCaseBuilder caseBuilder = new OutputActionCaseBuilder();
         OutputActionBuilder outputBuilder = new OutputActionBuilder();
         outputBuilder.setPort(new PortNumber(42L));
         outputBuilder.setMaxLength(52);
         caseBuilder.setOutputAction(outputBuilder.build());
+        ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setActionChoice(caseBuilder.build());
+        List<Action> actions = new ArrayList<>();
         actions.add(actionBuilder.build());
         actionBuilder = new ActionBuilder();
         actionBuilder.setActionChoice(new CopyTtlOutCaseBuilder().build());
@@ -152,9 +151,6 @@ public class OF13ActionsSerializerTest {
         actionBuilder.setActionChoice(new DecNwTtlCaseBuilder().build());
         actions.add(actionBuilder.build());
         actionBuilder = new ActionBuilder();
-        SetFieldCaseBuilder setFieldCaseBuilder = new SetFieldCaseBuilder();
-        SetFieldActionBuilder setFieldBuilder = new SetFieldActionBuilder();
-        List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder matchBuilder = new MatchEntryBuilder();
         matchBuilder.setOxmClass(OpenflowBasicClass.class);
         matchBuilder.setOxmMatchField(InPort.class);
@@ -164,8 +160,11 @@ public class OF13ActionsSerializerTest {
         inPortBuilder.setPortNumber(new PortNumber(1L));
         inPortCaseBuilder.setInPort(inPortBuilder.build());
         matchBuilder.setMatchEntryValue(inPortCaseBuilder.build());
+        List<MatchEntry> entries = new ArrayList<>();
         entries.add(matchBuilder.build());
+        SetFieldActionBuilder setFieldBuilder = new SetFieldActionBuilder();
         setFieldBuilder.setMatchEntry(entries);
+        SetFieldCaseBuilder setFieldCaseBuilder = new SetFieldCaseBuilder();
         setFieldCaseBuilder.setSetFieldAction(setFieldBuilder.build());
         actionBuilder.setActionChoice(setFieldCaseBuilder.build());
         actions.add(actionBuilder.build());
@@ -248,23 +247,20 @@ public class OF13ActionsSerializerTest {
     }
 
     /**
-     * Testing correct serialization of actions
+     * Testing correct serialization of actions.
      */
     @Test
     public void testHeaders() {
-        List<Action> actions = new ArrayList<>();
-        ActionBuilder actionBuilder = new ActionBuilder();
         OutputActionCaseBuilder caseBuilder = new OutputActionCaseBuilder();
         OutputActionBuilder outputBuilder = new OutputActionBuilder();
         outputBuilder.setPort(new PortNumber(42L));
         outputBuilder.setMaxLength(52);
         caseBuilder.setOutputAction(outputBuilder.build());
+        ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setActionChoice(caseBuilder.build());
+        List<Action> actions = new ArrayList<>();
         actions.add(actionBuilder.build());
         actionBuilder = new ActionBuilder();
-        SetFieldCaseBuilder setFieldCaseBuilder = new SetFieldCaseBuilder();
-        SetFieldActionBuilder setFieldBuilder = new SetFieldActionBuilder();
-        List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder matchBuilder = new MatchEntryBuilder();
         matchBuilder.setOxmClass(OpenflowBasicClass.class);
         matchBuilder.setOxmMatchField(InPort.class);
@@ -274,8 +270,11 @@ public class OF13ActionsSerializerTest {
         inPortBuilder.setPortNumber(new PortNumber(1L));
         inPortCaseBuilder.setInPort(inPortBuilder.build());
         matchBuilder.setMatchEntryValue(inPortCaseBuilder.build());
+        List<MatchEntry> entries = new ArrayList<>();
         entries.add(matchBuilder.build());
+        SetFieldActionBuilder setFieldBuilder = new SetFieldActionBuilder();
         setFieldBuilder.setMatchEntry(entries);
+        SetFieldCaseBuilder setFieldCaseBuilder = new SetFieldCaseBuilder();
         setFieldCaseBuilder.setSetFieldAction(setFieldBuilder.build());
         actionBuilder.setActionChoice(setFieldCaseBuilder.build());
         actions.add(actionBuilder.build());

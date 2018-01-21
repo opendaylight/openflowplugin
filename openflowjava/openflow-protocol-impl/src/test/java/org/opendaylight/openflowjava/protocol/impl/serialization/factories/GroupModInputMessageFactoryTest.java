@@ -10,16 +10,12 @@ package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
@@ -33,8 +29,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.grouping.BucketsListBuilder;
 
 /**
- * @author timotej.kubas
+ * Unit tests for GroupModInputMessageFactory.
  *
+ * @author timotej.kubas
  */
 public class GroupModInputMessageFactoryTest {
     private static final byte MESSAGE_TYPE = 15;
@@ -43,7 +40,7 @@ public class GroupModInputMessageFactoryTest {
     private OFSerializer<GroupModInput> groupModFactory;
 
     /**
-     * Initializes serializer registry and stores correct factory in field
+     * Initializes serializer registry and stores correct factory in field.
      */
     @Before
     public void startUp() {
@@ -54,8 +51,7 @@ public class GroupModInputMessageFactoryTest {
     }
 
     /**
-     * @throws Exception
-     * Testing of {@link GroupModInputMessageFactory} for correct translation from POJO
+     * Testing of {@link GroupModInputMessageFactory} for correct translation from POJO.
      */
     @Test
     public void testGroupModInputMessage() throws Exception {
@@ -66,7 +62,7 @@ public class GroupModInputMessageFactoryTest {
         builder.setGroupId(new GroupId(256L));
         List<BucketsList> exp = createBucketsList();
         builder.setBucketsList(exp);
-        GroupModInput message = builder.build();
+        final GroupModInput message = builder.build();
 
         ByteBuf out = UnpooledByteBufAllocator.DEFAULT.buffer();
 
@@ -91,35 +87,32 @@ public class GroupModInputMessageFactoryTest {
         Assert.assertArrayEquals("Wrong bucketList", exp.toArray(), rec.toArray());
     }
 
-    private static List<BucketsList> createBucketsList(){
-        List<BucketsList> bucketsList = new ArrayList<>();
+    private static List<BucketsList> createBucketsList() {
+        final List<BucketsList> bucketsList = new ArrayList<>();
         BucketsListBuilder bucketsBuilder = new BucketsListBuilder();
-        BucketsList bucket;
         bucketsBuilder.setWeight(10);
         bucketsBuilder.setWatchPort(new PortNumber(65L));
         bucketsBuilder.setWatchGroup(22L);
-        bucket = bucketsBuilder.build();
+        BucketsList bucket = bucketsBuilder.build();
         bucketsList.add(bucket);
         return bucketsList;
     }
 
-    private static List<BucketsList> createBucketsListFromBufer(ByteBuf out){
-        List<BucketsList> bucketsList = new ArrayList<>();
+    private static List<BucketsList> createBucketsListFromBufer(ByteBuf out) {
+        final List<BucketsList> bucketsList = new ArrayList<>();
         BucketsListBuilder bucketsBuilder = new BucketsListBuilder();
-        BucketsList bucket;
         out.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
         bucketsBuilder.setWeight(out.readUnsignedShort());
         bucketsBuilder.setWatchPort(new PortNumber(out.readUnsignedInt()));
         bucketsBuilder.setWatchGroup(out.readUnsignedInt());
         out.skipBytes(4);
-        bucket = bucketsBuilder.build();
+        BucketsList bucket = bucketsBuilder.build();
         bucketsList.add(bucket);
         return bucketsList;
     }
 
     /**
-     * Testing of {@link GroupModInputMessageFactory} for correct translation from POJO
-     * @throws Exception
+     * Testing of {@link GroupModInputMessageFactory} for correct translation from POJO.
      */
     @Test
     public void testGroupModInputWithNoBuckets() throws Exception {

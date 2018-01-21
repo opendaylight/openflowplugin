@@ -10,7 +10,6 @@ package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,8 +23,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInputBuilder;
 
 /**
- * @author michal.polkorab
+ * Unit tests for EchoInputMessageFactory.
  *
+ * @author michal.polkorab
  */
 public class EchoInputMessageFactoryTest {
 
@@ -34,7 +34,7 @@ public class EchoInputMessageFactoryTest {
     private OFSerializer<EchoInput> echoFactory;
 
     /**
-     * Initializes serializer registry and stores correct factory in field
+     * Initializes serializer registry and stores correct factory in field.
      */
     @Before
     public void startUp() {
@@ -45,8 +45,7 @@ public class EchoInputMessageFactoryTest {
     }
 
     /**
-     * Testing of {@link EchoInputMessageFactory} for correct translation from POJO
-     * @throws Exception
+     * Testing of {@link EchoInputMessageFactory} for correct translation from POJO.
      */
     @Test
     public void testV13() throws Exception {
@@ -59,8 +58,7 @@ public class EchoInputMessageFactoryTest {
     }
 
     /**
-     * Testing of {@link EchoInputMessageFactory} for correct translation from POJO
-     * @throws Exception
+     * Testing of {@link EchoInputMessageFactory} for correct translation from POJO.
      */
     @Test
     public void testV10() throws Exception {
@@ -73,11 +71,10 @@ public class EchoInputMessageFactoryTest {
     }
 
     /**
-     * Testing of {@link EchoInputMessageFactory} for correct data serialization
-     * @throws Exception
+     * Testing of {@link EchoInputMessageFactory} for correct data serialization.
      */
     @Test
-    public void testData() throws Exception{
+    public void testData() throws Exception {
         byte[] dataToTest = new byte[]{91,92,93,94,95,96,97,98};
         EchoInputBuilder eib = new EchoInputBuilder();
         BufferHelper.setupHeader(eib, EncodeConstants.OF13_VERSION_ID);
@@ -85,7 +82,7 @@ public class EchoInputMessageFactoryTest {
         EchoInput ei = eib.build();
         ByteBuf out = UnpooledByteBufAllocator.DEFAULT.buffer();
         echoFactory.serialize(ei, out);
-        BufferHelper.checkHeaderV13(out, ECHO_REQUEST_MESSAGE_CODE_TYPE, 8+dataToTest.length);
+        BufferHelper.checkHeaderV13(out, ECHO_REQUEST_MESSAGE_CODE_TYPE, 8 + dataToTest.length);
         byte[] outData = new byte[dataToTest.length];
         out.readBytes(outData);
         Assert.assertArrayEquals("Wrong - different output data.", dataToTest, outData);

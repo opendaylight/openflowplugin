@@ -8,11 +8,9 @@
 
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
-import org.junit.Assert;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
@@ -25,8 +23,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInputBuilder;
 
 /**
- * @author michal.polkorab
+ * Unit tests for EchoReplyInputMessageFactory.
  *
+ * @author michal.polkorab
  */
 public class EchoReplyInputMessageFactoryTest {
 
@@ -35,7 +34,7 @@ public class EchoReplyInputMessageFactoryTest {
     private OFSerializer<EchoReplyInput> echoFactory;
 
     /**
-     * Initializes serializer registry and stores correct factory in field
+     * Initializes serializer registry and stores correct factory in field.
      */
     @Before
     public void startUp() {
@@ -46,8 +45,7 @@ public class EchoReplyInputMessageFactoryTest {
     }
 
     /**
-     * Testing of {@link EchoReplyInputMessageFactory} for correct translation from POJO
-     * @throws Exception
+     * Testing of {@link EchoReplyInputMessageFactory} for correct translation from POJO.
      */
     @Test
     public void testV13() throws Exception {
@@ -60,8 +58,7 @@ public class EchoReplyInputMessageFactoryTest {
     }
 
     /**
-     * Testing of {@link EchoReplyInputMessageFactory} for correct translation from POJO
-     * @throws Exception
+     * Testing of {@link EchoReplyInputMessageFactory} for correct translation from POJO.
      */
     @Test
     public void testV10() throws Exception {
@@ -74,8 +71,7 @@ public class EchoReplyInputMessageFactoryTest {
     }
 
     /**
-     * Testing of {@link EchoReplyInputMessageFactory} for correct message serialization
-     * @throws Exception
+     * Testing of {@link EchoReplyInputMessageFactory} for correct message serialization.
      */
     @Test
     public void testDataSerialize()throws Exception {
@@ -86,7 +82,7 @@ public class EchoReplyInputMessageFactoryTest {
         EchoReplyInput eri = erib.build();
         ByteBuf out = UnpooledByteBufAllocator.DEFAULT.buffer();
         echoFactory.serialize(eri, out);
-        BufferHelper.checkHeaderV13(out, ECHO_REPLY_MESSAGE_CODE_TYPE, 8+dataToTest.length);
+        BufferHelper.checkHeaderV13(out, ECHO_REPLY_MESSAGE_CODE_TYPE, 8 + dataToTest.length);
         byte[] outData = new byte[dataToTest.length];
         out.readBytes(outData);
         Assert.assertArrayEquals("Wrong - different output data.",dataToTest, outData);

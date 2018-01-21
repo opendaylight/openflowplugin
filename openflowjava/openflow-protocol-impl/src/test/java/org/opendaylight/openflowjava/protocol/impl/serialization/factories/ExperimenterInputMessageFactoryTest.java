@@ -28,8 +28,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
 
 /**
- * @author michal.polkorab
+ * Unit tests for ExperimenterInputMessageFactory.
  *
+ * @author michal.polkorab
  */
 public class ExperimenterInputMessageFactoryTest {
 
@@ -43,7 +44,7 @@ public class ExperimenterInputMessageFactoryTest {
     private ByteBuf out;
 
     /**
-     * Sets up ExperimenterInputMessageFactory
+     * Sets up ExperimenterInputMessageFactory.
      * @param real true if setup should use real registry, false when mock is desired
      */
     public void startUp(boolean real) {
@@ -60,10 +61,9 @@ public class ExperimenterInputMessageFactoryTest {
 
     /**
      * Testing of {@link ExperimenterInputMessageFactory} for correct serializer
-     * lookup and serialization
-     * @throws Exception
+     * lookup and serialization.
      */
-    @Test(expected=IllegalStateException.class)
+    @Test(expected = IllegalStateException.class)
     public void testV10Real() throws Exception {
         startUp(true);
         ExperimenterInputBuilder builder = new ExperimenterInputBuilder();
@@ -78,10 +78,9 @@ public class ExperimenterInputMessageFactoryTest {
 
     /**
      * Testing of {@link ExperimenterInputMessageFactory} for correct serializer
-     * lookup and serialization
-     * @throws Exception
+     * lookup and serialization.
      */
-    @Test(expected=IllegalStateException.class)
+    @Test(expected = IllegalStateException.class)
     public void testV13Real() throws Exception {
         startUp(true);
         ExperimenterInputBuilder builder = new ExperimenterInputBuilder();
@@ -96,8 +95,7 @@ public class ExperimenterInputMessageFactoryTest {
 
     /**
      * Testing of {@link ExperimenterInputMessageFactory} for correct serializer
-     * lookup and serialization
-     * @throws Exception
+     * lookup and serialization.
      */
     @Test
     public void testV10() throws Exception {
@@ -118,8 +116,7 @@ public class ExperimenterInputMessageFactoryTest {
 
     /**
      * Testing of {@link ExperimenterInputMessageFactory} for correct serializer
-     * lookup and serialization
-     * @throws Exception
+     * lookup and serialization.
      */
     @Test
     public void testV13() throws Exception {

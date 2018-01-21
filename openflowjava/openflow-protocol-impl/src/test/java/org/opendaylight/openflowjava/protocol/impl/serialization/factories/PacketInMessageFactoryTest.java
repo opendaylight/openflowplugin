@@ -40,8 +40,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessageBuilder;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Unit tests for PacketInMessageFactory.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class PacketInMessageFactoryTest {
     private OFSerializer<PacketInMessage> factory;
@@ -67,7 +68,7 @@ public class PacketInMessageFactoryTest {
         builder.setCookie(new BigInteger(1, cookie));
         MatchBuilder matchBuilder = new MatchBuilder();
         matchBuilder.setType(OxmMatchType.class);
-        List<MatchEntry> entries = new ArrayList<>();
+        final List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
         entriesBuilder.setOxmClass(OpenflowBasicClass.class);
         entriesBuilder.setOxmMatchField(InPhyPort.class);

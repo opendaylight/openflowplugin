@@ -10,19 +10,17 @@ package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterBandType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterId;
@@ -37,6 +35,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.mod.BandsBuilder;
 
 /**
+ * Unit tests for MeterModInputMessageFactory.
+ *
  * @author timotej.kubas
  * @author michal.polkorab
  */
@@ -46,7 +46,7 @@ public class MeterModInputMessageFactoryTest {
     private OFSerializer<MeterModInput> meterModFactory;
 
     /**
-     * Initializes serializer registry and stores correct factory in field
+     * Initializes serializer registry and stores correct factory in field.
      */
     @Before
     public void startUp() {
@@ -57,8 +57,7 @@ public class MeterModInputMessageFactoryTest {
     }
 
     /**
-     * @throws Exception
-     * Testing of {@link MeterModInputMessageFactory} for correct translation from POJO
+     * Testing of {@link MeterModInputMessageFactory} for correct translation from POJO.
      */
     @Test
     public void testMeterModInputMessage() throws Exception {
@@ -80,25 +79,26 @@ public class MeterModInputMessageFactoryTest {
         Assert.assertEquals("Wrong bands", message.getBands(), decodeBandsList(out));
     }
 
-    private static MeterFlags decodeMeterModFlags(short input){
-        final Boolean _oFPMFKBPS = (input & (1 << 0)) > 0;
-        final Boolean _oFPMFPKTPS = (input & (1 << 1)) > 0;
-        final Boolean _oFPMFBURST = (input & (1 << 2)) > 0;
-        final Boolean _oFPMFSTATS = (input & (1 << 3)) > 0;
+    @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
+    private static MeterFlags decodeMeterModFlags(short input) {
+        final Boolean _oFPMFKBPS = (input & 1 << 0) > 0;
+        final Boolean _oFPMFPKTPS = (input & 1 << 1) > 0;
+        final Boolean _oFPMFBURST = (input & 1 << 2) > 0;
+        final Boolean _oFPMFSTATS = (input & 1 << 3) > 0;
         return new MeterFlags(_oFPMFBURST, _oFPMFKBPS, _oFPMFPKTPS, _oFPMFSTATS);
     }
 
-    private static List<Bands> createBandsList(){
-        List<Bands> bandsList = new ArrayList<>();
-        BandsBuilder bandsBuilder = new BandsBuilder();
-        MeterBandDropCaseBuilder dropCaseBuilder = new MeterBandDropCaseBuilder();
+    private static List<Bands> createBandsList() {
+        final List<Bands> bandsList = new ArrayList<>();
+        final BandsBuilder bandsBuilder = new BandsBuilder();
+        final MeterBandDropCaseBuilder dropCaseBuilder = new MeterBandDropCaseBuilder();
         MeterBandDropBuilder dropBand = new MeterBandDropBuilder();
         dropBand.setType(MeterBandType.OFPMBTDROP);
         dropBand.setRate(1L);
         dropBand.setBurstSize(2L);
         dropCaseBuilder.setMeterBandDrop(dropBand.build());
         bandsList.add(bandsBuilder.setMeterBand(dropCaseBuilder.build()).build());
-        MeterBandDscpRemarkCaseBuilder dscpCaseBuilder = new MeterBandDscpRemarkCaseBuilder();
+        final MeterBandDscpRemarkCaseBuilder dscpCaseBuilder = new MeterBandDscpRemarkCaseBuilder();
         MeterBandDscpRemarkBuilder dscpRemarkBand = new MeterBandDscpRemarkBuilder();
         dscpRemarkBand.setType(MeterBandType.OFPMBTDSCPREMARK);
         dscpRemarkBand.setRate(1L);
@@ -109,22 +109,22 @@ public class MeterModInputMessageFactoryTest {
         return bandsList;
     }
 
-    private static List<Bands> decodeBandsList(ByteBuf input){
-        List<Bands> bandsList = new ArrayList<>();
-        BandsBuilder bandsBuilder = new BandsBuilder();
-        MeterBandDropCaseBuilder dropCaseBuilder = new MeterBandDropCaseBuilder();
+    private static List<Bands> decodeBandsList(ByteBuf input) {
+        final List<Bands> bandsList = new ArrayList<>();
+        final BandsBuilder bandsBuilder = new BandsBuilder();
+        final MeterBandDropCaseBuilder dropCaseBuilder = new MeterBandDropCaseBuilder();
         MeterBandDropBuilder dropBand = new MeterBandDropBuilder();
         dropBand.setType(MeterBandType.forValue(input.readUnsignedShort()));
-        input.skipBytes(Short.SIZE/Byte.SIZE);
+        input.skipBytes(Short.SIZE / Byte.SIZE);
         dropBand.setRate(input.readUnsignedInt());
         dropBand.setBurstSize(input.readUnsignedInt());
         input.skipBytes(4);
         dropCaseBuilder.setMeterBandDrop(dropBand.build());
         bandsList.add(bandsBuilder.setMeterBand(dropCaseBuilder.build()).build());
-        MeterBandDscpRemarkCaseBuilder dscpCaseBuilder = new MeterBandDscpRemarkCaseBuilder();
+        final MeterBandDscpRemarkCaseBuilder dscpCaseBuilder = new MeterBandDscpRemarkCaseBuilder();
         MeterBandDscpRemarkBuilder dscpRemarkBand = new MeterBandDscpRemarkBuilder();
         dscpRemarkBand.setType(MeterBandType.forValue(input.readUnsignedShort()));
-        input.skipBytes(Short.SIZE/Byte.SIZE);
+        input.skipBytes(Short.SIZE / Byte.SIZE);
         dscpRemarkBand.setRate(input.readUnsignedInt());
         dscpRemarkBand.setBurstSize(input.readUnsignedInt());
         dscpRemarkBand.setPrecLevel(input.readUnsignedByte());
@@ -135,8 +135,7 @@ public class MeterModInputMessageFactoryTest {
     }
 
     /**
-     * @throws Exception
-     * Testing of {@link MeterModInputMessageFactory} for correct translation from POJO
+     * Testing of {@link MeterModInputMessageFactory} for correct translation from POJO.
      */
     @Test
     public void testMeterModInputMessageWithNoBands() throws Exception {
