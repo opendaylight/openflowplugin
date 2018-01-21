@@ -51,14 +51,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Unit tests for FlowModInputMessageFactory.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class FlowModInputMessageFactoryTest {
     private OFDeserializer<FlowModInput> flowFactory;
 
     /**
-     * Initializes deserializer registry and lookups correct deserializer
+     * Initializes deserializer registry and lookups correct deserializer.
      */
     @Before
     public void startUp() {
@@ -70,11 +71,11 @@ public class FlowModInputMessageFactoryTest {
 
     @Test
     public void test() throws Exception {
-        ByteBuf bb = BufferHelper
-                .buildBuffer("ff 01 04 01 06 00 07 01 ff 05 00 00 09 30 00 30 41 02 00 0c 00 00 00 7e 00 "
-                        + "00 00 02 00 00 11 46 00 00 00 62 00 0b 00 00 00 01 00 11 80 00 02 04 00 00 00 2a 80 00 12 01 04 00 "
-                        + "00 00 00 00 00 00 00 01 00 08 2b 00 00 00 00 02 00 18 00 00 00 00 ff 01 04 01 06 00 07 01 ff 05 00 00 "
-                        + "09 30 00 30 00 04 00 18 00 00 00 00 00 00 00 10 00 00 00 2a 00 34 00 00 00 00 00 00");
+        ByteBuf bb = BufferHelper.buildBuffer(
+            "ff 01 04 01 06 00 07 01 ff 05 00 00 09 30 00 30 41 02 00 0c 00 00 00 7e 00 "
+            + "00 00 02 00 00 11 46 00 00 00 62 00 0b 00 00 00 01 00 11 80 00 02 04 00 00 00 2a 80 00 12 01 04 00 "
+            + "00 00 00 00 00 00 00 01 00 08 2b 00 00 00 00 02 00 18 00 00 00 00 ff 01 04 01 06 00 07 01 ff 05 00 00 "
+            + "09 30 00 30 00 04 00 18 00 00 00 00 00 00 00 10 00 00 00 2a 00 34 00 00 00 00 00 00");
         FlowModInput deserializedMessage = BufferHelper.deserialize(flowFactory, bb);
         BufferHelper.checkHeaderV13(deserializedMessage);
         byte[] cookie = new byte[] { (byte) 0xFF, 0x01, 0x04, 0x01, 0x06, 0x00, 0x07, 0x01 };
@@ -97,7 +98,7 @@ public class FlowModInputMessageFactoryTest {
     }
 
     private List<Instruction> createInstructions() {
-        List<Instruction> instructions = new ArrayList<>();
+        final List<Instruction> instructions = new ArrayList<>();
         InstructionBuilder insBuilder = new InstructionBuilder();
         GotoTableCaseBuilder goToCaseBuilder = new GotoTableCaseBuilder();
         GotoTableBuilder instructionBuilder = new GotoTableBuilder();
@@ -115,10 +116,10 @@ public class FlowModInputMessageFactoryTest {
         insBuilder.setInstructionChoice(metadataCaseBuilder.build());
         instructions.add(insBuilder.build());
         insBuilder = new InstructionBuilder();
-        ApplyActionsCaseBuilder applyActionsCaseBuilder = new ApplyActionsCaseBuilder();
-        ApplyActionsBuilder actionsBuilder = new ApplyActionsBuilder();
-        List<Action> actions = new ArrayList<>();
-        ActionBuilder actionBuilder = new ActionBuilder();
+        final ApplyActionsCaseBuilder applyActionsCaseBuilder = new ApplyActionsCaseBuilder();
+        final ApplyActionsBuilder actionsBuilder = new ApplyActionsBuilder();
+        final List<Action> actions = new ArrayList<>();
+        final ActionBuilder actionBuilder = new ActionBuilder();
         OutputActionCaseBuilder caseBuilder = new OutputActionCaseBuilder();
         OutputActionBuilder outputBuilder = new OutputActionBuilder();
         outputBuilder.setPort(new PortNumber(42L));
@@ -136,7 +137,7 @@ public class FlowModInputMessageFactoryTest {
     private Match createMatch() {
         MatchBuilder matchBuilder = new MatchBuilder();
         matchBuilder.setType(OxmMatchType.class);
-        List<MatchEntry> entries = new ArrayList<>();
+        final List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
         entriesBuilder.setOxmClass(OpenflowBasicClass.class);
         entriesBuilder.setOxmMatchField(InPhyPort.class);

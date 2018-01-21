@@ -24,8 +24,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInput;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Unit tests for OF10PortModInputMessageFactory.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class OF10PortModInputMessageFactoryTest {
     private OFDeserializer<PortModInput> factory;

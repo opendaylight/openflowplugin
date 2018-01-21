@@ -21,8 +21,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetQueueConfigInput;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Unit tests for OF10GetQueueConfigInputMessageFactory.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class OF10GetQueueConfigInputMessageFactoryTest {
     private OFDeserializer<GetQueueConfigInput> factory;

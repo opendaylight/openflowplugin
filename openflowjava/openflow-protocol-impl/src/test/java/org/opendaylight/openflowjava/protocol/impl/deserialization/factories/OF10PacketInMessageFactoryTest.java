@@ -8,21 +8,22 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
 import io.netty.buffer.ByteBuf;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PacketInReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 
 /**
+ * Unit tests for OF10PacketInMessageFactory.
+ *
  * @author michal.polkorab
  */
 public class OF10PacketInMessageFactoryTest {
@@ -30,7 +31,7 @@ public class OF10PacketInMessageFactoryTest {
     private OFDeserializer<PacketInMessage> packetInFactory;
 
     /**
-     * Initializes deserializer registry and lookups correct deserializer
+     * Initializes deserializer registry and lookups correct deserializer.
      */
     @Before
     public void startUp() {
@@ -41,10 +42,10 @@ public class OF10PacketInMessageFactoryTest {
     }
 
     /**
-     * Testing {@link OF10PacketInMessageFactory} for correct translation into POJO
+     * Testing {@link OF10PacketInMessageFactory} for correct translation into POJO.
      */
     @Test
-    public void test(){
+    public void test() {
         ByteBuf bb = BufferHelper.buildBuffer("00 01 02 03 01 02 01 02 00 00 01 02 03 04");
         PacketInMessage builtByFactory = BufferHelper.deserialize(packetInFactory, bb);
 
@@ -57,10 +58,10 @@ public class OF10PacketInMessageFactoryTest {
     }
 
     /**
-     * Testing {@link OF10PacketInMessageFactory} for correct translation into POJO
+     * Testing {@link OF10PacketInMessageFactory} for correct translation into POJO.
      */
     @Test
-    public void testWithNoAdditionalData(){
+    public void testWithNoAdditionalData() {
         ByteBuf bb = BufferHelper.buildBuffer("00 01 02 03 01 02 01 02 00 00");
         PacketInMessage builtByFactory = BufferHelper.deserialize(packetInFactory, bb);
 
