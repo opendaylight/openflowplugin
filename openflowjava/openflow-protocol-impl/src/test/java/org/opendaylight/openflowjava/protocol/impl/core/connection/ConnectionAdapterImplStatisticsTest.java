@@ -12,7 +12,6 @@ import static org.mockito.Mockito.when;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOutboundHandlerAdapter;
 import io.netty.channel.ChannelPipeline;
@@ -61,21 +60,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.S
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
 /**
- * Test counters in ConnectionAdapter (at least DS_ENTERED_OFJAVA, DS_FLOW_MODS_ENTERED and US_MESSAGE_PASS counters have to be enabled)
- * @author madamjak
+ * Test counters in ConnectionAdapter (at least DS_ENTERED_OFJAVA, DS_FLOW_MODS_ENTERED and US_MESSAGE_PASS counters
+ * have to be enabled).
  *
+ * @author madamjak
  */
 public class ConnectionAdapterImplStatisticsTest {
 
     private static final int RPC_RESPONSE_EXPIRATION = 1;
     private static final RemovalListener<RpcResponseKey, ResponseExpectedRpcListener<?>> REMOVAL_LISTENER =
-            new RemovalListener<RpcResponseKey, ResponseExpectedRpcListener<?>>() {
-        @Override
-        public void onRemoval(
-                final RemovalNotification<RpcResponseKey, ResponseExpectedRpcListener<?>> notification) {
-            notification.getValue().discard();
-        }
-    };
+        notification -> notification.getValue().discard();
 
     @Mock SystemNotificationsListener systemListener;
     @Mock ConnectionReadyListener readyListener;
@@ -108,8 +102,8 @@ public class ConnectionAdapterImplStatisticsTest {
     private StatisticsCounters statCounters;
 
     /**
-     * Initialize mocks
-     * Start counting and reset counters before each test
+     * Initialize mocks.
+     * Start counting and reset counters before each test.
      */
     @Before
     public void setUp() {
@@ -119,11 +113,11 @@ public class ConnectionAdapterImplStatisticsTest {
     }
 
     /**
-     * Disconnect adapter
-     * Stop counting after each test
+     * Disconnect adapter.
+     * Stop counting after each test.
      */
     @After
-    public void tierDown(){
+    public void tierDown() {
         if (adapter != null && adapter.isAlive()) {
             adapter.disconnect();
         }
@@ -131,20 +125,21 @@ public class ConnectionAdapterImplStatisticsTest {
     }
 
     /**
-     * Test statistic counter for all rpc calls (counters DS_ENTERED_OFJAVA and DS_FLOW_MODS_ENTERED have to be enabled)
+     * Test statistic counter for all rpc calls (counters DS_ENTERED_OFJAVA and DS_FLOW_MODS_ENTERED have to be
+     * enabled).
      */
     @Test
     public void testEnterOFJavaCounter() {
-        if(!statCounters.isCounterEnabled(CounterEventTypes.DS_ENTERED_OFJAVA)){
+        if (!statCounters.isCounterEnabled(CounterEventTypes.DS_ENTERED_OFJAVA)) {
             Assert.fail("Counter " + CounterEventTypes.DS_ENTERED_OFJAVA + " is not enabled");
         }
-        if(!statCounters.isCounterEnabled(CounterEventTypes.DS_FLOW_MODS_ENTERED)){
+        if (!statCounters.isCounterEnabled(CounterEventTypes.DS_FLOW_MODS_ENTERED)) {
             Assert.fail("Counter " + CounterEventTypes.DS_FLOW_MODS_ENTERED + " is not enabled");
         }
         final EmbeddedChannel embChannel = new EmbeddedChannel(new EmbededChannelHandler());
         adapter = new ConnectionAdapterImpl(embChannel, InetSocketAddress.createUnresolved("localhost", 9876), true);
-        cache = CacheBuilder.newBuilder().concurrencyLevel(1).expireAfterWrite(RPC_RESPONSE_EXPIRATION, TimeUnit.MINUTES)
-                .removalListener(REMOVAL_LISTENER).build();
+        cache = CacheBuilder.newBuilder().concurrencyLevel(1)
+                .expireAfterWrite(RPC_RESPONSE_EXPIRATION, TimeUnit.MINUTES).removalListener(REMOVAL_LISTENER).build();
         adapter.setResponseCache(cache);
         adapter.barrier(barrierInput);
         embChannel.runPendingTasks();
@@ -184,17 +179,19 @@ public class ConnectionAdapterImplStatisticsTest {
         embChannel.runPendingTasks();
         adapter.setAsync(setAsyncInput);
         embChannel.runPendingTasks();
-        Assert.assertEquals("Wrong - bad counter value for ConnectionAdapterImpl rpc methods", 19, statCounters.getCounter(CounterEventTypes.DS_ENTERED_OFJAVA).getCounterValue());
-        Assert.assertEquals("Wrong - bad counter value for ConnectionAdapterImpl flow-mod entered", 1, statCounters.getCounter(CounterEventTypes.DS_FLOW_MODS_ENTERED).getCounterValue());
+        Assert.assertEquals("Wrong - bad counter value for ConnectionAdapterImpl rpc methods", 19,
+                statCounters.getCounter(CounterEventTypes.DS_ENTERED_OFJAVA).getCounterValue());
+        Assert.assertEquals("Wrong - bad counter value for ConnectionAdapterImpl flow-mod entered", 1,
+                statCounters.getCounter(CounterEventTypes.DS_FLOW_MODS_ENTERED).getCounterValue());
         adapter.disconnect();
     }
 
     /**
-     * Test counter for pass messages to consumer (counter US_MESSAGE_PASS has to be enabled)
+     * Test counter for pass messages to consumer (counter US_MESSAGE_PASS has to be enabled).
      */
     @Test
     public void testMessagePassCounter() {
-        if(!statCounters.isCounterEnabled(CounterEventTypes.US_MESSAGE_PASS)){
+        if (!statCounters.isCounterEnabled(CounterEventTypes.US_MESSAGE_PASS)) {
             Assert.fail("Counter " + CounterEventTypes.US_MESSAGE_PASS + " is not enabled");
         }
         when(channel.pipeline()).thenReturn(pipeline);
@@ -202,8 +199,8 @@ public class ConnectionAdapterImplStatisticsTest {
         adapter.setMessageListener(messageListener);
         adapter.setSystemListener(systemListener);
         adapter.setConnectionReadyListener(readyListener);
-        cache = CacheBuilder.newBuilder().concurrencyLevel(1).expireAfterWrite(RPC_RESPONSE_EXPIRATION, TimeUnit.MINUTES)
-                .removalListener(REMOVAL_LISTENER).build();
+        cache = CacheBuilder.newBuilder().concurrencyLevel(1)
+                .expireAfterWrite(RPC_RESPONSE_EXPIRATION, TimeUnit.MINUTES).removalListener(REMOVAL_LISTENER).build();
         adapter.setResponseCache(cache);
         when(channel.disconnect()).thenReturn(channelFuture);
         DataObject message = new EchoRequestMessageBuilder().build();
@@ -224,14 +221,14 @@ public class ConnectionAdapterImplStatisticsTest {
         adapter.consume(message);
         message = new EchoRequestMessageBuilder().build();
         adapter.consume(message);
-        Assert.assertEquals("Wrong - bad counter value for ConnectionAdapterImpl consume method", 9, statCounters.getCounter(CounterEventTypes.US_MESSAGE_PASS).getCounterValue());
+        Assert.assertEquals("Wrong - bad counter value for ConnectionAdapterImpl consume method", 9,
+                statCounters.getCounter(CounterEventTypes.US_MESSAGE_PASS).getCounterValue());
         adapter.disconnect();
     }
 
     /**
-     * Empty channel Handler for testing
+     * Empty channel Handler for testing.
      * @author madamjak
-     *
      */
     private class EmbededChannelHandler extends ChannelOutboundHandlerAdapter {
         // no operation need to test

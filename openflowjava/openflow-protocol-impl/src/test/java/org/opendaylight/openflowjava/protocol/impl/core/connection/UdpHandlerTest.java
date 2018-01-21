@@ -24,8 +24,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author madamjak
+ * Unit tests for UdpHandler.
  *
+ * @author madamjak
  */
 public class UdpHandlerTest {
 
@@ -34,8 +35,9 @@ public class UdpHandlerTest {
     @Mock
     private UdpChannelInitializer udpChannelInitializerMock;
     private UdpHandler udpHandler;
+
     /**
-     * Mock init
+     * Mock init.
      */
     @Before
     public void startUp() {
@@ -43,10 +45,7 @@ public class UdpHandlerTest {
     }
 
     /**
-     * Test to create UdpHandler with empty address and zero port
-     * @throws InterruptedException
-     * @throws ExecutionException
-     * @throws IOException
+     * Test to create UdpHandler with empty address and zero port.
      */
     @Test
     public void testWithEmptyAddress() throws Exception {
@@ -63,10 +62,7 @@ public class UdpHandlerTest {
     }
 
     /**
-     * Test to create UdpHandler with empty address and zero port on Epoll native transport
-     * @throws InterruptedException
-     * @throws ExecutionException
-     * @throws IOException
+     * Test to create UdpHandler with empty address and zero port on Epoll native transport.
      */
     @Test
     public void testWithEmptyAddressOnEpoll() throws Exception {
@@ -83,13 +79,10 @@ public class UdpHandlerTest {
     }
 
     /**
-     * Test to create UdpHandler with fill address and given port
-     * @throws InterruptedException
-     * @throws ExecutionException
-     * @throws IOException
+     * Test to create UdpHandler with fill address and given port.
      */
     @Test
-    public void testWithAddressAndPort() throws Exception{
+    public void testWithAddressAndPort() throws Exception {
         int port = 9874;
         udpHandler = new UdpHandler(InetAddress.getLocalHost(), port);
         udpHandler.setChannelInitializer(udpChannelInitializerMock);
@@ -104,10 +97,7 @@ public class UdpHandlerTest {
     }
 
     /**
-     * Test to create UdpHandler with fill address and given port on Epoll native transport
-     * @throws InterruptedException
-     * @throws ExecutionException
-     * @throws IOException
+     * Test to create UdpHandler with fill address and given port on Epoll native transport.
      */
     @Test
     public void testWithAddressAndPortOnEpoll() throws Exception {
@@ -124,18 +114,18 @@ public class UdpHandlerTest {
         shutdownServer();
     }
 
-    private Boolean startupServer(final boolean isEpollEnabled) throws InterruptedException, IOException, ExecutionException {
+    private Boolean startupServer(final boolean isEpollEnabled)
+            throws InterruptedException, IOException, ExecutionException {
         ListenableFuture<Boolean> online = udpHandler.getIsOnlineFuture();
         /**
          * Test EPoll based native transport if isEpollEnabled is true.
          * Else use Nio based transport.
          */
         udpHandler.initiateEventLoopGroups(null, isEpollEnabled);
-        (new Thread(udpHandler)).start();
+        new Thread(udpHandler).start();
 
-        boolean startedSuccessfully = false;
         try {
-            startedSuccessfully = online.get(10, TimeUnit.SECONDS);
+            online.get(10, TimeUnit.SECONDS);
         } catch (TimeoutException e) {
             LOG.warn("Timeout while waiting for UDP handler to start", e);
         }

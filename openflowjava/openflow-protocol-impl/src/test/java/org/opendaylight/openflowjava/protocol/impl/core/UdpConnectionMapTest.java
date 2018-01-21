@@ -9,9 +9,7 @@ package org.opendaylight.openflowjava.protocol.impl.core;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.socket.DatagramPacket;
-
 import java.net.InetSocketAddress;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,24 +18,25 @@ import org.mockito.MockitoAnnotations;
 import org.opendaylight.openflowjava.protocol.impl.core.connection.MessageConsumer;
 
 /**
- * @author madamjak
+ * Unit tests for UdpConnectionMap.
  *
+ * @author madamjak
  */
 public class UdpConnectionMapTest {
 
     @Mock MessageConsumer consumerMock;
-    @Mock  ByteBuf messageBuffer;
+    @Mock ByteBuf messageBuffer;
 
     @Before
-    public void startUp(){
+    public void startUp() {
         MockitoAnnotations.initMocks(this);
     }
 
     /**
-     * Test {@link UdpConnectionMap} - sender address is not null
+     * Test {@link UdpConnectionMap} - sender address is not null.
      */
     @Test
-    public void testWithSenderAddress(){
+    public void testWithSenderAddress() {
         InetSocketAddress recipientISA = InetSocketAddress.createUnresolved("localhost", 9876);
         InetSocketAddress senderISA = InetSocketAddress.createUnresolved("192.168.15.2", 21021);
         DatagramPacket datagramPacket = new DatagramPacket(messageBuffer, recipientISA, senderISA);
@@ -50,26 +49,26 @@ public class UdpConnectionMapTest {
     }
 
     /**
-     * Test {@link UdpConnectionMap} - sender address is null to add connection
+     * Test {@link UdpConnectionMap} - sender address is null to add connection.
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testWithoutSenderAddressOnAdd(){
+    public void testWithoutSenderAddressOnAdd() {
         UdpConnectionMap.addConnection(null, consumerMock);
     }
 
     /**
-     * Test {@link UdpConnectionMap} - sender address is not null to get message consumer
+     * Test {@link UdpConnectionMap} - sender address is not null to get message consumer.
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testWithoutSenderAddressOnGet(){
+    public void testWithoutSenderAddressOnGet() {
         UdpConnectionMap.getMessageConsumer(null);
     }
 
     /**
-     * Test {@link UdpConnectionMap} - sender address is not null to remove connection
+     * Test {@link UdpConnectionMap} - sender address is not null to remove connection.
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testWithoutSenderAddressOnRemove(){
+    public void testWithoutSenderAddressOnRemove() {
         UdpConnectionMap.removeConnection(null);
     }
 }

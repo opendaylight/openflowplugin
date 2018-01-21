@@ -10,21 +10,18 @@ package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
-
 import java.net.InetSocketAddress;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.opendaylight.openflowjava.protocol.impl.core.connection.UdpMessageListenerWrapper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 
 /**
+ * Unit tests for UdpMessageListenerWrapper.
  *
  * @author madamjak
- *
  */
 public class UdpMessageListenerWrapperTest {
 
@@ -32,16 +29,17 @@ public class UdpMessageListenerWrapperTest {
     @Mock OfHeader msg;
 
     @Before
-    public void startUp(){
+    public void startUp() {
         MockitoAnnotations.initMocks(this);
     }
+
     /**
-     * Getters test
+     * Getters test.
      */
     @Test
-    public void test(){
+    public void test() {
         int port = 9876;
-        String host ="localhost";
+        String host = "localhost";
         InetSocketAddress inetSockAddr = InetSocketAddress.createUnresolved(host, port);
         UdpMessageListenerWrapper wrapper = new UdpMessageListenerWrapper(msg,listener,inetSockAddr);
 
@@ -49,5 +47,4 @@ public class UdpMessageListenerWrapperTest {
         Assert.assertEquals("Wrong getListener", listener, wrapper.getListener());
         Assert.assertEquals("Wrong getMsg", msg, wrapper.getMsg());
     }
-
 }

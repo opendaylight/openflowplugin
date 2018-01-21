@@ -11,8 +11,8 @@ package org.opendaylight.openflowjava.protocol.impl.core;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import io.netty.channel.ChannelHandlerContext;
 
+import io.netty.channel.ChannelHandlerContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -21,18 +21,20 @@ import org.opendaylight.openflowjava.protocol.impl.core.connection.MessageConsum
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
 /**
+ * Unit tests for DelegatingInboundHandler.
+ *
  * @author jameshall
  */
 public class DelegatingInboundHandlerTest {
 
-    @Mock ChannelHandlerContext mockChHndlrCtx ;
-    @Mock MessageConsumer mockMsgConsumer ;
+    @Mock ChannelHandlerContext mockChHndlrCtx;
+    @Mock MessageConsumer mockMsgConsumer;
     @Mock DataObject mockDataObject ;
 
-    DelegatingInboundHandler dih ;
+    DelegatingInboundHandler dih;
 
     /**
-     * Sets up test environment
+     * Sets up test environment.
      */
     @Before
     public void setUp() {
@@ -40,33 +42,25 @@ public class DelegatingInboundHandlerTest {
         dih = new DelegatingInboundHandler(mockMsgConsumer) ;
     }
 
-    /**
-     *
-     */
     @Test
     public void testChannelReadSuccess()   {
         dih.channelRead(mockChHndlrCtx, mockDataObject) ;
 
         // Verify that the message buf was released...
-        verify( mockMsgConsumer, times(1)).consume(mockDataObject);
+        verify(mockMsgConsumer, times(1)).consume(mockDataObject);
     }
-    /**
-     *
-     */
+
     @Test
     public void testChannelInactive()   {
         dih.channelInactive(mockChHndlrCtx);
 
-        verify( mockMsgConsumer, times(1)).consume(any(DataObject.class));
+        verify(mockMsgConsumer, times(1)).consume(any(DataObject.class));
     }
 
-    /**
-     * ChannelUnregistered
-     */
     @Test
     public void testChannelUnregistered()   {
         dih.channelUnregistered(mockChHndlrCtx);
 
-        verify( mockMsgConsumer, times(1)).consume(any(DataObject.class));
+        verify(mockMsgConsumer, times(1)).consume(any(DataObject.class));
     }
 }

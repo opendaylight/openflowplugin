@@ -11,20 +11,20 @@ package org.opendaylight.openflowjava.protocol.impl.core;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.InputStream;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.PathType;
 
 /**
+ * Unit tests for SslKeyStore.
  *
  * @author jameshall
  */
 public class SslKeyStoreTest {
 
     /**
-     * Sets up test environment
+     * Sets up test environment.
      */
     @Before
     public void setUp() {
@@ -32,24 +32,22 @@ public class SslKeyStoreTest {
     }
 
     /**
-     * Test keystore file access - via classpath
-     * @throws Exception
+     * Test keystore file access - via classpath.
      */
     @Test
     public void testAsInputStream() throws Exception {
         InputStream inputStream = SslKeyStore.asInputStream("/key.bin", PathType.CLASSPATH);
-        assertNotNull( inputStream );
+        assertNotNull(inputStream);
         inputStream.close();
     }
 
     /**
-     * Test keystore file access - via relative path
-     * @throws Exception
+     * Test keystore file access - via relative path.
      */
     @Test
     public void testAsInputStream2() throws Exception {
         InputStream inputStream = SslKeyStore.asInputStream("src/test/resources/key.bin", PathType.PATH);
-        assertNotNull( inputStream );
+        assertNotNull(inputStream);
         inputStream.close();
     }
 }

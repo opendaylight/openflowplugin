@@ -10,8 +10,8 @@ package org.opendaylight.openflowjava.protocol.impl.core;
 
 import static org.junit.Assert.assertNotNull;
 
+import com.google.common.collect.Lists;
 import javax.net.ssl.SSLContext;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
@@ -20,9 +20,8 @@ import org.opendaylight.openflowjava.protocol.api.connection.TlsConfigurationImp
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.KeystoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.PathType;
 
-import com.google.common.collect.Lists;
-
 /**
+ * Unit tests for SslContextFactory.
  *
  * @author jameshall
  */
@@ -32,7 +31,7 @@ public class SslContextFactoryTest {
     TlsConfiguration tlsConfiguration ;
 
     /**
-     * Sets up test environment
+     * Sets up test environment.
      */
     @Before
     public void setUp() {
@@ -43,14 +42,10 @@ public class SslContextFactoryTest {
         sslContextFactory = new SslContextFactory(tlsConfiguration);
     }
 
-    /**
-     * @throws Exception
-     */
     @Test
     public void testGetServerContext() throws Exception {
         SSLContext context  = sslContextFactory.getServerContext() ;
 
-        assertNotNull( context );
+        assertNotNull(context);
     }
-
 }

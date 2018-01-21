@@ -10,6 +10,7 @@ package org.opendaylight.openflowjava.protocol.impl.core;
 
 import static org.junit.Assert.assertNotNull;
 
+import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -22,9 +23,8 @@ import org.opendaylight.openflowjava.protocol.impl.serialization.SerializationFa
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.KeystoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.PathType;
 
-import com.google.common.collect.Lists;
-
 /**
+ * Unit tests for ChannelInitializerFactory.
  *
  * @author jameshall
  */
@@ -38,7 +38,7 @@ public class PublishingChannelInitializerFactoryTest {
     @Mock DeserializationFactory deserializationFactory ;
 
     /**
-     * Sets up test environment
+     * Sets up test environment.
      */
     @Before
     public void setUp() {
@@ -55,11 +55,11 @@ public class PublishingChannelInitializerFactoryTest {
     }
 
     /**
-     * Test {@link TcpChannelInitializer} creation
+     * Test {@link TcpChannelInitializer} creation.
      */
     @Test
     public void testCreatePublishingChannelInitializer() {
         TcpChannelInitializer initializer = factory.createPublishingChannelInitializer() ;
-        assertNotNull( initializer );
+        assertNotNull(initializer);
     }
 }

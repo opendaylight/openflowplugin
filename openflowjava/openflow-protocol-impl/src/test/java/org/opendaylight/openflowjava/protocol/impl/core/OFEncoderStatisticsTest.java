@@ -11,11 +11,11 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyShort;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -32,9 +32,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
 /**
- * Test counters for encoding (at least DS_ENCODE_SUCCESS, DS_ENCODE_FAIL and DS_FLOW_MODS_SENT counters have to be enabled)
- * @author madamjak
+ * Test counters for encoding (at least DS_ENCODE_SUCCESS, DS_ENCODE_FAIL and DS_FLOW_MODS_SENT counters have to
+ * be enabled).
  *
+ * @author madamjak
  */
 public class OFEncoderStatisticsTest {
 
@@ -51,10 +52,10 @@ public class OFEncoderStatisticsTest {
     private OFEncoder ofEncoder;
 
     /**
-     * Initialize tests, start and reset counters before each test
+     * Initialize tests, start and reset counters before each test.
      */
     @Before
-    public void initTlest(){
+    public void initTlest() {
         MockitoAnnotations.initMocks(this);
         ofEncoder = new OFEncoder() ;
         ofEncoder.setSerializationFactory(mockSerializationFactory) ;
@@ -63,80 +64,80 @@ public class OFEncoderStatisticsTest {
     }
 
     /**
-     * Stop counting after each test
+     * Stop counting after each test.
      */
     @After
-    public void tierDown(){
+    public void tierDown() {
         statCounters.stopCounting();
     }
 
     /**
-     * Test counting of success encode (counter DS_ENCODE_SUCCESS has to be enabled)
+     * Test counting of success encode (counter DS_ENCODE_SUCCESS has to be enabled).
      */
     @Test
-    public void testEncodeSuccessCounter() {
+    public void testEncodeSuccessCounter() throws Exception {
         CounterEventTypes cet = CounterEventTypes.DS_ENCODE_SUCCESS;
-        if(! statCounters.isCounterEnabled(cet)){
+        if (!statCounters.isCounterEnabled(cet)) {
             Assert.fail("Counter " + cet + " is not enabled.");
         }
-        int count = 4;
+
         when(mockOut.readableBytes()).thenReturn(1);
         when(wrapper.getMsg()).thenReturn(mockMsg);
         when(wrapper.getMsg().getVersion()).thenReturn((short) EncodeConstants.OF13_VERSION_ID);
-        try {
-            for(int i = 0; i< count; i++){
-                ofEncoder.encode(mockChHndlrCtx, wrapper, mockOut);
-            }
-        } catch (Exception e) {
-            Assert.fail();
+
+        int count = 4;
+        for (int i = 0; i < count; i++) {
+            ofEncoder.encode(mockChHndlrCtx, wrapper, mockOut);
         }
-        Assert.assertEquals("Wrong - bad counter value for OFEncoder encode succesfully ", count, statCounters.getCounter(cet).getCounterValue());
+
+        Assert.assertEquals("Wrong - bad counter value for OFEncoder encode succesfully ", count,
+                statCounters.getCounter(cet).getCounterValue());
     }
 
     /**
-     * Test counting of flow-mod sent (counter DS_FLOW_MODS_SENT has to be enabled)
+     * Test counting of flow-mod sent (counter DS_FLOW_MODS_SENT has to be enabled).
      */
     @Test
-    public void testFlowModSentCounter() {
+    public void testFlowModSentCounter() throws Exception {
         CounterEventTypes cet = CounterEventTypes.DS_FLOW_MODS_SENT;
-        if(! statCounters.isCounterEnabled(cet)){
+        if (!statCounters.isCounterEnabled(cet)) {
             Assert.fail("Counter " + cet + " is not enabled.");
         }
-        int count = 4;
         when(mockOut.readableBytes()).thenReturn(1);
         when(wrapper.getMsg()).thenReturn(mockFlowModInput);
         when(wrapper.getMsg().getVersion()).thenReturn((short) EncodeConstants.OF13_VERSION_ID);
-        try {
-            for(int i = 0; i< count; i++){
-                ofEncoder.encode(mockChHndlrCtx, wrapper, mockOut);
-            }
-        } catch (Exception e) {
-            Assert.fail();
-        }
-        Assert.assertEquals("Wrong - bad counter value for OFEncoder flow-mod sent", count, statCounters.getCounter(cet).getCounterValue());
-    }
-    /**
-     * Test counting of encode fail (counter DS_ENCODE_FAIL has to be enabled)
-     */
 
+        int count = 4;
+        for (int i = 0; i < count; i++) {
+            ofEncoder.encode(mockChHndlrCtx, wrapper, mockOut);
+        }
+
+        Assert.assertEquals("Wrong - bad counter value for OFEncoder flow-mod sent", count,
+                statCounters.getCounter(cet).getCounterValue());
+    }
+
+    /**
+     * Test counting of encode fail (counter DS_ENCODE_FAIL has to be enabled).
+     */
     @Test
-    public void testEncodeEncodeFailCounter() {
+    public void testEncodeEncodeFailCounter() throws Exception {
         CounterEventTypes cet = CounterEventTypes.DS_ENCODE_FAIL;
-        if(! statCounters.isCounterEnabled(cet)){
+        if (!statCounters.isCounterEnabled(cet)) {
             Assert.fail("Counter " + cet + " is not enabled.");
         }
-        int count = 2;
+
         when(wrapper.getMsg()).thenReturn(mockMsg);
         when(wrapper.getListener()).thenReturn(listener);
         when(wrapper.getMsg().getVersion()).thenReturn((short) EncodeConstants.OF13_VERSION_ID);
-        doThrow(new IllegalArgumentException()).when(mockSerializationFactory).messageToBuffer(anyShort(),any(ByteBuf.class), any(DataObject.class));
-        try {
-            for(int i = 0; i< count; i++){
-                ofEncoder.encode(mockChHndlrCtx, wrapper, mockOut);
-            }
-        } catch (Exception e) {
-            Assert.fail();
+        doThrow(new IllegalArgumentException()).when(mockSerializationFactory).messageToBuffer(anyShort(),
+                any(ByteBuf.class), any(DataObject.class));
+
+        int count = 2;
+        for (int i = 0; i < count; i++) {
+            ofEncoder.encode(mockChHndlrCtx, wrapper, mockOut);
         }
-        Assert.assertEquals("Wrong - bad counter value for OFEncoder fail encode", count, statCounters.getCounter(cet).getCounterValue());
+
+        Assert.assertEquals("Wrong - bad counter value for OFEncoder fail encode", count,
+                statCounters.getCounter(cet).getCounterValue());
     }
 }

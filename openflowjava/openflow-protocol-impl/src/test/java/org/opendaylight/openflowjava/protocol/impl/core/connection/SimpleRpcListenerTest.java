@@ -12,6 +12,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.concurrent.Future;
 import java.util.concurrent.ExecutionException;
@@ -24,15 +25,16 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 /**
- * @author michal.polkorab
+ * UNit tests for SimpleRpcListener.
  *
+ * @author michal.polkorab
  */
 public class SimpleRpcListenerTest {
 
     @Mock Future<Void> future;
 
     /**
-     * Initializes mocks
+     * Initializes mocks.
      */
     @Before
     public void startUp() {
@@ -40,7 +42,7 @@ public class SimpleRpcListenerTest {
     }
 
     /**
-     * Test SimpleRpcListener creation
+     * Test SimpleRpcListener creation.
      */
     @Test
     public void test() {
@@ -50,7 +52,7 @@ public class SimpleRpcListenerTest {
     }
 
     /**
-     * Test rpc success
+     * Test rpc success.
      */
     @Test
     public void testSuccessfulRpc() {
@@ -68,7 +70,7 @@ public class SimpleRpcListenerTest {
     }
 
     /**
-     * Test rpc success
+     * Test rpc success.
      */
     @Test
     public void testOperationComplete() {
@@ -84,7 +86,7 @@ public class SimpleRpcListenerTest {
     }
 
     /**
-     * Test rpc success
+     * Test rpc success.
      */
     @Test
     public void testOperationComplete2() {

@@ -10,7 +10,6 @@ package org.opendaylight.openflowjava.protocol.impl.core.connection;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelOutboundHandlerAdapter;
 import io.netty.channel.ChannelPromise;
@@ -45,19 +44,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableModInput;
 
 /**
+ * Unit tests for ConnectionAdapterImpl02.
+ *
  * @author madamjak
  * @author michal.polkorab
  */
 public class ConnectionAdapterImpl02Test {
     private static final int RPC_RESPONSE_EXPIRATION = 1;
     private static final RemovalListener<RpcResponseKey, ResponseExpectedRpcListener<?>> REMOVAL_LISTENER =
-            new RemovalListener<RpcResponseKey, ResponseExpectedRpcListener<?>>() {
-        @Override
-        public void onRemoval(
-                final RemovalNotification<RpcResponseKey, ResponseExpectedRpcListener<?>> notification) {
-            notification.getValue().discard();
-        }
-    };
+        notification -> notification.getValue().discard();
 
     @Mock EchoInput echoInput;
     @Mock BarrierInput barrierInput;
@@ -81,31 +76,34 @@ public class ConnectionAdapterImpl02Test {
     private ConnectionAdapterImpl adapter;
     private Cache<RpcResponseKey, ResponseExpectedRpcListener<?>> cache;
     private OfHeader responseOfCall;
+
     /**
-     * Initialize mocks
+     * Initialize mocks.
      */
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
     }
+
     /**
-     * Disconnect adapter
+     * Disconnect adapter.
      */
     @After
-    public void tierDown(){
+    public void tierDown() {
         if (adapter != null && adapter.isAlive()) {
             adapter.disconnect();
         }
     }
+
     /**
-     * Test Rpc Calls
+     * Test Rpc Calls.
      */
     @Test
     public void testRcp() {
         final EmbeddedChannel embChannel = new EmbeddedChannel(new EmbededChannelHandler());
         adapter = new ConnectionAdapterImpl(embChannel, InetSocketAddress.createUnresolved("localhost", 9876), true);
-        cache = CacheBuilder.newBuilder().concurrencyLevel(1).expireAfterWrite(RPC_RESPONSE_EXPIRATION, TimeUnit.MINUTES)
-                .removalListener(REMOVAL_LISTENER).build();
+        cache = CacheBuilder.newBuilder().concurrencyLevel(1).expireAfterWrite(
+                RPC_RESPONSE_EXPIRATION, TimeUnit.MINUTES).removalListener(REMOVAL_LISTENER).build();
         adapter.setResponseCache(cache);
         // -- barrier
         adapter.barrier(barrierInput);
@@ -187,16 +185,15 @@ public class ConnectionAdapterImpl02Test {
     }
 
     /**
-     * Channel Handler for testing
+     * Channel Handler for testing.
      * @author madamjak
-     *
      */
     private class EmbededChannelHandler extends ChannelOutboundHandlerAdapter {
         @Override
         public void write(final ChannelHandlerContext ctx, final Object msg,
                 final ChannelPromise promise) throws Exception {
             responseOfCall = null;
-            if(msg instanceof MessageListenerWrapper){
+            if (msg instanceof MessageListenerWrapper) {
                 final MessageListenerWrapper listener = (MessageListenerWrapper) msg;
                 final OfHeader ofHeader = listener.getMsg();
                 responseOfCall = ofHeader;
