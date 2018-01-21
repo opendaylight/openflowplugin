@@ -17,7 +17,6 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.experimenter.id._case.ExperimenterBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.ExperimenterActionSubType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.CopyTtlInCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.CopyTtlInCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.OutputActionCase;
@@ -39,13 +38,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 
 /**
- * @author michal.polkorab
+ * Unit tests for TypeKeyMakerFactory.
  *
+ * @author michal.polkorab
  */
 public class TypeKeyMakerFactoryTest {
 
     /**
-     * Tests {@link TypeKeyMakerFactory#createActionKeyMaker(short)}
+     * Tests {@link TypeKeyMakerFactory#createActionKeyMaker(short)}.
      */
     @Test
     public void testActionKeyMaker() {
@@ -63,14 +63,15 @@ public class TypeKeyMakerFactoryTest {
     }
 
     /**
-     * Tests {@link TypeKeyMakerFactory#createActionKeyMaker(short)}
+     * Tests {@link TypeKeyMakerFactory#createActionKeyMaker(short)}.
      */
     @Test
     public void testExperimenterActionKeyMaker() {
         TypeKeyMaker<Action> keyMaker = TypeKeyMakerFactory.createActionKeyMaker(EncodeConstants.OF13_VERSION_ID);
         Assert.assertNotNull("Null keyMaker", keyMaker);
 
-        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder builder = new ActionBuilder();
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping
+            .ActionBuilder builder = new ActionBuilder();
         builder.setExperimenterId(new ExperimenterId(42L));
         builder.setActionChoice(new CopyTtlInCaseBuilder().build());
         Action action = builder.build();
@@ -82,11 +83,12 @@ public class TypeKeyMakerFactoryTest {
     }
 
     /**
-     * Tests {@link TypeKeyMakerFactory#createInstructionKeyMaker(short)}
+     * Tests {@link TypeKeyMakerFactory#createInstructionKeyMaker(short)}.
      */
     @Test
     public void testInstructionKeyMaker() {
-        TypeKeyMaker<Instruction> keyMaker = TypeKeyMakerFactory.createInstructionKeyMaker(EncodeConstants.OF13_VERSION_ID);
+        TypeKeyMaker<Instruction> keyMaker =
+                TypeKeyMakerFactory.createInstructionKeyMaker(EncodeConstants.OF13_VERSION_ID);
         Assert.assertNotNull("Null keyMaker", keyMaker);
 
         InstructionBuilder builder = new InstructionBuilder();
@@ -100,11 +102,12 @@ public class TypeKeyMakerFactoryTest {
     }
 
     /**
-     * Tests {@link TypeKeyMakerFactory#createInstructionKeyMaker(short)}
+     * Tests {@link TypeKeyMakerFactory#createInstructionKeyMaker(short)}.
      */
     @Test
     public void testExperimenterInstructionKeyMaker() {
-        TypeKeyMaker<Instruction> keyMaker = TypeKeyMakerFactory.createInstructionKeyMaker(EncodeConstants.OF13_VERSION_ID);
+        TypeKeyMaker<Instruction> keyMaker =
+                TypeKeyMakerFactory.createInstructionKeyMaker(EncodeConstants.OF13_VERSION_ID);
         Assert.assertNotNull("Null keyMaker", keyMaker);
 
         InstructionBuilder builder = new InstructionBuilder();
@@ -119,11 +122,12 @@ public class TypeKeyMakerFactoryTest {
     }
 
     /**
-     * Tests {@link TypeKeyMakerFactory#createMatchEntriesKeyMaker(short)}
+     * Tests {@link TypeKeyMakerFactory#createMatchEntriesKeyMaker(short)}.
      */
     @Test
     public void testMatchEntriesKeyMaker() {
-        TypeKeyMaker<MatchEntry> keyMaker = TypeKeyMakerFactory.createMatchEntriesKeyMaker(EncodeConstants.OF13_VERSION_ID);
+        TypeKeyMaker<MatchEntry> keyMaker =
+                TypeKeyMakerFactory.createMatchEntriesKeyMaker(EncodeConstants.OF13_VERSION_ID);
         Assert.assertNotNull("Null keyMaker", keyMaker);
 
         MatchEntryBuilder builder = new MatchEntryBuilder();
@@ -140,11 +144,12 @@ public class TypeKeyMakerFactoryTest {
     }
 
     /**
-     * Tests {@link TypeKeyMakerFactory#createMatchEntriesKeyMaker(short)}
+     * Tests {@link TypeKeyMakerFactory#createMatchEntriesKeyMaker(short)}.
      */
     @Test
     public void testExperimenterMatchEntriesKeyMaker() {
-        TypeKeyMaker<MatchEntry> keyMaker = TypeKeyMakerFactory.createMatchEntriesKeyMaker(EncodeConstants.OF13_VERSION_ID);
+        TypeKeyMaker<MatchEntry> keyMaker =
+                TypeKeyMakerFactory.createMatchEntriesKeyMaker(EncodeConstants.OF13_VERSION_ID);
         Assert.assertNotNull("Null keyMaker", keyMaker);
 
         MatchEntryBuilder builder = new MatchEntryBuilder();
@@ -164,10 +169,6 @@ public class TypeKeyMakerFactoryTest {
                 ExperimenterClass.class, OxmMatchFieldClass.class);
         comparationKey.setExperimenterId(42L);
         Assert.assertEquals("Wrong key", comparationKey, key);
-    }
-
-    private class ActionSubtypeClass extends ExperimenterActionSubType {
-        // only for testing purposes
     }
 
     private class OxmMatchFieldClass extends MatchField {

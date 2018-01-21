@@ -9,10 +9,8 @@ package org.opendaylight.openflowjava.protocol.impl.util;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,15 +49,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.QueueId;
 
 /**
- * @author michal.polkorab
+ * Unit tests for OF10ActionsSerializer.
  *
+ * @author michal.polkorab
  */
 public class OF10ActionsSerializerTest {
 
     private SerializerRegistry registry;
 
     /**
-     * Initializes serializer table and stores correct factory in field
+     * Initializes serializer table and stores correct factory in field.
      */
     @Before
     public void startUp() {
@@ -68,17 +67,17 @@ public class OF10ActionsSerializerTest {
     }
 
     /**
-     * Testing correct serialization of actions (OF v1.0)
+     * Testing correct serialization of actions (OF v1.0).
      */
     @Test
     public void test() {
-        List<Action> actions = new ArrayList<>();
-        ActionBuilder actionBuilder = new ActionBuilder();
+        final List<Action> actions = new ArrayList<>();
         OutputActionCaseBuilder caseBuilder = new OutputActionCaseBuilder();
         OutputActionBuilder outputBuilder = new OutputActionBuilder();
         outputBuilder.setPort(new PortNumber(42L));
         outputBuilder.setMaxLength(32);
         caseBuilder.setOutputAction(outputBuilder.build());
+        ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setActionChoice(caseBuilder.build());
         actions.add(actionBuilder.build());
         actionBuilder = new ActionBuilder();

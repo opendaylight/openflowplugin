@@ -10,11 +10,9 @@ package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,8 +40,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 
 /**
- * @author michal.polkorab
+ * Unit tests for OF10FlowModInputMessageFactory.
  *
+ * @author michal.polkorab
  */
 public class OF10FlowModInputMessageFactoryTest {
 
@@ -51,7 +50,7 @@ public class OF10FlowModInputMessageFactoryTest {
     private OFSerializer<FlowModInput> flowModFactory;
 
     /**
-     * Initializes serializer registry and stores correct factory in field
+     * Initializes serializer registry and stores correct factory in field.
      */
     @Before
     public void startUp() {
@@ -62,8 +61,7 @@ public class OF10FlowModInputMessageFactoryTest {
     }
 
     /**
-     * @throws Exception
-     * Testing of {@link OF10FlowModInputMessageFactory} for correct translation from POJO
+     * Testing of {@link OF10FlowModInputMessageFactory} for correct translation from POJO.
      */
     @Test
     public void testFlowModInputMessageFactory() throws Exception {
@@ -95,7 +93,7 @@ public class OF10FlowModInputMessageFactoryTest {
         builder.setBufferId(2L);
         builder.setOutPort(new PortNumber(4422L));
         builder.setFlagsV10(new FlowModFlagsV10(true, false, true));
-        List<Action> actions = new ArrayList<>();
+        final List<Action> actions = new ArrayList<>();
         ActionBuilder actionBuilder = new ActionBuilder();
         SetNwDstCaseBuilder nwDstCaseBuilder = new SetNwDstCaseBuilder();
         SetNwDstActionBuilder nwDstBuilder = new SetNwDstActionBuilder();

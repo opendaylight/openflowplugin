@@ -33,8 +33,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.queue.property.header.QueuePropertyBuilder;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Unit tests for QueueGetConfigReplyMessageFactory.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class QueueGetConfigReplyMessageFactoryTest {
     private OFSerializer<GetQueueConfigOutput> factory;
@@ -111,7 +112,7 @@ public class QueueGetConfigReplyMessageFactoryTest {
     }
 
     private static List<QueueProperty> createPropertiesList() {
-        List<QueueProperty> propertiesList = new ArrayList<>();
+        final List<QueueProperty> propertiesList = new ArrayList<>();
         QueuePropertyBuilder pb = new QueuePropertyBuilder();
         pb.setProperty(QueueProperties.forValue(2));
         RateQueuePropertyBuilder rateBuilder = new RateQueuePropertyBuilder();

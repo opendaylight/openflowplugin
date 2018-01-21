@@ -10,20 +10,18 @@ package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.HelloElementType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInputBuilder;
@@ -33,8 +31,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author michal.polkorab
+ * Unit tests for HelloInputMessageFactory.
  *
+ * @author michal.polkorab
  */
 public class HelloInputMessageFactoryTest {
 
@@ -43,7 +42,7 @@ public class HelloInputMessageFactoryTest {
     private OFSerializer<HelloInput> helloFactory;
 
     /**
-     * Initializes serializer registry and stores correct factory in field
+     * Initializes serializer registry and stores correct factory in field.
      */
     @Before
     public void startUp() {
@@ -54,8 +53,7 @@ public class HelloInputMessageFactoryTest {
     }
 
     /**
-     * Testing of {@link HelloInputMessageFactory} for correct translation from POJO
-     * @throws Exception
+     * Testing of {@link HelloInputMessageFactory} for correct translation from POJO.
      */
     @Test
     public void testWithoutElementsSet() throws Exception {
@@ -70,8 +68,7 @@ public class HelloInputMessageFactoryTest {
     }
 
     /**
-     * Testing of {@link HelloInputMessageFactory} for correct translation from POJO
-     * @throws Exception
+     * Testing of {@link HelloInputMessageFactory} for correct translation from POJO.
      */
     @Test
     public void testWith4BitVersionBitmap() throws Exception {
@@ -92,12 +89,12 @@ public class HelloInputMessageFactoryTest {
         Elements element = readElement(out).get(0);
         Assert.assertEquals("Wrong element type", expectedElement.get(0).getType(), element.getType());
         Elements comparation = createComparationElement(lengthOfBitmap).get(0);
-        Assert.assertArrayEquals("Wrong element bitmap", comparation.getVersionBitmap().toArray(), element.getVersionBitmap().toArray());
+        Assert.assertArrayEquals("Wrong element bitmap", comparation.getVersionBitmap().toArray(),
+                element.getVersionBitmap().toArray());
     }
 
     /**
-     * Testing of {@link HelloInputMessageFactory} for correct translation from POJO
-     * @throws Exception
+     * Testing of {@link HelloInputMessageFactory} for correct translation from POJO.
      */
     @Test
     public void testWith64BitVersionBitmap() throws Exception {
@@ -118,12 +115,13 @@ public class HelloInputMessageFactoryTest {
         Elements element = readElement(out).get(0);
         Assert.assertEquals("Wrong element type", expectedElement.get(0).getType(), element.getType());
         Elements comparation = createComparationElement(lengthOfBitmap).get(0);
-        Assert.assertArrayEquals("Wrong element bitmap", comparation.getVersionBitmap().toArray(), element.getVersionBitmap().toArray());
+        Assert.assertArrayEquals("Wrong element bitmap", comparation.getVersionBitmap().toArray(),
+                element.getVersionBitmap().toArray());
     }
 
     private static List<Elements> createElement(int lengthOfBitmap) {
         ElementsBuilder elementsBuilder = new ElementsBuilder();
-        List<Elements> elementsList = new ArrayList<>();
+        final List<Elements> elementsList = new ArrayList<>();
         List<Boolean> booleanList = new ArrayList<>();
         for (int i = 0; i < lengthOfBitmap; i++) {
             booleanList.add(true);
@@ -135,14 +133,14 @@ public class HelloInputMessageFactoryTest {
     }
 
     private static List<Elements> createComparationElement(int lengthOfBitmap) {
-        ElementsBuilder elementsBuilder = new ElementsBuilder();
-        List<Elements> elementsList = new ArrayList<>();
+        final ElementsBuilder elementsBuilder = new ElementsBuilder();
+        final List<Elements> elementsList = new ArrayList<>();
         List<Boolean> booleanList = new ArrayList<>();
         for (int i = 0; i < lengthOfBitmap; i++) {
             booleanList.add(true);
         }
-        if ((lengthOfBitmap % Integer.SIZE) != 0) {
-            for (int i = 0; i < (Integer.SIZE - (lengthOfBitmap % Integer.SIZE)); i++) {
+        if (lengthOfBitmap % Integer.SIZE != 0) {
+            for (int i = 0; i < Integer.SIZE - lengthOfBitmap % Integer.SIZE; i++) {
                 booleanList.add(false);
             }
         }
@@ -176,12 +174,11 @@ public class HelloInputMessageFactoryTest {
         return elementsList;
     }
 
-    private static List<Boolean> readVersionBitmap(int[] input){
+    private static List<Boolean> readVersionBitmap(int[] input) {
         List<Boolean> versionBitmapList = new ArrayList<>();
-        for (int i = 0; i < input.length; i++) {
-            int mask = input[i];
+        for (int mask : input) {
             for (int j = 0; j < Integer.SIZE; j++) {
-                    versionBitmapList.add((mask & (1<<j)) != 0);
+                versionBitmapList.add((mask & 1 << j) != 0);
             }
         }
         return versionBitmapList;

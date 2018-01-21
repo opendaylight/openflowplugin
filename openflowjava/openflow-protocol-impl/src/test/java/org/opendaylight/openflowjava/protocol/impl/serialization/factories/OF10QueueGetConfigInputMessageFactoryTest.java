@@ -16,16 +16,17 @@ import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetQueueConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetQueueConfigInputBuilder;
 
 /**
- * @author michal.polkorab
+ * Unit tests for OF10QueueGetConfigInputMessageFactory.
  *
+ * @author michal.polkorab
  */
 public class OF10QueueGetConfigInputMessageFactoryTest {
 
@@ -33,7 +34,7 @@ public class OF10QueueGetConfigInputMessageFactoryTest {
     private OFSerializer<GetQueueConfigInput> queueFactory;
 
     /**
-     * Initializes serializer registry and stores correct factory in field
+     * Initializes serializer registry and stores correct factory in field.
      */
     @Before
     public void startUp() {
@@ -44,8 +45,7 @@ public class OF10QueueGetConfigInputMessageFactoryTest {
     }
 
     /**
-     * Testing of {@link OF10QueueGetConfigInputMessageFactory} for correct translation from POJO
-     * @throws Exception
+     * Testing of {@link OF10QueueGetConfigInputMessageFactory} for correct translation from POJO.
      */
     @Test
     public void test() throws Exception {

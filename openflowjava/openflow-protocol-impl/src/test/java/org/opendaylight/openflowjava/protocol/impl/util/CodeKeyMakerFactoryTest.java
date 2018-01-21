@@ -9,7 +9,6 @@
 package org.opendaylight.openflowjava.protocol.impl.util;
 
 import io.netty.buffer.ByteBuf;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.keys.ActionDeserializerKey;
@@ -19,13 +18,14 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 
 /**
- * @author michal.polkorab
+ * Unit tests for CodeKeyMakerFactory.
  *
+ * @author michal.polkorab
  */
 public class CodeKeyMakerFactoryTest {
 
     /**
-     * Tests {@link CodeKeyMakerFactory#createMatchEntriesKeyMaker(short)}
+     * Tests {@link CodeKeyMakerFactory#createMatchEntriesKeyMaker(short)}.
      */
     @Test
     public void testMatchEntriesKeyMaker() {
@@ -43,7 +43,7 @@ public class CodeKeyMakerFactoryTest {
     }
 
     /**
-     * Tests {@link CodeKeyMakerFactory#createMatchEntriesKeyMaker(short)}
+     * Tests {@link CodeKeyMakerFactory#createMatchEntriesKeyMaker(short)}.
      */
     @Test
     public void testExperimenterMatchEntriesKeyMaker() {
@@ -55,14 +55,15 @@ public class CodeKeyMakerFactoryTest {
         MessageCodeKey codeKey = keyMaker.make(buffer);
 
         Assert.assertNotNull("Null key", codeKey);
-        MatchEntryDeserializerKey comparationKey = new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, 65535, 0);
+        MatchEntryDeserializerKey comparationKey =
+                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, 65535, 0);
         comparationKey.setExperimenterId(1L);
         Assert.assertEquals("Wrong key", comparationKey, codeKey);
         Assert.assertEquals("Buffer index modified", 8, buffer.readableBytes());
     }
 
     /**
-     * Tests {@link CodeKeyMakerFactory#createActionsKeyMaker(short)}
+     * Tests {@link CodeKeyMakerFactory#createActionsKeyMaker(short)}.
      */
     @Test
     public void testActionKeyMaker() {
@@ -80,7 +81,7 @@ public class CodeKeyMakerFactoryTest {
     }
 
     /**
-     * Tests {@link CodeKeyMakerFactory#createActionsKeyMaker(short)}
+     * Tests {@link CodeKeyMakerFactory#createActionsKeyMaker(short)}.
      */
     @Test
     public void testExperimenterActionKeyMaker() {
@@ -98,7 +99,7 @@ public class CodeKeyMakerFactoryTest {
     }
 
     /**
-     * Tests {@link CodeKeyMakerFactory#createInstructionsKeyMaker(short)}
+     * Tests {@link CodeKeyMakerFactory#createInstructionsKeyMaker(short)}.
      */
     @Test
     public void testInstructionKeyMaker() {
@@ -116,7 +117,7 @@ public class CodeKeyMakerFactoryTest {
     }
 
     /**
-     * Tests {@link CodeKeyMakerFactory#createInstructionsKeyMaker(short)}
+     * Tests {@link CodeKeyMakerFactory#createInstructionsKeyMaker(short)}.
      */
     @Test
     public void testExperimenterInstructionKeyMaker() {
