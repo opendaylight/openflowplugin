@@ -10,14 +10,13 @@ package org.opendaylight.openflowjava.protocol.impl.core;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
-
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -29,8 +28,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInputBuilder;
 
 /**
- * @author michal.polkorab
+ * Unit tests for OFDatagramPacketEncoder.
  *
+ * @author michal.polkorab
  */
 public class OFDatagramPacketEncoderTest {
 
@@ -39,11 +39,12 @@ public class OFDatagramPacketEncoderTest {
     @Mock SerializationFactory factory;
 
     private UdpMessageListenerWrapper wrapper;
-    private InetSocketAddress address = new InetSocketAddress("10.0.0.1", 6653);
+    private final InetSocketAddress address = new InetSocketAddress("10.0.0.1", 6653);
     private List<Object> out;
 
     /**
-     * Initializes mocks and other objects
+     * Initializes mocks and other objects.
+     *
      * @param version openflow protocol wire version
      */
     public void startUp(Short version) {
@@ -56,24 +57,21 @@ public class OFDatagramPacketEncoderTest {
     }
 
     /**
-     * Tests encoding
+     * Tests encoding.
      */
     @Test
-    public void testCorrectEncode() {
+    public void testCorrectEncode() throws Exception {
         startUp((short) EncodeConstants.OF13_VERSION_ID);
         OFDatagramPacketEncoder encoder = new OFDatagramPacketEncoder();
         encoder.setSerializationFactory(factory);
-        try {
-            encoder.encode(ctx, wrapper, out);
-        } catch (Exception e) {
-            Assert.fail();
-        }
+        encoder.encode(ctx, wrapper, out);
     }
 
     /**
-     * Tests encoding
+     * Tests encoding.
      */
     @Test
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public void testIncorrectEncode() {
         startUp(null);
         OFDatagramPacketEncoder encoder = new OFDatagramPacketEncoder();

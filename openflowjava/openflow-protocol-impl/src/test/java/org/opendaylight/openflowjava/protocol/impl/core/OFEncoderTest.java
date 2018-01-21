@@ -14,12 +14,11 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
-
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -31,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
 /**
+ * Unit tests for OFEncoder.
  *
  * @author jameshall
  */
@@ -47,65 +47,57 @@ public class OFEncoderTest {
     OFEncoder ofEncoder = new OFEncoder() ;
 
     /**
-     * Sets up test environment
+     * Sets up test environment.
      */
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         ofEncoder = new OFEncoder() ;
-        ofEncoder.setSerializationFactory( mockSerializationFactory ) ;
+        ofEncoder.setSerializationFactory(mockSerializationFactory);
     }
 
     /**
-     * Test successful write (no clear)
+     * Test successful write (no clear).
      */
     @Test
-    public void testEncodeSuccess() {
+    public void testEncodeSuccess() throws Exception {
         when(mockOut.readableBytes()).thenReturn(1);
         when(wrapper.getMsg()).thenReturn(mockMsg);
         when(wrapper.getMsg().getVersion()).thenReturn((short) EncodeConstants.OF13_VERSION_ID);
-        try {
-            ofEncoder.encode(mockChHndlrCtx, wrapper, mockOut);
-        } catch (Exception e) {
-            Assert.fail();
-        }
+
+        ofEncoder.encode(mockChHndlrCtx, wrapper, mockOut);
 
         // Verify that the channel was flushed after the ByteBuf was retained.
         verify(mockOut, times(0)).clear();
     }
 
     /**
-     * Test Bytebuf clearing after serialization failure
+     * Test Bytebuf clearing after serialization failure.
      */
     @Test
-    public void testEncodeSerializationException() {
+    public void testEncodeSerializationException() throws Exception {
         when(wrapper.getMsg()).thenReturn(mockMsg);
         when(wrapper.getListener()).thenReturn(listener);
         when(wrapper.getMsg().getVersion()).thenReturn((short) EncodeConstants.OF13_VERSION_ID);
-        doThrow(new IllegalArgumentException()).when(mockSerializationFactory).messageToBuffer(anyShort(),any(ByteBuf.class), any(DataObject.class));
-        try {
-            ofEncoder.encode(mockChHndlrCtx, wrapper, mockOut);
-        } catch (Exception e) {
-            Assert.fail();
-        }
+        doThrow(new IllegalArgumentException()).when(mockSerializationFactory).messageToBuffer(anyShort(),
+                any(ByteBuf.class), any(DataObject.class));
+
+        ofEncoder.encode(mockChHndlrCtx, wrapper, mockOut);
 
         // Verify that the output message buf was cleared...
         verify(mockOut, times(1)).clear();
     }
 
     /**
-     * Test no action on empty bytebuf
+     * Test no action on empty bytebuf.
      */
     @Test
-    public void testEncodeSerializesNoBytes() {
+    public void testEncodeSerializesNoBytes() throws Exception {
         when(mockOut.readableBytes()).thenReturn(0);
         when(wrapper.getMsg()).thenReturn(mockMsg);
         when(wrapper.getMsg().getVersion()).thenReturn((short) EncodeConstants.OF13_VERSION_ID);
-        try {
-            ofEncoder.encode(mockChHndlrCtx, wrapper, mockOut);
-        } catch (Exception e) {
-            Assert.fail();
-        }
+
+        ofEncoder.encode(mockChHndlrCtx, wrapper, mockOut);
 
         // Verify that the output message buf was cleared...
         verify(mockOut, times(0)).clear();
