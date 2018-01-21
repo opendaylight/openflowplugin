@@ -28,8 +28,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessageBuilder;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Unit tests for PortStatusMessageFactory.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class PortStatusMessageFactoryTest {
     private OFSerializer<PortStatusMessage> factory;
@@ -97,38 +98,38 @@ public class PortStatusMessageFactoryTest {
     }
 
     private static PortConfig createPortConfig(long input) {
-        final Boolean _portDown = ((input) & (1 << 0)) > 0;
-        final Boolean _noRecv = ((input) & (1 << 2)) > 0;
-        final Boolean _noFwd = ((input) & (1 << 5)) > 0;
-        final Boolean _noPacketIn = ((input) & (1 << 6)) > 0;
+        final Boolean _portDown = (input & 1 << 0) > 0;
+        final Boolean _noRecv = (input & 1 << 2) > 0;
+        final Boolean _noFwd = (input & 1 << 5) > 0;
+        final Boolean _noPacketIn = (input & 1 << 6) > 0;
         return new PortConfig(_noFwd, _noPacketIn, _noRecv, _portDown);
     }
 
     private static PortFeatures createPortFeatures(long input) {
-        final Boolean _10mbHd = ((input) & (1 << 0)) > 0;
-        final Boolean _10mbFd = ((input) & (1 << 1)) > 0;
-        final Boolean _100mbHd = ((input) & (1 << 2)) > 0;
-        final Boolean _100mbFd = ((input) & (1 << 3)) > 0;
-        final Boolean _1gbHd = ((input) & (1 << 4)) > 0;
-        final Boolean _1gbFd = ((input) & (1 << 5)) > 0;
-        final Boolean _10gbFd = ((input) & (1 << 6)) > 0;
-        final Boolean _40gbFd = ((input) & (1 << 7)) > 0;
-        final Boolean _100gbFd = ((input) & (1 << 8)) > 0;
-        final Boolean _1tbFd = ((input) & (1 << 9)) > 0;
-        final Boolean _other = ((input) & (1 << 10)) > 0;
-        final Boolean _copper = ((input) & (1 << 11)) > 0;
-        final Boolean _fiber = ((input) & (1 << 12)) > 0;
-        final Boolean _autoneg = ((input) & (1 << 13)) > 0;
-        final Boolean _pause = ((input) & (1 << 14)) > 0;
-        final Boolean _pauseAsym = ((input) & (1 << 15)) > 0;
+        final Boolean _10mbHd = (input & 1 << 0) > 0;
+        final Boolean _10mbFd = (input & 1 << 1) > 0;
+        final Boolean _100mbHd = (input & 1 << 2) > 0;
+        final Boolean _100mbFd = (input & 1 << 3) > 0;
+        final Boolean _1gbHd = (input & 1 << 4) > 0;
+        final Boolean _1gbFd = (input & 1 << 5) > 0;
+        final Boolean _10gbFd = (input & 1 << 6) > 0;
+        final Boolean _40gbFd = (input & 1 << 7) > 0;
+        final Boolean _100gbFd = (input & 1 << 8) > 0;
+        final Boolean _1tbFd = (input & 1 << 9) > 0;
+        final Boolean _other = (input & 1 << 10) > 0;
+        final Boolean _copper = (input & 1 << 11) > 0;
+        final Boolean _fiber = (input & 1 << 12) > 0;
+        final Boolean _autoneg = (input & 1 << 13) > 0;
+        final Boolean _pause = (input & 1 << 14) > 0;
+        final Boolean _pauseAsym = (input & 1 << 15) > 0;
         return new PortFeatures(_100gbFd, _100mbFd, _100mbHd, _10gbFd, _10mbFd, _10mbHd, _1gbFd, _1gbHd, _1tbFd,
                 _40gbFd, _autoneg, _copper, _fiber, _other, _pause, _pauseAsym);
     }
 
     private static PortState createPortState(long input) {
-        final Boolean one = ((input) & (1 << 0)) > 0;
-        final Boolean two = ((input) & (1 << 1)) > 0;
-        final Boolean three = ((input) & (1 << 2)) > 0;
+        final Boolean one = (input & 1 << 0) > 0;
+        final Boolean two = (input & 1 << 1) > 0;
+        final Boolean three = (input & 1 << 2) > 0;
         return new PortState(two, one, three);
     }
 

@@ -8,11 +8,9 @@
 
 package org.opendaylight.openflowjava.protocol.impl.util;
 
-import java.util.List;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
-
+import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,8 +21,9 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
 /**
- * @author michal.polkorab
+ * Unit tests for ListDeserializer.
  *
+ * @author michal.polkorab
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ListDeserializerTest {
@@ -33,7 +32,7 @@ public class ListDeserializerTest {
     @Mock DeserializerRegistry registry;
 
     /**
-     * Tests {@link ListDeserializer#deserializeList(short, int, ByteBuf, CodeKeyMaker, DeserializerRegistry)}
+     * Tests {@link ListDeserializer#deserializeList(short, int, ByteBuf, CodeKeyMaker, DeserializerRegistry)}.
      */
     @Test
     public void test() {
@@ -45,7 +44,7 @@ public class ListDeserializerTest {
     }
 
     /**
-     * Tests {@link ListDeserializer#deserializeHeaders(short, int, ByteBuf, CodeKeyMaker, DeserializerRegistry)}
+     * Tests {@link ListDeserializer#deserializeHeaders(short, int, ByteBuf, CodeKeyMaker, DeserializerRegistry)}.
      */
     @Test
     public void test2() {

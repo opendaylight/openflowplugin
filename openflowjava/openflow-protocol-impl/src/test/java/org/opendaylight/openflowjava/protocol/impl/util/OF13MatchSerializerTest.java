@@ -10,10 +10,8 @@ package org.opendaylight.openflowjava.protocol.impl.util;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,8 +24,6 @@ import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6FlowLabel;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.approved.extensions.rev160802.TcpFlags;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.approved.extensions.rev160802.oxm.container.match.entry.value.experimenter.id._case.TcpFlagsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.experimenter.id._case.ExperimenterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
@@ -59,8 +55,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author michal.polkorab
+ * Unit tests for OF13MatchSerializer.
  *
+ * @author michal.polkorab
  */
 public class OF13MatchSerializerTest {
 
@@ -70,7 +67,7 @@ public class OF13MatchSerializerTest {
     private OFSerializer<Match> matchSerializer;
 
     /**
-     * Initializes serializer table and stores correct factory in field
+     * Initializes serializer table and stores correct factory in field.
      */
     @Before
     public void startUp() {
@@ -81,13 +78,13 @@ public class OF13MatchSerializerTest {
     }
 
     /**
-     * Test for correct serialization of Ipv4Address match entry
+     * Test for correct serialization of Ipv4Address match entry.
      */
     @Test
     public void testIpv4Src() {
         MatchBuilder builder = new MatchBuilder();
         builder.setType(OxmMatchType.class);
-        List<MatchEntry> entries = new ArrayList<>();
+        final List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
         entriesBuilder.setOxmClass(OpenflowBasicClass.class);
         entriesBuilder.setOxmMatchField(Ipv4Src.class);
@@ -116,13 +113,13 @@ public class OF13MatchSerializerTest {
     }
 
     /**
-     * Test for correct serialization of Ipv6Address match entry
+     * Test for correct serialization of Ipv6Address match entry.
      */
     @Test
     public void testIpv6Various() {
         MatchBuilder builder = new MatchBuilder();
         builder.setType(OxmMatchType.class);
-        List<MatchEntry> entries = new ArrayList<>();
+        final List<MatchEntry> entries = new ArrayList<>();
         // ipv6 match entry with correct Ipv6 address
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
         entriesBuilder.setOxmClass(OpenflowBasicClass.class);
@@ -243,13 +240,13 @@ public class OF13MatchSerializerTest {
     }
 
     /**
-     * Test for correct serialization of incorrect Ipv6Address match entry
+     * Test for correct serialization of incorrect Ipv6Address match entry.
      */
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testIpv6Incorrect() {
         MatchBuilder builder = new MatchBuilder();
         builder.setType(OxmMatchType.class);
-        List<MatchEntry> entries = new ArrayList<>();
+        final List<MatchEntry> entries = new ArrayList<>();
         // ipv6 match entry with incorrect Ipv6 address
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
         entriesBuilder.setOxmClass(OpenflowBasicClass.class);
@@ -268,7 +265,7 @@ public class OF13MatchSerializerTest {
     }
 
     /**
-     * Test for correct serialization of Ipv4Address match entry
+     * Test for correct serialization of Ipv4Address match entry.
      */
     @Test
     public void testIpv6Flabel() {
@@ -290,7 +287,7 @@ public class OF13MatchSerializerTest {
     }
 
     /**
-     * Test for correct serialization of Ipv4Address match entry
+     * Test for correct serialization of Ipv4Address match entry.
      */
     @Test
     public void testIpv6FlabelWithMask() {
@@ -313,7 +310,7 @@ public class OF13MatchSerializerTest {
     }
 
     /**
-     * Test for correct serialization of Ipv4Address match entry with wrong mask
+     * Test for correct serialization of Ipv4Address match entry with wrong mask.
      */
     @Test
     public void testIpv6FlabelWithMaskBad() {
@@ -328,16 +325,10 @@ public class OF13MatchSerializerTest {
         }
     }
 
-    /**
-     * @param labelValue ipv6 flow label
-     * @param hasMask
-     * @param mask ipv6 flow label mask
-     * @return
-     */
     private static Match buildIpv6FLabelMatch(long labelValue, boolean hasMask, byte[] mask) {
         MatchBuilder builder = new MatchBuilder();
         builder.setType(OxmMatchType.class);
-        List<MatchEntry> entries = new ArrayList<>();
+        final List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
         entriesBuilder.setOxmClass(OpenflowBasicClass.class);
         entriesBuilder.setOxmMatchField(Ipv6Flabel.class);
@@ -355,7 +346,7 @@ public class OF13MatchSerializerTest {
     }
 
     /**
-     * Test Standard match type
+     * Test Standard match type.
      */
     @Test
     public void testStandardMatchType() {
@@ -374,11 +365,11 @@ public class OF13MatchSerializerTest {
 
     /**
      * Test serialize experimenter match entry - with no experimenter
-     * match entry serializer registered
+     * match entry serializer registered.
      */
-    @Test(expected=IllegalStateException.class)
+    @Test(expected = IllegalStateException.class)
     public void testSerializeExperimenterMatchEntry() {
-        List<MatchEntry> entries = new ArrayList<>();
+        final List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder builder = new MatchEntryBuilder();
         builder.setOxmClass(ExperimenterClass.class);
         builder.setOxmMatchField(OxmMatchFieldClass.class);

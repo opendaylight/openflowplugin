@@ -9,7 +9,6 @@
 package org.opendaylight.openflowjava.protocol.impl.util;
 
 import io.netty.buffer.ByteBuf;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,15 +23,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10;
 
 /**
- * @author michal.polkorab
+ * Unit tests for OF10MatchDeserializer.
  *
+ * @author michal.polkorab
  */
 public class OF10MatchDeserializerTest {
 
     private OFDeserializer<MatchV10> matchDeserializer;
 
     /**
-     * Initializes deserializer registry and lookups correct deserializer
+     * Initializes deserializer registry and lookups correct deserializer.
      */
     @Before
     public void startUp() {
@@ -43,7 +43,7 @@ public class OF10MatchDeserializerTest {
     }
 
     /**
-     * Testing correct deserialization of ofp_match
+     * Testing correct deserialization of ofp_match.
      */
     @Test
     public void test() {
@@ -71,7 +71,7 @@ public class OF10MatchDeserializerTest {
     }
 
     /**
-     * Testing correct deserialization of ofp_match
+     * Testing correct deserialization of ofp_match.
      */
     @Test
     public void test2() {

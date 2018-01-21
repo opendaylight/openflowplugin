@@ -10,11 +10,9 @@ package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,6 +53,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 
 /**
+ * Unit tests for FlowModInputMessageFactory.
+ *
  * @author timotej.kubas
  * @author michal.polkorab
  */
@@ -64,7 +64,7 @@ public class FlowModInputMessageFactoryTest {
     private OFSerializer<FlowModInput> flowModFactory;
 
     /**
-     * Initializes serializer registry and stores correct factory in field
+     * Initializes serializer registry and stores correct factory in field.
      */
     @Before
     public void startUp() {
@@ -75,8 +75,7 @@ public class FlowModInputMessageFactoryTest {
     }
 
     /**
-     * @throws Exception
-     * Testing of {@link FlowModInputMessageFactory} for correct translation from POJO
+     * Testing of {@link FlowModInputMessageFactory} for correct translation from POJO.
      */
     @Test
     public void testFlowModInputMessageFactory() throws Exception {
@@ -97,7 +96,7 @@ public class FlowModInputMessageFactoryTest {
         builder.setFlags(new FlowModFlags(true, false, true, false, true));
         MatchBuilder matchBuilder = new MatchBuilder();
         matchBuilder.setType(OxmMatchType.class);
-        List<MatchEntry> entries = new ArrayList<>();
+        final List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
         entriesBuilder.setOxmClass(OpenflowBasicClass.class);
         entriesBuilder.setOxmMatchField(InPhyPort.class);
@@ -119,7 +118,7 @@ public class FlowModInputMessageFactoryTest {
         entries.add(entriesBuilder.build());
         matchBuilder.setMatchEntry(entries);
         builder.setMatch(matchBuilder.build());
-        List<Instruction> instructions = new ArrayList<>();
+        final List<Instruction> instructions = new ArrayList<>();
         InstructionBuilder insBuilder = new InstructionBuilder();
         GotoTableCaseBuilder goToCaseBuilder = new GotoTableCaseBuilder();
         GotoTableBuilder instructionBuilder = new GotoTableBuilder();
@@ -135,10 +134,10 @@ public class FlowModInputMessageFactoryTest {
         insBuilder.setInstructionChoice(metadataCaseBuilder.build());
         instructions.add(insBuilder.build());
         insBuilder = new InstructionBuilder();
-        ApplyActionsCaseBuilder applyActionsCaseBuilder = new ApplyActionsCaseBuilder();
-        ApplyActionsBuilder actionsBuilder = new ApplyActionsBuilder();
-        List<Action> actions = new ArrayList<>();
-        ActionBuilder actionBuilder = new ActionBuilder();
+        final ApplyActionsCaseBuilder applyActionsCaseBuilder = new ApplyActionsCaseBuilder();
+        final ApplyActionsBuilder actionsBuilder = new ApplyActionsBuilder();
+        final List<Action> actions = new ArrayList<>();
+        final ActionBuilder actionBuilder = new ActionBuilder();
         OutputActionCaseBuilder caseBuilder = new OutputActionCaseBuilder();
         OutputActionBuilder outputBuilder = new OutputActionBuilder();
         outputBuilder.setPort(new PortNumber(42L));
@@ -151,7 +150,7 @@ public class FlowModInputMessageFactoryTest {
         insBuilder.setInstructionChoice(applyActionsCaseBuilder.build());
         instructions.add(insBuilder.build());
         builder.setInstruction(instructions);
-        FlowModInput message = builder.build();
+        final FlowModInput message = builder.build();
 
         ByteBuf out = UnpooledByteBufAllocator.DEFAULT.buffer();
 
@@ -223,13 +222,15 @@ public class FlowModInputMessageFactoryTest {
         Assert.assertTrue("Unread data", out.readableBytes() == 0);
     }
 
-    private static FlowModFlags createFlowModFlagsFromBitmap(int input){
-        final Boolean _oFPFFSENDFLOWREM = (input & (1 << 0)) > 0;
-        final Boolean _oFPFFCHECKOVERLAP = (input & (1 << 1)) > 0;
-        final Boolean _oFPFFRESETCOUNTS = (input & (1 << 2)) > 0;
-        final Boolean _oFPFFNOPKTCOUNTS = (input & (1 << 3)) > 0;
-        final Boolean _oFPFFNOBYTCOUNTS = (input & (1 << 4)) > 0;
-        return new FlowModFlags(_oFPFFCHECKOVERLAP, _oFPFFNOBYTCOUNTS, _oFPFFNOPKTCOUNTS, _oFPFFRESETCOUNTS, _oFPFFSENDFLOWREM);
+    @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
+    private static FlowModFlags createFlowModFlagsFromBitmap(int input) {
+        final Boolean _oFPFFSENDFLOWREM = (input & 1 << 0) > 0;
+        final Boolean _oFPFFCHECKOVERLAP = (input & 1 << 1) > 0;
+        final Boolean _oFPFFRESETCOUNTS = (input & 1 << 2) > 0;
+        final Boolean _oFPFFNOPKTCOUNTS = (input & 1 << 3) > 0;
+        final Boolean _oFPFFNOBYTCOUNTS = (input & 1 << 4) > 0;
+        return new FlowModFlags(_oFPFFCHECKOVERLAP, _oFPFFNOBYTCOUNTS, _oFPFFNOPKTCOUNTS, _oFPFFRESETCOUNTS,
+                _oFPFFSENDFLOWREM);
     }
 
 }

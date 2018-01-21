@@ -27,8 +27,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
 
 /**
- * @author michal.polkorab
+ * Unit tests for VendorInputMessageFactory.
  *
+ * @author michal.polkorab
  */
 @RunWith(MockitoJUnitRunner.class)
 public class VendorInputMessageFactoryTest {
@@ -39,7 +40,8 @@ public class VendorInputMessageFactoryTest {
     VendorInputMessageFactory serializer;
 
     /**
-     * Tests {@link VendorInputMessageFactory#serialize(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterOfMessage, ByteBuf)}
+     * Tests {@link VendorInputMessageFactory#serialize(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow
+     * .protocol.rev130731.ExperimenterOfMessage, ByteBuf)}.
      */
     @Test
     public void test() {
@@ -47,7 +49,7 @@ public class VendorInputMessageFactoryTest {
             .thenReturn(serializer);
         VendorInputMessageFactory factory = new VendorInputMessageFactory();
         factory.injectSerializerRegistry(registry);
-        ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer();
+        final ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer();
         ExperimenterInputBuilder builder = new ExperimenterInputBuilder();
         builder.setVersion((short) EncodeConstants.OF10_VERSION_ID);
         builder.setXid(12345L);
@@ -59,6 +61,7 @@ public class VendorInputMessageFactoryTest {
         Mockito.when(registry.getSerializer(Matchers.<ExperimenterIdSerializerKey<ExperimenterDataOfChoice>>any()))
                 .thenReturn(foundSerializer);
         factory.serialize(experimenterInput, buffer);
-        Mockito.verify(foundSerializer, Mockito.times(1)).serialize(experimenterInput.getExperimenterDataOfChoice(), buffer);
+        Mockito.verify(foundSerializer, Mockito.times(1))
+            .serialize(experimenterInput.getExperimenterDataOfChoice(), buffer);
     }
 }

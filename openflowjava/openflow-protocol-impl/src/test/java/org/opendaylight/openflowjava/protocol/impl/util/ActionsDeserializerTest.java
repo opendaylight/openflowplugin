@@ -8,9 +8,7 @@
 package org.opendaylight.openflowjava.protocol.impl.util;
 
 import io.netty.buffer.ByteBuf;
-
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,8 +39,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author michal.polkorab
+ * Unit tests for ActionsDeserializer.
  *
+ * @author michal.polkorab
  */
 public class ActionsDeserializerTest {
 
@@ -51,7 +50,7 @@ public class ActionsDeserializerTest {
     private DeserializerRegistry registry;
 
     /**
-     * Initializes deserializer registry and lookups correct deserializer
+     * Initializes deserializer registry and lookups correct deserializer.
      */
     @Before
     public void startUp() {
@@ -60,7 +59,7 @@ public class ActionsDeserializerTest {
     }
 
     /**
-     * Testing actions deserialization
+     * Testing actions deserialization.
      */
     @Test
     public void test() {
@@ -146,7 +145,7 @@ public class ActionsDeserializerTest {
     }
 
     /**
-     * Tests {@link AbstractActionDeserializer#deserializeHeader(ByteBuf)}
+     * Tests {@link AbstractActionDeserializer#deserializeHeader(ByteBuf)}.
      */
     @Test
     public void testDeserializeHeader() {
@@ -159,8 +158,10 @@ public class ActionsDeserializerTest {
 
         Assert.assertTrue("Wrong action type", actions.get(0).getActionChoice() instanceof OutputActionCase);
         Assert.assertNull("Wrong action port", ((OutputActionCase) actions.get(0).getActionChoice()).getOutputAction());
-        Assert.assertNull("Wrong action max-length", ((OutputActionCase) actions.get(0).getActionChoice()).getOutputAction());
+        Assert.assertNull("Wrong action max-length",
+                ((OutputActionCase) actions.get(0).getActionChoice()).getOutputAction());
         Assert.assertTrue("Wrong action type", actions.get(1).getActionChoice() instanceof SetFieldCase);
-        Assert.assertNull("Wrong action oxm field", ((SetFieldCase) actions.get(1).getActionChoice()).getSetFieldAction());
+        Assert.assertNull("Wrong action oxm field",
+                ((SetFieldCase) actions.get(1).getActionChoice()).getSetFieldAction());
     }
 }

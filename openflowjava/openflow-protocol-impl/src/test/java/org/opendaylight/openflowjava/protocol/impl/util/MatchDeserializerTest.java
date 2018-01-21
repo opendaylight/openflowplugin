@@ -8,9 +8,7 @@
 package org.opendaylight.openflowjava.protocol.impl.util;
 
 import io.netty.buffer.ByteBuf;
-
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -113,8 +111,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match;
 
 /**
- * @author michal.polkorab
+ * Unit tests for MatchDeserializer.
  *
+ * @author michal.polkorab
  */
 public class MatchDeserializerTest {
 
@@ -122,7 +121,7 @@ public class MatchDeserializerTest {
     private DeserializerRegistry registry;
 
     /**
-     * Initializes deserializer registry and lookups correct deserializer
+     * Initializes deserializer registry and lookups correct deserializer.
      */
     @Before
     public void startUp() {
@@ -134,7 +133,7 @@ public class MatchDeserializerTest {
     }
 
     /**
-     * Testing Ipv4 address deserialization
+     * Testing Ipv4 address deserialization.
      */
     @Test
     public void testIpv4Address() {
@@ -150,7 +149,7 @@ public class MatchDeserializerTest {
     }
 
     /**
-     * Testing Ipv6 address deserialization
+     * Testing Ipv6 address deserialization.
      */
     @Test
     public void testIpv6Address() {
@@ -166,7 +165,7 @@ public class MatchDeserializerTest {
     }
 
     /**
-     * Testing match deserialization
+     * Testing match deserialization.
      */
     @Test
     public void testMatch() {
@@ -214,7 +213,6 @@ public class MatchDeserializerTest {
                 + "80 00 4D 10 00 00 00 00 00 00 00 07 00 00 00 00 00 00 00 FF "
                 + "80 00 4F 04 00 00 03 04");
 
-        System.out.println(buffer.readableBytes());
         Match match = matchDeserializer.deserialize(buffer);
         Assert.assertEquals("Wrong match type", OxmMatchType.class, match.getType());
         Assert.assertEquals("Wrong match entries size", 40, match.getMatchEntry().size());
@@ -499,7 +497,7 @@ public class MatchDeserializerTest {
     }
 
     /**
-     * Testing header deserialization
+     * Testing header deserialization.
      */
     @Test
     public void testHeaders() {
@@ -517,7 +515,7 @@ public class MatchDeserializerTest {
     }
 
     /**
-     * Testing standard match type
+     * Testing standard match type.
      */
     @Test
     public void testStandardMatch() {

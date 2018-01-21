@@ -9,7 +9,6 @@ package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,8 +39,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table._case.MultipartRequestTableBuilder;
 
 /**
- * @author michal.polkorab
+ * Unit tests for OF10StatsRequestInputFactory.
  *
+ * @author michal.polkorab
  */
 public class OF10StatsRequestInputFactoryTest {
 
@@ -49,7 +49,7 @@ public class OF10StatsRequestInputFactoryTest {
     private OFSerializer<MultipartRequestInput> multipartFactory;
 
     /**
-     * Initializes serializer registry and stores correct factory in field
+     * Initializes serializer registry and stores correct factory in field.
      */
     @Before
     public void startUp() {
@@ -60,8 +60,7 @@ public class OF10StatsRequestInputFactoryTest {
     }
 
     /**
-     * Testing OF10StatsRequestInputFactory (Desc) for correct serialization
-     * @throws Exception
+     * Testing OF10StatsRequestInputFactory (Desc) for correct serialization.
      */
     @Test
     public void testDesc() throws Exception {
@@ -85,8 +84,7 @@ public class OF10StatsRequestInputFactoryTest {
     }
 
     /**
-     * Testing OF10StatsRequestInputFactory (Flow) for correct serialization
-     * @throws Exception
+     * Testing OF10StatsRequestInputFactory (Flow) for correct serialization.
      */
     @Test
     public void testFlow() throws Exception {
@@ -94,8 +92,8 @@ public class OF10StatsRequestInputFactoryTest {
         BufferHelper.setupHeader(builder, EncodeConstants.OF10_VERSION_ID);
         builder.setType(MultipartType.OFPMPFLOW);
         builder.setFlags(new MultipartRequestFlags(false));
-        MultipartRequestFlowCaseBuilder caseBuilder = new MultipartRequestFlowCaseBuilder();
-        MultipartRequestFlowBuilder flowBuilder = new MultipartRequestFlowBuilder();
+        final MultipartRequestFlowCaseBuilder caseBuilder = new MultipartRequestFlowCaseBuilder();
+        final MultipartRequestFlowBuilder flowBuilder = new MultipartRequestFlowBuilder();
         MatchV10Builder matchBuilder = new MatchV10Builder();
         matchBuilder.setWildcards(new FlowWildcardsV10(true, true, true, true, true, true,
                 true, true, true, true));
@@ -152,8 +150,7 @@ public class OF10StatsRequestInputFactoryTest {
     }
 
     /**
-     * Testing OF10StatsRequestInputFactory (Aggregate) for correct serialization
-     * @throws Exception
+     * Testing OF10StatsRequestInputFactory (Aggregate) for correct serialization.
      */
     @Test
     public void testAggregate() throws Exception {
@@ -161,8 +158,8 @@ public class OF10StatsRequestInputFactoryTest {
         BufferHelper.setupHeader(builder, EncodeConstants.OF10_VERSION_ID);
         builder.setType(MultipartType.OFPMPAGGREGATE);
         builder.setFlags(new MultipartRequestFlags(false));
-        MultipartRequestFlowCaseBuilder caseBuilder = new MultipartRequestFlowCaseBuilder();
-        MultipartRequestFlowBuilder flowBuilder = new MultipartRequestFlowBuilder();
+        final MultipartRequestFlowCaseBuilder caseBuilder = new MultipartRequestFlowCaseBuilder();
+        final MultipartRequestFlowBuilder flowBuilder = new MultipartRequestFlowBuilder();
         MatchV10Builder matchBuilder = new MatchV10Builder();
         matchBuilder.setWildcards(new FlowWildcardsV10(false, false, false, false,
                 false, false, false, false, false, false));
@@ -219,8 +216,7 @@ public class OF10StatsRequestInputFactoryTest {
     }
 
     /**
-     * Testing OF10StatsRequestInputFactory (Table) for correct serialization
-     * @throws Exception
+     * Testing OF10StatsRequestInputFactory (Table) for correct serialization.
      */
     @Test
     public void testTable() throws Exception {
@@ -244,8 +240,7 @@ public class OF10StatsRequestInputFactoryTest {
     }
 
     /**
-     * Testing OF10StatsRequestInputFactory (Port) for correct serialization
-     * @throws Exception
+     * Testing OF10StatsRequestInputFactory (Port) for correct serialization.
      */
     @Test
     public void testPort() throws Exception {
@@ -272,8 +267,7 @@ public class OF10StatsRequestInputFactoryTest {
     }
 
     /**
-     * Testing OF10StatsRequestInputFactory (Queue) for correct serialization
-     * @throws Exception
+     * Testing OF10StatsRequestInputFactory (Queue) for correct serialization.
      */
     @Test
     public void testQueue() throws Exception {

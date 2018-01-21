@@ -10,9 +10,7 @@ package org.opendaylight.openflowjava.protocol.impl.util;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
-
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,8 +20,9 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegist
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 
 /**
- * @author michal.polkorab
+ * Unit tests for ListSerializer.
  *
+ * @author michal.polkorab
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ListSerializerTest {
@@ -33,7 +32,7 @@ public class ListSerializerTest {
 
     /**
      * Tests {@link ListSerializer#serializeHeaderList(List, TypeKeyMaker, SerializerRegistry, ByteBuf)}
-     * with null List
+     * with null List.
      */
     @Test
     public void test() {
