@@ -62,8 +62,8 @@ public class SerializerRegistryImpl implements SerializerRegistry {
         InstructionsInitializer.registerInstructionSerializers(this);
     }
 
-    public void setGroupAddModConfig(boolean isGroupAddModEnabled) {
-        this.isGroupAddModEnabled = isGroupAddModEnabled;
+    public void setGroupAddModConfig(boolean value) {
+        this.isGroupAddModEnabled = value;
     }
 
     @Override

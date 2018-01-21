@@ -10,32 +10,29 @@ package org.opendaylight.openflowjava.protocol.impl.util;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
 import org.junit.Assert;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 
 /**
- * @author michal.polkorab
+ * Helper class for buffers.
  *
+ * @author michal.polkorab
  */
 public abstract class BufferHelper {
 
-    /**
-     *
-     */
     public static final Long DEFAULT_XID = 0x01020304L;
     private static final byte[] XID = new byte[] { 0x01, 0x02, 0x03, 0x04 };
 
     /**
-     * @param payload
+     * Build a ByteBuffer.
+     *
+     * @param payload the payload data
      * @return ByteBuf filled with OpenFlow protocol message without first 4
      *         bytes
      */
@@ -47,6 +44,8 @@ public abstract class BufferHelper {
     }
 
     /**
+     * Build a ByteBuffer.
+     *
      * @param payload String in hex format
      * @return ByteBuf filled with OpenFlow protocol message without first 4
      *         bytes
@@ -56,6 +55,8 @@ public abstract class BufferHelper {
     }
 
     /**
+     * Build a ByteBuffer.
+     *
      * @return ByteBuf filled with OpenFlow protocol header message without first 4
      *         bytes
      */
@@ -67,7 +68,8 @@ public abstract class BufferHelper {
     }
 
     /**
-     * Use version 1.3 for encoded message
+     * Use version 1.3 for encoded message.
+     *
      * @param input ByteBuf to be checked for correct OpenFlow Protocol header
      * @param msgType type of received message
      * @param length expected length of message in header
@@ -77,13 +79,32 @@ public abstract class BufferHelper {
     }
 
     /**
-     * Use version 1.0 for encoded message
+     * Checks a 1.3 header.
+     *
+     * @param ofHeader OpenFlow protocol header
+     */
+    public static void checkHeaderV13(OfHeader ofHeader) {
+        checkHeader(ofHeader, (short) EncodeConstants.OF13_VERSION_ID);
+    }
+
+    /**
+     * Use version 1.0 for encoded message.
+     *
      * @param input ByteBuf to be checked for correct OpenFlow Protocol header
      * @param msgType type of received message
      * @param length expected length of message in header
      */
     public static void checkHeaderV10(ByteBuf input, byte msgType, int length) {
         checkHeader(input, msgType, length, (short) EncodeConstants.OF10_VERSION_ID);
+    }
+
+    /**
+     * Checks a 1.0 header.
+     *
+     * @param ofHeader OpenFlow protocol header
+     */
+    public static void checkHeaderV10(OfHeader ofHeader) {
+        checkHeader(ofHeader, (short) EncodeConstants.OF10_VERSION_ID);
     }
 
     private static void checkHeader(ByteBuf input, byte msgType, int length, Short version) {
@@ -93,23 +114,9 @@ public abstract class BufferHelper {
         Assert.assertEquals("Wrong Xid", DEFAULT_XID, Long.valueOf(input.readUnsignedInt()));
     }
 
-
-    /**
-     * @param ofHeader OpenFlow protocol header
-     */
-    public static void checkHeaderV13(OfHeader ofHeader) {
-        checkHeader(ofHeader, (short) EncodeConstants.OF13_VERSION_ID);
-    }
-
-    /**
-     * @param ofHeader OpenFlow protocol header
-     */
-    public static void checkHeaderV10(OfHeader ofHeader) {
-        checkHeader(ofHeader, (short) EncodeConstants.OF10_VERSION_ID);
-    }
-
     /**
      * Check version and xid of OFP header.
+     *
      * @param ofHeader OpenFlow protocol header
      * @param version OpenFlow protocol version
      */
@@ -119,23 +126,22 @@ public abstract class BufferHelper {
     }
 
     /**
-     * @param builder
+     * Sets up a header.
+     *
+     * @param builder builder
      * @param version wire protocol number used
-     * @throws NoSuchMethodException
-     * @throws SecurityException
-     * @throws IllegalAccessException
-     * @throws IllegalArgumentException
-     * @throws InvocationTargetException
      */
-    public static void setupHeader(Object builder, int version) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        Method m = builder.getClass().getMethod("setVersion", Short.class);
-        m.invoke(builder, (short) version);
+    public static void setupHeader(Object builder, int version) throws NoSuchMethodException, SecurityException,
+            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        Method method = builder.getClass().getMethod("setVersion", Short.class);
+        method.invoke(builder, (short) version);
         Method m2 = builder.getClass().getMethod("setXid", Long.class);
         m2.invoke(builder, BufferHelper.DEFAULT_XID);
     }
 
     /**
-     * Decode message
+     * Decode message.
+     *
      * @param decoder decoder instance
      * @param bb data input buffer
      * @return message decoded pojo

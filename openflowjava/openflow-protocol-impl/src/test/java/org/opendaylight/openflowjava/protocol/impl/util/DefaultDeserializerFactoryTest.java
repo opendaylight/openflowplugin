@@ -41,9 +41,9 @@ public abstract class DefaultDeserializerFactoryTest<T extends DataContainer> {
     protected void testHeaderVersions(final List<Byte> versions, final ByteBuf buffer) {
         for (short version : versions) {
             ByteBuf bb = buffer.copy();
-            OFDeserializer<T> factory = registry.getDeserializer(
+            OFDeserializer<T> serializer = registry.getDeserializer(
                     new MessageCodeKey(version, messageCodeKey.getMsgType(), messageCodeKey.getClazz()));
-            T builtByFactory = BufferHelper.deserialize(factory, bb);
+            T builtByFactory = BufferHelper.deserialize(serializer, bb);
             BufferHelper.checkHeader((OfHeader) builtByFactory, version);
         }
     }

@@ -8,9 +8,7 @@
 package org.opendaylight.openflowjava.protocol.impl.util;
 
 import io.netty.buffer.ByteBuf;
-
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,8 +30,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction;
 
 /**
- * @author michal.polkorab
+ * Unit tests for InstructionsDeserializer.
  *
+ * @author michal.polkorab
  */
 public class InstructionsDeserializerTest {
 
@@ -41,7 +40,7 @@ public class InstructionsDeserializerTest {
     private DeserializerRegistry registry;
 
     /**
-     * Initializes deserializer registry and lookups correct deserializer
+     * Initializes deserializer registry and lookups correct deserializer.
      */
     @Before
     public void startUp() {
@@ -50,7 +49,7 @@ public class InstructionsDeserializerTest {
     }
 
     /**
-     * Testing instructions translation
+     * Testing instructions translation.
      */
     @Test
     public void test() {
@@ -92,7 +91,8 @@ public class InstructionsDeserializerTest {
                 .getMaxLength().intValue());
         Action action2 = ((WriteActionsCase) i5.getInstructionChoice()).getWriteActions().getAction().get(1);
         Assert.assertTrue("Wrong action", action2.getActionChoice() instanceof GroupCase);
-        Assert.assertEquals("Wrong action", 80, ((GroupCase) action2.getActionChoice()).getGroupAction().getGroupId().intValue());
+        Assert.assertEquals("Wrong action", 80,
+                ((GroupCase) action2.getActionChoice()).getGroupAction().getGroupId().intValue());
         Instruction i6 = instructions.get(5);
         Assert.assertTrue("Wrong type - i6", i6.getInstructionChoice() instanceof ApplyActionsCase);
         Assert.assertEquals("Wrong instructions - i6", 2, ((ApplyActionsCase) i6.getInstructionChoice())

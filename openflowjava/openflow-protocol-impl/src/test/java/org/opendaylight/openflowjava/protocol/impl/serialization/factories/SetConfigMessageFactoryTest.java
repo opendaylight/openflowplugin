@@ -10,21 +10,22 @@ package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.SwitchConfigFlag;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInputBuilder;
 
 /**
+ * Unit tests for SetConfigMessageFactory.
+ *
  * @author timotej.kubas
  * @author michal.polkorab
  */
@@ -35,7 +36,7 @@ public class SetConfigMessageFactoryTest {
     private OFSerializer<SetConfigInput> setConfigFactory;
 
     /**
-     * Initializes serializer registry and stores correct factory in field
+     * Initializes serializer registry and stores correct factory in field.
      */
     @Before
     public void startUp() {
@@ -46,8 +47,7 @@ public class SetConfigMessageFactoryTest {
     }
 
     /**
-     * Testing of {@link SetConfigMessageFactory} for correct translation from POJO
-     * @throws Exception
+     * Testing of {@link SetConfigMessageFactory} for correct translation from POJO.
      */
     @Test
     public void testSetConfigMessageV13() throws Exception {
@@ -67,8 +67,7 @@ public class SetConfigMessageFactoryTest {
     }
 
     /**
-     * Testing of {@link SetConfigMessageFactory} for correct translation from POJO
-     * @throws Exception
+     * Testing of {@link SetConfigMessageFactory} for correct translation from POJO.
      */
     @Test
     public void testSetConfigMessageV10() throws Exception {

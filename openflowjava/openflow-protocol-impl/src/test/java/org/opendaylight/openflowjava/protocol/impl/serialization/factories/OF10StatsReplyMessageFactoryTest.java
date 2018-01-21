@@ -62,8 +62,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table._case.multipart.reply.table.TableStatsBuilder;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Unit tests for OF10StatsReplyMessageFactory.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class OF10StatsReplyMessageFactoryTest {
     private OFSerializer<MultipartReplyMessage> factory;
@@ -84,7 +85,7 @@ public class OF10StatsReplyMessageFactoryTest {
         BufferHelper.setupHeader(builder, EncodeConstants.OF10_VERSION_ID);
         builder.setFlags(new MultipartRequestFlags(true));
         builder.setType(MultipartType.forValue(0));
-        MultipartReplyDescCaseBuilder descCase = new MultipartReplyDescCaseBuilder();
+        final MultipartReplyDescCaseBuilder descCase = new MultipartReplyDescCaseBuilder();
         MultipartReplyDescBuilder desc = new MultipartReplyDescBuilder();
         desc.setMfrDesc("Test");
         desc.setHwDesc("Test");
@@ -168,7 +169,7 @@ public class OF10StatsReplyMessageFactoryTest {
         BufferHelper.setupHeader(builder, EncodeConstants.OF10_VERSION_ID);
         builder.setFlags(new MultipartRequestFlags(true));
         builder.setType(MultipartType.forValue(2));
-        MultipartReplyAggregateCaseBuilder aggregateCase = new MultipartReplyAggregateCaseBuilder();
+        final MultipartReplyAggregateCaseBuilder aggregateCase = new MultipartReplyAggregateCaseBuilder();
         MultipartReplyAggregateBuilder aggregate = new MultipartReplyAggregateBuilder();
         aggregate.setPacketCount(BigInteger.valueOf(1234L));
         aggregate.setByteCount(BigInteger.valueOf(1234L));
@@ -322,7 +323,7 @@ public class OF10StatsReplyMessageFactoryTest {
         builder.setRxOverErr(BigInteger.valueOf(1L));
         builder.setRxCrcErr(BigInteger.valueOf(1L));
         builder.setCollisions(BigInteger.valueOf(1L));
-        List<PortStats> list = new ArrayList<PortStats>();
+        List<PortStats> list = new ArrayList<>();
         list.add(builder.build());
         return list;
     }
@@ -369,8 +370,8 @@ public class OF10StatsReplyMessageFactoryTest {
         builder.setCookie(BigInteger.valueOf(1234L));
         builder.setPacketCount(BigInteger.valueOf(1234L));
         builder.setByteCount(BigInteger.valueOf(1234L));
-        List<Action> actions = new ArrayList<>();
-        ActionBuilder actionBuilder = new ActionBuilder();
+        final List<Action> actions = new ArrayList<>();
+        final ActionBuilder actionBuilder = new ActionBuilder();
         OutputActionCaseBuilder caseBuilder = new OutputActionCaseBuilder();
         OutputActionBuilder outputBuilder = new OutputActionBuilder();
         outputBuilder.setPort(new PortNumber(42L));
@@ -379,18 +380,18 @@ public class OF10StatsReplyMessageFactoryTest {
         actionBuilder.setActionChoice(caseBuilder.build());
         actions.add(actionBuilder.build());
         builder.setAction(actions);
-        List<FlowStats> list = new ArrayList<FlowStats>();
+        List<FlowStats> list = new ArrayList<>();
         list.add(builder.build());
         return list;
     }
 
     private static MultipartRequestFlags createMultipartRequestFlags(int input) {
-        final Boolean one = ((input) & (1 << 0)) > 0;
+        final Boolean one = (input & 1 << 0) > 0;
         return new MultipartRequestFlags(one);
     }
 
     private static MultipartReplyDescCase decodeDescBody(ByteBuf output) {
-        MultipartReplyDescCaseBuilder descCase = new MultipartReplyDescCaseBuilder();
+        final MultipartReplyDescCaseBuilder descCase = new MultipartReplyDescCaseBuilder();
         MultipartReplyDescBuilder desc = new MultipartReplyDescBuilder();
         byte[] mfrDesc = new byte[256];
         output.readBytes(mfrDesc);
