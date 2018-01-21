@@ -178,8 +178,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeaturePropertiesBuilder;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Unit tests for MultipartReplyMessageFactory.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class MultipartReplyMessageFactoryTest {
     private static final byte MESSAGE_TYPE = 19;
@@ -201,9 +202,9 @@ public class MultipartReplyMessageFactoryTest {
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
         builder.setFlags(new MultipartRequestFlags(true));
         builder.setType(MultipartType.forValue(12));
-        MultipartReplyTableFeaturesCaseBuilder caseBuilder = new MultipartReplyTableFeaturesCaseBuilder();
-        MultipartReplyTableFeaturesBuilder featuresBuilder = new MultipartReplyTableFeaturesBuilder();
-        List<TableFeatures> tableFeaturesList = new ArrayList<>();
+        final MultipartReplyTableFeaturesCaseBuilder caseBuilder = new MultipartReplyTableFeaturesCaseBuilder();
+        final MultipartReplyTableFeaturesBuilder featuresBuilder = new MultipartReplyTableFeaturesBuilder();
+        final List<TableFeatures> tableFeaturesList = new ArrayList<>();
         TableFeaturesBuilder tableFeaturesBuilder = new TableFeaturesBuilder();
         tableFeaturesBuilder.setTableId((short) 8);
         tableFeaturesBuilder.setName("AAAABBBBCCCCDDDDEEEEFFFFGGGG");
@@ -211,7 +212,6 @@ public class MultipartReplyMessageFactoryTest {
         tableFeaturesBuilder.setMetadataWrite(new byte[] { 0x00, 0x07, 0x01, 0x05, 0x01, 0x00, 0x03, 0x01 });
         tableFeaturesBuilder.setConfig(new TableConfig(true));
         tableFeaturesBuilder.setMaxEntries(65L);
-        List<TableFeatureProperties> properties = new ArrayList<>();
         TableFeaturePropertiesBuilder propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTNEXTTABLES);
         NextTableRelatedTableFeaturePropertyBuilder nextPropBuilder = new NextTableRelatedTableFeaturePropertyBuilder();
@@ -220,6 +220,7 @@ public class MultipartReplyMessageFactoryTest {
         nextIds.add(new NextTableIdsBuilder().setTableId((short) 2).build());
         nextPropBuilder.setNextTableIds(nextIds);
         propBuilder.addAugmentation(NextTableRelatedTableFeatureProperty.class, nextPropBuilder.build());
+        List<TableFeatureProperties> properties = new ArrayList<>();
         properties.add(propBuilder.build());
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTNEXTTABLESMISS);
@@ -230,7 +231,6 @@ public class MultipartReplyMessageFactoryTest {
         properties.add(propBuilder.build());
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTINSTRUCTIONS);
-        InstructionRelatedTableFeaturePropertyBuilder insPropBuilder = new InstructionRelatedTableFeaturePropertyBuilder();
         List<Instruction> insIds = new ArrayList<>();
         InstructionBuilder insBuilder = new InstructionBuilder();
         insBuilder.setInstructionChoice(new WriteActionsCaseBuilder().build());
@@ -238,6 +238,8 @@ public class MultipartReplyMessageFactoryTest {
         insBuilder = new InstructionBuilder();
         insBuilder.setInstructionChoice(new GotoTableCaseBuilder().build());
         insIds.add(insBuilder.build());
+        InstructionRelatedTableFeaturePropertyBuilder insPropBuilder =
+                new InstructionRelatedTableFeaturePropertyBuilder();
         insPropBuilder.setInstruction(insIds);
         propBuilder.addAugmentation(InstructionRelatedTableFeatureProperty.class, insPropBuilder.build());
         properties.add(propBuilder.build());
@@ -308,18 +310,18 @@ public class MultipartReplyMessageFactoryTest {
         properties.add(propBuilder.build());
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTMATCH);
-        OxmRelatedTableFeaturePropertyBuilder oxmBuilder = new OxmRelatedTableFeaturePropertyBuilder();
-        List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
         entriesBuilder.setOxmClass(OpenflowBasicClass.class);
         entriesBuilder.setOxmMatchField(InPhyPort.class);
         entriesBuilder.setHasMask(false);
+        List<MatchEntry> entries = new ArrayList<>();
         entries.add(entriesBuilder.build());
         entriesBuilder = new MatchEntryBuilder();
         entriesBuilder.setOxmClass(OpenflowBasicClass.class);
         entriesBuilder.setOxmMatchField(InPort.class);
         entriesBuilder.setHasMask(false);
         entries.add(entriesBuilder.build());
+        OxmRelatedTableFeaturePropertyBuilder oxmBuilder = new OxmRelatedTableFeaturePropertyBuilder();
         oxmBuilder.setMatchEntry(entries);
         propBuilder.addAugmentation(OxmRelatedTableFeatureProperty.class, oxmBuilder.build());
         properties.add(propBuilder.build());
@@ -539,7 +541,7 @@ public class MultipartReplyMessageFactoryTest {
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
         builder.setFlags(new MultipartRequestFlags(true));
         builder.setType(MultipartType.forValue(11));
-        MultipartReplyMeterFeaturesCaseBuilder meterFeaturesCase = new MultipartReplyMeterFeaturesCaseBuilder();
+        final MultipartReplyMeterFeaturesCaseBuilder meterFeaturesCase = new MultipartReplyMeterFeaturesCaseBuilder();
         MultipartReplyMeterFeaturesBuilder meterFeatures = new MultipartReplyMeterFeaturesBuilder();
         meterFeatures.setMaxMeter(1L);
         meterFeatures.setBandTypes(new MeterBandTypeBitmap(true, false));
@@ -644,7 +646,7 @@ public class MultipartReplyMessageFactoryTest {
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
         builder.setFlags(new MultipartRequestFlags(true));
         builder.setType(MultipartType.forValue(8));
-        MultipartReplyGroupFeaturesCaseBuilder featureCase = new MultipartReplyGroupFeaturesCaseBuilder();
+        final MultipartReplyGroupFeaturesCaseBuilder featureCase = new MultipartReplyGroupFeaturesCaseBuilder();
         MultipartReplyGroupFeaturesBuilder feature = new MultipartReplyGroupFeaturesBuilder();
         feature.setTypes(new GroupTypes(true, false, true, false));
         feature.setCapabilities(new GroupCapabilities(true, false, true, true));
@@ -888,7 +890,7 @@ public class MultipartReplyMessageFactoryTest {
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
         builder.setFlags(new MultipartRequestFlags(true));
         builder.setType(MultipartType.forValue(2));
-        MultipartReplyAggregateCaseBuilder aggregateCase = new MultipartReplyAggregateCaseBuilder();
+        final MultipartReplyAggregateCaseBuilder aggregateCase = new MultipartReplyAggregateCaseBuilder();
         MultipartReplyAggregateBuilder aggregate = new MultipartReplyAggregateBuilder();
         aggregate.setPacketCount(BigInteger.valueOf(1L));
         aggregate.setByteCount(BigInteger.valueOf(1L));
@@ -940,7 +942,7 @@ public class MultipartReplyMessageFactoryTest {
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
         builder.setFlags(new MultipartRequestFlags(true));
         builder.setType(MultipartType.forValue(0));
-        MultipartReplyDescCaseBuilder descCase = new MultipartReplyDescCaseBuilder();
+        final MultipartReplyDescCaseBuilder descCase = new MultipartReplyDescCaseBuilder();
         MultipartReplyDescBuilder desc = new MultipartReplyDescBuilder();
         desc.setMfrDesc("Test");
         desc.setHwDesc("Test");
@@ -1060,45 +1062,45 @@ public class MultipartReplyMessageFactoryTest {
     }
 
     private static PortConfig createPortConfig(long input) {
-        final Boolean _portDown = ((input) & (1 << 0)) > 0;
-        final Boolean _noRecv = ((input) & (1 << 2)) > 0;
-        final Boolean _noFwd = ((input) & (1 << 5)) > 0;
-        final Boolean _noPacketIn = ((input) & (1 << 6)) > 0;
+        final Boolean _portDown = (input & 1 << 0) > 0;
+        final Boolean _noRecv = (input & 1 << 2) > 0;
+        final Boolean _noFwd = (input & 1 << 5) > 0;
+        final Boolean _noPacketIn = (input & 1 << 6) > 0;
         return new PortConfig(_noFwd, _noPacketIn, _noRecv, _portDown);
     }
 
     private static PortFeatures createPortFeatures(long input) {
-        final Boolean _10mbHd = ((input) & (1 << 0)) > 0;
-        final Boolean _10mbFd = ((input) & (1 << 1)) > 0;
-        final Boolean _100mbHd = ((input) & (1 << 2)) > 0;
-        final Boolean _100mbFd = ((input) & (1 << 3)) > 0;
-        final Boolean _1gbHd = ((input) & (1 << 4)) > 0;
-        final Boolean _1gbFd = ((input) & (1 << 5)) > 0;
-        final Boolean _10gbFd = ((input) & (1 << 6)) > 0;
-        final Boolean _40gbFd = ((input) & (1 << 7)) > 0;
-        final Boolean _100gbFd = ((input) & (1 << 8)) > 0;
-        final Boolean _1tbFd = ((input) & (1 << 9)) > 0;
-        final Boolean _other = ((input) & (1 << 10)) > 0;
-        final Boolean _copper = ((input) & (1 << 11)) > 0;
-        final Boolean _fiber = ((input) & (1 << 12)) > 0;
-        final Boolean _autoneg = ((input) & (1 << 13)) > 0;
-        final Boolean _pause = ((input) & (1 << 14)) > 0;
-        final Boolean _pauseAsym = ((input) & (1 << 15)) > 0;
+        final Boolean _10mbHd = (input & 1 << 0) > 0;
+        final Boolean _10mbFd = (input & 1 << 1) > 0;
+        final Boolean _100mbHd = (input & 1 << 2) > 0;
+        final Boolean _100mbFd = (input & 1 << 3) > 0;
+        final Boolean _1gbHd = (input & 1 << 4) > 0;
+        final Boolean _1gbFd = (input & 1 << 5) > 0;
+        final Boolean _10gbFd = (input & 1 << 6) > 0;
+        final Boolean _40gbFd = (input & 1 << 7) > 0;
+        final Boolean _100gbFd = (input & 1 << 8) > 0;
+        final Boolean _1tbFd = (input & 1 << 9) > 0;
+        final Boolean _other = (input & 1 << 10) > 0;
+        final Boolean _copper = (input & 1 << 11) > 0;
+        final Boolean _fiber = (input & 1 << 12) > 0;
+        final Boolean _autoneg = (input & 1 << 13) > 0;
+        final Boolean _pause = (input & 1 << 14) > 0;
+        final Boolean _pauseAsym = (input & 1 << 15) > 0;
         return new PortFeatures(_100gbFd, _100mbFd, _100mbHd, _10gbFd, _10mbFd, _10mbHd, _1gbFd, _1gbHd, _1tbFd,
                 _40gbFd, _autoneg, _copper, _fiber, _other, _pause, _pauseAsym);
     }
 
     private static PortState createPortState(long input) {
-        final Boolean one = ((input) & (1 << 0)) > 0;
-        final Boolean two = ((input) & (1 << 1)) > 0;
-        final Boolean three = ((input) & (1 << 2)) > 0;
+        final Boolean one = (input & 1 << 0) > 0;
+        final Boolean two = (input & 1 << 1) > 0;
+        final Boolean three = (input & 1 << 2) > 0;
         return new PortState(two, one, three);
     }
 
     private static List<Bands> decodeBandsList(ByteBuf input) {
-        List<Bands> bandsList = new ArrayList<>();
-        BandsBuilder bandsBuilder = new BandsBuilder();
-        MeterBandDropCaseBuilder dropCaseBuilder = new MeterBandDropCaseBuilder();
+        final List<Bands> bandsList = new ArrayList<>();
+        final BandsBuilder bandsBuilder = new BandsBuilder();
+        final MeterBandDropCaseBuilder dropCaseBuilder = new MeterBandDropCaseBuilder();
         MeterBandDropBuilder dropBand = new MeterBandDropBuilder();
         dropBand.setType(MeterBandType.forValue(input.readUnsignedShort()));
         input.skipBytes(Short.SIZE / Byte.SIZE);
@@ -1106,7 +1108,7 @@ public class MultipartReplyMessageFactoryTest {
         dropBand.setBurstSize(input.readUnsignedInt());
         dropCaseBuilder.setMeterBandDrop(dropBand.build());
         bandsList.add(bandsBuilder.setMeterBand(dropCaseBuilder.build()).build());
-        MeterBandDscpRemarkCaseBuilder dscpCaseBuilder = new MeterBandDscpRemarkCaseBuilder();
+        final MeterBandDscpRemarkCaseBuilder dscpCaseBuilder = new MeterBandDscpRemarkCaseBuilder();
         MeterBandDscpRemarkBuilder dscpRemarkBand = new MeterBandDscpRemarkBuilder();
         dscpRemarkBand.setType(MeterBandType.forValue(input.readUnsignedShort()));
         input.skipBytes(Short.SIZE / Byte.SIZE);
@@ -1129,22 +1131,22 @@ public class MultipartReplyMessageFactoryTest {
     }
 
     private static MeterBandTypeBitmap createMeterBandTypeBitmap(int input) {
-        final Boolean one = ((input) & (1 << 0)) > 0;
-        final Boolean two = ((input) & (1 << 1)) > 0;
+        final Boolean one = (input & 1 << 0) > 0;
+        final Boolean two = (input & 1 << 1) > 0;
         return new MeterBandTypeBitmap(one, two);
     }
 
     private static List<Bands> createBandsList() {
-        List<Bands> bandsList = new ArrayList<>();
-        BandsBuilder bandsBuilder = new BandsBuilder();
-        MeterBandDropCaseBuilder dropCaseBuilder = new MeterBandDropCaseBuilder();
+        final List<Bands> bandsList = new ArrayList<>();
+        final BandsBuilder bandsBuilder = new BandsBuilder();
+        final MeterBandDropCaseBuilder dropCaseBuilder = new MeterBandDropCaseBuilder();
         MeterBandDropBuilder dropBand = new MeterBandDropBuilder();
         dropBand.setType(MeterBandType.OFPMBTDROP);
         dropBand.setRate(1L);
         dropBand.setBurstSize(2L);
         dropCaseBuilder.setMeterBandDrop(dropBand.build());
         bandsList.add(bandsBuilder.setMeterBand(dropCaseBuilder.build()).build());
-        MeterBandDscpRemarkCaseBuilder dscpCaseBuilder = new MeterBandDscpRemarkCaseBuilder();
+        final MeterBandDscpRemarkCaseBuilder dscpCaseBuilder = new MeterBandDscpRemarkCaseBuilder();
         MeterBandDscpRemarkBuilder dscpRemarkBand = new MeterBandDscpRemarkBuilder();
         dscpRemarkBand.setType(MeterBandType.OFPMBTDSCPREMARK);
         dscpRemarkBand.setRate(1L);
@@ -1156,10 +1158,10 @@ public class MultipartReplyMessageFactoryTest {
     }
 
     private static MeterFlags createMeterFlags(int input) {
-        final Boolean one = ((input) & (1 << 0)) > 0;
-        final Boolean two = ((input) & (1 << 1)) > 0;
-        final Boolean three = ((input) & (1 << 2)) > 0;
-        final Boolean four = ((input) & (1 << 3)) > 0;
+        final Boolean one = (input & 1 << 0) > 0;
+        final Boolean two = (input & 1 << 1) > 0;
+        final Boolean three = (input & 1 << 2) > 0;
+        final Boolean four = (input & 1 << 3) > 0;
         return new MeterFlags(three, one, two, four);
     }
 
@@ -1187,41 +1189,25 @@ public class MultipartReplyMessageFactoryTest {
     }
 
     private static ActionType createActionType(int input) {
-        final Boolean one = ((input) & (1 << 0)) > 0;
-        final Boolean two = ((input) & (1 << 1)) > 0;
-        final Boolean three = ((input) & (1 << 2)) > 0;
-        final Boolean four = ((input) & (1 << 3)) > 0;
-        final Boolean five = ((input) & (1 << 4)) > 0;
-        final Boolean six = ((input) & (1 << 5)) > 0;
-        final Boolean seven = ((input) & (1 << 6)) > 0;
-        final Boolean eight = ((input) & (1 << 7)) > 0;
-        final Boolean nine = ((input) & (1 << 8)) > 0;
-        final Boolean ten = ((input) & (1 << 9)) > 0;
-        final Boolean eleven = ((input) & (1 << 10)) > 0;
-        final Boolean twelve = ((input) & (1 << 11)) > 0;
-        final Boolean thirteen = ((input) & (1 << 12)) > 0;
-        final Boolean fourteen = ((input) & (1 << 13)) > 0;
-        final Boolean fifthteen = ((input) & (1 << 14)) > 0;
-        final Boolean sixteen = ((input) & (1 << 15)) > 0;
-        final Boolean seventeen = ((input) & (1 << 16)) > 0;
+        final Boolean one = (input & 1 << 0) > 0;
+        final Boolean two = (input & 1 << 1) > 0;
+        final Boolean three = (input & 1 << 2) > 0;
+        final Boolean four = (input & 1 << 3) > 0;
+        final Boolean five = (input & 1 << 4) > 0;
+        final Boolean six = (input & 1 << 5) > 0;
+        final Boolean seven = (input & 1 << 6) > 0;
+        final Boolean eight = (input & 1 << 7) > 0;
+        final Boolean nine = (input & 1 << 8) > 0;
+        final Boolean ten = (input & 1 << 9) > 0;
+        final Boolean eleven = (input & 1 << 10) > 0;
+        final Boolean twelve = (input & 1 << 11) > 0;
+        final Boolean thirteen = (input & 1 << 12) > 0;
+        final Boolean fourteen = (input & 1 << 13) > 0;
+        final Boolean fifthteen = (input & 1 << 14) > 0;
+        final Boolean sixteen = (input & 1 << 15) > 0;
+        final Boolean seventeen = (input & 1 << 16) > 0;
         return new ActionType(three, two, five, thirteen, seventeen, eleven, one, nine, sixteen, seven, eight,
                 fifthteen, six, fourteen, four, twelve, ten);
-    }
-
-    private static GroupCapabilities createGroupCapabilities(int input) {
-        final Boolean one = ((input) & (1 << 0)) > 0;
-        final Boolean two = ((input) & (1 << 1)) > 0;
-        final Boolean three = ((input) & (1 << 2)) > 0;
-        final Boolean four = ((input) & (1 << 3)) > 0;
-        return new GroupCapabilities(three, four, two, one);
-    }
-
-    private static GroupTypes createGroupTypes(int input) {
-        final Boolean one = ((input) & (1 << 0)) > 0;
-        final Boolean two = ((input) & (1 << 1)) > 0;
-        final Boolean three = ((input) & (1 << 2)) > 0;
-        final Boolean four = ((input) & (1 << 3)) > 0;
-        return new GroupTypes(one, four, three, two);
     }
 
     private static List<ActionType> createActionType() {
@@ -1240,6 +1226,22 @@ public class MultipartReplyMessageFactoryTest {
         list.add(actionType4);
         return list;
 
+    }
+
+    private static GroupCapabilities createGroupCapabilities(int input) {
+        final Boolean one = (input & 1 << 0) > 0;
+        final Boolean two = (input & 1 << 1) > 0;
+        final Boolean three = (input & 1 << 2) > 0;
+        final Boolean four = (input & 1 << 3) > 0;
+        return new GroupCapabilities(three, four, two, one);
+    }
+
+    private static GroupTypes createGroupTypes(int input) {
+        final Boolean one = (input & 1 << 0) > 0;
+        final Boolean two = (input & 1 << 1) > 0;
+        final Boolean three = (input & 1 << 2) > 0;
+        final Boolean four = (input & 1 << 3) > 0;
+        return new GroupTypes(one, four, three, two);
     }
 
     private static List<GroupDesc> createGroupDesc() {
@@ -1278,13 +1280,13 @@ public class MultipartReplyMessageFactoryTest {
     }
 
     private static List<Action> createActionList() {
-        List<Action> actions = new ArrayList<>();
-        ActionBuilder actionBuilder = new ActionBuilder();
+        final List<Action> actions = new ArrayList<>();
         OutputActionCaseBuilder caseBuilder = new OutputActionCaseBuilder();
         OutputActionBuilder outputBuilder = new OutputActionBuilder();
         outputBuilder.setPort(new PortNumber(45L));
         outputBuilder.setMaxLength(55);
         caseBuilder.setOutputAction(outputBuilder.build());
+        ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setActionChoice(caseBuilder.build());
         actions.add(actionBuilder.build());
         actionBuilder = new ActionBuilder();
@@ -1337,7 +1339,7 @@ public class MultipartReplyMessageFactoryTest {
         builder.setCollisions(BigInteger.valueOf(1L));
         builder.setDurationSec(1L);
         builder.setDurationNsec(1L);
-        List<PortStats> list = new ArrayList<PortStats>();
+        List<PortStats> list = new ArrayList<>();
         list.add(builder.build());
         return list;
     }
@@ -1348,7 +1350,7 @@ public class MultipartReplyMessageFactoryTest {
         builder.setActiveCount(1L);
         builder.setLookupCount(BigInteger.valueOf(1L));
         builder.setMatchedCount(BigInteger.valueOf(1L));
-        List<TableStats> list = new ArrayList<TableStats>();
+        List<TableStats> list = new ArrayList<>();
         list.add(builder.build());
         return list;
     }
@@ -1366,7 +1368,7 @@ public class MultipartReplyMessageFactoryTest {
         builder.setByteCount(BigInteger.valueOf(1234L));
         MatchBuilder matchBuilder = new MatchBuilder();
         matchBuilder.setType(OxmMatchType.class);
-        List<MatchEntry> entries = new ArrayList<>();
+        final List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
         entriesBuilder.setOxmClass(OpenflowBasicClass.class);
         entriesBuilder.setOxmMatchField(InPhyPort.class);
@@ -1388,7 +1390,7 @@ public class MultipartReplyMessageFactoryTest {
         entries.add(entriesBuilder.build());
         matchBuilder.setMatchEntry(entries);
         builder.setMatch(matchBuilder.build());
-        List<Instruction> instructions = new ArrayList<>();
+        final List<Instruction> instructions = new ArrayList<>();
         // Goto_table instruction
         InstructionBuilder builderInstruction = new InstructionBuilder();
         GotoTableCaseBuilder gotoCaseBuilder = new GotoTableCaseBuilder();
@@ -1420,16 +1422,16 @@ public class MultipartReplyMessageFactoryTest {
         instructions.add(builderInstruction.build());
         // Write_actions instruction
         builderInstruction = new InstructionBuilder();
-        WriteActionsCaseBuilder writeActionsCaseBuilder = new WriteActionsCaseBuilder();
-        WriteActionsBuilder writeActionsBuilder = new WriteActionsBuilder();
-        List<Action> actions = new ArrayList<>();
-        ActionBuilder actionBuilder = new ActionBuilder();
+        final WriteActionsCaseBuilder writeActionsCaseBuilder = new WriteActionsCaseBuilder();
+        final WriteActionsBuilder writeActionsBuilder = new WriteActionsBuilder();
         OutputActionCaseBuilder caseBuilder = new OutputActionCaseBuilder();
         OutputActionBuilder outputBuilder = new OutputActionBuilder();
         outputBuilder.setPort(new PortNumber(45L));
         outputBuilder.setMaxLength(55);
         caseBuilder.setOutputAction(outputBuilder.build());
+        ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setActionChoice(caseBuilder.build());
+        List<Action> actions = new ArrayList<>();
         actions.add(actionBuilder.build());
         actionBuilder = new ActionBuilder();
         SetNwTtlCaseBuilder ttlCaseBuilder = new SetNwTtlCaseBuilder();
@@ -1444,8 +1446,8 @@ public class MultipartReplyMessageFactoryTest {
         instructions.add(builderInstruction.build());
         // Apply_actions instruction
         builderInstruction = new InstructionBuilder();
-        ApplyActionsCaseBuilder applyActionsCaseBuilder = new ApplyActionsCaseBuilder();
-        ApplyActionsBuilder applyActionsBuilder = new ApplyActionsBuilder();
+        final ApplyActionsCaseBuilder applyActionsCaseBuilder = new ApplyActionsCaseBuilder();
+        final ApplyActionsBuilder applyActionsBuilder = new ApplyActionsBuilder();
         actions = new ArrayList<>();
         actionBuilder = new ActionBuilder();
         PushVlanCaseBuilder vlanCaseBuilder = new PushVlanCaseBuilder();
@@ -1462,18 +1464,18 @@ public class MultipartReplyMessageFactoryTest {
         builderInstruction.setInstructionChoice(applyActionsCaseBuilder.build());
         instructions.add(builderInstruction.build());
         builder.setInstruction(instructions);
-        List<FlowStats> list = new ArrayList<FlowStats>();
+        List<FlowStats> list = new ArrayList<>();
         list.add(builder.build());
         return list;
     }
 
     private static MultipartRequestFlags createMultipartRequestFlags(int input) {
-        final Boolean one = ((input) & (1 << 0)) > 0;
+        final Boolean one = (input & 1 << 0) > 0;
         return new MultipartRequestFlags(one);
     }
 
     private static MultipartReplyDescCase decodeDescBody(ByteBuf output) {
-        MultipartReplyDescCaseBuilder descCase = new MultipartReplyDescCaseBuilder();
+        final MultipartReplyDescCaseBuilder descCase = new MultipartReplyDescCaseBuilder();
         MultipartReplyDescBuilder desc = new MultipartReplyDescBuilder();
         byte[] mfrDesc = new byte[256];
         output.readBytes(mfrDesc);

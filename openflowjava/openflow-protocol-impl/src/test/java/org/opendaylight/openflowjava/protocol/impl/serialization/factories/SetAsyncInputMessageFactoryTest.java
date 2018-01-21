@@ -10,10 +10,8 @@ package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,6 +34,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.async.body.grouping.PortStatusMaskBuilder;
 
 /**
+ * Unit tests for SetAsyncInputMessageFactory.
+ *
  * @author timotej.kubas
  * @author michal.polkorab
  */
@@ -45,7 +45,7 @@ public class SetAsyncInputMessageFactoryTest {
     private OFSerializer<SetAsyncInput> setAsyncFactory;
 
     /**
-     * Initializes serializer registry and stores correct factory in field
+     * Initializes serializer registry and stores correct factory in field.
      */
     @Before
     public void startUp() {
@@ -56,8 +56,7 @@ public class SetAsyncInputMessageFactoryTest {
     }
 
     /**
-     * @throws Exception
-     * Testing of {@link SetAsyncInputMessageFactory} for correct translation from POJO
+     * Testing of {@link SetAsyncInputMessageFactory} for correct translation from POJO.
      */
     @Test
     public void testSetAsyncInputMessage() throws Exception {
@@ -82,7 +81,7 @@ public class SetAsyncInputMessageFactoryTest {
     }
 
     private static List<PacketInMask> createPacketInMask() {
-        List<PacketInMask> masks = new ArrayList<>();
+        final List<PacketInMask> masks = new ArrayList<>();
         PacketInMaskBuilder builder;
         // OFPCR_ROLE_EQUAL or OFPCR_ROLE_MASTER
         builder = new PacketInMaskBuilder();
@@ -101,7 +100,7 @@ public class SetAsyncInputMessageFactoryTest {
     }
 
     private static List<PortStatusMask> createPortStatusMask() {
-        List<PortStatusMask> masks = new ArrayList<>();
+        final List<PortStatusMask> masks = new ArrayList<>();
         PortStatusMaskBuilder builder;
         builder = new PortStatusMaskBuilder();
         // OFPCR_ROLE_EQUAL or OFPCR_ROLE_MASTER
@@ -120,7 +119,7 @@ public class SetAsyncInputMessageFactoryTest {
     }
 
     private static List<FlowRemovedMask> createFlowRemowedMask() {
-        List<FlowRemovedMask> masks = new ArrayList<>();
+        final List<FlowRemovedMask> masks = new ArrayList<>();
         FlowRemovedMaskBuilder builder;
         // OFPCR_ROLE_EQUAL or OFPCR_ROLE_MASTER
         builder = new FlowRemovedMaskBuilder();
@@ -140,8 +139,7 @@ public class SetAsyncInputMessageFactoryTest {
     }
 
     /**
-     * @throws Exception
-     * Testing of {@link SetAsyncInputMessageFactory} for correct translation from POJO
+     * Testing of {@link SetAsyncInputMessageFactory} for correct translation from POJO.
      */
     @Test
     public void testSetAsyncInputWithNullMasks() throws Exception {

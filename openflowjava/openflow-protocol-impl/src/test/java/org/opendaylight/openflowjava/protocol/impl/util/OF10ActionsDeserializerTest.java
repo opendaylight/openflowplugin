@@ -31,15 +31,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 
 /**
- * @author michal.polkorab
+ * Unit tests for OF10ActionsDeserializer.
  *
+ * @author michal.polkorab
  */
 public class OF10ActionsDeserializerTest {
 
     private DeserializerRegistry registry;
 
     /**
-     * Initializes deserializer registry and lookups correct deserializer
+     * Initializes deserializer registry and lookups correct deserializer.
      */
     @Before
     public void startUp() {
@@ -48,7 +49,7 @@ public class OF10ActionsDeserializerTest {
     }
 
     /**
-     * Testing correct deserialization of actions (OF v1.0)
+     * Testing correct deserialization of actions (OF v1.0).
      */
     @Test
     public void test() {

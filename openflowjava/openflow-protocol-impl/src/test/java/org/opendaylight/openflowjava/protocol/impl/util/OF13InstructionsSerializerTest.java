@@ -9,10 +9,8 @@ package org.opendaylight.openflowjava.protocol.impl.util;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,15 +44,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 
 /**
- * @author michal.polkorab
+ * Unit tests for OF13InstructionsSerializer.
  *
+ * @author michal.polkorab
  */
 public class OF13InstructionsSerializerTest {
 
     private SerializerRegistry registry;
 
     /**
-     * Initializes serializer table and stores correct factory in field
+     * Initializes serializer table and stores correct factory in field.
      */
     @Before
     public void startUp() {
@@ -63,11 +62,11 @@ public class OF13InstructionsSerializerTest {
     }
 
     /**
-     * Testing instructions translation
+     * Testing instructions translation.
      */
     @Test
     public void test() {
-        List<Instruction> instructions = new ArrayList<>();
+        final List<Instruction> instructions = new ArrayList<>();
         // Goto_table instruction
         InstructionBuilder builder = new InstructionBuilder();
         GotoTableCaseBuilder gotoCaseBuilder = new GotoTableCaseBuilder();
@@ -99,16 +98,16 @@ public class OF13InstructionsSerializerTest {
         instructions.add(builder.build());
         // Write_actions instruction
         builder = new InstructionBuilder();
-        WriteActionsCaseBuilder writeActionsCaseBuilder = new WriteActionsCaseBuilder();
-        WriteActionsBuilder writeActionsBuilder = new WriteActionsBuilder();
-        List<Action> actions = new ArrayList<>();
-        ActionBuilder actionBuilder = new ActionBuilder();
+        final WriteActionsCaseBuilder writeActionsCaseBuilder = new WriteActionsCaseBuilder();
+        final WriteActionsBuilder writeActionsBuilder = new WriteActionsBuilder();
         OutputActionCaseBuilder caseBuilder = new OutputActionCaseBuilder();
         OutputActionBuilder outputBuilder = new OutputActionBuilder();
         outputBuilder.setPort(new PortNumber(45L));
         outputBuilder.setMaxLength(55);
         caseBuilder.setOutputAction(outputBuilder.build());
+        ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setActionChoice(caseBuilder.build());
+        List<Action> actions = new ArrayList<>();
         actions.add(actionBuilder.build());
         actionBuilder = new ActionBuilder();
         SetNwTtlCaseBuilder ttlCaseBuilder = new SetNwTtlCaseBuilder();
@@ -123,8 +122,8 @@ public class OF13InstructionsSerializerTest {
         instructions.add(builder.build());
         // Apply_actions instruction
         builder = new InstructionBuilder();
-        ApplyActionsCaseBuilder applyActionsCaseBuilder = new ApplyActionsCaseBuilder();
-        ApplyActionsBuilder applyActionsBuilder = new ApplyActionsBuilder();
+        final ApplyActionsCaseBuilder applyActionsCaseBuilder = new ApplyActionsCaseBuilder();
+        final ApplyActionsBuilder applyActionsBuilder = new ApplyActionsBuilder();
         actions = new ArrayList<>();
         actionBuilder = new ActionBuilder();
         PushVlanCaseBuilder vlanCaseBuilder = new PushVlanCaseBuilder();

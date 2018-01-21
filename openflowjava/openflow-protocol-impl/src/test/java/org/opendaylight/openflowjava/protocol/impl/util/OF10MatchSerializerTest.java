@@ -10,7 +10,6 @@ package org.opendaylight.openflowjava.protocol.impl.util;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,8 +26,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10Builder;
 
 /**
- * @author michal.polkorab
+ * Unit tests for OF10MatchSerializer.
  *
+ * @author michal.polkorab
  */
 public class OF10MatchSerializerTest {
 
@@ -36,7 +36,7 @@ public class OF10MatchSerializerTest {
     private OFSerializer<MatchV10> matchSerializer;
 
     /**
-     * Initializes serializer table and stores correct factory in field
+     * Initializes serializer table and stores correct factory in field.
      */
     @Before
     public void startUp() {
@@ -47,11 +47,11 @@ public class OF10MatchSerializerTest {
     }
 
     /**
-     * Testing correct serialization of ofp_match
+     * Testing correct serialization of ofp_match.
      */
     @Test
     public void test() {
-        ByteBuf out = UnpooledByteBufAllocator.DEFAULT.buffer();
+        final ByteBuf out = UnpooledByteBufAllocator.DEFAULT.buffer();
         MatchV10Builder builder = new MatchV10Builder();
         builder.setWildcards(new FlowWildcardsV10(false, false, true, false,
                 false, true, false, true, true, true));
@@ -94,11 +94,11 @@ public class OF10MatchSerializerTest {
     }
 
     /**
-     * Testing correct serialization of ofp_match
+     * Testing correct serialization of ofp_match.
      */
     @Test
     public void test2() {
-        ByteBuf out = UnpooledByteBufAllocator.DEFAULT.buffer();
+        final ByteBuf out = UnpooledByteBufAllocator.DEFAULT.buffer();
         MatchV10Builder builder = new MatchV10Builder();
         builder.setWildcards(new FlowWildcardsV10(true, true, true, true,
                 true, true, true, true, true, true));

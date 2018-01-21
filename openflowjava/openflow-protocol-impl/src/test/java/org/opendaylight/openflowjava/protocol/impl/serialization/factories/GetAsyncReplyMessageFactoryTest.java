@@ -33,8 +33,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.async.body.grouping.PortStatusMaskBuilder;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Unit tests for GetAsyncReplyMessageFactory.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class GetAsyncReplyMessageFactoryTest {
     private OFSerializer<GetAsyncOutput> factory;
@@ -68,7 +69,7 @@ public class GetAsyncReplyMessageFactoryTest {
     }
 
     private static List<PacketInMask> createPacketInMask() {
-        List<PacketInMask> masks = new ArrayList<>();
+        final List<PacketInMask> masks = new ArrayList<>();
         PacketInMaskBuilder builder;
         // OFPCR_ROLE_EQUAL or OFPCR_ROLE_MASTER
         builder = new PacketInMaskBuilder();
@@ -87,7 +88,7 @@ public class GetAsyncReplyMessageFactoryTest {
     }
 
     private static List<PortStatusMask> createPortStatusMask() {
-        List<PortStatusMask> masks = new ArrayList<>();
+        final List<PortStatusMask> masks = new ArrayList<>();
         PortStatusMaskBuilder builder;
         builder = new PortStatusMaskBuilder();
         // OFPCR_ROLE_EQUAL or OFPCR_ROLE_MASTER
@@ -106,7 +107,7 @@ public class GetAsyncReplyMessageFactoryTest {
     }
 
     private static List<FlowRemovedMask> createFlowRemowedMask() {
-        List<FlowRemovedMask> masks = new ArrayList<>();
+        final List<FlowRemovedMask> masks = new ArrayList<>();
         FlowRemovedMaskBuilder builder;
         // OFPCR_ROLE_EQUAL or OFPCR_ROLE_MASTER
         builder = new FlowRemovedMaskBuilder();

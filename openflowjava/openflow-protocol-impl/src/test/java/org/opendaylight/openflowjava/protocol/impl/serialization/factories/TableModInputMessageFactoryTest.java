@@ -16,15 +16,17 @@ import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.TableConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.TableId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableModInputBuilder;
 
 /**
+ * Unit tests for TableModInputMessageFactory.
+ *
  * @author timotej.kubas
  * @author michal.polkorab
  */
@@ -35,7 +37,7 @@ public class TableModInputMessageFactoryTest {
     private OFSerializer<TableModInput> tableModFactory;
 
     /**
-     * Initializes serializer registry and stores correct factory in field
+     * Initializes serializer registry and stores correct factory in field.
      */
     @Before
     public void startUp() {
@@ -46,8 +48,7 @@ public class TableModInputMessageFactoryTest {
     }
 
     /**
-     * Testing of {@link TableModInputMessageFactory} for correct translation from POJO
-     * @throws Exception
+     * Testing of {@link TableModInputMessageFactory} for correct translation from POJO.
      */
     @Test
     public void testTableModInput() throws Exception {

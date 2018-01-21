@@ -21,8 +21,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutputBuilder;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Unit tests for OF10BarrierReplyMessageFactory.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class OF10BarrierReplyMessageFactoryTest {
     private OFSerializer<BarrierOutput> factory;
