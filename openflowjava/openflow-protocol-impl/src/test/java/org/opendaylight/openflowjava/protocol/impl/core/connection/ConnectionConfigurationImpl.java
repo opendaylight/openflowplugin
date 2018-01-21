@@ -15,8 +15,9 @@ import org.opendaylight.openflowjava.protocol.api.connection.TlsConfiguration;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.TransportProtocol;
 
 /**
- * @author michal.polkorab
+ * Test implementation for ConnectionConfiguration.
  *
+ * @author michal.polkorab
  */
 public class ConnectionConfigurationImpl implements ConnectionConfiguration {
 
@@ -30,13 +31,7 @@ public class ConnectionConfigurationImpl implements ConnectionConfiguration {
     private final boolean isGroupAddModEnabled;
 
     /**
-     * Creates {@link ConnectionConfigurationImpl}
-     *
-     * @param address
-     * @param port
-     * @param tlsConfig
-     * @param switchIdleTimeout
-     * @param useBarrier
+     * Creates {@link ConnectionConfigurationImpl}.
      */
     public ConnectionConfigurationImpl(final InetAddress address, final int port, final TlsConfiguration tlsConfig,
             final long switchIdleTimeout, final boolean useBarrier, final boolean isGroupAddModEnabled) {
@@ -64,8 +59,7 @@ public class ConnectionConfigurationImpl implements ConnectionConfiguration {
     }
 
     /**
-     * Used for testing - sets transport protocol
-     * @param protocol
+     * Used for testing - sets transport protocol.
      */
     public void setTransferProtocol(final TransportProtocol protocol) {
         this.transferProtocol = protocol;
@@ -93,10 +87,12 @@ public class ConnectionConfigurationImpl implements ConnectionConfiguration {
     }
 
     /**
-     * @param threadConfig thread model configuration (configures threads used)
+     * Sets the ThreadConfiguration.
+     *
+     * @param config thread model configuration (configures threads used)
      */
-    public void setThreadConfiguration(final ThreadConfiguration threadConfig) {
-        this.threadConfig = threadConfig;
+    public void setThreadConfiguration(final ThreadConfiguration config) {
+        this.threadConfig = config;
     }
 
     @Override

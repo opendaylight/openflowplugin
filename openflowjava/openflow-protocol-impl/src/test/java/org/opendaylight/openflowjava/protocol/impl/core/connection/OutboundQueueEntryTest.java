@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link OutboundQueueEntry} class test
+ * {@link OutboundQueueEntry} class test.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class OutboundQueueEntryTest {
@@ -47,8 +47,8 @@ public class OutboundQueueEntryTest {
     private final OutboundQueueEntry outboundQueueEntry = new OutboundQueueEntry();
     private final OfHeader barrierInput = new BarrierInputBuilder().setVersion(VERSION).setXid(VALUE).build();
     private final OfHeader packetOutInput = new PacketOutInputBuilder().setVersion(VERSION).setXid(VALUE).build();
-    private final OfHeader multipartReplyMessage =
-            new MultipartReplyMessageBuilder().setVersion(VERSION).setXid(VALUE).setFlags(new MultipartRequestFlags(false)).build();
+    private final OfHeader multipartReplyMessage = new MultipartReplyMessageBuilder().setVersion(VERSION).setXid(VALUE)
+            .setFlags(new MultipartRequestFlags(false)).build();
     private final OfHeader flowModInput = new FlowModInputBuilder().setVersion(VERSION).setXid(VALUE).build();
     private final OfHeader flowRemoved = new FlowRemovedMessageBuilder().setVersion(VERSION).setXid(VALUE).build();
 
@@ -109,20 +109,18 @@ public class OutboundQueueEntryTest {
     @Test
     public void test() throws Exception {
 
-        final FutureCallback<OfHeader> result =
-                new FutureCallback<OfHeader>() {
+        final FutureCallback<OfHeader> result = new FutureCallback<OfHeader>() {
+            @Override
+            public void onSuccess(@Nullable OfHeader header) {
+                LOG.info("onSuccess: xid: {}", header.getXid());
+            }
 
-                    @Override
-                    public void onSuccess(@Nullable OfHeader ofHeader) {
-                        LOG.info("onSuccess: xid: {}", ofHeader.getXid());
-                    }
-
-                    @Override
-                    public void onFailure(Throwable throwable) {
-                        LOG.info("onFailure! Error: {}", throwable);
-                        LOG.info("Failure called {} time", increaseFailCounter());
-                    }
-                };
+            @Override
+            public void onFailure(Throwable throwable) {
+                LOG.info("onFailure! Error: {}", throwable);
+                LOG.info("Failure called {} time", increaseFailCounter());
+            }
+        };
 
         /** This scenario creates entry with XID 1 then commit it, fail it and again commit it */
         /** Simulates behavior when entry is committed after fail */
@@ -143,5 +141,4 @@ public class OutboundQueueEntryTest {
 
         Assert.assertTrue(this.failCounter == 1);
     }
-
 }

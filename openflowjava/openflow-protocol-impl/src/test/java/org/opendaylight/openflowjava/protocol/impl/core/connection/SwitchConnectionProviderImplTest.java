@@ -27,10 +27,12 @@ import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionPro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.KeystoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.PathType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.TransportProtocol;
+import org.slf4j.LoggerFactory;
 
 /**
- * @author michal.polkorab
+ * Unit tests for SwitchConnectionProviderImpl.
  *
+ * @author michal.polkorab
  */
 public class SwitchConnectionProviderImplTest {
 
@@ -38,16 +40,15 @@ public class SwitchConnectionProviderImplTest {
 
     private static final int SWITCH_IDLE_TIMEOUT = 2000;
     private static final int WAIT_TIMEOUT = 2000;
-    private InetAddress startupAddress;
     private TlsConfiguration tlsConfiguration;
     private SwitchConnectionProviderImpl provider;
     private ConnectionConfigurationImpl config;
 
     /**
-     * Creates new {@link SwitchConnectionProvider} instance for each test
+     * Creates new {@link SwitchConnectionProvider} instance for each test.
      * @param protocol communication protocol
      */
-    public void startUp(final TransportProtocol protocol) {
+    public void startUp(final TransportProtocol protocol) throws UnknownHostException {
         MockitoAnnotations.initMocks(this);
         config = null;
         if (protocol != null) {
@@ -56,12 +57,9 @@ public class SwitchConnectionProviderImplTest {
         provider = new SwitchConnectionProviderImpl(config);
     }
 
-    private void createConfig(final TransportProtocol protocol) {
-        try {
-            startupAddress = InetAddress.getLocalHost();
-        } catch (final UnknownHostException e) {
-            e.printStackTrace();
-        }
+    private void createConfig(final TransportProtocol protocol) throws UnknownHostException {
+        InetAddress startupAddress = InetAddress.getLocalHost();
+
         tlsConfiguration = null;
         if (protocol.equals(TransportProtocol.TLS)) {
             tlsConfiguration = new TlsConfigurationImpl(KeystoreType.JKS,
@@ -74,7 +72,7 @@ public class SwitchConnectionProviderImplTest {
     }
 
     /**
-     * Tests provider startup - without configuration and {@link SwitchConnectionHandler}
+     * Tests provider startup - without configuration and {@link SwitchConnectionHandler}.
      */
     @Test
     public void testStartup1() {
@@ -88,10 +86,10 @@ public class SwitchConnectionProviderImplTest {
     }
 
     /**
-     * Tests provider startup - without configuration
+     * Tests provider startup - without configuration.
      */
     @Test
-    public void testStartup2() {
+    public void testStartup2() throws UnknownHostException {
         startUp(null);
         provider.setSwitchConnectionHandler(handler);
         final ListenableFuture<Boolean> future = provider.startup();
@@ -103,10 +101,10 @@ public class SwitchConnectionProviderImplTest {
     }
 
     /**
-     * Tests provider startup - without {@link SwitchConnectionHandler}
+     * Tests provider startup - without {@link SwitchConnectionHandler}.
      */
     @Test
-    public void testStartup3() {
+    public void testStartup3() throws UnknownHostException {
         startUp(TransportProtocol.TCP);
         final ListenableFuture<Boolean> future = provider.startup();
         try {
@@ -118,10 +116,10 @@ public class SwitchConnectionProviderImplTest {
     }
 
     /**
-     * Tests correct provider startup - over TCP
+     * Tests correct provider startup - over TCP.
      */
     @Test
-    public void testStartup4() {
+    public void testStartup4() throws UnknownHostException {
         startUp(TransportProtocol.TCP);
         provider.setSwitchConnectionHandler(handler);
         try {
@@ -132,10 +130,10 @@ public class SwitchConnectionProviderImplTest {
     }
 
     /**
-     * Tests correct provider startup - over TLS
+     * Tests correct provider startup - over TLS.
      */
     @Test
-    public void testStartup5() {
+    public void testStartup5() throws UnknownHostException {
         startUp(TransportProtocol.TLS);
         provider.setSwitchConnectionHandler(handler);
         try {
@@ -146,10 +144,10 @@ public class SwitchConnectionProviderImplTest {
     }
 
     /**
-     * Tests correct provider startup - over UDP
+     * Tests correct provider startup - over UDP.
      */
     @Test
-    public void testStartup6() {
+    public void testStartup6() throws UnknownHostException {
         startUp(TransportProtocol.UDP);
         provider.setSwitchConnectionHandler(handler);
         try {
@@ -157,20 +155,20 @@ public class SwitchConnectionProviderImplTest {
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             Assert.fail();
         }
-        }
+    }
 
     /**
-     * Tests correct provider shutdown
+     * Tests correct provider shutdown.
      */
     @Test
-    public void testShutdown() {
+    public void testShutdown() throws UnknownHostException {
         startUp(TransportProtocol.TCP);
         provider.setSwitchConnectionHandler(handler);
         try {
             Assert.assertTrue("Failed to start", provider.startup().get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS));
             Assert.assertTrue("Failed to stop", provider.shutdown().get(5 * WAIT_TIMEOUT, TimeUnit.MILLISECONDS));
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            e.printStackTrace();
+            LoggerFactory.getLogger(SwitchConnectionProviderImplTest.class).error("Unexpected error", e);
         }
     }
 
