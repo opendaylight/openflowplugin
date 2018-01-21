@@ -10,9 +10,9 @@ package org.opendaylight.openflowjava.protocol.impl.serialization.match;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -25,15 +25,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ipv6.exthdr._case.Ipv6ExthdrBuilder;
 
 /**
- * @author michal.polkorab
+ * Unit tests for OxmIpv6ExtHdrSerializer.
  *
+ * @author michal.polkorab
  */
 public class OxmIpv6ExtHdrSerializerTest {
 
     OxmIpv6ExtHdrSerializer serializer = new OxmIpv6ExtHdrSerializer();
 
     /**
-     * Test correct serialization
+     * Test correct serialization.
      */
     @Test
     public void testSerializeWithoutMask() {
@@ -49,7 +50,7 @@ public class OxmIpv6ExtHdrSerializerTest {
     }
 
     /**
-     * Test correct serialization
+     * Test correct serialization.
      */
     @Test
     public void testSerializeWithMask() {
@@ -68,7 +69,7 @@ public class OxmIpv6ExtHdrSerializerTest {
     }
 
     /**
-     * Test correct header serialization
+     * Test correct header serialization.
      */
     @Test
     public void testSerializeHeaderWithoutMask() {
@@ -82,7 +83,7 @@ public class OxmIpv6ExtHdrSerializerTest {
     }
 
     /**
-     * Test correct header serialization
+     * Test correct header serialization.
      */
     @Test
     public void testSerializeHeaderWithMask() {
@@ -96,7 +97,7 @@ public class OxmIpv6ExtHdrSerializerTest {
     }
 
     /**
-     * Test correct oxm-class return value
+     * Test correct oxm-class return value.
      */
     @Test
     public void testGetOxmClassCode() {
@@ -104,7 +105,7 @@ public class OxmIpv6ExtHdrSerializerTest {
     }
 
     /**
-     * Test correct oxm-field return value
+     * Test correct oxm-field return value.
      */
     @Test
     public void getOxmFieldCode() {
@@ -112,7 +113,7 @@ public class OxmIpv6ExtHdrSerializerTest {
     }
 
     /**
-     * Test correct value length return value
+     * Test correct value length return value.
      */
     @Test
     public void testGetValueLength() {
@@ -120,7 +121,7 @@ public class OxmIpv6ExtHdrSerializerTest {
     }
 
     private static MatchEntryBuilder prepareIpv6ExtHdrMatchEntry(boolean hasMask, Ipv6ExthdrFlags flags) {
-        MatchEntryBuilder builder = prepareIpv6ExtHdrHeader(hasMask);
+        final MatchEntryBuilder builder = prepareIpv6ExtHdrHeader(hasMask);
         Ipv6ExthdrCaseBuilder casebuilder = new Ipv6ExthdrCaseBuilder();
         Ipv6ExthdrBuilder valueBuilder = new Ipv6ExthdrBuilder();
         if (hasMask) {

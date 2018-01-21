@@ -10,9 +10,9 @@ package org.opendaylight.openflowjava.protocol.impl.serialization.match;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -24,15 +24,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.vlan.vid._case.VlanVidBuilder;
 
 /**
- * @author michal.polkorab
+ * Unit tests for OxmVlanVidSerializer.
  *
+ * @author michal.polkorab
  */
 public class OxmVlanVidSerializerTest {
 
     OxmVlanVidSerializer serializer = new OxmVlanVidSerializer();
 
     /**
-     * Test correct serialization
+     * Test correct serialization.
      */
     @Test
     public void testSerializeWithCfiBitSet() {
@@ -47,7 +48,7 @@ public class OxmVlanVidSerializerTest {
     }
 
     /**
-     * Test correct serialization
+     * Test correct serialization.
      */
     @Test
     public void testSerializeWithoutCfiBitSet() {
@@ -65,7 +66,7 @@ public class OxmVlanVidSerializerTest {
     }
 
     /**
-     * Test correct header serialization
+     * Test correct header serialization.
      */
     @Test
     public void testSerializeHeaderWithoutMask() {
@@ -79,7 +80,7 @@ public class OxmVlanVidSerializerTest {
     }
 
     /**
-     * Test correct header serialization
+     * Test correct header serialization.
      */
     @Test
     public void testSerializeHeaderWithMask() {
@@ -93,7 +94,7 @@ public class OxmVlanVidSerializerTest {
     }
 
     /**
-     * Test correct oxm-class return value
+     * Test correct oxm-class return value.
      */
     @Test
     public void testGetOxmClassCode() {
@@ -101,7 +102,7 @@ public class OxmVlanVidSerializerTest {
     }
 
     /**
-     * Test correct oxm-field return value
+     * Test correct oxm-field return value.
      */
     @Test
     public void getOxmFieldCode() {
@@ -109,7 +110,7 @@ public class OxmVlanVidSerializerTest {
     }
 
     /**
-     * Test correct value length return value
+     * Test correct value length return value.
      */
     @Test
     public void testGetValueLength() {
@@ -117,8 +118,8 @@ public class OxmVlanVidSerializerTest {
     }
 
     private static MatchEntryBuilder prepareVlanVidMatchEntry(boolean hasMask, boolean cfiBit) {
-        MatchEntryBuilder builder = prepareVlanVidHeader(hasMask);
-        VlanVidCaseBuilder casebuilder = new VlanVidCaseBuilder();
+        final MatchEntryBuilder builder = prepareVlanVidHeader(hasMask);
+        final VlanVidCaseBuilder casebuilder = new VlanVidCaseBuilder();
         VlanVidBuilder valueBuilder = new VlanVidBuilder();
         if (hasMask) {
             valueBuilder.setMask(new byte[]{15, 15});
