@@ -10,9 +10,9 @@ package org.opendaylight.openflowjava.protocol.impl.serialization.match;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -24,15 +24,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.metadata._case.MetadataBuilder;
 
 /**
- * @author michal.polkorab
+ * Unit tests for OxmMetadataSerializer.
  *
+ * @author michal.polkorab
  */
 public class OxmMetadataSerializerTest {
 
     OxmMetadataSerializer serializer = new OxmMetadataSerializer();
 
     /**
-     * Test correct serialization
+     * Test correct serialization.
      */
     @Test
     public void testSerializeWithoutMask() {
@@ -49,7 +50,7 @@ public class OxmMetadataSerializerTest {
     }
 
     /**
-     * Test correct serialization
+     * Test correct serialization.
      */
     @Test
     public void testSerializeWithMask() {
@@ -70,7 +71,7 @@ public class OxmMetadataSerializerTest {
     }
 
     /**
-     * Test correct header serialization
+     * Test correct header serialization.
      */
     @Test
     public void testSerializeHeaderWithoutMask() {
@@ -84,7 +85,7 @@ public class OxmMetadataSerializerTest {
     }
 
     /**
-     * Test correct header serialization
+     * Test correct header serialization.
      */
     @Test
     public void testSerializeHeaderWithMask() {
@@ -98,7 +99,7 @@ public class OxmMetadataSerializerTest {
     }
 
     /**
-     * Test correct oxm-class return value
+     * Test correct oxm-class return value.
      */
     @Test
     public void testGetOxmClassCode() {
@@ -106,7 +107,7 @@ public class OxmMetadataSerializerTest {
     }
 
     /**
-     * Test correct oxm-field return value
+     * Test correct oxm-field return value.
      */
     @Test
     public void getOxmFieldCode() {
@@ -114,7 +115,7 @@ public class OxmMetadataSerializerTest {
     }
 
     /**
-     * Test correct value length return value
+     * Test correct value length return value.
      */
     @Test
     public void testGetValueLength() {
@@ -122,7 +123,7 @@ public class OxmMetadataSerializerTest {
     }
 
     private static MatchEntryBuilder prepareMatchEntry(boolean hasMask, byte[] value) {
-        MatchEntryBuilder builder = prepareHeader(hasMask);
+        final MatchEntryBuilder builder = prepareHeader(hasMask);
         MetadataCaseBuilder casebuilder = new MetadataCaseBuilder();
         MetadataBuilder valueBuilder = new MetadataBuilder();
         if (hasMask) {
