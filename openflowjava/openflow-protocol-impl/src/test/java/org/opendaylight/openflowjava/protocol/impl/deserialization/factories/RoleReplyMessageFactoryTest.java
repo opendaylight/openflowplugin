@@ -9,19 +9,20 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
 import io.netty.buffer.ByteBuf;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestOutput;
 
 /**
+ * Unit tests for RoleReplyMessageFactory.
+ *
  * @author timotej.kubas
  * @author michal.polkorab
  */
@@ -30,7 +31,7 @@ public class RoleReplyMessageFactoryTest {
     private OFDeserializer<RoleRequestOutput> roleFactory;
 
     /**
-     * Initializes deserializer registry and lookups correct deserializer
+     * Initializes deserializer registry and lookups correct deserializer.
      */
     @Before
     public void startUp() {
@@ -41,10 +42,10 @@ public class RoleReplyMessageFactoryTest {
     }
 
    /**
-    * Testing of {@link RoleReplyMessageFactory} for correct translation into POJO
+    * Testing of {@link RoleReplyMessageFactory} for correct translation into POJO.
     */
     @Test
-    public void test(){
+    public void test() {
         ByteBuf bb = BufferHelper.buildBuffer("00 00 00 02 00 00 00 00 00 01 02 03 04 05 06 07");
         RoleRequestOutput builtByFactory = BufferHelper.deserialize(roleFactory, bb);
 

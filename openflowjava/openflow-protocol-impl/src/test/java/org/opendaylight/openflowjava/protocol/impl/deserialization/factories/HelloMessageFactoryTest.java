@@ -67,7 +67,8 @@ public class HelloMessageFactoryTest extends DefaultDeserializerFactoryTest<Hell
         HelloMessage builtByFactory = BufferHelper.deserialize(factory, bb);
         List<Elements> element = createElement(4,HelloElementType.VERSIONBITMAP.getIntValue());
         Assert.assertEquals("Wrong type", element.get(0).getType(), builtByFactory.getElements().get(0).getType());
-        Assert.assertEquals("Wrong versionBitmap", element.get(0).getVersionBitmap(), builtByFactory.getElements().get(0).getVersionBitmap());
+        Assert.assertEquals("Wrong versionBitmap", element.get(0).getVersionBitmap(),
+                builtByFactory.getElements().get(0).getVersionBitmap());
     }
 
     /**
@@ -84,14 +85,15 @@ public class HelloMessageFactoryTest extends DefaultDeserializerFactoryTest<Hell
         HelloMessage builtByFactory = BufferHelper.deserialize(factory, bb);
         List<Elements> element = createElement(8,HelloElementType.VERSIONBITMAP.getIntValue());
         Assert.assertEquals("Wrong type", element.get(0).getType(), builtByFactory.getElements().get(0).getType());
-        Assert.assertEquals("Wrong versionBitmap", element.get(0).getVersionBitmap(), builtByFactory.getElements().get(0).getVersionBitmap());
+        Assert.assertEquals("Wrong versionBitmap", element.get(0).getVersionBitmap(),
+                builtByFactory.getElements().get(0).getVersionBitmap());
     }
 
     /**
      * Testing {@link HelloMessageFactory} if incorrect version is set.
      */
     @Test
-    public void testBadType(){
+    public void testBadType() {
         ByteBuf bb = BufferHelper.buildBuffer("00 02 " // type
                                             + "00 0c " // length
                                             + "00 00 00 11 " // bitmap 1
@@ -103,8 +105,8 @@ public class HelloMessageFactoryTest extends DefaultDeserializerFactoryTest<Hell
     }
 
     private static List<Elements> createElement(int lengthInByte, int type) {
-        ElementsBuilder elementsBuilder = new ElementsBuilder();
-        List<Elements> elementsList = new ArrayList<>();
+        final ElementsBuilder elementsBuilder = new ElementsBuilder();
+        final List<Elements> elementsList = new ArrayList<>();
         List<Boolean> booleanList = new ArrayList<>();
         booleanList.add(true);
         booleanList.add(false);
@@ -112,7 +114,7 @@ public class HelloMessageFactoryTest extends DefaultDeserializerFactoryTest<Hell
         booleanList.add(false);
         booleanList.add(true);
         int inSize = booleanList.size();
-        for (int i = 1; i < ((lengthInByte * 8) - inSize + 1); i++) {
+        for (int i = 1; i < lengthInByte * 8 - inSize + 1; i++) {
             booleanList.add(false);
         }
         elementsBuilder.setType(HelloElementType.forValue(type));

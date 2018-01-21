@@ -56,8 +56,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeaturePropertiesBuilder;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Unit tests for MultipartRequestTableFeaturesInputMessageFactory.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class MultipartRequestTableFeaturesInputMessageFactoryTest {
     private OFDeserializer<MultipartRequestInput> factory;
@@ -73,9 +74,9 @@ public class MultipartRequestTableFeaturesInputMessageFactoryTest {
     @Test
     public void test() {
         ByteBuf bb = BufferHelper.buildBuffer("00 0c 00 01 00 00 00 00 00 68 01 00 00 00 00 00 4e 61 6d "
-                + "65 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 "
-                + "00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 01 00 00 00 10 00 01 "
-                + "00 04 00 02 00 04 00 04 00 04 00 02 00 05 01 00 00 00 00 04 00 08 00 00 00 04 00 08 00 08 80 00 02 04 ");
+            + "65 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 "
+            + "00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 01 00 00 00 10 00 01 "
+            + "00 04 00 02 00 04 00 04 00 04 00 02 00 05 01 00 00 00 00 04 00 08 00 00 00 04 00 08 00 08 80 00 02 04 ");
         MultipartRequestInput deserializedMessage = BufferHelper.deserialize(factory, bb);
         BufferHelper.checkHeaderV13(deserializedMessage);
         Assert.assertEquals("Wrong type", MultipartType.forValue(12), deserializedMessage.getType());
@@ -93,7 +94,7 @@ public class MultipartRequestTableFeaturesInputMessageFactoryTest {
     }
 
     public List<TableFeatures> createTableFeaturesList() {
-        List<TableFeatures> list = new ArrayList<>();
+        final List<TableFeatures> list = new ArrayList<>();
         TableFeaturesBuilder builder = new TableFeaturesBuilder();
         builder.setTableId((short) 1);
         builder.setName("Name");
@@ -107,7 +108,7 @@ public class MultipartRequestTableFeaturesInputMessageFactoryTest {
     }
 
     public List<TableFeatureProperties> createTableFeatureProperties() {
-        List<TableFeatureProperties> list = new ArrayList<>();
+        final List<TableFeatureProperties> list = new ArrayList<>();
         TableFeaturePropertiesBuilder builder = new TableFeaturePropertiesBuilder();
         builder.setType(TableFeaturesPropType.forValue(0));
         InstructionRelatedTableFeaturePropertyBuilder insBuilder = new InstructionRelatedTableFeaturePropertyBuilder();
@@ -140,7 +141,7 @@ public class MultipartRequestTableFeaturesInputMessageFactoryTest {
     }
 
     public List<MatchEntry> createMatchEntries() {
-        List<MatchEntry> entries = new ArrayList<>();
+        final List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
         entriesBuilder.setOxmClass(OpenflowBasicClass.class);
         entriesBuilder.setOxmMatchField(InPhyPort.class);

@@ -21,8 +21,9 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 
 /**
- * @author michal.polkorab
+ * Unit tests for VendorMessageFactory.
  *
+ * @author michal.polkorab
  */
 @RunWith(MockitoJUnitRunner.class)
 public class VendorMessageFactoryTest {
@@ -31,7 +32,7 @@ public class VendorMessageFactoryTest {
     @Mock ExperimenterMessageFactory deserializer;
 
     /**
-     * Tests {@link VendorMessageFactory#deserialize(ByteBuf)}
+     * Tests {@link VendorMessageFactory#deserialize(ByteBuf)}.
      */
     @Test
     public void test() {

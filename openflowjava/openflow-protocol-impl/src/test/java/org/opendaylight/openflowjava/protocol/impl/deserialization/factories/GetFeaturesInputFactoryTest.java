@@ -19,8 +19,9 @@ import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesInput;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * UNit tests for GetFeaturesInputFactory.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class GetFeaturesInputFactoryTest {
     private OFDeserializer<GetFeaturesInput> factory;

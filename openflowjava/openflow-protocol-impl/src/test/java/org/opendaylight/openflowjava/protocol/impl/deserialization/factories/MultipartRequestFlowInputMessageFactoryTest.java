@@ -26,8 +26,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlowBuilder;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Unit tests for MultipartRequestFlowInputMessageFactory.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class MultipartRequestFlowInputMessageFactoryTest {
 
@@ -55,7 +56,7 @@ public class MultipartRequestFlowInputMessageFactoryTest {
     }
 
     private static MultipartRequestFlowCase createRequestFlow() {
-        MultipartRequestFlowCaseBuilder caseBuilder = new MultipartRequestFlowCaseBuilder();
+        final MultipartRequestFlowCaseBuilder caseBuilder = new MultipartRequestFlowCaseBuilder();
         MultipartRequestFlowBuilder builder = new MultipartRequestFlowBuilder();
         builder.setTableId((short) 8);
         builder.setOutPort(85L);

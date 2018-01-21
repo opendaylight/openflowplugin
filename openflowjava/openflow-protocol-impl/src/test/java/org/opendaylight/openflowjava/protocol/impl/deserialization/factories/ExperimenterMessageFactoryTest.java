@@ -26,8 +26,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
 
 /**
- * @author michal.polkorab
+ * Unit tests for ExperimenterMessageFactory.
  *
+ * @author michal.polkorab
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ExperimenterMessageFactoryTest {
@@ -38,7 +39,7 @@ public class ExperimenterMessageFactoryTest {
     private ExperimenterMessageFactory factory;
 
     /**
-     * Initializes mocks
+     * Initializes mocks.
      */
     @Before
     public void startUp() {
@@ -46,7 +47,7 @@ public class ExperimenterMessageFactoryTest {
     }
 
     /**
-     * Test deserializer lookup correctness
+     * Test deserializer lookup correctness.
      */
     @Test
     public void test() {

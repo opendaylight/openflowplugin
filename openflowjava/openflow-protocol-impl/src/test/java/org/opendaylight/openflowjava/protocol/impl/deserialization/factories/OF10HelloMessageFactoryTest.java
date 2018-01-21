@@ -9,19 +9,20 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
 import io.netty.buffer.ByteBuf;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
 
 /**
+ * Unit tests for OF10HelloMessageFactory.
+ *
  * @author michal.polkorab
  */
 public class OF10HelloMessageFactoryTest {
@@ -29,7 +30,7 @@ public class OF10HelloMessageFactoryTest {
     private OFDeserializer<HelloMessage> helloFactory;
 
     /**
-     * Initializes deserializer registry and lookups correct deserializer
+     * Initializes deserializer registry and lookups correct deserializer.
      */
     @Before
     public void startUp() {
@@ -40,7 +41,7 @@ public class OF10HelloMessageFactoryTest {
     }
 
     /**
-     * Testing {@link OF10HelloMessageFactory} for correct translation into POJO
+     * Testing {@link OF10HelloMessageFactory} for correct translation into POJO.
      */
     @Test
     public void testWithoutElements() {
@@ -52,8 +53,8 @@ public class OF10HelloMessageFactoryTest {
         Assert.assertNull("Wrong elements", builtByFactory.getElements());
     }
 
-	/**
-     * Testing {@link OF10HelloMessageFactory} for correct translation into POJO
+    /**
+     * Testing {@link OF10HelloMessageFactory} for correct translation into POJO.
      */
     @Test
     public void testWithElements() {

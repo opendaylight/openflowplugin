@@ -32,8 +32,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.mod.BandsBuilder;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Unit tests for MeterModInputMessageFactory.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class MeterModInputMessageFactoryTest {
 
@@ -63,16 +64,16 @@ public class MeterModInputMessageFactoryTest {
     }
 
     private static List<Bands> createBandsList() {
-        List<Bands> bandsList = new ArrayList<>();
-        BandsBuilder bandsBuilder = new BandsBuilder();
-        MeterBandDropCaseBuilder dropCaseBuilder = new MeterBandDropCaseBuilder();
+        final List<Bands> bandsList = new ArrayList<>();
+        final BandsBuilder bandsBuilder = new BandsBuilder();
+        final MeterBandDropCaseBuilder dropCaseBuilder = new MeterBandDropCaseBuilder();
         MeterBandDropBuilder dropBand = new MeterBandDropBuilder();
         dropBand.setType(MeterBandType.OFPMBTDROP);
         dropBand.setRate(1L);
         dropBand.setBurstSize(2L);
         dropCaseBuilder.setMeterBandDrop(dropBand.build());
         bandsList.add(bandsBuilder.setMeterBand(dropCaseBuilder.build()).build());
-        MeterBandDscpRemarkCaseBuilder dscpCaseBuilder = new MeterBandDscpRemarkCaseBuilder();
+        final MeterBandDscpRemarkCaseBuilder dscpCaseBuilder = new MeterBandDscpRemarkCaseBuilder();
         MeterBandDscpRemarkBuilder dscpRemarkBand = new MeterBandDscpRemarkBuilder();
         dscpRemarkBand.setType(MeterBandType.OFPMBTDSCPREMARK);
         dscpRemarkBand.setRate(1L);

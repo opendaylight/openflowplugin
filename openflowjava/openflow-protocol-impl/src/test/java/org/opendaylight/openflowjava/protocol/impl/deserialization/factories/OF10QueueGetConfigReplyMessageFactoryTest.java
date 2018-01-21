@@ -9,7 +9,6 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
 import io.netty.buffer.ByteBuf;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,15 +24,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.queue.get.config.reply.Queues;
 
 /**
- * @author michal.polkorab
+ * Unit tests for OF10QueueGetConfigReplyMessageFactory.
  *
+ * @author michal.polkorab
  */
 public class OF10QueueGetConfigReplyMessageFactoryTest {
 
     private OFDeserializer<GetQueueConfigOutput> queueFactory;
 
     /**
-     * Initializes deserializer registry and lookups correct deserializer
+     * Initializes deserializer registry and lookups correct deserializer.
      */
     @Before
     public void startUp() {
@@ -45,7 +45,7 @@ public class OF10QueueGetConfigReplyMessageFactoryTest {
 
     /**
      * Testing of {@link OF10QueueGetConfigReplyMessageFactory} for correct
-     * translation into POJO
+     * translation into POJO.
      */
     @Test
     public void test() {

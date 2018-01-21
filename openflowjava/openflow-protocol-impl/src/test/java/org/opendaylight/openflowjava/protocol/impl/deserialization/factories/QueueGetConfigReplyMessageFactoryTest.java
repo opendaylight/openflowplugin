@@ -9,10 +9,8 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
 import io.netty.buffer.ByteBuf;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,6 +32,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.queue.property.header.QueuePropertyBuilder;
 
 /**
+ * Unit tests for QueueGetConfigReplyMessageFactory.
+ *
  * @author timotej.kubas
  * @author michal.polkorab
  */
@@ -42,7 +42,7 @@ public class QueueGetConfigReplyMessageFactoryTest {
     private OFDeserializer<GetQueueConfigOutput> queueFactory;
 
     /**
-     * Initializes deserializer registry and lookups correct deserializer
+     * Initializes deserializer registry and lookups correct deserializer.
      */
     @Before
     public void startUp() {
@@ -53,19 +53,20 @@ public class QueueGetConfigReplyMessageFactoryTest {
     }
 
     /**
-     * Testing {@link QueueGetConfigReplyMessageFactory} for correct translation into POJO
+     * Testing {@link QueueGetConfigReplyMessageFactory} for correct translation into POJO.
      */
     @Test
-    public void test(){
-        ByteBuf bb = BufferHelper.buildBuffer("00 00 00 03 00 00 00 00 00 00 00 01 00 00 00 03 00 20 00 00 00 00 00 00 00 02 00 10 00 00 00 00 00 05 00 00 00 00 00 00");
+    public void test() {
+        ByteBuf bb = BufferHelper.buildBuffer("00 00 00 03 00 00 00 00 00 00 00 01 00 00 00 03 00 20 00 00 00 00 "
+                + "00 00 00 02 00 10 00 00 00 00 00 05 00 00 00 00 00 00");
         GetQueueConfigOutput builtByFactory = BufferHelper.deserialize(queueFactory, bb);
         BufferHelper.checkHeaderV13(builtByFactory);
         Assert.assertEquals("Wrong port", 3L, builtByFactory.getPort().getValue().longValue());
         Assert.assertEquals("Wrong queues", builtByFactory.getQueues(), createQueuesList());
     }
 
-    private static List<Queues> createQueuesList(){
-        List<Queues> queuesList = new ArrayList<>();
+    private static List<Queues> createQueuesList() {
+        final List<Queues> queuesList = new ArrayList<>();
         QueuesBuilder qb = new QueuesBuilder();
         qb.setQueueId(new QueueId(1L));
         qb.setPort(new PortNumber(3L));
@@ -75,8 +76,8 @@ public class QueueGetConfigReplyMessageFactoryTest {
         return queuesList;
     }
 
-    private static List<QueueProperty> createPropertiesList(){
-        List<QueueProperty> propertiesList = new ArrayList<>();
+    private static List<QueueProperty> createPropertiesList() {
+        final List<QueueProperty> propertiesList = new ArrayList<>();
         QueuePropertyBuilder pb = new QueuePropertyBuilder();
         pb.setProperty(QueueProperties.forValue(2));
         RateQueuePropertyBuilder rateBuilder = new RateQueuePropertyBuilder();

@@ -26,8 +26,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.meter._case.MultipartRequestMeterBuilder;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Unit tests for MultipartRequestMeterInputMessageFactory.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class MultipartRequestMeterInputMessageFactoryTest {
     private OFDeserializer<MultipartRequestInput> factory;

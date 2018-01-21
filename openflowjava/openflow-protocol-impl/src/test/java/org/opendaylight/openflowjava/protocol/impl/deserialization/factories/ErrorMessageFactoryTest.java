@@ -9,7 +9,6 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
 import io.netty.buffer.ByteBuf;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,6 +23,8 @@ import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 
 /**
+ * Unit tests for ErrorMessageFactory.
+ *
  * @author michal.polkorab
  * @author timotej.kubas
  */
@@ -36,7 +37,7 @@ public class ErrorMessageFactoryTest {
     private ErrorMessageFactory errorFactory;
 
     /**
-     * Initializes deserializer registry and lookups correct deserializer
+     * Initializes deserializer registry and lookups correct deserializer..
      */
     @Before
     public void startUp() {
@@ -44,7 +45,7 @@ public class ErrorMessageFactoryTest {
     }
 
     /**
-     * Test of {@link ErrorMessageFactory} for correct translation into POJO
+     * Test of {@link ErrorMessageFactory} for correct translation into POJO.
      */
     @Test
     public void testWithoutData() {
@@ -191,7 +192,7 @@ public class ErrorMessageFactoryTest {
 
     /**
      * Test of {@link ErrorMessageFactory} for correct translation into POJO
-     * - not existing code used
+     * - not existing code used.
      */
     @Test
     public void testWithoutData2() {
@@ -337,7 +338,7 @@ public class ErrorMessageFactoryTest {
     }
 
     /**
-     * Test of {@link ErrorMessageFactory} for correct translation into POJO
+     * Test of {@link ErrorMessageFactory} for correct translation into POJO.
      */
     @Test
     public void testWithData() {
@@ -353,7 +354,7 @@ public class ErrorMessageFactoryTest {
     }
 
     /**
-     * Test of {@link ErrorMessageFactory} for correct translation into POJO
+     * Test of {@link ErrorMessageFactory} for correct translation into POJO.
      */
     @Test
     public void testWithIncorrectTypeEnum() {
@@ -369,7 +370,7 @@ public class ErrorMessageFactoryTest {
     }
 
     /**
-     * Test of {@link ErrorMessageFactory} for correct translation into POJO
+     * Test of {@link ErrorMessageFactory} for correct translation into POJO.
      */
     @Test
     public void testWithIncorrectCodeEnum() {
@@ -385,7 +386,7 @@ public class ErrorMessageFactoryTest {
     }
 
     /**
-     * Test of {@link ErrorMessageFactory} for correct translation into POJO
+     * Test of {@link ErrorMessageFactory} for correct translation into POJO.
      */
     @Test
     public void testExperimenterError() {
