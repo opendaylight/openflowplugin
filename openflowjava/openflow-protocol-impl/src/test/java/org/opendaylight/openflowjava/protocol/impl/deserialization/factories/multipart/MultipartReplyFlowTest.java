@@ -9,9 +9,7 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories.multipart;
 
 import io.netty.buffer.ByteBuf;
-
 import java.math.BigInteger;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,15 +28,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.multipart.reply.flow.FlowStats;
 
 /**
- * @author michal.polkorab
+ * Unit tests for MultipartReplyFlow.
  *
+ * @author michal.polkorab
  */
 public class MultipartReplyFlowTest {
 
     private OFDeserializer<MultipartReplyMessage> factory;
 
     /**
-     * Initializes deserializer registry and lookups correct deserializer
+     * Initializes deserializer registry and lookups correct deserializer.
      */
     @Before
     public void startUp() {
@@ -49,10 +48,10 @@ public class MultipartReplyFlowTest {
     }
 
     /**
-     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO
+     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO.
      */
     @Test
-    public void testEmptyMultipartReplyFlowBody(){
+    public void testEmptyMultipartReplyFlowBody() {
         ByteBuf bb = BufferHelper.buildBuffer("00 01 00 01 00 00 00 00");
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(factory, bb);
 
@@ -65,34 +64,34 @@ public class MultipartReplyFlowTest {
     }
 
     /**
-     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO
+     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO.
      */
     @Test
-    public void testMultipartReplyFlowBody(){
-        ByteBuf bb = BufferHelper.buildBuffer("00 01 00 01 00 00 00 00 "+
+    public void testMultipartReplyFlowBody() {
+        ByteBuf bb = BufferHelper.buildBuffer("00 01 00 01 00 00 00 00 " + //
                                               // first flow stat
-                                              "00 48 08 00 "+ // length, tableId, padding
-                                              "00 00 00 09 "+//durationSec
-                                              "00 00 00 07 "+//durationNsec
-                                              "00 0C 00 0E 00 0F 00 1F "+//priority, idleTimeout, hardTimeout, flags
-                                              "00 00 00 00 "+//pad_02
-                                              "FF 01 01 01 01 01 01 01 "+//cookie
-                                              "EF 01 01 01 01 01 01 01 "+//packetCount
-                                              "7F 01 01 01 01 01 01 01 "+//byteCount
-                                              "00 01 00 04 00 00 00 00 "+//empty match
-                                              "00 01 00 08 06 00 00 00 "+
-                                              "00 01 00 08 06 00 00 00 "+
+                                              "00 48 08 00 " + // length, tableId, padding
+                                              "00 00 00 09 " + //durationSec
+                                              "00 00 00 07 " + //durationNsec
+                                              "00 0C 00 0E 00 0F 00 1F " + //priority, idleTimeout, hardTimeout, flags
+                                              "00 00 00 00 " + //pad_02
+                                              "FF 01 01 01 01 01 01 01 " + //cookie
+                                              "EF 01 01 01 01 01 01 01 " + //packetCount
+                                              "7F 01 01 01 01 01 01 01 " + //byteCount
+                                              "00 01 00 04 00 00 00 00 " + //empty match
+                                              "00 01 00 08 06 00 00 00 " + //
+                                              "00 01 00 08 06 00 00 00 " + //
                                               // second flow stat
-                                              "00 48 08 00 "+ // length, tableId, padding
-                                              "00 00 00 09 "+//durationSec
-                                              "00 00 00 07 "+//durationNsec
-                                              "00 0C 00 0E 00 0F 00 00 "+//priority, idleTimeout, hardTimeout, flags
-                                              "00 00 00 00 "+//pad_02
-                                              "FF 01 01 01 01 01 01 01 "+//cookie
-                                              "EF 01 01 01 01 01 01 01 "+//packetCount
-                                              "7F 01 01 01 01 01 01 01 "+//byteCount
-                                              "00 01 00 04 00 00 00 00 "+//empty match
-                                              "00 01 00 08 06 00 00 00 "+
+                                              "00 48 08 00 " + // length, tableId, padding
+                                              "00 00 00 09 " + //durationSec
+                                              "00 00 00 07 " + //durationNsec
+                                              "00 0C 00 0E 00 0F 00 00 " + // priority, idleTimeout, hardTimeout, flags
+                                              "00 00 00 00 " + //pad_02
+                                              "FF 01 01 01 01 01 01 01 " + //cookie
+                                              "EF 01 01 01 01 01 01 01 " + //packetCount
+                                              "7F 01 01 01 01 01 01 01 " + //byteCount
+                                              "00 01 00 04 00 00 00 00 " + //empty match
+                                              "00 01 00 08 06 00 00 00 " + //
                                               "00 01 00 08 06 00 00 00");
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(factory, bb);
 
@@ -111,11 +110,11 @@ public class MultipartReplyFlowTest {
         Assert.assertEquals("Wrong hardTimeOut", 15, flowStats1.getHardTimeout().intValue());
         Assert.assertEquals("Wrong flags", new FlowModFlags(true, true, true, true, true), flowStats1.getFlags());
         Assert.assertEquals("Wrong cookie", new BigInteger(1, new byte[]{(byte) 0xFF, 0x01, 0x01, 0x01, 0x01,
-                0x01, 0x01, 0x01}), flowStats1.getCookie());
+            0x01, 0x01, 0x01}), flowStats1.getCookie());
         Assert.assertEquals("Wrong packetCount", new BigInteger(1, new byte[]{(byte) 0xEF, 0x01, 0x01, 0x01,
-                0x01, 0x01, 0x01, 0x01}), flowStats1.getPacketCount());
+            0x01, 0x01, 0x01, 0x01}), flowStats1.getPacketCount());
         Assert.assertEquals("Wrong byteCount", new BigInteger(1, new byte[]{(byte) 0x7F, 0x01, 0x01, 0x01,
-                0x01, 0x01, 0x01, 0x01}), flowStats1.getByteCount());
+            0x01, 0x01, 0x01, 0x01}), flowStats1.getByteCount());
         Assert.assertEquals("Wrong match type", OxmMatchType.class, flowStats1.getMatch().getType());
         flowStats1 = message.getFlowStats().get(1);
         Assert.assertEquals("Wrong tableId", 8, flowStats1.getTableId().intValue());
@@ -126,11 +125,11 @@ public class MultipartReplyFlowTest {
         Assert.assertEquals("Wrong hardTimeOut", 15, flowStats1.getHardTimeout().intValue());
         Assert.assertEquals("Wrong flags", new FlowModFlags(false, false, false, false, false), flowStats1.getFlags());
         Assert.assertEquals("Wrong cookie", new BigInteger(1, new byte[]{(byte) 0xFF, 0x01, 0x01, 0x01, 0x01,
-                0x01, 0x01, 0x01}), flowStats1.getCookie());
+            0x01, 0x01, 0x01}), flowStats1.getCookie());
         Assert.assertEquals("Wrong packetCount", new BigInteger(1, new byte[]{(byte) 0xEF, 0x01, 0x01, 0x01,
-                0x01, 0x01, 0x01, 0x01}), flowStats1.getPacketCount());
+            0x01, 0x01, 0x01, 0x01}), flowStats1.getPacketCount());
         Assert.assertEquals("Wrong byteCount", new BigInteger(1, new byte[]{(byte) 0x7F, 0x01, 0x01, 0x01,
-                0x01, 0x01, 0x01, 0x01}), flowStats1.getByteCount());
+            0x01, 0x01, 0x01, 0x01}), flowStats1.getByteCount());
         Assert.assertEquals("Wrong match type", OxmMatchType.class, flowStats1.getMatch().getType());
     }
 }

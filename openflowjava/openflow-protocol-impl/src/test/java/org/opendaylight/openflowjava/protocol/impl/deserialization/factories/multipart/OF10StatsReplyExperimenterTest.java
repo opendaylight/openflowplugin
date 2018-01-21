@@ -25,8 +25,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
 
 /**
- * @author michal.polkorab
+ * Unit tests for OF10StatsReplyExperimenter.
  *
+ * @author michal.polkorab
  */
 @RunWith(MockitoJUnitRunner.class)
 public class OF10StatsReplyExperimenterTest {
@@ -35,7 +36,7 @@ public class OF10StatsReplyExperimenterTest {
     @Mock private OFDeserializer<ExperimenterDataOfChoice> vendorDeserializer;
 
     /**
-     * Tests {@link OF10StatsReplyMessageFactory} for experimenter body translation
+     * Tests {@link OF10StatsReplyMessageFactory} for experimenter body translation.
      */
     @Test
     public void test() {
