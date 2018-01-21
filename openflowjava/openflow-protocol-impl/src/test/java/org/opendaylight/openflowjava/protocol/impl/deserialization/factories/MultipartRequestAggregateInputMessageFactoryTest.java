@@ -26,8 +26,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.aggregate._case.MultipartRequestAggregateBuilder;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Unit tests for MultipartRequestAggregateInputMessageFactory.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class MultipartRequestAggregateInputMessageFactoryTest {
 
@@ -55,7 +56,7 @@ public class MultipartRequestAggregateInputMessageFactoryTest {
     }
 
     private static MultipartRequestAggregateCase createRequestAggregate() {
-        MultipartRequestAggregateCaseBuilder caseBuilder = new MultipartRequestAggregateCaseBuilder();
+        final MultipartRequestAggregateCaseBuilder caseBuilder = new MultipartRequestAggregateCaseBuilder();
         MultipartRequestAggregateBuilder builder = new MultipartRequestAggregateBuilder();
         builder.setTableId((short) 8);
         builder.setOutPort(85L);

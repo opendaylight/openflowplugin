@@ -9,20 +9,21 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
 import io.netty.buffer.ByteBuf;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 
 /**
+ * Unit tests for FeaturesReplyMessageFactory.
+ *
  * @author michal.polkorab
  * @author timotej.kubas
  */
@@ -31,7 +32,7 @@ public class FeaturesReplyMessageFactoryTest {
     private OFDeserializer<GetFeaturesOutput> featuresFactory;
 
     /**
-     * Initializes deserializer registry and lookups correct deserializer
+     * Initializes deserializer registry and lookups correct deserializer.
      */
     @Before
     public void startUp() {
@@ -42,7 +43,7 @@ public class FeaturesReplyMessageFactoryTest {
     }
 
     /**
-     * Testing {@link FeaturesReplyMessageFactory} for correct translation into POJO
+     * Testing {@link FeaturesReplyMessageFactory} for correct translation into POJO.
      */
     @Test
     public void test() {
@@ -55,13 +56,14 @@ public class FeaturesReplyMessageFactoryTest {
         Assert.assertEquals("Wrong buffers", 0x00010203L, builtByFactory.getBuffers().longValue());
         Assert.assertEquals("Wrong number of tables", 0x01, builtByFactory.getTables().shortValue());
         Assert.assertEquals("Wrong auxiliaryId", 0x01, builtByFactory.getAuxiliaryId().shortValue());
-        Assert.assertEquals("Wrong capabilities", new Capabilities(false, false, false, false, false, false, false), builtByFactory.getCapabilities());
+        Assert.assertEquals("Wrong capabilities", new Capabilities(false, false, false, false, false, false, false),
+                builtByFactory.getCapabilities());
         Assert.assertEquals("Wrong reserved", 0x00010203L, builtByFactory.getReserved().longValue());
     }
 
     /**
      * Testing {@link FeaturesReplyMessageFactory} for correct translation into POJO
-     * (capabilities set)
+     * (capabilities set).
      */
     @Test
     public void testCapabilities() {
@@ -70,6 +72,7 @@ public class FeaturesReplyMessageFactoryTest {
         GetFeaturesOutput builtByFactory = BufferHelper.deserialize(featuresFactory, bb);
 
         BufferHelper.checkHeaderV13(builtByFactory);
-        Assert.assertEquals("Wrong capabilities", new Capabilities(true, true, true, true, true, true, true), builtByFactory.getCapabilities());
+        Assert.assertEquals("Wrong capabilities", new Capabilities(true, true, true, true, true, true, true),
+                builtByFactory.getCapabilities());
     }
 }

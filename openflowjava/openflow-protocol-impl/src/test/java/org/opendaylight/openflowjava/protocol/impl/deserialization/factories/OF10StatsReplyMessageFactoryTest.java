@@ -8,9 +8,7 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
 import io.netty.buffer.ByteBuf;
-
 import java.math.BigInteger;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,15 +37,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table._case.MultipartReplyTable;
 
 /**
- * @author michal.polkorab
+ * Unit tests for OF10StatsReplyMessageFactory.
  *
+ * @author michal.polkorab
  */
 public class OF10StatsReplyMessageFactoryTest {
+    static final int DESC_STR_LEN = 256;
+    static final int SERIAL_NUM_LEN = 32;
 
     private OFDeserializer<MultipartReplyMessage> statsFactory;
 
     /**
-     * Initializes deserializer registry and lookups correct deserializer
+     * Initializes deserializer registry and lookups correct deserializer.
      */
     @Before
     public void startUp() {
@@ -58,12 +59,10 @@ public class OF10StatsReplyMessageFactoryTest {
     }
 
     /**
-     * Testing OF10StatsReplyMessageFactory (Desc) for correct deserialization
+     * Testing OF10StatsReplyMessageFactory (Desc) for correct deserialization.
      */
     @Test
     public void testDesc() {
-        final int DESC_STR_LEN = 256;
-        final int SERIAL_NUM_LEN = 32;
         ByteBuf bb = BufferHelper.buildBuffer("00 00 00 00");
 
         String mfrDesc = "Manufacturer description";
@@ -112,7 +111,7 @@ public class OF10StatsReplyMessageFactoryTest {
     }
 
     /**
-     * Testing OF10StatsReplyMessageFactory (Flow) for correct deserialization
+     * Testing OF10StatsReplyMessageFactory (Flow) for correct deserialization.
      */
     @Test
     public void testFlow() {
@@ -159,7 +158,7 @@ public class OF10StatsReplyMessageFactoryTest {
     }
 
     /**
-     * Testing OF10StatsReplyMessageFactory (Aggregate) for correct deserialization
+     * Testing OF10StatsReplyMessageFactory (Aggregate) for correct deserialization.
      */
     @Test
     public void testAggregate() {
@@ -184,7 +183,7 @@ public class OF10StatsReplyMessageFactoryTest {
     }
 
     /**
-     * Testing OF10StatsReplyMessageFactory (Table) for correct deserialization
+     * Testing OF10StatsReplyMessageFactory (Table) for correct deserialization.
      */
     @Test
     public void testTable() {
@@ -219,7 +218,7 @@ public class OF10StatsReplyMessageFactoryTest {
     }
 
     /**
-     * Testing OF10StatsReplyMessageFactory (Port) for correct deserialization
+     * Testing OF10StatsReplyMessageFactory (Port) for correct deserialization.
      */
     @Test
     public void testPort() {
@@ -280,7 +279,7 @@ public class OF10StatsReplyMessageFactoryTest {
     }
 
     /**
-     * Testing OF10StatsReplyMessageFactory (Queue) for correct deserialization
+     * Testing OF10StatsReplyMessageFactory (Queue) for correct deserialization.
      */
     @Test
     public void testQueue() {

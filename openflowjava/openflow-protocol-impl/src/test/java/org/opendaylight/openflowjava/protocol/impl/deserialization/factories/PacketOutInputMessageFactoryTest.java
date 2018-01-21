@@ -30,8 +30,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Unit tests for PacketOutInputMessageFactory.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class PacketOutInputMessageFactoryTest {
     private OFDeserializer<PacketOutInput> factory;
@@ -48,9 +49,9 @@ public class PacketOutInputMessageFactoryTest {
     @Test
     public void test() {
         ByteBuf bb = BufferHelper.buildBuffer(
-                "00 00 01 00 00 00 01 00 00 28 00 00 00 00 00 00 00 11 00 08 00 19 00 00 00 12 00 08 00 00 00 00 00 12 "
-                        + "00 08 00 00 00 00 00 12 00 08 00 00 00 00 00 12 00 08 00 00 00 00 00 00 01 02 03 04 05 06 07 08 09 10 "
-                        + "11 12 13 14");
+            "00 00 01 00 00 00 01 00 00 28 00 00 00 00 00 00 00 11 00 08 00 19 00 00 00 12 00 08 00 00 00 00 00 12 "
+            + "00 08 00 00 00 00 00 12 00 08 00 00 00 00 00 12 00 08 00 00 00 00 00 00 01 02 03 04 05 06 07 08 09 10 "
+            + "11 12 13 14");
         PacketOutInput deserializedMessage = BufferHelper.deserialize(factory, bb);
         BufferHelper.checkHeaderV13(deserializedMessage);
 
@@ -62,7 +63,7 @@ public class PacketOutInputMessageFactoryTest {
     }
 
     private List<Action> createAction() {
-        List<Action> actions = new ArrayList<>();
+        final List<Action> actions = new ArrayList<>();
         ActionBuilder actionBuilder = new ActionBuilder();
         PushVlanCaseBuilder pushVlanCaseBuilder = new PushVlanCaseBuilder();
         PushVlanActionBuilder pushVlanBuilder = new PushVlanActionBuilder();

@@ -9,20 +9,21 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization;
 
 import static org.junit.Assert.assertEquals;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
-
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 
 /**
- * @author michal.polkorab
+ * Unit tests for DeserializationFactory.
  *
+ * @author michal.polkorab
  */
 public class DeserializationFactoryTest {
 
     /**
-     * Test deserializer lookup & deserialization
+     * Test deserializer lookup & deserialization.
      */
     @Test
     public void test() {
@@ -39,9 +40,9 @@ public class DeserializationFactoryTest {
     }
 
     /**
-     * Test deserializer lookup & deserialization
+     * Test deserializer lookup & deserialization.
      */
-    @Test(expected=NullPointerException.class)
+    @Test(expected = NullPointerException.class)
     public void testNotExistingDeserializer() {
         DeserializerRegistryImpl registry = new DeserializerRegistryImpl();
         registry.init();

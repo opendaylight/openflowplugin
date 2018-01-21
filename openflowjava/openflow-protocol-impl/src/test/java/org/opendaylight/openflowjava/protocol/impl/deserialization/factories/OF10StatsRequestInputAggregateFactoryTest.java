@@ -28,8 +28,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.aggregate._case.MultipartRequestAggregateBuilder;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Unit tests for OF10StatsRequestInputAggregateFactory.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class OF10StatsRequestInputAggregateFactoryTest {
     private OFDeserializer<MultipartRequestInput> factory;
@@ -56,8 +57,8 @@ public class OF10StatsRequestInputAggregateFactoryTest {
     }
 
     private static MultipartRequestBody createMultipartRequestBody() {
-        MultipartRequestAggregateCaseBuilder caseBuilder = new MultipartRequestAggregateCaseBuilder();
-        MultipartRequestAggregateBuilder aggregateBuilder = new MultipartRequestAggregateBuilder();
+        final MultipartRequestAggregateCaseBuilder caseBuilder = new MultipartRequestAggregateCaseBuilder();
+        final MultipartRequestAggregateBuilder aggregateBuilder = new MultipartRequestAggregateBuilder();
         MatchV10Builder matchBuilder = new MatchV10Builder();
         matchBuilder.setWildcards(
                 new FlowWildcardsV10(false, false, false, false, false, false, false, false, false, false));

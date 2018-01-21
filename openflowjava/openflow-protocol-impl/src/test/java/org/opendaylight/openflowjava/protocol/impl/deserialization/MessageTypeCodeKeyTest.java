@@ -13,21 +13,21 @@ import org.junit.Test;
 
 
 /**
+ * Unit tests for MessageTypeCodeKey.
  *
  * @author madamjak
- *
  */
 public class MessageTypeCodeKeyTest {
 
     /**
-     * Tests equals and hashCode
+     * Tests equals and hashCode.
      */
     @Test
-    public void testEqualsAndHashcode(){
-        short msgType1 = 12;
-        short msgVersion1 = 34;
-        short msgType2 = 21;
-        short msgVersion2 = 43;
+    public void testEqualsAndHashcode() {
+        final short msgType1 = 12;
+        final short msgVersion1 = 34;
+        final short msgType2 = 21;
+        final short msgVersion2 = 43;
         MessageTypeCodeKey key1 = new MessageTypeCodeKey(msgVersion1, msgType1);
 
         Assert.assertTrue("Wrong - equals to same object", key1.equals(key1));
@@ -48,10 +48,10 @@ public class MessageTypeCodeKeyTest {
     }
 
     /**
-     * Tests getters
+     * Tests getters.
      */
     @Test
-    public void testGetter(){
+    public void testGetter() {
         short msgType = 12;
         short msgVersion = 34;
         MessageTypeCodeKey key1 = new MessageTypeCodeKey(msgVersion, msgType);

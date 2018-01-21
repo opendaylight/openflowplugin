@@ -37,8 +37,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Unit tests for OF10FlowModInputMessageFactory.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class OF10FlowModInputMessageFactoryTest {
     private OFDeserializer<FlowModInput> factory;
@@ -73,7 +74,7 @@ public class OF10FlowModInputMessageFactoryTest {
     }
 
     private static List<Action> createAction() {
-        List<Action> actions = new ArrayList<>();
+        final List<Action> actions = new ArrayList<>();
         ActionBuilder actionBuilder = new ActionBuilder();
         SetNwDstCaseBuilder nwDstCaseBuilder = new SetNwDstCaseBuilder();
         SetNwDstActionBuilder nwDstBuilder = new SetNwDstActionBuilder();
