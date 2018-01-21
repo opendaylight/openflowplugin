@@ -9,7 +9,6 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories.multipart;
 
 import io.netty.buffer.ByteBuf;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.factories.MultipartReplyMessageFactory;
@@ -24,15 +23,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.desc._case.multipart.reply.port.desc.Ports;
 
 /**
- * @author michal.polkorab
+ * Unit tests for MultipartReplyPortDesc.
  *
+ * @author michal.polkorab
  */
 public class MultipartReplyPortDescTest {
 
-    private MultipartReplyMessageFactory factory = new MultipartReplyMessageFactory();
+    private final MultipartReplyMessageFactory factory = new MultipartReplyMessageFactory();
 
     /**
-     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO
+     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO.
      */
     @Test
     public void testEmptyMultipartReplyPortDesc() {
@@ -48,11 +48,11 @@ public class MultipartReplyPortDescTest {
     }
 
     /**
-     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO
+     * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO.
      */
     @Test
     public void testMultipartReplyPortDesc() {
-        ByteBuf bb = BufferHelper.buildBuffer("00 0D 00 00 00 00 00 00 " +
+        ByteBuf bb = BufferHelper.buildBuffer("00 0D 00 00 00 00 00 00 " + //
                                               // first port desc
                                               "00 01 02 03 00 00 00 00 " + // portNo, padding
                                               "08 00 27 00 B0 EB 00 00 " + // mac address, padding
@@ -110,7 +110,8 @@ public class MultipartReplyPortDescTest {
         Assert.assertEquals("Wrong portState", new PortState(false, false, false), port.getState());
         Assert.assertEquals("Wrong currentFeatures", new PortFeatures(false, false, false, false, false, false, false,
                 false, false, false, false, false, false, false, false, false), port.getCurrentFeatures());
-        Assert.assertEquals("Wrong advertisedFeatures",  new PortFeatures(false, false, false, false, false, false, false,
+        Assert.assertEquals("Wrong advertisedFeatures",
+                new PortFeatures(false, false, false, false, false, false, false,
                 false, false, false, false, false, false, false, false, false), port.getAdvertisedFeatures());
         Assert.assertEquals("Wrong supportedFeatures", new PortFeatures(false, false, false, false, false, false, false,
                 false, false, false, false, false, false, false, false, false), port.getSupportedFeatures());

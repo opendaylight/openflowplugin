@@ -9,7 +9,6 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.instruction;
 
 import io.netty.buffer.ByteBuf;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
@@ -22,14 +21,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction;
 
 /**
- * @author michal.polkorab
+ * Unit tests for AbstractInstructionDeserializer.
  *
+ * @author michal.polkorab
  */
 public class AbstractInstructionDeserializerTest {
 
     /**
      * Tests {@link AbstractInstructionDeserializer#deserializeHeader(ByteBuf)} with different
-     * instruction types
+     * instruction types.
      */
     @Test
     public void test() {
