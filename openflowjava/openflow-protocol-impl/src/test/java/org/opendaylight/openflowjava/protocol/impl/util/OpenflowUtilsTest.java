@@ -15,13 +15,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortStateV10;
 
 /**
- * @author michal.polkorab
+ * Unit tests for OpenflowUtils.
  *
+ * @author michal.polkorab
  */
 public class OpenflowUtilsTest {
 
     /**
-     * Tests {@link OpenflowUtils#createPortState(long)}
+     * Tests {@link OpenflowUtils#createPortState(long)}.
      */
     @Test
     public void testPortState() {
@@ -39,7 +40,7 @@ public class OpenflowUtilsTest {
     }
 
     /**
-     * Tests {@link OpenflowUtils#createPortConfig(long)}
+     * Tests {@link OpenflowUtils#createPortConfig(long)}.
      */
     @Test
     public void testPortConfig() {
@@ -53,7 +54,7 @@ public class OpenflowUtilsTest {
     }
 
     /**
-     * Tests {@link OpenflowUtils#createPortFeatures(long)}
+     * Tests {@link OpenflowUtils#createPortFeatures(long)}.
      */
     @Test
     public void testPortFeatures() {

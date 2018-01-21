@@ -10,18 +10,16 @@ package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-
 import java.math.BigInteger;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
@@ -54,17 +52,28 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.queue._case.MultipartRequestQueueBuilder;
 
 /**
+ * Unit tests for MultipartRequestInputFactory.
+ *
  * @author timotej.kubas
  * @author michal.polkorab
  */
 public class MultipartRequestInputFactoryTest {
-    /** padding in MultipartRequest message */
+    static final byte PADDING_IN_MULTIPART_REQUEST_FLOW_BODY_01 = 3;
+    static final byte PADDING_IN_MULTIPART_REQUEST_FLOW_BODY_02 = 4;
+    static final byte PADDING_IN_MULTIPART_REQUEST_METER_CONFIG_BODY = 4;
+    static final byte PADDING_IN_MULTIPART_REQUEST_AGGREGATE_BODY_01 = 3;
+    static final byte PADDING_IN_MULTIPART_REQUEST_AGGREGATE_BODY_02 = 4;
+    static final byte PADDING_IN_MULTIPART_REQUEST_PORTSTATS_BODY = 4;
+    static final byte PADDING_IN_MULTIPART_REQUEST_GROUP_BODY = 4;
+    static final byte PADDING_IN_MULTIPART_REQUEST_METER_BODY = 4;
+
+    /** padding in MultipartRequest message. */
     public static final byte PADDING_IN_MULTIPART_REQUEST_MESSAGE = 4;
     private SerializerRegistry registry;
     private OFSerializer<MultipartRequestInput> multipartFactory;
 
     /**
-     * Initializes serializer registry and stores correct factory in field
+     * Initializes serializer registry and stores correct factory in field.
      */
     @Before
     public void startUp() {
@@ -75,8 +84,7 @@ public class MultipartRequestInputFactoryTest {
     }
 
     /**
-     * @throws Exception
-     * Testing of {@link MultipartRequestInputFactory} for correct translation from POJO
+     * Testing of {@link MultipartRequestInputFactory} for correct translation from POJO.
      */
     @Test
     public void testMultipartRequestFlowInputFactory() throws Exception {
@@ -98,7 +106,7 @@ public class MultipartRequestInputFactoryTest {
     }
 
     private static MultipartRequestFlowCase createRequestFlow() {
-        MultipartRequestFlowCaseBuilder caseBuilder = new MultipartRequestFlowCaseBuilder();
+        final MultipartRequestFlowCaseBuilder caseBuilder = new MultipartRequestFlowCaseBuilder();
         MultipartRequestFlowBuilder builder = new MultipartRequestFlowBuilder();
         builder.setTableId((short) 8);
         builder.setOutPort(85L);
@@ -113,9 +121,7 @@ public class MultipartRequestInputFactoryTest {
     }
 
     private static MultipartRequestFlowCase decodeRequestFlow(ByteBuf output) {
-        final byte PADDING_IN_MULTIPART_REQUEST_FLOW_BODY_01 = 3;
-        final byte PADDING_IN_MULTIPART_REQUEST_FLOW_BODY_02 = 4;
-        MultipartRequestFlowCaseBuilder caseBuilder = new MultipartRequestFlowCaseBuilder();
+        final MultipartRequestFlowCaseBuilder caseBuilder = new MultipartRequestFlowCaseBuilder();
         MultipartRequestFlowBuilder builder = new MultipartRequestFlowBuilder();
         builder.setTableId(output.readUnsignedByte());
         output.skipBytes(PADDING_IN_MULTIPART_REQUEST_FLOW_BODY_01);
@@ -133,8 +139,7 @@ public class MultipartRequestInputFactoryTest {
     }
 
     /**
-     * @throws Exception
-     * Testing of {@link MultipartRequestInputFactory} for correct translation from POJO
+     * Testing of {@link MultipartRequestInputFactory} for correct translation from POJO.
      */
     @Test
     public void testMultipartRequestInputAggregateBodyFactory() throws Exception {
@@ -155,14 +160,15 @@ public class MultipartRequestInputFactoryTest {
         Assert.assertEquals("Wrong aggregate", message.getMultipartRequestBody(), decodeRequestAggregate(out));
     }
 
-    private static MultipartRequestFlags decodeMultipartRequestFlags(short input){
-        final Boolean _oFPMPFREQMORE = (input & (1 << 0)) > 0;
+    @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
+    private static MultipartRequestFlags decodeMultipartRequestFlags(short input) {
+        final Boolean _oFPMPFREQMORE = (input & 1 << 0) > 0;
         return new MultipartRequestFlags(_oFPMPFREQMORE);
     }
 
 
     private static MultipartRequestAggregateCase createRequestAggregate() {
-        MultipartRequestAggregateCaseBuilder caseBuilder = new MultipartRequestAggregateCaseBuilder();
+        final MultipartRequestAggregateCaseBuilder caseBuilder = new MultipartRequestAggregateCaseBuilder();
         MultipartRequestAggregateBuilder builder = new MultipartRequestAggregateBuilder();
         builder.setTableId((short) 8);
         builder.setOutPort(85L);
@@ -177,9 +183,7 @@ public class MultipartRequestInputFactoryTest {
     }
 
     private static MultipartRequestAggregateCase decodeRequestAggregate(ByteBuf output) {
-        final byte PADDING_IN_MULTIPART_REQUEST_AGGREGATE_BODY_01 = 3;
-        final byte PADDING_IN_MULTIPART_REQUEST_AGGREGATE_BODY_02 = 4;
-        MultipartRequestAggregateCaseBuilder caseBuilder = new MultipartRequestAggregateCaseBuilder();
+        final  MultipartRequestAggregateCaseBuilder caseBuilder = new MultipartRequestAggregateCaseBuilder();
         MultipartRequestAggregateBuilder builder = new MultipartRequestAggregateBuilder();
         builder.setTableId(output.readUnsignedByte());
         output.skipBytes(PADDING_IN_MULTIPART_REQUEST_AGGREGATE_BODY_01);
@@ -197,8 +201,7 @@ public class MultipartRequestInputFactoryTest {
     }
 
     /**
-     * @throws Exception
-     * Testing of {@link MultipartRequestInputFactory} for correct translation from POJO
+     * Testing of {@link MultipartRequestInputFactory} for correct translation from POJO.
      */
     @Test
     public void testMultipartRequestInputTableFactory() throws Exception {
@@ -219,8 +222,7 @@ public class MultipartRequestInputFactoryTest {
     }
 
     /**
-     * @throws Exception
-     * Testing of {@link MultipartRequestInputFactory} for correct translation from POJO
+     * Testing of {@link MultipartRequestInputFactory} for correct translation from POJO.
      */
     @Test
     public void testMultipartRequestPortStatsMessageFactory() throws Exception {
@@ -250,7 +252,6 @@ public class MultipartRequestInputFactoryTest {
     }
 
     private static MultipartRequestPortStatsCase decodeRequestPortStats(ByteBuf output) {
-        final byte PADDING_IN_MULTIPART_REQUEST_PORTSTATS_BODY = 4;
         MultipartRequestPortStatsCaseBuilder caseBuilder = new MultipartRequestPortStatsCaseBuilder();
         MultipartRequestPortStatsBuilder builder = new MultipartRequestPortStatsBuilder();
         builder.setPortNo(output.readUnsignedInt());
@@ -260,8 +261,7 @@ public class MultipartRequestInputFactoryTest {
     }
 
     /**
-     * @throws Exception
-     * Testing of {@link MultipartRequestInputFactory} for correct translation from POJO
+     * Testing of {@link MultipartRequestInputFactory} for correct translation from POJO.
      */
     @Test
     public void testMultipartRequestQueueMessageFactory() throws Exception {
@@ -301,8 +301,7 @@ public class MultipartRequestInputFactoryTest {
     }
 
     /**
-     * @throws Exception
-     * Testing of {@link MultipartRequestInputFactory} for correct translation from POJO
+     * Testing of {@link MultipartRequestInputFactory} for correct translation from POJO.
      */
     @Test
     public void testMultipartRequestGroupMessageFactory() throws Exception {
@@ -332,7 +331,6 @@ public class MultipartRequestInputFactoryTest {
     }
 
     private static MultipartRequestGroupCase decodeRequestGroup(ByteBuf output) {
-        final byte PADDING_IN_MULTIPART_REQUEST_GROUP_BODY = 4;
         MultipartRequestGroupCaseBuilder caseBuilder = new MultipartRequestGroupCaseBuilder();
         MultipartRequestGroupBuilder builder = new MultipartRequestGroupBuilder();
         builder.setGroupId(new GroupId(output.readUnsignedInt()));
@@ -342,8 +340,7 @@ public class MultipartRequestInputFactoryTest {
     }
 
     /**
-     * @throws Exception
-     * Testing of {@link MultipartRequestInputFactory} for correct translation from POJO
+     * Testing of {@link MultipartRequestInputFactory} for correct translation from POJO.
      */
     @Test
     public void testMultipartRequestMeterMessageFactory() throws Exception {
@@ -373,7 +370,6 @@ public class MultipartRequestInputFactoryTest {
     }
 
     private static MultipartRequestMeterCase decodeRequestMeter(ByteBuf output) {
-        final byte PADDING_IN_MULTIPART_REQUEST_METER_BODY = 4;
         MultipartRequestMeterCaseBuilder caseBuilder = new MultipartRequestMeterCaseBuilder();
         MultipartRequestMeterBuilder builder = new MultipartRequestMeterBuilder();
         builder.setMeterId(new MeterId(output.readUnsignedInt()));
@@ -383,8 +379,7 @@ public class MultipartRequestInputFactoryTest {
     }
 
     /**
-     * @throws Exception
-     * Testing of {@link MultipartRequestInputFactory} for correct translation from POJO
+     * Testing of {@link MultipartRequestInputFactory} for correct translation from POJO.
      */
     @Test
     public void testMultipartRequestMeterConfigMessageFactory() throws Exception {
@@ -414,7 +409,6 @@ public class MultipartRequestInputFactoryTest {
     }
 
     private static MultipartRequestMeterConfigCase decodeRequestMeterConfig(ByteBuf output) {
-        final byte PADDING_IN_MULTIPART_REQUEST_METER_CONFIG_BODY = 4;
         MultipartRequestMeterConfigCaseBuilder caseBuilder = new MultipartRequestMeterConfigCaseBuilder();
         MultipartRequestMeterConfigBuilder builder = new MultipartRequestMeterConfigBuilder();
         builder.setMeterId(new MeterId(output.readUnsignedInt()));
@@ -424,8 +418,7 @@ public class MultipartRequestInputFactoryTest {
     }
 
     /**
-     * @throws Exception
-     * Testing of {@link MultipartRequestInputFactory} for correct translation from POJO
+     * Testing of {@link MultipartRequestInputFactory} for correct translation from POJO.
      */
     @Test
     public void testMultipartRequestDescMessageFactory() throws Exception {

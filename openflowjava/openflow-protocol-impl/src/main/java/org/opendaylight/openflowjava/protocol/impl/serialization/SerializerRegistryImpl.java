@@ -60,6 +60,15 @@ public class SerializerRegistryImpl implements SerializerRegistry {
         InstructionsInitializer.registerInstructionSerializers(this);
     }
 
+    public void setGroupAddModConfig(boolean value) {
+        this.isGroupAddModEnabled = value;
+    }
+
+    @Override
+    public boolean isGroupAddModEnabled() {
+        return isGroupAddModEnabled;
+    }
+
     /**
      * Gets the encoder for the given message type key.
      *

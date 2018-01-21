@@ -10,21 +10,21 @@ package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInputBuilder;
 
 /**
- * @author michal.polkorab
+ * Unit tests for BarrierInputMessageFactory.
  *
+ * @author michal.polkorab
  */
 public class BarrierInputMessageFactoryTest {
 
@@ -33,7 +33,7 @@ public class BarrierInputMessageFactoryTest {
     private OFSerializer<BarrierInput> barrierFactory;
 
     /**
-     * Initializes serializer registry and stores correct factory in field
+     * Initializes serializer registry and stores correct factory in field.
      */
     @Before
     public void startUp() {
@@ -44,8 +44,7 @@ public class BarrierInputMessageFactoryTest {
     }
 
     /**
-     * Testing of {@link BarrierInputMessageFactory} for correct translation from POJO
-     * @throws Exception
+     * Testing of {@link BarrierInputMessageFactory} for correct translation from POJO.
      */
     @Test
     public void test() throws Exception {

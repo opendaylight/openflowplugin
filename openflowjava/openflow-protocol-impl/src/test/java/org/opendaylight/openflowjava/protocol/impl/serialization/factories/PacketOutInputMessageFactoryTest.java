@@ -10,10 +10,8 @@ package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,8 +33,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInputBuilder;
 
 /**
- * @author timotej.kubas
+ * Unit tests for PacketOutInputMessageFactory.
  *
+ * @author timotej.kubas
  */
 public class PacketOutInputMessageFactoryTest {
     private static final byte MESSAGE_TYPE = 13;
@@ -46,7 +45,7 @@ public class PacketOutInputMessageFactoryTest {
     private OFSerializer<PacketOutInput> packetOutFactory;
 
     /**
-     * Initializes serializer registry and stores correct factory in field
+     * Initializes serializer registry and stores correct factory in field.
      */
     @Before
     public void startUp() {
@@ -57,8 +56,7 @@ public class PacketOutInputMessageFactoryTest {
     }
 
     /**
-     * Testing of {@link PacketOutInputMessageFactory} for correct translation from POJO
-     * @throws Exception
+     * Testing of {@link PacketOutInputMessageFactory} for correct translation from POJO.
      */
     @Test
     public void testPacketOutInputMessage() throws Exception {
@@ -66,7 +64,7 @@ public class PacketOutInputMessageFactoryTest {
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
         builder.setBufferId(256L);
         builder.setInPort(new PortNumber(256L));
-        List<Action> actions = new ArrayList<>();
+        final List<Action> actions = new ArrayList<>();
         ActionBuilder actionBuilder = new ActionBuilder();
         PushVlanCaseBuilder pushVlanCaseBuilder = new PushVlanCaseBuilder();
         PushVlanActionBuilder pushVlanBuilder = new PushVlanActionBuilder();
@@ -102,8 +100,7 @@ public class PacketOutInputMessageFactoryTest {
     }
 
     /**
-     * Testing of {@link PacketOutInputMessageFactory} for correct translation from POJO
-     * @throws Exception
+     * Testing of {@link PacketOutInputMessageFactory} for correct translation from POJO.
      */
     @Test
     public void testPacketOutInputWithNoData() throws Exception {

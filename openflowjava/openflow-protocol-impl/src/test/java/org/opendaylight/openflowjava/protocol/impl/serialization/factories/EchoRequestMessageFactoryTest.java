@@ -23,12 +23,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessageBuilder;
 
 /**
- * @author giuseppex.petralia@intel.com
+ * Unit tests for EchoRequestMessageFactory.
  *
+ * @author giuseppex.petralia@intel.com
  */
 public class EchoRequestMessageFactoryTest {
     private static final byte MESSAGE_TYPE = 2;
-    EchoRequestMessage message;
     private OFSerializer<EchoRequestMessage> factory;
 
     @Before
