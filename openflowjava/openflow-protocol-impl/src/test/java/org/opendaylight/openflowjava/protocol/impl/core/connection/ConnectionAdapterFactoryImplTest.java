@@ -8,6 +8,7 @@
 package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
 import static org.mockito.Mockito.when;
+
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelPipeline;
 import java.net.InetSocketAddress;
@@ -16,10 +17,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 /**
+ * Unit tests for ConnectionAdapterFactoryImpl.
  *
  * @author madamjak
- *
  */
 public class ConnectionAdapterFactoryImplTest {
 
@@ -28,16 +30,17 @@ public class ConnectionAdapterFactoryImplTest {
     @Mock InetSocketAddress address;
 
     @Before
-    public void startUp(){
+    public void startUp() {
         MockitoAnnotations.initMocks(this);
         when(channel.pipeline()).thenReturn(channnelPipe);
     }
 
     @Test
-    public void test(){
+    public void test() {
         final ConnectionAdapterFactoryImpl connAdapterFactory = new ConnectionAdapterFactoryImpl();
         final ConnectionFacade connFacade = connAdapterFactory.createConnectionFacade(channel, address, true);
         Assert.assertNotNull("Wrong - ConnectionFacade has not created.", connFacade);
-        Assert.assertEquals("Wrong - diffrence between channel.isOpen() and ConnectionFacade.isAlive()", channel.isOpen(), connFacade.isAlive());
+        Assert.assertEquals("Wrong - diffrence between channel.isOpen() and ConnectionFacade.isAlive()",
+                channel.isOpen(), connFacade.isAlive());
     }
 }

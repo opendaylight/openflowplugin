@@ -8,15 +8,14 @@
 package org.opendaylight.openflowjava.protocol.impl.core;
 
 import static org.mockito.Mockito.when;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DatagramPacket;
-
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,8 +27,9 @@ import org.opendaylight.openflowjava.protocol.impl.core.connection.MessageConsum
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 
 /**
- * @author madamjak
+ * Unit tests for OFDatagramPacketHandler.
  *
+ * @author madamjak
  */
 public class OFDatagramPacketHandlerTest {
     @Mock ChannelHandlerContext ctxMock;
@@ -38,16 +38,16 @@ public class OFDatagramPacketHandlerTest {
     @Mock Channel channelMock;
 
     @Before
-    public void startUp(){
+    public void startUp() {
         MockitoAnnotations.initMocks(this);
         when(ctxMock.channel()).thenReturn(channelMock);
     }
 
     /**
-     * Test {@link OFDatagramPacketHandler}
+     * Test {@link OFDatagramPacketHandler}.
      */
     @Test
-    public void test(){
+    public void test() throws Exception {
         OFDatagramPacketHandler handler = new OFDatagramPacketHandler(switchConnHandler);
         byte version = EncodeConstants.OF13_VERSION_ID;
         ByteBuf messageBuffer = ByteBufUtils.hexStringToByteBuf("04 02 00 08 01 02 03 04");
@@ -56,15 +56,14 @@ public class OFDatagramPacketHandlerTest {
         DatagramPacket datagramPacket = new DatagramPacket(messageBuffer, recipientISA, senderISA);
         UdpConnectionMap.addConnection(datagramPacket.sender(), consumerMock);
         List<Object> outList = new ArrayList<>();
-        try {
-            handler.decode(ctxMock, datagramPacket, outList);
-        } catch (Exception e) {
-            Assert.fail("Wrong - Unexcepted exception occurred");
-        }
+
+        handler.decode(ctxMock, datagramPacket, outList);
+
         VersionMessageUdpWrapper versionUdpWrapper = (VersionMessageUdpWrapper) outList.get(0);
         Assert.assertEquals("Wrong - incorrect version has been decoded",version, versionUdpWrapper.getVersion());
         Assert.assertEquals("Wrong - sender addresses are different", senderISA, versionUdpWrapper.getAddress());
         messageBuffer.readerIndex(1);
-        Assert.assertEquals("Wrong - undecoded part of input ByteBuff is differnt to output",0, messageBuffer.compareTo(versionUdpWrapper.getMessageBuffer()));
+        Assert.assertEquals("Wrong - undecoded part of input ByteBuff is differnt to output", 0,
+                messageBuffer.compareTo(versionUdpWrapper.getMessageBuffer()));
     }
 }

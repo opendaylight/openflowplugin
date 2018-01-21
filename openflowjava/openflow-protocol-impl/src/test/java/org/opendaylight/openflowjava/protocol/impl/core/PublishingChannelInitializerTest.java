@@ -41,6 +41,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.K
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.PathType;
 
 /**
+ * Unit tests for ChannelInitializer.
  *
  * @author james.hall
  */
@@ -63,26 +64,24 @@ public class PublishingChannelInitializerTest {
     TcpChannelInitializer pubChInitializer  ;
 
     /**
-     * Sets up test environment
-     * @throws Exception
+     * Sets up test environment.
      */
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        pubChInitializer= new TcpChannelInitializer(mockChGrp, mockConnAdaptorFactory) ;
+        pubChInitializer = new TcpChannelInitializer(mockChGrp, mockConnAdaptorFactory) ;
         pubChInitializer.setSerializationFactory(mockSerializationFactory);
         pubChInitializer.setDeserializationFactory(mockDeserializationFactory);
         pubChInitializer.setSwitchIdleTimeout(1) ;
         pubChInitializer.getConnectionIterator() ;
         pubChInitializer.setUseBarrier(true);
 
-        when( mockChGrp.size()).thenReturn(1) ;
-        pubChInitializer.setSwitchConnectionHandler( mockSwConnHandler ) ;
+        when(mockChGrp.size()).thenReturn(1);
+        pubChInitializer.setSwitchConnectionHandler(mockSwConnHandler);
 
-        inetSockAddr = new InetSocketAddress(InetAddress.getLocalHost(), 8675 ) ;
+        inetSockAddr = new InetSocketAddress(InetAddress.getLocalHost(), 8675);
 
-        when(mockConnAdaptorFactory.createConnectionFacade(mockSocketCh, null, true))
-        .thenReturn(mockConnFacade);
+        when(mockConnAdaptorFactory.createConnectionFacade(mockSocketCh, null, true)).thenReturn(mockConnFacade);
         when(mockSocketCh.remoteAddress()).thenReturn(inetSockAddr) ;
         when(mockSocketCh.localAddress()).thenReturn(inetSockAddr) ;
         when(mockSocketCh.remoteAddress()).thenReturn(inetSockAddr) ;
@@ -96,7 +95,7 @@ public class PublishingChannelInitializerTest {
 
 
     /**
-     * Test channel initialization with encryption config set
+     * Test channel initialization with encryption config set.
      */
     @Test
     public void testinitChannelEncryptionSet()  {
@@ -108,7 +107,7 @@ public class PublishingChannelInitializerTest {
     }
 
     /**
-     * Test channel initialization with null encryption config
+     * Test channel initialization with null encryption config.
      */
     @Test
     public void testinitChannelEncryptionSetNullTls()  {
@@ -120,7 +119,7 @@ public class PublishingChannelInitializerTest {
     }
 
     /**
-     * Test channel initialization without setting the encryption
+     * Test channel initialization without setting the encryption.
      */
     @Test
     public void testinitChannelEncryptionNotSet()  {
@@ -131,8 +130,7 @@ public class PublishingChannelInitializerTest {
     }
 
     /**
-     * Test disconnect on new connection rejected
-     * @throws UnknownHostException
+     * Test disconnect on new connection rejected.
      */
     @Test
     public void testinitChannelNoEncryptionAcceptFails() throws UnknownHostException  {
@@ -140,31 +138,33 @@ public class PublishingChannelInitializerTest {
         pubChInitializer.initChannel(mockSocketCh) ;
 
         verify(mockSocketCh, times(1)).disconnect();
-        verify(mockChPipeline, times(0))
-        .addLast( any(String.class), any(ChannelHandler.class) ) ;
+        verify(mockChPipeline, times(0)).addLast(any(String.class), any(ChannelHandler.class));
     }
 
     /**
-     * Test channel close on exception during initialization
+     * Test channel close on exception during initialization.
      */
     @Test
     public void testExceptionThrown() {
         doThrow(new IllegalArgumentException()).when(mockSocketCh).pipeline() ;
         pubChInitializer.initChannel(mockSocketCh);
 
-        verify( mockSocketCh, times(1)).close() ;
+        verify(mockSocketCh, times(1)).close();
     }
 
     /**
-     * All paths should install these six handlers:
+     * All paths should install these six handlers.
      */
     private void verifyCommonHandlers() {
         verify(mockChPipeline, times(1)).addLast(eq(PipelineHandlers.IDLE_HANDLER.name()),any(IdleHandler.class)) ;
         verify(mockChPipeline, times(1)).addLast(eq(PipelineHandlers.OF_DECODER.name()),any(OFDecoder.class)) ;
         verify(mockChPipeline, times(1)).addLast(eq(PipelineHandlers.OF_ENCODER.name()),any(OFEncoder.class)) ;
-        verify(mockChPipeline, times(1)).addLast(eq(PipelineHandlers.OF_FRAME_DECODER.name()),any(OFFrameDecoder.class)) ;
-        verify(mockChPipeline, times(1)).addLast(eq(PipelineHandlers.OF_VERSION_DETECTOR.name()),any(OFVersionDetector.class)) ;
-        verify(mockChPipeline, times(1)).addLast(eq(PipelineHandlers.DELEGATING_INBOUND_HANDLER.name()),any(DelegatingInboundHandler.class));
+        verify(mockChPipeline, times(1)).addLast(eq(PipelineHandlers.OF_FRAME_DECODER.name()),
+                any(OFFrameDecoder.class));
+        verify(mockChPipeline, times(1)).addLast(eq(PipelineHandlers.OF_VERSION_DETECTOR.name()),
+                any(OFVersionDetector.class));
+        verify(mockChPipeline, times(1)).addLast(eq(PipelineHandlers.DELEGATING_INBOUND_HANDLER.name()),
+                any(DelegatingInboundHandler.class));
         assertEquals(1, pubChInitializer.size()) ;
     }
 }

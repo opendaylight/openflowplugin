@@ -9,10 +9,10 @@
 package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
 import static org.junit.Assert.fail;
+
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -28,19 +28,14 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 /**
- * @author michal.polkorab
+ * Unit tests for ResponseExpectedRpcListener.
  *
+ * @author michal.polkorab
  */
 public class ResponseExpectedRpcListenerTest {
 
     private static final RemovalListener<RpcResponseKey, ResponseExpectedRpcListener<?>> REMOVAL_LISTENER =
-            new RemovalListener<RpcResponseKey, ResponseExpectedRpcListener<?>>() {
-        @Override
-        public void onRemoval(
-                final RemovalNotification<RpcResponseKey, ResponseExpectedRpcListener<?>> notification) {
-            notification.getValue().discard();
-        }
-    };
+        notification -> notification.getValue().discard();
     private static final int RPC_RESPONSE_EXPIRATION = 1;
     private final Cache<RpcResponseKey, ResponseExpectedRpcListener<?>> responseCache  = CacheBuilder.newBuilder()
             .concurrencyLevel(1)
@@ -48,24 +43,24 @@ public class ResponseExpectedRpcListenerTest {
             .removalListener(REMOVAL_LISTENER).build();
 
     /**
-     * Test object creation
+     * Test object creation.
      */
-    @Test(expected=NullPointerException.class)
+    @Test(expected = NullPointerException.class)
     public void testCreation() {
         RpcResponseKey key = new RpcResponseKey(12345L, BarrierOutput.class.getName());
         new ResponseExpectedRpcListener<>("MESSAGE", "Failed to send message", null, key);
     }
 
     /**
-     * Test object creation
+     * Test object creation.
      */
-    @Test(expected=NullPointerException.class)
+    @Test(expected = NullPointerException.class)
     public void testCreation2() {
         new ResponseExpectedRpcListener<>("MESSAGE", "Failed to send message", responseCache, null);
     }
 
     /**
-     * Test object creation
+     * Test object creation.
      */
     @Test
     public void testDiscard() {
@@ -88,7 +83,7 @@ public class ResponseExpectedRpcListenerTest {
     }
 
     /**
-     * Test object creation
+     * Test object creation.
      */
     @Test
     public void testCompleted() {
@@ -110,7 +105,7 @@ public class ResponseExpectedRpcListenerTest {
     }
 
     /**
-     * Test object creation
+     * Test object creation.
      */
     @Test
     public void testOperationSuccessful() {

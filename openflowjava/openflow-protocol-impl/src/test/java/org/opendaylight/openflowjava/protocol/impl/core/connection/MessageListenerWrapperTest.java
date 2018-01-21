@@ -10,19 +10,18 @@ package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.opendaylight.openflowjava.protocol.impl.core.connection.MessageListenerWrapper;
-import org.opendaylight.openflowjava.protocol.impl.core.connection.SimpleRpcListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInputBuilder;
 
 /**
- * @author michal.polkorab
+ * UNit tests for MessageListenerWrapper.
  *
+ * @author michal.polkorab
  */
 public class MessageListenerWrapperTest {
 
     /**
-     * Test MessageListenerWrapper creation
+     * Test MessageListenerWrapper creation.
      */
     @Test
     public void test() {

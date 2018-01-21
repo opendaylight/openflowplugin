@@ -10,31 +10,31 @@ package org.opendaylight.openflowjava.protocol.impl.core;
 
 import io.netty.buffer.ByteBuf;
 import java.net.InetSocketAddress;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.Assert;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 /**
+ * Unit tests for VersionMessageUdpWrapper.
  *
  * @author madamjak
- *
  */
-
 public class VersionMessageUdpWrapperTest {
 
     @Mock ByteBuf byteBuff;
+
     @Before
-    public void startUp(){
+    public void startUp() {
         MockitoAnnotations.initMocks(this);
     }
 
     @Test
-    public void test(){
+    public void test() {
         short version = 35;
         int port = 9876;
-        String host ="localhost";
+        String host = "localhost";
         InetSocketAddress inetSockAddr = InetSocketAddress.createUnresolved(host, port);
         VersionMessageUdpWrapper wrapper = new VersionMessageUdpWrapper(version,byteBuff,inetSockAddr);
 

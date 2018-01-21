@@ -9,39 +9,37 @@
 package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
 import io.netty.channel.Channel;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.opendaylight.openflowjava.protocol.impl.core.connection.ChannelOutboundQueue;
-import org.opendaylight.openflowjava.protocol.impl.core.connection.SimpleRpcListener;
 
 /**
- * @author michal.polkorab
+ * UNit tests for ChannelOutboundQueue.
  *
+ * @author michal.polkorab
  */
 public class ChannelOutboundQueueTest {
 
     @Mock Channel channel;
 
     /**
-     * Initialize mocks
+     * Initialize mocks.
      */
     public ChannelOutboundQueueTest() {
         MockitoAnnotations.initMocks(this);
     }
 
     /**
-     * Test incorrect queue creation handling
+     * Test incorrect queue creation handling.
      */
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testIncorrectQueueCreation() {
         new ChannelOutboundQueue(channel, 0, null);
     }
 
     /**
-     * Test correct enqueue handling
+     * Test correct enqueue handling.
      */
     @Test
     public void testEnqueue() {

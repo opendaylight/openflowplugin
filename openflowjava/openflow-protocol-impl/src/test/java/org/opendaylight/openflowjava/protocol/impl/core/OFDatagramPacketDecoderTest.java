@@ -9,12 +9,10 @@ package org.opendaylight.openflowjava.protocol.impl.core;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-
 import java.net.InetSocketAddress;
-
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -23,8 +21,9 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializationFactory;
 
 /**
- * @author madamjak
+ * Unit tests for OFDatagramPacketDecoder.
  *
+ * @author madamjak
  */
 public class OFDatagramPacketDecoderTest {
     @Mock DeserializationFactory deserializationFactory;
@@ -34,20 +33,18 @@ public class OFDatagramPacketDecoderTest {
     private VersionMessageUdpWrapper msgWrapper;
 
     @Before
-    public void startUp(){
+    public void startUp() {
         MockitoAnnotations.initMocks(this);
     }
 
     @Test
-    public void test() {
+    public void test() throws Exception {
         OFDatagramPacketDecoder decoder = new OFDatagramPacketDecoder();
         decoder.setDeserializationFactory(deserializationFactory);
-        msgWrapper = new VersionMessageUdpWrapper(EncodeConstants.OF13_VERSION_ID, messageBufferMock, new InetSocketAddress("10.0.0.1", 6653));
-        try {
-            decoder.channelRead0(ctx, msgWrapper);
-        } catch (Exception e) {
-            Assert.fail("Exception occured");
-        }
+        msgWrapper = new VersionMessageUdpWrapper(EncodeConstants.OF13_VERSION_ID, messageBufferMock,
+                new InetSocketAddress("10.0.0.1", 6653));
+
+        decoder.channelRead0(ctx, msgWrapper);
         verify(messageBufferMock, times(1)).release();
     }
 }

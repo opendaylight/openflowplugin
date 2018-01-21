@@ -8,26 +8,25 @@
 
 package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
-import org.junit.Test;
 import org.junit.Assert;
-import org.opendaylight.openflowjava.protocol.impl.core.connection.RpcResponseKey;
+import org.junit.Test;
 
 /**
+ * Unit tests for RpcResponseKey.
  *
  * @author madamjak
- *
  */
 public class RpcResponseKeyTest {
 
     /**
-     * Test equals (xid is not tested)
+     * Test equals (xid is not tested).
      */
     @Test
-    public void testEquals(){
+    public void testEquals() {
 
         long xid1 = 12L;
         long xid2 = 66L;
-        String outputClazz1 = "Clazz01";
+        final String outputClazz1 = "Clazz01";
         String outputClazz2 = "Clazz02";
         RpcResponseKey key1 = new RpcResponseKey(xid1, null);
         RpcResponseKey key2 = new RpcResponseKey(xid2, outputClazz2);
@@ -46,10 +45,10 @@ public class RpcResponseKeyTest {
     }
 
     /**
-     * Test getters
+     * Test getters.
      */
     @Test
-    public void testGetters(){
+    public void testGetters() {
 
         long xid1 = 12L;
         String outputClazz1 = "Clazz01";

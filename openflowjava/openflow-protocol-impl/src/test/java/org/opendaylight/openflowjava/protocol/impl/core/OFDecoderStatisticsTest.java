@@ -10,12 +10,11 @@ package org.opendaylight.openflowjava.protocol.impl.core;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyShort;
 import static org.mockito.Mockito.when;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -30,10 +29,9 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 
 /**
  * Test to count decoder events (counters US_DECODE_SUCCESS, US_DECODE_FAIL and
- * US_RECEIVED_IN_OFJAVA have to be enabled)
+ * US_RECEIVED_IN_OFJAVA have to be enabled).
  *
  * @author madamjak
- *
  */
 public class OFDecoderStatisticsTest {
 
@@ -48,8 +46,7 @@ public class OFDecoderStatisticsTest {
     private StatisticsCounters statCounters;
 
     /**
-     * Sets up test environment Start counting and reset counters before each
-     * test
+     * Sets up test environment Start counting and reset counters before each test.
      */
     @Before
     public void setUp() {
@@ -62,7 +59,7 @@ public class OFDecoderStatisticsTest {
     }
 
     /**
-     * Stop counting after each test
+     * Stop counting after each test.
      */
     @After
     public void tierDown() {
@@ -70,10 +67,10 @@ public class OFDecoderStatisticsTest {
     }
 
     /**
-     * Test decode success counter
+     * Test decode success counter.
      */
     @Test
-    public void testDecodeSuccesfullCounter() {
+    public void testDecodeSuccesfullCounter() throws Exception {
         if (!statCounters.isCounterEnabled(CounterEventTypes.US_DECODE_SUCCESS)) {
             Assert.fail("Counter " + CounterEventTypes.US_DECODE_SUCCESS + " is not enable");
         }
@@ -86,15 +83,13 @@ public class OFDecoderStatisticsTest {
         }
         int count = 4;
         when(mockDeserializationFactory.deserialize(any(ByteBuf.class),anyShort())).thenReturn(mockDataObject);
-        try {
-            for (int i = 0; i < count; i++) {
-                writeObj = ByteBufUtils.hexStringToByteBuf("16 03 01 00");
-                inMsg = new VersionMessageWrapper((short) 8, writeObj);
-                ofDecoder.decode(mockChHndlrCtx, inMsg, outList);
-            }
-        } catch (Exception e) {
-            Assert.fail();
+
+        for (int i = 0; i < count; i++) {
+            writeObj = ByteBufUtils.hexStringToByteBuf("16 03 01 00");
+            inMsg = new VersionMessageWrapper((short) 8, writeObj);
+            ofDecoder.decode(mockChHndlrCtx, inMsg, outList);
         }
+
         Assert.assertEquals("Wrong - bad counter value for OFEncoder encode succesfully ",
                 count,statCounters.getCounter(CounterEventTypes.US_DECODE_SUCCESS).getCounterValue());
         Assert.assertEquals(
@@ -105,10 +100,10 @@ public class OFDecoderStatisticsTest {
     }
 
     /**
-     * Test fail decode counter
+     * Test fail decode counter.
      */
     @Test
-    public void testDecodeFailCounter() {
+    public void testDecodeFailCounter() throws Exception {
         if (!statCounters.isCounterEnabled(CounterEventTypes.US_DECODE_SUCCESS)) {
             Assert.fail("Counter " + CounterEventTypes.US_DECODE_SUCCESS + " is not enable");
         }
@@ -119,16 +114,15 @@ public class OFDecoderStatisticsTest {
             Assert.fail("Counter " + CounterEventTypes.US_RECEIVED_IN_OFJAVA + " is not enable");
         }
         int count = 2;
-        when( mockDeserializationFactory.deserialize(any(ByteBuf.class),anyShort())).thenThrow(new IllegalArgumentException());
-        try {
-            for (int i = 0; i < count; i++) {
-                writeObj = ByteBufUtils.hexStringToByteBuf("16 03 01 00");
-                inMsg = new VersionMessageWrapper((short) 8, writeObj);
-                ofDecoder.decode(mockChHndlrCtx, inMsg, outList);
-            }
-        } catch (Exception e) {
-            Assert.fail();
+        when(mockDeserializationFactory.deserialize(any(ByteBuf.class),anyShort()))
+            .thenThrow(new IllegalArgumentException());
+
+        for (int i = 0; i < count; i++) {
+            writeObj = ByteBufUtils.hexStringToByteBuf("16 03 01 00");
+            inMsg = new VersionMessageWrapper((short) 8, writeObj);
+            ofDecoder.decode(mockChHndlrCtx, inMsg, outList);
         }
+
         Assert.assertEquals(
                 "Wrong - bad counter value for OFEncoder encode succesfully ",
                 count, statCounters.getCounter(CounterEventTypes.US_DECODE_FAIL).getCounterValue());
