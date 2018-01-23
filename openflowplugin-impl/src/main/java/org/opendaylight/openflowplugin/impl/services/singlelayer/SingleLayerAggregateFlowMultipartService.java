@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.services.singlelayer;
 
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -75,6 +76,6 @@ public class SingleLayerAggregateFlowMultipartService
                     .<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>failed()
                     .withRpcErrors(result.getErrors())
                     .build();
-        });
+        }, MoreExecutors.directExecutor());
     }
 }
