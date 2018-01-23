@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f5866d43_7187fa88",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/flow/DeviceFlowRegistryImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 291,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-01-23T02:56:55Z",
+      "side": 1,
+      "message": "Synchronizing on flowRegistry in this method only won\u0027t help, as it\u0027s not going to block the modification of flowRegistry anyways. I think you should use the iterator for this HashBiMap for iteration to avoid the the exception.",
+      "revId": "cb637e1c44a474c793224ea85b1dfa4f826b1bd0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
