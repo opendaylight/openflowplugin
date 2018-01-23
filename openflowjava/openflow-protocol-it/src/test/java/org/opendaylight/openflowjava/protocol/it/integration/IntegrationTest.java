@@ -77,13 +77,12 @@ public class IntegrationTest {
                     "/selfSignedController", PathType.CLASSPATH,
                     new ArrayList<String>());
         }
-        connConfig = new ConnectionConfigurationImpl(startupAddress, 0, tlsConfiguration, SWITCH_IDLE_TIMEOUT, true);
+        connConfig = new ConnectionConfigurationImpl(startupAddress, 0, tlsConfiguration, SWITCH_IDLE_TIMEOUT, true, false);
         connConfig.setTransferProtocol(protocol);
         mockPlugin = new MockPlugin();
 
-        switchConnectionProvider = new SwitchConnectionProviderImpl();
+        switchConnectionProvider = new SwitchConnectionProviderImpl(connConfig);
         switchConnectionProvider.setSwitchConnectionHandler(mockPlugin);
-        switchConnectionProvider.setConfiguration(connConfig);
         switchConnectionProvider.startup().get(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
         if (protocol.equals(TransportProtocol.TCP) || protocol.equals(TransportProtocol.TLS)) {
             final TcpHandler tcpHandler = (TcpHandler) switchConnectionProvider.getServerFacade();

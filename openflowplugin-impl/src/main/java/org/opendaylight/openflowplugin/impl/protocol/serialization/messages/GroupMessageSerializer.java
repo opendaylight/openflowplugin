@@ -27,9 +27,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
  * OF protocol versions: 1.3.
  */
 public class GroupMessageSerializer extends AbstractMessageSerializer<GroupMessage> implements
-        SerializerRegistryInjector {
+    SerializerRegistryInjector {
     private static final byte PADDING_IN_GROUP_MOD_MESSAGE = 1;
     private static final byte PADDING_IN_BUCKET = 4;
+    private static final int OFPGC_ADD_OR_MOD = 32768;
+    private final boolean isGroupAddModEnabled;
 
     private static final Comparator<Bucket> COMPARATOR = (bucket1, bucket2) -> {
         if (bucket1.getBucketId() == null || bucket2.getBucketId() == null) {
@@ -40,11 +42,24 @@ public class GroupMessageSerializer extends AbstractMessageSerializer<GroupMessa
 
     private SerializerRegistry registry;
 
+    public GroupMessageSerializer(boolean isGroupAddModEnabled) {
+        this.isGroupAddModEnabled =  isGroupAddModEnabled;
+    }
+
     @Override
     public void serialize(GroupMessage message, ByteBuf outBuffer) {
         final int index = outBuffer.writerIndex();
         super.serialize(message, outBuffer);
-        outBuffer.writeShort(message.getCommand().getIntValue());
+        if (isGroupAddModEnabled) {
+            if (message.getCommand().equals(GroupModCommand.OFPGCADD)
+                    || message.getCommand().equals(GroupModCommand.OFPGCMODIFY)) {
+                outBuffer.writeShort(OFPGC_ADD_OR_MOD);
+            } else {
+                outBuffer.writeShort(message.getCommand().getIntValue());
+            }
+        } else {
+            outBuffer.writeShort(message.getCommand().getIntValue());
+        }
         outBuffer.writeByte(message.getGroupType().getIntValue());
         outBuffer.writeZero(PADDING_IN_GROUP_MOD_MESSAGE);
         outBuffer.writeInt(message.getGroupId().getValue().intValue());
@@ -75,7 +90,6 @@ public class GroupMessageSerializer extends AbstractMessageSerializer<GroupMessa
 
                     outBuffer.setShort(bucketIndex, outBuffer.writerIndex() - bucketIndex);
                 }));
-
         outBuffer.setShort(index + 2, outBuffer.writerIndex() - index);
     }
 

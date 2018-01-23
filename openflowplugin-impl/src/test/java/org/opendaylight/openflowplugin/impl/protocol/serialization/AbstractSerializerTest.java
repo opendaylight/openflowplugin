@@ -36,7 +36,7 @@ public abstract class AbstractSerializerTest {
         registry = new SerializerRegistryImpl();
         registry.init();
         provider = new SerializerExtensionProviderImpl(registry);
-        SerializerInjector.injectSerializers(provider);
+        SerializerInjector.injectSerializers(provider, false);
         init();
     }
 
