@@ -94,7 +94,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                             return null;
                         }
                     });
-            });
+            }, MoreExecutors.directExecutor());
 
     }
 

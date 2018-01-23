@@ -12,6 +12,7 @@ import com.google.common.base.Function;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -55,7 +56,7 @@ public final class BarrierUtil {
                 resultPair.setLeft(interInput);
                 final SendBarrierInput barrierInput = createSendBarrierInput(nodeRef);
                 return JdkFutureAdapters.listenInPoolThread(transactionService.sendBarrier(barrierInput));
-            });
+            }, MoreExecutors.directExecutor());
         // store barrier result and return initiated pair
         final ListenableFuture<Pair<RpcResult<T>, RpcResult<Void>>> compositeResult = Futures.transform(
                 barrierResult, new Function<RpcResult<Void>, Pair<RpcResult<T>, RpcResult<Void>>>() {
