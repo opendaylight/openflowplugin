@@ -12,6 +12,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -204,7 +205,9 @@ public final class FlatBatchUtil {
      */
     public static ListenableFuture<RpcResult<ProcessFlatBatchOutput>> mergeJobsResultsFutures(
             final List<ListenableFuture<RpcResult<ProcessFlatBatchOutput>>> firedJobs) {
-        return Futures.transform(Futures.successfulAsList(firedJobs), mergeRpcResults());
+        return Futures.transform(Futures.successfulAsList(firedJobs),
+                mergeRpcResults(),
+                MoreExecutors.directExecutor());
     }
 
     /**
