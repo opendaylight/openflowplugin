@@ -12,6 +12,7 @@ import com.google.common.base.Function;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Future;
@@ -144,6 +145,6 @@ public class MultiLayerAggregateFlowMultipartService extends AbstractAggregateFl
                 return RpcResultBuilder
                              .<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>failed()
                              .withRpcErrors(result.getErrors()).build();
-            });
+            }, MoreExecutors.directExecutor());
     }
 }

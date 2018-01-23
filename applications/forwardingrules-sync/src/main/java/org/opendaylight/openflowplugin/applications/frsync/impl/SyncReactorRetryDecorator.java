@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.applications.frsync.impl;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
 import org.opendaylight.openflowplugin.applications.frsync.util.ReconciliationRegistry;
@@ -56,6 +57,6 @@ public class SyncReactorRetryDecorator implements SyncReactor {
                 }
                 return result;
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 }
