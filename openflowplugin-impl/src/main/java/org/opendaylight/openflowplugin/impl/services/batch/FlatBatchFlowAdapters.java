@@ -13,6 +13,7 @@ import com.google.common.base.Function;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -172,6 +173,7 @@ public final class FlatBatchFlowAdapters {
         convertFlowBatchFutureForChain(final Future<RpcResult<T>> resultUpdateFlowFuture,
                                    final int currentOffset) {
         return Futures.transform(JdkFutureAdapters.listenInPoolThread(resultUpdateFlowFuture),
-                FlatBatchFlowAdapters.<T>convertBatchFlowResult(currentOffset));
+                FlatBatchFlowAdapters.<T>convertBatchFlowResult(currentOffset),
+                MoreExecutors.directExecutor());
     }
 }
