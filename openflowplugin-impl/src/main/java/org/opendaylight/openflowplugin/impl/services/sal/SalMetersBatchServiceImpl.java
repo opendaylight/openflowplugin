@@ -12,6 +12,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -90,11 +91,12 @@ public class SalMetersBatchServiceImpl implements SalMetersBatchService {
                 .collect(Collectors.toList());
 
         final ListenableFuture<RpcResult<List<BatchFailedMetersOutput>>> commonResult =
-                Futures.transform(Futures.allAsList(resultsLot), MeterUtil.<UpdateMeterOutput>createCumulativeFunction(
-                        meters, batchUpdateMeters.size()));
+                Futures.transform(Futures.allAsList(resultsLot),
+                        MeterUtil.<UpdateMeterOutput>createCumulativeFunction(meters, batchUpdateMeters.size()),
+                        MoreExecutors.directExecutor());
 
         ListenableFuture<RpcResult<UpdateMetersBatchOutput>> updateMetersBulkFuture =
-                Futures.transform(commonResult, MeterUtil.METER_UPDATE_TRANSFORM);
+                Futures.transform(commonResult, MeterUtil.METER_UPDATE_TRANSFORM, MoreExecutors.directExecutor());
 
         if (input.isBarrierAfter()) {
             updateMetersBulkFuture = BarrierUtil.chainBarrier(updateMetersBulkFuture, input.getNode(),
@@ -118,10 +120,11 @@ public class SalMetersBatchServiceImpl implements SalMetersBatchService {
 
         final ListenableFuture<RpcResult<List<BatchFailedMetersOutput>>> commonResult =
                 Futures.transform(Futures.allAsList(resultsLot),
-                        MeterUtil.<AddMeterOutput>createCumulativeFunction(input.getBatchAddMeters()));
+                        MeterUtil.<AddMeterOutput>createCumulativeFunction(input.getBatchAddMeters()),
+                        MoreExecutors.directExecutor());
 
         ListenableFuture<RpcResult<AddMetersBatchOutput>> addMetersBulkFuture =
-                Futures.transform(commonResult, MeterUtil.METER_ADD_TRANSFORM);
+                Futures.transform(commonResult, MeterUtil.METER_ADD_TRANSFORM, MoreExecutors.directExecutor());
 
         if (input.isBarrierAfter()) {
             addMetersBulkFuture = BarrierUtil.chainBarrier(addMetersBulkFuture, input.getNode(),
@@ -147,10 +150,11 @@ public class SalMetersBatchServiceImpl implements SalMetersBatchService {
 
         final ListenableFuture<RpcResult<List<BatchFailedMetersOutput>>> commonResult =
                 Futures.transform(Futures.allAsList(resultsLot),
-                        MeterUtil.<RemoveMeterOutput>createCumulativeFunction(input.getBatchRemoveMeters()));
+                        MeterUtil.<RemoveMeterOutput>createCumulativeFunction(input.getBatchRemoveMeters()),
+                        MoreExecutors.directExecutor());
 
         ListenableFuture<RpcResult<RemoveMetersBatchOutput>> removeMetersBulkFuture =
-                Futures.transform(commonResult, MeterUtil.METER_REMOVE_TRANSFORM);
+                Futures.transform(commonResult, MeterUtil.METER_REMOVE_TRANSFORM, MoreExecutors.directExecutor());
 
         if (input.isBarrierAfter()) {
             removeMetersBulkFuture = BarrierUtil.chainBarrier(removeMetersBulkFuture, input.getNode(),

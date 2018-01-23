@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl.services.sal;
 
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.Objects;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -40,9 +41,11 @@ public class SalAsyncConfigServiceImpl implements SalAsyncConfigService {
 
     @Override
     public Future<RpcResult<GetAsyncOutput>> getAsync(GetAsyncInput input) {
-        return Futures.transform(getAsyncConfigService.handleServiceCall(input), result ->
-                Objects.nonNull(result) && result.isSuccessful()
-                        ? RpcResultBuilder.success(new GetAsyncOutputBuilder(result.getResult())).build()
-                        : RpcResultBuilder.<GetAsyncOutput>failed().build());
+        return Futures.transform(getAsyncConfigService.handleServiceCall(input),
+                result ->
+                        Objects.nonNull(result) && result.isSuccessful()
+                                ? RpcResultBuilder.success(new GetAsyncOutputBuilder(result.getResult())).build()
+                                : RpcResultBuilder.failed().build(),
+                MoreExecutors.directExecutor());
     }
 }
