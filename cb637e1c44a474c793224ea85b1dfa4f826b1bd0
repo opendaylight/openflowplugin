@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "662e9d86_3b5ef769",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 358,
+      "author": {
+        "id": 6592
+      },
+      "writtenOn": "2018-01-24T15:16:32Z",
+      "side": 1,
+      "message": "ok",
+      "parentUuid": "41fc4000_2254f595",
+      "range": {
+        "startLine": 358,
+        "startChar": 0,
+        "endLine": 358,
+        "endChar": 52
+      },
+      "revId": "cb637e1c44a474c793224ea85b1dfa4f826b1bd0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c5118ebb_0b1a061b",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
         "patchSetId": 4
@@ -36,6 +60,30 @@
       "writtenOn": "2018-01-24T05:48:11Z",
       "side": 1,
       "message": "we can add portStatus in the debug message\n\nstatus message {}\", portStatus);",
+      "range": {
+        "startLine": 360,
+        "startChar": 16,
+        "endLine": 360,
+        "endChar": 78
+      },
+      "revId": "cb637e1c44a474c793224ea85b1dfa4f826b1bd0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c6b38808_1e7265fb",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 360,
+      "author": {
+        "id": 6592
+      },
+      "writtenOn": "2018-01-24T15:16:32Z",
+      "side": 1,
+      "message": "ok",
+      "parentUuid": "c5118ebb_0b1a061b",
       "range": {
         "startLine": 360,
         "startChar": 16,
