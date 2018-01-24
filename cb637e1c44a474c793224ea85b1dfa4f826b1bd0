@@ -62,6 +62,24 @@
       "revId": "cb637e1c44a474c793224ea85b1dfa4f826b1bd0",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "882c6b47_cf36bc67",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/flow/DeviceFlowRegistryImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 291,
+      "author": {
+        "id": 6592
+      },
+      "writtenOn": "2018-01-24T15:15:32Z",
+      "side": 1,
+      "message": "As i understand, this part of code is not removing anything from the map, problem i see is since it is not synchronised this operation on the flowregistry map may conflict with any other action performed while addition/deletion of flow to map. Iterator can be used but synchronising on flowregistry map should solve the issue. I have run CSIt before, it has passed without error, maybe i can run the test couple more times to ensure.",
+      "parentUuid": "f5866d43_7187fa88",
+      "revId": "cb637e1c44a474c793224ea85b1dfa4f826b1bd0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
