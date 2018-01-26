@@ -21,7 +21,6 @@
     <name>ODL :: openflowjava :: ${project.artifactId}</name>
 
     <properties>
-        <controller.mdsal.version>1.7.0-SNAPSHOT</controller.mdsal.version>
         <mdsal.version>2.4.0-SNAPSHOT</mdsal.version>
         <mdsal.model.version>0.12.0-SNAPSHOT</mdsal.model.version>
     </properties>
@@ -63,15 +62,6 @@
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
-
-            <!-- Controller infrastructure -->
-            <dependency>
-                <groupId>org.opendaylight.controller</groupId>
-                <artifactId>mdsal-artifacts</artifactId>
-                <version>${controller.mdsal.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -86,12 +76,6 @@
         <dependency>
             <groupId>org.opendaylight.mdsal.model</groupId>
             <artifactId>odl-mdsal-models</artifactId>
-            <type>xml</type>
-            <classifier>features</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>odl-mdsal-common</artifactId>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
