@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "701c7ecd_6df6b450",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/UdpHandler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-01-27T02:58:14Z",
+      "side": 1,
+      "message": "We should log this exception here, but i think it\u0027s for some other patch.",
+      "revId": "9d9b4efb543bd303a4938f9a493d442a3d51bb9a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
