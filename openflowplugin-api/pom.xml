@@ -68,6 +68,10 @@
             <artifactId>diagstatus-api</artifactId>
             <version>${infrautils.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opendaylight.mdsal</groupId>
+            <artifactId>mdsal-eos-binding-api</artifactId>
+        </dependency>
     </dependencies>
 
 </project>
