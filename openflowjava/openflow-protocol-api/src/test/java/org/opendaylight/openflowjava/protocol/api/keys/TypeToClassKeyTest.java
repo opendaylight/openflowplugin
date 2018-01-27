@@ -11,18 +11,19 @@ package org.opendaylight.openflowjava.protocol.api.keys;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+
 /**
+ * Unit tests for TypeToClassKey.
  *
  * @author madamjak
- *
  */
 public class TypeToClassKeyTest {
 
     /**
-     * Test equals
+     * Test equals.
      */
     @Test
-    public void test(){
+    public void test() {
         final short ver10 = EncodeConstants.OF10_VERSION_ID;
         final short ver13 = EncodeConstants.OF13_VERSION_ID;
         final int type1 = 1;

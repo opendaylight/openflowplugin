@@ -15,14 +15,14 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.ExperimenterActionSubType;
 
 /**
- * @author michal.polkorab
+ * Unit tests for ExperimenterActionSerializerKey.
  *
+ * @author michal.polkorab
  */
 public class ExperimenterActionSerializerKeyTest {
 
-
     /**
-     * Test ExperimenterActionSerializerKey equals and hashCode
+     * Test ExperimenterActionSerializerKey equals and hashCode.
      */
     @Test
     public void test() {
@@ -50,7 +50,7 @@ public class ExperimenterActionSerializerKeyTest {
     }
 
     /**
-     * Test ExperimenterActionSerializerKey equals
+     * Test ExperimenterActionSerializerKey equals.
      */
     @Test
     public void testEquals() {

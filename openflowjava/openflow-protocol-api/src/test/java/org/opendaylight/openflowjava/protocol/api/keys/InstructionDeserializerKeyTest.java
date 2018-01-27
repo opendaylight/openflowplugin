@@ -13,13 +13,14 @@ import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 
 /**
- * @author michal.polkorab
+ * Unit tests for InstructionDeserializerKey.
  *
+ * @author michal.polkorab
  */
 public class InstructionDeserializerKeyTest {
 
     /**
-     * Test InstructionDeserializerKey equals and hashCode
+     * Test InstructionDeserializerKey equals and hashCode.
      */
     @Test
     public void test() {
@@ -42,10 +43,10 @@ public class InstructionDeserializerKeyTest {
     }
 
     /**
-     * Test InstructionDeserializerKey equals - additional test
+     * Test InstructionDeserializerKey equals - additional test.
      */
     @Test
-    public void testEquals(){
+    public void testEquals() {
         InstructionDeserializerKey key1 = new InstructionDeserializerKey(EncodeConstants.OF10_VERSION_ID, 11, null);
         InstructionDeserializerKey key2 = new InstructionDeserializerKey(EncodeConstants.OF10_VERSION_ID, 11, 24L);
 
@@ -57,13 +58,14 @@ public class InstructionDeserializerKeyTest {
     }
 
     /**
-     * Test InstructionDeserializerKey toString()
+     * Test InstructionDeserializerKey toString().
      */
     @Test
-    public void testToString(){
+    public void testToString() {
         InstructionDeserializerKey key1 = new InstructionDeserializerKey(EncodeConstants.OF10_VERSION_ID, 11, null);
 
-        Assert.assertEquals("Wrong toString()", "msgVersion: 1 objectClass: org.opendaylight.yang.gen.v1.urn.opendaylight"
+        Assert.assertEquals("Wrong toString()",
+                "msgVersion: 1 objectClass: org.opendaylight.yang.gen.v1.urn.opendaylight"
                 + ".openflow.common.instruction.rev130731.instructions.grouping.Instruction msgType: 11"
                 + " experimenterID: null", key1.toString());
     }

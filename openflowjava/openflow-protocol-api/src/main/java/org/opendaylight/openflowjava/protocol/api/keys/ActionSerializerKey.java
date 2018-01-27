@@ -12,16 +12,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 
 /**
+ * Key for an action serializer.
+ *
  * @author michal.polkorab
  * @param <T> action type
  */
 public class ActionSerializerKey<T extends ActionChoice> extends MessageTypeKey<Action>
         implements ExperimenterSerializerKey {
 
-    private Class<T> actionType;
-    private Long experimenterId;
+    private final Class<T> actionType;
+    private final Long experimenterId;
 
     /**
+     * Constructor.
+     *
      * @param msgVersion protocol wire version
      * @param actionType type of action
      * @param experimenterId experimenter / vendor ID
@@ -37,8 +41,8 @@ public class ActionSerializerKey<T extends ActionChoice> extends MessageTypeKey<
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + ((actionType == null) ? 0 : actionType.hashCode());
-        result = prime * result + ((experimenterId == null) ? 0 : experimenterId.hashCode());
+        result = prime * result + (actionType == null ? 0 : actionType.hashCode());
+        result = prime * result + (experimenterId == null ? 0 : experimenterId.hashCode());
         return result;
     }
 

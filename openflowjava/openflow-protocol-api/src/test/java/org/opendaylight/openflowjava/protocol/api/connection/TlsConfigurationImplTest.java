@@ -8,28 +8,28 @@
 
 package org.opendaylight.openflowjava.protocol.api.connection;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
+import com.google.common.collect.Lists;
 import java.util.List;
-
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.KeystoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.PathType;
 
-import com.google.common.collect.Lists;
-
 /**
- * @author michal.polkorab
+ * Unit tests for TlsConfigurationImpl.
  *
+ * @author michal.polkorab
  */
 public class TlsConfigurationImplTest {
 
     /**
-     * Test correct TlsConfigurationImpl creation
+     * Test correct TlsConfigurationImpl creation.
      */
     @Test
     public void test() {
-        List<String> cipherSuites = Lists.newArrayList("TLS_RSA_WITH_AES_128_CBC_SHA", "TLS_RSA_WITH_AES_128_CBC_SHA256");
+        List<String> cipherSuites = Lists.newArrayList("TLS_RSA_WITH_AES_128_CBC_SHA",
+                "TLS_RSA_WITH_AES_128_CBC_SHA256");
         TlsConfigurationImpl config = new TlsConfigurationImpl(KeystoreType.JKS,
                 "user/dir", PathType.CLASSPATH, KeystoreType.PKCS12, "/var/lib", PathType.PATH, cipherSuites);
         assertEquals("Wrong keystore location", "/var/lib", config.getTlsKeystore());

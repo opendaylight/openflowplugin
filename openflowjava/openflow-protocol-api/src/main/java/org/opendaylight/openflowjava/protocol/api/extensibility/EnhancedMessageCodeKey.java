@@ -10,15 +10,17 @@ package org.opendaylight.openflowjava.protocol.api.extensibility;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 
 /**
- * @author michal.polkorab
+ * Enhanced MessageCodeKey.
  *
+ * @author michal.polkorab
  */
 public class EnhancedMessageCodeKey extends MessageCodeKey {
 
-    private int msgType2;
+    private final int msgType2;
 
     /**
-     * Constructor
+     * Constructor.
+     *
      * @param version wire protocol version
      * @param value used as distinguisher
      * @param value2 used as detailed distinguisher

@@ -11,14 +11,18 @@ package org.opendaylight.openflowjava.protocol.api.keys;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
+ * Key for an experimenter id type serializer.
+ *
  * @param <T> class of object to be serialized
  * @author michal.polkorab
  */
 public class ExperimenterIdTypeSerializerKey<T extends DataContainer> extends ExperimenterIdSerializerKey<T> {
 
-    private long type;
+    private final long type;
 
     /**
+     * Constructor.
+     *
      * @param msgVersion     protocol wire version
      * @param experimenterId experimenter / vendor ID
      * @param type           data type according to vendor implementation

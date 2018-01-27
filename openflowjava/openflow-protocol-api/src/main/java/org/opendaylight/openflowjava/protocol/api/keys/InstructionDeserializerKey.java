@@ -11,19 +11,22 @@ package org.opendaylight.openflowjava.protocol.api.keys;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction;
 
 /**
- * @author michal.polkorab
+ * Key for an instruction deserializer.
  *
+ * @author michal.polkorab
  */
 public class InstructionDeserializerKey extends MessageCodeKey {
 
-    private Long experimenterId;
+    private final Long experimenterId;
+
     /**
+     * Constructor.
+     *
      * @param version protocol wire version
      * @param type instruction type
      * @param experimenterId experimenter (vendor) identifier
      */
-    public InstructionDeserializerKey(short version, int type,
-            Long experimenterId) {
+    public InstructionDeserializerKey(short version, int type, Long experimenterId) {
         super(version, type, Instruction.class);
         this.experimenterId = experimenterId;
     }
@@ -32,7 +35,7 @@ public class InstructionDeserializerKey extends MessageCodeKey {
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + ((experimenterId == null) ? 0 : experimenterId.hashCode());
+        result = prime * result + (experimenterId == null ? 0 : experimenterId.hashCode());
         return result;
     }
 

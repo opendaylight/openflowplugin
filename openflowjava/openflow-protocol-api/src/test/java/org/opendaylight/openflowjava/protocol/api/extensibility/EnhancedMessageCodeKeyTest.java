@@ -15,13 +15,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
 
 /**
- * @author michal.polkorab
+ * Unit tests for EnhancedMessageCodeKey.
  *
+ * @author michal.polkorab
  */
 public class EnhancedMessageCodeKeyTest {
 
     /**
-     * Test EnhancedMessageCodeKey equals and hashCode
+     * Test EnhancedMessageCodeKey equals and hashCode.
      */
     @Test
     public void test() {
@@ -49,7 +50,7 @@ public class EnhancedMessageCodeKeyTest {
     }
 
     /**
-     * Test EnhancedMessageTypeKey equals - additional test
+     * Test EnhancedMessageTypeKey equals - additional test.
      */
     @Test
     public void testEquals() {
@@ -61,14 +62,15 @@ public class EnhancedMessageCodeKeyTest {
     }
 
     /**
-     * Test EnhancedMessageCodeKey toString()
+     * Test EnhancedMessageCodeKey toString().
      */
     @Test
     public void testToString() {
         EnhancedMessageCodeKey key1 =
                 new EnhancedMessageCodeKey(EncodeConstants.OF10_VERSION_ID, 4, 8, BarrierInput.class);
 
-        Assert.assertEquals("Wrong toString()", "msgVersion: 1 objectClass: org.opendaylight.yang.gen.v1.urn.opendaylight"
+        Assert.assertEquals("Wrong toString()",
+                "msgVersion: 1 objectClass: org.opendaylight.yang.gen.v1.urn.opendaylight"
                 + ".openflow.protocol.rev130731.BarrierInput msgType: 4 msgType2: 8", key1.toString());
     }
 }

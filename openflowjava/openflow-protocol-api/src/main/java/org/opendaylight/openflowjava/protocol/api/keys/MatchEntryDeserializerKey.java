@@ -11,16 +11,19 @@ package org.opendaylight.openflowjava.protocol.api.keys;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 
 /**
- * @author michal.polkorab
+ * Key for a match entry deserializer.
  *
+ * @author michal.polkorab
  */
 public final class MatchEntryDeserializerKey extends MessageCodeKey
         implements ExperimenterDeserializerKey {
 
-    private int oxmField;
+    private final int oxmField;
     private Long experimenterId;
 
     /**
+     * Constructor.
+     *
      * @param version protocol wire version
      * @param oxmClass oxm_class (see specification)
      * @param oxmField oxm_field (see specification)
@@ -32,6 +35,8 @@ public final class MatchEntryDeserializerKey extends MessageCodeKey
     }
 
     /**
+     * Sets the experimenter id.
+     *
      * @param experimenterId experimenter / vendor ID
      */
     public void setExperimenterId(Long experimenterId) {
@@ -42,7 +47,7 @@ public final class MatchEntryDeserializerKey extends MessageCodeKey
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + ((experimenterId == null) ? 0 : experimenterId.hashCode());
+        result = prime * result + (experimenterId == null ? 0 : experimenterId.hashCode());
         result = prime * result + oxmField;
         return result;
     }

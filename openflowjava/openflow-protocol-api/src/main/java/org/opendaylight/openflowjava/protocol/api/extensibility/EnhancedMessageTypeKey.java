@@ -11,7 +11,8 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 
 
 /**
- * More specific key for {@link SerializerRegistry}
+ * More specific key for {@link SerializerRegistry}.
+ *
  * @author michal.polkorab
  * @param <E> main type
  * @param <F> specific type
@@ -21,6 +22,8 @@ public class EnhancedMessageTypeKey<E, F> extends MessageTypeKey<E> {
     private final Class<F> msgType2;
 
     /**
+     * Constructor.
+     *
      * @param msgVersion protocol version
      * @param msgType main type
      * @param msgType2 subtype
@@ -34,7 +37,7 @@ public class EnhancedMessageTypeKey<E, F> extends MessageTypeKey<E> {
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + ((msgType2 == null) ? 0 : msgType2.hashCode());
+        result = prime * result + (msgType2 == null ? 0 : msgType2.hashCode());
         return result;
     }
 

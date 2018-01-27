@@ -17,13 +17,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
 
 /**
- * @author michal.polkorab
+ * Unit tests for ExperimenterIdDeserializerKey.
  *
+ * @author michal.polkorab
  */
 public class ExperimenterIdDeserializerKeyTest {
 
     /**
-     * Test ExperimenterIdDeserializerKey equals and hashCode
+     * Test ExperimenterIdDeserializerKey equals and hashCode.
      */
     @Test
     public void test() {
@@ -51,14 +52,15 @@ public class ExperimenterIdDeserializerKeyTest {
     }
 
     /**
-     * Test ExperimenterIdDeserializerKey equals - additional test
+     * Test ExperimenterIdDeserializerKey equals - additional test.
      */
     @Test
     public void testEquals() {
         ExperimenterIdDeserializerKey key1 =
                 new ExperimenterIdDeserializerKey(EncodeConstants.OF10_VERSION_ID, 0L, ExperimenterMessage.class);
         Assert.assertTrue("Wrong equal to identical object.", key1.equals(key1));
-        MessageCodeKey mk = new MessageCodeKey(EncodeConstants.OF10_VERSION_ID,EncodeConstants.EXPERIMENTER_VALUE, ExperimenterMessage.class);
+        MessageCodeKey mk = new MessageCodeKey(EncodeConstants.OF10_VERSION_ID,
+                EncodeConstants.EXPERIMENTER_VALUE, ExperimenterMessage.class);
         Assert.assertFalse("Wrong equal to different class.", key1.equals(mk));
         ExperimenterIdDeserializerKey key2 =
                 new ExperimenterIdDeserializerKey(EncodeConstants.OF10_VERSION_ID, 42L, ExperimenterMessage.class);

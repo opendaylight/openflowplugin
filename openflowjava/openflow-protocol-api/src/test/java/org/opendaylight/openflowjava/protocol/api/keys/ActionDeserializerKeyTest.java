@@ -13,13 +13,14 @@ import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 
 /**
- * @author michal.polkorab
+ * Unit tests for ActionDeserializerKey.
  *
+ * @author michal.polkorab
  */
 public class ActionDeserializerKeyTest {
 
     /**
-     * Test ActionDeserializerKey equals and hashCode
+     * Test ActionDeserializerKey equals and hashCode.
      */
     @Test
     public void test() {
@@ -42,10 +43,10 @@ public class ActionDeserializerKeyTest {
     }
 
     /**
-     * Test ActionDeserializerKey equals - additional test
+     * Test ActionDeserializerKey equals - additional test.
      */
     @Test
-    public void testEquals(){
+    public void testEquals() {
         ActionDeserializerKey key1 = new ActionDeserializerKey(EncodeConstants.OF10_VERSION_ID, 11, null);
         ActionDeserializerKey key2 = new ActionDeserializerKey(EncodeConstants.OF10_VERSION_ID, 11, 42L);
 
@@ -57,10 +58,10 @@ public class ActionDeserializerKeyTest {
     }
 
     /**
-     * Test InstructionDeserializerKey toString()
+     * Test InstructionDeserializerKey toString().
      */
     @Test
-    public void testToString(){
+    public void testToString() {
         ActionDeserializerKey key1 = new ActionDeserializerKey(EncodeConstants.OF10_VERSION_ID, 11, null);
 
         Assert.assertEquals("Wrong toString()", "msgVersion: 1 objectClass: org.opendaylight.yang.gen.v1.urn"

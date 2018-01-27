@@ -11,20 +11,24 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
- * Created by hyy on 2016/9/8.
+ * Key for an experimenter id meter subtype serializer.
+ *
+ * @author hyy on 2016/9/8.
  */
 public class ExperimenterIdMeterSubTypeSerializerKey<T extends DataContainer> extends ExperimenterIdSerializerKey<T> {
 
-    private Class<? extends ExperimenterMeterBandSubType> meterSubType;
+    private final Class<? extends ExperimenterMeterBandSubType> meterSubType;
 
     /**
+     * Constructor.
+     *
      * @param msgVersion      protocol wire version
      * @param experimenterId  experimenter / vendor ID
      * @param objectClass     class of object to be serialized
      * @param meterSubType    vendor defined subtype
      */
     public ExperimenterIdMeterSubTypeSerializerKey(short msgVersion, long experimenterId,
-                                                   Class<T> objectClass, Class<? extends ExperimenterMeterBandSubType> meterSubType) {
+            Class<T> objectClass, Class<? extends ExperimenterMeterBandSubType> meterSubType) {
         super(msgVersion, experimenterId, objectClass);
         this.meterSubType = meterSubType;
     }
@@ -33,7 +37,7 @@ public class ExperimenterIdMeterSubTypeSerializerKey<T extends DataContainer> ex
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + ((meterSubType == null) ? 0 : meterSubType.hashCode());
+        result = prime * result + (meterSubType == null ? 0 : meterSubType.hashCode());
         return result;
     }
 

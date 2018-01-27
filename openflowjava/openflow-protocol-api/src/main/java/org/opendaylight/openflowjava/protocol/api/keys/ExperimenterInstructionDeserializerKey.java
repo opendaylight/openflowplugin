@@ -11,13 +11,16 @@ package org.opendaylight.openflowjava.protocol.api.keys;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 
 /**
- * @author michal.polkorab
+ * Key for an experimenter instruction deserializer.
  *
+ * @author michal.polkorab
  */
 public final class ExperimenterInstructionDeserializerKey extends InstructionDeserializerKey
         implements ExperimenterDeserializerKey {
 
     /**
+     * Constructor.
+     *
      * @param version protocol wire version
      * @param experimenterId experimenter (vendor) identifier
      */

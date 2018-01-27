@@ -14,13 +14,14 @@ import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterInstructionDe
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 
 /**
- * @author michal.polkorab
+ * Unit tests for ExperimenterInstructionDeserializerKey.
  *
+ * @author michal.polkorab
  */
 public class ExperimenterInstructionDeserializerKeyTest {
 
     /**
-     * Test ExperimenterInstructionDeserializerKey equals and hashCode
+     * Test ExperimenterInstructionDeserializerKey equals and hashCode.
      */
     @Test
     public void test() {

@@ -11,14 +11,16 @@ import io.netty.buffer.ByteBuf;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
- * Does only-header serialization (such as oxm_ids, action_ids, instruction_ids)
+ * Does only-header serialization (such as oxm_ids, action_ids, instruction_ids).
+ *
  * @author michal.polkorab
  * @param <T> input message type
  */
 public interface HeaderSerializer<T extends DataContainer> extends OFGeneralSerializer {
 
     /**
-     * Serializes object headers (e.g. for Multipart message - Table Features)
+     * Serializes object headers (e.g. for Multipart message - Table Features).
+     *
      * @param input object whose headers should be serialized
      * @param outBuffer output buffer
      */

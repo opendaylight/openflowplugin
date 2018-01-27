@@ -15,19 +15,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.WriteActionsCase;
 
 /**
- * @author michal.polkorab
+ * Unit tests for InstructionSerializerKey.
  *
+ * @author michal.polkorab
  */
 public class InstructionSerializerKeyTest {
 
     /**
-     * Test InstructionSerializerKey equals and hashCode
+     * Test InstructionSerializerKey equals and hashCode.
      */
     @Test
     public void test() {
         InstructionSerializerKey<?> key1 =
                 new InstructionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, ApplyActionsCase.class, 42L);
-                InstructionSerializerKey<?> key2 =
+        InstructionSerializerKey<?> key2 =
                 new InstructionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, ApplyActionsCase.class, 42L);
         Assert.assertTrue("Wrong equals", key1.equals(key2));
         Assert.assertTrue("Wrong hashCode", key1.hashCode() == key2.hashCode());
@@ -49,18 +50,18 @@ public class InstructionSerializerKeyTest {
     }
 
     /**
-     * Test InstructionSerializerKey equals  - additional test
+     * Test InstructionSerializerKey equals  - additional test.
      */
     @Test
-    public void testEquals(){
+    public void testEquals() {
         InstructionSerializerKey<?> key1 =
-                new InstructionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, ApplyActionsCase.class, 42L);
-        InstructionSerializerKey<?> key2 =
                 new InstructionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, ApplyActionsCase.class, 42L);
 
         Assert.assertTrue("Wrong equal to identical object.", key1.equals(key1));
         Assert.assertFalse("Wrong equal to different class.", key1.equals(new Object()));
 
+        InstructionSerializerKey<?> key2 =
+                new InstructionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, ApplyActionsCase.class, 42L);
         key1 = new InstructionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, ApplyActionsCase.class, null);
         Assert.assertFalse("Wrong equal by experimenterId.", key1.equals(key2));
 
@@ -70,10 +71,10 @@ public class InstructionSerializerKeyTest {
     }
 
     /**
-     * Test InstructionSerializerKey toString()
+     * Test InstructionSerializerKey toString().
      */
     @Test
-    public void testToString(){
+    public void testToString() {
         InstructionSerializerKey<?> key1 =
                 new InstructionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, ApplyActionsCase.class, 42L);
 

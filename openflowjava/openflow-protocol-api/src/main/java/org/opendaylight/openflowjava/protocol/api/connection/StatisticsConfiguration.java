@@ -9,18 +9,22 @@
 package org.opendaylight.openflowjava.protocol.api.connection;
 
 /**
- * Used for StatisticsCounter configuration
+ * Used for StatisticsCounter configuration.
  *
  * @author madamjak
  */
 public interface StatisticsConfiguration {
 
     /**
+     * Determines if statistics are enabled.
+     *
      * @return true if statistics are / will be collected, false otherwise
      */
     boolean getStatisticsCollect();
 
     /**
+     * Returns the delay between two statistics logs.
+     *
      * @return delay between two statistics logs (in milliseconds)
      */
     int getLogReportDelay();

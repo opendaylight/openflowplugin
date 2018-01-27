@@ -9,8 +9,9 @@
 package org.opendaylight.openflowjava.protocol.api.util;
 
 /**
- * @author michal.polkorab
+ * Conversion utilities.
  *
+ * @author michal.polkorab
  */
 public abstract class BinContent {
 
@@ -19,6 +20,8 @@ public abstract class BinContent {
     }
 
     /**
+     * Converts an int to unsigned long.
+     *
      * @param value input integer value (might be negative)
      * @return int part wrapped in long (always positive)
      */
@@ -27,6 +30,8 @@ public abstract class BinContent {
     }
 
     /**
+     * Converts an unsigned long to int.
+     *
      * @param value input long value
      * @return long cut into int
      */

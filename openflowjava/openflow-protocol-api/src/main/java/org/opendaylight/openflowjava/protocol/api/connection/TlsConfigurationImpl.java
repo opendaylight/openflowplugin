@@ -9,26 +9,27 @@
 package org.opendaylight.openflowjava.protocol.api.connection;
 
 import java.util.List;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.KeystoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.PathType;
 
 /**
- * Class is used only for testing purposes - passwords are hardcoded
+ * Class is used only for testing purposes - passwords are hard-coded.
+ *
  * @author michal.polkorab
  */
 public class TlsConfigurationImpl implements TlsConfiguration {
 
-    private KeystoreType trustStoreType;
-    private String trustStore;
-    private KeystoreType keyStoreType;
-    private String keyStore;
-    private PathType keystorePathType;
-    private PathType truststorePathType;
-    private List<String> cipherSuites;
+    private final KeystoreType trustStoreType;
+    private final String trustStore;
+    private final KeystoreType keyStoreType;
+    private final String keyStore;
+    private final PathType keystorePathType;
+    private final PathType truststorePathType;
+    private final List<String> cipherSuites;
 
     /**
-     * Default constructor
+     * Default constructor.
+     *
      * @param trustStoreType JKS or PKCS12
      * @param trustStore path to trustStore file
      * @param trustStorePathType truststore path type (classpath or path)

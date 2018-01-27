@@ -8,13 +8,15 @@
 package org.opendaylight.openflowjava.protocol.api.extensibility;
 
 /**
- * Serializer registry injector
+ * Serializer registry injector.
+ *
  * @author michal.polkorab
  */
 public interface SerializerRegistryInjector {
 
     /**
-     * Injects serializer registry
+     * Injects serializer registry.
+     *
      * @param serializerRegistry registry instance
      */
     void injectSerializerRegistry(SerializerRegistry serializerRegistry);
