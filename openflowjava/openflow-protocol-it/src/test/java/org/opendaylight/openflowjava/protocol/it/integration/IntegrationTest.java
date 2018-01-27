@@ -14,6 +14,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import org.junit.After;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfiguration;
@@ -40,6 +41,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * End-to-end integration test.
+ *
  * @author michal.polkorab
  * @author timotej.kubas
  */
@@ -57,13 +60,13 @@ public class IntegrationTest {
     private SwitchConnectionProviderImpl switchConnectionProvider;
     private ConnectionConfigurationImpl connConfig;
 
-    private Thread t;
+    private Thread thread;
 
-    private enum ClientType {SIMPLE, LISTENING}
-    /**
-     * @param protocol communication protocol to be used during test
-     * @throws Exception
-     */
+    private enum ClientType {
+        SIMPLE,
+        LISTENING
+    }
+
     public void setUp(final TransportProtocol protocol) throws Exception {
         LOGGER.debug("\n starting test -------------------------------");
 
@@ -94,9 +97,6 @@ public class IntegrationTest {
         }
     }
 
-    /**
-     * @throws Exception
-     */
     @After
     public void tearDown() throws Exception {
         switchConnectionProvider.close();
@@ -104,8 +104,7 @@ public class IntegrationTest {
     }
 
     /**
-     * Library integration and communication test with handshake
-     * @throws Exception
+     * Library integration and communication test with handshake.
      */
     @Test
     public void testHandshake() throws Exception {
@@ -113,7 +112,8 @@ public class IntegrationTest {
         final int amountOfCLients = 1;
         final Deque<ClientEvent> scenario = ScenarioFactory.createHandshakeScenario();
         final ScenarioHandler handler = new ScenarioHandler(scenario);
-        final List<OFClient> clients = createAndStartClient(amountOfCLients, handler, TransportProtocol.TCP, ClientType.SIMPLE);
+        final List<OFClient> clients = createAndStartClient(amountOfCLients, handler,
+                TransportProtocol.TCP, ClientType.SIMPLE);
         final OFClient firstClient = clients.get(0);
         firstClient.getScenarioDone().get();
         Thread.sleep(1000);
@@ -122,8 +122,7 @@ public class IntegrationTest {
     }
 
     /**
-     * Library integration and secured communication test with handshake
-     * @throws Exception
+     * Library integration and secured communication test with handshake.
      */
     @Test
     public void testTlsHandshake() throws Exception {
@@ -131,7 +130,8 @@ public class IntegrationTest {
         final int amountOfCLients = 1;
         final Deque<ClientEvent> scenario = ScenarioFactory.createHandshakeScenario();
         final ScenarioHandler handler = new ScenarioHandler(scenario);
-        final List<OFClient> clients = createAndStartClient(amountOfCLients, handler, TransportProtocol.TLS, ClientType.SIMPLE);
+        final List<OFClient> clients = createAndStartClient(amountOfCLients, handler,
+                TransportProtocol.TLS, ClientType.SIMPLE);
         final OFClient firstClient = clients.get(0);
         firstClient.getScenarioDone().get();
         Thread.sleep(1000);
@@ -140,8 +140,7 @@ public class IntegrationTest {
     }
 
     /**
-     * Library integration and communication test with handshake + echo exchange
-     * @throws Exception
+     * Library integration and communication test with handshake + echo exchange.
      */
     @Test
     public void testHandshakeAndEcho() throws Exception {
@@ -153,7 +152,8 @@ public class IntegrationTest {
         scenario.addFirst(new SleepEvent(1000));
         scenario.addFirst(new WaitForMessageEvent(ByteBufUtils.hexStringToBytes("04 03 00 08 00 00 00 04")));
         final ScenarioHandler handler = new ScenarioHandler(scenario);
-        final List<OFClient> clients = createAndStartClient(amountOfCLients, handler, TransportProtocol.TCP, ClientType.SIMPLE);
+        final List<OFClient> clients = createAndStartClient(amountOfCLients, handler,
+                TransportProtocol.TCP, ClientType.SIMPLE);
         final OFClient firstClient = clients.get(0);
         firstClient.getScenarioDone().get();
 
@@ -161,8 +161,7 @@ public class IntegrationTest {
     }
 
     /**
-     * Library integration and secured communication test with handshake + echo exchange
-     * @throws Exception
+     * Library integration and secured communication test with handshake + echo exchange.
      */
     @Test
     public void testTlsHandshakeAndEcho() throws Exception {
@@ -174,7 +173,8 @@ public class IntegrationTest {
         scenario.addFirst(new SleepEvent(1000));
         scenario.addFirst(new WaitForMessageEvent(ByteBufUtils.hexStringToBytes("04 03 00 08 00 00 00 04")));
         final ScenarioHandler handler = new ScenarioHandler(scenario);
-        final List<OFClient> clients = createAndStartClient(amountOfCLients, handler, TransportProtocol.TLS, ClientType.SIMPLE);
+        final List<OFClient> clients = createAndStartClient(amountOfCLients, handler,
+                TransportProtocol.TLS, ClientType.SIMPLE);
         final OFClient firstClient = clients.get(0);
         firstClient.getScenarioDone().get();
 
@@ -182,8 +182,7 @@ public class IntegrationTest {
     }
 
     /**
-     * Library udp integration and communication test with handshake + echo exchange
-     * @throws Exception
+     * Library udp integration and communication test with handshake + echo exchange.
      */
     @Test
     public void testUdpHandshakeAndEcho() throws Exception {
@@ -195,7 +194,8 @@ public class IntegrationTest {
         scenario.addFirst(new SleepEvent(1000));
         scenario.addFirst(new WaitForMessageEvent(ByteBufUtils.hexStringToBytes("04 03 00 08 00 00 00 04")));
         final ScenarioHandler handler = new ScenarioHandler(scenario);
-        final List<OFClient> clients = createAndStartClient(amountOfCLients, handler, TransportProtocol.UDP, ClientType.SIMPLE);
+        final List<OFClient> clients = createAndStartClient(amountOfCLients, handler,
+                TransportProtocol.UDP, ClientType.SIMPLE);
         final OFClient firstClient = clients.get(0);
         firstClient.getScenarioDone().get();
 
@@ -203,8 +203,7 @@ public class IntegrationTest {
     }
 
     /**
-     * Library integration and communication test (with virtual machine)
-     * @throws Exception
+     * Library integration and communication test (with virtual machine).
      */
     //@Test
     public void testCommunicationWithVM() throws Exception {
@@ -212,13 +211,16 @@ public class IntegrationTest {
     }
 
     /**
-     * @param amountOfCLients
+     * Creates and start a client.
+     *
+     * @param amountOfCLients number of clients
      * @param protocol true if encrypted connection should be used
      * @return new clients up and running
      * @throws ExecutionException if some client could not start
      */
     private List<OFClient> createAndStartClient(final int amountOfCLients, final ScenarioHandler scenarioHandler,
-            final TransportProtocol protocol, final ClientType clientType) throws ExecutionException {
+            final TransportProtocol protocol, final ClientType clientType)
+                    throws ExecutionException, InterruptedException, TimeoutException {
         final List<OFClient> clientsHorde = new ArrayList<>();
         for (int i = 0; i < amountOfCLients; i++) {
             LOGGER.debug("startup address in createclient: {}", startupAddress.getHostAddress());
@@ -245,23 +247,15 @@ public class IntegrationTest {
             sc.setScenarioHandler(scenarioHandler);
             clientsHorde.add(sc);
             //sc.run();
-            t = new Thread(sc);
-            t.start();
+            thread = new Thread(sc);
+            thread.start();
         }
         for (final OFClient sc : clientsHorde) {
-            try {
-                sc.getIsOnlineFuture().get(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
-            } catch (final Exception e) {
-                LOGGER.error("createAndStartClient: Something borked ... ", e.getMessage(), e);
-                throw new ExecutionException(e);
-            }
+            sc.getIsOnlineFuture().get(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
         }
         return clientsHorde;
     }
 
-    /**
-     * @throws Exception
-     */
     @Test
     public void testInitiateConnection() throws Exception {
         setUp(TransportProtocol.TCP);
