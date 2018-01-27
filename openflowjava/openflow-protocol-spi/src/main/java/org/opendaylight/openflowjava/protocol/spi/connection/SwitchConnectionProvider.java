@@ -9,46 +9,53 @@
 
 package org.opendaylight.openflowjava.protocol.spi.connection;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
 import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider;
 
-import com.google.common.util.concurrent.ListenableFuture;
-
 /**
+ * Provides handling for a swicth connection.
+ *
  * @author mirehak
  * @author michal.polkorab
- *
  */
 public interface SwitchConnectionProvider extends AutoCloseable,
         SerializerExtensionProvider, DeserializerExtensionProvider {
 
     /**
+     * Set connection configuration.
+     *
      * @param configuration [protocol, port, address and supported features]
      */
     void setConfiguration(ConnectionConfiguration configuration);
 
     /**
-     * return the connection configuration
+     * Returns the connection configuration.
+     *
      * @return configuration [protocol, port, address and supported features]
      */
     ConnectionConfiguration getConfiguration();
 
     /**
-     * start listening to switches, but please don't forget to do
-     * {@link #setSwitchConnectionHandler(SwitchConnectionHandler)} first
+     * Start listening to switches, but please don't forget to do
+     * {@link #setSwitchConnectionHandler(SwitchConnectionHandler)} first.
+     *
      * @return future, triggered to true, when listening channel is up and running
      */
     ListenableFuture<Boolean> startup();
 
     /**
-     * stop listening to switches
+     * Stop listening to switches.
+     *
      * @return future, triggered to true, when all listening channels are down
      */
     ListenableFuture<Boolean> shutdown();
 
     /**
+     * Sets the SwitchConnectionHandler.
+     *
      * @param switchConHandler instance being informed when new switch connects
      */
     void setSwitchConnectionHandler(SwitchConnectionHandler switchConHandler);
