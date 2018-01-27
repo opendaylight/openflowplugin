@@ -9,20 +9,19 @@
 package org.opendaylight.openflowjava.protocol.spi.statistics;
 
 /**
- * Used for JConsole service
+ * Used for JConsole service.
  *
  * @author michal.polkorab
  */
 public interface StatisticsHandler {
 
     /**
-     * Resets all counters
+     * Resets all counters.
      */
-    public void resetCounters();
+    void resetCounters();
 
     /**
-     * Prints statistics
-     * @return statistics
+     * Returns statistics.
      */
-    public String printStatistics();
+    String printStatistics();
 }

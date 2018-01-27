@@ -64,6 +64,7 @@ public interface SerializerRegistry {
     boolean isGroupAddModEnabled();
 
     /**
+     * Sets whether or not group add mod messages are enabled.
      *
      * @param isGroupAddModEnabled true if group add mod messages are enabled
      */
