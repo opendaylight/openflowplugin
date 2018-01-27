@@ -58,20 +58,6 @@
             <artifactId>openflowjava-util</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-common-util</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.opendaylight.controller</groupId>
-                    <artifactId>sal-common-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.opendaylight.yangtools</groupId>
-                    <artifactId>concepts</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-handler</artifactId>
         </dependency>
