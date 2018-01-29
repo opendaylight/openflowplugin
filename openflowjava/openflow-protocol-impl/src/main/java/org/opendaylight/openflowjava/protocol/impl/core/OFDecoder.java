@@ -14,7 +14,6 @@ import java.util.List;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializationFactory;
 import org.opendaylight.openflowjava.statistics.CounterEventTypes;
 import org.opendaylight.openflowjava.statistics.StatisticsCounters;
-import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,11 +41,9 @@ public class OFDecoder extends MessageToMessageDecoder<VersionMessageWrapper> {
     @SuppressWarnings("checkstyle:IllegalCatch")
     protected void decode(ChannelHandlerContext ctx, VersionMessageWrapper msg, List<Object> out) throws Exception {
         statisticsCounter.incrementCounter(CounterEventTypes.US_RECEIVED_IN_OFJAVA);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("VersionMessageWrapper received");
-            LOG.debug("<< {}", ByteBufUtils.byteBufToHexString(msg.getMessageBuffer()));
-        }
-
+        LOG.info("VersionMessageWrapper received");
+//        LOG.info("<< {} << {}", ByteBufUtils.byteBufToHexString(msg.getMessageBuffer()),
+//                msg.getMessageBuffer().readUnsignedByte());
         try {
             final DataObject dataObject = deserializationFactory.deserialize(msg.getMessageBuffer(),
                     msg.getVersion());
