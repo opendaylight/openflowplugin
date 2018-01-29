@@ -32,6 +32,8 @@ public interface ConnectionContext {
      */
     void setHandshakeContext(HandshakeContext handshakeContext);
 
+    void setControllerState(boolean controllerIsOK);
+
     /**
      * Distinguished connection states.
      */
