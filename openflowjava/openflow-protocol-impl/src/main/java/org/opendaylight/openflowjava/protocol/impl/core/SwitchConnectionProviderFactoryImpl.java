@@ -25,16 +25,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 
 /**
  * Implementation of the SwitchConnectionProviderFactory interface.
- *
- * @author Thomas Pantelis
  */
 public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProviderFactory {
 
     @Override
     public SwitchConnectionProvider newInstance(SwitchConnectionConfig config) {
-        SwitchConnectionProviderImpl switchConnectionProviderImpl =
-                new SwitchConnectionProviderImpl(new ConnectionConfigurationImpl(config));
-        return switchConnectionProviderImpl;
+        return new SwitchConnectionProviderImpl(new ConnectionConfigurationImpl(config));
     }
 
     private static InetAddress getInetAddress(final IpAddress address) throws UnknownHostException {
