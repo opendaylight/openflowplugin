@@ -10,10 +10,11 @@ package org.opendaylight.openflowplugin.api.openflow.mastership;
 /**
  * API provided for all OFP application to use.
  * This is registration of service for mastership changes.
- * Service provides three events.
+ * Service provides several events.
  * <ul>
  *     <li><i>onBecomeOwner</i>
  *     <li><i>onLoseOwnership</i>
+ *     <li><i>controllerInJeopardyState</i> - added in 0.6.0 oxygen
  * </ul>
  * @see MastershipChangeService
  * @since 0.5.0 Nitrogen

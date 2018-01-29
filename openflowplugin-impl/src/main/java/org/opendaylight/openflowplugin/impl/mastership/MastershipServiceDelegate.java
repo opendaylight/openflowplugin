@@ -46,6 +46,11 @@ public class MastershipServiceDelegate implements MastershipChangeService, Maste
     }
 
     @Override
+    public void controllerInJeopardyState(@Nonnull DeviceInfo deviceInfo) {
+        this.service.controllerInJeopardyState(deviceInfo);
+    }
+
+    @Override
     public String toString() {
         return service.toString();
     }

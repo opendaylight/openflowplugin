@@ -303,6 +303,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                 if (deviceInfo.getNodeId().equals(nodeId)) {
                     if (connectedDevices.containsKey(deviceInfo)) {
                         connectedDevices.get(deviceInfo).setControllerState(false);
+                        ownershipChangeListener.controllerInJeopardyState(deviceInfo);
                         break;
                     }
                 }

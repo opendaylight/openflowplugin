@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
@@ -53,5 +54,12 @@ public interface OwnershipChangeListener extends ReconciliationFrameworkRegistra
      * @param masterChecker {@link MasterChecker}
      */
     void setMasterChecker(@Nonnull MasterChecker masterChecker);
+
+    /**
+     * This event is called when devices master controller is in jeopardy state.
+     * @param deviceInfo connected switch identification
+     * @since 0.6.0 Oxygen
+     */
+    void controllerInJeopardyState(@Nonnull DeviceInfo deviceInfo);
 
 }

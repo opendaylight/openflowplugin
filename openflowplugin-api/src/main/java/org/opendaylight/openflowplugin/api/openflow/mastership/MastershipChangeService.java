@@ -39,4 +39,11 @@ public interface MastershipChangeService extends AutoCloseable {
      */
     void onLoseOwnership(@Nonnull DeviceInfo deviceInfo);
 
+    /**
+     * Event when devices controller is in jeopardy state
+     * @param deviceInfo connected switch identification
+     * @since 0.6.0 Oxygen
+     */
+    void controllerInJeopardyState(@Nonnull DeviceInfo deviceInfo);
+
 }

@@ -80,6 +80,11 @@ public final class MastershipChangeServiceManagerImpl implements MastershipChang
     }
 
     @Override
+    public void controllerInJeopardyState(@Nonnull DeviceInfo deviceInfo) {
+        serviceGroup.forEach(mastershipChangeService -> mastershipChangeService.controllerInJeopardyState(deviceInfo));
+    }
+
+    @Override
     public boolean isReconciliationFrameworkRegistered() {
         return (rfService != null);
     }
