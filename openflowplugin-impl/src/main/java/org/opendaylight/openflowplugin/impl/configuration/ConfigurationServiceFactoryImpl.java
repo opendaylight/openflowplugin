@@ -20,6 +20,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationListener;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationProperty;
@@ -37,8 +38,8 @@ public class ConfigurationServiceFactoryImpl implements ConfigurationServiceFact
 
     @Override
     public ConfigurationService newInstance(
-            final OpenflowProviderConfig providerConfig,
-            final BundleContext bundleContext) {
+            @Nonnull final OpenflowProviderConfig providerConfig,
+            @Nullable final BundleContext bundleContext) {
         return new ConfigurationServiceImpl(providerConfig, bundleContext);
     }
 
@@ -84,31 +85,35 @@ public class ConfigurationServiceFactoryImpl implements ConfigurationServiceFact
                             providerConfig.getThreadPoolTimeout().toString())
                     .build());
 
-            LOG.info("Loading configuration from '{}' configuration file", OFConstants.CONFIG_FILE_ID);
-            Optional.ofNullable(bundleContext.getServiceReference(ConfigurationAdmin.class))
-                    .ifPresent(serviceReference -> {
-                        final ConfigurationAdmin configurationAdmin = bundleContext.getService(serviceReference);
+            if (bundleContext == null) {
+                LOG.warn("Bundle context is 'null' cannot load configuration from file.");
+            } else {
+                LOG.info("Loading configuration from '{}' configuration file", OFConstants.CONFIG_FILE_ID);
+                Optional.ofNullable(bundleContext.getServiceReference(ConfigurationAdmin.class))
+                        .ifPresent(serviceReference -> {
+                            final ConfigurationAdmin configurationAdmin = bundleContext.getService(serviceReference);
 
-                        try {
-                            final Configuration configuration
-                                    = configurationAdmin.getConfiguration(OFConstants.CONFIG_FILE_ID);
+                            try {
+                                final Configuration configuration
+                                        = configurationAdmin.getConfiguration(OFConstants.CONFIG_FILE_ID);
 
-                            Optional.ofNullable(configuration.getProperties()).ifPresent(properties -> {
-                                final Enumeration<String> keys = properties.keys();
-                                final Map<String, String> mapProperties = new HashMap<>(properties.size());
+                                Optional.ofNullable(configuration.getProperties()).ifPresent(properties -> {
+                                    final Enumeration<String> keys = properties.keys();
+                                    final Map<String, String> mapProperties = new HashMap<>(properties.size());
 
-                                while (keys.hasMoreElements()) {
-                                    final String key = keys.nextElement();
-                                    final String value = properties.get(key).toString();
-                                    mapProperties.put(key, value);
-                                }
+                                    while (keys.hasMoreElements()) {
+                                        final String key = keys.nextElement();
+                                        final String value = properties.get(key).toString();
+                                        mapProperties.put(key, value);
+                                    }
 
-                                update(mapProperties);
-                            });
-                        } catch (IOException e) {
-                            LOG.debug("Failed to load {} configuration file. Error {}", OFConstants.CONFIG_FILE_ID, e);
-                        }
-                    });
+                                    update(mapProperties);
+                                });
+                            } catch (IOException e) {
+                                LOG.warn("Failed to load {} configuration file. Error {}", OFConstants.CONFIG_FILE_ID, e);
+                            }
+                        });
+            }
         }
 
         @Override

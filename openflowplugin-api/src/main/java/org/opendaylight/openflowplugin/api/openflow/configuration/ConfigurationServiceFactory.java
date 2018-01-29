@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.configuration;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.osgi.framework.BundleContext;
 
@@ -14,6 +16,6 @@ import org.osgi.framework.BundleContext;
  * Factory for creating ConfigurationService instances.
  */
 public interface ConfigurationServiceFactory {
-    ConfigurationService newInstance(OpenflowProviderConfig providerConfig,
-                                     BundleContext bundleContext);
+    ConfigurationService newInstance(@Nonnull OpenflowProviderConfig providerConfig,
+                                     @Nullable BundleContext bundleContext);
 }
