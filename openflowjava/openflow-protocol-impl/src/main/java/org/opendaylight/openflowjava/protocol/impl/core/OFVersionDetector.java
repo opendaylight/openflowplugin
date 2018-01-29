@@ -58,7 +58,9 @@ public class OFVersionDetector extends ByteToMessageDecoder {
             LOG.debug("detected version: {}", version);
             if (!filterPacketIns || EncodeConstants.OF_PACKETIN_MESSAGE_TYPE_VALUE != messageType) {
                 ByteBuf messageBuffer = in.slice();
-                out.add(new VersionMessageWrapper(version, messageBuffer));
+                VersionMessageWrapper versionMessageWrapper =  new VersionMessageWrapper(version, messageBuffer);
+                LOG.info("VersionMessageWrapper is prepared in decode with messagebuffer {}", messageBuffer);
+                out.add(versionMessageWrapper);
                 messageBuffer.retain();
             } else {
                 LOG.debug("dropped packetin");
