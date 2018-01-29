@@ -11,6 +11,9 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegi
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFGeneralDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
+import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializerRegistryImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper class for registering match entry deserializers.
@@ -18,6 +21,8 @@ import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
  * @author michal.polkorab
  */
 public class MatchEntryDeserializerRegistryHelper {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MatchEntryDeserializerRegistryHelper.class);
 
     private final short version;
     private final DeserializerRegistry registry;
@@ -46,6 +51,8 @@ public class MatchEntryDeserializerRegistryHelper {
     public void register(int oxmField, OFGeneralDeserializer deserializer) {
         MatchEntryDeserializerKey key = new MatchEntryDeserializerKey(version, oxmClass, oxmField);
         key.setExperimenterId(null);
+        LOG.info("The registry is with key {} with value {}", key , deserializer);
+
         registry.registerDeserializer(key, deserializer);
     }
 
