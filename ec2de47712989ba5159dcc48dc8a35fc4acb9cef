@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8d5197be_073c6968",
+        "filename": "openflowjava/openflow-protocol-impl/src/test/java/org/opendaylight/openflowjava/protocol/impl/deserialization/factories/GetAsyncReplyMessageFactoryTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-01-29T22:37:01Z",
+      "side": 1,
+      "message": "+ is not needed here, it\u0027s just a stream of byte.",
+      "range": {
+        "startLine": 60,
+        "startChar": 31,
+        "endLine": 60,
+        "endChar": 32
+      },
+      "revId": "ec2de47712989ba5159dcc48dc8a35fc4acb9cef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
