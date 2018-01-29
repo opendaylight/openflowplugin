@@ -65,6 +65,8 @@ public class DeserializerRegistryImpl implements DeserializerRegistry {
     @SuppressWarnings("unchecked")
     public <T extends OFGeneralDeserializer> T getDeserializer(MessageCodeKey key) {
         OFGeneralDeserializer deserializer = registry.get(key);
+        LOG.info("Deserializer for key: " + key
+                + " was not found as {}", deserializer);
         if (deserializer == null) {
             throw new IllegalStateException("Deserializer for key: " + key
                     + " was not found - please verify that all needed deserializers ale loaded correctly");
