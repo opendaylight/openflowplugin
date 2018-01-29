@@ -288,6 +288,13 @@ public class ConnectionContextImpl implements ConnectionContext {
         return result;
     }
 
+    @Override
+    public void setControllerState(boolean controllerIsOK) {
+        if (this.deviceInfo != null) {
+            ((DeviceInfoImpl)this.deviceInfo).changeControllerState(controllerIsOK);
+        }
+    }
+
     private static class DeviceInfoImpl implements DeviceInfo {
 
         private final NodeId nodeId;
@@ -296,6 +303,7 @@ public class ConnectionContextImpl implements ConnectionContext {
         private final BigInteger datapathId;
         private final ServiceGroupIdentifier serviceGroupIdentifier;
         private OutboundQueue outboundQueueProvider;
+        private volatile boolean controllerIsStable;
 
         DeviceInfoImpl(
                 final NodeId nodeId,
@@ -309,6 +317,7 @@ public class ConnectionContextImpl implements ConnectionContext {
             this.datapathId = datapathId;
             this.outboundQueueProvider = outboundQueueProvider;
             this.serviceGroupIdentifier = ServiceGroupIdentifier.create(this.nodeId.getValue());
+            this.controllerIsStable = true;
         }
 
         @Override
@@ -334,6 +343,11 @@ public class ConnectionContextImpl implements ConnectionContext {
         @Override
         public ServiceGroupIdentifier getServiceIdentifier() {
             return this.serviceGroupIdentifier;
+        }
+
+        @Override
+        public boolean controllerIsStable() {
+            return this.controllerIsStable;
         }
 
         @Override
@@ -371,6 +385,10 @@ public class ConnectionContextImpl implements ConnectionContext {
 
         public void setOutboundQueueProvider(final OutboundQueue outboundQueueProvider) {
             this.outboundQueueProvider = outboundQueueProvider;
+        }
+
+        synchronized void changeControllerState(final boolean stableController) {
+            this.controllerIsStable = stableController;
         }
 
         @Override

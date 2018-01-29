@@ -65,6 +65,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
 
     private final Map<DeviceInfo, ContextChain> contextChainMap = new ConcurrentHashMap<>();
     private final Map<DeviceInfo, ? super ConnectionContext> connectingDevices = new ConcurrentHashMap<>();
+    private final Map<DeviceInfo, ConnectionContext> connectedDevices = new ConcurrentHashMap<>();
     private final EntityOwnershipListenerRegistration eosListenerRegistration;
     private final ClusterSingletonServiceProvider singletonServiceProvider;
     private final ExecutorService executorService;
@@ -136,6 +137,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         contextChain.addContext(roleContext);
         contextChainMap.put(deviceInfo, contextChain);
         connectingDevices.remove(deviceInfo);
+        connectedDevices.putIfAbsent(deviceInfo, connectionContext);
         LOG.debug("Context chain" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfo);
 
         deviceContext.onPublished();
@@ -273,34 +275,58 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
 
     @Override
     public void ownershipChanged(EntityOwnershipChange entityOwnershipChange) {
-        if (entityOwnershipChange.hasOwner()) {
-            return;
-        }
 
         final String entityName = getEntityNameFromOwnershipChange(entityOwnershipChange);
 
         if (Objects.nonNull(entityName)) {
-            LOG.debug("Entity {} has no owner", entityName);
+
             final NodeId nodeId = new NodeId(entityName);
 
-            try {
-                final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier = DeviceStateUtil
-                        .createNodeInstanceIdentifier(nodeId);
+            if (entityOwnershipChange.hasOwner() && !entityOwnershipChange.inJeopardy()) {
+                for (DeviceInfo deviceInfo : contextChainMap.keySet()) {
+                    if (deviceInfo.getNodeId().equals(nodeId) && !deviceInfo.controllerIsStable()) {
+                        LOG.debug("Entity {} controller recovered from jeopardy state.", entityName);
+                        if (connectedDevices.containsKey(deviceInfo)) {
+                            connectedDevices.get(deviceInfo).setControllerState(true);
+                            return;
+                        }
+                    }
+                }
+                return;
+            }
 
-                deviceManager.sendNodeRemovedNotification(nodeInstanceIdentifier);
+            if (!entityOwnershipChange.hasOwner()) {
+                LOG.debug("Entity {} has no owner", entityName);
+                try {
+                    final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier = DeviceStateUtil
+                            .createNodeInstanceIdentifier(nodeId);
 
-                LOG.info("Try to remove device {} from operational DS", nodeId);
-                deviceManager.removeDeviceFromOperationalDS(nodeInstanceIdentifier)
-                        .get(REMOVE_DEVICE_FROM_DS_TIMEOUT, TimeUnit.MILLISECONDS);
-                LOG.info("Removing device from operational DS {} was successful", nodeId);
-            } catch (TimeoutException | ExecutionException | NullPointerException | InterruptedException e) {
-                LOG.warn("Not able to remove device {} from operational DS. ", nodeId, e);
+                    deviceManager.sendNodeRemovedNotification(nodeInstanceIdentifier);
+
+                    LOG.info("Try to remove device {} from operational DS", nodeId);
+                    deviceManager.removeDeviceFromOperationalDS(nodeInstanceIdentifier)
+                            .get(REMOVE_DEVICE_FROM_DS_TIMEOUT, TimeUnit.MILLISECONDS);
+                    LOG.info("Removing device from operational DS {} was successful", nodeId);
+                } catch (TimeoutException | ExecutionException | NullPointerException | InterruptedException e) {
+                    LOG.warn("Not able to remove device {} from operational DS. ", nodeId, e);
+                }
+            } else {
+                LOG.debug("Entity {} controller is in jeopardy state.", entityName);
+                for (DeviceInfo deviceInfo : contextChainMap.keySet()) {
+                    if (deviceInfo.getNodeId().equals(nodeId)) {
+                        if (connectedDevices.containsKey(deviceInfo)) {
+                            connectedDevices.get(deviceInfo).setControllerState(false);
+                            break;
+                        }
+                    }
+                }
             }
         }
     }
 
     private void destroyContextChain(final DeviceInfo deviceInfo) {
         ownershipChangeListener.becomeSlaveOrDisconnect(deviceInfo);
+        connectedDevices.remove(deviceInfo);
         Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(contextChain -> {
             deviceManager.sendNodeRemovedNotification(deviceInfo.getNodeInstanceIdentifier());
             contextChain.close();
