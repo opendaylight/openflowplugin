@@ -8,7 +8,6 @@
 package org.opendaylight.openflowjava.protocol.impl.core;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Throwables;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -26,16 +25,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 
 /**
  * Implementation of the SwitchConnectionProviderFactory interface.
- *
- * @author Thomas Pantelis
  */
 public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProviderFactory {
 
     @Override
     public SwitchConnectionProvider newInstance(SwitchConnectionConfig config) {
-        SwitchConnectionProviderImpl switchConnectionProviderImpl =
-                new SwitchConnectionProviderImpl(new ConnectionConfigurationImpl(config));
-        return switchConnectionProviderImpl;
+        return new SwitchConnectionProviderImpl(new ConnectionConfigurationImpl(config));
     }
 
     private static InetAddress extractIpAddressBin(final IpAddress address) throws UnknownHostException {
@@ -70,7 +65,7 @@ public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProv
             try {
                 address = extractIpAddressBin(config.getAddress());
             } catch(UnknownHostException e) {
-                Throwables.propagate(e);
+                throw new RuntimeException(e);
             }
         }
 
