@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "52b70d17_b697c3e7",
+        "filename": "openflowjava/openflow-protocol-impl/src/test/java/org/opendaylight/openflowjava/protocol/impl/deserialization/factories/multipart/MultipartReplyTableFeaturesTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-01-29T22:41:56Z",
+      "side": 1,
+      "message": "\"//\" is to avoid checkstyle warning for putting \"+\" before the string ?",
+      "range": {
+        "startLine": 117,
+        "startChar": 73,
+        "endLine": 117,
+        "endChar": 77
+      },
+      "revId": "95be1ae278c70fcb0b493dd7053b6ab854ad3085",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
