@@ -41,8 +41,8 @@ public class OFDecoder extends MessageToMessageDecoder<VersionMessageWrapper> {
     protected void decode(ChannelHandlerContext ctx, VersionMessageWrapper msg, List<Object> out) throws Exception {
         statisticsCounter.incrementCounter(CounterEventTypes.US_RECEIVED_IN_OFJAVA);
         if (LOG.isDebugEnabled()) {
-            LOG.debug("VersionMessageWrapper received");
-            LOG.debug("<< {}", ByteBufUtils.byteBufToHexString(msg.getMessageBuffer()));
+            LOG.error("VersionMessageWrapper received with version {} for msg {} with type {}", msg.getVersion(), msg.getMessageBuffer(), msg.getMessageBuffer().readUnsignedByte());
+            LOG.error("<< {}", ByteBufUtils.byteBufToHexString(msg.getMessageBuffer()));
         }
 
         try {
