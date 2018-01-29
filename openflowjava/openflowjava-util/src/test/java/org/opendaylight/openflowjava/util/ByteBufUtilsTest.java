@@ -23,16 +23,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInputBuilder;
 
 /**
- * @author michal.polkorab
+ * Unit tests for ByteBufUtils.
  *
+ * @author michal.polkorab
  */
 public class ByteBufUtilsTest {
 
-    private final byte[] EXPECTED = new byte[]{0x01, 0x02, 0x03, 0x04, 0x05, (byte) 0xff};
-    private final byte[] EXPECTEDVALUES1AND255 = new byte[]{0x00, 0x01, 0x00, (byte) 0xff};
+    private static final byte[] EXPECTED = new byte[]{0x01, 0x02, 0x03, 0x04, 0x05, (byte) 0xff};
+    private static final byte[] EXPECTEDVALUES1AND255 = new byte[]{0x00, 0x01, 0x00, (byte) 0xff};
 
     /**
-     * Test of {@link org.opendaylight.openflowjava.util.ByteBufUtils#hexStringToBytes(String)}
+     * Test of {@link org.opendaylight.openflowjava.util.ByteBufUtils#hexStringToBytes(String)}.
      */
     @Test
     public void testHexStringToBytes() {
@@ -42,7 +43,7 @@ public class ByteBufUtilsTest {
     }
 
     /**
-     * Test of {@link ByteBufUtils#hexStringToBytes(String, boolean)}
+     * Test of {@link ByteBufUtils#hexStringToBytes(String, boolean)}.
      */
     @Test
     public void testHexStringToBytes2() {
@@ -52,7 +53,7 @@ public class ByteBufUtilsTest {
     }
 
     /**
-     * Test of {@link ByteBufUtils#hexStringToByteBuf(String)}
+     * Test of {@link ByteBufUtils#hexStringToByteBuf(String)}.
      */
     @Test
     public void testHexStringToByteBuf() {
@@ -62,7 +63,7 @@ public class ByteBufUtilsTest {
     }
 
     /**
-     * Test of {@link ByteBufUtils#hexStringToByteBuf(String, ByteBuf)}
+     * Test of {@link ByteBufUtils#hexStringToByteBuf(String, ByteBuf)}.
      */
     @Test
     public void testHexStringToGivenByteBuf() {
@@ -79,7 +80,7 @@ public class ByteBufUtilsTest {
     }
 
     /**
-     * Test of {@link ByteBufUtils#fillBitMaskFromMap(java.util.Map)}
+     * Test of {@link ByteBufUtils#fillBitMaskFromMap(java.util.Map)}.
      */
     @Test
     public void testFillBitmaskByEmptyMap() {
@@ -92,18 +93,18 @@ public class ByteBufUtilsTest {
 
     private static String toBinaryString(Map<Integer, Boolean> emptyMap, int length) {
         String binaryString = Integer.toBinaryString(ByteBufUtils.fillBitMaskFromMap(emptyMap));
-        return String.format("%"+length+"s", binaryString).replaceAll(" ", "0");
+        return String.format("%" + length + "s", binaryString).replaceAll(" ", "0");
     }
 
     /**
-     * Test of {@link ByteBufUtils#fillBitMaskFromMap(java.util.Map)}
+     * Test of {@link ByteBufUtils#fillBitMaskFromMap(java.util.Map)}.
      */
     @Test
     public void testFillBitmaskByFullMap() {
         Map<Integer, Boolean> fullMap = new HashMap<>();
         String expectedBinaryString = "11111111111111111111111111111111";
         String bitmaskValueInBinarySytring;
-        for(Integer i=0;i<=31;i++) {
+        for (Integer i = 0; i <= 31; i++) {
             fullMap.put(i, true);
         }
         bitmaskValueInBinarySytring = toBinaryString(fullMap, 32);
@@ -111,14 +112,14 @@ public class ByteBufUtilsTest {
     }
 
     /**
-     * Test of {@link ByteBufUtils#fillBitMaskFromMap(java.util.Map)}
+     * Test of {@link ByteBufUtils#fillBitMaskFromMap(java.util.Map)}.
      */
     @Test
     public void testFillBitmaskByZeroMap() {
         Map<Integer, Boolean> zeroMap = new HashMap<>();
         String expectedBinaryString = "00000000000000000000000000000000";
         String bitmaskValueInBinarySytring;
-        for(Integer i=0;i<=31;i++) {
+        for (Integer i = 0; i <= 31; i++) {
             zeroMap.put(i, false);
         }
         bitmaskValueInBinarySytring = toBinaryString(zeroMap, 32);
@@ -126,7 +127,7 @@ public class ByteBufUtilsTest {
     }
 
     /**
-     * Test of {@link ByteBufUtils#fillBitMaskFromMap(java.util.Map)}
+     * Test of {@link ByteBufUtils#fillBitMaskFromMap(java.util.Map)}.
      */
     @Test
     public void testFillBitmaskByRandomSet() {
@@ -134,9 +135,9 @@ public class ByteBufUtilsTest {
         String expectedBinaryString = "00000000000000000111100000000000";
         String bitmaskValueInBinarySytring;
         Boolean mapValue;
-        for(Integer i=0;i<=31;i++) {
+        for (Integer i = 0; i <= 31; i++) {
             mapValue = false;
-            if(i>=11 && i<=14) {
+            if (i >= 11 && i <= 14) {
                 mapValue = true;
             }
             randomMap.put(i, mapValue);
@@ -146,7 +147,7 @@ public class ByteBufUtilsTest {
     }
 
     /**
-     * Test of {@link ByteBufUtils#fillBitMaskFromList(List)}
+     * Test of {@link ByteBufUtils#fillBitMaskFromList(List)}.
      */
     @Test
     public void testFillBitmaskByEmptyList() {
@@ -162,18 +163,18 @@ public class ByteBufUtilsTest {
         int[] bitMaskArray;
         bitMaskArray = ByteBufUtils.fillBitMaskFromList(emptyList);
         String binaryString = Integer.toBinaryString(bitMaskArray[0]);
-        return String.format("%"+length+"s", binaryString).replaceAll(" ", "0");
+        return String.format("%" + length + "s", binaryString).replaceAll(" ", "0");
     }
 
     /**
-     * Test of {@link ByteBufUtils#fillBitMaskFromList(List)}
+     * Test of {@link ByteBufUtils#fillBitMaskFromList(List)}.
      */
     @Test
     public void testFillBitmaskByFullList() {
         List<Boolean> fullList = new ArrayList<>();
         String expectedBinaryString = "11111111111111111111111111111111";
         String bitmaskValueInBinarySytring;
-        for(Integer i=0;i<=31;i++) {
+        for (Integer i = 0; i <= 31; i++) {
             fullList.add(true);
         }
         bitmaskValueInBinarySytring = listToBinaryString(fullList, 32);
@@ -181,14 +182,14 @@ public class ByteBufUtilsTest {
     }
 
     /**
-     * Test of {@link ByteBufUtils#fillBitMaskFromList(List)}
+     * Test of {@link ByteBufUtils#fillBitMaskFromList(List)}.
      */
     @Test
     public void testFillBitmaskByZeroList() {
         List<Boolean> zeroList = new ArrayList<>();
         String expectedBinaryString = "00000000000000000000000000000000";
         String bitmaskValueInBinarySytring;
-        for(Integer i=0;i<=31;i++) {
+        for (Integer i = 0; i <= 31; i++) {
             zeroList.add(false);
         }
         bitmaskValueInBinarySytring = listToBinaryString(zeroList, 32);
@@ -196,7 +197,7 @@ public class ByteBufUtilsTest {
     }
 
     /**
-     * Test of {@link ByteBufUtils#fillBitMaskFromList(List)}
+     * Test of {@link ByteBufUtils#fillBitMaskFromList(List)}.
      */
     @Test
     public void testFillBitmaskFromRandomList() {
@@ -204,9 +205,9 @@ public class ByteBufUtilsTest {
         String expectedBinaryString = "00000000000000000111100000000000";
         String bitmaskValueInBinarySytring;
         Boolean listValue;
-        for(Integer i=0;i<=31;i++) {
+        for (Integer i = 0; i <= 31; i++) {
             listValue = false;
-            if(i>=11 && i<=14) {
+            if (i >= 11 && i <= 14) {
                 listValue = true;
             }
             randomList.add(listValue);
@@ -216,7 +217,7 @@ public class ByteBufUtilsTest {
     }
 
     /**
-     * Test of {@link ByteBufUtils#macAddressToBytes(String)}
+     * Test of {@link ByteBufUtils#macAddressToBytes(String)}.
      */
     @Test
     public void testMacToBytes() {
@@ -233,82 +234,82 @@ public class ByteBufUtilsTest {
     }
 
     /**
-     * Test of {@link ByteBufUtils#macAddressToBytes(String)}
+     * Test of {@link ByteBufUtils#macAddressToBytes(String)}.
      */
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testMacToBytes2() {
         Assert.assertArrayEquals("Wrong byte array", new byte[]{0, 1, 2, 3, (byte) 255, 5},
                 ByteBufUtils.macAddressToBytes("00:01:02:03:FF:0G"));
     }
 
     /**
-     * Test of {@link ByteBufUtils#macAddressToBytes(String)}
+     * Test of {@link ByteBufUtils#macAddressToBytes(String)}.
      */
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testMacToBytesTooShort() {
         ByteBufUtils.macAddressToBytes("00:01:02:03:FF");
     }
 
     /**
-     * Test of {@link ByteBufUtils#macAddressToBytes(String)}
+     * Test of {@link ByteBufUtils#macAddressToBytes(String)}.
      */
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testMacToBytesTooShort2() {
         ByteBufUtils.macAddressToBytes("00:01:02:03:FF:");
     }
 
     /**
-     * Test of {@link ByteBufUtils#macAddressToBytes(String)}
+     * Test of {@link ByteBufUtils#macAddressToBytes(String)}.
      */
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testIncorrectMacToBytes() {
         ByteBufUtils.macAddressToBytes("00:01:02:03:FF::");
     }
 
     /**
-     * Test of {@link ByteBufUtils#macAddressToBytes(String)}
+     * Test of {@link ByteBufUtils#macAddressToBytes(String)}.
      */
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testIncorrectMacToBytes2() {
         ByteBufUtils.macAddressToBytes("00:01:02:03:FF:::");
     }
 
     /**
-     * Test of {@link ByteBufUtils#macAddressToBytes(String)}
+     * Test of {@link ByteBufUtils#macAddressToBytes(String)}.
      */
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testMacToBytesTooLong() {
         ByteBufUtils.macAddressToBytes("00:01:02:03:FF:05:85");
     }
 
     /**
-     * Test of {@link ByteBufUtils#macAddressToBytes(String)}
+     * Test of {@link ByteBufUtils#macAddressToBytes(String)}.
      */
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testMacToBytesInvalidOctet() {
         ByteBufUtils.macAddressToBytes("00:01:02:03:FF:05d");
     }
 
     /**
-     * Test of {@link ByteBufUtils#macAddressToBytes(String)}
+     * Test of {@link ByteBufUtils#macAddressToBytes(String)}.
      */
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testMacToBytesInvalidOctet2() {
         ByteBufUtils.macAddressToBytes("00:01:rr:03:FF:05");
     }
 
     /**
-     * Test of {@link ByteBufUtils#macAddressToBytes(String)}
+     * Test of {@link ByteBufUtils#macAddressToBytes(String)}.
      */
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testMacToBytesInvalidOctet3() {
         ByteBufUtils.macAddressToBytes("00:01:05d:03:FF:02");
     }
 
     /**
-     * Test of {@link ByteBufUtils#macAddressToString(byte[])}
+     * Test of {@link ByteBufUtils#macAddressToString(byte[])}.
      */
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testMacToString() {
         Assert.assertEquals("Wrong string decoded", "00:01:02:03:FF:05",
                 ByteBufUtils.macAddressToString(new byte[]{0, 1, 2, 3, (byte) 255, 5}));
@@ -316,7 +317,7 @@ public class ByteBufUtilsTest {
     }
 
     /**
-     * Test of {@link ByteBufUtils#decodeNullTerminatedString(ByteBuf, int)}
+     * Test of {@link ByteBufUtils#decodeNullTerminatedString(ByteBuf, int)}.
      */
     @Test
     public void testDecodeString() {
@@ -328,7 +329,7 @@ public class ByteBufUtilsTest {
     }
 
     /**
-     * Test of {@link ByteBufUtils#byteBufToHexString(ByteBuf)}
+     * Test of {@link ByteBufUtils#byteBufToHexString(ByteBuf)}.
      */
     @Test
     public void testByteBufToHexString() {
@@ -338,7 +339,7 @@ public class ByteBufUtilsTest {
     }
 
     /**
-     * Buffer padding test
+     * Buffer padding test.
      */
     @Test
     public void testPadBuffer() {
@@ -350,16 +351,16 @@ public class ByteBufUtilsTest {
     }
 
     /**
-     * Write OF header test
+     * Write OF header test.
      */
     @Test
     public void testWriteHeader() {
-        ByteBuf buf = PooledByteBufAllocator.DEFAULT.buffer();
         HelloInputBuilder helloBuilder = new HelloInputBuilder();
         helloBuilder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
         helloBuilder.setXid(12345L);
         helloBuilder.setElements(null);
         HelloInput helloInput = helloBuilder.build();
+        ByteBuf buf = PooledByteBufAllocator.DEFAULT.buffer();
         ByteBufUtils.writeOFHeader((byte) 0, helloInput, buf, EncodeConstants.OFHEADER_SIZE);
         Assert.assertEquals("Wrong version", EncodeConstants.OF13_VERSION_ID, buf.readUnsignedByte());
         Assert.assertEquals("Wrong type", 0, buf.readUnsignedByte());
@@ -369,7 +370,7 @@ public class ByteBufUtilsTest {
     }
 
     /**
-     * Fill bitmask test
+     * Fill bitmask test.
      */
     @Test
     public void testFillBitmask() {
@@ -385,7 +386,7 @@ public class ByteBufUtilsTest {
     }
 
     /**
-     * Test bytes to hex string
+     * Test bytes to hex string.
      */
     @Test
     public void testBytesToHexString() {
@@ -396,9 +397,9 @@ public class ByteBufUtilsTest {
     }
 
     /**
-     * Test ipv4 address conversion
+     * Test ipv4 address conversion.
      */
-    @Test(expected=IndexOutOfBoundsException.class)
+    @Test(expected = IndexOutOfBoundsException.class)
     public void testReadIpv4Address() {
         ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer();
         buffer.writeByte(10);
@@ -415,9 +416,9 @@ public class ByteBufUtilsTest {
     }
 
     /**
-     * Test ipv6 address conversion
+     * Test ipv6 address conversion.
      */
-    @Test(expected=IndexOutOfBoundsException.class)
+    @Test(expected = IndexOutOfBoundsException.class)
     public void testReadIpv6Address() {
         ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer();
         buffer.writeShort(10);
@@ -445,7 +446,7 @@ public class ByteBufUtilsTest {
         shorts.add((short) 255);
 
         final byte[] bytes = ByteBufUtils.serializeList(shorts);
-        Assert.assertTrue(bytes.length == shorts.size()*2);
+        Assert.assertTrue(bytes.length == shorts.size() * 2);
         Assert.assertArrayEquals(EXPECTEDVALUES1AND255, bytes);
     }
 
@@ -453,17 +454,17 @@ public class ByteBufUtilsTest {
     public void testUpdateHeader() throws IOException {
         ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer();
         buffer.writeInt(1);
-        int start = buffer.writerIndex();
+        final int start = buffer.writerIndex();
         buffer.writeShort(4);
         buffer.writeShort(EncodeConstants.EMPTY_LENGTH);
         buffer.writeLong(8);
-        int end = buffer.writerIndex();
+        final int end = buffer.writerIndex();
 
         ByteBufUtils.updateOFHeaderLength(buffer, start);
         Assert.assertEquals(buffer.readInt(), 1);
         Assert.assertEquals(buffer.readShort(), 4);
         Assert.assertEquals(buffer.readShort(), 12);
-        Assert.assertEquals(buffer.readLong(), 8l);
+        Assert.assertEquals(buffer.readLong(), 8L);
         Assert.assertEquals(buffer.getShort(start + EncodeConstants.OFHEADER_LENGTH_INDEX), end - start);
     }
 }

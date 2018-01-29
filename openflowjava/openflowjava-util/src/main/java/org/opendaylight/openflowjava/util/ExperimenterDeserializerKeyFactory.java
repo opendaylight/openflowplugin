@@ -17,15 +17,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeatureProperties;
 
 /**
+ * Factory for creating experimenter deserializer keys.
+ *
  * @author michal.polkorab
  */
-public abstract class ExperimenterDeserializerKeyFactory {
+public final class ExperimenterDeserializerKeyFactory {
 
     private ExperimenterDeserializerKeyFactory() {
         //not called
     }
 
     /**
+     * Creates an experimenter error deserializer key.
+     *
      * @param version openflow wire version
      * @param experimenterId experimenter / vendor ID
      * @return key instance
@@ -36,6 +40,8 @@ public abstract class ExperimenterDeserializerKeyFactory {
     }
 
     /**
+     * Creates an experimenter message deserializer key.
+     *
      * @param version openflow wire version
      * @param experimenterId experimenter / vendor ID
      * @param type experimenter type according to vendor implementation
@@ -47,7 +53,9 @@ public abstract class ExperimenterDeserializerKeyFactory {
     }
 
     /**
-     * @param version        openflow wire version
+     * Creates a vendor message deserializer key.
+     *
+     * @param version openflow wire version
      * @param experimenterId experimenter / vendor ID
      * @return key instance
      */
@@ -57,9 +65,11 @@ public abstract class ExperimenterDeserializerKeyFactory {
     }
 
     /**
+     * Creates a multi-part reply message deserializer key.
+     *
      * @param version openflow wire version
      * @param experimenterId experimenter / vendor ID
-     * @param type
+     * @param type the type
      * @return key instance
      */
     public static ExperimenterIdTypeDeserializerKey createMultipartReplyMessageDeserializerKey(
@@ -68,7 +78,9 @@ public abstract class ExperimenterDeserializerKeyFactory {
     }
 
     /**
-     * @param version        openflow wire version
+     * Creates a multi-part reply vendor message deserializer key.
+     *
+     * @param version openflow wire version
      * @param experimenterId experimenter / vendor ID
      * @return key instance
      */
@@ -78,6 +90,8 @@ public abstract class ExperimenterDeserializerKeyFactory {
     }
 
     /**
+     * Creates a multi-part reply TF deserializer key.
+     *
      * @param version openflow wire version
      * @param experimenterId experimenter / vendor ID
      * @return key instance
@@ -88,6 +102,8 @@ public abstract class ExperimenterDeserializerKeyFactory {
     }
 
     /**
+     * Creates a queue property deserializer key.
+     *
      * @param version openflow wire version
      * @param experimenterId experimenter / vendor ID
      * @return key instance
@@ -98,6 +114,8 @@ public abstract class ExperimenterDeserializerKeyFactory {
     }
 
     /**
+     * Creates a meter band deserializer key.
+     *
      * @param version openflow wire version
      * @param experimenterId experimenter / vendor ID
      * @return key instance
@@ -106,5 +124,4 @@ public abstract class ExperimenterDeserializerKeyFactory {
             short version, Long experimenterId) {
         return new ExperimenterIdDeserializerKey(version, experimenterId, MeterBandExperimenterCase.class);
     }
-
 }

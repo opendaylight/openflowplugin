@@ -20,9 +20,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeatureProperties;
 
 /**
- * Test ExperimenterSerializerKeyFactory key creation
- * @author michal.polkorab
+ * Test ExperimenterSerializerKeyFactory key creation.
  *
+ * @author michal.polkorab
  */
 public class ExperimenterSerializerKeyFactoryTest {
 
@@ -76,12 +76,12 @@ public class ExperimenterSerializerKeyFactoryTest {
 
     @Test
     public void testCreateMeterBandSubTypeSerializerKey() throws Exception {
-        ExperimenterIdSerializerKey<?> createdKey;
-        ExperimenterIdSerializerKey<?> comparationKey1;
-        ExperimenterIdSerializerKey<?> comparationKey2;
-        ExperimenterIdSerializerKey<?> comparationKey3;
-        ExperimenterIdSerializerKey<?> comparationKey4;
-        ExperimenterIdSerializerKey<?> comparationKey5;
+        final ExperimenterIdSerializerKey<?> createdKey;
+        final ExperimenterIdSerializerKey<?> comparationKey1;
+        final ExperimenterIdSerializerKey<?> comparationKey2;
+        final ExperimenterIdSerializerKey<?> comparationKey3;
+        final ExperimenterIdSerializerKey<?> comparationKey4;
+        final ExperimenterIdSerializerKey<?> comparationKey5;
 
         createdKey = ExperimenterSerializerKeyFactory.createMeterBandSerializerKey(
                 EncodeConstants.OF10_VERSION_ID, 43L, ExperimenterMeterBandSubType.class);
