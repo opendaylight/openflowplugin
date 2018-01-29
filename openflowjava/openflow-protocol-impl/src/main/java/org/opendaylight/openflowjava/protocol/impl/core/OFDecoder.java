@@ -42,10 +42,10 @@ public class OFDecoder extends MessageToMessageDecoder<VersionMessageWrapper> {
     @SuppressWarnings("checkstyle:IllegalCatch")
     protected void decode(ChannelHandlerContext ctx, VersionMessageWrapper msg, List<Object> out) throws Exception {
         statisticsCounter.incrementCounter(CounterEventTypes.US_RECEIVED_IN_OFJAVA);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("VersionMessageWrapper received");
-            LOG.debug("<< {}", ByteBufUtils.byteBufToHexString(msg.getMessageBuffer()));
-        }
+    //    if (LOG.isDebugEnabled()) {
+       //     LOG.error("VersionMessageWrapper received with version {} for msg {} with type {}", msg.getVersion(), msg.getMessageBuffer().readUnsignedByte());
+            LOG.error("<< {}", ByteBufUtils.byteBufToHexString(msg.getMessageBuffer()));
+     //   }
 
         try {
             final DataObject dataObject = deserializationFactory.deserialize(msg.getMessageBuffer(),
