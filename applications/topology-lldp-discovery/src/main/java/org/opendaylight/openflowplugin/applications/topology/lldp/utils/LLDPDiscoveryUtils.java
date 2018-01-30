@@ -50,7 +50,7 @@ public class LLDPDiscoveryUtils {
     public static String macToString(byte[] mac) {
         StringBuilder b = new StringBuilder();
         for (int i = 0; i < mac.length; i++) {
-            b.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? ":" : ""));
+            b.append(String.format("%02X%s", mac[i], i < mac.length - 1 ? ":" : ""));
         }
 
         return b.toString();
@@ -76,7 +76,7 @@ public class LLDPDiscoveryUtils {
         if (isLLDP(payload)) {
             Ethernet ethPkt = new Ethernet();
             try {
-                ethPkt.deserialize(payload, 0, payload.length * NetUtils.NumBitsInAByte);
+                ethPkt.deserialize(payload, 0, payload.length * NetUtils.NUM_BITS_IN_A_BYTE);
             } catch (Exception e) {
                 LOG.warn("Failed to decode LLDP packet {}", e);
                 return nodeConnectorRef;
@@ -180,6 +180,6 @@ public class LLDPDiscoveryUtils {
             ethernetType = bb.getShort(ETHERNET_VLAN_OFFSET);
         }
 
-        return (ethernetType == ETHERNET_TYPE_LLDP);
+        return ethernetType == ETHERNET_TYPE_LLDP;
     }
 }

@@ -132,19 +132,17 @@ public class BitBufferHelperTest {
     //     [01100011]
     @Test
     public void testGetBytes() throws Exception {
-        byte data[] = { 108, 96, 125, -112, 5, 6, 108, 8, 9, 10, 11, 12, 13,
-                14, 15, 16, 17, 18, 19, 20, 21, 22 };
-        byte[] x;
+        byte[] data = { 108, 96, 125, -112, 5, 6, 108, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22 };
 
         Assert.assertTrue(BitBufferHelper.getBits(data, 0, 8)[0] == 108);
         Assert.assertTrue(BitBufferHelper.getBits(data, 8, 8)[0] == 96);
 
-        x = BitBufferHelper.getBits(data, 0, 10);
-        Assert.assertTrue(x[0] == 1);
-        Assert.assertTrue(x[1] == -79);
+        byte[]  bits = BitBufferHelper.getBits(data, 0, 10);
+        Assert.assertTrue(bits[0] == 1);
+        Assert.assertTrue(bits[1] == -79);
 
-        x = BitBufferHelper.getBits(data, 3, 8);
-        Assert.assertTrue(x[0] == 99);
+        bits = BitBufferHelper.getBits(data, 3, 8);
+        Assert.assertTrue(bits[0] == 99);
         //Assert.assertTrue(x[1] == 97);
 
     }
@@ -182,143 +180,143 @@ public class BitBufferHelperTest {
     @Test
     public void testToByteArray() {
         short sh = Short.MAX_VALUE;
-        byte[] data_sh = new byte[Byte.SIZE / 8];
-        data_sh = BitBufferHelper.toByteArray(sh);
-        Assert.assertTrue(data_sh[0] == 127);
-        Assert.assertTrue(data_sh[1] == -1);
+        byte[] dataShort = new byte[Byte.SIZE / 8];
+        dataShort = BitBufferHelper.toByteArray(sh);
+        Assert.assertTrue(dataShort[0] == 127);
+        Assert.assertTrue(dataShort[1] == -1);
 
         short sh2 = Short.MIN_VALUE;
-        byte[] data_sh2 = new byte[Byte.SIZE / 8];
-        data_sh2 = BitBufferHelper.toByteArray(sh2);
-        Assert.assertTrue(data_sh2[0] == -128);
-        Assert.assertTrue(data_sh2[1] == 0);
+        byte[] dataShort2 = new byte[Byte.SIZE / 8];
+        dataShort2 = BitBufferHelper.toByteArray(sh2);
+        Assert.assertTrue(dataShort2[0] == -128);
+        Assert.assertTrue(dataShort2[1] == 0);
 
         short sh3 = 16384;
-        byte[] data_sh3 = new byte[Byte.SIZE / 8];
-        data_sh3 = BitBufferHelper.toByteArray(sh3);
-        Assert.assertTrue(data_sh3[0] == 64);
-        Assert.assertTrue(data_sh3[1] == 0);
+        byte[] dataShort3 = new byte[Byte.SIZE / 8];
+        dataShort3 = BitBufferHelper.toByteArray(sh3);
+        Assert.assertTrue(dataShort3[0] == 64);
+        Assert.assertTrue(dataShort3[1] == 0);
 
         short sh4 = 146; //TCP headerlenflags - startoffset = 103
-        byte[] data_sh4 = new byte[Byte.SIZE / 8];
-        data_sh4 = BitBufferHelper.toByteArray(sh4);
-        Assert.assertTrue(data_sh4[0] == 0);
-        Assert.assertTrue(data_sh4[1] == -110);
+        byte[] dataShort4 = new byte[Byte.SIZE / 8];
+        dataShort4 = BitBufferHelper.toByteArray(sh4);
+        Assert.assertTrue(dataShort4[0] == 0);
+        Assert.assertTrue(dataShort4[1] == -110);
 
-        short sh4_2 = 5000; //IPv4 Offset - startOffset = 51 (to 63)
-        byte[] data_sh4_2 = new byte[Byte.SIZE / 8];
-        data_sh4_2 = BitBufferHelper.toByteArray(sh4_2);
-        Assert.assertTrue(data_sh4_2[0] == 19);
-        Assert.assertTrue(data_sh4_2[1] == -120);
+        short sh5 = 5000; //IPv4 Offset - startOffset = 51 (to 63)
+        byte[] dataShort5 = new byte[Byte.SIZE / 8];
+        dataShort5 = BitBufferHelper.toByteArray(sh5);
+        Assert.assertTrue(dataShort5[0] == 19);
+        Assert.assertTrue(dataShort5[1] == -120);
 
-        short sh4_3 = 5312; //numEndRestBits < numBitstoShiftBy
-        byte[] data_sh4_3 = new byte[Byte.SIZE / 8];
-        data_sh4_3 = BitBufferHelper.toByteArray(sh4_3);
-        Assert.assertTrue(data_sh4_3[0] == 20);
-        Assert.assertTrue(data_sh4_3[1] == -64);
+        short sh6 = 5312; //numEndRestBits < numBitstoShiftBy
+        byte[] dataShort6 = new byte[Byte.SIZE / 8];
+        dataShort6 = BitBufferHelper.toByteArray(sh6);
+        Assert.assertTrue(dataShort6[0] == 20);
+        Assert.assertTrue(dataShort6[1] == -64);
 
-        int Int = Integer.MAX_VALUE;
-        byte[] data_Int = new byte[Integer.SIZE / 8];
-        data_Int = BitBufferHelper.toByteArray(Int);
-        Assert.assertTrue(data_Int[0] == 127);
-        Assert.assertTrue(data_Int[1] == -1);
-        Assert.assertTrue(data_Int[2] == -1);
-        Assert.assertTrue(data_Int[3] == -1);
+        int int1 = Integer.MAX_VALUE;
+        byte[] dataInt1 = new byte[Integer.SIZE / 8];
+        dataInt1 = BitBufferHelper.toByteArray(int1);
+        Assert.assertTrue(dataInt1[0] == 127);
+        Assert.assertTrue(dataInt1[1] == -1);
+        Assert.assertTrue(dataInt1[2] == -1);
+        Assert.assertTrue(dataInt1[3] == -1);
 
-        int Int2 = Integer.MIN_VALUE;
-        byte[] data_Int2 = new byte[Integer.SIZE / 8];
-        data_Int2 = BitBufferHelper.toByteArray(Int2);
-        Assert.assertTrue(data_Int2[0] == -128);
-        Assert.assertTrue(data_Int2[1] == 0);
-        Assert.assertTrue(data_Int2[2] == 0);
-        Assert.assertTrue(data_Int2[3] == 0);
+        int int2 = Integer.MIN_VALUE;
+        byte[] dataInt2 = new byte[Integer.SIZE / 8];
+        dataInt2 = BitBufferHelper.toByteArray(int2);
+        Assert.assertTrue(dataInt2[0] == -128);
+        Assert.assertTrue(dataInt2[1] == 0);
+        Assert.assertTrue(dataInt2[2] == 0);
+        Assert.assertTrue(dataInt2[3] == 0);
 
-        int Int3 = 1077952576;
-        byte[] data_Int3 = new byte[Integer.SIZE / 8];
-        data_Int3 = BitBufferHelper.toByteArray(Int3);
-        Assert.assertTrue(data_Int3[0] == 64);
-        Assert.assertTrue(data_Int3[1] == 64);
-        Assert.assertTrue(data_Int3[2] == 64);
-        Assert.assertTrue(data_Int3[3] == 64);
+        int int3 = 1077952576;
+        byte[] dataInt3 = new byte[Integer.SIZE / 8];
+        dataInt3 = BitBufferHelper.toByteArray(int3);
+        Assert.assertTrue(dataInt3[0] == 64);
+        Assert.assertTrue(dataInt3[1] == 64);
+        Assert.assertTrue(dataInt3[2] == 64);
+        Assert.assertTrue(dataInt3[3] == 64);
 
-        long Lng = Long.MAX_VALUE;
-        byte[] data_lng = new byte[Long.SIZE / 8];
-        data_lng = BitBufferHelper.toByteArray(Lng);
-        Assert.assertTrue(data_lng[0] == 127);
-        Assert.assertTrue(data_lng[1] == -1);
-        Assert.assertTrue(data_lng[2] == -1);
-        Assert.assertTrue(data_lng[3] == -1);
-        Assert.assertTrue(data_lng[4] == -1);
-        Assert.assertTrue(data_lng[5] == -1);
-        Assert.assertTrue(data_lng[6] == -1);
-        Assert.assertTrue(data_lng[7] == -1);
+        long long1 = Long.MAX_VALUE;
+        byte[] dataLong1 = new byte[Long.SIZE / 8];
+        dataLong1 = BitBufferHelper.toByteArray(long1);
+        Assert.assertTrue(dataLong1[0] == 127);
+        Assert.assertTrue(dataLong1[1] == -1);
+        Assert.assertTrue(dataLong1[2] == -1);
+        Assert.assertTrue(dataLong1[3] == -1);
+        Assert.assertTrue(dataLong1[4] == -1);
+        Assert.assertTrue(dataLong1[5] == -1);
+        Assert.assertTrue(dataLong1[6] == -1);
+        Assert.assertTrue(dataLong1[7] == -1);
 
-        long Lng2 = Long.MIN_VALUE;
-        byte[] data_lng2 = new byte[Long.SIZE / 8];
-        data_lng2 = BitBufferHelper.toByteArray(Lng2);
-        Assert.assertTrue(data_lng2[0] == -128);
-        Assert.assertTrue(data_lng2[1] == 0);
-        Assert.assertTrue(data_lng2[2] == 0);
-        Assert.assertTrue(data_lng2[3] == 0);
-        Assert.assertTrue(data_lng2[4] == 0);
-        Assert.assertTrue(data_lng2[5] == 0);
-        Assert.assertTrue(data_lng2[6] == 0);
-        Assert.assertTrue(data_lng2[7] == 0);
+        long long2 = Long.MIN_VALUE;
+        byte[] dataLong2 = new byte[Long.SIZE / 8];
+        dataLong2 = BitBufferHelper.toByteArray(long2);
+        Assert.assertTrue(dataLong2[0] == -128);
+        Assert.assertTrue(dataLong2[1] == 0);
+        Assert.assertTrue(dataLong2[2] == 0);
+        Assert.assertTrue(dataLong2[3] == 0);
+        Assert.assertTrue(dataLong2[4] == 0);
+        Assert.assertTrue(dataLong2[5] == 0);
+        Assert.assertTrue(dataLong2[6] == 0);
+        Assert.assertTrue(dataLong2[7] == 0);
 
-        byte B = Byte.MAX_VALUE;
-        byte[] data_B = new byte[Byte.SIZE / 8];
-        data_B = BitBufferHelper.toByteArray(B);
-        Assert.assertTrue(data_B[0] == 127);
+        byte byte1 = Byte.MAX_VALUE;
+        byte[] dataByte1 = new byte[Byte.SIZE / 8];
+        dataByte1 = BitBufferHelper.toByteArray(byte1);
+        Assert.assertTrue(dataByte1[0] == 127);
 
-        byte B1 = Byte.MIN_VALUE;
-        byte[] data_B1 = new byte[Byte.SIZE / 8];
-        data_B1 = BitBufferHelper.toByteArray(B1);
-        Assert.assertTrue(data_B1[0] == -128);
+        byte byte2 = Byte.MIN_VALUE;
+        byte[] dataByte2 = new byte[Byte.SIZE / 8];
+        dataByte2 = BitBufferHelper.toByteArray(byte2);
+        Assert.assertTrue(dataByte2[0] == -128);
 
-        byte B2 = 64;
-        byte[] data_B2 = new byte[Byte.SIZE / 8];
-        data_B2 = BitBufferHelper.toByteArray(B2);
-        Assert.assertTrue(data_B2[0] == 64);
+        byte byte3 = 64;
+        byte[] dataByte3 = new byte[Byte.SIZE / 8];
+        dataByte3 = BitBufferHelper.toByteArray(byte3);
+        Assert.assertTrue(dataByte3[0] == 64);
 
-        byte B3 = 32;
-        byte[] data_B3 = new byte[Byte.SIZE / 8];
-        data_B3 = BitBufferHelper.toByteArray(B3);
-        Assert.assertTrue(data_B3[0] == 32);
+        byte byte4 = 32;
+        byte[] dataByte4 = new byte[Byte.SIZE / 8];
+        dataByte4 = BitBufferHelper.toByteArray(byte4);
+        Assert.assertTrue(dataByte4[0] == 32);
 
     }
 
     @Test
     public void testToByteArrayVariable() {
         int len = 9;
-        byte[] data_sh;
-        data_sh = BitBufferHelper.toByteArray(511, len);
-        Assert.assertTrue(data_sh[0] == (byte) 255);
-        Assert.assertTrue(data_sh[1] == (byte) 128);
+        byte[] dataShort;
+        dataShort = BitBufferHelper.toByteArray(511, len);
+        Assert.assertTrue(dataShort[0] == (byte) 255);
+        Assert.assertTrue(dataShort[1] == (byte) 128);
 
-        data_sh = BitBufferHelper.toByteArray(511, len);
-        Assert.assertTrue(data_sh[0] == (byte) 255);
-        Assert.assertTrue(data_sh[1] == (byte) 128);
+        dataShort = BitBufferHelper.toByteArray(511, len);
+        Assert.assertTrue(dataShort[0] == (byte) 255);
+        Assert.assertTrue(dataShort[1] == (byte) 128);
 
-        data_sh = BitBufferHelper.toByteArray((long) 511, len);
-        Assert.assertTrue(data_sh[0] == (byte) 255);
-        Assert.assertTrue(data_sh[1] == (byte) 128);
+        dataShort = BitBufferHelper.toByteArray((long) 511, len);
+        Assert.assertTrue(dataShort[0] == (byte) 255);
+        Assert.assertTrue(dataShort[1] == (byte) 128);
     }
 
     @Test
     public void testToInt() {
-        byte data[] = { 1 };
+        byte[] data = { 1 };
         Assert.assertTrue(BitBufferHelper.toNumber(data) == 1);
 
-        byte data2[] = { 1, 1 };
+        byte[] data2 = { 1, 1 };
         Assert.assertTrue(BitBufferHelper.toNumber(data2) == 257);
 
-        byte data3[] = { 1, 1, 1 };
+        byte[] data3 = { 1, 1, 1 };
         Assert.assertTrue(BitBufferHelper.toNumber(data3) == 65793);
     }
 
     @Test
     public void testToLongGetter() {
-        byte data[] = { 1, 1 };
+        byte[] data = { 1, 1 };
         Assert.assertTrue(BitBufferHelper.getLong(data) == 257L);
     }
 
@@ -351,18 +349,18 @@ public class BitBufferHelperTest {
     // [01001011] [01101110] [01101011] [10100000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]*/
     public void testInsertBits() throws Exception {
         //CASE 1: startOffset%8 == 0 && numBits%8 == 0
-        byte inputdata[] = { 75, 110, 107, 80, 10, 12, 35, 100, 125, 65 };
+        byte[] inputdata = { 75, 110, 107, 80, 10, 12, 35, 100, 125, 65 };
         int startOffset = 0;
         int numBits = 8;
 
-        byte data1[] = new byte[2];
+        byte[] data1 = new byte[2];
         startOffset = 0;
         numBits = 16;
         BitBufferHelper.insertBits(data1, inputdata, startOffset, numBits);
         Assert.assertTrue(data1[0] == 75);
         Assert.assertTrue(data1[1] == 110);
 
-        byte data2[] = new byte[4];
+        byte[] data2 = new byte[4];
         startOffset = 0;
         numBits = 32;
         BitBufferHelper.insertBits(data2, inputdata, startOffset, numBits);
@@ -372,8 +370,9 @@ public class BitBufferHelperTest {
         Assert.assertTrue(data2[3] == 80);
 
         // INPUT: {75, 110, 107, 80, 10, 12, 35, 100, 125, 65} =
-        // [01001011] [01101110] [01101011] [10100000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]        // OUTPUT: [01001011] [01101000] = {75, 104}
-        byte data10[] = new byte[2];
+        // [01001011] [01101110] [01101011] [10100000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]
+        // OUTPUT: [01001011] [01101000] = {75, 104}
+        byte[] data10 = new byte[2];
         startOffset = 0;
         numBits = 13;
         BitBufferHelper.insertBits(data10, inputdata, startOffset, numBits);
@@ -381,16 +380,18 @@ public class BitBufferHelperTest {
         Assert.assertTrue(data10[1] == 104);
 
         // INPUT: {75, 110, 107, 80, 10, 12, 35, 100, 125, 65} =
-        // [01001011] [01101110] [01101011] [10100000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]        // OUTPUT: [01001000] = {72}
-        byte data11[] = new byte[4];
+        // [01001011] [01101110] [01101011] [10100000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]
+        // OUTPUT: [01001000] = {72}
+        byte[] data11 = new byte[4];
         startOffset = 8;
         numBits = 6;
         BitBufferHelper.insertBits(data11, inputdata, startOffset, numBits);
         Assert.assertTrue(data11[1] == 72);
 
         // INPUT: {75, 110, 107, 80, 10, 12, 35, 100, 125, 65} =
-        // [01001011] [01101110] [01101011] [10100000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]        //OUTPUT: [01001011] [01101110] [01101000] = {75, 110, 105}
-        byte data12[] = new byte[4];
+        // [01001011] [01101110] [01101011] [10100000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]
+        // OUTPUT: [01001011] [01101110] [01101000] = {75, 110, 105}
+        byte[] data12 = new byte[4];
         startOffset = 0;
         numBits = 23;
         BitBufferHelper.insertBits(data12, inputdata, startOffset, numBits);
@@ -399,8 +400,9 @@ public class BitBufferHelperTest {
         Assert.assertTrue(data12[2] == 106);
 
         // INPUT: {75, 110, 107, 80, 10, 12, 35, 100, 125, 65} =
-        // [01001011] [01101110] [01101011] [10100000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]        //OUTPUT: [01001011] [01101110] [01100000] = {75, 110, 96}
-        byte data13[] = new byte[4];
+        // [01001011] [01101110] [01101011] [10100000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]
+        // OUTPUT: [01001011] [01101110] [01100000] = {75, 110, 96}
+        byte[] data13 = new byte[4];
         startOffset = 8;
         numBits = 20;
         BitBufferHelper.insertBits(data13, inputdata, startOffset, numBits);
@@ -409,8 +411,9 @@ public class BitBufferHelperTest {
         Assert.assertTrue(data13[3] == 96);
 
         // INPUT: {75, 110, 107, 80, 10, 12, 35, 100, 125, 65} =
-        // [01001011] [01101110] [01101011] [10100000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]        //OUTPUT: [01001011] [01101110] [01101011] [10100000]= {75, 110, 107, 80}
-        byte data14[] = new byte[4];
+        // [01001011] [01101110] [01101011] [10100000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]
+        // OUTPUT: [01001011] [01101110] [01101011] [10100000]= {75, 110, 107, 80}
+        byte[] data14 = new byte[4];
         startOffset = 0;
         numBits = 30;
         BitBufferHelper.insertBits(data14, inputdata, startOffset, numBits);
@@ -421,8 +424,9 @@ public class BitBufferHelperTest {
 
         //CASE 3: startOffset%8 != 0, numBits%8 = 0
         // INPUT: {75, 110, 107, 80, 10, 12, 35, 100, 125, 65} =
-        // [01001011] [01101110] [01101011] [10100000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]        //OUTPUT: [00001001] [11000000] = {72, 96}
-        byte data16[] = new byte[5];
+        // [01001011] [01101110] [01101011] [10100000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]
+        // OUTPUT: [00001001] [11000000] = {72, 96}
+        byte[] data16 = new byte[5];
         startOffset = 3;
         numBits = 8;
         BitBufferHelper.insertBits(data16, inputdata, startOffset, numBits);
@@ -431,12 +435,13 @@ public class BitBufferHelperTest {
         Assert.assertTrue(data16[2] == 0);
 
         // INPUT: {75, 110, 107, 80, 10, 12, 35, 100, 125, 65} =
-        // [01001011] [01101110] [01101011] [01010000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]        //OUTPUT: [00000000] [00000100] [10110110] [11100000]= {0, 4, -54, -96}
+        // [01001011] [01101110] [01101011] [01010000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]
+        // OUTPUT: [00000000] [00000100] [10110110] [11100000]= {0, 4, -54, -96}
         // OUTPUT: [00000100] [1011 0110] [1110 0000] = {4, -54, -96}
 
         startOffset = 3;
         numBits = 16;
-        byte data17[] = new byte[5];
+        byte[] data17 = new byte[5];
         BitBufferHelper.insertBits(data17, inputdata, startOffset, numBits);
         Assert.assertTrue(data17[0] == 9);
         Assert.assertTrue(data17[1] == 109);
@@ -446,8 +451,8 @@ public class BitBufferHelperTest {
         // INPUT: {79, 110, 111}
         // = [01001111] [01101110] [01101111]
         //OUTPUT: [0000 1001] [1110 1101] [110 00000] = {9, -19, -64}
-        byte data18[] = new byte[5];
-        byte inputdata3[] = { 79, 110, 111 };
+        byte[] data18 = new byte[5];
+        byte[] inputdata3 = { 79, 110, 111 };
         startOffset = 3;
         numBits = 16;
         BitBufferHelper.insertBits(data18, inputdata3, startOffset, numBits);
@@ -456,12 +461,13 @@ public class BitBufferHelperTest {
         Assert.assertTrue(data18[2] == -64);
 
         // INPUT: {75, 110, 107, 80, 10, 12, 35, 100, 125, 65} =
-        // [01001011] [01101110] [01101011] [01010000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]        //OUTPUT: [00000000] [00000100] [10110110] [11100000]= {0, 4, -54, -96}
+        // [01001011] [01101110] [01101011] [01010000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]
+        // OUTPUT: [00000000] [00000100] [10110110] [11100000]= {0, 4, -54, -96}
         // OUTPUT: [0000 1001] [0110 1101] [1100 1101] [0110 1010] [0000 0001] = {9, 109, -51, 106, 0}
 
         startOffset = 3;
         numBits = 32;
-        byte data19[] = new byte[5];
+        byte[] data19 = new byte[5];
         BitBufferHelper.insertBits(data19, inputdata, startOffset, numBits);
         Assert.assertTrue(data19[0] == 9);
         Assert.assertTrue(data19[1] == 109);
@@ -470,11 +476,12 @@ public class BitBufferHelperTest {
         Assert.assertTrue(data19[4] == 0);
 
         // INPUT: {75, 110, 107, 80, 10, 12, 35, 100, 125, 65} =
-        // [01001011] [01101110] [01101011] [01010000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]        //OUTPUT: [00000000] [00000100] [10110110] [11100000]= {0, 4, -54, -96}
+        // [01001011] [01101110] [01101011] [01010000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]
+        // OUTPUT: [00000000] [00000100] [10110110] [11100000]= {0, 4, -54, -96}
         // OUTPUT: data[4, 5, 6] = [0 010 0101] [1 011 0111] [0 000 0000] = {37, -73, 0}
         startOffset = 33;
         numBits = 16;
-        byte data20[] = new byte[7];
+        byte[] data20 = new byte[7];
         BitBufferHelper.insertBits(data20, inputdata, startOffset, numBits);
         Assert.assertTrue(data20[4] == 37);
         Assert.assertTrue(data20[5] == -73);
@@ -482,33 +489,36 @@ public class BitBufferHelperTest {
 
         //CASE 4: extranumBits != 0 AND extraOffsetBits != 0
         // INPUT: {75, 110, 107, 80, 10, 12, 35, 100, 125, 65} =
-        // [01001011] [01101110] [01101011] [01010000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]        //OUTPUT: [00000000] [00000100] [10110110] [11100000]= {0, 4, -54, -96}
+        // [01001011] [01101110] [01101011] [01010000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]
+        // OUTPUT: [00000000] [00000100] [10110110] [11100000]= {0, 4, -54, -96}
         // OUTPUT: [0000 1001] [0100 0000]  = {9, 96}
         startOffset = 3;
         numBits = 7;
-        byte data21[] = new byte[7];
+        byte[] data21 = new byte[7];
         BitBufferHelper.insertBits(data21, inputdata, startOffset, numBits);
         Assert.assertTrue(data21[0] == 9);
         Assert.assertTrue(data21[1] == 64);
         Assert.assertTrue(data21[2] == 0);
 
         // INPUT: {75, 110, 107, 80, 10, 12, 35, 100, 125, 65} =
-        // [01001011] [01101110] [01101011] [01010000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]        //OUTPUT: [00000000] [00000100] [10110110] [11100000]= {0, 4, -54, -96}
+        // [01001011] [01101110] [01101011] [01010000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]
+        // OUTPUT: [00000000] [00000100] [10110110] [11100000]= {0, 4, -54, -96}
         // OUTPUT: data = [00000 010] [01011 011] [01110 000] = {37, -73, 0}
         startOffset = 5;
         numBits = 17;
-        byte data22[] = new byte[7];
+        byte[] data22 = new byte[7];
         BitBufferHelper.insertBits(data22, inputdata, startOffset, numBits);
         Assert.assertTrue(data22[0] == 2);
         Assert.assertTrue(data22[1] == 91);
         Assert.assertTrue(data22[2] == 112);
 
         // INPUT: {75, 110, 107, 80, 10, 12, 35, 100, 125, 65} =
-        // [01001011] [01101110] [01101011] [01010000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]        //OUTPUT: [00000000] [00000100] [10110110] [11100000]= {0, 4, -54, -96}
+        // [01001011] [01101110] [01101011] [01010000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]
+        // OUTPUT: [00000000] [00000100] [10110110] [11100000]= {0, 4, -54, -96}
         // OUTPUT: [0000 1001] [0110 1101] [110 01101] [01 00000] = {9, 109, -51, 64}
         startOffset = 3;
         numBits = 23;
-        byte data23[] = new byte[7];
+        byte[] data23 = new byte[7];
         BitBufferHelper.insertBits(data23, inputdata, startOffset, numBits);
         Assert.assertTrue(data23[0] == 9);
         Assert.assertTrue(data23[1] == 109);
@@ -516,22 +526,24 @@ public class BitBufferHelperTest {
         Assert.assertTrue(data23[3] == 64);
 
         // INPUT: {75, 110, 107, 80, 10, 12, 35, 100, 125, 65} =
-        // [01001011] [01101110] [01101011] [01010000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]        //OUTPUT: [00000000] [00000100] [10110110] [11100000]= {0, 4, -54, -96}
+        // [01001011] [01101110] [01101011] [01010000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]
+        // OUTPUT: [00000000] [00000100] [10110110] [11100000]= {0, 4, -54, -96}
         // OUTPUT: [0000 1001] [0110 1101]  = {9, 109}
         startOffset = 3;
         numBits = 13;
-        byte data24[] = new byte[7];
+        byte[] data24 = new byte[7];
         BitBufferHelper.insertBits(data24, inputdata, startOffset, numBits);
         Assert.assertTrue(data24[0] == 9);
         Assert.assertTrue(data24[1] == 109);
         Assert.assertTrue(data24[2] == 0);
 
         // INPUT: {75, 110, 107, 80, 10, 12, 35, 100, 125, 65} =
-        // [01001011] [01101110] [01101011] [01010000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]        //OUTPUT: [00000000] [00000100] [10110110] [11100000]= {0, 4, -54, -96}
+        // [01001011] [01101110] [01101011] [01010000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]
+        // OUTPUT: [00000000] [00000100] [10110110] [11100000]= {0, 4, -54, -96}
         // OUTPUT: [0000 0100] [1011 0110] [1110 0110]  = {4, -74, -26}
         startOffset = 4;
         numBits = 20;
-        byte data25[] = new byte[7];
+        byte[] data25 = new byte[7];
         BitBufferHelper.insertBits(data25, inputdata, startOffset, numBits);
         Assert.assertTrue(data25[0] == 4);
         Assert.assertTrue(data25[1] == -74);
@@ -539,11 +551,12 @@ public class BitBufferHelperTest {
         Assert.assertTrue(data25[3] == -0);
 
         // INPUT: {75, 110, 107, 80, 10, 12, 35, 100, 125, 65} =
-        // [01001011] [01101110] [01101011] [01010000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]        //OUTPUT: [00000000] [00000100] [10110110] [11100000]= {0, 4, -54, -96}
+        // [01001011] [01101110] [01101011] [01010000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]
+        // OUTPUT: [00000000] [00000100] [10110110] [11100000]= {0, 4, -54, -96}
         // OUTPUT: [0000 0010] [0101 1011]   = {0, 2, 91, 0}
         startOffset = 13;
         numBits = 11;
-        byte data26[] = new byte[7];
+        byte[] data26 = new byte[7];
         BitBufferHelper.insertBits(data26, inputdata, startOffset, numBits);
         Assert.assertTrue(data26[0] == 0);
         Assert.assertTrue(data26[1] == 2);
@@ -551,11 +564,12 @@ public class BitBufferHelperTest {
         Assert.assertTrue(data26[3] == 0);
 
         // INPUT: {75, 110, 107, 80, 10, 12, 35, 100, 125, 65} =
-        // [01001011] [01101110] [01101011] [01010000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]        //OUTPUT: [00000000] [00000100] [10110110] [11100000]= {0, 4, -54, -96}
+        // [01001011] [01101110] [01101011] [01010000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]
+        // OUTPUT: [00000000] [00000100] [10110110] [11100000]= {0, 4, -54, -96}
         // OUTPUT: [000 01001] [011 01101] [110 0 0000]   = {9, 109, -64, 0}
         startOffset = 3;
         numBits = 17;
-        byte data27[] = new byte[7];
+        byte[] data27 = new byte[7];
         BitBufferHelper.insertBits(data27, inputdata, startOffset, numBits);
         Assert.assertTrue(data27[0] == 9);
         Assert.assertTrue(data27[1] == 109);
@@ -563,11 +577,13 @@ public class BitBufferHelperTest {
         Assert.assertTrue(data27[3] == 0);
 
         // INPUT: {75, 110, 107, 80, 10, 12, 35, 100, 125, 65} =
-        // [01001011] [01101110] [01101011] [01010000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]        //OUTPUT: [00000000] [00000100] [10110110] [11100000]= {0, 4, -54, -96}
-        // OUTPUT: [00 000000] [00 000000] [00 010010] [11 011011] [10 011010] [11 010100] [0000 0000] = {0, 0, 18, -37,-102,-44,0}
+        // [01001011] [01101110] [01101011] [01010000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]
+        // OUTPUT: [00000000] [00000100] [10110110] [11100000]= {0, 4, -54, -96}
+        // OUTPUT: [00 000000] [00 000000] [00 010010] [11 011011] [10 011010] [11 010100] [0000 0000] =
+        //    {0, 0, 18, -37,-102,-44,0}
         startOffset = 18;
         numBits = 34;
-        byte data28[] = new byte[7];
+        byte[] data28 = new byte[7];
         BitBufferHelper.insertBits(data28, inputdata, startOffset, numBits);
         Assert.assertTrue(data28[0] == 0);
         Assert.assertTrue(data28[1] == 0);
@@ -581,7 +597,7 @@ public class BitBufferHelperTest {
 
     @Test
     public void testGetShort() throws Exception {
-        byte data[] = new byte[2];
+        byte[] data = new byte[2];
         data[0] = 7;
         data[1] = 8;
         int length = 9; // num bits
@@ -619,20 +635,20 @@ public class BitBufferHelperTest {
 
     @Test
     public void testToIntVarLength() throws Exception {
-        byte data[] = { (byte) 255, (byte) 128 };
+        byte[] data = { (byte) 255, (byte) 128 };
         int length = 9; // num bits
         Assert.assertTrue(BitBufferHelper.getInt(data, length) == 384);
 
-        byte data2[] = { 0, 8 };
+        byte[] data2 = { 0, 8 };
         Assert.assertTrue(BitBufferHelper.getInt(data2, 9) == 8);
 
-        byte data3[] = { 1, 1, 1 };
+        byte[] data3 = { 1, 1, 1 };
         Assert.assertTrue(BitBufferHelper.getInt(data3) == 65793);
 
-        byte data4[] = { 1, 1, 1 };
+        byte[] data4 = { 1, 1, 1 };
         Assert.assertTrue(BitBufferHelper.getInt(data4) == 65793);
 
-        byte data5[] = { 1, 1 };
+        byte[] data5 = { 1, 1 };
         Assert.assertTrue(BitBufferHelper.getInt(data5) == 257);
 
     }
@@ -670,7 +686,7 @@ public class BitBufferHelperTest {
     }
 
     @Test
-    public void testShiftBitstoLSBMSB() {
+    public void testShiftBitsToLSBAndMSB() {
         byte[] data = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 };
 
         byte[] clone = BitBufferHelper.shiftBitsToMSB(BitBufferHelper

@@ -99,7 +99,7 @@ public final class LLDPUtil {
         Ethernet ethPkt = new Ethernet();
         ethPkt.setSourceMACAddress(sourceMac).setEtherType(EtherTypes.LLDP.shortValue()).setPayload(discoveryPkt);
         if (destinationAddress == null) {
-            ethPkt.setDestinationMACAddress(LLDP.LLDPMulticastMac);
+            ethPkt.setDestinationMACAddress(LLDP.LLDP_MULTICAST_MAC);
         } else {
             ethPkt.setDestinationMACAddress(HexEncode.bytesFromHexString(destinationAddress.getValue()));
         }
