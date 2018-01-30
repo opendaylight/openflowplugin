@@ -17,11 +17,12 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 /**
  * Basic {@link InstanceIdentifier} related tools.
  */
-public class PathUtil {
+public final class PathUtil {
 
     private PathUtil() {
         throw new IllegalStateException("This class should not be instantiated.");
     }
+
     public static NodeId digNodeId(final InstanceIdentifier<?> nodeIdent) {
         return nodeIdent.firstKeyOf(Node.class, NodeKey.class).getId();
     }

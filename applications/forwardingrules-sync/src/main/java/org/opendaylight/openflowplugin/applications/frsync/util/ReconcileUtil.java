@@ -58,11 +58,14 @@ public final class ReconcileUtil {
     }
 
     /**
+     * Creates a single rpc result of type Void honoring all partial rpc results.
+     *
      * @param previousItemAction description for case when the triggering future contains failure
      * @param <D>                type of rpc output (gathered in list)
      * @return single rpc result of type Void honoring all partial rpc results
      */
-    public static <D> Function<List<RpcResult<D>>, RpcResult<Void>> createRpcResultCondenser(final String previousItemAction) {
+    public static <D> Function<List<RpcResult<D>>, RpcResult<Void>> createRpcResultCondenser(
+            final String previousItemAction) {
         return input -> {
             final RpcResultBuilder<Void> resultSink;
             if (input != null) {
@@ -86,11 +89,14 @@ public final class ReconcileUtil {
     }
 
     /**
+     * Creates a single rpc result of type Void honoring all partial rpc results.
+     *
      * @param actionDescription description for case when the triggering future contains failure
      * @param <D>               type of rpc output (gathered in list)
      * @return single rpc result of type Void honoring all partial rpc results
      */
-    public static <D> Function<RpcResult<D>, RpcResult<Void>> createRpcResultToVoidFunction(final String actionDescription) {
+    public static <D> Function<RpcResult<D>, RpcResult<Void>> createRpcResultToVoidFunction(
+            final String actionDescription) {
         return input -> {
             final RpcResultBuilder<Void> resultSink;
             if (input != null) {
@@ -110,7 +116,9 @@ public final class ReconcileUtil {
     }
 
     /**
-     * @param nodeIdent                     flow capable node path - target device for routed rpc
+     * Flushes a chain barrier.
+     *
+     * @param nodeIdent flow capable node path - target device for routed rpc
      * @param flowCapableTransactionService barrier rpc service
      * @return async barrier result
      */
@@ -126,7 +134,9 @@ public final class ReconcileUtil {
     }
 
     /**
-     * @param nodeId             target node
+     * Returns a list of safe synchronization steps with updates.
+     *
+     * @param nodeId target node
      * @param installedGroupsArg groups resent on device
      * @param pendingGroups      groups configured for device
      * @return list of safe synchronization steps with updates
@@ -138,6 +148,8 @@ public final class ReconcileUtil {
     }
 
     /**
+     * Returns a list of safe synchronization steps.
+     *
      * @param nodeId             target node
      * @param installedGroupsArg groups resent on device
      * @param pendingGroups      groups configured for device
@@ -170,8 +182,10 @@ public final class ReconcileUtil {
                         } else {
                             if (checkGroupPrecondition(installedGroups.keySet(), group)) {
                                 iterator.remove();
-                                LOG.trace("Group {} on device {} differs - planned for update", group.getGroupId(), nodeId);
-                                stepPlan.getItemsToUpdate().add(new ItemSyncBox.ItemUpdateTuple<>(existingGroup, group));
+                                LOG.trace("Group {} on device {} differs - planned for update", group.getGroupId(),
+                                        nodeId);
+                                stepPlan.getItemsToUpdate().add(new ItemSyncBox.ItemUpdateTuple<>(existingGroup,
+                                        group));
                             }
                         }
                     }
@@ -187,8 +201,8 @@ public final class ReconcileUtil {
                 installedGroups.putAll(installIncrement);
                 plan.add(stepPlan);
             } else if (!pendingGroups.isEmpty()) {
-                LOG.warn("Failed to resolve and divide groups into preconditions-match based ordered plan: {}, " +
-                        "resolving stuck at level {}", nodeId.getValue(), plan.size());
+                LOG.warn("Failed to resolve and divide groups into preconditions-match based ordered plan: {}, "
+                        + "resolving stuck at level {}", nodeId.getValue(), plan.size());
                 throw new IllegalStateException("Failed to resolve and divide groups when matching preconditions");
             }
         }
@@ -203,7 +217,7 @@ public final class ReconcileUtil {
             for (Action action : bucket.getAction()) {
                 // if the output action is a group
                 if (GroupActionCase.class.equals(action.getAction().getImplementedInterface())) {
-                    Long groupId = ((GroupActionCase) (action.getAction())).getGroupAction().getGroupId();
+                    Long groupId = ((GroupActionCase) action.getAction()).getGroupAction().getGroupId();
                     // see if that output group is installed
                     if (!installedGroupIds.contains(groupId)) {
                         // if not installed, we have missing dependencies and cannot install this pending group
@@ -236,6 +250,8 @@ public final class ReconcileUtil {
     }
 
     /**
+     * Resolves meter differences.
+     *
      * @param nodeId              target node
      * @param meterOperationalMap meters present on device
      * @param metersConfigured    meters configured for device
@@ -263,6 +279,8 @@ public final class ReconcileUtil {
     }
 
     /**
+     * Resolves flow differences in a table.
+     *
      * @param flowsConfigured    flows resent on device
      * @param flowOperationalMap flows configured for device
      * @param gatherUpdates      check content of pending item if present on device (and create update task eventually)
@@ -289,6 +307,8 @@ public final class ReconcileUtil {
     }
 
     /**
+     * Resolves flow differences in all tables.
+     *
      * @param nodeId              target node
      * @param tableOperationalMap flow-tables resent on device
      * @param tablesConfigured    flow-tables configured for device
@@ -296,9 +316,8 @@ public final class ReconcileUtil {
      * @return map : key={@link TableKey}, value={@link ItemSyncBox} of safe synchronization steps
      */
     public static Map<TableKey, ItemSyncBox<Flow>> resolveFlowDiffsInAllTables(final NodeId nodeId,
-                                                                               final Map<Short, Table> tableOperationalMap,
-                                                                               final List<Table> tablesConfigured,
-                                                                               final boolean gatherUpdates) {
+            final Map<Short, Table> tableOperationalMap, final List<Table> tablesConfigured,
+            final boolean gatherUpdates) {
         LOG.trace("resolving flows in tables for {}", nodeId.getValue());
         final Map<TableKey, ItemSyncBox<Flow>> tableFlowSyncBoxes = new HashMap<>();
         for (final Table tableConfigured : tablesConfigured) {

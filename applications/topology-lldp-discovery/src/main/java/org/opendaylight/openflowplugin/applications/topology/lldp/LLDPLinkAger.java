@@ -39,7 +39,7 @@ public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
     private final EntityOwnershipService eos;
 
     /**
-     * default ctor - start timer
+     * default ctor - start timer.
      */
     public LLDPLinkAger(final TopologyLldpDiscoveryConfig topologyLldpDiscoveryConfig,
             final NotificationProviderService notificationService,
@@ -74,7 +74,7 @@ public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
                 LinkDiscovered link = entry.getKey();
                 Date expires = entry.getValue();
                 Date now = new Date();
-                if(now.after(expires)) {
+                if (now.after(expires)) {
                     if (notificationService != null) {
                         LinkRemovedBuilder lrb = new LinkRemovedBuilder(link);
 

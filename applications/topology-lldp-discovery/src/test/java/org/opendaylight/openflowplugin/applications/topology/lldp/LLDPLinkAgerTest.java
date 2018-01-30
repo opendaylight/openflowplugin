@@ -47,14 +47,15 @@ public class LLDPLinkAgerTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(LLDPLinkAgerTest.class);
 
-    private LLDPLinkAger lldpLinkAger;
-    private final long LLDP_INTERVAL = 5L;
-    private final long LINK_EXPIRATION_TIME = 10L;
+    private static final long LLDP_INTERVAL = 5L;
+    private static final long LINK_EXPIRATION_TIME = 10L;
+
     /**
-     * We need to wait while other tasks are finished before we can check anything
-     * in LLDPAgingTask
+     * We need to wait while other tasks are finished before we can check anything in LLDPAgingTask.
      */
-    private final int SLEEP = 100;
+    private static final int SLEEP = 100;
+
+    private LLDPLinkAger lldpLinkAger;
 
     @Mock
     private LinkDiscovered link;
@@ -87,7 +88,7 @@ public class LLDPLinkAgerTest {
     }
 
     /**
-     * Inner class LLDPAgingTask removes all expired records from linkToDate if any (in constructor of LLDPLinkAger)
+     * Inner class LLDPAgingTask removes all expired records from linkToDate if any (in constructor of LLDPLinkAger).
      */
     @Test
     public void testLLDPAgingTask() throws InterruptedException {

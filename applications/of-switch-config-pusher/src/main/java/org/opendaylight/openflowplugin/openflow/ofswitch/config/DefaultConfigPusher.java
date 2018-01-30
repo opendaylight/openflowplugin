@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.openflow.ofswitch.config;
 
 import java.util.Collection;
-import java.util.concurrent.Callable;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
@@ -44,17 +43,16 @@ public class DefaultConfigPusher implements AutoCloseable, DataTreeChangeListene
         this.dataBroker = dataBroker;
     }
 
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public void start() {
         try {
-            final InstanceIdentifier<FlowCapableNode> path = InstanceIdentifier.create(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class);
-            final DataTreeIdentifier<FlowCapableNode> identifier = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, path);
+            final InstanceIdentifier<FlowCapableNode> path = InstanceIdentifier.create(Nodes.class).child(Node.class)
+                    .augmentation(FlowCapableNode.class);
+            final DataTreeIdentifier<FlowCapableNode> identifier = new DataTreeIdentifier<>(
+                    LogicalDatastoreType.OPERATIONAL, path);
             final SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
-            listenerRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<DataTreeChangeListener>>() {
-                @Override
-                public ListenerRegistration<DataTreeChangeListener> call() throws Exception {
-                    return dataBroker.registerDataTreeChangeListener(identifier, DefaultConfigPusher.this);
-                }
-            });
+            listenerRegistration = looper.loopUntilNoException(
+                () -> dataBroker.registerDataTreeChangeListener(identifier, DefaultConfigPusher.this));
         } catch (Exception e) {
             LOG.error("DataTreeChangeListener registration failed: {}", e);
             throw new IllegalStateException("DefaultConfigPusher startup failed!", e);
@@ -64,19 +62,20 @@ public class DefaultConfigPusher implements AutoCloseable, DataTreeChangeListene
 
     @Override
     public void close() {
-        if(listenerRegistration != null) {
+        if (listenerRegistration != null) {
             listenerRegistration.close();
         }
     }
 
     @Override
     public void onDataTreeChanged(@Nonnull final Collection<DataTreeModification<FlowCapableNode>> modifications) {
-        for (DataTreeModification modification : modifications) {
+        for (DataTreeModification<FlowCapableNode> modification : modifications) {
             if (modification.getRootNode().getModificationType() == ModificationType.WRITE) {
                 SetConfigInputBuilder setConfigInputBuilder = new SetConfigInputBuilder();
                 setConfigInputBuilder.setFlag(SwitchConfigFlag.FRAGNORMAL.toString());
                 setConfigInputBuilder.setMissSearchLength(OFConstants.OFPCML_NO_BUFFER);
-                setConfigInputBuilder.setNode(new NodeRef(modification.getRootPath().getRootIdentifier().firstIdentifierOf(Node.class)));
+                setConfigInputBuilder.setNode(new NodeRef(modification.getRootPath()
+                        .getRootIdentifier().firstIdentifierOf(Node.class)));
                 nodeConfigService.setConfig(setConfigInputBuilder.build());
             }
         }

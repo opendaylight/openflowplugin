@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -75,11 +74,14 @@ public class SyncReactorImpl implements SyncReactor {
          *  - flows - meters - groups (reordered)
          **/
 
-        final List<ItemSyncBox<Group>> groupsToAddOrUpdate = extractGroupsToAddOrUpdate(nodeId, configTree, operationalTree);
+        final List<ItemSyncBox<Group>> groupsToAddOrUpdate =
+                extractGroupsToAddOrUpdate(nodeId, configTree, operationalTree);
         final ItemSyncBox<Meter> metersToAddOrUpdate = extractMetersToAddOrUpdate(nodeId, configTree, operationalTree);
-        final Map<TableKey, ItemSyncBox<Flow>> flowsToAddOrUpdate = extractFlowsToAddOrUpdate(nodeId, configTree, operationalTree);
+        final Map<TableKey, ItemSyncBox<Flow>> flowsToAddOrUpdate =
+                extractFlowsToAddOrUpdate(nodeId, configTree, operationalTree);
 
-        final Map<TableKey, ItemSyncBox<Flow>> flowsToRemove = extractFlowsToRemove(nodeId, configTree, operationalTree);
+        final Map<TableKey, ItemSyncBox<Flow>> flowsToRemove =
+                extractFlowsToRemove(nodeId, configTree, operationalTree);
         final ItemSyncBox<Meter> metersToRemove = extractMetersToRemove(nodeId, configTree, operationalTree);
         final List<ItemSyncBox<Group>> groupsToRemove = extractGroupsToRemove(nodeId, configTree, operationalTree);
 
@@ -91,32 +93,29 @@ public class SyncReactorImpl implements SyncReactor {
         final ListenableFuture<RpcResult<Void>> resultVehicle = syncPlanPushStrategy.executeSyncStrategy(
                 bootstrapResultFuture, input, counters);
 
-        return Futures.transform(resultVehicle, new Function<RpcResult<Void>, Boolean>() {
-            @Override
-            public Boolean apply(RpcResult<Void> input) {
-                if (input == null) {
-                    return false;
-                }
-                if (LOG.isDebugEnabled()) {
-                    final CrudCounts flowCrudCounts = counters.getFlowCrudCounts();
-                    final CrudCounts meterCrudCounts = counters.getMeterCrudCounts();
-                    final CrudCounts groupCrudCounts = counters.getGroupCrudCounts();
-                    LOG.debug("Syncup outcome[{}] (added/updated/removed): flow={}/{}/{}, group={}/{}/{}, " +
-                                    "meter={}/{}/{}, errors={}",
-                            nodeId.getValue(),
-                            flowCrudCounts.getAdded(), flowCrudCounts.getUpdated(), flowCrudCounts.getRemoved(),
-                            groupCrudCounts.getAdded(), groupCrudCounts.getUpdated(), groupCrudCounts.getRemoved(),
-                            meterCrudCounts.getAdded(), meterCrudCounts.getUpdated(), meterCrudCounts.getRemoved(),
-                            Arrays.toString(input.getErrors().toArray()));
-                }
-                return input.isSuccessful();
-            }}, MoreExecutors.directExecutor());
+        return Futures.transform(resultVehicle, input1 -> {
+            if (input1 == null) {
+                return false;
+            }
+            if (LOG.isDebugEnabled()) {
+                final CrudCounts flowCrudCounts = counters.getFlowCrudCounts();
+                final CrudCounts meterCrudCounts = counters.getMeterCrudCounts();
+                final CrudCounts groupCrudCounts = counters.getGroupCrudCounts();
+                LOG.debug("Syncup outcome[{}] (added/updated/removed): flow={}/{}/{}, group={}/{}/{}, "
+                                + "meter={}/{}/{}, errors={}",
+                        nodeId.getValue(),
+                        flowCrudCounts.getAdded(), flowCrudCounts.getUpdated(), flowCrudCounts.getRemoved(),
+                        groupCrudCounts.getAdded(), groupCrudCounts.getUpdated(), groupCrudCounts.getRemoved(),
+                        meterCrudCounts.getAdded(), meterCrudCounts.getUpdated(), meterCrudCounts.getRemoved(),
+                        Arrays.toString(input1.getErrors().toArray()));
+            }
+            return input1.isSuccessful();
+        }, MoreExecutors.directExecutor());
     }
 
     @VisibleForTesting
     private static List<ItemSyncBox<Group>> extractGroupsToAddOrUpdate(final NodeId nodeId,
-                                                                       final FlowCapableNode flowCapableNodeConfigured,
-                                                                       final FlowCapableNode flowCapableNodeOperational) {
+            final FlowCapableNode flowCapableNodeConfigured, final FlowCapableNode flowCapableNodeOperational) {
         final List<Group> groupsConfigured = ReconcileUtil.safeGroups(flowCapableNodeConfigured);
         final List<Group> groupsOperational = ReconcileUtil.safeGroups(flowCapableNodeOperational);
         final Map<Long, Group> groupOperationalMap = FlowCapableNodeLookups.wrapGroupsToMap(groupsOperational);
@@ -140,8 +139,7 @@ public class SyncReactorImpl implements SyncReactor {
 
     @VisibleForTesting
     private static Map<TableKey, ItemSyncBox<Flow>> extractFlowsToAddOrUpdate(final NodeId nodeId,
-                                                                              final FlowCapableNode flowCapableNodeConfigured,
-                                                                              final FlowCapableNode flowCapableNodeOperational) {
+            final FlowCapableNode flowCapableNodeConfigured, final FlowCapableNode flowCapableNodeOperational) {
         final List<Table> tablesConfigured = ReconcileUtil.safeTables(flowCapableNodeConfigured);
         if (tablesConfigured.isEmpty()) {
             return Collections.emptyMap();
@@ -155,8 +153,7 @@ public class SyncReactorImpl implements SyncReactor {
 
     @VisibleForTesting
     private static Map<TableKey, ItemSyncBox<Flow>> extractFlowsToRemove(final NodeId nodeId,
-                                                                         final FlowCapableNode flowCapableNodeConfigured,
-                                                                         final FlowCapableNode flowCapableNodeOperational) {
+            final FlowCapableNode flowCapableNodeConfigured, final FlowCapableNode flowCapableNodeOperational) {
         final List<Table> tablesOperational = ReconcileUtil.safeTables(flowCapableNodeOperational);
         if (tablesOperational.isEmpty()) {
             return Collections.emptyMap();

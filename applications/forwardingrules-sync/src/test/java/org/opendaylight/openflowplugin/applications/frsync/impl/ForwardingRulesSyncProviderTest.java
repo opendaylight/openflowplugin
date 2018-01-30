@@ -14,9 +14,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
@@ -50,12 +48,10 @@ public class ForwardingRulesSyncProviderTest {
     @Before
     public void setUp() throws Exception {
         Mockito.when(rpcRegistry.getRpcService(Matchers.<Class<? extends RpcService>>any()))
-                .thenAnswer(new Answer<RpcService>() {
-                    @Override
-                    public RpcService answer(final InvocationOnMock invocation) throws Throwable {
-                        Class<? extends RpcService> serviceType = (Class<? extends RpcService>) invocation.getArguments()[0];
-                        return Mockito.mock(serviceType);
-                    }
+                .thenAnswer(invocation -> {
+                    Class<? extends RpcService> serviceType =
+                            (Class<? extends RpcService>) invocation.getArguments()[0];
+                    return Mockito.mock(serviceType);
                 });
 
         provider = new ForwardingRulesSyncProvider(broker, dataBroker, rpcRegistry, clusterSingletonService);
