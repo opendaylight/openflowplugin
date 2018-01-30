@@ -37,8 +37,9 @@
             <artifactId>openflowplugin-common</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.controller</groupId>
+            <groupId>org.opendaylight.openflowplugin.libraries</groupId>
             <artifactId>liblldp</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
