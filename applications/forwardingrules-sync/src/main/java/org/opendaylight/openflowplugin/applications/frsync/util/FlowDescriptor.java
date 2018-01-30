@@ -25,15 +25,15 @@ public class FlowDescriptor {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
 
-        FlowDescriptor that = (FlowDescriptor) o;
+        FlowDescriptor that = (FlowDescriptor) obj;
         if (flowId != null ? !flowId.equals(that.flowId) : that.flowId != null) {
             return false;
         }

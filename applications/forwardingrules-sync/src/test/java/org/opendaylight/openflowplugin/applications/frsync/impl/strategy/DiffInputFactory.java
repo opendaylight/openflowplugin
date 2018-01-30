@@ -22,7 +22,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter
 /**
  * Provides create methods for data involved in {@link SynchronizationDiffInput}.
  */
-public class DiffInputFactory {
+public final class DiffInputFactory {
+    private DiffInputFactory() {
+    }
+
     static ItemSyncBox<Group> createGroupSyncBox(final long... groupIDs) {
         final ItemSyncBox<Group> groupBox = new ItemSyncBox<>();
 

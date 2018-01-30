@@ -25,6 +25,7 @@ import org.opendaylight.openflowplugin.libraries.liblldp.Ethernet;
 import org.opendaylight.openflowplugin.libraries.liblldp.LLDP;
 import org.opendaylight.openflowplugin.libraries.liblldp.LLDPTLV;
 import org.opendaylight.openflowplugin.libraries.liblldp.NetUtils;
+import org.opendaylight.openflowplugin.libraries.liblldp.PacketException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -37,8 +38,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-public class LLDPDiscoveryUtils {
+public final class LLDPDiscoveryUtils {
     private static final Logger LOG = LoggerFactory.getLogger(LLDPDiscoveryUtils.class);
 
     private static final short MINIMUM_LLDP_SIZE = 61;
@@ -47,17 +47,22 @@ public class LLDPDiscoveryUtils {
     private static final short ETHERNET_TYPE_OFFSET = 12;
     private static final short ETHERNET_VLAN_OFFSET = ETHERNET_TYPE_OFFSET + 4;
 
+    private LLDPDiscoveryUtils() {
+    }
+
     public static String macToString(byte[] mac) {
-        StringBuilder b = new StringBuilder();
+        StringBuilder builder = new StringBuilder();
         for (int i = 0; i < mac.length; i++) {
-            b.append(String.format("%02X%s", mac[i], i < mac.length - 1 ? ":" : ""));
+            builder.append(String.format("%02X%s", mac[i], i < mac.length - 1 ? ":" : ""));
         }
 
-        return b.toString();
+        return builder.toString();
     }
 
     /**
-     * @param payload
+     * Returns the encoded in custom TLV for the given lldp.
+     *
+     * @param payload lldp payload
      * @return nodeConnectorId - encoded in custom TLV of given lldp
      * @see LLDPDiscoveryUtils#lldpToNodeConnectorRef(byte[], boolean)
      */
@@ -66,10 +71,13 @@ public class LLDPDiscoveryUtils {
     }
 
     /**
-     * @param payload
+     * Returns the encoded in custom TLV for the given lldp.
+     *
+     * @param payload lldp payload
      * @param useExtraAuthenticatorCheck make it more secure (CVE-2015-1611 CVE-2015-1612)
      * @return nodeConnectorId - encoded in custom TLV of given lldp
      */
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public static NodeConnectorRef lldpToNodeConnectorRef(byte[] payload, boolean useExtraAuthenticatorCheck)  {
         NodeConnectorRef nodeConnectorRef = null;
 
@@ -77,7 +85,7 @@ public class LLDPDiscoveryUtils {
             Ethernet ethPkt = new Ethernet();
             try {
                 ethPkt.deserialize(payload, 0, payload.length * NetUtils.NUM_BITS_IN_A_BYTE);
-            } catch (Exception e) {
+            } catch (PacketException e) {
                 LOG.warn("Failed to decode LLDP packet {}", e);
                 return nodeConnectorRef;
             }
@@ -96,8 +104,8 @@ public class LLDPDiscoveryUtils {
                     throw new Exception("Node id wasn't specified via systemNameId in LLDP packet.");
                 }
 
-                final LLDPTLV nodeConnectorIdLldptlv = lldp.getCustomTLV(
-                        new CustomTLVKey(BitBufferHelper.getInt(LLDPTLV.OFOUI), LLDPTLV.CUSTOM_TLV_SUB_TYPE_NODE_CONNECTOR_ID[0]));
+                final LLDPTLV nodeConnectorIdLldptlv = lldp.getCustomTLV(new CustomTLVKey(
+                        BitBufferHelper.getInt(LLDPTLV.OFOUI), LLDPTLV.CUSTOM_TLV_SUB_TYPE_NODE_CONNECTOR_ID[0]));
                 if (nodeConnectorIdLldptlv != null) {
                     srcNodeConnectorId = new NodeConnectorId(LLDPTLV.getCustomString(
                             nodeConnectorIdLldptlv.getValue(), nodeConnectorIdLldptlv.getLength()));
@@ -109,7 +117,8 @@ public class LLDPDiscoveryUtils {
                     boolean secure = checkExtraAuthenticator(lldp, srcNodeConnectorId);
                     if (!secure) {
                         LOG.warn("SECURITY ALERT: there is probably a LLDP spoofing attack in progress.");
-                        throw new Exception("Attack. LLDP packet with inconsistent extra authenticator field was received.");
+                        throw new Exception(
+                                "Attack. LLDP packet with inconsistent extra authenticator field was received.");
                     }
                 }
 
@@ -119,20 +128,22 @@ public class LLDPDiscoveryUtils {
                         .toInstance();
                 nodeConnectorRef = new NodeConnectorRef(srcInstanceId);
             } catch (Exception e) {
-                LOG.debug("Caught exception while parsing out lldp optional and custom fields: {}", e.getMessage(), e);
+                LOG.debug("Caught exception while parsing out lldp optional and custom fields", e);
             }
         }
         return nodeConnectorRef;
     }
 
     /**
-     * @param nodeConnectorId
+     * Gets an extra authenticator for lldp security.
+     *
+     * @param nodeConnectorId the NodeConnectorId
      * @return extra authenticator for lldp security
-     * @throws NoSuchAlgorithmException
      */
-    public static byte[] getValueForLLDPPacketIntegrityEnsuring(final NodeConnectorId nodeConnectorId) throws NoSuchAlgorithmException {
+    public static byte[] getValueForLLDPPacketIntegrityEnsuring(final NodeConnectorId nodeConnectorId)
+            throws NoSuchAlgorithmException {
         String finalKey;
-        if(LLDPActivator.getLldpSecureKey() !=null && !LLDPActivator.getLldpSecureKey().isEmpty()) {
+        if (LLDPActivator.getLldpSecureKey() != null && !LLDPActivator.getLldpSecureKey().isEmpty()) {
             finalKey = LLDPActivator.getLldpSecureKey();
         } else {
             finalKey = ManagementFactory.getRuntimeMXBean().getName();
@@ -146,12 +157,8 @@ public class LLDPDiscoveryUtils {
         return hashedValue.asBytes();
     }
 
-    /**
-     * @param lldp
-     * @param srcNodeConnectorId
-     * @throws NoSuchAlgorithmException
-     */
-    private static boolean checkExtraAuthenticator(LLDP lldp, NodeConnectorId srcNodeConnectorId) throws NoSuchAlgorithmException {
+    private static boolean checkExtraAuthenticator(LLDP lldp, NodeConnectorId srcNodeConnectorId)
+            throws NoSuchAlgorithmException {
         final LLDPTLV hashLldptlv = lldp.getCustomTLV(
                 new CustomTLVKey(BitBufferHelper.getInt(LLDPTLV.OFOUI), LLDPTLV.CUSTOM_TLV_SUB_TYPE_CUSTOM_SEC[0]));
         boolean secAuthenticatorOk = false;

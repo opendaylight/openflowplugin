@@ -11,7 +11,9 @@ package org.opendaylight.openflowplugin.applications.frsync.impl;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Collection;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -45,14 +47,14 @@ public abstract class AbstractFrmSyncListener<T extends DataObject> implements N
                         LOG.trace("Syncup for {} return from {} listener", nodeId.getValue(), dsType());
                     }
                 }
-            } catch (Exception e) {
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
                 LOG.error("Error processing inventory node modification: {}, {}", nodeId.getValue(), e);
             }
         }
     }
 
     protected abstract Optional<ListenableFuture<Boolean>> processNodeModification(
-            final DataTreeModification<T> modification);
+            DataTreeModification<T> modification);
 
     protected abstract LogicalDatastoreType dsType();
 

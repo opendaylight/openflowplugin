@@ -130,45 +130,46 @@ public class SyncPlanPushStrategyIncrementalImplTest {
     @Test
     public void testExecuteSyncStrategy() throws Exception {
         final SynchronizationDiffInput diffInput = new SynchronizationDiffInput(NODE_IDENT,
-                groupsToAddOrUpdate, metersToAddOrUpdate, flowsToAddOrUpdate, flowsToRemove, metersToRemove, groupsToRemove);
+                groupsToAddOrUpdate, metersToAddOrUpdate, flowsToAddOrUpdate, flowsToRemove,
+                metersToRemove, groupsToRemove);
 
-        final SyncCrudCounters counters = new SyncCrudCounters();
+        final SyncCrudCounters syncCounters = new SyncCrudCounters();
         final ListenableFuture<RpcResult<Void>> rpcResult = syncPlanPushStrategy.executeSyncStrategy(
-                RpcResultBuilder.<Void>success().buildFuture(), diffInput, counters);
+                RpcResultBuilder.<Void>success().buildFuture(), diffInput, syncCounters);
 
-        Mockito.verify(groupCommitter, Mockito.times(6)).add(Matchers.<InstanceIdentifier<Group>>any(),Matchers.<Group>any(),
-                Matchers.<InstanceIdentifier<FlowCapableNode>>any());
-        Mockito.verify(groupCommitter, Mockito.times(3)).update(Matchers.<InstanceIdentifier<Group>>any(),Matchers.<Group>any(),
-               Matchers.<Group>any(), Matchers.<InstanceIdentifier<FlowCapableNode>>any());
-        Mockito.verify(groupCommitter, Mockito.times(6)).remove(Matchers.<InstanceIdentifier<Group>>any(),Matchers.<Group>any(),
-                Matchers.<InstanceIdentifier<FlowCapableNode>>any());
-        Mockito.verify(flowCommitter, Mockito.times(6)).add(Matchers.<InstanceIdentifier<Flow>>any(),Matchers.<Flow>any(),
-                Matchers.<InstanceIdentifier<FlowCapableNode>>any());
-        Mockito.verify(flowCommitter, Mockito.times(3)).update(Matchers.<InstanceIdentifier<Flow>>any(),Matchers.<Flow>any(),
-               Matchers.<Flow>any(), Matchers.<InstanceIdentifier<FlowCapableNode>>any());
-        Mockito.verify(flowCommitter, Mockito.times(6)).remove(Matchers.<InstanceIdentifier<Flow>>any(),Matchers.<Flow>any(),
-                Matchers.<InstanceIdentifier<FlowCapableNode>>any());
-        Mockito.verify(meterCommitter, Mockito.times(3)).add(Matchers.<InstanceIdentifier<Meter>>any(), Matchers.<Meter>any(),
-                Matchers.<InstanceIdentifier<FlowCapableNode>>any());
-        Mockito.verify(meterCommitter, Mockito.times(3)).update(Matchers.<InstanceIdentifier<Meter>>any(), Matchers.<Meter>any(),
+        Mockito.verify(groupCommitter, Mockito.times(6)).add(Matchers.<InstanceIdentifier<Group>>any(),
+                Matchers.<Group>any(), Matchers.<InstanceIdentifier<FlowCapableNode>>any());
+        Mockito.verify(groupCommitter, Mockito.times(3)).update(Matchers.<InstanceIdentifier<Group>>any(),
+                Matchers.<Group>any(), Matchers.<Group>any(), Matchers.<InstanceIdentifier<FlowCapableNode>>any());
+        Mockito.verify(groupCommitter, Mockito.times(6)).remove(Matchers.<InstanceIdentifier<Group>>any(),
+                Matchers.<Group>any(), Matchers.<InstanceIdentifier<FlowCapableNode>>any());
+        Mockito.verify(flowCommitter, Mockito.times(6)).add(Matchers.<InstanceIdentifier<Flow>>any(),
+                Matchers.<Flow>any(), Matchers.<InstanceIdentifier<FlowCapableNode>>any());
+        Mockito.verify(flowCommitter, Mockito.times(3)).update(Matchers.<InstanceIdentifier<Flow>>any(),
+                Matchers.<Flow>any(), Matchers.<Flow>any(), Matchers.<InstanceIdentifier<FlowCapableNode>>any());
+        Mockito.verify(flowCommitter, Mockito.times(6)).remove(Matchers.<InstanceIdentifier<Flow>>any(),
+                Matchers.<Flow>any(), Matchers.<InstanceIdentifier<FlowCapableNode>>any());
+        Mockito.verify(meterCommitter, Mockito.times(3)).add(Matchers.<InstanceIdentifier<Meter>>any(),
                 Matchers.<Meter>any(), Matchers.<InstanceIdentifier<FlowCapableNode>>any());
-        Mockito.verify(meterCommitter, Mockito.times(3)).remove(Matchers.<InstanceIdentifier<Meter>>any(), Matchers.<Meter>any(),
-                Matchers.<InstanceIdentifier<FlowCapableNode>>any());
+        Mockito.verify(meterCommitter, Mockito.times(3)).update(Matchers.<InstanceIdentifier<Meter>>any(),
+                Matchers.<Meter>any(), Matchers.<Meter>any(), Matchers.<InstanceIdentifier<FlowCapableNode>>any());
+        Mockito.verify(meterCommitter, Mockito.times(3)).remove(Matchers.<InstanceIdentifier<Meter>>any(),
+                Matchers.<Meter>any(), Matchers.<InstanceIdentifier<FlowCapableNode>>any());
 
         Assert.assertTrue(rpcResult.isDone());
         Assert.assertTrue(rpcResult.get().isSuccessful());
 
-        Assert.assertEquals(6, counters.getFlowCrudCounts().getAdded());
-        Assert.assertEquals(3, counters.getFlowCrudCounts().getUpdated());
-        Assert.assertEquals(6, counters.getFlowCrudCounts().getRemoved());
+        Assert.assertEquals(6, syncCounters.getFlowCrudCounts().getAdded());
+        Assert.assertEquals(3, syncCounters.getFlowCrudCounts().getUpdated());
+        Assert.assertEquals(6, syncCounters.getFlowCrudCounts().getRemoved());
 
-        Assert.assertEquals(6, counters.getGroupCrudCounts().getAdded());
-        Assert.assertEquals(3, counters.getGroupCrudCounts().getUpdated());
-        Assert.assertEquals(6, counters.getGroupCrudCounts().getRemoved());
+        Assert.assertEquals(6, syncCounters.getGroupCrudCounts().getAdded());
+        Assert.assertEquals(3, syncCounters.getGroupCrudCounts().getUpdated());
+        Assert.assertEquals(6, syncCounters.getGroupCrudCounts().getRemoved());
 
-        Assert.assertEquals(3, counters.getMeterCrudCounts().getAdded());
-        Assert.assertEquals(3, counters.getMeterCrudCounts().getUpdated());
-        Assert.assertEquals(3, counters.getMeterCrudCounts().getRemoved());
+        Assert.assertEquals(3, syncCounters.getMeterCrudCounts().getAdded());
+        Assert.assertEquals(3, syncCounters.getMeterCrudCounts().getUpdated());
+        Assert.assertEquals(3, syncCounters.getMeterCrudCounts().getRemoved());
     }
 
     @Before
@@ -207,8 +208,8 @@ public class SyncPlanPushStrategyIncrementalImplTest {
                 Matchers.<InstanceIdentifier<FlowCapableNode>>any());
 
         Mockito.doAnswer(createSalServiceFutureAnswer()).when(tableCommitter).update(
-                Matchers.<InstanceIdentifier<TableFeatures>>any(), Matchers.<TableFeatures>any(), Matchers.<TableFeatures>any(),
-                Matchers.<InstanceIdentifier<FlowCapableNode>>any());
+                Matchers.<InstanceIdentifier<TableFeatures>>any(), Matchers.<TableFeatures>any(),
+                Matchers.<TableFeatures>any(), Matchers.<InstanceIdentifier<FlowCapableNode>>any());
 
         syncPlanPushStrategy = new SyncPlanPushStrategyIncrementalImpl()
                 .setMeterForwarder(meterCommitter)

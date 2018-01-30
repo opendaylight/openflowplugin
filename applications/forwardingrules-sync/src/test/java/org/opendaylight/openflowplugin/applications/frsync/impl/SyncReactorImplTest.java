@@ -112,32 +112,26 @@ public class SyncReactorImplTest {
                 .thenReturn(RpcResultBuilder.<Void>success().buildFuture());
 
         final ListenableFuture<Boolean> syncupResult = reactor.syncup(NODE_IDENT, syncupEntry);
-        try {
-            Assert.assertTrue(syncupResult.isDone());
-            final Boolean voidRpcResult = syncupResult.get(2, TimeUnit.SECONDS);
-            Assert.assertTrue(voidRpcResult);
+        Assert.assertTrue(syncupResult.isDone());
+        final Boolean voidRpcResult = syncupResult.get(2, TimeUnit.SECONDS);
+        Assert.assertTrue(voidRpcResult);
 
-            Mockito.verify(syncPlanPushStrategy).executeSyncStrategy(
-                    Matchers.<ListenableFuture<RpcResult<Void>>>any(),
-                    syncDiffInputCaptor.capture(),
-                    Matchers.<SyncCrudCounters>any()
-            );
+        Mockito.verify(syncPlanPushStrategy).executeSyncStrategy(
+                Matchers.<ListenableFuture<RpcResult<Void>>>any(),
+                syncDiffInputCaptor.capture(),
+                Matchers.<SyncCrudCounters>any());
 
-            final SynchronizationDiffInput diffInput = syncDiffInputCaptor.getValue();
-            Assert.assertEquals(1, ReconcileUtil.countTotalPushed(diffInput.getFlowsToAddOrUpdate().values()));
-            Assert.assertEquals(0, ReconcileUtil.countTotalUpdated(diffInput.getFlowsToAddOrUpdate().values()));
-            Assert.assertEquals(1, ReconcileUtil.countTotalPushed(diffInput.getFlowsToRemove().values()));
+        final SynchronizationDiffInput diffInput = syncDiffInputCaptor.getValue();
+        Assert.assertEquals(1, ReconcileUtil.countTotalPushed(diffInput.getFlowsToAddOrUpdate().values()));
+        Assert.assertEquals(0, ReconcileUtil.countTotalUpdated(diffInput.getFlowsToAddOrUpdate().values()));
+        Assert.assertEquals(1, ReconcileUtil.countTotalPushed(diffInput.getFlowsToRemove().values()));
 
-            Assert.assertEquals(1, ReconcileUtil.countTotalPushed(diffInput.getGroupsToAddOrUpdate()));
-            Assert.assertEquals(0, ReconcileUtil.countTotalUpdated(diffInput.getGroupsToAddOrUpdate()));
-            Assert.assertEquals(1, ReconcileUtil.countTotalPushed(diffInput.getGroupsToRemove()));
+        Assert.assertEquals(1, ReconcileUtil.countTotalPushed(diffInput.getGroupsToAddOrUpdate()));
+        Assert.assertEquals(0, ReconcileUtil.countTotalUpdated(diffInput.getGroupsToAddOrUpdate()));
+        Assert.assertEquals(1, ReconcileUtil.countTotalPushed(diffInput.getGroupsToRemove()));
 
-            Assert.assertEquals(1, diffInput.getMetersToAddOrUpdate().getItemsToPush().size());
-            Assert.assertEquals(0, diffInput.getMetersToAddOrUpdate().getItemsToUpdate().size());
-            Assert.assertEquals(1, diffInput.getMetersToRemove().getItemsToPush().size());
-        } catch (Exception e) {
-            LOG.warn("syncup failed", e);
-            Assert.fail("syncup failed: " + e.getMessage());
-        }
+        Assert.assertEquals(1, diffInput.getMetersToAddOrUpdate().getItemsToPush().size());
+        Assert.assertEquals(0, diffInput.getMetersToAddOrUpdate().getItemsToUpdate().size());
+        Assert.assertEquals(1, diffInput.getMetersToRemove().getItemsToPush().size());
     }
 }

@@ -17,7 +17,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 /**
  * Basic {@link DataTreeModification} related tools.
  */
-public class ModificationUtil {
+public final class ModificationUtil {
 
     private ModificationUtil() {
         throw new IllegalStateException("This class should not be instantiated.");

@@ -53,6 +53,7 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
      * Update cache. If operational data are present, choose appropriate data and start syncup.
      * Otherwise skip incoming change.
      */
+    @Override
     protected Optional<ListenableFuture<Boolean>> processNodeModification(
             final DataTreeModification<FlowCapableNode> modification) {
         final InstanceIdentifier<FlowCapableNode> nodePath = modification.getRootPath().getRootIdentifier();
@@ -89,7 +90,8 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
                                                   final FlowCapableNode dataAfter,
                                                   final FlowCapableNode operationalNode) {
         LOG.debug("Reconciliation {}: {}", dsType(), PathUtil.digNodeId(nodePath).getValue());
-        final SyncupEntry syncupEntry = new SyncupEntry(dataAfter, dsType(), operationalNode, LogicalDatastoreType.OPERATIONAL);
+        final SyncupEntry syncupEntry = new SyncupEntry(dataAfter, dsType(), operationalNode,
+                LogicalDatastoreType.OPERATIONAL);
         return reactor.syncup(nodePath, syncupEntry);
     }
 

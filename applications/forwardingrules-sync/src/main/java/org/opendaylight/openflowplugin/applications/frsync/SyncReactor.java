@@ -18,10 +18,11 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  */
 public interface SyncReactor {
     /**
+     * Invoked to synchronize a device.
+     *
      * @param flowcapableNodePath path to openflow augmentation of node
      * @param syncupEntry configured node + device reflection
      * @return synchronization outcome
      */
-    ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
-                                     final SyncupEntry syncupEntry);
+    ListenableFuture<Boolean> syncup(InstanceIdentifier<FlowCapableNode> flowcapableNodePath, SyncupEntry syncupEntry);
 }

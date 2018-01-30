@@ -74,6 +74,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
      * Update cache, register for device mastership when device connected and start reconciliation if device
      * is registered and actual modification is consistent.Skip the event otherwise.
      */
+    @Override
     protected Optional<ListenableFuture<Boolean>> processNodeModification(
             final DataTreeModification<Node> modification) {
         Optional<ListenableFuture<Boolean>> result;
@@ -85,7 +86,8 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
             deviceMastershipManager.onDeviceDisconnected(nodeId);
             result = skipModification(modification);
         } else {
-            operationalSnapshot.updateCache(nodeId, Optional.fromNullable(ModificationUtil.flowCapableNodeAfter(modification)));
+            operationalSnapshot.updateCache(nodeId, Optional.fromNullable(
+                    ModificationUtil.flowCapableNodeAfter(modification)));
 
             final boolean isAdd = isAdd(nodeModification) || isAddLogical(nodeModification);
 
@@ -93,8 +95,9 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
                 deviceMastershipManager.onDeviceConnected(nodeId);
             }
 
-            // if node is registered for reconcile we need consistent data from operational DS (skip partial collections)
-            // but we can accept first modification since all statistics are intentionally collected in one step on startup
+            // if node is registered for reconcile we need consistent data from operational DS (skip partial
+            // collections) but we can accept first modification since all statistics are intentionally collected in
+            // one step on startup
             if (reconciliationRegistry.isRegistered(nodeId) && (isAdd || isConsistentForReconcile(modification))) {
                 result = reconciliation(modification);
             } else {
@@ -122,7 +125,8 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
      * All connectors disappeared from operational store (logical delete).
      */
     private boolean isDeleteLogical(final DataObjectModification<Node> nodeModification) {
-        return !safeConnectorsEmpty(nodeModification.getDataBefore()) && safeConnectorsEmpty(nodeModification.getDataAfter());
+        return !safeConnectorsEmpty(nodeModification.getDataBefore())
+                && safeConnectorsEmpty(nodeModification.getDataAfter());
 
     }
 
@@ -134,7 +138,8 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
      * All connectors appeared in operational store (logical add).
      */
     private boolean isAddLogical(final DataObjectModification<Node> nodeModification) {
-        return safeConnectorsEmpty(nodeModification.getDataBefore()) && !safeConnectorsEmpty(nodeModification.getDataAfter());
+        return safeConnectorsEmpty(nodeModification.getDataBefore())
+                && !safeConnectorsEmpty(nodeModification.getDataAfter());
     }
 
     /**

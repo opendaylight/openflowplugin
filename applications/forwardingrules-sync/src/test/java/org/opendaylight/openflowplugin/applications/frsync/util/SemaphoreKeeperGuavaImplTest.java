@@ -72,10 +72,10 @@ public class SemaphoreKeeperGuavaImplTest {
                     0L, TimeUnit.MILLISECONDS,
                     new LinkedBlockingQueue<Runnable>()) {
                 @Override
-                protected void afterExecute(final Runnable r, final Throwable t) {
-                    super.afterExecute(r, t);
-                    if (t != null) {
-                        LOG.error("pool thread crashed", t);
+                protected void afterExecute(final Runnable task, final Throwable failure) {
+                    super.afterExecute(task, failure);
+                    if (failure != null) {
+                        LOG.error("pool thread crashed", failure);
                     }
                 }
             };
@@ -114,12 +114,13 @@ public class SemaphoreKeeperGuavaImplTest {
         private final ConcurrentMap<Integer, Integer> counter = new ConcurrentHashMap<>();
         private volatile int index = 0;
 
-        public Worker(SemaphoreKeeper<String> keeper, final String key) {
+        Worker(SemaphoreKeeper<String> keeper, final String key) {
             this.keeper = keeper;
             this.key = key;
         }
 
         @Override
+        @SuppressWarnings("checkstyle:IllegalCatch")
         public void run() {
             try {
                 final Semaphore guard = keeper.summonGuard(key);

@@ -14,7 +14,8 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
  * Represents configuration item contract for device.
  * Combining add/update/remove commiters into single one.
  */
-public interface ForwardingRulesCommitter<D extends DataObject, A extends DataObject, R extends DataObject, U extends DataObject>
-        extends ForwardingRulesAddCommitter<D, A>, ForwardingRulesRemoveCommitter<D, R>, ForwardingRulesUpdateCommitter<D, U> {
+public interface ForwardingRulesCommitter<D extends DataObject, A extends DataObject, R extends DataObject,
+    U extends DataObject> extends ForwardingRulesAddCommitter<D, A>,
+        ForwardingRulesRemoveCommitter<D, R>, ForwardingRulesUpdateCommitter<D, U> {
 }
 

@@ -45,7 +45,8 @@ public class SyncReactorClusterDecoratorTest {
     public void setUp() {
         reactor = new SyncReactorClusterDecorator(delegate, deviceMastershipManager);
 
-        InstanceIdentifier<Node> nodePath = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(NODE_ID));
+        InstanceIdentifier<Node> nodePath = InstanceIdentifier.create(Nodes.class)
+                .child(Node.class, new NodeKey(NODE_ID));
         fcNodePath = nodePath.augmentation(FlowCapableNode.class);
     }
 

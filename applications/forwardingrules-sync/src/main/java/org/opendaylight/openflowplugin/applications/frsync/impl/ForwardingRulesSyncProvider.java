@@ -85,13 +85,14 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
         this.flatBatchService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalFlatBatchService.class),
                 "RPC SalFlatBatchService not found.");
 
-        nodeConfigDataTreePath = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, FLOW_CAPABLE_NODE_WC_PATH);
+        nodeConfigDataTreePath = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION,
+                FLOW_CAPABLE_NODE_WC_PATH);
         nodeOperationalDataTreePath = new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL, NODE_WC_PATH);
 
-        final ExecutorService executorService= Executors.newCachedThreadPool(new ThreadFactoryBuilder()
+        final ExecutorService executorService = Executors.newCachedThreadPool(new ThreadFactoryBuilder()
                 .setNameFormat(FRS_EXECUTOR_PREFIX + "%d")
                 .setDaemon(false)
-                .setUncaughtExceptionHandler((thread, e) -> LOG.error("Uncaught exception {}", thread, e))
+                .setUncaughtExceptionHandler((thread, ex) -> LOG.error("Uncaught exception {}", thread, ex))
                 .build());
         syncThreadPool = MoreExecutors.listeningDecorator(executorService);
         broker.registerProvider(this);
@@ -125,8 +126,8 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
 
         final NodeListener<FlowCapableNode> nodeListenerConfig =
                 new SimplifiedConfigListener(reactor, configSnapshot, operationalDao);
-        final NodeListener<Node> nodeListenerOperational =
-                new SimplifiedOperationalListener(reactor, operationalSnapshot, configDao, reconciliationRegistry, deviceMastershipManager);
+        final NodeListener<Node> nodeListenerOperational = new SimplifiedOperationalListener(reactor,
+                operationalSnapshot, configDao, reconciliationRegistry, deviceMastershipManager);
 
         dataTreeConfigChangeListener =
                 dataService.registerDataTreeChangeListener(nodeConfigDataTreePath, nodeListenerConfig);
@@ -136,6 +137,7 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
         LOG.info("ForwardingRulesSync has started.");
     }
 
+    @Override
     public void close() {
         if (Objects.nonNull(dataTreeConfigChangeListener)) {
             dataTreeConfigChangeListener.close();

@@ -47,7 +47,8 @@ public class SyncReactorGuardDecoratorTest {
     @Before
     public void setUp() throws Exception {
         reactor = new SyncReactorGuardDecorator(delegate);
-        InstanceIdentifier<Node> nodePath = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(NODE_ID));
+        InstanceIdentifier<Node> nodePath = InstanceIdentifier.create(Nodes.class)
+                .child(Node.class, new NodeKey(NODE_ID));
         fcNodePath = nodePath.augmentation(FlowCapableNode.class);
 
         final Node operationalNode = Mockito.mock(Node.class);

@@ -34,7 +34,8 @@ public class DeviceMastershipTest {
 
     @Before
     public void setUp() throws Exception {
-        deviceMastership = new DeviceMastership(NODE_ID, reconciliationRegistry, Mockito.mock(ClusterSingletonServiceProvider.class));
+        deviceMastership = new DeviceMastership(NODE_ID, reconciliationRegistry,
+                Mockito.mock(ClusterSingletonServiceProvider.class));
     }
 
     @Test

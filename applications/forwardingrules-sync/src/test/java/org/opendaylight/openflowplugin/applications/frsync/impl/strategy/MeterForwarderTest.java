@@ -95,7 +95,8 @@ public class MeterForwarderTest {
 
         Meter removeMeter = new MeterBuilder(meter).build();
 
-        final Future<RpcResult<RemoveMeterOutput>> removeResult = meterForwarder.remove(meterPath, removeMeter, flowCapableNodePath);
+        final Future<RpcResult<RemoveMeterOutput>> removeResult =
+                meterForwarder.remove(meterPath, removeMeter, flowCapableNodePath);
         Mockito.verify(salMeterService).removeMeter(Matchers.<RemoveMeterInput>any());
 
         Assert.assertTrue(removeResult.isDone());
@@ -123,7 +124,8 @@ public class MeterForwarderTest {
                 .setMeterName("another-test")
                 .build();
 
-        final Future<RpcResult<UpdateMeterOutput>> updateResult = meterForwarder.update(meterPath, meterOriginal, meterUpdate,
+        final Future<RpcResult<UpdateMeterOutput>> updateResult =
+                meterForwarder.update(meterPath, meterOriginal, meterUpdate,
                 flowCapableNodePath);
         Mockito.verify(salMeterService).updateMeter(Matchers.<UpdateMeterInput>any());
 

@@ -61,6 +61,7 @@ public class DeviceMastership implements ClusterSingletonService, AutoCloseable 
     }
 
     @Override
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public void close() {
         if (clusterSingletonServiceRegistration != null) {
             try {

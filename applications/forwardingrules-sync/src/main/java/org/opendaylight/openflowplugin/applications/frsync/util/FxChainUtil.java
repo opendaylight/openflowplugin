@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Util methods for {@link com.google.common.util.concurrent.ListenableFuture} chaining.
  */
-public class FxChainUtil {
+public final class FxChainUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(FxChainUtil.class);
 
@@ -40,7 +40,8 @@ public class FxChainUtil {
                     if (result.isSuccessful()) {
                         LOG.debug(prefix + " finished successfully: {}", nodeId.getValue());
                     } else {
-                        final Collection<RpcError> errors = MoreObjects.firstNonNull(result.getErrors(), ImmutableList.<RpcError>of());
+                        final Collection<RpcError> errors = MoreObjects.firstNonNull(result.getErrors(),
+                                ImmutableList.<RpcError>of());
                         LOG.debug(prefix + " failed: {} -> {}", nodeId.getValue(), Arrays.toString(errors.toArray()));
                     }
                 } else {
@@ -49,8 +50,8 @@ public class FxChainUtil {
             }
 
             @Override
-            public void onFailure(final Throwable t) {
-                LOG.debug(prefix + " reconciliation failed seriously: {}", nodeId.getValue(), t);
+            public void onFailure(final Throwable failure) {
+                LOG.debug(prefix + " reconciliation failed seriously: {}", nodeId.getValue(), failure);
             }
         };
     }

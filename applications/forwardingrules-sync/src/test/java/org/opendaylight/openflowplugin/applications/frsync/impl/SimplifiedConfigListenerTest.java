@@ -92,7 +92,8 @@ public class SimplifiedConfigListenerTest {
     public void testOnDataTreeChangedAdd() {
         Mockito.when(configModification.getDataBefore()).thenReturn(null);
         Mockito.when(configModification.getDataAfter()).thenReturn(dataAfter);
-        final SyncupEntry syncupEntry = loadOperationalDSAndPrepareSyncupEntry(dataAfter, confgDS, dataBefore, operationalDS);
+        final SyncupEntry syncupEntry =
+                loadOperationalDSAndPrepareSyncupEntry(dataAfter, confgDS, dataBefore, operationalDS);
 
         nodeListenerConfig.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
@@ -129,8 +130,8 @@ public class SimplifiedConfigListenerTest {
 
     @Test
     public void testOnDataTreeChangedSkip() {
-        Mockito.when(roTx.read(LogicalDatastoreType.OPERATIONAL, fcNodePath)).
-                thenReturn(Futures.immediateCheckedFuture(Optional.absent()));
+        Mockito.when(roTx.read(LogicalDatastoreType.OPERATIONAL, fcNodePath))
+                .thenReturn(Futures.immediateCheckedFuture(Optional.absent()));
 
         nodeListenerConfig.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
@@ -138,8 +139,9 @@ public class SimplifiedConfigListenerTest {
         Mockito.verify(roTx).close();
     }
 
-    private SyncupEntry loadOperationalDSAndPrepareSyncupEntry(final FlowCapableNode after, final LogicalDatastoreType dsTypeAfter,
-                                                               final FlowCapableNode before, final LogicalDatastoreType dsTypeBefore) {
+    private SyncupEntry loadOperationalDSAndPrepareSyncupEntry(final FlowCapableNode after,
+            final LogicalDatastoreType dsTypeAfter, final FlowCapableNode before,
+            final LogicalDatastoreType dsTypeBefore) {
         Mockito.when(roTx.read(LogicalDatastoreType.OPERATIONAL, fcNodePath))
                 .thenReturn(Futures.immediateCheckedFuture(Optional.of(dataBefore)));
         final SyncupEntry syncupEntry = new SyncupEntry(after, dsTypeAfter, before, dsTypeBefore);

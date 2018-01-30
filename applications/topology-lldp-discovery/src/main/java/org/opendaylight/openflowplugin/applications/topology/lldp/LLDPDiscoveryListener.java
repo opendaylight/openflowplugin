@@ -27,7 +27,7 @@ public class LLDPDiscoveryListener implements PacketProcessingListener {
     @Override
     public void onPacketReceived(PacketReceived lldp) {
         NodeConnectorRef src = LLDPDiscoveryUtils.lldpToNodeConnectorRef(lldp.getPayload(), true);
-        if(src != null) {
+        if (src != null) {
             LinkDiscoveredBuilder ldb = new LinkDiscoveredBuilder();
             ldb.setDestination(lldp.getIngress());
             ldb.setSource(new NodeConnectorRef(src));
