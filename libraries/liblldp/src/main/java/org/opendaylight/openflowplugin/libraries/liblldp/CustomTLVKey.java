@@ -10,27 +10,23 @@ package org.opendaylight.openflowplugin.libraries.liblldp;
 
 public class CustomTLVKey {
 
-    private int oui;
-    private byte subtype;
+    private final int oui;
+    private final byte subtype;
 
-    /**
-     * @param oui
-     * @param subtype
-     */
     public CustomTLVKey(final int oui, final byte subtype) {
         this.oui = oui;
         this.subtype = subtype;
     }
 
     /**
-     * @return the oui
+     * Returns the oui.
      */
     public int getOui() {
         return oui;
     }
 
     /**
-     * @return the subtype
+     * Returns the subtype.
      */
     public byte getSubtype() {
         return subtype;
