@@ -38,7 +38,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Implements {@link ForwardingRulesCommitter} methods for processing add, update and remove of {@link Flow}.
  */
-public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutput, RemoveFlowOutput, UpdateFlowOutput> {
+public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutput, RemoveFlowOutput,
+        UpdateFlowOutput> {
 
     private static final Logger LOG = LoggerFactory.getLogger(FlowForwarder.class);
     private static final String TABLE_ID_MISMATCH = "tableId mismatch";
@@ -89,8 +90,8 @@ public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutp
 
             // always needs to set strict flag into update-flow input so that
             // only a flow entry associated with a given flow object is updated.
-            builder.setUpdatedFlow((new UpdatedFlowBuilder(update)).setStrict(Boolean.TRUE).build());
-            builder.setOriginalFlow((new OriginalFlowBuilder(original)).setStrict(Boolean.TRUE).build());
+            builder.setUpdatedFlow(new UpdatedFlowBuilder(update).setStrict(Boolean.TRUE).build());
+            builder.setOriginalFlow(new OriginalFlowBuilder(original).setStrict(Boolean.TRUE).build());
 
             output = salFlowService.updateFlow(builder.build());
         } else {
@@ -118,7 +119,8 @@ public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutp
             builder.setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey)));
             output = salFlowService.addFlow(builder.build());
         } else {
-            output = RpcResultBuilder.<AddFlowOutput>failed().withError(RpcError.ErrorType.APPLICATION, TABLE_ID_MISMATCH).buildFuture();
+            output = RpcResultBuilder.<AddFlowOutput>failed().withError(RpcError.ErrorType.APPLICATION,
+                    TABLE_ID_MISMATCH).buildFuture();
         }
         return output;
     }

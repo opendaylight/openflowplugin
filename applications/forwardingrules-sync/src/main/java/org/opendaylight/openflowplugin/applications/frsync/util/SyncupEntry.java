@@ -12,7 +12,8 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 
 /**
- * Data entry of before and after data for syncup in {@link org.opendaylight.openflowplugin.applications.frsync.SyncReactor}.
+ * Data entry of before and after data for syncup in
+ * {@link org.opendaylight.openflowplugin.applications.frsync.SyncReactor}.
  */
 public class SyncupEntry {
     private final FlowCapableNode after;
@@ -49,15 +50,15 @@ public class SyncupEntry {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
 
-        SyncupEntry that = (SyncupEntry) o;
+        SyncupEntry that = (SyncupEntry) obj;
 
         if (after != null ? !after.equals(that.after) : that.after != null) {
             return false;

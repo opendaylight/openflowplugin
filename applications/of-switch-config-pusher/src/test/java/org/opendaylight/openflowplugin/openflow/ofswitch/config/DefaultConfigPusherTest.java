@@ -42,7 +42,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultConfigPusherTest {
     private DefaultConfigPusher defaultConfigPusher;
-    private final static InstanceIdentifier<Node> nodeIID = InstanceIdentifier.create(Nodes.class)
+    private static final InstanceIdentifier<Node> NODE_IID = InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(new NodeId("testnode:1")));
     @Mock
     private NodeConfigService nodeConfigService;
@@ -54,7 +54,8 @@ public class DefaultConfigPusherTest {
     @Before
     public void setUp() throws Exception {
         defaultConfigPusher = new DefaultConfigPusher(nodeConfigService, Mockito.mock(DataBroker.class));
-        final DataTreeIdentifier<FlowCapableNode> identifier = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, nodeIID);
+        final DataTreeIdentifier<FlowCapableNode> identifier =
+                new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, NODE_IID);
         Mockito.when(dataTreeModification.getRootPath()).thenReturn(identifier);
         Mockito.when(dataTreeModification.getRootNode()).thenReturn(Mockito.mock(DataObjectModification.class));
         Mockito.when(dataTreeModification.getRootNode().getModificationType()).thenReturn(ModificationType.WRITE);
@@ -67,7 +68,7 @@ public class DefaultConfigPusherTest {
         final SetConfigInput captured = setConfigInputCaptor.getValue();
         Assert.assertEquals(SwitchConfigFlag.FRAGNORMAL.toString(), captured.getFlag());
         Assert.assertEquals(OFConstants.OFPCML_NO_BUFFER, captured.getMissSearchLength());
-        Assert.assertEquals(nodeIID, captured.getNode().getValue());
+        Assert.assertEquals(NODE_IID, captured.getNode().getValue());
     }
 
     @After

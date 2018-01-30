@@ -32,7 +32,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Implements {@link ForwardingRulesCommitter} methods for processing add, update and remove of {@link Meter}.
  */
-public class MeterForwarder implements ForwardingRulesCommitter<Meter, AddMeterOutput, RemoveMeterOutput, UpdateMeterOutput> {
+public class MeterForwarder implements ForwardingRulesCommitter<Meter, AddMeterOutput, RemoveMeterOutput,
+        UpdateMeterOutput> {
 
     private static final Logger LOG = LoggerFactory.getLogger(MeterForwarder.class);
     private final SalMeterService salMeterService;
@@ -42,8 +43,8 @@ public class MeterForwarder implements ForwardingRulesCommitter<Meter, AddMeterO
     }
 
     @Override
-    public Future<RpcResult<RemoveMeterOutput>> remove(final InstanceIdentifier<Meter> identifier, final Meter removeDataObj,
-                                                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public Future<RpcResult<RemoveMeterOutput>> remove(final InstanceIdentifier<Meter> identifier,
+            final Meter removeDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
         LOG.trace("Received the Meter REMOVE request [Tbl id, node Id {} {}",
                 identifier, nodeIdent);
@@ -66,8 +67,8 @@ public class MeterForwarder implements ForwardingRulesCommitter<Meter, AddMeterO
 
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
         builder.setMeterRef(new MeterRef(identifier));
-        builder.setUpdatedMeter((new UpdatedMeterBuilder(update)).build());
-        builder.setOriginalMeter((new OriginalMeterBuilder(original)).build());
+        builder.setUpdatedMeter(new UpdatedMeterBuilder(update).build());
+        builder.setOriginalMeter(new OriginalMeterBuilder(original).build());
 
         return salMeterService.updateMeter(builder.build());
     }
