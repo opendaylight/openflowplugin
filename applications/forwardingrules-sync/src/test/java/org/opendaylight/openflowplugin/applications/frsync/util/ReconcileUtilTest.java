@@ -62,7 +62,7 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 public class ReconcileUtilTest {
 
     private static final NodeId NODE_ID = new NodeId("unit-node-id");
-    private final InstanceIdentifier<Node> NODE_IDENT = InstanceIdentifier.create(Nodes.class)
+    private static final InstanceIdentifier<Node> NODE_IDENT = InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(NODE_ID));
     private static final Splitter COMMA_SPLITTER = Splitter.on(",");
 
@@ -92,9 +92,7 @@ public class ReconcileUtilTest {
     }
 
     /**
-     * add one missing group
-     *
-     * @throws Exception
+     * add one missing group.
      */
     @Test
     public void testResolveAndDivideGroupDiffs1() throws Exception {
@@ -114,14 +112,13 @@ public class ReconcileUtilTest {
         Assert.assertEquals(1, plan.size());
 
         Assert.assertEquals(1, plan.get(0).getItemsToPush().size());
-        Assert.assertEquals(4L, plan.get(0).getItemsToPush().iterator().next().getKey().getGroupId().getValue().longValue());
+        Assert.assertEquals(4L, plan.get(0).getItemsToPush().iterator().next().getKey()
+                .getGroupId().getValue().longValue());
         Assert.assertEquals(0, plan.get(0).getItemsToUpdate().size());
     }
 
     /**
-     * add 3 groups with dependencies - 3 steps involved
-     *
-     * @throws Exception
+     * add 3 groups with dependencies - 3 steps involved.
      */
     @Test
     public void testResolveAndDivideGroupDiffs2() throws Exception {
@@ -139,22 +136,23 @@ public class ReconcileUtilTest {
         Assert.assertEquals(3, plan.size());
 
         Assert.assertEquals(1, plan.get(0).getItemsToPush().size());
-        Assert.assertEquals(2L, plan.get(0).getItemsToPush().iterator().next().getKey().getGroupId().getValue().longValue());
+        Assert.assertEquals(2L, plan.get(0).getItemsToPush().iterator().next().getKey()
+                .getGroupId().getValue().longValue());
         Assert.assertEquals(0, plan.get(0).getItemsToUpdate().size());
 
         Assert.assertEquals(1, plan.get(1).getItemsToPush().size());
-        Assert.assertEquals(4L, plan.get(1).getItemsToPush().iterator().next().getKey().getGroupId().getValue().longValue());
+        Assert.assertEquals(4L, plan.get(1).getItemsToPush().iterator().next().getKey()
+                .getGroupId().getValue().longValue());
         Assert.assertEquals(0, plan.get(1).getItemsToUpdate().size());
 
         Assert.assertEquals(1, plan.get(2).getItemsToPush().size());
-        Assert.assertEquals(3L, plan.get(2).getItemsToPush().iterator().next().getKey().getGroupId().getValue().longValue());
+        Assert.assertEquals(3L, plan.get(2).getItemsToPush().iterator().next().getKey()
+                .getGroupId().getValue().longValue());
         Assert.assertEquals(0, plan.get(2).getItemsToUpdate().size());
     }
 
     /**
-     * no actions taken - installed and pending groups are the same
-     *
-     * @throws Exception
+     * no actions taken - installed and pending groups are the same.
      */
     @Test
     public void testResolveAndDivideGroupDiffs3() throws Exception {
@@ -173,9 +171,7 @@ public class ReconcileUtilTest {
     }
 
     /**
-     * update 1 group
-     *
-     * @throws Exception
+     * update 1 group.
      */
     @Test
     public void testResolveAndDivideGroupDiffs4() throws Exception {
@@ -193,15 +189,14 @@ public class ReconcileUtilTest {
         Assert.assertEquals(1, plan.size());
         Assert.assertEquals(0, plan.get(0).getItemsToPush().size());
         Assert.assertEquals(1, plan.get(0).getItemsToUpdate().size());
-        final ItemSyncBox.ItemUpdateTuple<Group> firstItemUpdateTuple = plan.get(0).getItemsToUpdate().iterator().next();
+        final ItemSyncBox.ItemUpdateTuple<Group> firstItemUpdateTuple =
+                plan.get(0).getItemsToUpdate().iterator().next();
         Assert.assertEquals(1L, firstItemUpdateTuple.getOriginal().getGroupId().getValue().longValue());
         Assert.assertEquals(1L, firstItemUpdateTuple.getUpdated().getGroupId().getValue().longValue());
     }
 
     /**
-     * no action taken - update 1 group will be ignored
-     *
-     * @throws Exception
+     * no action taken - update 1 group will be ignored.
      */
     @Test
     public void testResolveAndDivideGroupDiffs5() throws Exception {
@@ -220,9 +215,7 @@ public class ReconcileUtilTest {
     }
 
     /**
-     * should add 1 group but preconditions are not met
-     *
-     * @throws Exception
+     * should add 1 group but preconditions are not met.
      */
     @Test
     public void testResolveAndDivideGroupDiffs_negative1() throws Exception {
@@ -239,9 +232,7 @@ public class ReconcileUtilTest {
     }
 
     /**
-     * should update 1 group but preconditions are not met
-     *
-     * @throws Exception
+     * should update 1 group but preconditions are not met.
      */
     @Test
     public void testResolveAndDivideGroupDiffs_negative2() throws Exception {
@@ -310,9 +301,7 @@ public class ReconcileUtilTest {
     }
 
     /**
-     * covers {@link ReconcileUtil#countTotalUpdated(Iterable)} too
-     *
-     * @throws Exception
+     * covers {@link ReconcileUtil#countTotalUpdated(Iterable)} too.
      */
     @Test
     public void testCountTotalAdds() throws Exception {

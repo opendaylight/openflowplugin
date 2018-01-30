@@ -32,7 +32,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Implements {@link ForwardingRulesCommitter} methods for processing add, update and remove of {@link Group}.
  */
-public class GroupForwarder implements ForwardingRulesCommitter<Group, AddGroupOutput, RemoveGroupOutput, UpdateGroupOutput> {
+public class GroupForwarder implements ForwardingRulesCommitter<Group, AddGroupOutput, RemoveGroupOutput,
+        UpdateGroupOutput> {
 
     private static final Logger LOG = LoggerFactory.getLogger(GroupForwarder.class);
     private final SalGroupService salGroupService;
@@ -42,8 +43,8 @@ public class GroupForwarder implements ForwardingRulesCommitter<Group, AddGroupO
     }
 
     @Override
-    public Future<RpcResult<RemoveGroupOutput>> remove(final InstanceIdentifier<Group> identifier, final Group removeDataObj,
-                                                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public Future<RpcResult<RemoveGroupOutput>> remove(final InstanceIdentifier<Group> identifier,
+            final Group removeDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.trace("Forwarding Table REMOVE request [Tbl id, node Id {} {}",
                 identifier, nodeIdent);
 
@@ -67,8 +68,8 @@ public class GroupForwarder implements ForwardingRulesCommitter<Group, AddGroupO
 
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
         builder.setGroupRef(new GroupRef(identifier));
-        builder.setUpdatedGroup((new UpdatedGroupBuilder(update)).build());
-        builder.setOriginalGroup((new OriginalGroupBuilder(original)).build());
+        builder.setUpdatedGroup(new UpdatedGroupBuilder(update).build());
+        builder.setOriginalGroup(new OriginalGroupBuilder(original).build());
 
         return salGroupService.updateGroup(builder.build());
     }

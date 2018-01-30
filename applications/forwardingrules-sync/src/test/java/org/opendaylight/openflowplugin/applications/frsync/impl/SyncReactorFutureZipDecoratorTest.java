@@ -27,9 +27,7 @@ import org.mockito.InOrder;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.util.SyncupEntry;
@@ -66,7 +64,7 @@ public class SyncReactorFutureZipDecoratorTest {
         final ExecutorService executorService = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder()
                 .setDaemon(false)
                 .setNameFormat("frsync-test-%d")
-                .setUncaughtExceptionHandler((thread, e) -> LOG.error("Uncaught exception {}", thread, e))
+                .setUncaughtExceptionHandler((thread, ex) -> LOG.error("Uncaught exception {}", thread, ex))
                 .build());
         syncThreadPool = MoreExecutors.listeningDecorator(executorService);
         reactor = new SyncReactorFutureZipDecorator(delegate, syncThreadPool);
@@ -90,15 +88,12 @@ public class SyncReactorFutureZipDecoratorTest {
         final List<ListenableFuture<Boolean>> allResults = new ArrayList<>();
 
         Mockito.when(delegate.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Mockito.eq(first)))
-                .thenAnswer(new Answer<ListenableFuture<Boolean>>() {
-                    @Override
-                    public ListenableFuture<Boolean> answer(final InvocationOnMock invocationOnMock) throws Throwable {
-                        LOG.info("unlocking next configs");
-                        latchForNext.countDown();
-                        latchForFirst.await();
-                        LOG.info("unlocking first delegate");
-                        return Futures.immediateFuture(Boolean.TRUE);
-                    }
+                .thenAnswer(invocationOnMock -> {
+                    LOG.info("unlocking next configs");
+                    latchForNext.countDown();
+                    latchForFirst.await();
+                    LOG.info("unlocking first delegate");
+                    return Futures.immediateFuture(Boolean.TRUE);
                 });
 
         allResults.add(reactor.syncup(fcNodePath, first));
@@ -137,14 +132,11 @@ public class SyncReactorFutureZipDecoratorTest {
         final SyncupEntry second = new SyncupEntry(dataAfter, configDS, dataBefore, configDS);
 
         Mockito.when(delegate.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Mockito.eq(first)))
-                .thenAnswer(new Answer<ListenableFuture<Boolean>>() {
-            @Override
-            public ListenableFuture<Boolean> answer(final InvocationOnMock invocationOnMock) throws Throwable {
-                LOG.info("unlocking next config");
-                latchForNext.countDown();
-                return Futures.immediateFuture(Boolean.TRUE);
-            }
-            });
+                .thenAnswer(invocationOnMock -> {
+                    LOG.info("unlocking next config");
+                    latchForNext.countDown();
+                    return Futures.immediateFuture(Boolean.TRUE);
+                });
 
         reactor.syncup(fcNodePath, first);
         latchForNext.await();
@@ -175,16 +167,13 @@ public class SyncReactorFutureZipDecoratorTest {
         final SyncupEntry second = new SyncupEntry(configActual, configDS, freshOperational, operationalDS);
 
         Mockito.when(delegate.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Mockito.eq(first)))
-                .thenAnswer(new Answer<ListenableFuture<Boolean>>() {
-            @Override
-            public ListenableFuture<Boolean> answer(final InvocationOnMock invocationOnMock) throws Throwable {
-                LOG.info("unlocking for fresh operational");
-                latchForNext.countDown();
-                latchForFirst.await();
-                LOG.info("unlocking first delegate");
-                return Futures.immediateFuture(Boolean.TRUE);
-            }
-        });
+                .thenAnswer(invocationOnMock -> {
+                    LOG.info("unlocking for fresh operational");
+                    latchForNext.countDown();
+                    latchForFirst.await();
+                    LOG.info("unlocking first delegate");
+                    return Futures.immediateFuture(Boolean.TRUE);
+                });
 
         reactor.syncup(fcNodePath, first);
         latchForNext.await();

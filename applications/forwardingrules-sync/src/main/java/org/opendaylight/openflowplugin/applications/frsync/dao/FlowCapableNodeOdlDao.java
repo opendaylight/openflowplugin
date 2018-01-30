@@ -41,8 +41,9 @@ public class FlowCapableNodeOdlDao implements FlowCapableNodeDao {
         this.logicalDatastoreType = logicalDatastoreType;
     }
 
+    @Override
     public Optional<FlowCapableNode> loadByNodeId(@Nonnull NodeId nodeId) {
-        try (final ReadOnlyTransaction roTx = dataBroker.newReadOnlyTransaction()) {
+        try (ReadOnlyTransaction roTx = dataBroker.newReadOnlyTransaction()) {
             final InstanceIdentifier<FlowCapableNode> path =
                     NODES_IID.child(Node.class, new NodeKey(nodeId)).augmentation(FlowCapableNode.class);
             return roTx.read(logicalDatastoreType, path).checkedGet(5000, TimeUnit.MILLISECONDS);

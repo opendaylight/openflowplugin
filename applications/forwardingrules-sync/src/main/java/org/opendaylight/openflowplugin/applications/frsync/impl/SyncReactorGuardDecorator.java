@@ -41,6 +41,7 @@ public class SyncReactorGuardDecorator implements SyncReactor {
         this.delegate = delegate;
     }
 
+    @Override
     public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
                                             final SyncupEntry syncupEntry) {
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
@@ -75,14 +76,16 @@ public class SyncReactorGuardDecorator implements SyncReactor {
                 }
                 semaphoreKeeper.releaseGuard(guard);
             }
+
             @Override
-            public void onFailure(final Throwable t) {
+            public void onFailure(final Throwable failure) {
                 final long stampFinished = System.nanoTime();
                 LOG.warn("Syncup failed {} took:{} rpc:{} wait:{}", nodeId.getValue(),
                         formatNanos(stampFinished - stampBeforeGuard), formatNanos(stampFinished - stampAfterGuard),
                         formatNanos(stampAfterGuard - stampBeforeGuard));
                 semaphoreKeeper.releaseGuard(guard);
-            }};
+            }
+        };
     }
 
     private static String formatNanos(final long nanos) {

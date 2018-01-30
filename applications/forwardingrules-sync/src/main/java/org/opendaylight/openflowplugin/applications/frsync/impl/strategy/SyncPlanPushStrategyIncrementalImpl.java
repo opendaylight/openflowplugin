@@ -9,11 +9,10 @@
 package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
 import com.google.common.collect.Iterables;
-import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
-import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -80,74 +79,56 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
         // TODO enable table-update when ready
         //resultVehicle = updateTableFeatures(nodeIdent, configTree);
 
-        resultVehicle = Futures.transformAsync(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
-            @Override
-            public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
-                if (!input.isSuccessful()) {
-                    //TODO chain errors but not skip processing on first error return Futures.immediateFuture(input);
-                    //final ListenableFuture<RpcResult<Void>> singleVoidUpdateResult = Futures.transform(
-                    //        Futures.asList Arrays.asList(input, output),
-                    //        ReconcileUtil.<UpdateFlowOutput>createRpcResultCondenser("TODO"));
-                }
-                return addMissingGroups(nodeId, nodeIdent, diffInput.getGroupsToAddOrUpdate(), counters);
+        resultVehicle = Futures.transformAsync(resultVehicle, input -> {
+            if (!input.isSuccessful()) {
+                //TODO chain errors but not skip processing on first error return Futures.immediateFuture(input);
+                //final ListenableFuture<RpcResult<Void>> singleVoidUpdateResult = Futures.transform(
+                //        Futures.asList Arrays.asList(input, output),
+                //        ReconcileUtil.<UpdateFlowOutput>createRpcResultCondenser("TODO"));
             }
+            return addMissingGroups(nodeId, nodeIdent, diffInput.getGroupsToAddOrUpdate(), counters);
         }, MoreExecutors.directExecutor());
         Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "addMissingGroups"),
                 MoreExecutors.directExecutor());
-        resultVehicle = Futures.transformAsync(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
-            @Override
-            public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
-                if (!input.isSuccessful()) {
-                    //TODO chain errors but not skip processing on first error return Futures.immediateFuture(input);
-                }
-                return addMissingMeters(nodeId, nodeIdent, diffInput.getMetersToAddOrUpdate(), counters);
+        resultVehicle = Futures.transformAsync(resultVehicle, input -> {
+            if (!input.isSuccessful()) {
+                //TODO chain errors but not skip processing on first error return Futures.immediateFuture(input);
             }
+            return addMissingMeters(nodeId, nodeIdent, diffInput.getMetersToAddOrUpdate(), counters);
         }, MoreExecutors.directExecutor());
         Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "addMissingMeters"),
                 MoreExecutors.directExecutor());
-        resultVehicle = Futures.transformAsync(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
-            @Override
-            public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
-                if (!input.isSuccessful()) {
-                    //TODO chain errors but not skip processing on first error return Futures.immediateFuture(input);
-                }
-                return addMissingFlows(nodeId, nodeIdent, diffInput.getFlowsToAddOrUpdate(), counters);
+        resultVehicle = Futures.transformAsync(resultVehicle, input -> {
+            if (!input.isSuccessful()) {
+                //TODO chain errors but not skip processing on first error return Futures.immediateFuture(input);
             }
+            return addMissingFlows(nodeId, nodeIdent, diffInput.getFlowsToAddOrUpdate(), counters);
         }, MoreExecutors.directExecutor());
         Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "addMissingFlows"),
                 MoreExecutors.directExecutor());
 
 
-        resultVehicle = Futures.transformAsync(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
-            @Override
-            public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
-                if (!input.isSuccessful()) {
-                    //TODO chain errors but not skip processing on first error return Futures.immediateFuture(input);
-                }
-                return removeRedundantFlows(nodeId, nodeIdent, diffInput.getFlowsToRemove(), counters);
+        resultVehicle = Futures.transformAsync(resultVehicle, input -> {
+            if (!input.isSuccessful()) {
+                //TODO chain errors but not skip processing on first error return Futures.immediateFuture(input);
             }
+            return removeRedundantFlows(nodeId, nodeIdent, diffInput.getFlowsToRemove(), counters);
         }, MoreExecutors.directExecutor());
         Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "removeRedundantFlows"),
                 MoreExecutors.directExecutor());
-        resultVehicle = Futures.transformAsync(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
-            @Override
-            public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
-                if (!input.isSuccessful()) {
-                    //TODO chain errors but not skip processing on first error return Futures.immediateFuture(input);
-                }
-                return removeRedundantMeters(nodeId, nodeIdent, diffInput.getMetersToRemove(), counters);
+        resultVehicle = Futures.transformAsync(resultVehicle, input -> {
+            if (!input.isSuccessful()) {
+                //TODO chain errors but not skip processing on first error return Futures.immediateFuture(input);
             }
+            return removeRedundantMeters(nodeId, nodeIdent, diffInput.getMetersToRemove(), counters);
         }, MoreExecutors.directExecutor());
         Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "removeRedundantMeters"),
                 MoreExecutors.directExecutor());
-        resultVehicle = Futures.transformAsync(resultVehicle, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
-            @Override
-            public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input) throws Exception {
-                if (!input.isSuccessful()) {
-                    //TODO chain errors but not skip processing on first error return Futures.immediateFuture(input);
-                }
-                return removeRedundantGroups(nodeId, nodeIdent, diffInput.getGroupsToRemove(), counters);
+        resultVehicle = Futures.transformAsync(resultVehicle, input -> {
+            if (!input.isSuccessful()) {
+                //TODO chain errors but not skip processing on first error return Futures.immediateFuture(input);
             }
+            return removeRedundantGroups(nodeId, nodeIdent, diffInput.getGroupsToRemove(), counters);
         }, MoreExecutors.directExecutor());
         Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "removeRedundantGroups"),
                 MoreExecutors.directExecutor());
@@ -189,7 +170,8 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 final Flow existingFlow = flowUpdate.getOriginal();
                 final Flow updatedFlow = flowUpdate.getUpdated();
 
-                final KeyedInstanceIdentifier<Flow, FlowKey> flowIdent = tableIdent.child(Flow.class, updatedFlow.getKey());
+                final KeyedInstanceIdentifier<Flow, FlowKey> flowIdent = tableIdent.child(Flow.class,
+                        updatedFlow.getKey());
                 LOG.trace("flow {} in table {} - needs update on device {} match{}",
                         updatedFlow.getId(), tableKey, nodeId, updatedFlow.getMatch());
 
@@ -298,22 +280,17 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
             }
             Collections.reverse(groupsRemovalPlan);
             for (final ItemSyncBox<Group> groupsPortion : groupsRemovalPlan) {
-                chainedResult =
-                        Futures.transformAsync(chainedResult, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
-                            @Override
-                            public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input)
-                                    throws Exception {
-                                final ListenableFuture<RpcResult<Void>> result;
-                                if (input.isSuccessful()) {
-                                    result = flushRemoveGroupPortionAndBarrier(nodeIdent, groupsPortion);
-                                } else {
-                                    // pass through original unsuccessful rpcResult
-                                    result = Futures.immediateFuture(input);
-                                }
+                chainedResult = Futures.transformAsync(chainedResult, input -> {
+                    final ListenableFuture<RpcResult<Void>> result;
+                    if (input.isSuccessful()) {
+                        result = flushRemoveGroupPortionAndBarrier(nodeIdent, groupsPortion);
+                    } else {
+                        // pass through original unsuccessful rpcResult
+                        result = Futures.immediateFuture(input);
+                    }
 
-                                return result;
-                            }
-                        }, MoreExecutors.directExecutor());
+                    return result;
+                }, MoreExecutors.directExecutor());
             }
         } catch (IllegalStateException e) {
             chainedResult = RpcResultBuilder.<Void>failed()
@@ -358,7 +335,8 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 for (TableFeatures tableFeaturesItem : tableFeatures) {
                     // TODO uncomment java.lang.NullPointerException
                     // at
-                    // org.opendaylight.openflowjava.protocol.impl.serialization.match.AbstractOxmMatchEntrySerializer.serializeHeader(AbstractOxmMatchEntrySerializer.java:31
+                    // org.opendaylight.openflowjava.protocol.impl.serialization.match.AbstractOxmMatchEntrySerializer
+                    //    .serializeHeader(AbstractOxmMatchEntrySerializer.java:31
                     // allResults.add(JdkFutureAdapters.listenInPoolThread(
                     // tableForwarder.update(tableFeaturesII, null, tableFeaturesItem, nodeIdent)));
                 }
@@ -489,21 +467,17 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 chainedResult = flushAddGroupPortionAndBarrier(nodeIdent, groupsAddPlan.get(0));
                 for (final ItemSyncBox<Group> groupsPortion : Iterables.skip(groupsAddPlan, 1)) {
                     chainedResult =
-                            Futures.transformAsync(chainedResult, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
-                                @Override
-                                public ListenableFuture<RpcResult<Void>> apply(final RpcResult<Void> input)
-                                        throws Exception {
-                                    final ListenableFuture<RpcResult<Void>> result;
-                                    if (input.isSuccessful()) {
-                                        result = flushAddGroupPortionAndBarrier(nodeIdent, groupsPortion);
-                                    } else {
-                                        // pass through original unsuccessful rpcResult
-                                        result = Futures.immediateFuture(input);
-                                    }
+                        Futures.transformAsync(chainedResult, input -> {
+                            final ListenableFuture<RpcResult<Void>> result;
+                            if (input.isSuccessful()) {
+                                result = flushAddGroupPortionAndBarrier(nodeIdent, groupsPortion);
+                            } else {
+                                // pass through original unsuccessful rpcResult
+                                result = Futures.immediateFuture(input);
+                            }
 
-                                    return result;
-                                }
-                            }, MoreExecutors.directExecutor());
+                            return result;
+                        }, MoreExecutors.directExecutor());
                 }
             } else {
                 chainedResult = RpcResultBuilder.<Void>success().buildFuture();
@@ -538,7 +512,8 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
         return this;
     }
 
-    public SyncPlanPushStrategyIncrementalImpl setTransactionService(final FlowCapableTransactionService transactionService) {
+    public SyncPlanPushStrategyIncrementalImpl setTransactionService(
+            final FlowCapableTransactionService transactionService) {
         this.transactionService = transactionService;
         return this;
     }

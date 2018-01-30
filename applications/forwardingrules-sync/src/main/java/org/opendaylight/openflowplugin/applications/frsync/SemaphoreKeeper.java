@@ -24,18 +24,18 @@ public interface SemaphoreKeeper<K> {
      * @param key semaphore identifier
      * @return new or existing semaphore for given key, for one key there is always only one semaphore available
      */
-    Semaphore summonGuard(@Nonnull final K key);
+    Semaphore summonGuard(@Nonnull K key);
 
     /**
      * Get guard and lock for key.
      * @param key for which guard should be created and acquired
      * @return semaphore guard
      */
-    Semaphore summonGuardAndAcquire(@Nonnull final K key);
+    Semaphore summonGuardAndAcquire(@Nonnull K key);
 
     /**
      * Unlock and release guard.
      * @param guard semaphore guard which should be released
      */
-    void releaseGuard(@Nullable final Semaphore guard);
+    void releaseGuard(@Nullable Semaphore guard);
 }
