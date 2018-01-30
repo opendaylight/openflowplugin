@@ -20,6 +20,8 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 public interface SyncPlanPushStrategy {
 
     /**
+     * Invoked to execute the synchronization strategy.
+     *
      * @param resultVehicle bootstrap future - execution will chain it's async calls to this one
      * @param diffInput     wraps all diff data required for any strategy ({add,remove,update} x {flow,group,meter})
      * @param counters      reference to internal one-shot statistics - summary off successfully pushed items

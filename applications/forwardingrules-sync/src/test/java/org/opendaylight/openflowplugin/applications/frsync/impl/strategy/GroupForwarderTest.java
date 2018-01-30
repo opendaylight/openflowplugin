@@ -97,7 +97,8 @@ public class GroupForwarderTest {
                         .buildFuture()
         );
 
-        final Future<RpcResult<RemoveGroupOutput>> addResult = groupForwarder.remove(groupPath, group, flowCapableNodePath);
+        final Future<RpcResult<RemoveGroupOutput>> addResult =
+                groupForwarder.remove(groupPath, group, flowCapableNodePath);
 
         Mockito.verify(salGroupService).removeGroup(Matchers.<RemoveGroupInput>any());
 
@@ -129,8 +130,8 @@ public class GroupForwarderTest {
                 .setGroupName("another-test")
                 .build();
 
-        final Future<RpcResult<UpdateGroupOutput>> addResult = groupForwarder.update(groupPath, groupOriginal, groupUpdate,
-                flowCapableNodePath);
+        final Future<RpcResult<UpdateGroupOutput>> addResult =
+                groupForwarder.update(groupPath, groupOriginal, groupUpdate, flowCapableNodePath);
 
         Mockito.verify(salGroupService).updateGroup(Matchers.<UpdateGroupInput>any());
 

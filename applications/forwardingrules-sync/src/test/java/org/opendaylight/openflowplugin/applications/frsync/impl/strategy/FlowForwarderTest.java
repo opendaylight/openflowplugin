@@ -152,7 +152,8 @@ public class FlowForwarderTest {
                 .setMatch(new MatchBuilder().build())
                 .build();
 
-        final Future<RpcResult<UpdateFlowOutput>> updateResult = flowForwarder.update(flowPath, flow, flowUpdated, flowCapableNodePath);
+        final Future<RpcResult<UpdateFlowOutput>> updateResult = flowForwarder.update(flowPath, flow,
+                flowUpdated, flowCapableNodePath);
 
         Mockito.verify(salFlowService).updateFlow(Matchers.<UpdateFlowInput>any());
         final UpdateFlowInput updateFlowInput = updateFlowInputCpt.getValue();
@@ -188,7 +189,8 @@ public class FlowForwarderTest {
                                 .build()).buildFuture());
 
         final Flow removeFlow = new FlowBuilder(flow).build();
-        final Future<RpcResult<RemoveFlowOutput>> removeResult = flowForwarder.remove(flowPath, removeFlow, flowCapableNodePath);
+        final Future<RpcResult<RemoveFlowOutput>> removeResult = flowForwarder.remove(flowPath,
+                removeFlow, flowCapableNodePath);
 
         Mockito.verify(salFlowService).removeFlow(Matchers.<RemoveFlowInput>any());
         final RemoveFlowInput flowInput = removeFlowInputCpt.getValue();

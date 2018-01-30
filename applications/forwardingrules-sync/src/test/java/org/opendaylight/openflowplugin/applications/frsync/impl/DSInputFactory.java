@@ -47,7 +47,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter
  * Provides create methods for dataObjects involved in
  * {@link org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener} by inventory.
  */
-public class DSInputFactory {
+public final class DSInputFactory {
+    private DSInputFactory() {
+    }
+
     public static Group createGroup(final long groupIdValue) {
         final Buckets buckets = new BucketsBuilder()
                 .setBucket(Collections.<Bucket>emptyList())

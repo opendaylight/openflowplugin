@@ -33,7 +33,8 @@ public class DeviceMastershipManager {
 
     public void onDeviceConnected(final NodeId nodeId) {
         LOG.debug("FRS service registered for: {}", nodeId.getValue());
-        final DeviceMastership mastership = new DeviceMastership(nodeId, reconciliationRegistry, clusterSingletonService);
+        final DeviceMastership mastership = new DeviceMastership(nodeId, reconciliationRegistry,
+                clusterSingletonService);
         deviceMasterships.put(nodeId, mastership);
     }
 

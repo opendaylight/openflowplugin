@@ -120,7 +120,8 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
     @Test
     public void testExecuteSyncStrategy() throws Exception {
         final SynchronizationDiffInput diffInput = new SynchronizationDiffInput(NODE_IDENT,
-                groupsToAddOrUpdate, metersToAddOrUpdate, flowsToAddOrUpdate, flowsToRemove, metersToRemove, groupsToRemove);
+                groupsToAddOrUpdate, metersToAddOrUpdate, flowsToAddOrUpdate,
+                flowsToRemove, metersToRemove, groupsToRemove);
 
         Mockito.when(flatBatchService.processFlatBatch(Matchers.<ProcessFlatBatchInput>any()))
                 .thenReturn(RpcResultBuilder.success(new ProcessFlatBatchOutputBuilder().build()).buildFuture());
@@ -167,7 +168,8 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
 
     @Test
     public void testAssembleAddOrUpdateGroups() throws Exception {
-        final int lastOrder = SyncPlanPushStrategyFlatBatchImpl.assembleAddOrUpdateGroups(batchBag, 0, groupsToAddOrUpdate);
+        final int lastOrder = SyncPlanPushStrategyFlatBatchImpl.assembleAddOrUpdateGroups(
+                batchBag, 0, groupsToAddOrUpdate);
 
         Assert.assertEquals(9, lastOrder);
         Assert.assertEquals(3, batchBag.size());
@@ -198,7 +200,8 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
 
     @Test
     public void testAssembleAddOrUpdateMeters() throws Exception {
-        final int lastOrder = SyncPlanPushStrategyFlatBatchImpl.assembleAddOrUpdateMeters(batchBag, 0, metersToAddOrUpdate);
+        final int lastOrder = SyncPlanPushStrategyFlatBatchImpl.assembleAddOrUpdateMeters(
+                batchBag, 0, metersToAddOrUpdate);
 
         Assert.assertEquals(6, lastOrder);
         Assert.assertEquals(2, batchBag.size());
@@ -223,7 +226,8 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
 
     @Test
     public void testAssembleAddOrUpdateFlows() throws Exception {
-        final int lastOrder = SyncPlanPushStrategyFlatBatchImpl.assembleAddOrUpdateFlows(batchBag, 0, flowsToAddOrUpdate);
+        final int lastOrder = SyncPlanPushStrategyFlatBatchImpl.assembleAddOrUpdateFlows(
+                batchBag, 0, flowsToAddOrUpdate);
 
         Assert.assertEquals(9, lastOrder);
         Assert.assertEquals(3, batchBag.size());
@@ -286,7 +290,8 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
                 new BatchBuilder().setBatchOrder(9).build(),
                 new BatchBuilder().setBatchOrder(15).build()
         );
-        final Map<Range<Integer>, Batch> rangeBatchMap = SyncPlanPushStrategyFlatBatchImpl.mapBatchesToRanges(inputBatchBag, 42);
+        final Map<Range<Integer>, Batch> rangeBatchMap =
+                SyncPlanPushStrategyFlatBatchImpl.mapBatchesToRanges(inputBatchBag, 42);
 
         Assert.assertEquals(4, rangeBatchMap.size());
         int idx = 0;

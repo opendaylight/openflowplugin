@@ -27,7 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
- * Test for {@link SyncReactorRetryDecorator}
+ * Test for {@link SyncReactorRetryDecorator}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class SyncReactorRetryDecoratorTest {
@@ -46,7 +46,8 @@ public class SyncReactorRetryDecoratorTest {
     @Before
     public void setUp() {
         reactor = new SyncReactorRetryDecorator(delegate, reconciliationRegistry);
-        InstanceIdentifier<Node> nodePath = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(NODE_ID));
+        InstanceIdentifier<Node> nodePath = InstanceIdentifier.create(Nodes.class)
+                .child(Node.class, new NodeKey(NODE_ID));
         fcNodePath = nodePath.augmentation(FlowCapableNode.class);
     }
 
