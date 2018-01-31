@@ -85,10 +85,12 @@ public class MultipathConvertorTest {
 
     @Test
     public void testConvert() throws Exception {
-        final ActionMultipath actionMultipath = (ActionMultipath) multipathConvertor.convert(bucketActionsCase).getActionChoice();
+        final ActionMultipath actionMultipath =
+                (ActionMultipath) multipathConvertor.convert(bucketActionsCase).getActionChoice();
         Assert.assertEquals(OfjNxHashFields.NXHASHFIELDSETHSRC, actionMultipath.getNxActionMultipath().getFields());
         Assert.assertEquals(Integer.valueOf(2), actionMultipath.getNxActionMultipath().getBasis());
-        Assert.assertEquals(OfjNxMpAlgorithm.NXMPALGHASHTHRESHOLD, actionMultipath.getNxActionMultipath().getAlgorithm());
+        Assert.assertEquals(OfjNxMpAlgorithm.NXMPALGHASHTHRESHOLD,
+                actionMultipath.getNxActionMultipath().getAlgorithm());
         Assert.assertEquals(Integer.valueOf(2), actionMultipath.getNxActionMultipath().getMaxLink());
         Assert.assertEquals(Long.valueOf(2L), actionMultipath.getNxActionMultipath().getArg());
     }
@@ -96,46 +98,85 @@ public class MultipathConvertorTest {
     @Test
     public void testConvert1() throws Exception {
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult
-                = multipathConvertor.convert(action, ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION);
+                = multipathConvertor.convert(action, ActionPath.FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult1
-                = multipathConvertor.convert(action, ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION);
+                = multipathConvertor.convert(action, ActionPath.FLOWS_STATISTICS_UPDATE_WRITE_ACTIONS);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult2
-                = multipathConvertor.convert(action, ActionPath.GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION);
+                = multipathConvertor.convert(action, ActionPath.GROUP_DESC_STATS_UPDATED_BUCKET_ACTION);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult3
-                = multipathConvertor.convert(action, ActionPath.NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION);
+                = multipathConvertor.convert(action, ActionPath.INVENTORY_FLOWNODE_TABLE_WRITE_ACTIONS);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult4
-                = multipathConvertor.convert(action, ActionPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION);
+                = multipathConvertor.convert(action, ActionPath.FLOWS_STATISTICS_RPC_APPLY_ACTIONS);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult5
-                = multipathConvertor.convert(action, ActionPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION);
+                = multipathConvertor.convert(action, ActionPath.FLOWS_STATISTICS_RPC_WRITE_ACTIONS);
 
-        Assert.assertEquals(Integer.valueOf(1), ((NxActionMultipathNotifFlowsStatisticsUpdateApplyActionsCase) actionResult).getNxMultipath().getBasis());
-        Assert.assertEquals(OfjNxMpAlgorithm.NXMPALGHRW, ((NxActionMultipathNotifFlowsStatisticsUpdateApplyActionsCase) actionResult).getNxMultipath().getAlgorithm());
-        Assert.assertEquals(Long.valueOf(2L), ((NxActionMultipathNotifFlowsStatisticsUpdateApplyActionsCase) actionResult).getNxMultipath().getArg());
-        Assert.assertEquals(Integer.valueOf(2), ((NxActionMultipathNotifFlowsStatisticsUpdateApplyActionsCase) actionResult).getNxMultipath().getMaxLink());
+        Assert.assertEquals(Integer.valueOf(1),
+                ((NxActionMultipathNotifFlowsStatisticsUpdateApplyActionsCase) actionResult).getNxMultipath()
+                        .getBasis());
+        Assert.assertEquals(OfjNxMpAlgorithm.NXMPALGHRW,
+                ((NxActionMultipathNotifFlowsStatisticsUpdateApplyActionsCase) actionResult).getNxMultipath()
+                        .getAlgorithm());
+        Assert.assertEquals(Long.valueOf(2L),
+                ((NxActionMultipathNotifFlowsStatisticsUpdateApplyActionsCase) actionResult).getNxMultipath().getArg());
+        Assert.assertEquals(Integer.valueOf(2),
+                ((NxActionMultipathNotifFlowsStatisticsUpdateApplyActionsCase) actionResult).getNxMultipath()
+                        .getMaxLink());
 
-        Assert.assertEquals(Integer.valueOf(1), ((NxActionMultipathNotifFlowsStatisticsUpdateWriteActionsCase) actionResult1).getNxMultipath().getBasis());
-        Assert.assertEquals(OfjNxMpAlgorithm.NXMPALGHRW, ((NxActionMultipathNotifFlowsStatisticsUpdateWriteActionsCase) actionResult1).getNxMultipath().getAlgorithm());
-        Assert.assertEquals(Long.valueOf(2L), ((NxActionMultipathNotifFlowsStatisticsUpdateWriteActionsCase) actionResult1).getNxMultipath().getArg());
-        Assert.assertEquals(Integer.valueOf(2), ((NxActionMultipathNotifFlowsStatisticsUpdateWriteActionsCase) actionResult1).getNxMultipath().getMaxLink());
+        Assert.assertEquals(Integer.valueOf(1),
+                ((NxActionMultipathNotifFlowsStatisticsUpdateWriteActionsCase) actionResult1).getNxMultipath()
+                        .getBasis());
+        Assert.assertEquals(OfjNxMpAlgorithm.NXMPALGHRW,
+                ((NxActionMultipathNotifFlowsStatisticsUpdateWriteActionsCase) actionResult1).getNxMultipath()
+                        .getAlgorithm());
+        Assert.assertEquals(Long.valueOf(2L),
+                ((NxActionMultipathNotifFlowsStatisticsUpdateWriteActionsCase) actionResult1).getNxMultipath()
+                        .getArg());
+        Assert.assertEquals(Integer.valueOf(2),
+                ((NxActionMultipathNotifFlowsStatisticsUpdateWriteActionsCase) actionResult1).getNxMultipath()
+                        .getMaxLink());
 
-        Assert.assertEquals(Integer.valueOf(1), ((NxActionMultipathNotifGroupDescStatsUpdatedCase) actionResult2).getNxMultipath().getBasis());
-        Assert.assertEquals(OfjNxMpAlgorithm.NXMPALGHRW, ((NxActionMultipathNotifGroupDescStatsUpdatedCase) actionResult2).getNxMultipath().getAlgorithm());
-        Assert.assertEquals(Long.valueOf(2L), ((NxActionMultipathNotifGroupDescStatsUpdatedCase) actionResult2).getNxMultipath().getArg());
-        Assert.assertEquals(Integer.valueOf(2), ((NxActionMultipathNotifGroupDescStatsUpdatedCase) actionResult2).getNxMultipath().getMaxLink());
+        Assert.assertEquals(Integer.valueOf(1),
+                ((NxActionMultipathNotifGroupDescStatsUpdatedCase) actionResult2).getNxMultipath().getBasis());
+        Assert.assertEquals(OfjNxMpAlgorithm.NXMPALGHRW,
+                ((NxActionMultipathNotifGroupDescStatsUpdatedCase) actionResult2).getNxMultipath().getAlgorithm());
+        Assert.assertEquals(Long.valueOf(2L),
+                ((NxActionMultipathNotifGroupDescStatsUpdatedCase) actionResult2).getNxMultipath().getArg());
+        Assert.assertEquals(Integer.valueOf(2),
+                ((NxActionMultipathNotifGroupDescStatsUpdatedCase) actionResult2).getNxMultipath().getMaxLink());
 
-        Assert.assertEquals(Integer.valueOf(1), ((NxActionMultipathNodesNodeTableFlowWriteActionsCase) actionResult3).getNxMultipath().getBasis());
-        Assert.assertEquals(OfjNxMpAlgorithm.NXMPALGHRW, ((NxActionMultipathNodesNodeTableFlowWriteActionsCase) actionResult3).getNxMultipath().getAlgorithm());
-        Assert.assertEquals(Long.valueOf(2L), ((NxActionMultipathNodesNodeTableFlowWriteActionsCase) actionResult3).getNxMultipath().getArg());
-        Assert.assertEquals(Integer.valueOf(2), ((NxActionMultipathNodesNodeTableFlowWriteActionsCase) actionResult3).getNxMultipath().getMaxLink());
+        Assert.assertEquals(Integer.valueOf(1),
+                ((NxActionMultipathNodesNodeTableFlowWriteActionsCase) actionResult3).getNxMultipath().getBasis());
+        Assert.assertEquals(OfjNxMpAlgorithm.NXMPALGHRW,
+                ((NxActionMultipathNodesNodeTableFlowWriteActionsCase) actionResult3).getNxMultipath().getAlgorithm());
+        Assert.assertEquals(Long.valueOf(2L),
+                ((NxActionMultipathNodesNodeTableFlowWriteActionsCase) actionResult3).getNxMultipath().getArg());
+        Assert.assertEquals(Integer.valueOf(2),
+                ((NxActionMultipathNodesNodeTableFlowWriteActionsCase) actionResult3).getNxMultipath().getMaxLink());
 
-        Assert.assertEquals(Integer.valueOf(1), ((NxActionMultipathNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxMultipath().getBasis());
-        Assert.assertEquals(OfjNxMpAlgorithm.NXMPALGHRW, ((NxActionMultipathNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxMultipath().getAlgorithm());
-        Assert.assertEquals(Long.valueOf(2L), ((NxActionMultipathNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxMultipath().getArg());
-        Assert.assertEquals(Integer.valueOf(2), ((NxActionMultipathNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxMultipath().getMaxLink());
+        Assert.assertEquals(Integer.valueOf(1),
+                ((NxActionMultipathNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxMultipath()
+                        .getBasis());
+        Assert.assertEquals(OfjNxMpAlgorithm.NXMPALGHRW,
+                ((NxActionMultipathNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxMultipath()
+                        .getAlgorithm());
+        Assert.assertEquals(Long.valueOf(2L),
+                ((NxActionMultipathNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxMultipath()
+                        .getArg());
+        Assert.assertEquals(Integer.valueOf(2),
+                ((NxActionMultipathNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxMultipath()
+                        .getMaxLink());
 
-        Assert.assertEquals(Integer.valueOf(1), ((NxActionMultipathNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxMultipath().getBasis());
-        Assert.assertEquals(OfjNxMpAlgorithm.NXMPALGHRW, ((NxActionMultipathNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxMultipath().getAlgorithm());
-        Assert.assertEquals(Long.valueOf(2L), ((NxActionMultipathNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxMultipath().getArg());
-        Assert.assertEquals(Integer.valueOf(2), ((NxActionMultipathNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxMultipath().getMaxLink());
+        Assert.assertEquals(Integer.valueOf(1),
+                ((NxActionMultipathNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxMultipath()
+                        .getBasis());
+        Assert.assertEquals(OfjNxMpAlgorithm.NXMPALGHRW,
+                ((NxActionMultipathNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxMultipath()
+                        .getAlgorithm());
+        Assert.assertEquals(Long.valueOf(2L),
+                ((NxActionMultipathNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxMultipath()
+                        .getArg());
+        Assert.assertEquals(Integer.valueOf(2),
+                ((NxActionMultipathNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxMultipath()
+                        .getMaxLink());
     }
 }

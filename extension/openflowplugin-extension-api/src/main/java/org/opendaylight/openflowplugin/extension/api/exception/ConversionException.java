@@ -9,7 +9,7 @@
 package org.opendaylight.openflowplugin.extension.api.exception;
 
 /**
- * General exception for conversion related operations
+ * General exception for conversion related operations.
  */
 public class ConversionException extends Exception {
     public ConversionException(String message) {

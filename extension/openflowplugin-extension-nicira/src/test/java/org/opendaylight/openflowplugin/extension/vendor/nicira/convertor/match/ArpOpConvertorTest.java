@@ -64,10 +64,12 @@ public class ArpOpConvertorTest {
         nxAugMatchRpcAddFlowBuilder.setNxmOfArpOp(nxmOfArpOpBuilder.build());
 
         final Augmentation<Extension> extensionAugmentation = nxAugMatchRpcAddFlowBuilder.build();
-        when(extension.getAugmentation(Matchers.<Class<Augmentation<Extension>>>any())).thenReturn(extensionAugmentation);
+        when(extension.getAugmentation(Matchers.<Class<Augmentation<Extension>>>any()))
+                .thenReturn(extensionAugmentation);
 
-        final MatchEntry matchEntry = arpOpConvertor.convert(extension);
-        Assert.assertEquals(nxAugMatchRpcAddFlowBuilder.getNxmOfArpOp().getValue(), ((ArpOpCaseValue)matchEntry.getMatchEntryValue()).getArpOpValues().getValue());
+        final MatchEntry converted = arpOpConvertor.convert(extension);
+        Assert.assertEquals(nxAugMatchRpcAddFlowBuilder.getNxmOfArpOp().getValue(),
+                ((ArpOpCaseValue) converted.getMatchEntryValue()).getArpOpValues().getValue());
     }
 
     @Test
@@ -80,21 +82,29 @@ public class ArpOpConvertorTest {
 
         when(matchEntry.getMatchEntryValue()).thenReturn(arpOpCase);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = arpOpConvertor.convert(matchEntry, MatchPath.PACKETRECEIVED_MATCH);
-        Assert.assertEquals(arpOpCase.getArpOp().getOpCode(), ((NxAugMatchNotifPacketIn)extensionAugment.getAugmentationObject()).getNxmOfArpOp().getValue());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = arpOpConvertor.convert(matchEntry,
+                MatchPath.PACKET_RECEIVED_MATCH);
+        Assert.assertEquals(arpOpCase.getArpOp().getOpCode(),
+                ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmOfArpOp().getValue());
         Assert.assertEquals(extensionAugment.getKey(), NxmOfArpOpKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = arpOpConvertor.convert(matchEntry, MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
-        Assert.assertEquals(arpOpCase.getArpOp().getOpCode(), ((NxAugMatchNodesNodeTableFlow)extensionAugment1.getAugmentationObject()).getNxmOfArpOp().getValue());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = arpOpConvertor.convert(matchEntry,
+                MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
+        Assert.assertEquals(arpOpCase.getArpOp().getOpCode(),
+                ((NxAugMatchNodesNodeTableFlow) extensionAugment1.getAugmentationObject()).getNxmOfArpOp().getValue());
         Assert.assertEquals(extensionAugment1.getKey(), NxmOfArpOpKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = arpOpConvertor.convert(matchEntry, MatchPath.SWITCHFLOWREMOVED_MATCH);
-        Assert.assertEquals(arpOpCase.getArpOp().getOpCode(), ((NxAugMatchNotifSwitchFlowRemoved)extensionAugment2.getAugmentationObject()).getNxmOfArpOp().getValue());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = arpOpConvertor.convert(matchEntry,
+                MatchPath.SWITCH_FLOW_REMOVED_MATCH);
+        Assert.assertEquals(arpOpCase.getArpOp().getOpCode(),
+                ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment2.getAugmentationObject()).getNxmOfArpOp()
+                        .getValue());
         Assert.assertEquals(extensionAugment2.getKey(), NxmOfArpOpKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = arpOpConvertor.convert(matchEntry, MatchPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH);
-        Assert.assertEquals(arpOpCase.getArpOp().getOpCode(), ((NxAugMatchRpcGetFlowStats)extensionAugment3.getAugmentationObject()).getNxmOfArpOp().getValue());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = arpOpConvertor.convert(matchEntry,
+                MatchPath.FLOWS_STATISTICS_RPC_MATCH);
+        Assert.assertEquals(arpOpCase.getArpOp().getOpCode(),
+                ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject()).getNxmOfArpOp().getValue());
         Assert.assertEquals(extensionAugment3.getKey(), NxmOfArpOpKey.class);
-
     }
 }
