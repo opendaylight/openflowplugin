@@ -8,22 +8,19 @@
 
 package org.opendaylight.openflowjava.protocol.impl.clients;
 
+import com.google.common.util.concurrent.SettableFuture;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.Future;
-
 import java.net.InetAddress;
 import java.util.concurrent.ExecutionException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.util.concurrent.SettableFuture;
-
 /**
- * Simple client for testing purposes
+ * Simple client for testing purposes.
  *
  * @author michal.polkorab
  */
@@ -39,7 +36,7 @@ public class SimpleClient implements OFClient {
     private ScenarioHandler scenarioHandler;
 
     /**
-     * Constructor of class
+     * Constructor of class.
      *
      * @param host address of host
      * @param port host listening port
@@ -56,7 +53,7 @@ public class SimpleClient implements OFClient {
     }
 
     /**
-     * Starting class of {@link SimpleClient}
+     * Starting class of {@link SimpleClient}.
      */
     @Override
     public void run() {
@@ -64,12 +61,12 @@ public class SimpleClient implements OFClient {
         SimpleClientInitializer clientInitializer = new SimpleClientInitializer(isOnlineFuture, securedClient);
         clientInitializer.setScenario(scenarioHandler);
         try {
-            Bootstrap b = new Bootstrap();
-            b.group(group)
+            Bootstrap bootstrap = new Bootstrap();
+            bootstrap.group(group)
                 .channel(NioSocketChannel.class)
                 .handler(clientInitializer);
 
-            b.connect(host, port).sync();
+            bootstrap.connect(host, port).sync();
 
             synchronized (scenarioHandler) {
                 LOG.debug("WAITING FOR SCENARIO");
@@ -77,7 +74,7 @@ public class SimpleClient implements OFClient {
                     scenarioHandler.wait();
                 }
             }
-        } catch (Exception ex) {
+        } catch (InterruptedException ex) {
             LOG.error(ex.getMessage(), ex);
         } finally {
             LOG.debug("shutting down");
@@ -92,6 +89,8 @@ public class SimpleClient implements OFClient {
     }
 
     /**
+     * Disconnect.
+     *
      * @return close future
      */
     public Future<?> disconnect() {
@@ -105,10 +104,7 @@ public class SimpleClient implements OFClient {
     }
 
     /**
-     * Sets up {@link SimpleClient} and fires run()
-     *
-     * @param args
-     * @throws Exception
+     * Sets up {@link SimpleClient} and fires run().
      */
     public static void main(String[] args) throws Exception {
         String host;

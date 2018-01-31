@@ -9,22 +9,24 @@
 package org.opendaylight.openflowjava.protocol.impl.clients;
 
 import java.util.Arrays;
-
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class representing waiting on message
+ * Class representing waiting on message.
+ *
  * @author michal.polkorab
  */
 public class WaitForMessageEvent implements ClientEvent {
 
     private static final Logger LOG = LoggerFactory.getLogger(WaitForMessageEvent.class);
-    private byte[] headerExpected;
+    private final byte[] headerExpected;
     private byte[] headerReceived;
 
     /**
+     * Constructor.
+     *
      * @param headerExpected header (first 8 bytes) of expected message
      */
     public WaitForMessageEvent(byte[] headerExpected) {
@@ -49,6 +51,8 @@ public class WaitForMessageEvent implements ClientEvent {
     }
 
     /**
+     * Sets the received header.
+     *
      * @param headerReceived header (first 8 bytes) of expected message
      */
     public void setHeaderReceived(byte[] headerReceived) {

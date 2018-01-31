@@ -53,11 +53,11 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, P
     private FlowCommitWrapper dataStoreAccessor;
     private PacketProcessingService packetProcessingService;
 
-    private boolean iAmLearning = false;
+    private boolean isLearning = false;
 
     private NodeId nodeId;
-    private AtomicLong flowIdInc = new AtomicLong();
-    private AtomicLong flowCookieInc = new AtomicLong(0x2a00000000000000L);
+    private final AtomicLong flowIdInc = new AtomicLong();
+    private final AtomicLong flowCookieInc = new AtomicLong(0x2a00000000000000L);
 
     private InstanceIdentifier<Node> nodePath;
     private InstanceIdentifier<Table> tablePath;
@@ -67,7 +67,7 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, P
 
     @Override
     public synchronized void onSwitchAppeared(InstanceIdentifier<Table> appearedTablePath) {
-        if (iAmLearning) {
+        if (isLearning) {
             LOG.debug("already learning a node, skipping {}", nodeId.getValue());
             return;
         }
@@ -76,16 +76,11 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, P
 
         // disable listening - simple learning handles only one node (switch)
         if (registrationPublisher != null) {
-            try {
-                LOG.debug("closing dataTreeChangeListenerRegistration");
-                registrationPublisher.getDataTreeChangeListenerRegistration().close();
-            } catch (Exception e) {
-                LOG.warn("closing registration upon flowCapable node update listener failed: {}", e.getMessage());
-                LOG.debug("closing registration upon flowCapable node update listener failed.. ", e);
-            }
+            LOG.debug("closing dataTreeChangeListenerRegistration");
+            registrationPublisher.getDataTreeChangeListenerRegistration().close();
         }
 
-        iAmLearning = true;
+        isLearning = true;
 
         tablePath = appearedTablePath;
         nodePath = tablePath.firstIdentifierOf(Node.class);
@@ -125,7 +120,7 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, P
 
     @Override
     public void onPacketReceived(PacketReceived notification) {
-        if (!iAmLearning) {
+        if (!isLearning) {
             // ignoring packets - this should not happen
             return;
         }
@@ -185,11 +180,6 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, P
 
     }
 
-    /**
-     * @param srcMac
-     * @param dstMac
-     * @param destNodeConnector
-     */
     private void addBridgeFlow(MacAddress srcMac, MacAddress dstMac, NodeConnectorRef destNodeConnector) {
         synchronized (coveredMacPaths) {
             String macPath = srcMac.toString() + dstMac.toString();
@@ -217,7 +207,8 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, P
 
     private void flood(byte[] payload, NodeConnectorRef ingress) {
         NodeConnectorKey nodeConnectorKey = new NodeConnectorKey(nodeConnectorId("0xfffffffb"));
-        InstanceIdentifier<?> nodeConnectorPath = InstanceIdentifierUtils.createNodeConnectorPath(nodePath, nodeConnectorKey);
+        InstanceIdentifier<?> nodeConnectorPath = InstanceIdentifierUtils.createNodeConnectorPath(
+                nodePath, nodeConnectorKey);
         NodeConnectorRef egressConnectorRef = new NodeConnectorRef(nodeConnectorPath);
 
         sendPacketOut(payload, ingress, egressConnectorRef);

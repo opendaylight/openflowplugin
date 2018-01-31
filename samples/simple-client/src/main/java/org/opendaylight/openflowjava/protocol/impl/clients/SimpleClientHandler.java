@@ -9,17 +9,16 @@
 
 package org.opendaylight.openflowjava.protocol.impl.clients;
 
+import com.google.common.util.concurrent.SettableFuture;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.util.concurrent.SettableFuture;
-
 /**
+ * Simple client handler.
  *
  * @author michal.polkorab
  */
@@ -31,6 +30,8 @@ public class SimpleClientHandler extends ChannelInboundHandlerAdapter {
     protected ScenarioHandler scenarioHandler;
 
     /**
+     * Constructor.
+     *
      * @param isOnlineFuture future notifier of connected channel
      * @param scenarioHandler handler of scenario events
      */
@@ -66,10 +67,12 @@ public class SimpleClientHandler extends ChannelInboundHandlerAdapter {
     }
 
     /**
-     * @param scenarioHandler handler of scenario events
+     * Sets the ScenarioHandler.
+     *
+     * @param handler handler of scenario events
      */
-    public void setScenario(ScenarioHandler scenarioHandler) {
-        this.scenarioHandler = scenarioHandler;
+    public void setScenario(ScenarioHandler handler) {
+        this.scenarioHandler = handler;
     }
 
 }
