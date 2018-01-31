@@ -7,18 +7,8 @@
  */
 package org.opendaylight.openflowplugin.extension.api;
 
-
-/**
- *
- */
 public class ConverterExtensionActionKeyTest {
 
-    /**
-     * Test method for {@link org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey#equals(java.lang.Object)}.
-     */
-    /**
-     * Test method for {@link org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey#equals(java.lang.Object)}.
-     */
 //    @Test
 //    public void testEqualsObject() {
 //        ConverterExtensionMatchKey key1 = new ConverterExtensionMatchKey(Match.class);

@@ -13,7 +13,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
- * convert message from OFJava-API model into MD-SAL model
+ * Convert message from OFJava-API model into MD-SAL model.
  *
  * @param <F> input message model - OFJava-API
  * @param <P> represents possible paths in yang schema for augmentations
@@ -21,7 +21,9 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
 public interface ConvertorMessageFromOFJava<F extends DataContainer, P extends AugmentationPath> {
 
     /**
-     * @param input
+     * Convert OF model to MD-SAL model.
+     *
+     * @param input OF model
      * @param path  in yang schema where a converted value has to be augmented
      * @return message converted to MD-SAL and its type
      */

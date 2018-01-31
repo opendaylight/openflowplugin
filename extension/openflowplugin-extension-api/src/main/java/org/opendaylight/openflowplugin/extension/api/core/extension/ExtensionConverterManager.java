@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.extension.api.core.extension;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterRegistrator;
 
 /**
- * unifying interface
+ * Unifying interface.
  */
 public interface ExtensionConverterManager extends ExtensionConverterProvider, ExtensionConverterRegistrator {
     // see parents

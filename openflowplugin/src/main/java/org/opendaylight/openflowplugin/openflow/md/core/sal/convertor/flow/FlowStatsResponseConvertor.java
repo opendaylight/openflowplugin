@@ -69,7 +69,7 @@ public class FlowStatsResponseConvertor extends Convertor<List<FlowStats>, List<
                                                       final short version,
                                                       final Short ipProtocol) {
         ActionResponseConvertorData actionResponseConvertorData = new ActionResponseConvertorData(version);
-        actionResponseConvertorData.setActionPath(ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION);
+        actionResponseConvertorData.setActionPath(ActionPath.FLOWS_STATISTICS_UPDATE_WRITE_ACTIONS);
         actionResponseConvertorData.setIpProtocol(ipProtocol);
 
         InstructionsBuilder instructionsBuilder = new InstructionsBuilder();

@@ -20,7 +20,6 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
-import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowplugin.extension.onf.BundleTestUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleControlType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleFlags;
@@ -55,8 +54,8 @@ public class BundleControlFactoryTest extends AbstractBundleMessageFactoryTest {
         dataBuilder.setFlags(new BundleFlags(true, true));
 
         if (withProperty) {
-            dataBuilder.setBundleProperty((new ArrayList<>(Collections.singleton(
-                    BundleTestUtils.createExperimenterProperty(propertyExperimenterData)))));
+            dataBuilder.setBundleProperty(new ArrayList<>(Collections.singleton(
+                    BundleTestUtils.createExperimenterProperty(propertyExperimenterData))));
             Mockito.when(registry.getSerializer(Matchers.any())).thenReturn(propertySerializer);
             ((SerializerRegistryInjector) factory).injectSerializerRegistry(registry);
         }
@@ -68,8 +67,9 @@ public class BundleControlFactoryTest extends AbstractBundleMessageFactoryTest {
         Assert.assertEquals("Wrong type", BundleControlType.ONFBCTOPENREQUEST.getIntValue(), out.readUnsignedShort());
         Assert.assertEquals("Wrong flags", 3, out.readUnsignedShort());
         if (withProperty) {
-            Assert.assertEquals("Wrong property type", BundlePropertyType.ONFETBPTEXPERIMENTER.getIntValue(), out.readUnsignedShort());
-            int length = out.readUnsignedShort();
+            Assert.assertEquals("Wrong property type", BundlePropertyType.ONFETBPTEXPERIMENTER.getIntValue(),
+                    out.readUnsignedShort());
+            out.readUnsignedShort(); // length
             Assert.assertEquals("Wrong experimenter ID", 1, out.readUnsignedInt());
             Assert.assertEquals("Wrong experimenter type", 2, out.readUnsignedInt());
             Mockito.verify(propertySerializer, Mockito.times(1)).serialize(propertyExperimenterData, out);
@@ -78,5 +78,4 @@ public class BundleControlFactoryTest extends AbstractBundleMessageFactoryTest {
             Assert.assertTrue("Unexpected data", out.readableBytes() == 0);
         }
     }
-
 }

@@ -109,38 +109,37 @@ public final class MatchExtensionHelper {
         AugmentTuple<EXT_POINT> augmentTuple = null;
         if (!extensionsList.isEmpty()) {
             switch (matchPath) {
-                case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH:
+                case FLOWS_STATISTICS_UPDATE_MATCH:
                     GeneralAugMatchNotifUpdateFlowStatsBuilder generalExtMatchAugBld1 = new GeneralAugMatchNotifUpdateFlowStatsBuilder();
                     generalExtMatchAugBld1.setExtensionList(extensionsList);
                     augmentTuple = (AugmentTuple<EXT_POINT>)
-                            new AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match>(
+                            new AugmentTuple<>(
                                     GeneralAugMatchNotifUpdateFlowStats.class, generalExtMatchAugBld1.build());
                     break;
-                case PACKETRECEIVED_MATCH:
+                case PACKET_RECEIVED_MATCH:
                     GeneralAugMatchNotifPacketInBuilder generalExtMatchAugBld2 = new GeneralAugMatchNotifPacketInBuilder();
                     generalExtMatchAugBld2.setExtensionList(extensionsList);
                     augmentTuple = (AugmentTuple<EXT_POINT>)
-                            new AugmentTuple<Match>(GeneralAugMatchNotifPacketIn.class, generalExtMatchAugBld2.build());
+                            new AugmentTuple<>(GeneralAugMatchNotifPacketIn.class, generalExtMatchAugBld2.build());
                     break;
-                case PACKETINMESSAGE_MATCH:
+                case PACKET_IN_MESSAGE_MATCH:
                     GeneralAugMatchPacketInMessageBuilder generalExtMatchAugBld5 = new GeneralAugMatchPacketInMessageBuilder();
                     generalExtMatchAugBld5.setExtensionList(extensionsList);
                     augmentTuple = (AugmentTuple<EXT_POINT>)
-                            new AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.in.message
-                                    .Match>(GeneralAugMatchPacketInMessage.class, generalExtMatchAugBld5.build());
+                            new AugmentTuple<>(GeneralAugMatchPacketInMessage.class, generalExtMatchAugBld5.build());
                     break;
-                case SWITCHFLOWREMOVED_MATCH:
+                case SWITCH_FLOW_REMOVED_MATCH:
                     GeneralAugMatchNotifSwitchFlowRemovedBuilder generalExtMatchAugBld3 = new GeneralAugMatchNotifSwitchFlowRemovedBuilder();
                     generalExtMatchAugBld3.setExtensionList(extensionsList);
                     augmentTuple = (AugmentTuple<EXT_POINT>)
-                            new AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.mod.removed.Match>(
+                            new AugmentTuple<>(
                                     GeneralAugMatchNotifSwitchFlowRemoved.class, generalExtMatchAugBld3.build());
                     break;
-                case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH:
+                case FLOWS_STATISTICS_RPC_MATCH:
                     GeneralAugMatchRpcOutputFlowStatsBuilder generalExtMatchAugBld4 = new GeneralAugMatchRpcOutputFlowStatsBuilder();
                     generalExtMatchAugBld4.setExtensionList(extensionsList);
                     augmentTuple = (AugmentTuple<EXT_POINT>)
-                            new AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match>(
+                            new AugmentTuple<>(
                                     GeneralAugMatchRpcOutputFlowStats.class, generalExtMatchAugBld4.build());
                     break;
                 default:

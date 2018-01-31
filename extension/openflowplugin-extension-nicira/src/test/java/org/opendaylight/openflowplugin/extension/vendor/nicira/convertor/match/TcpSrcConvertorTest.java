@@ -53,20 +53,24 @@ public class TcpSrcConvertorTest {
         final NxmOfTcpSrcBuilder nxmOfTcpSrcBuilder = new NxmOfTcpSrcBuilder()
                 .setMask(1)
                 .setPort(DEFAULT_PORT);
-        final NxAugMatchNodesNodeTableFlowBuilder nxAugMatchNotifUpdateFlowStatsBuilder = new NxAugMatchNodesNodeTableFlowBuilder();
+        final NxAugMatchNodesNodeTableFlowBuilder nxAugMatchNotifUpdateFlowStatsBuilder =
+                new NxAugMatchNodesNodeTableFlowBuilder();
         nxAugMatchNotifUpdateFlowStatsBuilder.setNxmOfTcpSrc(nxmOfTcpSrcBuilder.build());
 
         final Augmentation<Extension> extensionAugmentation = nxAugMatchNotifUpdateFlowStatsBuilder.build();
-        when(extension.getAugmentation(Matchers.<Class<Augmentation<Extension>>>any())).thenReturn(extensionAugmentation);
+        when(extension.getAugmentation(Matchers.<Class<Augmentation<Extension>>>any()))
+            .thenReturn(extensionAugmentation);
 
         tcpSrcConvertor = new TcpSrcConvertor();
     }
 
     @Test
     public void testConvert() throws Exception {
-        final MatchEntry matchEntry = tcpSrcConvertor.convert(extension);
-        Assert.assertEquals(1, ((TcpSrcCaseValue)matchEntry.getMatchEntryValue()).getTcpSrcValues().getMask().intValue());
-        Assert.assertEquals(DEFAULT_PORT, ((TcpSrcCaseValue)matchEntry.getMatchEntryValue()).getTcpSrcValues().getPort());
+        final MatchEntry converted = tcpSrcConvertor.convert(extension);
+        Assert.assertEquals(1,
+                ((TcpSrcCaseValue) converted.getMatchEntryValue()).getTcpSrcValues().getMask().intValue());
+        Assert.assertEquals(DEFAULT_PORT,
+                ((TcpSrcCaseValue) converted.getMatchEntryValue()).getTcpSrcValues().getPort());
     }
 
     @Test
@@ -81,24 +85,36 @@ public class TcpSrcConvertorTest {
 
         when(matchEntry.getMatchEntryValue()).thenReturn(tcpSrcCaseValue);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = tcpSrcConvertor.convert(matchEntry, MatchPath.PACKETRECEIVED_MATCH);
-        Assert.assertEquals(2, ((NxAugMatchNotifPacketIn)extensionAugment.getAugmentationObject()).getNxmOfTcpSrc().getMask().intValue());
-        Assert.assertEquals(DEFAULT_PORT, ((NxAugMatchNotifPacketIn)extensionAugment.getAugmentationObject()).getNxmOfTcpSrc().getPort());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = tcpSrcConvertor.convert(matchEntry,
+                MatchPath.PACKET_RECEIVED_MATCH);
+        Assert.assertEquals(2, ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmOfTcpSrc()
+                .getMask().intValue());
+        Assert.assertEquals(DEFAULT_PORT,
+                ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmOfTcpSrc().getPort());
         Assert.assertEquals(extensionAugment.getKey(), NxmOfTcpSrcKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = tcpSrcConvertor.convert(matchEntry, MatchPath.SWITCHFLOWREMOVED_MATCH);
-        Assert.assertEquals(2, ((NxAugMatchNotifSwitchFlowRemoved)extensionAugment1.getAugmentationObject()).getNxmOfTcpSrc().getMask().intValue());
-        Assert.assertEquals(DEFAULT_PORT, ((NxAugMatchNotifSwitchFlowRemoved)extensionAugment1.getAugmentationObject()).getNxmOfTcpSrc().getPort());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = tcpSrcConvertor
+                .convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
+        Assert.assertEquals(2, ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
+                .getNxmOfTcpSrc().getMask().intValue());
+        Assert.assertEquals(DEFAULT_PORT, ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
+                .getNxmOfTcpSrc().getPort());
         Assert.assertEquals(extensionAugment.getKey(), NxmOfTcpSrcKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = tcpSrcConvertor.convert(matchEntry, MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
-        Assert.assertEquals(2, ((NxAugMatchNodesNodeTableFlow)extensionAugment2.getAugmentationObject()).getNxmOfTcpSrc().getMask().intValue());
-        Assert.assertEquals(DEFAULT_PORT, ((NxAugMatchNodesNodeTableFlow)extensionAugment2.getAugmentationObject()).getNxmOfTcpSrc().getPort());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = tcpSrcConvertor
+                .convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
+        Assert.assertEquals(2, ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
+                .getNxmOfTcpSrc().getMask().intValue());
+        Assert.assertEquals(DEFAULT_PORT,
+                ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject()).getNxmOfTcpSrc().getPort());
         Assert.assertEquals(extensionAugment.getKey(), NxmOfTcpSrcKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = tcpSrcConvertor.convert(matchEntry, MatchPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH);
-        Assert.assertEquals(2, ((NxAugMatchRpcGetFlowStats)extensionAugment3.getAugmentationObject()).getNxmOfTcpSrc().getMask().intValue());
-        Assert.assertEquals(DEFAULT_PORT, ((NxAugMatchRpcGetFlowStats)extensionAugment3.getAugmentationObject()).getNxmOfTcpSrc().getPort());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = tcpSrcConvertor
+                .convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
+        Assert.assertEquals(2, ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject()).getNxmOfTcpSrc()
+                .getMask().intValue());
+        Assert.assertEquals(DEFAULT_PORT,
+                ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject()).getNxmOfTcpSrc().getPort());
         Assert.assertEquals(extensionAugment.getKey(), NxmOfTcpSrcKey.class);
     }
 }

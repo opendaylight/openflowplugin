@@ -63,16 +63,18 @@ public class ArpSpaConvertorTest {
         nxAugMatchRpcAddFlowBuilder.setNxmOfArpSpa(nxmOfArpSpaBuilder.build());
 
         final Augmentation<Extension> extensionAugmentation = nxAugMatchRpcAddFlowBuilder.build();
-        when(extension.getAugmentation(Matchers.<Class<Augmentation<Extension>>>any())).thenReturn(extensionAugmentation);
+        when(extension.getAugmentation(Matchers.<Class<Augmentation<Extension>>>any()))
+                .thenReturn(extensionAugmentation);
 
-        final MatchEntry matchEntry = arpSpaConvertor.convert(extension);
-        Assert.assertEquals(IpConverter.Ipv4AddressToLong(IPV4_ADDRESS), ((ArpSpaCaseValue)matchEntry.getMatchEntryValue()).getArpSpaValues().getValue().longValue());
+        final MatchEntry converted = arpSpaConvertor.convert(extension);
+        Assert.assertEquals(IpConverter.ipv4AddressToLong(IPV4_ADDRESS),
+                ((ArpSpaCaseValue) converted.getMatchEntryValue()).getArpSpaValues().getValue().longValue());
     }
 
     @Test
     public void testConvertFromOFJava() throws Exception {
         final ArpSpaValuesBuilder arpSpaValuesBuilder = new ArpSpaValuesBuilder()
-                .setValue(IpConverter.Ipv4AddressToLong(IPV4_ADDRESS));
+                .setValue(IpConverter.ipv4AddressToLong(IPV4_ADDRESS));
         final ArpSpaCaseValueBuilder arpSpaCaseValueBuilder = new ArpSpaCaseValueBuilder()
                 .setArpSpaValues(arpSpaValuesBuilder.build());
 
@@ -80,22 +82,28 @@ public class ArpSpaConvertorTest {
 
         when(matchEntry.getMatchEntryValue()).thenReturn(arpSpaCaseValue);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = arpSpaConvertor.convert(matchEntry, MatchPath.PACKETRECEIVED_MATCH);
-        Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchNotifPacketIn)extensionAugment.getAugmentationObject()).getNxmOfArpSpa().getIpv4Address());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = arpSpaConvertor.convert(matchEntry,
+                MatchPath.PACKET_RECEIVED_MATCH);
+        Assert.assertEquals(IPV4_ADDRESS,
+                ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmOfArpSpa().getIpv4Address());
         Assert.assertEquals(extensionAugment.getKey(), NxmOfArpSpaKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = arpSpaConvertor.convert(matchEntry, MatchPath.SWITCHFLOWREMOVED_MATCH);
-        Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchNotifSwitchFlowRemoved)extensionAugment1.getAugmentationObject()).getNxmOfArpSpa().getIpv4Address());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = arpSpaConvertor
+                .convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
+        Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
+                .getNxmOfArpSpa().getIpv4Address());
         Assert.assertEquals(extensionAugment.getKey(), NxmOfArpSpaKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = arpSpaConvertor.convert(matchEntry, MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
-        Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchNodesNodeTableFlow)extensionAugment2.getAugmentationObject()).getNxmOfArpSpa().getIpv4Address());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = arpSpaConvertor
+                .convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
+        Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
+                .getNxmOfArpSpa().getIpv4Address());
         Assert.assertEquals(extensionAugment.getKey(), NxmOfArpSpaKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = arpSpaConvertor.convert(matchEntry, MatchPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH);
-        Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchRpcGetFlowStats)extensionAugment3.getAugmentationObject()).getNxmOfArpSpa().getIpv4Address());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = arpSpaConvertor
+                .convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
+        Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject())
+                .getNxmOfArpSpa().getIpv4Address());
         Assert.assertEquals(extensionAugment.getKey(), NxmOfArpSpaKey.class);
-
     }
-
 }
