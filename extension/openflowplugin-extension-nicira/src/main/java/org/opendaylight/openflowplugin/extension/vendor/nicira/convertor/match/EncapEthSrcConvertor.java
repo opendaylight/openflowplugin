@@ -39,56 +39,17 @@ import org.opendaylight.yangtools.yang.binding.Augmentation;
 
 public class EncapEthSrcConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava#convert
-     * (org.opendaylight.yangtools.yang.binding.DataContainer,
-     * org.opendaylight.openflowplugin.extension.api.path.AugmentationPath)
-     */
     @Override
     public ExtensionAugment<? extends Augmentation<Extension>> convert(MatchEntry input, MatchPath path) {
-        EncapEthSrcCaseValue encapEthSrcCaseValue = ((EncapEthSrcCaseValue) input.getMatchEntryValue());
-        return resolveAugmentation(new NxmNxEncapEthSrcBuilder().setMacAddress(encapEthSrcCaseValue.getEncapEthSrcValues().getMacAddress()).build(), path,
+        EncapEthSrcCaseValue encapEthSrcCaseValue = (EncapEthSrcCaseValue) input.getMatchEntryValue();
+        return resolveAugmentation(new NxmNxEncapEthSrcBuilder()
+                .setMacAddress(encapEthSrcCaseValue.getEncapEthSrcValues().getMacAddress()).build(), path,
                 NxmNxEncapEthSrcKey.class);
     }
 
-    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(NxmNxEncapEthSrc value,
-                                                                                           MatchPath path, Class<? extends ExtensionKey> key) {
-        switch (path) {
-            case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH:
-                return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,
-                        new NxAugMatchNodesNodeTableFlowBuilder().setNxmNxEncapEthSrc(value).build(), key);
-            case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH:
-                return new ExtensionAugment<>(NxAugMatchRpcGetFlowStats.class,
-                        new NxAugMatchRpcGetFlowStatsBuilder().setNxmNxEncapEthSrc(value).build(), key);
-            case PACKETRECEIVED_MATCH:
-                return new ExtensionAugment<>(NxAugMatchNotifPacketIn.class, new NxAugMatchNotifPacketInBuilder()
-                        .setNxmNxEncapEthSrc(value).build(), key);
-            case SWITCHFLOWREMOVED_MATCH:
-                return new ExtensionAugment<>(NxAugMatchNotifSwitchFlowRemoved.class,
-                        new NxAugMatchNotifSwitchFlowRemovedBuilder().setNxmNxEncapEthSrc(value).build(), key);
-            case PACKETINMESSAGE_MATCH:
-                return new ExtensionAugment<>(NxAugMatchPacketInMessage.class,
-                        new NxAugMatchPacketInMessageBuilder().setNxmNxEncapEthSrc(value).build(), key);
-            default:
-                throw new CodecPreconditionException(path);
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava#convert
-     * (org
-     * .opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general
-     * .rev140714.general.extension.grouping.Extension)
-     */
     @Override
     public MatchEntry convert(Extension extension) {
-        Optional<NxmNxEncapEthSrcGrouping> matchGrouping = MatchUtil.encapEthSrcResolver.getExtension(extension);
+        Optional<NxmNxEncapEthSrcGrouping> matchGrouping = MatchUtil.ENCAP_ETH_SRC_RESOLVER.getExtension(extension);
         if (!matchGrouping.isPresent()) {
             throw new CodecPreconditionException(extension);
         }
@@ -96,9 +57,31 @@ public class EncapEthSrcConvertor implements ConvertorToOFJava<MatchEntry>, Conv
         EncapEthSrcCaseValueBuilder encapEthSrcCaseValueBuilder = new EncapEthSrcCaseValueBuilder();
         encapEthSrcCaseValueBuilder.setEncapEthSrcValues(new EncapEthSrcValuesBuilder()
                 .setMacAddress(macAddress).build());
-        return MatchUtil.createDefaultMatchEntryBuilder(org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxEncapEthSrc.class,
-                Nxm1Class.class,
-                encapEthSrcCaseValueBuilder.build()).build();
+        return MatchUtil.createDefaultMatchEntryBuilder(
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxEncapEthSrc.class,
+                Nxm1Class.class, encapEthSrcCaseValueBuilder.build()).build();
     }
 
+    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(NxmNxEncapEthSrc value,
+            MatchPath path, Class<? extends ExtensionKey> key) {
+        switch (path) {
+            case FLOWS_STATISTICS_UPDATE_MATCH:
+                return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,
+                        new NxAugMatchNodesNodeTableFlowBuilder().setNxmNxEncapEthSrc(value).build(), key);
+            case FLOWS_STATISTICS_RPC_MATCH:
+                return new ExtensionAugment<>(NxAugMatchRpcGetFlowStats.class,
+                        new NxAugMatchRpcGetFlowStatsBuilder().setNxmNxEncapEthSrc(value).build(), key);
+            case PACKET_RECEIVED_MATCH:
+                return new ExtensionAugment<>(NxAugMatchNotifPacketIn.class, new NxAugMatchNotifPacketInBuilder()
+                        .setNxmNxEncapEthSrc(value).build(), key);
+            case SWITCH_FLOW_REMOVED_MATCH:
+                return new ExtensionAugment<>(NxAugMatchNotifSwitchFlowRemoved.class,
+                        new NxAugMatchNotifSwitchFlowRemovedBuilder().setNxmNxEncapEthSrc(value).build(), key);
+            case PACKET_IN_MESSAGE_MATCH:
+                return new ExtensionAugment<>(NxAugMatchPacketInMessage.class,
+                        new NxAugMatchPacketInMessageBuilder().setNxmNxEncapEthSrc(value).build(), key);
+            default:
+                throw new CodecPreconditionException(path);
+        }
+    }
 }

@@ -246,7 +246,7 @@ public final class MultipartReplyTranslatorUtil {
                                                          final ConvertorExecutor convertorExecutor) {
         FlowStatsResponseConvertorData flowData = new FlowStatsResponseConvertorData(data.getVersion());
         flowData.setDatapathId(data.getDatapathId());
-        flowData.setMatchPath(MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
+        flowData.setMatchPath(MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
         MultipartReplyFlowStatsBuilder message = new MultipartReplyFlowStatsBuilder();
         MultipartReplyFlowCase caseBody = (MultipartReplyFlowCase) msg.getMultipartReplyBody();
         MultipartReplyFlow replyBody = caseBody.getMultipartReplyFlow();
