@@ -254,6 +254,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                                                           final InstanceIdentifier<T> path,
                                                           final T data){
         if (initialized.get()) {
+            LOG.error("writeToTransaction : path: {} data: {} ", path, data);
             transactionChainManager.writeToTransaction(store, path, data, false);
         }
     }
@@ -337,11 +338,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             //4. if flowId present:
             if (flowDescriptor != null) {
                 // a) construct flow path
-                final KeyedInstanceIdentifier<Flow, FlowKey> flowPath = getDeviceInfo().getNodeInstanceIdentifier()
-                        .augmentation(FlowCapableNode.class)
-                        .child(Table.class, flowDescriptor.getTableKey())
-                        .child(Flow.class, new FlowKey(flowDescriptor.getFlowId()));
-                addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL,flowPath);
+                if (myManager.isStatisticsPollingOn()) {
+                    final KeyedInstanceIdentifier<Flow, FlowKey> flowPath = getDeviceInfo().getNodeInstanceIdentifier()
+                            .augmentation(FlowCapableNode.class)
+                            .child(Table.class, flowDescriptor.getTableKey())
+                            .child(Flow.class, new FlowKey(flowDescriptor.getFlowId()));
+                    addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, flowPath);
+                }
                 deviceFlowRegistry.addMark(flowRegKey);
             } else {
                 LOG.debug("flow id not found: nodeId={} tableId={}, priority={}",
@@ -355,10 +358,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
         if (initialized.get()) {
             try {
-                LOG.warn("writePortStatusMessage");
+                LOG.error("writePortStatusMessage", portStatus);
                 writePortStatusMessage(portStatus);
-                LOG.warn("submit transaction for write port status message");
+                LOG.error("submit transaction for write port status message", portStatus);
                 submitTransaction();
+                LOG.error("submit transaction for write port status message, done", portStatus);
             } catch (final Exception e) {
                 LOG.warn("Error processing port status message for port {} on device {}",
                         portStatus.getPortNo(), getDeviceInfo().getLOGValue(), e);
