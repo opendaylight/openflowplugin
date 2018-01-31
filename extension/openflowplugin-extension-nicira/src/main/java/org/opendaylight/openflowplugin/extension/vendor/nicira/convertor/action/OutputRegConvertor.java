@@ -32,20 +32,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.output.reg.grouping.nx.output.reg.SrcBuilder;
 
 /**
- * Convert to/from openflowplugin model to openflowjava model for
- * OutputReg action
+ * Convert to/from openflowplugin model to openflowjava model for OutputReg action.
  *
  * @author readams
  */
 public class OutputRegConvertor implements
-        ConvertorActionToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, Action>,
-        ConvertorActionFromOFJava<Action, ActionPath> {
+        ConvertorActionToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action,
+            Action>, ConvertorActionFromOFJava<Action, ActionPath> {
 
     @Override
-    public org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action convert(final Action input, final ActionPath path) {
+    public org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action convert(
+            final Action input, final ActionPath path) {
         NxActionOutputReg action = ((ActionOutputReg) input.getActionChoice()).getNxActionOutputReg();
         SrcBuilder srcBuilder = new SrcBuilder();
-        srcBuilder.setSrcChoice(RegMoveConvertor.resolveSrc(action.getSrc()));
+        srcBuilder.setSrcChoice(RegMoveConvertor.resolveSrcValue(action.getSrc()));
         srcBuilder.setOfsNbits(action.getNBits());
         NxOutputRegBuilder builder = new NxOutputRegBuilder();
         builder.setSrc(srcBuilder.build());
@@ -53,33 +53,13 @@ public class OutputRegConvertor implements
         return resolveAction(builder.build(), path);
     }
 
-    private static org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action resolveAction(final NxOutputReg value, final ActionPath path) {
-        switch (path) {
-            case NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION:
-                return new NxActionOutputRegNodesNodeTableFlowWriteActionsCaseBuilder().setNxOutputReg(value).build();
-            case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION:
-                return new NxActionOutputRegNotifFlowsStatisticsUpdateWriteActionsCaseBuilder().setNxOutputReg(value).build();
-            case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION:
-                return new NxActionOutputRegNotifFlowsStatisticsUpdateApplyActionsCaseBuilder().setNxOutputReg(value).build();
-            case GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION:
-                return new NxActionOutputRegNotifGroupDescStatsUpdatedCaseBuilder().setNxOutputReg(value).build();
-            case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION:
-                return new NxActionOutputRegNotifDirectStatisticsUpdateWriteActionsCaseBuilder().setNxOutputReg(value).build();
-            case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION:
-                return new NxActionOutputRegNotifDirectStatisticsUpdateApplyActionsCaseBuilder().setNxOutputReg(value).build();
-            case NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION:
-                return new NxActionOutputRegNodesNodeTableFlowApplyActionsCaseBuilder().setNxOutputReg(value).build();
-            default:
-                throw new CodecPreconditionException(path);
-        }
-    }
-
     @Override
-    public Action convert(final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action nxActionArg) {
+    public Action convert(
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action nxActionArg) {
         Preconditions.checkArgument(nxActionArg instanceof NxActionOutputRegGrouping);
         NxActionOutputRegGrouping nxAction = (NxActionOutputRegGrouping) nxActionArg;
         Src src = nxAction.getNxOutputReg().getSrc();
-        ActionOutputRegBuilder builder = new ActionOutputRegBuilder();
+        final ActionOutputRegBuilder builder = new ActionOutputRegBuilder();
         NxActionOutputRegBuilder nxActionOutputRegBuilder = new NxActionOutputRegBuilder();
         nxActionOutputRegBuilder.setSrc(RegMoveConvertor.resolveSrc(src.getSrcChoice()));
         nxActionOutputRegBuilder.setNBits(src.getOfsNbits());
@@ -88,4 +68,29 @@ public class OutputRegConvertor implements
         return ActionUtil.createAction(builder.build());
     }
 
+    private static org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action resolveAction(
+            final NxOutputReg value, final ActionPath path) {
+        switch (path) {
+            case INVENTORY_FLOWNODE_TABLE_WRITE_ACTIONS:
+                return new NxActionOutputRegNodesNodeTableFlowWriteActionsCaseBuilder().setNxOutputReg(value).build();
+            case FLOWS_STATISTICS_UPDATE_WRITE_ACTIONS:
+                return new NxActionOutputRegNotifFlowsStatisticsUpdateWriteActionsCaseBuilder()
+                        .setNxOutputReg(value).build();
+            case FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS:
+                return new NxActionOutputRegNotifFlowsStatisticsUpdateApplyActionsCaseBuilder()
+                        .setNxOutputReg(value).build();
+            case GROUP_DESC_STATS_UPDATED_BUCKET_ACTION:
+                return new NxActionOutputRegNotifGroupDescStatsUpdatedCaseBuilder().setNxOutputReg(value).build();
+            case FLOWS_STATISTICS_RPC_WRITE_ACTIONS:
+                return new NxActionOutputRegNotifDirectStatisticsUpdateWriteActionsCaseBuilder()
+                        .setNxOutputReg(value).build();
+            case FLOWS_STATISTICS_RPC_APPLY_ACTIONS:
+                return new NxActionOutputRegNotifDirectStatisticsUpdateApplyActionsCaseBuilder()
+                        .setNxOutputReg(value).build();
+            case INVENTORY_FLOWNODE_TABLE_APPLY_ACTIONS:
+                return new NxActionOutputRegNodesNodeTableFlowApplyActionsCaseBuilder().setNxOutputReg(value).build();
+            default:
+                throw new CodecPreconditionException(path);
+        }
+    }
 }

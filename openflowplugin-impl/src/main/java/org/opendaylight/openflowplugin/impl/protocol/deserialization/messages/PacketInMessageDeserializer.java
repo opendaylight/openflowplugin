@@ -30,7 +30,7 @@ public class PacketInMessageDeserializer implements OFDeserializer<PacketInMessa
     private static final byte PADDING_IN_PACKET_IN_HEADER = 2;
     private static final MessageCodeKey MATCH_KEY = new MessageCodeMatchKey(EncodeConstants.OF13_VERSION_ID,
             EncodeConstants.EMPTY_VALUE, Match.class,
-            MatchPath.PACKETINMESSAGE_MATCH);
+            MatchPath.PACKET_IN_MESSAGE_MATCH);
 
     private DeserializerRegistry registry;
 

@@ -49,20 +49,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Convert to/from SAL flow model to openflowjava model for NxmNxReg.
+ *
  * @author msunal
  */
 public class RegConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
 
-    private final static Logger LOG = LoggerFactory.getLogger(RegConvertor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RegConvertor.class);
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava#convert
-     * (org.opendaylight.yangtools.yang.binding.DataContainer,
-     * org.opendaylight.openflowplugin.extension.api.path.AugmentationPath)
-     */
     @SuppressWarnings("unchecked")
     @Override
     public ExtensionAugment<? extends Augmentation<Extension>> convert(MatchEntry input, MatchPath path) {
@@ -75,10 +69,9 @@ public class RegConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFro
             LOG.warn(msg);
             throw new IllegalStateException(msg);
         }
-        nxRegBuilder
-                .setReg((Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxReg>) input
-                        .getOxmMatchField());
-        RegCaseValue regCaseValue = ((RegCaseValue) input.getMatchEntryValue());
+        nxRegBuilder.setReg((Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match
+                .rev140421.NxmNxReg>) input.getOxmMatchField());
+        RegCaseValue regCaseValue = (RegCaseValue) input.getMatchEntryValue();
         nxRegBuilder.setValue(regCaseValue.getRegValues().getValue());
 
         if (input.isHasMask()) {
@@ -86,6 +79,26 @@ public class RegConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFro
         }
 
         return resolveAugmentation(nxRegBuilder.build(), path, resolveRegKey(input.getOxmMatchField()));
+    }
+
+    @Override
+    public MatchEntry convert(Extension extension) {
+        Optional<NxmNxRegGrouping> matchGrouping = MatchUtil.REG_RESOLVER.getExtension(extension);
+        if (!matchGrouping.isPresent()) {
+            throw new CodecPreconditionException(extension);
+        }
+        NxmNxReg nxmNxReg = matchGrouping.get().getNxmNxReg();
+        RegValuesBuilder regValuesBuilder = new RegValuesBuilder()
+            .setValue(nxmNxReg.getValue())
+            .setMask(nxmNxReg.getMask());
+
+        RegCaseValueBuilder regCaseValueBuilder = new RegCaseValueBuilder();
+        regCaseValueBuilder.setRegValues(regValuesBuilder.build());
+        return MatchUtil.createDefaultMatchEntryBuilder(nxmNxReg.getReg(),
+                Nxm1Class.class,
+                regCaseValueBuilder.build())
+            .setHasMask(Objects.nonNull(nxmNxReg.getMask()))
+            .build();
     }
 
     private static Class<? extends ExtensionKey> resolveRegKey(Class<? extends MatchField> oxmMatchField) {
@@ -117,55 +130,25 @@ public class RegConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFro
     }
 
     private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(NxmNxReg nxmNxReg,
-                                                                                           MatchPath path, Class<? extends ExtensionKey> key) {
+            MatchPath path, Class<? extends ExtensionKey> key) {
         switch (path) {
-            case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH:
+            case FLOWS_STATISTICS_UPDATE_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,
                         new NxAugMatchNodesNodeTableFlowBuilder().setNxmNxReg(nxmNxReg).build(), key);
-            case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH:
+            case FLOWS_STATISTICS_RPC_MATCH:
                 return new ExtensionAugment<>(NxAugMatchRpcGetFlowStats.class,
                         new NxAugMatchRpcGetFlowStatsBuilder().setNxmNxReg(nxmNxReg).build(), key);
-            case PACKETRECEIVED_MATCH:
+            case PACKET_RECEIVED_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNotifPacketIn.class, new NxAugMatchNotifPacketInBuilder()
                         .setNxmNxReg(nxmNxReg).build(), key);
-            case SWITCHFLOWREMOVED_MATCH:
+            case SWITCH_FLOW_REMOVED_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNotifSwitchFlowRemoved.class,
                         new NxAugMatchNotifSwitchFlowRemovedBuilder().setNxmNxReg(nxmNxReg).build(), key);
-            case PACKETINMESSAGE_MATCH:
+            case PACKET_IN_MESSAGE_MATCH:
                 return new ExtensionAugment<>(NxAugMatchPacketInMessage.class,
                         new NxAugMatchPacketInMessageBuilder().setNxmNxReg(nxmNxReg).build(), key);
             default:
                 throw new CodecPreconditionException(path);
         }
     }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava#convert
-     * (org
-     * .opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general
-     * .rev140714.general.extension.grouping.Extension)
-     */
-    @Override
-    public MatchEntry convert(Extension extension) {
-        Optional<NxmNxRegGrouping> matchGrouping = MatchUtil.regResolver.getExtension(extension);
-        if (!matchGrouping.isPresent()) {
-            throw new CodecPreconditionException(extension);
-        }
-        NxmNxReg nxmNxReg = matchGrouping.get().getNxmNxReg();
-        RegValuesBuilder regValuesBuilder = new RegValuesBuilder()
-            .setValue(nxmNxReg.getValue())
-            .setMask(nxmNxReg.getMask());
-
-        RegCaseValueBuilder regCaseValueBuilder = new RegCaseValueBuilder();
-        regCaseValueBuilder.setRegValues(regValuesBuilder.build());
-        return MatchUtil.createDefaultMatchEntryBuilder(nxmNxReg.getReg(),
-                Nxm1Class.class,
-                regCaseValueBuilder.build())
-            .setHasMask(Objects.nonNull(nxmNxReg.getMask()))
-            .build();
-    }
-
 }

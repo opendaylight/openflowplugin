@@ -10,8 +10,8 @@ package org.opendaylight.openflowplugin.extension.api;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
 
 /**
- * lookup and register key for extension converters, basic case expects this to
- * correlate with input model type
+ * Lookup and register key for extension converters, basic case expects this to
+ * correlate with input model type.
  *
  * @param <T> type of key
  */

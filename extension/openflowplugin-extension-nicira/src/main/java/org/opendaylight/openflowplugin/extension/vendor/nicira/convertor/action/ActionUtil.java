@@ -14,13 +14,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
 
 /**
+ * Action utilities.
+ *
  * @author msunal
  */
-public class ActionUtil {
+public final class ActionUtil {
+    public static final ExperimenterId EXPERIMENTER_ID = new ExperimenterId(NiciraConstants.NX_VENDOR_ID);
 
-    public final static ExperimenterId EXPERIMENTER_ID = new ExperimenterId(NiciraConstants.NX_VENDOR_ID);
+    private ActionUtil() {
+    }
 
-    public static final Action createAction(ActionChoice actionChoice){
+    public static Action createAction(ActionChoice actionChoice) {
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setActionChoice(actionChoice);
         actionBuilder.setExperimenterId(EXPERIMENTER_ID);
