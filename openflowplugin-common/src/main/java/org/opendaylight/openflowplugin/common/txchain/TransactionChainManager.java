@@ -155,16 +155,17 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
     }
 
     public boolean submitTransaction() {
+        LOG.error("Submitting Transaction");
         synchronized (txLock) {
             if (!submitIsEnabled) {
                 if (LOG.isTraceEnabled()) {
-                    LOG.trace("transaction not committed - submit block issued");
+                    LOG.error("transaction not committed - submit block issued");
                 }
                 return false;
             }
             if (Objects.isNull(wTx)) {
                 if (LOG.isTraceEnabled()) {
-                    LOG.trace("nothing to commit - submit returns true");
+                    LOG.error("nothing to commit - submit returns true");
                 }
                 return true;
             }
@@ -189,7 +190,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
             Futures.addCallback(submitFuture, new FutureCallback<Void>() {
                 @Override
                 public void onSuccess(final Void result) {
-                    //NOOP
+                    LOG.error("Transaction commit successfully completed. ", result);
                 }
 
                 @Override
@@ -198,8 +199,8 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                         LOG.error("Transaction commit failed. ", t);
                     } else {
                         if (t instanceof CancellationException) {
-                            LOG.warn("Submit task was canceled");
-                            LOG.trace("Submit exception: ", t);
+                            LOG.error("Submit task was canceled");
+                            LOG.error("Submit exception: ", t);
                         } else {
                             LOG.error("Exception during transaction submitting. ", t);
                         }
