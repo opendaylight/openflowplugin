@@ -34,8 +34,8 @@ public class EthDstCodecTest {
     private static final int VALUE_LENGTH = 6;
     private static final int NXM_FIELD_CODE = 1;
 
-    private static final byte[] testAddr = new byte[VALUE_LENGTH];
-    private static final MacAddress testAddress = new MacAddress(ByteBufUtils.macAddressToString(testAddr));
+    private static final byte[] TEST_ADDR = new byte[VALUE_LENGTH];
+    private static final MacAddress TEST_ADDRESS = new MacAddress(ByteBufUtils.macAddressToString(TEST_ADDR));
 
     @Before
     public void setUp() {
@@ -53,7 +53,7 @@ public class EthDstCodecTest {
         assertEquals(NXM_FIELD_CODE, fieldMask >> 1);
         assertEquals(0, fieldMask & 1);
         assertEquals(VALUE_LENGTH, buffer.readUnsignedByte());
-        assertEquals(testAddress, ByteBufUtils.readIetfMacAddress(buffer));
+        assertEquals(TEST_ADDRESS, ByteBufUtils.readIetfMacAddress(buffer));
     }
 
     @Test
@@ -62,20 +62,20 @@ public class EthDstCodecTest {
 
         input = ethDstCodec.deserialize(buffer);
 
-        EthDstCaseValue result = ((EthDstCaseValue) input.getMatchEntryValue());
+        final EthDstCaseValue result = (EthDstCaseValue) input.getMatchEntryValue();
 
         assertEquals(Nxm0Class.class, input.getOxmClass());
         assertEquals(NxmOfEthDst.class, input.getOxmMatchField());
         assertEquals(false, input.isHasMask());
-        assertEquals(testAddress, result.getEthDstValues().getMacAddress());
+        assertEquals(TEST_ADDRESS, result.getEthDstValues().getMacAddress());
     }
 
 
 
     private MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        EthDstCaseValueBuilder caseBuilder = new EthDstCaseValueBuilder();
-        EthDstValuesBuilder valuesBuilder = new EthDstValuesBuilder();
+        final EthDstCaseValueBuilder caseBuilder = new EthDstCaseValueBuilder();
+        final EthDstValuesBuilder valuesBuilder = new EthDstValuesBuilder();
 
         matchEntryBuilder.setOxmClass(Nxm0Class.class);
         matchEntryBuilder.setOxmMatchField(NxmOfEthDst.class);
@@ -93,9 +93,9 @@ public class EthDstCodecTest {
     private void createBuffer(ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_0_CLASS);
 
-        int fieldMask = (NXM_FIELD_CODE << 1);
+        int fieldMask = NXM_FIELD_CODE << 1;
         message.writeByte(fieldMask);
         message.writeByte(VALUE_LENGTH);
-        message.writeBytes(testAddr);
+        message.writeBytes(TEST_ADDR);
     }
 }

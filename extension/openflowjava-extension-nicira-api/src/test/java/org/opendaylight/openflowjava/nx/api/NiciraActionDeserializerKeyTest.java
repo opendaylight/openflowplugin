@@ -22,7 +22,7 @@ public class NiciraActionDeserializerKeyTest {
 
 
     /**
-     * If SUBTYPE is not Uint16 exception should be thrown
+     * If SUBTYPE is not Uint16 exception should be thrown.
      */
     @Test(expected = IllegalArgumentException.class)
     public void niciraActionDeserializerKeyTest1() {
@@ -30,7 +30,7 @@ public class NiciraActionDeserializerKeyTest {
     }
 
     /**
-     * If SUBTYPE is Uint16 it should be set and version should be set also
+     * If SUBTYPE is Uint16 it should be set and version should be set also.
      */
     @Test
     public void niciraActionDeserializerKeyTest2() {
@@ -47,7 +47,7 @@ public class NiciraActionDeserializerKeyTest {
     }
 
     /**
-     * If input param obj is null FALSE should be returned
+     * If input param obj is null FALSE should be returned.
      */
     @Test
     public void equalsTest1() {
@@ -58,7 +58,7 @@ public class NiciraActionDeserializerKeyTest {
     }
 
     /**
-     * If input param obj is NOT null but is different class FALSE should be returned
+     * If input param obj is NOT null but is different class FALSE should be returned.
      */
     @Test
     public void equalsTest2() {
@@ -69,7 +69,7 @@ public class NiciraActionDeserializerKeyTest {
     }
 
     /**
-     * If input param obj is same class but has different SUBTYPE value FALSE should be returned
+     * If input param obj is same class but has different SUBTYPE value FALSE should be returned.
      */
     @Test
     public void equalsTest3() {
@@ -80,7 +80,7 @@ public class NiciraActionDeserializerKeyTest {
     }
 
     /**
-     * If input param obj is same class but has different VERSION value FALSE should be returned
+     * If input param obj is same class but has different VERSION value FALSE should be returned.
      */
     @Test
     public void equalsTest4() {
@@ -91,7 +91,7 @@ public class NiciraActionDeserializerKeyTest {
     }
 
     /**
-     * If input param obj is absolutely same TRUE should be returned
+     * If input param obj is absolutely same TRUE should be returned.
      */
     @Test
     public void equalsTest5() {
@@ -102,7 +102,7 @@ public class NiciraActionDeserializerKeyTest {
     }
 
     /**
-     * If input param obj is same instance TRUE should be returned
+     * If input param obj is same instance TRUE should be returned.
      */
     @Test
     public void equalsTest6() {

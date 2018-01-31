@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowjava.nx.codec.match;
 
+import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -21,61 +22,57 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.OfMplsLabelCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.OfMplsLabelCaseValueBuilder;
 
-import io.netty.buffer.ByteBuf;
-
 public class MplsLabelCodec extends AbstractMatchCodec {
 
-  private static final int VALUE_LENGTH = 4;
-  private static final int NXM_FIELD_CODE = 34;
+    private static final int VALUE_LENGTH = 4;
+    private static final int NXM_FIELD_CODE = 34;
 
-  public static final MatchEntrySerializerKey<Nxm0Class, NxmOfMplsLabel> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
-      EncodeConstants.OF13_VERSION_ID, Nxm0Class.class,
-      NxmOfMplsLabel.class);
+    public static final MatchEntrySerializerKey<Nxm0Class, NxmOfMplsLabel> SERIALIZER_KEY =
+            new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm0Class.class, NxmOfMplsLabel.class);
 
-  public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
-      EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_0_CLASS,
-      NXM_FIELD_CODE);
+    public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
+            EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_0_CLASS, NXM_FIELD_CODE);
 
-  @Override
-  public void serialize(MatchEntry input, ByteBuf outBuffer) {
-    serializeHeader(input, outBuffer);
-    OfMplsLabelCaseValue value = (OfMplsLabelCaseValue) input.getMatchEntryValue();
-    outBuffer.writeInt(value.getMplsLabelValues().getMplsLabel().intValue());
-  }
+    @Override
+    public void serialize(MatchEntry input, ByteBuf outBuffer) {
+        serializeHeader(input, outBuffer);
+        OfMplsLabelCaseValue value = (OfMplsLabelCaseValue) input.getMatchEntryValue();
+        outBuffer.writeInt(value.getMplsLabelValues().getMplsLabel().intValue());
+    }
 
-  @Override
-  public MatchEntry deserialize(ByteBuf message) {
-    MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
-    OfMplsLabelCaseValueBuilder caseBuilder = new OfMplsLabelCaseValueBuilder();
-    MplsLabelValuesBuilder valuesBuilder = new MplsLabelValuesBuilder();
-    valuesBuilder.setMplsLabel(message.readLong()).build();
-    caseBuilder.setMplsLabelValues(valuesBuilder.build());
-    matchEntryBuilder.setMatchEntryValue(caseBuilder.build());
-    return matchEntryBuilder.build();
-  }
+    @Override
+    public MatchEntry deserialize(ByteBuf message) {
+        MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
+        OfMplsLabelCaseValueBuilder caseBuilder = new OfMplsLabelCaseValueBuilder();
+        MplsLabelValuesBuilder valuesBuilder = new MplsLabelValuesBuilder();
+        valuesBuilder.setMplsLabel(message.readLong()).build();
+        caseBuilder.setMplsLabelValues(valuesBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(caseBuilder.build());
+        return matchEntryBuilder.build();
+    }
 
-  @Override
-  public int getNxmFieldCode() {
-    return NXM_FIELD_CODE;
-  }
+    @Override
+    public int getNxmFieldCode() {
+        return NXM_FIELD_CODE;
+    }
 
-  @Override
-  public int getOxmClassCode() {
-    return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
-  }
+    @Override
+    public int getOxmClassCode() {
+        return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
+    }
 
-  @Override
-  public int getValueLength() {
-    return VALUE_LENGTH;
-  }
+    @Override
+    public int getValueLength() {
+        return VALUE_LENGTH;
+    }
 
-  @Override
-  public Class<? extends MatchField> getNxmField() {
-    return NxmOfMplsLabel.class;
-  }
+    @Override
+    public Class<? extends MatchField> getNxmField() {
+        return NxmOfMplsLabel.class;
+    }
 
-  @Override
-  public Class<? extends OxmClassBase> getOxmClass() {
-    return Nxm0Class.class;
-  }
+    @Override
+    public Class<? extends OxmClassBase> getOxmClass() {
+        return Nxm0Class.class;
+    }
 }

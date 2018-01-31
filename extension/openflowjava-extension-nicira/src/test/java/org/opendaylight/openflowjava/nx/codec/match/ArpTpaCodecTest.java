@@ -56,7 +56,7 @@ public class ArpTpaCodecTest {
         createBuffer(buffer);
         input = arpTpaCodec.deserialize(buffer);
 
-        ArpTpaCaseValue result = ((ArpTpaCaseValue) input.getMatchEntryValue());
+        final ArpTpaCaseValue result = (ArpTpaCaseValue) input.getMatchEntryValue();
 
         assertEquals(Nxm0Class.class, input.getOxmClass());
         assertEquals(NxmOfArpTpa.class, input.getOxmMatchField());
@@ -66,8 +66,8 @@ public class ArpTpaCodecTest {
 
     private MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        ArpTpaCaseValueBuilder caseBuilder = new ArpTpaCaseValueBuilder();
-        ArpTpaValuesBuilder valuesBuilder = new ArpTpaValuesBuilder();
+        final ArpTpaCaseValueBuilder caseBuilder = new ArpTpaCaseValueBuilder();
+        final ArpTpaValuesBuilder valuesBuilder = new ArpTpaValuesBuilder();
 
         matchEntryBuilder.setOxmClass(Nxm0Class.class);
         matchEntryBuilder.setOxmMatchField(NxmOfArpTpa.class);
@@ -83,10 +83,9 @@ public class ArpTpaCodecTest {
     private void createBuffer(ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_0_CLASS);
 
-        int fieldMask = (NXM_FIELD_CODE << 1);
+        int fieldMask = NXM_FIELD_CODE << 1;
         message.writeByte(fieldMask);
         message.writeByte(VALUE_LENGTH);
         message.writeInt(2);
     }
-
 }
