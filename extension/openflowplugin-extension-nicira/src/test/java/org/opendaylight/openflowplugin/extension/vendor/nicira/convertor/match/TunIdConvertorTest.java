@@ -50,19 +50,22 @@ public class TunIdConvertorTest {
     public void setUp() throws Exception {
         final NxmNxTunIdBuilder nxmNxTunIdBuilder = new NxmNxTunIdBuilder()
                 .setValue(BigInteger.ONE);
-        final NxAugMatchNodesNodeTableFlowBuilder nxAugMatchNotifUpdateFlowStatsBuilder = new NxAugMatchNodesNodeTableFlowBuilder();
+        final NxAugMatchNodesNodeTableFlowBuilder nxAugMatchNotifUpdateFlowStatsBuilder =
+                new NxAugMatchNodesNodeTableFlowBuilder();
         nxAugMatchNotifUpdateFlowStatsBuilder.setNxmNxTunId(nxmNxTunIdBuilder.build());
 
         final Augmentation<Extension> extensionAugmentation = nxAugMatchNotifUpdateFlowStatsBuilder.build();
-        when(extension.getAugmentation(Matchers.<Class<Augmentation<Extension>>>any())).thenReturn(extensionAugmentation);
+        when(extension.getAugmentation(Matchers.<Class<Augmentation<Extension>>>any()))
+            .thenReturn(extensionAugmentation);
 
         tunIdConvertor = new TunIdConvertor();
     }
 
     @Test
     public void testConvert() throws Exception {
-        final MatchEntry matchEntry = tunIdConvertor.convert(extension);
-        Assert.assertEquals(BigInteger.ONE, ((TunIdCaseValue)matchEntry.getMatchEntryValue()).getTunIdValues().getValue());
+        final MatchEntry converted = tunIdConvertor.convert(extension);
+        Assert.assertEquals(BigInteger.ONE, ((TunIdCaseValue)converted.getMatchEntryValue())
+                .getTunIdValues().getValue());
     }
 
     @Test
@@ -76,21 +79,29 @@ public class TunIdConvertorTest {
 
         when(matchEntry.getMatchEntryValue()).thenReturn(tunIdCaseValue);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = tunIdConvertor.convert(matchEntry, MatchPath.PACKETRECEIVED_MATCH);
-        Assert.assertEquals(BigInteger.TEN, ((NxAugMatchNotifPacketIn)extensionAugment.getAugmentationObject()).getNxmNxTunId().getValue());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = tunIdConvertor.convert(matchEntry,
+                MatchPath.PACKET_RECEIVED_MATCH);
+        Assert.assertEquals(BigInteger.TEN,
+                ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmNxTunId().getValue());
         Assert.assertEquals(extensionAugment.getKey(), NxmNxTunIdKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = tunIdConvertor.convert(matchEntry, MatchPath.SWITCHFLOWREMOVED_MATCH);
-        Assert.assertEquals(BigInteger.TEN, ((NxAugMatchNotifSwitchFlowRemoved)extensionAugment1.getAugmentationObject()).getNxmNxTunId().getValue());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = tunIdConvertor.convert(matchEntry,
+                MatchPath.SWITCH_FLOW_REMOVED_MATCH);
+        Assert.assertEquals(BigInteger.TEN,
+                ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject()).getNxmNxTunId()
+                        .getValue());
         Assert.assertEquals(extensionAugment.getKey(), NxmNxTunIdKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = tunIdConvertor.convert(matchEntry, MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
-        Assert.assertEquals(BigInteger.TEN, ((NxAugMatchNodesNodeTableFlow)extensionAugment2.getAugmentationObject()).getNxmNxTunId().getValue());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = tunIdConvertor.convert(matchEntry,
+                MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
+        Assert.assertEquals(BigInteger.TEN,
+                ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject()).getNxmNxTunId().getValue());
         Assert.assertEquals(extensionAugment.getKey(), NxmNxTunIdKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = tunIdConvertor.convert(matchEntry, MatchPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH);
-        Assert.assertEquals(BigInteger.TEN, ((NxAugMatchRpcGetFlowStats)extensionAugment3.getAugmentationObject()).getNxmNxTunId().getValue());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = tunIdConvertor.convert(matchEntry,
+                MatchPath.FLOWS_STATISTICS_RPC_MATCH);
+        Assert.assertEquals(BigInteger.TEN,
+                ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject()).getNxmNxTunId().getValue());
         Assert.assertEquals(extensionAugment.getKey(), NxmNxTunIdKey.class);
     }
-
 }

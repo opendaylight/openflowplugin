@@ -9,10 +9,8 @@
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action;
 
 import com.google.common.base.Preconditions;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
@@ -36,18 +34,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.conntrack.grouping.nx.conntrack.CtActionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.OfpactActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.actions.NxActionCtMarkCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.actions.NxActionNatCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.actions.NxActionCtMarkCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.actions.NxActionNatCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.actions.NxActionNatCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.actions.nx.action.ct.mark._case.NxActionCtMark;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.actions.nx.action.nat._case.NxActionNat;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.actions.nx.action.ct.mark._case.NxActionCtMarkBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.actions.nx.action.nat._case.NxActionNat;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.actions.nx.action.nat._case.NxActionNatBuilder;
 
 /**
+ * Conntrack converter implementation.
+ *
  * @author Aswin Suryanarayanan.
  */
-
 public class ConntrackConvertor implements
         ConvertorActionToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action
         .Action, Action>,
@@ -66,74 +65,6 @@ public class ConntrackConvertor implements
         return resolveAction(builder.build(), path);
     }
 
-    private List<CtActions> getCtAction(final NxActionConntrack action) {
-        if (action.getCtActions() == null) {
-            return null;
-        }
-        List<CtActions> ctActions = new ArrayList<>();
-        for (org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack
-                .grouping.nx.action.conntrack.CtActions ctAction : action.getCtActions()) {
-            org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions
-                .OfpactActions ofpactAction = ctAction.getOfpactActions();
-            if (ofpactAction instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421
-                    .ofpact.actions.ofpact.actions.NxActionNatCase) {
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact
-                    .actions.nx.action.nat._case.NxActionNat nxActionNat = ((org.opendaylight.yang.gen.v1.urn
-                            .opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions
-                            .NxActionNatCase) ofpactAction).getNxActionNat();
-                NxActionNatBuilder nxActionNatBuilder = new NxActionNatBuilder();
-                nxActionNatBuilder.setFlags(nxActionNat.getFlags());
-                nxActionNatBuilder.setRangePresent(nxActionNat.getRangePresent());
-                nxActionNatBuilder.setIpAddressMin(nxActionNat.getIpAddressMin());
-                nxActionNatBuilder.setIpAddressMax(nxActionNat.getIpAddressMax());
-                nxActionNatBuilder.setPortMin(nxActionNat.getPortMin());
-                nxActionNatBuilder.setPortMax(nxActionNat.getPortMax());
-                NxActionNatCaseBuilder caseBuilder = new NxActionNatCaseBuilder();
-                caseBuilder.setNxActionNat(nxActionNatBuilder.build());
-                CtActionsBuilder ctActionsBuilder = new CtActionsBuilder();
-                ctActionsBuilder.setOfpactActions(caseBuilder.build());
-                ctActions.add(ctActionsBuilder.build());
-            } else if (ofpactAction instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421
-                    .ofpact.actions.ofpact.actions.NxActionCtMarkCase) {
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact
-                    .actions.nx.action.ct.mark._case.NxActionCtMark nxActionCtMark = ((org.opendaylight.yang.gen.v1.urn
-                            .opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions
-                            .NxActionCtMarkCase) ofpactAction).getNxActionCtMark();
-                NxActionCtMarkBuilder nxActionCtMarkBuilder = new NxActionCtMarkBuilder();
-                nxActionCtMarkBuilder.setCtMark(nxActionCtMark.getCtMark());
-                // TODO: ct_mark mask is not supported yet
-                NxActionCtMarkCaseBuilder caseBuilder = new NxActionCtMarkCaseBuilder();
-                caseBuilder.setNxActionCtMark(nxActionCtMarkBuilder.build());
-                CtActionsBuilder ctActionsBuilder = new CtActionsBuilder();
-                ctActionsBuilder.setOfpactActions(caseBuilder.build());
-                ctActions.add(ctActionsBuilder.build());
-            }
-        }
-        return ctActions;
-    }
-
-    private static org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action
-                        .Action resolveAction(final NxConntrack value, final ActionPath path) {
-        switch (path) {
-            case NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION:
-                return new NxActionConntrackNodesNodeTableFlowWriteActionsCaseBuilder().setNxConntrack(value).build();
-            case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION:
-                return new NxActionConntrackNotifFlowsStatisticsUpdateWriteActionsCaseBuilder().setNxConntrack(value).build();
-            case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION:
-                return new NxActionConntrackNotifFlowsStatisticsUpdateApplyActionsCaseBuilder().setNxConntrack(value).build();
-            case GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION:
-                return new NxActionConntrackNotifGroupDescStatsUpdatedCaseBuilder().setNxConntrack(value).build();
-            case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION:
-                return new NxActionConntrackNotifDirectStatisticsUpdateWriteActionsCaseBuilder().setNxConntrack(value).build();
-            case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION:
-                return new NxActionConntrackNotifDirectStatisticsUpdateApplyActionsCaseBuilder().setNxConntrack(value).build();
-            case NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION:
-                return new NxActionConntrackNodesNodeTableFlowApplyActionsCaseBuilder().setNxConntrack(value).build();
-            default:
-                throw new CodecPreconditionException(path);
-        }
-    }
-
     @Override
     public Action convert(final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action
             .Action nxActionArg) {
@@ -149,6 +80,32 @@ public class ConntrackConvertor implements
         ActionConntrackBuilder actionConntrackBuilder = new ActionConntrackBuilder();
         actionConntrackBuilder.setNxActionConntrack(nxActionConntrackBuilder.build());
         return ActionUtil.createAction(actionConntrackBuilder.build());
+    }
+
+    private static org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action
+                        .Action resolveAction(final NxConntrack value, final ActionPath path) {
+        switch (path) {
+            case INVENTORY_FLOWNODE_TABLE_WRITE_ACTIONS:
+                return new NxActionConntrackNodesNodeTableFlowWriteActionsCaseBuilder().setNxConntrack(value).build();
+            case FLOWS_STATISTICS_UPDATE_WRITE_ACTIONS:
+                return new NxActionConntrackNotifFlowsStatisticsUpdateWriteActionsCaseBuilder()
+                        .setNxConntrack(value).build();
+            case FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS:
+                return new NxActionConntrackNotifFlowsStatisticsUpdateApplyActionsCaseBuilder()
+                        .setNxConntrack(value).build();
+            case GROUP_DESC_STATS_UPDATED_BUCKET_ACTION:
+                return new NxActionConntrackNotifGroupDescStatsUpdatedCaseBuilder().setNxConntrack(value).build();
+            case FLOWS_STATISTICS_RPC_WRITE_ACTIONS:
+                return new NxActionConntrackNotifDirectStatisticsUpdateWriteActionsCaseBuilder()
+                        .setNxConntrack(value).build();
+            case FLOWS_STATISTICS_RPC_APPLY_ACTIONS:
+                return new NxActionConntrackNotifDirectStatisticsUpdateApplyActionsCaseBuilder()
+                        .setNxConntrack(value).build();
+            case INVENTORY_FLOWNODE_TABLE_APPLY_ACTIONS:
+                return new NxActionConntrackNodesNodeTableFlowApplyActionsCaseBuilder().setNxConntrack(value).build();
+            default:
+                throw new CodecPreconditionException(path);
+        }
     }
 
     private List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack
@@ -185,9 +142,9 @@ public class ConntrackConvertor implements
             } else if (ofpactAction instanceof NxActionCtMarkCase) {
                 NxActionCtMark nxActionCtMark = ((NxActionCtMarkCase) ofpactAction).getNxActionCtMark();
                 org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact
-                    .actions.nx.action.ct.mark._case.NxActionCtMarkBuilder nxActionCtMarkBuilder = new org.opendaylight.yang.gen
-                    .v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.ct.mark
-                    ._case.NxActionCtMarkBuilder();
+                    .actions.nx.action.ct.mark._case.NxActionCtMarkBuilder nxActionCtMarkBuilder =
+                        new org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact
+                            .actions.ofpact.actions.nx.action.ct.mark._case.NxActionCtMarkBuilder();
                 nxActionCtMarkBuilder.setCtMark(nxActionCtMark.getCtMark());
                 // TODO: ct_mark mask is not supported yet
                 org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact
@@ -198,6 +155,52 @@ public class ConntrackConvertor implements
                     .grouping.nx.action.conntrack.CtActionsBuilder ctActionsBuilder = new org.opendaylight.yang.gen.v1
                     .urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack.grouping.nx.action
                     .conntrack.CtActionsBuilder();
+                ctActionsBuilder.setOfpactActions(caseBuilder.build());
+                ctActions.add(ctActionsBuilder.build());
+            }
+        }
+        return ctActions;
+    }
+
+    private List<CtActions> getCtAction(final NxActionConntrack action) {
+        if (action.getCtActions() == null) {
+            return null;
+        }
+        List<CtActions> ctActions = new ArrayList<>();
+        for (org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack
+                .grouping.nx.action.conntrack.CtActions ctAction : action.getCtActions()) {
+            org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions
+                .OfpactActions ofpactAction = ctAction.getOfpactActions();
+            if (ofpactAction instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421
+                    .ofpact.actions.ofpact.actions.NxActionNatCase) {
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact
+                    .actions.nx.action.nat._case.NxActionNat nxActionNat = ((org.opendaylight.yang.gen.v1.urn
+                            .opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions
+                            .NxActionNatCase) ofpactAction).getNxActionNat();
+                NxActionNatBuilder nxActionNatBuilder = new NxActionNatBuilder();
+                nxActionNatBuilder.setFlags(nxActionNat.getFlags());
+                nxActionNatBuilder.setRangePresent(nxActionNat.getRangePresent());
+                nxActionNatBuilder.setIpAddressMin(nxActionNat.getIpAddressMin());
+                nxActionNatBuilder.setIpAddressMax(nxActionNat.getIpAddressMax());
+                nxActionNatBuilder.setPortMin(nxActionNat.getPortMin());
+                nxActionNatBuilder.setPortMax(nxActionNat.getPortMax());
+                NxActionNatCaseBuilder caseBuilder = new NxActionNatCaseBuilder();
+                caseBuilder.setNxActionNat(nxActionNatBuilder.build());
+                CtActionsBuilder ctActionsBuilder = new CtActionsBuilder();
+                ctActionsBuilder.setOfpactActions(caseBuilder.build());
+                ctActions.add(ctActionsBuilder.build());
+            } else if (ofpactAction instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action
+                    .rev140421.ofpact.actions.ofpact.actions.NxActionCtMarkCase) {
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact
+                    .actions.nx.action.ct.mark._case.NxActionCtMark nxActionCtMark = ((org.opendaylight.yang.gen.v1.urn
+                            .opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions
+                            .NxActionCtMarkCase) ofpactAction).getNxActionCtMark();
+                NxActionCtMarkBuilder nxActionCtMarkBuilder = new NxActionCtMarkBuilder();
+                nxActionCtMarkBuilder.setCtMark(nxActionCtMark.getCtMark());
+                // TODO: ct_mark mask is not supported yet
+                NxActionCtMarkCaseBuilder caseBuilder = new NxActionCtMarkCaseBuilder();
+                caseBuilder.setNxActionCtMark(nxActionCtMarkBuilder.build());
+                CtActionsBuilder ctActionsBuilder = new CtActionsBuilder();
                 ctActionsBuilder.setOfpactActions(caseBuilder.build());
                 ctActions.add(ctActionsBuilder.build());
             }

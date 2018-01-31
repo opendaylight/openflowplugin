@@ -48,10 +48,10 @@ public abstract class ByteBufUtils {
     private static byte[] hexStringToBytes(final String hexSrc) {
         List<String> byteChips = Lists.newArrayList(HEXSTRING_SPLITTER.split(hexSrc));
         byte[] result = new byte[byteChips.size()];
-        int i = 0;
+        int index = 0;
         for (String chip : byteChips) {
-            result[i] = (byte) Short.parseShort(chip, 16);
-            i++;
+            result[index] = (byte) Short.parseShort(chip, 16);
+            index++;
         }
         return result;
     }
