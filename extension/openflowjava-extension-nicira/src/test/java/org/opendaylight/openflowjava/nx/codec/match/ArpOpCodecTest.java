@@ -58,7 +58,7 @@ public class ArpOpCodecTest {
 
         input = arpOpCodec.deserialize(buffer);
 
-        ArpOpCaseValue result = ((ArpOpCaseValue) input.getMatchEntryValue());
+        final ArpOpCaseValue result = (ArpOpCaseValue) input.getMatchEntryValue();
 
         assertEquals(Nxm0Class.class, input.getOxmClass());
         assertEquals(NxmOfArpOp.class, input.getOxmMatchField());
@@ -71,8 +71,8 @@ public class ArpOpCodecTest {
 
     private MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        ArpOpCaseValueBuilder caseBuilder = new ArpOpCaseValueBuilder();
-        ArpOpValuesBuilder valuesBuilder = new ArpOpValuesBuilder();
+        final ArpOpCaseValueBuilder caseBuilder = new ArpOpCaseValueBuilder();
+        final ArpOpValuesBuilder valuesBuilder = new ArpOpValuesBuilder();
 
         matchEntryBuilder.setOxmClass(Nxm0Class.class);
         matchEntryBuilder.setOxmMatchField(NxmOfArpOp.class);
@@ -88,10 +88,9 @@ public class ArpOpCodecTest {
     private void createBuffer(ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_0_CLASS);
 
-        int fieldMask = (NXM_FIELD_CODE << 1);
+        int fieldMask = NXM_FIELD_CODE << 1;
         message.writeByte(fieldMask);
         message.writeByte(VALUE_LENGTH);
         message.writeShort(2);
     }
-
 }

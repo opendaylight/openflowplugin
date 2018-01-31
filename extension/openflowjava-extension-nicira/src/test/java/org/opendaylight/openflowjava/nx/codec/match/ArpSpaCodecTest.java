@@ -57,7 +57,7 @@ public class ArpSpaCodecTest {
         createBuffer(buffer);
         input = arpSpaCodec.deserialize(buffer);
 
-        ArpSpaCaseValue result = ((ArpSpaCaseValue) input.getMatchEntryValue());
+        final ArpSpaCaseValue result = (ArpSpaCaseValue) input.getMatchEntryValue();
 
         assertEquals(Nxm0Class.class, input.getOxmClass());
         assertEquals(NxmOfArpSpa.class, input.getOxmMatchField());
@@ -68,8 +68,8 @@ public class ArpSpaCodecTest {
 
     private MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        ArpSpaCaseValueBuilder caseBuilder = new ArpSpaCaseValueBuilder();
-        ArpSpaValuesBuilder valuesBuilder = new ArpSpaValuesBuilder();
+        final ArpSpaCaseValueBuilder caseBuilder = new ArpSpaCaseValueBuilder();
+        final ArpSpaValuesBuilder valuesBuilder = new ArpSpaValuesBuilder();
 
         matchEntryBuilder.setOxmClass(Nxm0Class.class);
         matchEntryBuilder.setOxmMatchField(NxmOfArpSpa.class);
@@ -85,11 +85,9 @@ public class ArpSpaCodecTest {
     private void createBuffer(ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_0_CLASS);
 
-        int fieldMask = (NXM_FIELD_CODE << 1);
+        int fieldMask = NXM_FIELD_CODE << 1;
         message.writeByte(fieldMask);
         message.writeByte(VALUE_LENGTH);
         message.writeInt(2);
     }
-
-
 }

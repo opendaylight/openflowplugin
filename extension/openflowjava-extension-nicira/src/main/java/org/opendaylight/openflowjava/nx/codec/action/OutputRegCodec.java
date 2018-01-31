@@ -19,7 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.output.reg.grouping.NxActionOutputRegBuilder;
 
 /**
- * Codec for the Nicira OutputRegAction
+ * Codec for the Nicira OutputRegAction.
  *
  * @author readams
  */
@@ -34,7 +34,7 @@ public class OutputRegCodec extends AbstractActionCodec {
 
     @Override
     public void serialize(final Action input, final ByteBuf outBuffer) {
-        ActionOutputReg action = ((ActionOutputReg) input.getActionChoice());
+        ActionOutputReg action = (ActionOutputReg) input.getActionChoice();
         serializeHeader(LENGTH, SUBTYPE, outBuffer);
         outBuffer.writeShort(action.getNxActionOutputReg().getNBits().shortValue());
         outBuffer.writeInt(action.getNxActionOutputReg().getSrc().intValue());
@@ -44,8 +44,8 @@ public class OutputRegCodec extends AbstractActionCodec {
 
     @Override
     public Action deserialize(final ByteBuf message) {
-        ActionBuilder actionBuilder = deserializeHeader(message);
-        ActionOutputRegBuilder builder = new ActionOutputRegBuilder();
+        final ActionBuilder actionBuilder = deserializeHeader(message);
+        final ActionOutputRegBuilder builder = new ActionOutputRegBuilder();
         NxActionOutputRegBuilder nxActionOutputRegBuilder = new NxActionOutputRegBuilder();
         nxActionOutputRegBuilder.setNBits(message.readUnsignedShort());
         nxActionOutputRegBuilder.setSrc(message.readUnsignedInt());

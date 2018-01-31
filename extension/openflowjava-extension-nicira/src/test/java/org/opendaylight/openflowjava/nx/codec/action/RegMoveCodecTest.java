@@ -24,13 +24,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.move.grouping.NxActionRegMoveBuilder;
 
 public class RegMoveCodecTest {
+    private static final int LENGTH = 24;
+    private static final byte SUBTYPE = 6;
 
     RegMoveCodec regMoveCodec;
     ByteBuf buffer;
     Action action;
-
-    private final int LENGTH = 24;
-    private final byte SUBTYPE = 6;
 
     @Before
     public void setUp() {
@@ -78,7 +77,7 @@ public class RegMoveCodecTest {
         ExperimenterId experimenterId = new ExperimenterId(NiciraConstants.NX_VENDOR_ID);
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setExperimenterId(experimenterId);
-        ActionRegMoveBuilder actionRegMoveBuilder = new ActionRegMoveBuilder();
+        final ActionRegMoveBuilder actionRegMoveBuilder = new ActionRegMoveBuilder();
         NxActionRegMoveBuilder nxActionRegMoveBuilder = new NxActionRegMoveBuilder();
 
         nxActionRegMoveBuilder.setNBits(1);

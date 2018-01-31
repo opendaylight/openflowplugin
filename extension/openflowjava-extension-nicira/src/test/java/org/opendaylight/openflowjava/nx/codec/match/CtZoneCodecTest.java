@@ -58,7 +58,7 @@ public class CtZoneCodecTest {
         createBuffer(buffer);
         input = ctZoneCodec.deserialize(buffer);
 
-        CtZoneCaseValue result = ((CtZoneCaseValue) input.getMatchEntryValue());
+        final CtZoneCaseValue result = (CtZoneCaseValue) input.getMatchEntryValue();
 
         assertEquals(Nxm1Class.class, input.getOxmClass());
         assertEquals(NxmNxCtZone.class, input.getOxmMatchField());
@@ -69,8 +69,8 @@ public class CtZoneCodecTest {
 
     private MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        CtZoneCaseValueBuilder caseBuilder = new CtZoneCaseValueBuilder();
-        CtZoneValuesBuilder valuesBuilder = new CtZoneValuesBuilder();
+        final CtZoneCaseValueBuilder caseBuilder = new CtZoneCaseValueBuilder();
+        final CtZoneValuesBuilder valuesBuilder = new CtZoneValuesBuilder();
 
         matchEntryBuilder.setOxmClass(Nxm1Class.class);
         matchEntryBuilder.setOxmMatchField(NxmNxCtZone.class);
@@ -86,7 +86,7 @@ public class CtZoneCodecTest {
     private void createBuffer(ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_1_CLASS);
 
-        int fieldMask = (NXM_FIELD_CODE << 1);
+        int fieldMask = NXM_FIELD_CODE << 1;
         message.writeByte(fieldMask);
         message.writeByte(VALUE_LENGTH);
         message.writeShort(2);

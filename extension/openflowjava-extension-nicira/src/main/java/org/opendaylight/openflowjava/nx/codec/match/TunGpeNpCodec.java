@@ -27,15 +27,15 @@ public class TunGpeNpCodec extends AbstractMatchCodec {
 
     private static final int VALUE_LENGTH = 1;
     private static final int NXM_FIELD_CODE = 111;
-    public static final MatchEntrySerializerKey<Nxm1Class, NxmNxTunGpeNp> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
-            EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxTunGpeNp.class);
+    public static final MatchEntrySerializerKey<Nxm1Class, NxmNxTunGpeNp> SERIALIZER_KEY =
+            new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxTunGpeNp.class);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
             EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, NXM_FIELD_CODE);
 
     @Override
     public void serialize(MatchEntry input, ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
-        TunGpeNpCaseValue tunGpeNpCaseValue = ((TunGpeNpCaseValue) input.getMatchEntryValue());
+        TunGpeNpCaseValue tunGpeNpCaseValue = (TunGpeNpCaseValue) input.getMatchEntryValue();
         outBuffer.writeByte(tunGpeNpCaseValue.getTunGpeNpValues().getValue());
     }
 
@@ -43,7 +43,8 @@ public class TunGpeNpCodec extends AbstractMatchCodec {
     public MatchEntry deserialize(ByteBuf message) {
         MatchEntryBuilder matchEntriesBuilder = deserializeHeaderToBuilder(message);
         TunGpeNpCaseValueBuilder tunGpeNpCaseValueBuilder = new TunGpeNpCaseValueBuilder();
-        tunGpeNpCaseValueBuilder.setTunGpeNpValues(new TunGpeNpValuesBuilder().setValue(message.readUnsignedByte()).build());
+        tunGpeNpCaseValueBuilder.setTunGpeNpValues(new TunGpeNpValuesBuilder()
+                .setValue(message.readUnsignedByte()).build());
         matchEntriesBuilder.setMatchEntryValue(tunGpeNpCaseValueBuilder.build());
         matchEntriesBuilder.setHasMask(false);
         return matchEntriesBuilder.build();

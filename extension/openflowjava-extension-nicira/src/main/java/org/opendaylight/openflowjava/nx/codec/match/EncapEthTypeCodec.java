@@ -27,23 +27,24 @@ public class EncapEthTypeCodec extends AbstractMatchCodec {
 
     private static final int VALUE_LENGTH = 2;
     private static final int NXM_FIELD_CODE = 123;
-    public static final MatchEntrySerializerKey<Nxm1Class, NxmNxEncapEthType> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
-            EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxEncapEthType.class);
+    public static final MatchEntrySerializerKey<Nxm1Class, NxmNxEncapEthType> SERIALIZER_KEY =
+            new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxEncapEthType.class);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
             EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, NXM_FIELD_CODE);
 
     @Override
     public void serialize(MatchEntry input, ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
-        EncapEthTypeCaseValue encapEthTypeCaseValue = ((EncapEthTypeCaseValue) input.getMatchEntryValue());
+        EncapEthTypeCaseValue encapEthTypeCaseValue = (EncapEthTypeCaseValue) input.getMatchEntryValue();
         outBuffer.writeShort(encapEthTypeCaseValue.getEncapEthTypeValues().getEncapEthType().intValue());
     }
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
         MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
-        EncapEthTypeCaseValueBuilder encapEthTypeCaseValueBuilder= new EncapEthTypeCaseValueBuilder();
-        encapEthTypeCaseValueBuilder.setEncapEthTypeValues(new EncapEthTypeValuesBuilder().setEncapEthType(message.readUnsignedShort()).build());
+        EncapEthTypeCaseValueBuilder encapEthTypeCaseValueBuilder = new EncapEthTypeCaseValueBuilder();
+        encapEthTypeCaseValueBuilder.setEncapEthTypeValues(
+                new EncapEthTypeValuesBuilder().setEncapEthType(message.readUnsignedShort()).build());
         matchEntryBuilder.setMatchEntryValue(encapEthTypeCaseValueBuilder.build());
         matchEntryBuilder.setHasMask(false);
         return matchEntryBuilder.build();

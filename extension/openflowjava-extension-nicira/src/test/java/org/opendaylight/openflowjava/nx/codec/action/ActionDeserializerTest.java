@@ -59,10 +59,9 @@ public class ActionDeserializerTest {
 
     }
 
-
     /**
      * If NiciraExtensionCodecRegistratorImpl.getActionDeserializer(actionSerializerKey) returns NULL
-     * then NULL should be returned
+     * then NULL should be returned.
      */
     @Test
     public void deserializeTest() {
@@ -71,8 +70,7 @@ public class ActionDeserializerTest {
     }
 
     /**
-     * If experimentId is different from NiciraConstants.NX_VENDOR_ID
-     * then exception should be thrown
+     * If experimentId is different from NiciraConstants.NX_VENDOR_ID then exception should be thrown.
      */
     @Test(expected = IllegalStateException.class)
     public void deserializeTest1() {

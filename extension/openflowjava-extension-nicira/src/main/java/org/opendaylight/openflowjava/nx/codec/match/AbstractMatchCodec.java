@@ -9,7 +9,6 @@
 package org.opendaylight.openflowjava.nx.codec.match;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderDeserializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -74,27 +73,27 @@ public abstract class AbstractMatchCodec implements
     }
 
     /**
-     * @return numeric representation of nxm_field
+     * Returns the numeric representation of nxm_field.
      */
     public abstract int getNxmFieldCode();
 
     /**
-     * @return numeric representation of oxm_class
+     * Returns the numeric representation of oxm_class.
      */
     public abstract int getOxmClassCode();
 
     /**
-     * @return match entry value length
+     * Returns the match entry value length.
      */
     public abstract int getValueLength();
 
     /**
-     * @return nxm_field class
+     * Returns the nxm_field class.
      */
     public abstract Class<? extends MatchField> getNxmField();
 
     /**
-     * @return oxm_class class
+     * Returns the oxm_class class.
      */
     public abstract Class<? extends OxmClassBase> getOxmClass();
 

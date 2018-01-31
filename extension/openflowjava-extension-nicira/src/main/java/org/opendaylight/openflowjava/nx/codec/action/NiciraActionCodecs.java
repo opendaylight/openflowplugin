@@ -8,22 +8,19 @@
 package org.opendaylight.openflowjava.nx.codec.action;
 
 /**
- * @author msunal
+ * Defines the Nicira action codecs.
  *
+ * @author msunal
  */
-public class NiciraActionCodecs {
-
-    private NiciraActionCodecs() {
-    }
-
-    public static final RegMoveCodec REG_MOVE_CODEC = new RegMoveCodec();
-    public static final RegLoadCodec REG_LOAD_CODEC = new RegLoadCodec();
-    public static final OutputRegCodec OUTPUT_REG_CODEC = new OutputRegCodec();
-    public static final ResubmitCodec RESUBMIT_CODEC = new ResubmitCodec();
-    public static final MultipathCodec MULTIPATH_CODEC = new MultipathCodec();
-    public static final PushNshCodec PUSH_NSH_CODEC = new PushNshCodec();
-    public static final PopNshCodec POP_NSH_CODEC = new PopNshCodec();
-    public static final ConntrackCodec CONNTRACK_CODEC = new ConntrackCodec();
-    public static final LearnCodec LEARN_CODEC = new LearnCodec();
-    public static final FinTimeoutCodec FIN_TIMEOUT_CODEC = new FinTimeoutCodec();
+public interface NiciraActionCodecs {
+    RegMoveCodec REG_MOVE_CODEC = new RegMoveCodec();
+    RegLoadCodec REG_LOAD_CODEC = new RegLoadCodec();
+    OutputRegCodec OUTPUT_REG_CODEC = new OutputRegCodec();
+    ResubmitCodec RESUBMIT_CODEC = new ResubmitCodec();
+    MultipathCodec MULTIPATH_CODEC = new MultipathCodec();
+    PushNshCodec PUSH_NSH_CODEC = new PushNshCodec();
+    PopNshCodec POP_NSH_CODEC = new PopNshCodec();
+    ConntrackCodec CONNTRACK_CODEC = new ConntrackCodec();
+    LearnCodec LEARN_CODEC = new LearnCodec();
+    FinTimeoutCodec FIN_TIMEOUT_CODEC = new FinTimeoutCodec();
 }

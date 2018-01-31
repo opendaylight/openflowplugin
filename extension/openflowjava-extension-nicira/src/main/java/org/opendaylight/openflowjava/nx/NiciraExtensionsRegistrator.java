@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowjava.nx;
 
+import com.google.common.base.Preconditions;
 import org.opendaylight.openflowjava.nx.api.NiciraExtensionCodecRegistrator;
 import org.opendaylight.openflowjava.nx.codec.action.ConntrackCodec;
 import org.opendaylight.openflowjava.nx.codec.action.FinTimeoutCodec;
@@ -15,11 +16,11 @@ import org.opendaylight.openflowjava.nx.codec.action.LearnCodec;
 import org.opendaylight.openflowjava.nx.codec.action.MultipathCodec;
 import org.opendaylight.openflowjava.nx.codec.action.NiciraActionCodecs;
 import org.opendaylight.openflowjava.nx.codec.action.OutputRegCodec;
+import org.opendaylight.openflowjava.nx.codec.action.PopNshCodec;
+import org.opendaylight.openflowjava.nx.codec.action.PushNshCodec;
 import org.opendaylight.openflowjava.nx.codec.action.RegLoadCodec;
 import org.opendaylight.openflowjava.nx.codec.action.RegMoveCodec;
 import org.opendaylight.openflowjava.nx.codec.action.ResubmitCodec;
-import org.opendaylight.openflowjava.nx.codec.action.PushNshCodec;
-import org.opendaylight.openflowjava.nx.codec.action.PopNshCodec;
 import org.opendaylight.openflowjava.nx.codec.match.ArpOpCodec;
 import org.opendaylight.openflowjava.nx.codec.match.ArpShaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.ArpSpaCodec;
@@ -28,22 +29,23 @@ import org.opendaylight.openflowjava.nx.codec.match.ArpTpaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.CtMarkCodec;
 import org.opendaylight.openflowjava.nx.codec.match.CtStateCodec;
 import org.opendaylight.openflowjava.nx.codec.match.CtZoneCodec;
+import org.opendaylight.openflowjava.nx.codec.match.EncapEthDstCodec;
+import org.opendaylight.openflowjava.nx.codec.match.EncapEthSrcCodec;
+import org.opendaylight.openflowjava.nx.codec.match.EncapEthTypeCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EthDstCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EthSrcCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EthTypeCodec;
+import org.opendaylight.openflowjava.nx.codec.match.InPortCodec;
+import org.opendaylight.openflowjava.nx.codec.match.MplsLabelCodec;
 import org.opendaylight.openflowjava.nx.codec.match.NiciraMatchCodecs;
+import org.opendaylight.openflowjava.nx.codec.match.NshMdtypeCodec;
+import org.opendaylight.openflowjava.nx.codec.match.NshNpCodec;
 import org.opendaylight.openflowjava.nx.codec.match.Nshc1Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Nshc2Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Nshc3Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Nshc4Codec;
 import org.opendaylight.openflowjava.nx.codec.match.NsiCodec;
 import org.opendaylight.openflowjava.nx.codec.match.NspCodec;
-import org.opendaylight.openflowjava.nx.codec.match.EncapEthTypeCodec;
-import org.opendaylight.openflowjava.nx.codec.match.EncapEthSrcCodec;
-import org.opendaylight.openflowjava.nx.codec.match.EncapEthDstCodec;
-import org.opendaylight.openflowjava.nx.codec.match.NshMdtypeCodec;
-import org.opendaylight.openflowjava.nx.codec.match.NshNpCodec;
-import org.opendaylight.openflowjava.nx.codec.match.TunGpeNpCodec;
 import org.opendaylight.openflowjava.nx.codec.match.Reg0Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Reg1Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Reg2Codec;
@@ -54,15 +56,12 @@ import org.opendaylight.openflowjava.nx.codec.match.Reg6Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Reg7Codec;
 import org.opendaylight.openflowjava.nx.codec.match.TcpDstCodec;
 import org.opendaylight.openflowjava.nx.codec.match.TcpSrcCodec;
+import org.opendaylight.openflowjava.nx.codec.match.TunGpeNpCodec;
 import org.opendaylight.openflowjava.nx.codec.match.TunIdCodec;
 import org.opendaylight.openflowjava.nx.codec.match.TunIpv4DstCodec;
 import org.opendaylight.openflowjava.nx.codec.match.TunIpv4SrcCodec;
 import org.opendaylight.openflowjava.nx.codec.match.UdpDstCodec;
 import org.opendaylight.openflowjava.nx.codec.match.UdpSrcCodec;
-import org.opendaylight.openflowjava.nx.codec.match.InPortCodec;
-import org.opendaylight.openflowjava.nx.codec.match.MplsLabelCodec;
-
-import com.google.common.base.Preconditions;
 
 public class NiciraExtensionsRegistrator implements AutoCloseable {
     private final NiciraExtensionCodecRegistrator registrator;

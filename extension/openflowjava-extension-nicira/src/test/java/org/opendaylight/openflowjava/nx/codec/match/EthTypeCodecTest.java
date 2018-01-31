@@ -57,7 +57,7 @@ public class EthTypeCodecTest {
 
         input = ethTypeCodec.deserialize(buffer);
 
-        EthTypeCaseValue result = ((EthTypeCaseValue) input.getMatchEntryValue());
+        final EthTypeCaseValue result = (EthTypeCaseValue) input.getMatchEntryValue();
 
         assertEquals(Nxm0Class.class, input.getOxmClass());
         assertEquals(NxmOfEthType.class, input.getOxmMatchField());
@@ -69,8 +69,8 @@ public class EthTypeCodecTest {
 
     private MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        EthTypeCaseValueBuilder caseBuilder = new EthTypeCaseValueBuilder();
-        EthTypeValuesBuilder valuesBuilder = new EthTypeValuesBuilder();
+        final EthTypeCaseValueBuilder caseBuilder = new EthTypeCaseValueBuilder();
+        final EthTypeValuesBuilder valuesBuilder = new EthTypeValuesBuilder();
 
         matchEntryBuilder.setOxmClass(Nxm0Class.class);
         matchEntryBuilder.setOxmMatchField(NxmOfEthType.class);
@@ -86,7 +86,7 @@ public class EthTypeCodecTest {
     private void createBuffer(ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_0_CLASS);
 
-        int fieldMask = (NXM_FIELD_CODE << 1);
+        int fieldMask = NXM_FIELD_CODE << 1;
         message.writeByte(fieldMask);
         message.writeByte(VALUE_LENGTH);
         message.writeShort(2);

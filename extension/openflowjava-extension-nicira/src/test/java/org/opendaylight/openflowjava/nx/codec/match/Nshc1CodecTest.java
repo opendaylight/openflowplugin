@@ -33,7 +33,7 @@ public class Nshc1CodecTest {
     private static final int NXM_FIELD_CODE = 115;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         nshc1Codec = new Nshc1Codec();
         buffer = ByteBufAllocator.DEFAULT.buffer();
     }
@@ -57,7 +57,7 @@ public class Nshc1CodecTest {
 
         input = nshc1Codec.deserialize(buffer);
 
-        Nshc1CaseValue result = ((Nshc1CaseValue) input.getMatchEntryValue());
+        final Nshc1CaseValue result = (Nshc1CaseValue) input.getMatchEntryValue();
 
         assertEquals(Nxm1Class.class, input.getOxmClass());
         assertEquals(NxmNxNshc1.class, input.getOxmMatchField());
@@ -68,8 +68,8 @@ public class Nshc1CodecTest {
 
     private MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        Nshc1CaseValueBuilder caseBuilder = new Nshc1CaseValueBuilder();
-        Nshc1ValuesBuilder valuesBuilder = new Nshc1ValuesBuilder();
+        final Nshc1CaseValueBuilder caseBuilder = new Nshc1CaseValueBuilder();
+        final Nshc1ValuesBuilder valuesBuilder = new Nshc1ValuesBuilder();
 
         matchEntryBuilder.setOxmClass(Nxm1Class.class);
         matchEntryBuilder.setOxmMatchField(NxmNxNshc1.class);
@@ -85,10 +85,9 @@ public class Nshc1CodecTest {
     private void createBuffer(ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_1_CLASS);
 
-        int fieldMask = (NXM_FIELD_CODE << 1);
+        int fieldMask = NXM_FIELD_CODE << 1;
         message.writeByte(fieldMask);
         message.writeByte(VALUE_LENGTH);
         message.writeInt(2);
     }
-
 }

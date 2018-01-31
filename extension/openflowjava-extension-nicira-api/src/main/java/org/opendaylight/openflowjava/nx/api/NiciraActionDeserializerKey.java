@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -8,8 +8,9 @@
 package org.opendaylight.openflowjava.nx.api;
 
 /**
- * @author msunal
+ * Deserializer key for a Nicira action.
  *
+ * @author msunal
  */
 public final class NiciraActionDeserializerKey {
 
@@ -17,6 +18,8 @@ public final class NiciraActionDeserializerKey {
     private final int subtype;
 
     /**
+     * Contructor.
+     *
      * @param version protocol wire version
      * @param subtype nx_action_subtype
      */
@@ -37,7 +40,7 @@ public final class NiciraActionDeserializerKey {
         return subtype;
     }
 
-    private static final boolean isValueUint16(int value) {
+    private static boolean isValueUint16(int value) {
         if (value >= 0 && value <= 65535L) {
             return true;
         }

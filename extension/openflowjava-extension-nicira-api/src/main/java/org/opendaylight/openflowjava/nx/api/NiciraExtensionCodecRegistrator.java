@@ -17,8 +17,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmC
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 
 /**
- * @author msunal
+ * Registry for Nicira extension codecs.
  *
+ * @author msunal
  */
 public interface NiciraExtensionCodecRegistrator extends AutoCloseable {
 

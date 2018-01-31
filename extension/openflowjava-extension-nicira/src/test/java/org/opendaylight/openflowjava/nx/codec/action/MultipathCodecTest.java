@@ -26,14 +26,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.multipath.grouping.NxActionMultipathBuilder;
 
 public class MultipathCodecTest {
+    private static final int LENGTH = 32;
+    private static final byte NXAST_MULTIPATH_SUBTYPE = 10;
 
     MultipathCodec multipathCodec;
     ByteBuf buffer;
     Action action;
-
-    private final int LENGTH = 32;
-    private final byte NXAST_MULTIPATH_SUBTYPE = 10;
-
 
     @Before
     public void setUp() {
@@ -86,7 +84,7 @@ public class MultipathCodecTest {
         ExperimenterId experimenterId = new ExperimenterId(NiciraConstants.NX_VENDOR_ID);
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setExperimenterId(experimenterId);
-        ActionMultipathBuilder actionMultipathBuilder = new ActionMultipathBuilder();
+        final ActionMultipathBuilder actionMultipathBuilder = new ActionMultipathBuilder();
         NxActionMultipathBuilder nxActionMultipathBuilder = new NxActionMultipathBuilder();
 
         nxActionMultipathBuilder.setFields(OfjNxHashFields.NXHASHFIELDSETHSRC);

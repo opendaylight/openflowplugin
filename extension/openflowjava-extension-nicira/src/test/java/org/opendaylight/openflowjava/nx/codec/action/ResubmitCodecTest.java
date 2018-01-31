@@ -24,19 +24,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.resubmit.grouping.NxActionResubmitBuilder;
 
 public class ResubmitCodecTest {
+    private static final int LENGTH = 16;
+    private static final byte NXAST_RESUBMIT_SUBTYPE = 1;
+    private static final byte NXAST_RESUBMIT_TABLE_SUBTYPE = 14;
+
+    private static final short OFP_TABLE_ALL = 255;
+    private static final int OFP_IN_PORT =  0xfff8;
+    private static  final int PADDING = 3;
 
     ResubmitCodec resubmitCodec;
     ByteBuf buffer;
     Action action;
-
-    private final int LENGTH = 16;
-    private final byte NXAST_RESUBMIT_SUBTYPE = 1;
-    private final byte NXAST_RESUBMIT_TABLE_SUBTYPE = 14;
-
-    private final short OFP_TABLE_ALL = 255;
-    private final int OFP_IN_PORT =  0xfff8;
-    private final int padding = 3;
-
 
     @Before
     public void setUp() {
@@ -47,12 +45,12 @@ public class ResubmitCodecTest {
 
     /**
      * If table == null or table == OFP_TABLE_ALL
-     * SUBTYPE should be set to NXAST_RESUBMIT_SUBTYPE
+     * SUBTYPE should be set to NXAST_RESUBMIT_SUBTYPE.
      */
     @Test
     public void getSubTypeTest1() {
         action = createAction(null, null);
-        ActionResubmit actionResubmit = ((ActionResubmit) action.getActionChoice());
+        ActionResubmit actionResubmit = (ActionResubmit) action.getActionChoice();
 
         byte result = resubmitCodec.getSubType(actionResubmit);
         assertEquals(NXAST_RESUBMIT_SUBTYPE, result);
@@ -60,13 +58,13 @@ public class ResubmitCodecTest {
 
     /**
      * If table != null or table != OFP_TABLE_ALL
-     * SUBTYPE should be set to NXAST_RESUBMIT_TABLE_SUBTYPE
+     * SUBTYPE should be set to NXAST_RESUBMIT_TABLE_SUBTYPE.
      */
     @Test
     public void getSubTypeTest2() {
         Byte table = new Byte((byte)1);
         action = createAction(null, table);
-        ActionResubmit actionResubmit = ((ActionResubmit) action.getActionChoice());
+        ActionResubmit actionResubmit = (ActionResubmit) action.getActionChoice();
 
         byte result = resubmitCodec.getSubType(actionResubmit);
         assertEquals(NXAST_RESUBMIT_TABLE_SUBTYPE, result);
@@ -75,7 +73,7 @@ public class ResubmitCodecTest {
 
     /**
      * If table and inPort are NOT NULL they should be used instead of
-     * hardcoded values OFP_TABLE_ALL and OFP_IN_PORT
+     * hardcoded values OFP_TABLE_ALL and OFP_IN_PORT.
      */
     @Test
     public void serializeTest1() {
@@ -95,9 +93,7 @@ public class ResubmitCodecTest {
     }
 
     /**
-     * If table and inPort are NULL they
-     * hardcoded values OFP_TABLE_ALL and OFP_IN_PORT
-     * should be used
+     * If table and inPort are NULL they hardcoded values OFP_TABLE_ALL and OFP_IN_PORT should be used.
      */
     @Test
     public void serializeTest2() {
@@ -136,10 +132,10 @@ public class ResubmitCodecTest {
         ActionResubmitBuilder actionResubmitBuilder = new ActionResubmitBuilder();
         NxActionResubmitBuilder nxActionResubmitBuilder = new NxActionResubmitBuilder();
 
-        if(inPort != null) {
+        if (inPort != null) {
             nxActionResubmitBuilder.setInPort(inPort.intValue());
         }
-        if(table != null) {
+        if (table != null) {
             nxActionResubmitBuilder.setTable(table.shortValue());
         }
 
@@ -157,6 +153,6 @@ public class ResubmitCodecTest {
 
         message.writeShort(1);
         message.writeByte(2);
-        message.writeZero(padding);
+        message.writeZero(PADDING);
     }
 }

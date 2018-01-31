@@ -10,10 +10,8 @@ package org.opendaylight.openflowjava.nx.codec.action;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -69,7 +67,8 @@ public class ConntrackCodecTest {
 
         Assert.assertEquals(length + nxNatLengthAction1 + nxNatLengthAction2 + setFieldLength, buffer.readableBytes());
         Assert.assertEquals(EncodeConstants.EXPERIMENTER_VALUE, buffer.readUnsignedShort());
-        Assert.assertEquals(length + nxNatLengthAction1 + nxNatLengthAction2 + setFieldLength, buffer.readUnsignedShort());
+        Assert.assertEquals(length + nxNatLengthAction1 + nxNatLengthAction2 + setFieldLength,
+                buffer.readUnsignedShort());
         Assert.assertEquals(NiciraConstants.NX_VENDOR_ID.intValue(), buffer.readUnsignedInt());
         Assert.assertEquals(nxastConntrackSubtype, buffer.readUnsignedShort());
         Assert.assertEquals(1, buffer.readUnsignedShort());
@@ -152,7 +151,7 @@ public class ConntrackCodecTest {
         Assert.assertEquals(4000, natAction.getPortMax().shortValue());
         NxActionCtMarkCase nxActionCtMarkCase = (NxActionCtMarkCase) ctActions.get(2).getOfpactActions();
         NxActionCtMark ctMarkAction = nxActionCtMarkCase.getNxActionCtMark();
-        Assert.assertEquals((long) 36, ctMarkAction.getCtMark().longValue());
+        Assert.assertEquals(36, ctMarkAction.getCtMark().longValue());
     }
 
     @Test

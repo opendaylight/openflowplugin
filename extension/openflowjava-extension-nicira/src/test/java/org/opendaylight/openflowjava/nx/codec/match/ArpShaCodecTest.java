@@ -35,7 +35,7 @@ public class ArpShaCodecTest {
     private static final int NXM_FIELD_CODE = 17;
 
     private static byte[] resAddress = new byte[VALUE_LENGTH];
-    private static final MacAddress resultAddress = new MacAddress(ByteBufUtils.macAddressToString(resAddress));
+    private static final MacAddress RESULT_ADDRESS = new MacAddress(ByteBufUtils.macAddressToString(resAddress));
 
 
     @Before
@@ -55,7 +55,7 @@ public class ArpShaCodecTest {
         assertEquals(NXM_FIELD_CODE, fieldMask >> 1);
         assertEquals(0, fieldMask & 1);
         assertEquals(VALUE_LENGTH, buffer.readUnsignedByte());
-        assertEquals(resultAddress, ByteBufUtils.readIetfMacAddress(buffer));
+        assertEquals(RESULT_ADDRESS, ByteBufUtils.readIetfMacAddress(buffer));
     }
 
     @Test
@@ -64,19 +64,19 @@ public class ArpShaCodecTest {
 
         input = arpShaCodec.deserialize(buffer);
 
-        ArpShaCaseValue result = ((ArpShaCaseValue) input.getMatchEntryValue());
+        final ArpShaCaseValue result = (ArpShaCaseValue) input.getMatchEntryValue();
 
         assertEquals(Nxm1Class.class, input.getOxmClass());
         assertEquals(NxmNxArpSha.class, input.getOxmMatchField());
         assertEquals(false, input.isHasMask());
-        assertEquals(resultAddress, result.getArpShaValues().getMacAddress());
+        assertEquals(RESULT_ADDRESS, result.getArpShaValues().getMacAddress());
     }
 
 
     private MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        ArpShaCaseValueBuilder caseBuilder = new ArpShaCaseValueBuilder();
-        ArpShaValuesBuilder valuesBuilder = new ArpShaValuesBuilder();
+        final ArpShaCaseValueBuilder caseBuilder = new ArpShaCaseValueBuilder();
+        final ArpShaValuesBuilder valuesBuilder = new ArpShaValuesBuilder();
 
         matchEntryBuilder.setOxmClass(Nxm1Class.class);
         matchEntryBuilder.setOxmMatchField(NxmNxArpSha.class);
@@ -95,10 +95,9 @@ public class ArpShaCodecTest {
     private void createBuffer(ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_1_CLASS);
 
-        int fieldMask = (NXM_FIELD_CODE << 1);
+        int fieldMask = NXM_FIELD_CODE << 1;
         message.writeByte(fieldMask);
         message.writeByte(VALUE_LENGTH);
         message.writeBytes(resAddress);
     }
-
 }

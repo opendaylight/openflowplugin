@@ -23,6 +23,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.IpDstCaseValueBuilder;
 
 /**
+ * Codec for the Ipv6Dst message.
+ *
  * @author Sridhar Gaddam (sgaddam@redhat.com)
  */
 public class Ipv6DstCodec extends AbstractMatchCodec {
@@ -47,7 +49,7 @@ public class Ipv6DstCodec extends AbstractMatchCodec {
     @Override
     public void serialize(MatchEntry input, ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
-        IpDstCaseValue ipDstCase = ((IpDstCaseValue) input.getMatchEntryValue());
+        IpDstCaseValue ipDstCase = (IpDstCaseValue) input.getMatchEntryValue();
         outBuffer.writeInt(ipDstCase.getIpDstValues().getValue().intValue());
     }
 

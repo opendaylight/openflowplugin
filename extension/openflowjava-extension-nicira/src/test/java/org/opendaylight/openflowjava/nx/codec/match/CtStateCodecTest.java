@@ -57,7 +57,7 @@ public class CtStateCodecTest {
         createBuffer(buffer);
         input = ctStateCodec.deserialize(buffer);
 
-        CtStateCaseValue result = ((CtStateCaseValue) input.getMatchEntryValue());
+        final CtStateCaseValue result = (CtStateCaseValue) input.getMatchEntryValue();
 
         assertEquals(Nxm1Class.class, input.getOxmClass());
         assertEquals(NxmNxCtState.class, input.getOxmMatchField());
@@ -68,8 +68,8 @@ public class CtStateCodecTest {
 
     private MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        CtStateCaseValueBuilder caseBuilder = new CtStateCaseValueBuilder();
-        CtStateValuesBuilder valuesBuilder = new CtStateValuesBuilder();
+        final CtStateCaseValueBuilder caseBuilder = new CtStateCaseValueBuilder();
+        final CtStateValuesBuilder valuesBuilder = new CtStateValuesBuilder();
 
         matchEntryBuilder.setOxmClass(Nxm1Class.class);
         matchEntryBuilder.setOxmMatchField(NxmNxCtState.class);
@@ -86,7 +86,7 @@ public class CtStateCodecTest {
     private void createBuffer(ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_1_CLASS);
 
-        int fieldMask = (NXM_FIELD_CODE << 1);
+        int fieldMask = NXM_FIELD_CODE << 1;
         message.writeByte(fieldMask);
         message.writeByte(VALUE_LENGTH);
         //CtState = 1
@@ -94,5 +94,4 @@ public class CtStateCodecTest {
         //Mask = 2
         message.writeInt(2);
     }
-
 }
