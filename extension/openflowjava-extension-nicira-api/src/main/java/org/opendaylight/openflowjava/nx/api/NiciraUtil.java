@@ -10,12 +10,14 @@ package org.opendaylight.openflowjava.nx.api;
 import org.opendaylight.openflowjava.protocol.api.keys.ActionSerializerKey;
 
 /**
+ * Nicira utilities.
+ *
  * @author msunal
  */
 public final class NiciraUtil {
     private NiciraUtil() { }
 
-    public static final ActionSerializerKey<?> createOfJavaKeyFrom(NiciraActionSerializerKey key) {
+    public static ActionSerializerKey<?> createOfJavaKeyFrom(NiciraActionSerializerKey key) {
         return new ActionSerializerKey<>(key.getVersion(), key.getSubtype(), NiciraConstants.NX_VENDOR_ID);
     }
 

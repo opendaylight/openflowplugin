@@ -10,8 +10,9 @@ package org.opendaylight.openflowjava.nx.api;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.ActionChoice;
 
 /**
- * @author msunal
+ * Serializer key for a Nicira action.
  *
+ * @author msunal
  */
 public class NiciraActionSerializerKey {
 
@@ -19,6 +20,8 @@ public class NiciraActionSerializerKey {
     private final Class<? extends ActionChoice> subtype;
 
     /**
+     * Contructor.
+     *
      * @param version protocol wire version
      * @param subtype nx_action_subtype
      */
@@ -39,7 +42,7 @@ public class NiciraActionSerializerKey {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((subtype == null) ? 0 : subtype.hashCode());
+        result = prime * result + (subtype == null ? 0 : subtype.hashCode());
         result = prime * result + version;
         return result;
     }

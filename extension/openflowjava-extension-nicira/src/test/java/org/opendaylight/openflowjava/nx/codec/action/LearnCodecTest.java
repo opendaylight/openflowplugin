@@ -7,13 +7,11 @@
  */
 package org.opendaylight.openflowjava.nx.codec.action;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,14 +22,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionLearn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionLearnBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.flow.mod.spec.FlowModSpec;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.flow.mod.spec.flow.mod.spec.FlowModAddMatchFromFieldCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.flow.mod.spec.flow.mod.spec.FlowModAddMatchFromFieldCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.flow.mod.spec.flow.mod.spec.FlowModAddMatchFromValueCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.flow.mod.spec.flow.mod.spec.FlowModCopyFieldIntoFieldCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.flow.mod.spec.flow.mod.spec.FlowModCopyValueIntoFieldCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.flow.mod.spec.flow.mod.spec.FlowModOutputToPortCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.flow.mod.spec.flow.mod.spec.flow.mod.add.match.from.field._case.FlowModAddMatchFromField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.flow.mod.spec.flow.mod.spec.flow.mod.add.match.from.field._case.FlowModAddMatchFromFieldBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.flow.mod.spec.flow.mod.spec.flow.mod.add.match.from.value._case.FlowModAddMatchFromValueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.flow.mod.spec.flow.mod.spec.flow.mod.copy.field.into.field._case.FlowModCopyFieldIntoFieldBuilder;
@@ -48,8 +43,8 @@ public class LearnCodecTest {
     private ByteBuf buffer;
     private Action action;
 
-    private final byte LEARN_HEADER_LEN = 32;
-    private final byte NXAST_LEARN_SUBTYPE = 16;
+    private static final byte LEARN_HEADER_LEN = 32;
+    private static final byte NXAST_LEARN_SUBTYPE = 16;
     private static final short SRC_MASK = 0x2000;
     private static final short DST_MASK = 0x1800;
     private static final short NUM_BITS_MASK = 0x07FF;
@@ -65,9 +60,9 @@ public class LearnCodecTest {
         action = createAction();
         learnCodec.serialize(action, buffer);
 
-        Assert.assertEquals(LEARN_HEADER_LEN+56, buffer.readableBytes());
+        Assert.assertEquals(LEARN_HEADER_LEN + 56, buffer.readableBytes());
         Assert.assertEquals(EncodeConstants.EXPERIMENTER_VALUE, buffer.readUnsignedShort());
-        Assert.assertEquals(LEARN_HEADER_LEN+56, buffer.readUnsignedShort());
+        Assert.assertEquals(LEARN_HEADER_LEN + 56, buffer.readUnsignedShort());
         Assert.assertEquals(NiciraConstants.NX_VENDOR_ID.intValue(), buffer.readUnsignedInt());
         Assert.assertEquals(NXAST_LEARN_SUBTYPE, buffer.readUnsignedShort());
         Assert.assertEquals(1, buffer.readUnsignedShort());
@@ -88,7 +83,7 @@ public class LearnCodecTest {
         action = learnCodec.deserialize(buffer);
 
         ActionLearn result = (ActionLearn) action.getActionChoice();
-        Action act= createAction();
+        Action act = createAction();
         ActionLearn expResult = (ActionLearn)act.getActionChoice();
 
         Assert.assertEquals(expResult, result);
@@ -132,7 +127,7 @@ public class LearnCodecTest {
         ExperimenterId experimenterId = new ExperimenterId(NiciraConstants.NX_VENDOR_ID);
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setExperimenterId(experimenterId);
-        ActionLearnBuilder actionLearnBuilder = new ActionLearnBuilder();
+        final ActionLearnBuilder actionLearnBuilder = new ActionLearnBuilder();
 
         NxActionLearnBuilder nxActionLearnBuilder = new NxActionLearnBuilder();
         nxActionLearnBuilder.setIdleTimeout(1);
@@ -152,9 +147,9 @@ public class LearnCodecTest {
 
     private List<FlowMods> createFlowMods() {
 
-        List<FlowMods> flowMods = new ArrayList<FlowMods>();
+        final List<FlowMods> flowMods = new ArrayList<>();
         //length = 14
-        FlowModsBuilder flowMod = new FlowModsBuilder();
+        final FlowModsBuilder flowMod = new FlowModsBuilder();
         FlowModAddMatchFromFieldBuilder spec = new FlowModAddMatchFromFieldBuilder();
         spec.setFlowModNumBits(48);
         spec.setSrcField((long)9);
@@ -167,7 +162,7 @@ public class LearnCodecTest {
         flowMods.add(flowMod.build());
 
         //length = 14
-        FlowModsBuilder flowMod2 = new FlowModsBuilder();
+        final FlowModsBuilder flowMod2 = new FlowModsBuilder();
         FlowModCopyFieldIntoFieldBuilder spec2 = new FlowModCopyFieldIntoFieldBuilder();
         spec2.setFlowModNumBits(48);
         spec2.setSrcField((long)9);
@@ -180,7 +175,7 @@ public class LearnCodecTest {
         flowMods.add(flowMod2.build());
 
         //length = 10
-        FlowModsBuilder flowMod3 = new FlowModsBuilder();
+        final FlowModsBuilder flowMod3 = new FlowModsBuilder();
         FlowModCopyValueIntoFieldBuilder spec3 = new FlowModCopyValueIntoFieldBuilder();
         spec3.setFlowModNumBits(48);
         spec3.setValue(9);
@@ -192,7 +187,7 @@ public class LearnCodecTest {
         flowMods.add(flowMod3.build());
 
         //length = 10
-        FlowModsBuilder flowMod4 = new FlowModsBuilder();
+        final FlowModsBuilder flowMod4 = new FlowModsBuilder();
         FlowModAddMatchFromValueBuilder spec4 = new FlowModAddMatchFromValueBuilder();
         spec4.setFlowModNumBits(48);
         spec4.setValue(9);
@@ -204,7 +199,7 @@ public class LearnCodecTest {
         flowMods.add(flowMod4.build());
 
         //length = 8
-        FlowModsBuilder flowMod5 = new FlowModsBuilder();
+        final FlowModsBuilder flowMod5 = new FlowModsBuilder();
         FlowModOutputToPortBuilder spec5 = new FlowModOutputToPortBuilder();
         spec5.setFlowModNumBits(48);
         spec5.setSrcField((long) 9);
@@ -261,12 +256,12 @@ public class LearnCodecTest {
     }
 
     private void toFlowModSpecHeader(ByteBuf message, int src, int dst) {
-        short b = 0;
+        short value = 0;
         short bitNum = 48;
-        b |= (src << 13);
-        b |= (dst << 11);
-        b |= bitNum;
+        value |= src << 13;
+        value |= dst << 11;
+        value |= bitNum;
 
-        message.writeShort(b);
+        message.writeShort(value);
     }
 }

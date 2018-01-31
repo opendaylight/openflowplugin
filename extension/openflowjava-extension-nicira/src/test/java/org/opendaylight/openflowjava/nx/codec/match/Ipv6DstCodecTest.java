@@ -57,7 +57,7 @@ public class Ipv6DstCodecTest {
 
         input = ipv6DstCodec.deserialize(buffer);
 
-        IpDstCaseValue result = ((IpDstCaseValue) input.getMatchEntryValue());
+        final IpDstCaseValue result = (IpDstCaseValue) input.getMatchEntryValue();
 
         assertEquals(Nxm1Class.class, input.getOxmClass());
         assertEquals(NxmOfIpDst.class, input.getOxmMatchField());
@@ -68,8 +68,8 @@ public class Ipv6DstCodecTest {
 
     private MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        IpDstCaseValueBuilder caseBuilder = new IpDstCaseValueBuilder();
-        IpDstValuesBuilder valuesBuilder = new IpDstValuesBuilder();
+        final IpDstCaseValueBuilder caseBuilder = new IpDstCaseValueBuilder();
+        final IpDstValuesBuilder valuesBuilder = new IpDstValuesBuilder();
 
         matchEntryBuilder.setOxmClass(Nxm1Class.class);
         matchEntryBuilder.setOxmMatchField(NxmOfIpDst.class);
@@ -85,10 +85,9 @@ public class Ipv6DstCodecTest {
     private void createBuffer(ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_1_CLASS);
 
-        int fieldMask = (NXM_FIELD_CODE << 1);
+        int fieldMask = NXM_FIELD_CODE << 1;
         message.writeByte(fieldMask);
         message.writeByte(VALUE_LENGTH);
         message.writeInt(2);
     }
-
 }

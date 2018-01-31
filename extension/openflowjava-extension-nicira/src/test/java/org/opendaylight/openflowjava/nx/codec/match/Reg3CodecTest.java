@@ -58,7 +58,7 @@ public class Reg3CodecTest {
 
         input = reg3Codec.deserialize(buffer);
 
-        RegCaseValue result = ((RegCaseValue) input.getMatchEntryValue());
+        final RegCaseValue result = (RegCaseValue) input.getMatchEntryValue();
 
         assertEquals(Nxm1Class.class, input.getOxmClass());
         assertEquals(NxmNxReg3.class, input.getOxmMatchField());
@@ -68,8 +68,8 @@ public class Reg3CodecTest {
 
     private MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        RegCaseValueBuilder caseBuilder = new RegCaseValueBuilder();
-        RegValuesBuilder valuesBuilder = new RegValuesBuilder();
+        final RegCaseValueBuilder caseBuilder = new RegCaseValueBuilder();
+        final RegValuesBuilder valuesBuilder = new RegValuesBuilder();
 
         matchEntryBuilder.setOxmClass(Nxm1Class.class);
         matchEntryBuilder.setOxmMatchField(NxmNxReg3.class);
@@ -85,10 +85,9 @@ public class Reg3CodecTest {
     private void createBuffer(ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_1_CLASS);
 
-        int fieldMask = (NXM_FIELD_CODE << 1);
+        int fieldMask = NXM_FIELD_CODE << 1;
         message.writeByte(fieldMask);
         message.writeByte(VALUE_LENGTH);
         message.writeInt(1);
     }
-
 }
