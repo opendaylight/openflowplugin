@@ -11,13 +11,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
- * @author msunal
+ * Enumerates the match paths.
  *
+ * @author msunal
  */
 public enum MatchPath implements AugmentationPath {
 
     /**
-     * openflowplugin-extension-general.yang
+     * openflowplugin-extension-general.yang.
      * <pre>
      * module: sal-flow
      * notifications:
@@ -25,9 +26,10 @@ public enum MatchPath implements AugmentationPath {
      *    |  +--ro match
      * </pre>
      */
-    SWITCHFLOWREMOVED_MATCH(null),
+    SWITCH_FLOW_REMOVED_MATCH(null),
+
     /**
-     * openflowplugin-extension-general.yang
+     * openflowplugin-extension-general.yang.
      * <pre>
      * module: packet-processing
      * notifications:
@@ -35,9 +37,10 @@ public enum MatchPath implements AugmentationPath {
      *       +--ro match
      * </pre>
      */
-    PACKETRECEIVED_MATCH(null),
+    PACKET_RECEIVED_MATCH(null),
+
     /**
-     * openflowplugin-extension-general.yang
+     * openflowplugin-extension-general.yang.
      * <pre>
      * module: packet-processing
      * container:
@@ -45,9 +48,10 @@ public enum MatchPath implements AugmentationPath {
      *       +--ro match
      * </pre>
      */
-    PACKETINMESSAGE_MATCH(null),
+    PACKET_IN_MESSAGE_MATCH(null),
+
     /**
-     * openflowplugin-extension-general.yang
+     * openflowplugin-extension-general.yang.
      * <pre>
      * module: opendaylight-flow-statistics
      * notifications:
@@ -56,9 +60,10 @@ public enum MatchPath implements AugmentationPath {
      *    |  |  +--ro match
      * </pre>
      */
-    FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH(null),
+    FLOWS_STATISTICS_UPDATE_MATCH(null),
+
     /**
-     * openflowplugin-extension-general.yang
+     * openflowplugin-extension-general.yang.
      * <pre>
      * module: opendaylight-direct-statistics
      * rpc:
@@ -67,11 +72,11 @@ public enum MatchPath implements AugmentationPath {
      *    |  |  +--ro match
      * </pre>
      */
-    RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH(null);
+    FLOWS_STATISTICS_RPC_MATCH(null);
 
     private final InstanceIdentifier<Extension> iid;
 
-    private MatchPath(InstanceIdentifier<Extension> iid) {
+    MatchPath(InstanceIdentifier<Extension> iid) {
         this.iid = iid;
     }
 
