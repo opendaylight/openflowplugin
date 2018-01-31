@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for eventType.
+ * Java class for eventType.
  */
 @XmlType(name = "eventType")
 @XmlEnum
@@ -27,21 +27,21 @@ public enum EventType {
     SEND_EVENT("sendEvent");
     private final String value;
 
-    EventType(String v) {
-        value = v;
+    EventType(String val) {
+        value = val;
     }
 
     public String value() {
         return value;
     }
 
-    public static EventType fromValue(String v) {
+    public static EventType fromValue(String val) {
         for (EventType c: EventType.values()) {
-            if (c.value.equals(v)) {
+            if (c.value.equals(val)) {
                 return c;
             }
         }
-        throw new IllegalArgumentException(v);
+        throw new IllegalArgumentException(val);
     }
 
 }

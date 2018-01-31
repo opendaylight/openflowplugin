@@ -17,7 +17,7 @@ import org.opendaylight.yangtools.concepts.ListenerRegistration;
 public interface DataTreeChangeListenerRegistrationHolder {
 
     /**
-     * @return the DataTreeChangeListenerRegistration
+     * Returns the DataTreeChangeListenerRegistration.
      */
     ListenerRegistration<DataTreeChangeListener> getDataTreeChangeListenerRegistration();
 

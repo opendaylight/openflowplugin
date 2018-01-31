@@ -7,22 +7,21 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.clients;
 
-import java.net.InetAddress;
-import java.util.concurrent.Callable;
-
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import java.net.InetAddress;
+import java.util.concurrent.Callable;
 import org.slf4j.LoggerFactory;
 
 
 /**
- * Callable client class, inspired by SimpleClient class
- * Simulating device/switch connected to controller
+ * Callable client class, inspired by SimpleClient class.
+ * Simulating device/switch connected to controller.
+ *
  * @author Jozef Bacigal
- * Date: 4.3.2016.
  */
 public class CallableClient implements Callable<Boolean>, OFClient {
 
@@ -81,6 +80,7 @@ public class CallableClient implements Callable<Boolean>, OFClient {
 
 
     @Override
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public Boolean call() throws Exception {
         Preconditions.checkNotNull(bootstrap);
         Preconditions.checkNotNull(workerGroup);
@@ -99,7 +99,7 @@ public class CallableClient implements Callable<Boolean>, OFClient {
                     scenarioHandler.wait();
                 }
             }
-        } catch (Exception ex) {
+        } catch (RuntimeException ex) {
             LOG.error(ex.getMessage(), ex);
             return false;
         }

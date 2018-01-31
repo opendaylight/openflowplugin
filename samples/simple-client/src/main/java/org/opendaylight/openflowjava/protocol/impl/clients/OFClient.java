@@ -11,30 +11,33 @@ package org.opendaylight.openflowjava.protocol.impl.clients;
 import com.google.common.util.concurrent.SettableFuture;
 
 /**
- * Unifying interface for simple clients / switch simulators
+ * Unifying interface for simple clients / switch simulators.
  *
  * @author michal.polkorab
  */
 public interface OFClient extends Runnable {
 
     /**
-     * @return the isOnlineFuture which is set when client is started
+     * Returns the isOnlineFuture which is set when client is started.
      */
     SettableFuture<Boolean> getIsOnlineFuture();
 
     /**
-     * @return the scenarioDone when scenario is successfully finished
+     * Returns the scenarioDone when scenario is successfully finished.
      */
     SettableFuture<Boolean> getScenarioDone();
 
     /**
+     * Sets the ScenarioHandler.
+     *
      * @param scenario list of desired actions
      */
     void setScenarioHandler(ScenarioHandler scenario);
 
     /**
-     * @param securedClient true is client should use encrypted communication,
-     * false otherwise
+     * Sets wether client should use encrypted communication.
+     *
+     * @param securedClient true is client should use encrypted communication, false otherwise
      */
     void setSecuredClient(boolean securedClient);
 }

@@ -13,9 +13,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.handler.codec.MessageToMessageDecoder;
-
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +24,7 @@ import org.slf4j.LoggerFactory;
  */
 public class UdpSimpleClientFramer extends MessageToMessageDecoder<DatagramPacket> {
 
-    /** Length of OpenFlow 1.3 header */
+    /** Length of OpenFlow 1.3 header .*/
     public static final byte LENGTH_OF_HEADER = 8;
     private static final byte LENGTH_INDEX_IN_HEADER = 2;
     private static final Logger LOG = LoggerFactory.getLogger(UdpSimpleClientFramer.class);

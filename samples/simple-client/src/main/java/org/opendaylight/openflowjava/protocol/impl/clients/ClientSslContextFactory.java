@@ -8,9 +8,14 @@
 
 package org.opendaylight.openflowjava.protocol.impl.clients;
 
+import java.io.IOException;
+import java.security.KeyManagementException;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.Security;
-
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
@@ -55,7 +60,8 @@ public final class ClientSslContextFactory {
 
             clientContext = SSLContext.getInstance(PROTOCOL);
             clientContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
-        } catch (Exception e) {
+        } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException
+                | UnrecoverableKeyException | KeyManagementException e) {
             throw new Error(
                     "Failed to initialize the client-side SSLContext", e);
         }
@@ -64,7 +70,7 @@ public final class ClientSslContextFactory {
     }
 
     /**
-     * @return client context
+     * Returns the client context.
      */
     public static SSLContext getClientContext() {
         return CLIENT_CONTEXT;
