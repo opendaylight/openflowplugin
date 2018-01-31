@@ -58,7 +58,7 @@ public class Nshc2CodecTest {
 
         input = nshc2Codec.deserialize(buffer);
 
-        Nshc2CaseValue result = ((Nshc2CaseValue) input.getMatchEntryValue());
+        final Nshc2CaseValue result = (Nshc2CaseValue) input.getMatchEntryValue();
 
         assertEquals(Nxm1Class.class, input.getOxmClass());
         assertEquals(NxmNxNshc2.class, input.getOxmMatchField());
@@ -68,8 +68,8 @@ public class Nshc2CodecTest {
 
     private MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        Nshc2CaseValueBuilder caseBuilder = new Nshc2CaseValueBuilder();
-        Nshc2ValuesBuilder valuesBuilder = new Nshc2ValuesBuilder();
+        final Nshc2CaseValueBuilder caseBuilder = new Nshc2CaseValueBuilder();
+        final Nshc2ValuesBuilder valuesBuilder = new Nshc2ValuesBuilder();
 
         matchEntryBuilder.setOxmClass(Nxm1Class.class);
         matchEntryBuilder.setOxmMatchField(NxmNxNshc2.class);
@@ -85,7 +85,7 @@ public class Nshc2CodecTest {
     private void createBuffer(ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_1_CLASS);
 
-        int fieldMask = (NXM_FIELD_CODE << 1);
+        int fieldMask = NXM_FIELD_CODE << 1;
         message.writeByte(fieldMask);
         message.writeByte(VALUE_LENGTH);
         message.writeInt(2);

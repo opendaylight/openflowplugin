@@ -34,7 +34,7 @@ public class TcpSrcCodecTest {
     private static final int NXM_FIELD_CODE = 9;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         tcpSrcCodec = new TcpSrcCodec();
         buffer = ByteBufAllocator.DEFAULT.buffer();
     }
@@ -59,7 +59,7 @@ public class TcpSrcCodecTest {
 
         input = tcpSrcCodec.deserialize(buffer);
 
-        TcpSrcCaseValue result = ((TcpSrcCaseValue) input.getMatchEntryValue());
+        final TcpSrcCaseValue result = (TcpSrcCaseValue) input.getMatchEntryValue();
 
         assertEquals(Nxm0Class.class, input.getOxmClass());
         assertEquals(NxmOfTcpSrc.class, input.getOxmMatchField());
@@ -70,8 +70,8 @@ public class TcpSrcCodecTest {
 
     private MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        TcpSrcCaseValueBuilder caseBuilder = new TcpSrcCaseValueBuilder();
-        TcpSrcValuesBuilder valuesBuilder = new TcpSrcValuesBuilder();
+        final TcpSrcCaseValueBuilder caseBuilder = new TcpSrcCaseValueBuilder();
+        final TcpSrcValuesBuilder valuesBuilder = new TcpSrcValuesBuilder();
 
         matchEntryBuilder.setOxmClass(Nxm0Class.class);
         matchEntryBuilder.setOxmMatchField(NxmOfTcpSrc.class);
@@ -88,12 +88,11 @@ public class TcpSrcCodecTest {
     private void createBuffer(ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_0_CLASS);
 
-        int fieldMask = (NXM_FIELD_CODE << 1);
+        int fieldMask = NXM_FIELD_CODE << 1;
         message.writeByte(fieldMask);
         message.writeByte(VALUE_LENGTH);
         //Port num = 1
         message.writeShort(1);
         message.writeShort(0xffff);
     }
-
 }

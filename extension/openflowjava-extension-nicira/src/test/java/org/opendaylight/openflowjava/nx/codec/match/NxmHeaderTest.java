@@ -24,7 +24,7 @@ public class NxmHeaderTest {
     private static final int VALUE_LENGTH = 14;
 
     @Test
-    public void NxmHeaderTest() {
+    public void nxmHeaderTest() {
         header = createHeader();
         nxmHeader = new NxmHeader(header);
 
@@ -61,12 +61,9 @@ public class NxmHeaderTest {
         header = createHeader();
         nxmHeader = new NxmHeader(header);
 
-        String shouldBe = new String("NxmHeader " +
-                                        "[headerAsLong=" + header + ", " +
-                                        "oxmClass=" + OxmMatchConstants.NXM_1_CLASS + "," +
-                                        " nxmField=" + NXM_FIELD_CODE + "," +
-                                        " hasMask=" + false + "," +
-                                        " length=" + VALUE_LENGTH + "]");
+        String shouldBe = new String("NxmHeader " + "[headerAsLong=" + header + ", " + "oxmClass="
+                + OxmMatchConstants.NXM_1_CLASS + "," + " nxmField=" + NXM_FIELD_CODE + "," + " hasMask=" + false + ","
+                + " length=" + VALUE_LENGTH + "]");
 
         assertEquals(shouldBe, nxmHeader.toString());
     }

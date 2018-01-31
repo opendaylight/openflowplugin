@@ -9,10 +9,9 @@
 package org.opendaylight.openflowjava.nx.codec.action;
 
 import io.netty.buffer.ByteBuf;
-
+import org.opendaylight.openflowjava.nx.NiciraExtensionCodecRegistratorImpl;
 import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraConstants;
-import org.opendaylight.openflowjava.nx.NiciraExtensionCodecRegistratorImpl;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterActionDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -32,6 +31,8 @@ public class ActionDeserializer implements OFDeserializer<Action> {
     private final short version;
 
     /**
+     * Constructor.
+     *
      * @param version protocol wire version
      */
     public ActionDeserializer(short version) {
@@ -40,7 +41,7 @@ public class ActionDeserializer implements OFDeserializer<Action> {
 
     @Override
     public Action deserialize(ByteBuf message) {
-        int startPossition = message.readerIndex();
+        final int startPosition = message.readerIndex();
         // size of experimenter type
         message.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
         // size of length
@@ -56,7 +57,8 @@ public class ActionDeserializer implements OFDeserializer<Action> {
             LOG.info("No deserializer was found for key {}", key);
             return null;
         }
-        message.readerIndex(startPossition);
+
+        message.readerIndex(startPosition);
         return actionDeserializer.deserialize(message);
     }
 

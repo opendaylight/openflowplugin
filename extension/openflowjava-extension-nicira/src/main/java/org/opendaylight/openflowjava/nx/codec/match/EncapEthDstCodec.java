@@ -9,7 +9,6 @@
 package org.opendaylight.openflowjava.nx.codec.match;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -30,15 +29,15 @@ public class EncapEthDstCodec extends AbstractMatchCodec {
 
     private static final int VALUE_LENGTH = 6;
     private static final int NXM_FIELD_CODE = 122;
-    public static final MatchEntrySerializerKey<Nxm1Class, NxmNxEncapEthDst> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
-            EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxEncapEthDst.class);
+    public static final MatchEntrySerializerKey<Nxm1Class, NxmNxEncapEthDst> SERIALIZER_KEY =
+            new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxEncapEthDst.class);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
             EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, NXM_FIELD_CODE);
 
     @Override
     public void serialize(MatchEntry input, ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
-        EncapEthDstCaseValue value = ((EncapEthDstCaseValue) input.getMatchEntryValue());
+        EncapEthDstCaseValue value = (EncapEthDstCaseValue) input.getMatchEntryValue();
         outBuffer.writeBytes(ByteBufUtils.macAddressToBytes(value.getEncapEthDstValues().getMacAddress().getValue()));
     }
 

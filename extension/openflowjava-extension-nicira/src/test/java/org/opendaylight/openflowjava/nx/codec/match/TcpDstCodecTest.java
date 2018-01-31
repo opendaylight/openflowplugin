@@ -59,7 +59,7 @@ public class TcpDstCodecTest {
 
         input = tcpDstCodec.deserialize(buffer);
 
-        TcpDstCaseValue result = ((TcpDstCaseValue) input.getMatchEntryValue());
+        final TcpDstCaseValue result = (TcpDstCaseValue) input.getMatchEntryValue();
 
         assertEquals(Nxm0Class.class, input.getOxmClass());
         assertEquals(NxmOfTcpDst.class, input.getOxmMatchField());
@@ -71,8 +71,8 @@ public class TcpDstCodecTest {
 
     private MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        TcpDstCaseValueBuilder caseBuilder = new TcpDstCaseValueBuilder();
-        TcpDstValuesBuilder valuesBuilder = new TcpDstValuesBuilder();
+        final TcpDstCaseValueBuilder caseBuilder = new TcpDstCaseValueBuilder();
+        final TcpDstValuesBuilder valuesBuilder = new TcpDstValuesBuilder();
 
         matchEntryBuilder.setOxmClass(Nxm0Class.class);
         matchEntryBuilder.setOxmMatchField(NxmOfTcpDst.class);
@@ -89,12 +89,11 @@ public class TcpDstCodecTest {
     private void createBuffer(ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_0_CLASS);
 
-        int fieldMask = (NXM_FIELD_CODE << 1);
+        int fieldMask = NXM_FIELD_CODE << 1;
         message.writeByte(fieldMask);
         message.writeByte(VALUE_LENGTH);
         //Port num = 1
         message.writeShort(1);
         message.writeShort(0xffff);
     }
-
 }

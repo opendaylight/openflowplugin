@@ -30,7 +30,7 @@ public class RegLoadCodec extends AbstractActionCodec {
 
     @Override
     public void serialize(final Action input, final ByteBuf outBuffer) {
-        ActionRegLoad actionRegLoad = ((ActionRegLoad) input.getActionChoice());
+        ActionRegLoad actionRegLoad = (ActionRegLoad) input.getActionChoice();
         serializeHeader(LENGTH, SUBTYPE, outBuffer);
         outBuffer.writeShort(actionRegLoad.getNxActionRegLoad().getOfsNbits());
         outBuffer.writeInt(actionRegLoad.getNxActionRegLoad().getDst().intValue());
@@ -39,9 +39,9 @@ public class RegLoadCodec extends AbstractActionCodec {
 
     @Override
     public Action deserialize(final ByteBuf message) {
-        ActionBuilder actionBuilder = deserializeHeader(message);
+        final ActionBuilder actionBuilder = deserializeHeader(message);
         NxActionRegLoadBuilder nxActionRegLoadBuilder = new NxActionRegLoadBuilder();
-        ActionRegLoadBuilder actionRegLoadBuilder = new ActionRegLoadBuilder();
+        final ActionRegLoadBuilder actionRegLoadBuilder = new ActionRegLoadBuilder();
         nxActionRegLoadBuilder.setOfsNbits(message.readUnsignedShort());
         nxActionRegLoadBuilder.setDst(message.readUnsignedInt());
         nxActionRegLoadBuilder.setValue(BigInteger.valueOf(message.readLong()));
@@ -49,5 +49,4 @@ public class RegLoadCodec extends AbstractActionCodec {
         actionBuilder.setActionChoice(actionRegLoadBuilder.build());
         return actionBuilder.build();
     }
-
 }

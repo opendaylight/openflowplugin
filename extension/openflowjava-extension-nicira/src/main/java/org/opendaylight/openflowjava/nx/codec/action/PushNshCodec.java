@@ -19,7 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.push.nsh.grouping.NxActionPushNshBuilder;
 
 /**
- * Codec for the push_nsh
+ * Codec for the push_nsh.
  */
 public class PushNshCodec extends AbstractActionCodec {
     public static final int LENGTH = 16;
@@ -28,13 +28,13 @@ public class PushNshCodec extends AbstractActionCodec {
             new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionPushNsh.class);
     public static final NiciraActionDeserializerKey DESERIALIZER_KEY =
             new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, NXAST_PUSH_NSH_SUBTYPE);
-    private static final int padding = 6;
+    private static final int PADDING = 6;
 
     @Override
     public void serialize(Action input, ByteBuf outBuffer) {
-        ActionPushNsh action = ((ActionPushNsh) input.getActionChoice());
+        ActionPushNsh action = (ActionPushNsh) input.getActionChoice();
         serializeHeader(LENGTH, NXAST_PUSH_NSH_SUBTYPE, outBuffer);
-        outBuffer.writeZero(padding);
+        outBuffer.writeZero(PADDING);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class PushNshCodec extends AbstractActionCodec {
         ActionBuilder actionBuilder = deserializeHeader(message);
         ActionPushNshBuilder builder = new ActionPushNshBuilder();
         NxActionPushNshBuilder nxActionPushNshBuilder = new NxActionPushNshBuilder();
-        message.skipBytes(padding);
+        message.skipBytes(PADDING);
         builder.setNxActionPushNsh(nxActionPushNshBuilder.build());
         actionBuilder.setActionChoice(builder.build());
         return actionBuilder.build();

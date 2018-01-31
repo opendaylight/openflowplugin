@@ -57,7 +57,7 @@ public class IcmpTypeCodecTest {
 
         input = icmpTypeCodec.deserialize(buffer);
 
-        IcmpTypeCaseValue result = ((IcmpTypeCaseValue) input.getMatchEntryValue());
+        final IcmpTypeCaseValue result = (IcmpTypeCaseValue) input.getMatchEntryValue();
 
         assertEquals(Nxm0Class.class, input.getOxmClass());
         assertEquals(NxmOfIcmpType.class, input.getOxmMatchField());
@@ -70,8 +70,8 @@ public class IcmpTypeCodecTest {
 
     private MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        IcmpTypeCaseValueBuilder caseBuilder = new IcmpTypeCaseValueBuilder();
-        IcmpTypeValuesBuilder valuesBuilder = new IcmpTypeValuesBuilder();
+        final IcmpTypeCaseValueBuilder caseBuilder = new IcmpTypeCaseValueBuilder();
+        final IcmpTypeValuesBuilder valuesBuilder = new IcmpTypeValuesBuilder();
 
         matchEntryBuilder.setOxmClass(Nxm0Class.class);
         matchEntryBuilder.setOxmMatchField(NxmOfIcmpType.class);
@@ -87,10 +87,9 @@ public class IcmpTypeCodecTest {
     private void createBuffer(ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_0_CLASS);
 
-        int fieldMask = (NXM_FIELD_CODE << 1);
+        int fieldMask = NXM_FIELD_CODE << 1;
         message.writeByte(fieldMask);
         message.writeByte(VALUE_LENGTH);
         message.writeByte(2);
     }
-
 }

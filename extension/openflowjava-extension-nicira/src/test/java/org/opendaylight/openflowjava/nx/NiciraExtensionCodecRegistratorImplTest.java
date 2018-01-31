@@ -83,8 +83,10 @@ public class NiciraExtensionCodecRegistratorImplTest {
 
     @Test
     public void niciraExtensionsCodecRegistratorImplTest() {
-        Mockito.verify(provider).registerActionDeserializer(Matchers.eq(ActionDeserializer.OF10_DESERIALIZER_KEY), Matchers.any(ActionDeserializer.class));
-        Mockito.verify(provider).registerActionDeserializer(Matchers.eq(ActionDeserializer.OF13_DESERIALIZER_KEY), Matchers.any(ActionDeserializer.class));
+        Mockito.verify(provider).registerActionDeserializer(Matchers.eq(ActionDeserializer.OF10_DESERIALIZER_KEY),
+                Matchers.any(ActionDeserializer.class));
+        Mockito.verify(provider).registerActionDeserializer(Matchers.eq(ActionDeserializer.OF13_DESERIALIZER_KEY),
+                Matchers.any(ActionDeserializer.class));
     }
 
     @Test
@@ -140,6 +142,4 @@ public class NiciraExtensionCodecRegistratorImplTest {
         niciraExtensionCodecRegistrator.unregisterMatchEntryDeserializer(matchDeserializerKey);
         Mockito.verify(provider).unregisterDeserializer(matchDeserializerKey);
     }
-
-
 }

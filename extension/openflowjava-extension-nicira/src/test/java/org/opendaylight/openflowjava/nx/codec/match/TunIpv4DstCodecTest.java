@@ -57,7 +57,7 @@ public class TunIpv4DstCodecTest {
 
         input = tunIpv4DstCodec.deserialize(buffer);
 
-        TunIpv4DstCaseValue result = ((TunIpv4DstCaseValue) input.getMatchEntryValue());
+        final TunIpv4DstCaseValue result = (TunIpv4DstCaseValue) input.getMatchEntryValue();
 
         assertEquals(Nxm1Class.class, input.getOxmClass());
         assertEquals(NxmNxTunIpv4Dst.class, input.getOxmMatchField());
@@ -69,8 +69,8 @@ public class TunIpv4DstCodecTest {
 
     private MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        TunIpv4DstCaseValueBuilder caseBuilder = new TunIpv4DstCaseValueBuilder();
-        TunIpv4DstValuesBuilder valuesBuilder = new TunIpv4DstValuesBuilder();
+        final TunIpv4DstCaseValueBuilder caseBuilder = new TunIpv4DstCaseValueBuilder();
+        final TunIpv4DstValuesBuilder valuesBuilder = new TunIpv4DstValuesBuilder();
 
         matchEntryBuilder.setOxmClass(Nxm1Class.class);
         matchEntryBuilder.setOxmMatchField(NxmNxTunIpv4Dst.class);
@@ -86,10 +86,9 @@ public class TunIpv4DstCodecTest {
     private void createBuffer(ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_1_CLASS);
 
-        int fieldMask = (NXM_FIELD_CODE << 1);
+        int fieldMask = NXM_FIELD_CODE << 1;
         message.writeByte(fieldMask);
         message.writeByte(VALUE_LENGTH);
         message.writeInt(1);
     }
-
 }

@@ -19,7 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.fin.timeout.grouping.NxActionFinTimeoutBuilder;
 
 /**
- * Codec for the NX_FIN_TIMEOUT
+ * Codec for the NX_FIN_TIMEOUT.
  */
 public class FinTimeoutCodec extends AbstractActionCodec {
 
@@ -38,7 +38,7 @@ public class FinTimeoutCodec extends AbstractActionCodec {
         short idleTimeOut = OFP_NO_TIMEOUT;
         short hardTimeOut = OFP_NO_TIMEOUT;
 
-        ActionFinTimeout action = ((ActionFinTimeout) input.getActionChoice());
+        ActionFinTimeout action = (ActionFinTimeout) input.getActionChoice();
         serializeHeader(LENGTH, NXAST_FIN_TIMEOUT_SUBTYPE, outBuffer);
 
         if (action.getNxActionFinTimeout().getFinIdleTimeout() != null) {
@@ -54,7 +54,7 @@ public class FinTimeoutCodec extends AbstractActionCodec {
 
     @Override
     public Action deserialize(final ByteBuf message) {
-        ActionBuilder actionBuilder = deserializeHeader(message);
+        final ActionBuilder actionBuilder = deserializeHeader(message);
 
         ActionFinTimeoutBuilder builder = new ActionFinTimeoutBuilder();
         NxActionFinTimeoutBuilder nxActionFinTimeoutBuilder = new NxActionFinTimeoutBuilder();
