@@ -17,12 +17,12 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for anonymous complex type.
+ * Java class for anonymous complex type.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
     "scenario"
-})
+    })
 @XmlRootElement(name = "scenarios")
 public class Scenarios {
 
@@ -43,6 +43,7 @@ public class Scenarios {
      * <pre>
      *    getScenario().add(newItem);
      * </pre>
+     *
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link Scenario }

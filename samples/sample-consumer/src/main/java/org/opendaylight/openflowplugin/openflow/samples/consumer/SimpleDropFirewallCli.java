@@ -35,13 +35,10 @@ public class SimpleDropFirewallCli {
     }
 
     /**
-     * Form of input is:
-     *
-     * node name node-connector number source ip-address destinatinon ip-address
+     * Form of input is: node name node-connector number source ip-address destinatinon ip-address.
      *
      * @param cliInput
      *            Parsed input from CLI
-     * @return
      */
     public AddFlowInput createTcpFlow(final List<String> cliInput) {
         AddFlowInputBuilder ret = new AddFlowInputBuilder();
@@ -76,7 +73,7 @@ public class SimpleDropFirewallCli {
 
         List<Instruction> isntructions = Collections.singletonList(instructionBldr.build());
         InstructionsBuilder instructionsBldr = new InstructionsBuilder();
-		instructionsBldr.setInstruction(isntructions);
+        instructionsBldr.setInstruction(isntructions);
 
         ret.setInstructions(instructionsBldr.build());
 

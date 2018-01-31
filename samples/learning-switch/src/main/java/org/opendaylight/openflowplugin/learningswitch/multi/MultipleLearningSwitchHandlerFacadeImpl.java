@@ -78,9 +78,6 @@ public class MultipleLearningSwitchHandlerFacadeImpl implements LearningSwitchHa
         this.packetProcessingService = packetProcessingService;
     }
 
-    /**
-     * @param packetInDispatcher
-     */
     public void setPacketInDispatcher(PacketInDispatcherImpl packetInDispatcher) {
         this.packetInDispatcher = packetInDispatcher;
     }

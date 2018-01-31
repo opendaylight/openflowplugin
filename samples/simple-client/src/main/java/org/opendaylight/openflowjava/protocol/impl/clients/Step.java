@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for stepType complex type.
+ * Java class for stepType complex type.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "step", propOrder = {
@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlType;
     "name",
     "event",
     "bytes"
-})
+    })
 public class Step {
 
     protected short order;
@@ -100,6 +100,7 @@ public class Step {
      * <pre>
      *    getBytes().add(newItem);
      * </pre>
+     *
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link Short }

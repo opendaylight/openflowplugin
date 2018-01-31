@@ -17,15 +17,14 @@ public class Activator extends AbstractBindingAwareConsumer {
     SimpleDropFirewall service;
     private SalFlowService flowService;
     private SimpleDropFirewallCli cliAdapter;
-    
-    
+
     @Override
     protected void startImpl(BundleContext context) {
         service = new SimpleDropFirewall();
-        
+
         cliAdapter.setService(service);
     }
-    
+
     @Override
     public void onSessionInitialized(ConsumerContext session) {
         service.setContext(session);
