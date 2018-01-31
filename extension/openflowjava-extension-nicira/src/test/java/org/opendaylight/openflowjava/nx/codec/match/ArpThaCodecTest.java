@@ -34,8 +34,8 @@ public class ArpThaCodecTest {
     private static final int VALUE_LENGTH = 6;
     private static final int NXM_FIELD_CODE = 18;
 
-    private static final byte[] testAddr = new byte[VALUE_LENGTH];
-    private static final MacAddress testAddress = new MacAddress(ByteBufUtils.macAddressToString(testAddr));
+    private static final byte[] TEST_ADDR = new byte[VALUE_LENGTH];
+    private static final MacAddress TEST_ADDRESS = new MacAddress(ByteBufUtils.macAddressToString(TEST_ADDR));
 
     @Before
     public void setUp() {
@@ -53,7 +53,7 @@ public class ArpThaCodecTest {
         assertEquals(NXM_FIELD_CODE, fieldMask >> 1);
         assertEquals(0, fieldMask & 1);
         assertEquals(VALUE_LENGTH, buffer.readUnsignedByte());
-        assertEquals(testAddress, ByteBufUtils.readIetfMacAddress(buffer));
+        assertEquals(TEST_ADDRESS, ByteBufUtils.readIetfMacAddress(buffer));
     }
 
     @Test
@@ -61,18 +61,18 @@ public class ArpThaCodecTest {
         createBuffer(buffer);
         input = arpThaCodec.deserialize(buffer);
 
-        ArpThaCaseValue result = ((ArpThaCaseValue) input.getMatchEntryValue());
+        final ArpThaCaseValue result = (ArpThaCaseValue) input.getMatchEntryValue();
 
         assertEquals(Nxm1Class.class, input.getOxmClass());
         assertEquals(NxmNxArpTha.class, input.getOxmMatchField());
         assertEquals(false, input.isHasMask());
-        assertEquals(testAddress, result.getArpThaValues().getMacAddress());
+        assertEquals(TEST_ADDRESS, result.getArpThaValues().getMacAddress());
     }
 
     private MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        ArpThaCaseValueBuilder caseBuilder = new ArpThaCaseValueBuilder();
-        ArpThaValuesBuilder valuesBuilder = new ArpThaValuesBuilder();
+        final ArpThaCaseValueBuilder caseBuilder = new ArpThaCaseValueBuilder();
+        final ArpThaValuesBuilder valuesBuilder = new ArpThaValuesBuilder();
 
         matchEntryBuilder.setOxmClass(Nxm1Class.class);
         matchEntryBuilder.setOxmMatchField(NxmNxArpTha.class);
@@ -90,9 +90,9 @@ public class ArpThaCodecTest {
     private void createBuffer(ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_1_CLASS);
 
-        int fieldMask = (NXM_FIELD_CODE << 1);
+        int fieldMask = NXM_FIELD_CODE << 1;
         message.writeByte(fieldMask);
         message.writeByte(VALUE_LENGTH);
-        message.writeBytes(testAddr);
+        message.writeBytes(TEST_ADDR);
     }
 }
