@@ -11,7 +11,7 @@ package org.opendaylight.openflowjava.protocol.impl.clients;
 import java.io.InputStream;
 
 /**
- * Class for storing keys
+ * Class for storing keys.
  *
  * @author michal.polkorab
  */
@@ -24,7 +24,7 @@ public final class ClientSslKeyStore {
     }
 
     /**
-     * InputStream instance of key
+     * InputStream instance of key.
      *
      * @return key as InputStream
      */
@@ -37,14 +37,14 @@ public final class ClientSslKeyStore {
     }
 
     /**
-     * @return certificate password as char[]
+     * Returns the certificate password as char[].
      */
     public static char[] getCertificatePassword() {
         return "opendaylight".toCharArray();
     }
 
     /**
-     * @return KeyStore password as char[]
+     * Returns the KeyStore password as char[].
      */
     public static char[] getKeyStorePassword() {
         return "opendaylight".toCharArray();

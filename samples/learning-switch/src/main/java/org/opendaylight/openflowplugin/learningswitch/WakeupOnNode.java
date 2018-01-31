@@ -19,9 +19,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- *
- */
 public class WakeupOnNode implements DataTreeChangeListener<Table> {
 
     private static final Logger LOG = LoggerFactory.getLogger(WakeupOnNode.class);
@@ -40,7 +37,8 @@ public class WakeupOnNode implements DataTreeChangeListener<Table> {
                     LOG.trace("table: {}", table);
 
                     if (requiredTableId.equals(tableSure.getId())) {
-                        InstanceIdentifier<Table> tablePath = (InstanceIdentifier<Table>) modification.getRootPath().getRootIdentifier();
+                        InstanceIdentifier<Table> tablePath =
+                                modification.getRootPath().getRootIdentifier();
                         learningSwitchHandler.onSwitchAppeared(tablePath);
                     }
                 }
@@ -49,11 +47,12 @@ public class WakeupOnNode implements DataTreeChangeListener<Table> {
     }
 
     /**
+     * Sets the LearningSwitchHandler.
+     *
      * @param learningSwitchHandler the learningSwitchHandler to set
      */
     public void setLearningSwitchHandler(
             LearningSwitchHandler learningSwitchHandler) {
         this.learningSwitchHandler = learningSwitchHandler;
     }
-
 }

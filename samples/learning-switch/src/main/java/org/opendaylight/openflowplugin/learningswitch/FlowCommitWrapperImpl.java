@@ -16,16 +16,10 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFaile
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-/**
- *
- */
 public class FlowCommitWrapperImpl implements FlowCommitWrapper {
 
-    private DataBroker dataBrokerService;
+    private final DataBroker dataBrokerService;
 
-    /**
-     * @param dataBrokerService
-     */
     public FlowCommitWrapperImpl(DataBroker dataBrokerService) {
         this.dataBrokerService = dataBrokerService;
     }

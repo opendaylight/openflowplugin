@@ -8,23 +8,20 @@
 
 package org.opendaylight.openflowjava.protocol.impl.clients;
 
+import com.google.common.util.concurrent.SettableFuture;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.util.concurrent.Future;
-
 import java.net.InetAddress;
 import java.util.concurrent.ExecutionException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.util.concurrent.SettableFuture;
-
 /**
- * Simple client for testing purposes
+ * Simple client for testing purposes.
  *
  * @author michal.polkorab
  */
@@ -39,7 +36,7 @@ public class UdpSimpleClient implements OFClient {
     private ScenarioHandler scenarioHandler;
 
     /**
-     * Constructor of class
+     * Constructor of class.
      *
      * @param host address of host
      * @param port host listening port
@@ -56,7 +53,7 @@ public class UdpSimpleClient implements OFClient {
     }
 
     /**
-     * Starting class of {@link UdpSimpleClient}
+     * Starting class of {@link UdpSimpleClient}.
      */
     @Override
     public void run() {
@@ -64,13 +61,13 @@ public class UdpSimpleClient implements OFClient {
         UdpSimpleClientInitializer clientInitializer = new UdpSimpleClientInitializer(isOnlineFuture);
         clientInitializer.setScenario(scenarioHandler);
         try {
-            Bootstrap b = new Bootstrap();
-            b.group(group)
+            Bootstrap bootstrap = new Bootstrap();
+            bootstrap.group(group)
                 .channel(NioDatagramChannel.class)
                 .option(ChannelOption.SO_BROADCAST, false)
                 .handler(clientInitializer);
 
-            b.connect(host, port).sync();
+            bootstrap.connect(host, port).sync();
 
             synchronized (scenarioHandler) {
                 LOG.debug("WAITING FOR SCENARIO");
@@ -78,7 +75,7 @@ public class UdpSimpleClient implements OFClient {
                     scenarioHandler.wait();
                 }
             }
-        } catch (Exception ex) {
+        } catch (InterruptedException ex) {
             LOG.error(ex.getMessage(), ex);
         } finally {
             LOG.debug("shutting down");
@@ -93,6 +90,8 @@ public class UdpSimpleClient implements OFClient {
     }
 
     /**
+     * Disconnect.
+     *
      * @return close future
      */
     public Future<?> disconnect() {
@@ -101,10 +100,7 @@ public class UdpSimpleClient implements OFClient {
     }
 
     /**
-     * Sets up {@link UdpSimpleClient} and fires run()
-     *
-     * @param args
-     * @throws Exception
+     * Sets up {@link UdpSimpleClient} and fires run().
      */
     public static void main(String[] args) throws Exception {
         String host;

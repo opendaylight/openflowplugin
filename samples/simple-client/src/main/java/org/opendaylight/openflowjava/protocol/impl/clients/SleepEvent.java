@@ -12,16 +12,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class representing sleep (wait) event
+ * Class representing sleep (wait) event.
  *
  * @author michal.polkorab
  */
 public class SleepEvent implements ClientEvent {
 
     private static final Logger LOG = LoggerFactory.getLogger(SleepEvent.class);
-    private long sleepTime;
+    private final long sleepTime;
 
     /**
+     * Constructor.
      *
      * @param sleepTime time of {@link Thread#sleep(long)} in milliseconds
      */

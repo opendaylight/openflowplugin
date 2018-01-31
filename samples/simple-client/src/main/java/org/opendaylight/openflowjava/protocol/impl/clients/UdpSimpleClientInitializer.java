@@ -9,13 +9,13 @@
 
 package org.opendaylight.openflowjava.protocol.impl.clients;
 
+import com.google.common.util.concurrent.SettableFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.DatagramChannel;
 
-import com.google.common.util.concurrent.SettableFuture;
-
-/** Initializes udp pipeline
+/**
+ * Initializes udp pipeline.
  *
  * @author michal.polkorab
  */
@@ -25,6 +25,8 @@ public class UdpSimpleClientInitializer extends ChannelInitializer<DatagramChann
     private ScenarioHandler scenarioHandler;
 
     /**
+     * Constructor.
+     *
      * @param isOnlineFuture future notifier of connected channel
      */
     public UdpSimpleClientInitializer(SettableFuture<Boolean> isOnlineFuture) {
@@ -42,9 +44,11 @@ public class UdpSimpleClientInitializer extends ChannelInitializer<DatagramChann
     }
 
     /**
-     * @param scenarioHandler handler of scenario events
+     * Sets the ScenarioHandler.
+     *
+     * @param handler handler of scenario events
      */
-    public void setScenario(ScenarioHandler scenarioHandler) {
-        this.scenarioHandler = scenarioHandler;
+    public void setScenario(ScenarioHandler handler) {
+        this.scenarioHandler = handler;
     }
 }
