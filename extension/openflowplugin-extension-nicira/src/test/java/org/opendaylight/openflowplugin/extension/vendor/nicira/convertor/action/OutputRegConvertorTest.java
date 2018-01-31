@@ -75,7 +75,8 @@ public class OutputRegConvertorTest {
 
     @Test
     public void testConvert() throws Exception {
-        final ActionOutputReg actionOutputReg = (ActionOutputReg) outputRegConvertor.convert(actionsCase).getActionChoice();
+        final ActionOutputReg actionOutputReg =
+                (ActionOutputReg) outputRegConvertor.convert(actionsCase).getActionChoice();
         Assert.assertEquals(Integer.valueOf(1), actionOutputReg.getNxActionOutputReg().getNBits());
         Assert.assertEquals(Integer.valueOf(2), actionOutputReg.getNxActionOutputReg().getMaxLen());
     }
@@ -83,35 +84,54 @@ public class OutputRegConvertorTest {
     @Test
     public void testConvert1() throws Exception {
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult
-                = outputRegConvertor.convert(action, ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION);
+                = outputRegConvertor.convert(action, ActionPath.FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult1
-                = outputRegConvertor.convert(action, ActionPath.NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION);
+                = outputRegConvertor.convert(action, ActionPath.INVENTORY_FLOWNODE_TABLE_WRITE_ACTIONS);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult2
-                = outputRegConvertor.convert(action, ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION);
+                = outputRegConvertor.convert(action, ActionPath.FLOWS_STATISTICS_UPDATE_WRITE_ACTIONS);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult3
-                = outputRegConvertor.convert(action, ActionPath.GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION);
+                = outputRegConvertor.convert(action, ActionPath.GROUP_DESC_STATS_UPDATED_BUCKET_ACTION);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult4
-                = outputRegConvertor.convert(action, ActionPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION);
+                = outputRegConvertor.convert(action, ActionPath.FLOWS_STATISTICS_RPC_APPLY_ACTIONS);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult5
-                = outputRegConvertor.convert(action, ActionPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION);
+                = outputRegConvertor.convert(action, ActionPath.FLOWS_STATISTICS_RPC_WRITE_ACTIONS);
 
-        Assert.assertEquals(Integer.valueOf(3), ((NxActionOutputRegNotifFlowsStatisticsUpdateApplyActionsCase) actionResult).getNxOutputReg().getMaxLen());
-        Assert.assertEquals(Integer.valueOf(4), ((NxActionOutputRegNotifFlowsStatisticsUpdateApplyActionsCase) actionResult).getNxOutputReg().getSrc().getOfsNbits());
+        Assert.assertEquals(Integer.valueOf(3),
+                ((NxActionOutputRegNotifFlowsStatisticsUpdateApplyActionsCase) actionResult).getNxOutputReg()
+                        .getMaxLen());
+        Assert.assertEquals(Integer.valueOf(4),
+                ((NxActionOutputRegNotifFlowsStatisticsUpdateApplyActionsCase) actionResult).getNxOutputReg().getSrc()
+                        .getOfsNbits());
 
-        Assert.assertEquals(Integer.valueOf(3), ((NxActionOutputRegNodesNodeTableFlowWriteActionsCase) actionResult1).getNxOutputReg().getMaxLen());
-        Assert.assertEquals(Integer.valueOf(4), ((NxActionOutputRegNodesNodeTableFlowWriteActionsCase) actionResult1).getNxOutputReg().getSrc().getOfsNbits());
+        Assert.assertEquals(Integer.valueOf(3),
+                ((NxActionOutputRegNodesNodeTableFlowWriteActionsCase) actionResult1).getNxOutputReg().getMaxLen());
+        Assert.assertEquals(Integer.valueOf(4), ((NxActionOutputRegNodesNodeTableFlowWriteActionsCase) actionResult1)
+                .getNxOutputReg().getSrc().getOfsNbits());
 
-        Assert.assertEquals(Integer.valueOf(3), ((NxActionOutputRegNotifFlowsStatisticsUpdateWriteActionsCase) actionResult2).getNxOutputReg().getMaxLen());
-        Assert.assertEquals(Integer.valueOf(4), ((NxActionOutputRegNotifFlowsStatisticsUpdateWriteActionsCase) actionResult2).getNxOutputReg().getSrc().getOfsNbits());
+        Assert.assertEquals(Integer.valueOf(3),
+                ((NxActionOutputRegNotifFlowsStatisticsUpdateWriteActionsCase) actionResult2).getNxOutputReg()
+                        .getMaxLen());
+        Assert.assertEquals(Integer.valueOf(4),
+                ((NxActionOutputRegNotifFlowsStatisticsUpdateWriteActionsCase) actionResult2).getNxOutputReg().getSrc()
+                        .getOfsNbits());
 
-        Assert.assertEquals(Integer.valueOf(3), ((NxActionOutputRegNotifGroupDescStatsUpdatedCase) actionResult3).getNxOutputReg().getMaxLen());
-        Assert.assertEquals(Integer.valueOf(4), ((NxActionOutputRegNotifGroupDescStatsUpdatedCase) actionResult3).getNxOutputReg().getSrc().getOfsNbits());
+        Assert.assertEquals(Integer.valueOf(3),
+                ((NxActionOutputRegNotifGroupDescStatsUpdatedCase) actionResult3).getNxOutputReg().getMaxLen());
+        Assert.assertEquals(Integer.valueOf(4), ((NxActionOutputRegNotifGroupDescStatsUpdatedCase) actionResult3)
+                .getNxOutputReg().getSrc().getOfsNbits());
 
-        Assert.assertEquals(Integer.valueOf(3), ((NxActionOutputRegNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxOutputReg().getMaxLen());
-        Assert.assertEquals(Integer.valueOf(4), ((NxActionOutputRegNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxOutputReg().getSrc().getOfsNbits());
+        Assert.assertEquals(Integer.valueOf(3),
+                ((NxActionOutputRegNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxOutputReg()
+                        .getMaxLen());
+        Assert.assertEquals(Integer.valueOf(4),
+                ((NxActionOutputRegNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxOutputReg().getSrc()
+                        .getOfsNbits());
 
-        Assert.assertEquals(Integer.valueOf(3), ((NxActionOutputRegNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxOutputReg().getMaxLen());
-        Assert.assertEquals(Integer.valueOf(4), ((NxActionOutputRegNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxOutputReg().getSrc().getOfsNbits());
-
+        Assert.assertEquals(Integer.valueOf(3),
+                ((NxActionOutputRegNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxOutputReg()
+                        .getMaxLen());
+        Assert.assertEquals(Integer.valueOf(4),
+                ((NxActionOutputRegNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxOutputReg().getSrc()
+                        .getOfsNbits());
     }
 }

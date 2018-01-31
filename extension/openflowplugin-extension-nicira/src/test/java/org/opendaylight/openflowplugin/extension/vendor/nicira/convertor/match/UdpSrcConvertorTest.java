@@ -53,20 +53,24 @@ public class UdpSrcConvertorTest {
         final NxmOfUdpSrcBuilder nxmOfUdpSrcBuilder = new NxmOfUdpSrcBuilder()
                 .setMask(1)
                 .setPort(DEFAULT_PORT);
-        final NxAugMatchNodesNodeTableFlowBuilder nxAugMatchNotifUpdateFlowStatsBuilder = new NxAugMatchNodesNodeTableFlowBuilder();
+        final NxAugMatchNodesNodeTableFlowBuilder nxAugMatchNotifUpdateFlowStatsBuilder =
+                new NxAugMatchNodesNodeTableFlowBuilder();
         nxAugMatchNotifUpdateFlowStatsBuilder.setNxmOfUdpSrc(nxmOfUdpSrcBuilder.build());
 
         final Augmentation<Extension> extensionAugmentation = nxAugMatchNotifUpdateFlowStatsBuilder.build();
-        when(extension.getAugmentation(Matchers.<Class<Augmentation<Extension>>>any())).thenReturn(extensionAugmentation);
+        when(extension.getAugmentation(Matchers.<Class<Augmentation<Extension>>>any()))
+            .thenReturn(extensionAugmentation);
 
         udpSrcConvertor = new UdpSrcConvertor();
     }
 
     @Test
     public void testConvert() throws Exception {
-        final MatchEntry matchEntry = udpSrcConvertor.convert(extension);
-        Assert.assertEquals(Integer.valueOf(1), ((UdpSrcCaseValue)matchEntry.getMatchEntryValue()).getUdpSrcValues().getMask());
-        Assert.assertEquals(DEFAULT_PORT, ((UdpSrcCaseValue)matchEntry.getMatchEntryValue()).getUdpSrcValues().getPort());
+        final MatchEntry converted = udpSrcConvertor.convert(extension);
+        Assert.assertEquals(Integer.valueOf(1),
+                ((UdpSrcCaseValue) converted.getMatchEntryValue()).getUdpSrcValues().getMask());
+        Assert.assertEquals(DEFAULT_PORT,
+                ((UdpSrcCaseValue) converted.getMatchEntryValue()).getUdpSrcValues().getPort());
     }
 
     @Test
@@ -81,25 +85,37 @@ public class UdpSrcConvertorTest {
 
         when(matchEntry.getMatchEntryValue()).thenReturn(udpSrcCaseValue);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = udpSrcConvertor.convert(matchEntry, MatchPath.PACKETRECEIVED_MATCH);
-        Assert.assertEquals(Integer.valueOf(2), ((NxAugMatchNotifPacketIn)extensionAugment.getAugmentationObject()).getNxmOfUdpSrc().getMask());
-        Assert.assertEquals(DEFAULT_PORT, ((NxAugMatchNotifPacketIn)extensionAugment.getAugmentationObject()).getNxmOfUdpSrc().getPort());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = udpSrcConvertor.convert(matchEntry,
+                MatchPath.PACKET_RECEIVED_MATCH);
+        Assert.assertEquals(Integer.valueOf(2),
+                ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmOfUdpSrc().getMask());
+        Assert.assertEquals(DEFAULT_PORT,
+                ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmOfUdpSrc().getPort());
         Assert.assertEquals(extensionAugment.getKey(), NxmOfUdpSrcKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = udpSrcConvertor.convert(matchEntry, MatchPath.SWITCHFLOWREMOVED_MATCH);
-        Assert.assertEquals(Integer.valueOf(2), ((NxAugMatchNotifSwitchFlowRemoved)extensionAugment1.getAugmentationObject()).getNxmOfUdpSrc().getMask());
-        Assert.assertEquals(DEFAULT_PORT, ((NxAugMatchNotifSwitchFlowRemoved)extensionAugment1.getAugmentationObject()).getNxmOfUdpSrc().getPort());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = udpSrcConvertor
+                .convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
+        Assert.assertEquals(Integer.valueOf(2),
+                ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject()).getNxmOfUdpSrc()
+                        .getMask());
+        Assert.assertEquals(DEFAULT_PORT, ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
+                .getNxmOfUdpSrc().getPort());
         Assert.assertEquals(extensionAugment.getKey(), NxmOfUdpSrcKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = udpSrcConvertor.convert(matchEntry, MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
-        Assert.assertEquals(Integer.valueOf(2), ((NxAugMatchNodesNodeTableFlow)extensionAugment2.getAugmentationObject()).getNxmOfUdpSrc().getMask());
-        Assert.assertEquals(DEFAULT_PORT, ((NxAugMatchNodesNodeTableFlow)extensionAugment2.getAugmentationObject()).getNxmOfUdpSrc().getPort());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = udpSrcConvertor
+                .convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
+        Assert.assertEquals(Integer.valueOf(2),
+                ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject()).getNxmOfUdpSrc().getMask());
+        Assert.assertEquals(DEFAULT_PORT,
+                ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject()).getNxmOfUdpSrc().getPort());
         Assert.assertEquals(extensionAugment.getKey(), NxmOfUdpSrcKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = udpSrcConvertor.convert(matchEntry, MatchPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH);
-        Assert.assertEquals(Integer.valueOf(2), ((NxAugMatchRpcGetFlowStats)extensionAugment3.getAugmentationObject()).getNxmOfUdpSrc().getMask());
-        Assert.assertEquals(DEFAULT_PORT, ((NxAugMatchRpcGetFlowStats)extensionAugment3.getAugmentationObject()).getNxmOfUdpSrc().getPort());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = udpSrcConvertor
+                .convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
+        Assert.assertEquals(Integer.valueOf(2),
+                ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject()).getNxmOfUdpSrc().getMask());
+        Assert.assertEquals(DEFAULT_PORT,
+                ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject()).getNxmOfUdpSrc().getPort());
         Assert.assertEquals(extensionAugment.getKey(), NxmOfUdpSrcKey.class);
     }
-
 }

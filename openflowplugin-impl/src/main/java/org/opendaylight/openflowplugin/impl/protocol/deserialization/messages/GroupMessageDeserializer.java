@@ -74,12 +74,12 @@ public class GroupMessageDeserializer implements OFDeserializer<GroupMessage>, D
                 final int bucketLength = length - BUCKETS_HEADER_LENGTH;
                 int offset = 0;
 
-                while ((message.readerIndex() - startIndex) < bucketLength) {
+                while (message.readerIndex() - startIndex < bucketLength) {
                     actions.add(new ActionBuilder()
                         .setKey(new ActionKey(offset))
                         .setOrder(offset)
                         .setAction(ActionUtil.readAction(EncodeConstants.OF13_VERSION_ID, message, registry,
-                                ActionPath.GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION))
+                                ActionPath.GROUP_DESC_STATS_UPDATED_BUCKET_ACTION))
                         .build());
 
                     offset++;

@@ -41,7 +41,7 @@ public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<Multi
 
     private static final MessageCodeKey MATCH_KEY = new MessageCodeMatchKey(EncodeConstants.OF13_VERSION_ID,
             EncodeConstants.EMPTY_VALUE, Match.class,
-            MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
+            MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
 
     private static final byte PADDING_IN_FLOW_STATS_HEADER_01 = 1;
     private static final byte PADDING_IN_FLOW_STATS_HEADER_02 = 4;
@@ -97,7 +97,7 @@ public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<Multi
                 final int startIndex = itemMessage.readerIndex();
                 int offset = 0;
 
-                while ((itemMessage.readerIndex() - startIndex) < length) {
+                while (itemMessage.readerIndex() - startIndex < length) {
                     instructions.add(new InstructionBuilder()
                             .setKey(new InstructionKey(offset))
                             .setOrder(offset)
@@ -122,11 +122,11 @@ public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<Multi
     }
 
     private static FlowModFlags createFlowModFlagsFromBitmap(int input) {
-        final Boolean ofp_FF_SendFlowRem = (input & (1)) > 0;
-        final Boolean ofp_FF_CheckOverlap = (input & (1 << 1)) > 0;
-        final Boolean ofp_FF_ResetCounts = (input & (1 << 2)) > 0;
-        final Boolean ofp_FF_NoPktCounts = (input & (1 << 3)) > 0;
-        final Boolean ofp_FF_NoBytCounts = (input & (1 << 4)) > 0;
+        final Boolean ofp_FF_SendFlowRem = (input & 1) > 0;
+        final Boolean ofp_FF_CheckOverlap = (input & 1 << 1) > 0;
+        final Boolean ofp_FF_ResetCounts = (input & 1 << 2) > 0;
+        final Boolean ofp_FF_NoPktCounts = (input & 1 << 3) > 0;
+        final Boolean ofp_FF_NoBytCounts = (input & 1 << 4) > 0;
         return new FlowModFlags(ofp_FF_CheckOverlap, ofp_FF_NoBytCounts, ofp_FF_NoPktCounts, ofp_FF_ResetCounts,
                 ofp_FF_SendFlowRem);
     }

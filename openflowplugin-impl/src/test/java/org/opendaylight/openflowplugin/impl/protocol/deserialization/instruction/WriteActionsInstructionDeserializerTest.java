@@ -32,8 +32,7 @@ public class WriteActionsInstructionDeserializerTest extends AbstractInstruction
     protected void init() {
         deserializer = getRegistry().getDeserializer(
                 new MessageCodeActionExperimenterKey(EncodeConstants.OF13_VERSION_ID, getType(), Instruction.class,
-                        ActionPath
-                                .NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION,
+                        ActionPath.INVENTORY_FLOWNODE_TABLE_WRITE_ACTIONS,
                         null));
     }
 

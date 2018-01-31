@@ -51,11 +51,13 @@ public class EthTypeConvertorTest {
 
         final NxmOfEthTypeBuilder nxmOfEthTypeBuilder = new NxmOfEthTypeBuilder()
                 .setValue(1);
-        final NxAugMatchNodesNodeTableFlowBuilder nxAugMatchNotifUpdateFlowStatsBuilder = new NxAugMatchNodesNodeTableFlowBuilder();
+        final NxAugMatchNodesNodeTableFlowBuilder nxAugMatchNotifUpdateFlowStatsBuilder =
+                new NxAugMatchNodesNodeTableFlowBuilder();
         nxAugMatchNotifUpdateFlowStatsBuilder.setNxmOfEthType(nxmOfEthTypeBuilder.build());
 
         final Augmentation<Extension> extensionAugmentation = nxAugMatchNotifUpdateFlowStatsBuilder.build();
-        when(extension.getAugmentation(Matchers.<Class<Augmentation<Extension>>>any())).thenReturn(extensionAugmentation);
+        when(extension.getAugmentation(Matchers.<Class<Augmentation<Extension>>>any()))
+            .thenReturn(extensionAugmentation);
 
         ethTypeConvertor = new EthTypeConvertor();
 
@@ -63,8 +65,9 @@ public class EthTypeConvertorTest {
 
     @Test
     public void testConvert() throws Exception {
-        final MatchEntry matchEntry = ethTypeConvertor.convert(extension);
-        Assert.assertEquals(1, ((EthTypeCaseValue)matchEntry.getMatchEntryValue()).getEthTypeValues().getValue().intValue());
+        final MatchEntry converted = ethTypeConvertor.convert(extension);
+        Assert.assertEquals(1, ((EthTypeCaseValue)converted.getMatchEntryValue())
+                .getEthTypeValues().getValue().intValue());
     }
 
     @Test
@@ -78,20 +81,28 @@ public class EthTypeConvertorTest {
 
         when(matchEntry.getMatchEntryValue()).thenReturn(ethTypeCaseValue);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = ethTypeConvertor.convert(matchEntry, MatchPath.PACKETRECEIVED_MATCH);
-        Assert.assertEquals(1, ((NxAugMatchNotifPacketIn)extensionAugment.getAugmentationObject()).getNxmOfEthType().getValue().intValue());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = ethTypeConvertor
+                .convert(matchEntry, MatchPath.PACKET_RECEIVED_MATCH);
+        Assert.assertEquals(1, ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmOfEthType()
+                .getValue().intValue());
         Assert.assertEquals(extensionAugment.getKey(), NxmOfEthTypeKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = ethTypeConvertor.convert(matchEntry, MatchPath.SWITCHFLOWREMOVED_MATCH);
-        Assert.assertEquals(1, ((NxAugMatchNotifSwitchFlowRemoved)extensionAugment1.getAugmentationObject()).getNxmOfEthType().getValue().intValue());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = ethTypeConvertor
+                .convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
+        Assert.assertEquals(1, ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
+                .getNxmOfEthType().getValue().intValue());
         Assert.assertEquals(extensionAugment.getKey(), NxmOfEthTypeKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = ethTypeConvertor.convert(matchEntry, MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
-        Assert.assertEquals(1, ((NxAugMatchNodesNodeTableFlow)extensionAugment2.getAugmentationObject()).getNxmOfEthType().getValue().intValue());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = ethTypeConvertor
+                .convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
+        Assert.assertEquals(1, ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
+                .getNxmOfEthType().getValue().intValue());
         Assert.assertEquals(extensionAugment.getKey(), NxmOfEthTypeKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = ethTypeConvertor.convert(matchEntry, MatchPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH);
-        Assert.assertEquals(1, ((NxAugMatchRpcGetFlowStats)extensionAugment3.getAugmentationObject()).getNxmOfEthType().getValue().intValue());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = ethTypeConvertor
+                .convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
+        Assert.assertEquals(1, ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject()).getNxmOfEthType()
+                .getValue().intValue());
         Assert.assertEquals(extensionAugment.getKey(), NxmOfEthTypeKey.class);
     }
 }
