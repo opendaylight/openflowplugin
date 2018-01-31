@@ -10,6 +10,8 @@ package org.opendaylight.openflowjava.nx.codec.action;
 
 import static org.junit.Assert.assertEquals;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.nx.api.NiciraConstants;
@@ -21,20 +23,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionFinTimeoutBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.fin.timeout.grouping.NxActionFinTimeoutBuilder;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
-
 public class FinTimeoutCodecTest {
 
     FinTimeoutCodec finTimeoutCodec;
     ByteBuf buffer;
     Action action;
 
-    private final int LENGTH = 16;
-    private final byte NXAST_FIN_TIMEOUT_SUBTYPE = 19;
+    private static final int LENGTH = 16;
+    private static final byte NXAST_FIN_TIMEOUT_SUBTYPE = 19;
 
-    private final int OFP_NO_TIMEOUT = 0;
-    private final int padding = 2;
+    private static final int OFP_NO_TIMEOUT = 0;
+    private static final int PADDING = 2;
 
     @Before
     public void setUp() {
@@ -117,6 +116,6 @@ public class FinTimeoutCodecTest {
 
         message.writeShort(1);
         message.writeShort(2);
-        message.writeZero(padding);
+        message.writeZero(PADDING);
     }
 }

@@ -17,6 +17,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
 
 /**
+ * Base class for an action codec.
+ *
  * @author msunal
  */
 public abstract class AbstractActionCodec implements OFSerializer<Action>, OFDeserializer<Action> {
@@ -26,7 +28,8 @@ public abstract class AbstractActionCodec implements OFSerializer<Action>, OFDes
         writeMsgLengthVendorIdSubtypeToBuffer(msgLength, subtype, outBuffer);
     }
 
-    private static final void writeMsgLengthVendorIdSubtypeToBuffer(final int msgLength, final int subtype, final ByteBuf outBuffer) {
+    private static void writeMsgLengthVendorIdSubtypeToBuffer(final int msgLength, final int subtype,
+            final ByteBuf outBuffer) {
         outBuffer.writeShort(msgLength);
         outBuffer.writeInt(NiciraConstants.NX_VENDOR_ID.intValue());
         outBuffer.writeShort(subtype);
@@ -46,7 +49,7 @@ public abstract class AbstractActionCodec implements OFSerializer<Action>, OFDes
         return actionBuilder;
     }
 
-    protected static final ExperimenterId getExperimenterId(){
+    protected static final ExperimenterId getExperimenterId() {
         return new ExperimenterId(NiciraConstants.NX_VENDOR_ID);
     }
 

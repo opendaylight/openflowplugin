@@ -59,7 +59,7 @@ public class UdpDstCodecTest {
 
         input = udpDstCodec.deserialize(buffer);
 
-        UdpDstCaseValue result = ((UdpDstCaseValue) input.getMatchEntryValue());
+        final UdpDstCaseValue result = (UdpDstCaseValue) input.getMatchEntryValue();
 
         assertEquals(Nxm0Class.class, input.getOxmClass());
         assertEquals(NxmOfUdpDst.class, input.getOxmMatchField());
@@ -71,8 +71,8 @@ public class UdpDstCodecTest {
 
     private MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        UdpDstCaseValueBuilder caseBuilder = new UdpDstCaseValueBuilder();
-        UdpDstValuesBuilder valuesBuilder = new UdpDstValuesBuilder();
+        final UdpDstCaseValueBuilder caseBuilder = new UdpDstCaseValueBuilder();
+        final UdpDstValuesBuilder valuesBuilder = new UdpDstValuesBuilder();
 
         matchEntryBuilder.setOxmClass(Nxm0Class.class);
         matchEntryBuilder.setOxmMatchField(NxmOfUdpDst.class);
@@ -89,7 +89,7 @@ public class UdpDstCodecTest {
     private void createBuffer(ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_0_CLASS);
 
-        int fieldMask = (NXM_FIELD_CODE << 1);
+        int fieldMask = NXM_FIELD_CODE << 1;
         message.writeByte(fieldMask);
         message.writeByte(VALUE_LENGTH);
         //Port num = 1

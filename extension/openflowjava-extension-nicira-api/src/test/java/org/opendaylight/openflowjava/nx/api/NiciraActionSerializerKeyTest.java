@@ -33,7 +33,7 @@ public class NiciraActionSerializerKeyTest {
     }
 
     /**
-     * If input param obj is NULL then FALSE should be returned
+     * If input param obj is NULL then FALSE should be returned.
      */
     @Test
     public void equalsTest1() {
@@ -44,7 +44,7 @@ public class NiciraActionSerializerKeyTest {
     }
 
     /**
-     * If input param obj is NOT NULL but is instance of different class then FALSE should be returned
+     * If input param obj is NOT NULL but is instance of different class then FALSE should be returned.
      */
     @Test
     public void equalsTest2() {
@@ -55,7 +55,7 @@ public class NiciraActionSerializerKeyTest {
     }
 
     /**
-     * If input param obj is instance of the same class but this.subtype is NULL then FALSE should be returned
+     * If input param obj is instance of the same class but this.subtype is NULL then FALSE should be returned.
      */
     @Test
     public void equalsTest3() {
@@ -66,7 +66,7 @@ public class NiciraActionSerializerKeyTest {
     }
 
     /**
-     * If input param obj is instance of the same class but has different SUBTYPE then FALSE should be returned
+     * If input param obj is instance of the same class but has different SUBTYPE then FALSE should be returned.
      */
     @Test
     public void equalsTest4() {
@@ -77,7 +77,7 @@ public class NiciraActionSerializerKeyTest {
     }
 
     /**
-     * If input param obj is instance of the same class but has different VERSION then FALSE should be returned
+     * If input param obj is instance of the same class but has different VERSION then FALSE should be returned.
      */
     @Test
     public void equalsTest5() {
@@ -88,7 +88,7 @@ public class NiciraActionSerializerKeyTest {
     }
 
     /**
-     * If input param obj is instance of the same class and has same VERSION and SUBTYPE then TRUE should be returned
+     * If input param obj is instance of the same class and has same VERSION and SUBTYPE then TRUE should be returned.
      */
     @Test
     public void equalsTest6() {
@@ -99,7 +99,7 @@ public class NiciraActionSerializerKeyTest {
     }
 
     /**
-     * If input param obj is exactly same TRUE should be returned
+     * If input param obj is exactly same TRUE should be returned.
      */
     @Test
     public void equalsTest7() {

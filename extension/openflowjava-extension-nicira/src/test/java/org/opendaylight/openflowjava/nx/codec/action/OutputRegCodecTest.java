@@ -24,15 +24,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.output.reg.grouping.NxActionOutputRegBuilder;
 
 public class OutputRegCodecTest {
+    private static final int LENGTH = 24;
+    private static final byte SUBTYPE = 15;
+    private static final byte PADDING = 6;
 
     OutputRegCodec outRegCodec;
     ByteBuf buffer;
     Action action;
-
-    private final int LENGTH = 24;
-    private final byte SUBTYPE = 15;
-    private final byte PADDING = 6;
-
 
     @Before
     public void setUp() {
@@ -78,7 +76,7 @@ public class OutputRegCodecTest {
         ExperimenterId experimenterId = new ExperimenterId(NiciraConstants.NX_VENDOR_ID);
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setExperimenterId(experimenterId);
-        ActionOutputRegBuilder actionOutputRegBuilder = new ActionOutputRegBuilder();
+        final ActionOutputRegBuilder actionOutputRegBuilder = new ActionOutputRegBuilder();
         NxActionOutputRegBuilder nxActionOutputBuilder = new NxActionOutputRegBuilder();
 
         nxActionOutputBuilder.setNBits(1);
@@ -101,7 +99,5 @@ public class OutputRegCodecTest {
         message.writeInt(2);
         message.writeShort(3);
         message.writeZero(PADDING);
-
     }
-
 }

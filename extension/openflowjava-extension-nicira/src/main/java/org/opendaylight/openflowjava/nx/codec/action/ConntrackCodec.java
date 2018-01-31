@@ -8,12 +8,11 @@
 
 package org.opendaylight.openflowjava.nx.codec.action;
 
+import com.google.common.net.InetAddresses;
 import io.netty.buffer.ByteBuf;
-
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraActionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -28,22 +27,21 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack.grouping.nx.action.conntrack.CtActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack.grouping.nx.action.conntrack.CtActionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.NxActionCtMarkCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.NxActionNatCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.NxActionCtMarkCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.NxActionNatCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.NxActionNatCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.ct.mark._case.NxActionCtMark;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.nat._case.NxActionNat;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.ct.mark._case.NxActionCtMarkBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.nat._case.NxActionNat;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.nat._case.NxActionNatBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.net.InetAddresses;
-
 /**
+ * Action codec for conntrack.
+ *
  * @author Aswin Suryanarayanan.
  */
-
 public class ConntrackCodec extends AbstractActionCodec {
     private static final Logger LOG = LoggerFactory.getLogger(ConntrackCodec.class);
     public static final int CT_LENGTH = 24;
@@ -89,7 +87,7 @@ public class ConntrackCodec extends AbstractActionCodec {
                 NxActionNatCase nxActionNatCase = (NxActionNatCase)ctActions.getOfpactActions();
                 NxActionNat natAction = nxActionNatCase.getNxActionNat();
                 int natLength = getNatActionLength(natAction);
-                int pad = 8 - (natLength % 8);
+                int pad = 8 - natLength % 8;
                 length += natLength + pad;
             } else if (ctActions.getOfpactActions() instanceof NxActionCtMarkCase) {
                 length += SET_FIELD_LENGTH;
@@ -122,11 +120,11 @@ public class ConntrackCodec extends AbstractActionCodec {
         List<CtActions> ctActionsList = action.getNxActionConntrack().getCtActions();
         if (ctActionsList != null) {
             for (CtActions ctActions : ctActionsList) {
-                if (ctActions.getOfpactActions() instanceof NxActionNatCase){
+                if (ctActions.getOfpactActions() instanceof NxActionNatCase) {
                     NxActionNatCase nxActionNatCase = (NxActionNatCase)ctActions.getOfpactActions();
                     NxActionNat natAction = nxActionNatCase.getNxActionNat();
                     int natLength = getNatActionLength(natAction);
-                    int pad = 8 - (natLength % 8);
+                    int pad = 8 - natLength % 8;
                     serializeHeader(natLength + pad, NXAST_NAT_SUBTYPE, outBuffer);
                     outBuffer.writeZero(2);
                     outBuffer.writeShort(natAction.getFlags().shortValue());
@@ -151,7 +149,7 @@ public class ConntrackCodec extends AbstractActionCodec {
                         outBuffer.writeShort(natAction.getPortMax());
                     }
                     outBuffer.writeZero(pad);
-                } else if (ctActions.getOfpactActions() instanceof NxActionCtMarkCase){
+                } else if (ctActions.getOfpactActions() instanceof NxActionCtMarkCase) {
                     NxActionCtMarkCase nxActionCtMarkCase = (NxActionCtMarkCase)ctActions.getOfpactActions();
                     NxActionCtMark ctMarkAction = nxActionCtMarkCase.getNxActionCtMark();
 
@@ -179,13 +177,14 @@ public class ConntrackCodec extends AbstractActionCodec {
 
     @Override
     public Action deserialize(final ByteBuf message) {
-        short length = deserializeCtHeader(message);
+        final short length = deserializeCtHeader(message);
         NxActionConntrackBuilder nxActionConntrackBuilder = new NxActionConntrackBuilder();
         nxActionConntrackBuilder.setFlags(message.readUnsignedShort());
         nxActionConntrackBuilder.setZoneSrc(message.readUnsignedInt());
         nxActionConntrackBuilder.setConntrackZone(message.readUnsignedShort());
         nxActionConntrackBuilder.setRecircTable(message.readUnsignedByte());
         message.skipBytes(5);
+
         if  (length > CT_LENGTH) {
             deserializeCtAction(message,nxActionConntrackBuilder, length - CT_LENGTH);
         }
@@ -202,7 +201,7 @@ public class ConntrackCodec extends AbstractActionCodec {
         List<CtActions> ctActionsList = new ArrayList<>();
         int processedCtActionsLength = ctActionsLength;
 
-        while (processedCtActionsLength > 0){
+        while (processedCtActionsLength > 0) {
             int startReaderIndex = message.readerIndex();
 
             if (EncodeConstants.EXPERIMENTER_VALUE == message.readUnsignedShort()) {
@@ -210,7 +209,7 @@ public class ConntrackCodec extends AbstractActionCodec {
                 // reset indices
                 message.setIndex(startReaderIndex, message.writerIndex());
 
-                int startIndex = message.readerIndex();
+                final int startIndex = message.readerIndex();
                 int length = deserializeCtHeader(message);
 
                 processedCtActionsLength = processedCtActionsLength - length;

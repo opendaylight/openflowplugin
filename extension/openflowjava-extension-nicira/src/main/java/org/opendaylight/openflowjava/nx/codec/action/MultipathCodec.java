@@ -19,11 +19,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionMultipath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionMultipathBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.multipath.grouping.NxActionMultipathBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * Codec for the NX_MULTIPATH
+ * Codec for the NX_MULTIPATH.
  */
 public class MultipathCodec extends AbstractActionCodec {
     public static final int LENGTH = 32;
@@ -35,7 +33,7 @@ public class MultipathCodec extends AbstractActionCodec {
 
     @Override
     public void serialize(final Action input, final ByteBuf outBuffer) {
-        ActionMultipath action = ((ActionMultipath) input.getActionChoice());
+        ActionMultipath action = (ActionMultipath) input.getActionChoice();
         serializeHeader(LENGTH, NXAST_MULTIPATH_SUBTYPE, outBuffer);
 
         outBuffer.writeShort(action.getNxActionMultipath().getFields().getIntValue());
@@ -53,8 +51,8 @@ public class MultipathCodec extends AbstractActionCodec {
 
     @Override
     public Action deserialize(final ByteBuf message) {
-        ActionBuilder actionBuilder = deserializeHeader(message);
-        ActionMultipathBuilder actionMultipathBuilder = new ActionMultipathBuilder();
+        final ActionBuilder actionBuilder = deserializeHeader(message);
+        final ActionMultipathBuilder actionMultipathBuilder = new ActionMultipathBuilder();
 
         NxActionMultipathBuilder nxActionMultipathBuilder = new NxActionMultipathBuilder();
         nxActionMultipathBuilder.setFields(OfjNxHashFields.forValue(message.readUnsignedShort()));

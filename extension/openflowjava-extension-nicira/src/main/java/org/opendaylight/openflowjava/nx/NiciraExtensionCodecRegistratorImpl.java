@@ -34,18 +34,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmC
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 
 /**
- * @author msunal
+ * Implementation of NiciraExtensionCodecRegistrator.
  *
+ * @author msunal
  */
 public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodecRegistrator {
 
-    private static final Map<NiciraActionDeserializerKey, OFDeserializer<Action>> actionDeserializers = new ConcurrentHashMap<>();
+    private static final Map<NiciraActionDeserializerKey, OFDeserializer<Action>> ACTION_DESERIALIZERS =
+            new ConcurrentHashMap<>();
 
     private final List<SwitchConnectionProvider> providers;
 
-    /**
-     * @param providers
-     */
     public NiciraExtensionCodecRegistratorImpl(List<SwitchConnectionProvider> providers) {
         this.providers = providers;
         ActionDeserializer of10ActionDeserializer = new ActionDeserializer(EncodeConstants.OF10_VERSION_ID);
@@ -60,10 +59,38 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
         }
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.opendaylight.openflow.extension.nicira.api.
+     * NiciraExtensionCodecRegistrator
+     * #registerActionDeserializer(org.opendaylight
+     * .openflow.extension.nicira.api.NiciraActionDeserializerKey,
+     * org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer)
+     */
+    @Override
+    public void registerActionDeserializer(NiciraActionDeserializerKey key, OFDeserializer<Action> deserializer) {
+        ACTION_DESERIALIZERS.put(key, deserializer);
+    }
+
     private void registerActionSerializer(ActionSerializerKey<?> key, OFGeneralSerializer serializer) {
         for (SwitchConnectionProvider provider : providers) {
             provider.registerActionSerializer(key, serializer);
         }
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.opendaylight.openflow.extension.nicira.api.
+     * NiciraExtensionCodecRegistrator
+     * #registerActionSerializer(org.opendaylight.
+     * openflow.extension.nicira.api.NiciraActionSerializerKey,
+     * org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer)
+     */
+    @Override
+    public void registerActionSerializer(NiciraActionSerializerKey key, OFSerializer<Action> serializer) {
+        registerActionSerializer(NiciraUtil.createOfJavaKeyFrom(key), serializer);
     }
 
     private void unregisterDeserializer(ExperimenterDeserializerKey key) {
@@ -83,44 +110,16 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
      *
      * @see org.opendaylight.openflow.extension.nicira.api.
      * NiciraExtensionCodecRegistrator
-     * #registerActionDeserializer(org.opendaylight
-     * .openflow.extension.nicira.api.NiciraActionDeserializerKey,
-     * org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer)
-     */
-    @Override
-    public void registerActionDeserializer(NiciraActionDeserializerKey key, OFDeserializer<Action> deserializer) {
-        actionDeserializers.put(key, deserializer);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.opendaylight.openflow.extension.nicira.api.
-     * NiciraExtensionCodecRegistrator
      * #unregisterActionDeserializer(org.opendaylight
      * .openflow.extension.nicira.api.NiciraActionDeserializerKey)
      */
     @Override
     public void unregisterActionDeserializer(NiciraActionDeserializerKey key) {
-        actionDeserializers.remove(key);
+        ACTION_DESERIALIZERS.remove(key);
     }
 
     public static OFDeserializer<Action> getActionDeserializer(NiciraActionDeserializerKey key) {
-        return actionDeserializers.get(key);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.opendaylight.openflow.extension.nicira.api.
-     * NiciraExtensionCodecRegistrator
-     * #registerActionSerializer(org.opendaylight.
-     * openflow.extension.nicira.api.NiciraActionSerializerKey,
-     * org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer)
-     */
-    @Override
-    public void registerActionSerializer(NiciraActionSerializerKey key, OFSerializer<Action> serializer) {
-        registerActionSerializer(NiciraUtil.createOfJavaKeyFrom(key), serializer);
+        return ACTION_DESERIALIZERS.get(key);
     }
 
     /*
@@ -191,7 +190,8 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
      * .openflowjava.protocol.api.keys.MatchEntrySerializerKey)
      */
     @Override
-    public void unregisterMatchEntrySerializer(MatchEntrySerializerKey<? extends OxmClassBase, ? extends MatchField> key) {
+    public void unregisterMatchEntrySerializer(
+            MatchEntrySerializerKey<? extends OxmClassBase, ? extends MatchField> key) {
         unregisterSerializer(key);
     }
 
@@ -202,7 +202,7 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
 
     @VisibleForTesting
     boolean isEmptyActionDeserializers() {
-        return actionDeserializers.isEmpty();
+        return ACTION_DESERIALIZERS.isEmpty();
     }
 
 }

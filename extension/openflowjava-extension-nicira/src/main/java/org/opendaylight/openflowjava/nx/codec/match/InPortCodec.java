@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowjava.nx.codec.match;
 
+import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -20,8 +21,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.of.in.port.type.grouping.NxmOfInPortValuesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.OfInPortCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.OfInPortCaseValueBuilder;
-
-import io.netty.buffer.ByteBuf;
 
 public class InPortCodec extends AbstractMatchCodec {
 
@@ -78,5 +77,4 @@ public class InPortCodec extends AbstractMatchCodec {
     public Class<? extends OxmClassBase> getOxmClass() {
         return Nxm0Class.class;
     }
-
 }
