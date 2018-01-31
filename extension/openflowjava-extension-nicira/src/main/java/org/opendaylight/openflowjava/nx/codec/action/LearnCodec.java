@@ -9,7 +9,6 @@
 package org.opendaylight.openflowjava.nx.codec.action;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraActionSerializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraConstants;
@@ -22,9 +21,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.learn.grouping.NxActionLearnBuilder;
 
 /**
+ * Codec for the learn action.
+ *
  * @author Slava Radune
  */
-
 public class LearnCodec extends AbstractActionCodec {
     public static final byte NXAST_LEARN_SUBTYPE = 16;
     public static final NiciraActionSerializerKey SERIALIZER_KEY =
@@ -38,16 +38,16 @@ public class LearnCodec extends AbstractActionCodec {
         ActionLearn action = (ActionLearn) input.getActionChoice();
         int length = LearnCodecUtil.calcLength(action);
         int lengthMod = length % MUL_LENGTH;
-        if(lengthMod != 0){
+        if (lengthMod != 0) {
             lengthMod = MUL_LENGTH - lengthMod;
         }
-        serializeHeader(length+lengthMod, NXAST_LEARN_SUBTYPE, outBuffer);
+        serializeHeader(length + lengthMod, NXAST_LEARN_SUBTYPE, outBuffer);
 
         LearnCodecUtil.serializeLearnHeader(outBuffer, action);
         LearnCodecUtil.serializeFlowMods(outBuffer, action);
 
         //pad with zeros for the length to be multiplication by 8
-        if(lengthMod != 0){
+        if (lengthMod != 0) {
             outBuffer.writeZero(lengthMod);
         }
 
@@ -59,7 +59,7 @@ public class LearnCodec extends AbstractActionCodec {
         actionBuilder.setExperimenterId(new ExperimenterId(NiciraConstants.NX_VENDOR_ID));
 
         short length = LearnCodecUtil.deserializeHeader(message);
-        ActionLearnBuilder actionLearnBuilder = new ActionLearnBuilder();
+        final ActionLearnBuilder actionLearnBuilder = new ActionLearnBuilder();
 
         NxActionLearnBuilder nxActionLearnBuilder = new NxActionLearnBuilder();
         LearnCodecUtil.deserializeLearnHeader(message, nxActionLearnBuilder);
@@ -74,5 +74,4 @@ public class LearnCodec extends AbstractActionCodec {
 
         return actionBuilder.build();
     }
-
 }

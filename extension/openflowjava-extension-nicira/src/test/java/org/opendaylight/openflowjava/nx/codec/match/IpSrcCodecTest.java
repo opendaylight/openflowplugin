@@ -57,7 +57,7 @@ public class IpSrcCodecTest {
 
         input = ipSrcCodec.deserialize(buffer);
 
-        IpSrcCaseValue result = ((IpSrcCaseValue) input.getMatchEntryValue());
+        final IpSrcCaseValue result = (IpSrcCaseValue) input.getMatchEntryValue();
 
         assertEquals(Nxm0Class.class, input.getOxmClass());
         assertEquals(NxmOfIpSrc.class, input.getOxmMatchField());
@@ -67,8 +67,8 @@ public class IpSrcCodecTest {
 
     private MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        IpSrcCaseValueBuilder caseBuilder = new IpSrcCaseValueBuilder();
-        IpSrcValuesBuilder valuesBuilder = new IpSrcValuesBuilder();
+        final IpSrcCaseValueBuilder caseBuilder = new IpSrcCaseValueBuilder();
+        final IpSrcValuesBuilder valuesBuilder = new IpSrcValuesBuilder();
 
         matchEntryBuilder.setOxmClass(Nxm0Class.class);
         matchEntryBuilder.setOxmMatchField(NxmOfIpSrc.class);
@@ -84,10 +84,9 @@ public class IpSrcCodecTest {
     private void createBuffer(ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_0_CLASS);
 
-        int fieldMask = (NXM_FIELD_CODE << 1);
+        int fieldMask = NXM_FIELD_CODE << 1;
         message.writeByte(fieldMask);
         message.writeByte(VALUE_LENGTH);
         message.writeInt(2);
     }
-
 }

@@ -27,15 +27,15 @@ public class NshMdtypeCodec extends AbstractMatchCodec {
 
     private static final int VALUE_LENGTH = 1;
     private static final int NXM_FIELD_CODE = 119;
-    public static final MatchEntrySerializerKey<Nxm1Class, NxmNxNshMdtype> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
-            EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxNshMdtype.class);
+    public static final MatchEntrySerializerKey<Nxm1Class, NxmNxNshMdtype> SERIALIZER_KEY =
+            new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxNshMdtype.class);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
             EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, NXM_FIELD_CODE);
 
     @Override
     public void serialize(MatchEntry input, ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
-        NshMdtypeCaseValue nshMdtypeCaseValue = ((NshMdtypeCaseValue) input.getMatchEntryValue());
+        NshMdtypeCaseValue nshMdtypeCaseValue = (NshMdtypeCaseValue) input.getMatchEntryValue();
         outBuffer.writeByte(nshMdtypeCaseValue.getNshMdtypeValues().getValue());
     }
 
@@ -43,7 +43,8 @@ public class NshMdtypeCodec extends AbstractMatchCodec {
     public MatchEntry deserialize(ByteBuf message) {
         MatchEntryBuilder matchEntriesBuilder = deserializeHeaderToBuilder(message);
         NshMdtypeCaseValueBuilder nshMdtypeCaseValueBuilder = new NshMdtypeCaseValueBuilder();
-        nshMdtypeCaseValueBuilder.setNshMdtypeValues(new NshMdtypeValuesBuilder().setValue(message.readUnsignedByte()).build());
+        nshMdtypeCaseValueBuilder.setNshMdtypeValues(new NshMdtypeValuesBuilder()
+                .setValue(message.readUnsignedByte()).build());
         matchEntriesBuilder.setMatchEntryValue(nshMdtypeCaseValueBuilder.build());
         matchEntriesBuilder.setHasMask(false);
         return matchEntriesBuilder.build();

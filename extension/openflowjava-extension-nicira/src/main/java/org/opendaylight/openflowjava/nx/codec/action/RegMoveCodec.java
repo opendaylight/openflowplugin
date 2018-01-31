@@ -29,7 +29,7 @@ public class RegMoveCodec extends AbstractActionCodec {
 
     @Override
     public void serialize(final Action input, final ByteBuf outBuffer) {
-        ActionRegMove actionRegMove = ((ActionRegMove) input.getActionChoice());
+        ActionRegMove actionRegMove = (ActionRegMove) input.getActionChoice();
         serializeHeader(LENGTH, SUBTYPE, outBuffer);
         outBuffer.writeShort(actionRegMove.getNxActionRegMove().getNBits());
         outBuffer.writeShort(actionRegMove.getNxActionRegMove().getSrcOfs());
@@ -40,8 +40,8 @@ public class RegMoveCodec extends AbstractActionCodec {
 
     @Override
     public Action deserialize(final ByteBuf message) {
-        ActionBuilder actionBuilder = deserializeHeader(message);
-        ActionRegMoveBuilder actionRegMoveBuilder = new ActionRegMoveBuilder();
+        final ActionBuilder actionBuilder = deserializeHeader(message);
+        final ActionRegMoveBuilder actionRegMoveBuilder = new ActionRegMoveBuilder();
         NxActionRegMoveBuilder nxActionRegMoveBuilder = new NxActionRegMoveBuilder();
         nxActionRegMoveBuilder.setNBits(message.readUnsignedShort());
         nxActionRegMoveBuilder.setSrcOfs(message.readUnsignedShort());
@@ -52,5 +52,4 @@ public class RegMoveCodec extends AbstractActionCodec {
         actionBuilder.setActionChoice(actionRegMoveBuilder.build());
         return actionBuilder.build();
     }
-
 }

@@ -19,7 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.resubmit.grouping.NxActionResubmitBuilder;
 
 /**
- * Codec for the NX_RESUBMIT and NX_RESUBMIT_TABLE
+ * Codec for the NX_RESUBMIT and NX_RESUBMIT_TABLE.
  */
 public class ResubmitCodec extends AbstractActionCodec {
 
@@ -35,10 +35,11 @@ public class ResubmitCodec extends AbstractActionCodec {
 
     private static final byte OFP_TABLE_ALL = (byte) 255;
     private static final short OFP_IN_PORT = (short) 0xfff8;
-    private static final int padding = 3; // nx_action_resubmit : uint8_t pad[3];
+    private static final int PADDING = 3; // nx_action_resubmit : uint8_t pad[3];
 
     public byte getSubType(final ActionResubmit action) {
-        if ((action.getNxActionResubmit().getTable() == null) || (action.getNxActionResubmit().getTable().byteValue() == OFP_TABLE_ALL)) {
+        if (action.getNxActionResubmit().getTable() == null
+                || action.getNxActionResubmit().getTable().byteValue() == OFP_TABLE_ALL) {
             return NXAST_RESUBMIT_SUBTYPE;
         }
         return NXAST_RESUBMIT_TABLE_SUBTYPE;
@@ -49,7 +50,7 @@ public class ResubmitCodec extends AbstractActionCodec {
         byte table = OFP_TABLE_ALL;
         short inPort = OFP_IN_PORT;
 
-        ActionResubmit action = ((ActionResubmit) input.getActionChoice());
+        ActionResubmit action = (ActionResubmit) input.getActionChoice();
         serializeHeader(LENGTH, getSubType(action), outBuffer);
 
         if (action.getNxActionResubmit().getInPort() != null) {
@@ -60,19 +61,19 @@ public class ResubmitCodec extends AbstractActionCodec {
         }
         outBuffer.writeShort(inPort);
         outBuffer.writeByte(table);
-        outBuffer.writeZero(padding);
+        outBuffer.writeZero(PADDING);
     }
 
     @Override
     public Action deserialize(final ByteBuf message) {
-        ActionBuilder actionBuilder = deserializeHeader(message);
+        final ActionBuilder actionBuilder = deserializeHeader(message);
 
         ActionResubmitBuilder builder = new ActionResubmitBuilder();
         NxActionResubmitBuilder nxActionResubmitBuilder = new NxActionResubmitBuilder();
         nxActionResubmitBuilder.setInPort(message.readUnsignedShort());
         nxActionResubmitBuilder.setTable(message.readUnsignedByte());
         builder.setNxActionResubmit(nxActionResubmitBuilder.build());
-        message.skipBytes(padding);
+        message.skipBytes(PADDING);
 
         actionBuilder.setActionChoice(builder.build());
         return actionBuilder.build();

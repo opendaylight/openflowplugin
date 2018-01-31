@@ -12,24 +12,26 @@ import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmOfIcmpType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm0Class;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.IcmpTypeCaseValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmOfIcmpType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.of.match.icmp.type.grouping.IcmpTypeValuesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.IcmpTypeCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.IcmpTypeCaseValueBuilder;
 
 /**
+ * Codec for the Icmp type message.
+ *
  * @author Josh Hershberg (jhershbe@redhat.com)
  */
 public class IcmpTypeCodec extends AbstractMatchCodec {
     private static final int VALUE_LENGTH = 1;
     private static final int NXM_FIELD_CODE = 13;
-    public static final MatchEntrySerializerKey<Nxm0Class, NxmOfIcmpType> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
-            EncodeConstants.OF13_VERSION_ID, Nxm0Class.class, NxmOfIcmpType.class);
+    public static final MatchEntrySerializerKey<Nxm0Class, NxmOfIcmpType> SERIALIZER_KEY =
+            new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm0Class.class, NxmOfIcmpType.class);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
             EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_0_CLASS, NXM_FIELD_CODE);
 
@@ -37,7 +39,8 @@ public class IcmpTypeCodec extends AbstractMatchCodec {
     public MatchEntry deserialize(ByteBuf message) {
         MatchEntryBuilder matchEntriesBuilder = deserializeHeaderToBuilder(message);
         IcmpTypeCaseValueBuilder icmpTypeCaseValueBuilder = new IcmpTypeCaseValueBuilder();
-        icmpTypeCaseValueBuilder.setIcmpTypeValues(new IcmpTypeValuesBuilder().setValue(message.readUnsignedByte()).build());
+        icmpTypeCaseValueBuilder.setIcmpTypeValues(new IcmpTypeValuesBuilder()
+                .setValue(message.readUnsignedByte()).build());
         matchEntriesBuilder.setMatchEntryValue(icmpTypeCaseValueBuilder.build());
         matchEntriesBuilder.setHasMask(false);
         return matchEntriesBuilder.build();
@@ -46,7 +49,7 @@ public class IcmpTypeCodec extends AbstractMatchCodec {
     @Override
     public void serialize(MatchEntry input, ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
-        IcmpTypeCaseValue icmpTypeValue = ((IcmpTypeCaseValue) input.getMatchEntryValue());
+        IcmpTypeCaseValue icmpTypeValue = (IcmpTypeCaseValue) input.getMatchEntryValue();
         outBuffer.writeByte(icmpTypeValue.getIcmpTypeValues().getValue());
     }
 

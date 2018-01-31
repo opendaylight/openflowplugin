@@ -23,6 +23,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.IpSrcCaseValueBuilder;
 
 /**
+ * Codec for the Ipv6Src message.
+ *
  * @author Sridhar Gaddam (sgaddam@redhat.com)
  */
 public class Ipv6SrcCodec extends AbstractMatchCodec {
@@ -47,7 +49,7 @@ public class Ipv6SrcCodec extends AbstractMatchCodec {
     @Override
     public void serialize(MatchEntry input, ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
-        IpSrcCaseValue ipSrcCase = ((IpSrcCaseValue) input.getMatchEntryValue());
+        IpSrcCaseValue ipSrcCase = (IpSrcCaseValue) input.getMatchEntryValue();
         outBuffer.writeInt(ipSrcCase.getIpSrcValues().getValue().intValue());
     }
 
