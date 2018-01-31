@@ -18,43 +18,40 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-/**
- *
- */
 public abstract class PacketUtils {
 
     /**
-     * size of MAC address in octets (6*8 = 48 bits)
+     * size of MAC address in octets (6*8 = 48 bits).
      */
     private static final int MAC_ADDRESS_SIZE = 6;
 
     /**
-     * start position of destination MAC address in array
+     * start position of destination MAC address in array.
      */
     private static final int DST_MAC_START_POSITION = 0;
 
     /**
-     * end position of destination MAC address in array
+     * end position of destination MAC address in array.
      */
     private static final int DST_MAC_END_POSITION = 6;
 
     /**
-     * start position of source MAC address in array
+     * start position of source MAC address in array.
      */
     private static final int SRC_MAC_START_POSITION = 6;
 
     /**
-     * end position of source MAC address in array
+     * end position of source MAC address in array.
      */
     private static final int SRC_MAC_END_POSITION = 12;
 
     /**
-     * start position of ethernet type in array
+     * start position of ethernet type in array.
      */
     private static final int ETHER_TYPE_START_POSITION = 12;
 
     /**
-     * end position of ethernet type in array
+     * end position of ethernet type in array.
      */
     private static final int ETHER_TYPE_END_POSITION = 14;
 
@@ -63,7 +60,9 @@ public abstract class PacketUtils {
     }
 
     /**
-     * @param payload
+     * Extracts the destination MAC address.
+     *
+     * @param payload the payload bytes
      * @return destination MAC address
      */
     public static byte[] extractDstMac(final byte[] payload) {
@@ -71,7 +70,9 @@ public abstract class PacketUtils {
     }
 
     /**
-     * @param payload
+     * Extracts the source MAC address.
+     *
+     * @param payload the payload bytes
      * @return source MAC address
      */
     public static byte[] extractSrcMac(final byte[] payload) {
@@ -79,7 +80,9 @@ public abstract class PacketUtils {
     }
 
     /**
-     * @param payload
+     * Extracts the ethernet type.
+     *
+     * @param payload the payload bytes
      * @return source MAC address
      */
     public static byte[] extractEtherType(final byte[] payload) {
@@ -87,9 +90,10 @@ public abstract class PacketUtils {
     }
 
     /**
-     * @param rawMac
-     * @return {@link MacAddress} wrapping string value, baked upon binary MAC
-     *         address
+     * Converts a raw MAC bytes to a MacAddress.
+     *
+     * @param rawMac the raw bytes
+     * @return {@link MacAddress} wrapping string value, baked upon binary MAC address
      */
     public static MacAddress rawMacToMac(final byte[] rawMac) {
         MacAddress mac = null;
@@ -104,15 +108,13 @@ public abstract class PacketUtils {
     }
 
     /**
-     * @param nodeInstId
-     * @param nodeKey
-     * @param port
-     * @return port wrapped into {@link NodeConnectorRef}
+     * Returns the port wrapped into {@link NodeConnectorRef}.
      */
-    public static NodeConnectorRef createNodeConnRef(final InstanceIdentifier<Node> nodeInstId, final NodeKey nodeKey, final String port) {
-        StringBuilder sBuild = new StringBuilder(nodeKey.getId().getValue()).append(':').append(port);
-        NodeConnectorKey nConKey = new NodeConnectorKey(new NodeConnectorId(sBuild.toString()));
-        InstanceIdentifier<NodeConnector> portPath = nodeInstId.child(NodeConnector.class, nConKey);
+    public static NodeConnectorRef createNodeConnRef(final InstanceIdentifier<Node> nodeInstId, final NodeKey nodeKey,
+            final String port) {
+        StringBuilder builder = new StringBuilder(nodeKey.getId().getValue()).append(':').append(port);
+        NodeConnectorKey connKey = new NodeConnectorKey(new NodeConnectorId(builder.toString()));
+        InstanceIdentifier<NodeConnector> portPath = nodeInstId.child(NodeConnector.class, connKey);
         return new NodeConnectorRef(portPath);
     }
 }

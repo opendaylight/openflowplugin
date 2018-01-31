@@ -10,13 +10,12 @@ package org.opendaylight.openflowjava.protocol.impl.clients;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class representing sending message event
+ * Class representing sending message event.
  *
  * @author michal.polkorab
  */
@@ -27,6 +26,8 @@ public class SendEvent implements ClientEvent {
     protected ChannelHandlerContext ctx;
 
     /**
+     * Constructor.
+     *
      * @param msgToSend message to be sent
      */
     public SendEvent(byte[] msgToSend) {
@@ -50,6 +51,8 @@ public class SendEvent implements ClientEvent {
     }
 
     /**
+     * Sets the ChannelHandlerContext.
+     *
      * @param ctx context which will be used for sending messages (SendEvents)
      */
     public void setCtx(ChannelHandlerContext ctx) {

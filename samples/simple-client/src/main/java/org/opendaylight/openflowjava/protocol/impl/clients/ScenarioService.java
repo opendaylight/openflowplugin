@@ -7,16 +7,15 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.clients;
 
-import org.xml.sax.SAXException;
-
-import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.SortedMap;
+import javax.xml.bind.JAXBException;
+import org.xml.sax.SAXException;
 
 /**
+ * Interface for a scenario service.
  *
  * @author Jozef Bacigal
- * Date: 8.3.2016
  */
 interface ScenarioService {
 
@@ -30,8 +29,6 @@ interface ScenarioService {
      * Method to load data from XML configuration file. Each configuration has a name.
      * @param scenarioName {@link String}
      * @return scenarios
-     * @throws SAXException
-     * @throws JAXBException
      */
     Scenario unMarshallData(String scenarioName) throws SAXException, JAXBException;
 

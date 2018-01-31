@@ -9,19 +9,17 @@
 package org.opendaylight.openflowjava.protocol.impl.clients;
 
 import io.netty.channel.ChannelHandlerContext;
-
 import java.util.Deque;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Scenario handler thread.
  *
  * @author michal.polkorab
- *
  */
 public class ScenarioHandler extends Thread {
 
@@ -36,6 +34,7 @@ public class ScenarioHandler extends Thread {
     private boolean finishedOK = true;
 
     /**
+     * Constructor.
      *
      * @param scenario {@link Deque}
      */
@@ -44,7 +43,7 @@ public class ScenarioHandler extends Thread {
         ofMsg = new LinkedBlockingQueue<>();
     }
 
-    public ScenarioHandler(Deque<ClientEvent> scenario, int freeze, long sleepBetweenTries){
+    public ScenarioHandler(Deque<ClientEvent> scenario, int freeze, long sleepBetweenTries) {
         this.scenario = scenario;
         ofMsg = new LinkedBlockingQueue<>();
         this.sleepBetweenTries = sleepBetweenTries;
@@ -100,20 +99,22 @@ public class ScenarioHandler extends Thread {
     }
 
     /**
-     * @return true if scenario is done / empty
+     * Returns true if scenario is done / empty.
      */
     public boolean isEmpty() {
         return scenario.isEmpty();
     }
 
     /**
-     * @return scenario
+     * Returns the scenario.
      */
     public Deque<ClientEvent> getScenario() {
         return scenario;
     }
 
     /**
+     * Sets the scenario.
+     *
      * @param scenario scenario filled with desired events
      */
     public void setScenario(Deque<ClientEvent> scenario) {
@@ -121,6 +122,8 @@ public class ScenarioHandler extends Thread {
     }
 
     /**
+     * Sets the ChannelHandlerContext.
+     *
      * @param ctx context which will be used for sending messages (SendEvents)
      */
     public void setCtx(ChannelHandlerContext ctx) {
@@ -128,6 +131,8 @@ public class ScenarioHandler extends Thread {
     }
 
     /**
+     * Adds a message.
+     *
      * @param message received message that is compared to expected message
      */
     public void addOfMsg(byte[] message) {
@@ -135,7 +140,7 @@ public class ScenarioHandler extends Thread {
     }
 
     /**
-     * @return true is scenario is finished
+     * Returns true is scenario is finished.
      */
     public boolean isScenarioFinished() {
         return scenarioFinished;

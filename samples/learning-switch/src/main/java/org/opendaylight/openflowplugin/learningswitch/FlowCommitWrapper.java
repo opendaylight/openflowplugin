@@ -13,20 +13,16 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFaile
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-/**
- * 
- */
 public interface FlowCommitWrapper {
 
     /**
-     * Starts and commits data change transaction which 
-     * modifies provided flow path with supplied body.
-     * 
-     * @param flowPath 
-     * @param flowBody 
-     * @return transaction commit 
-     * 
+     * Starts and commits data change transaction which  modifies provided flow path with supplied body.
+     *
+     * @param flowPath the flow path
+     * @param flowBody the flow body
+     * @return transaction commit
      */
-    CheckedFuture<Void, TransactionCommitFailedException> writeFlowToConfig(InstanceIdentifier<Flow> flowPath, Flow flowBody);
+    CheckedFuture<Void, TransactionCommitFailedException> writeFlowToConfig(
+            InstanceIdentifier<Flow> flowPath, Flow flowBody);
 
 }
