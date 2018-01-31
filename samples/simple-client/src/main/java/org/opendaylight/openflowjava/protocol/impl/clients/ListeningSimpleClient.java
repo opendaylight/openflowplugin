@@ -7,25 +7,22 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.clients;
 
+import com.google.common.util.concurrent.SettableFuture;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.util.concurrent.Future;
-
 import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutionException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.util.concurrent.SettableFuture;
-
 /**
- * Listening client for testing purposes
- * @author martin.uhlir
+ * Listening client for testing purposes.
  *
+ * @author martin.uhlir
  */
 public class ListeningSimpleClient implements OFClient {
 
@@ -38,7 +35,7 @@ public class ListeningSimpleClient implements OFClient {
     private ScenarioHandler scenarioHandler;
 
     /**
-     * Constructor of the class
+     * Constructor of the class.
      *
      * @param port host listening port
      */
@@ -53,7 +50,7 @@ public class ListeningSimpleClient implements OFClient {
     }
 
     /**
-     * Starting class of {@link ListeningSimpleClient}
+     * Starting class of {@link ListeningSimpleClient}.
      */
     @Override
     public void run() {
@@ -62,14 +59,14 @@ public class ListeningSimpleClient implements OFClient {
         SimpleClientInitializer clientInitializer = new SimpleClientInitializer(isOnlineFuture, securedClient);
         clientInitializer.setScenario(scenarioHandler);
         try {
-            ServerBootstrap b = new ServerBootstrap();
-            b.group(bossGroup, workerGroup)
+            ServerBootstrap bootstrap = new ServerBootstrap();
+            bootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .childHandler(clientInitializer);
 
-            ChannelFuture f = b.bind(port).sync();
+            ChannelFuture future = bootstrap.bind(port).sync();
             // Update port, as it may have been specified as 0
-            this.port = ((InetSocketAddress) f.channel().localAddress()).getPort();
+            this.port = ((InetSocketAddress) future.channel().localAddress()).getPort();
             isOnlineFuture.set(true);
 
             synchronized (scenarioHandler) {
@@ -78,7 +75,7 @@ public class ListeningSimpleClient implements OFClient {
                     scenarioHandler.wait();
                 }
             }
-        } catch (Exception ex) {
+        } catch (InterruptedException ex) {
             LOG.error(ex.getMessage(), ex);
         } finally {
             LOG.debug("listening client shutting down");
@@ -94,6 +91,8 @@ public class ListeningSimpleClient implements OFClient {
     }
 
     /**
+     * Disconnect.
+     *
      * @return close future
      */
     public Future<?> disconnect() {
@@ -122,7 +121,7 @@ public class ListeningSimpleClient implements OFClient {
     }
 
     /**
-     * @return actual port number
+     * Returns the actual port number.
      */
     public int getPort() {
         return this.port;

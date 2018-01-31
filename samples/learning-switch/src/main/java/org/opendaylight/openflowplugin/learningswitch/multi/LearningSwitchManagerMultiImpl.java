@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Listens to packetIn notification and
+ * Listens to packetIn notification.
  * <ul>
  * <li>in HUB mode simply floods all switch ports (except ingress port)</li>
  * <li>in LSWITCH mode collects source MAC address of packetIn and bind it with ingress port.
@@ -47,6 +47,8 @@ public class LearningSwitchManagerMultiImpl implements DataTreeChangeListenerReg
     private ListenerRegistration<DataTreeChangeListener> dataTreeChangeListenerRegistration;
 
     /**
+     * Sets the NotificationService.
+     *
      * @param notificationService the notificationService to set
      */
     @Override
@@ -55,6 +57,8 @@ public class LearningSwitchManagerMultiImpl implements DataTreeChangeListenerReg
     }
 
     /**
+     * Sets the PacketProcessingService.
+     *
      * @param packetProcessingService the packetProcessingService to set
      */
     @Override
@@ -64,15 +68,17 @@ public class LearningSwitchManagerMultiImpl implements DataTreeChangeListenerReg
     }
 
     /**
-     * @param data the data to set
+     * Sets the DataBroker.
+     *
+     * @param broker the data to set
      */
     @Override
-    public void setDataBroker(DataBroker data) {
-        this.data = data;
+    public void setDataBroker(DataBroker broker) {
+        this.data = broker;
     }
 
     /**
-     * starting learning switch
+     * Starts learning switch.
      */
     @Override
     public void start() {
@@ -93,30 +99,23 @@ public class LearningSwitchManagerMultiImpl implements DataTreeChangeListenerReg
                 .child(Node.class)
                 .augmentation(FlowCapableNode.class)
                 .child(Table.class);
-        final DataTreeIdentifier<Table> dataTreeIdentifier = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, instanceIdentifier);
+        final DataTreeIdentifier<Table> dataTreeIdentifier =
+                new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, instanceIdentifier);
         dataTreeChangeListenerRegistration = data.registerDataTreeChangeListener(dataTreeIdentifier, wakeupListener);
         LOG.debug("start() <--");
     }
 
     /**
-     * stopping learning switch
+     * Stops learning switch.
      */
     @Override
     public void stop() {
         LOG.debug("stop() -->");
         //TODO: remove flow (created in #start())
-        try {
-            packetInRegistration.close();
-        } catch (Exception e) {
-            LOG.warn("Error unregistering packet in listener: {}", e.getMessage());
-            LOG.debug("Error unregistering packet in listener.. ", e);
-        }
-        try {
-            dataTreeChangeListenerRegistration.close();
-        } catch (Exception e) {
-            LOG.warn("Error unregistering data change listener: {}", e.getMessage());
-            LOG.debug("Error unregistering data change listener.. ", e);
-        }
+
+        packetInRegistration.close();
+
+        dataTreeChangeListenerRegistration.close();
         LOG.debug("stop() <--");
     }
 
