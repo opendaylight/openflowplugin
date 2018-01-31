@@ -40,18 +40,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
 
-public class FlowUtils {
+public final class FlowUtils {
     private FlowUtils() {
         //prohibite to instantiate util class
     }
 
     /**
-     * @param tableId
-     * @param priority
-     * @param srcMac
-     * @param dstMac
-     * @param dstPort
-     * @return {@link FlowBuilder} forwarding all packets to controller port
+     * Returns a {@link FlowBuilder} forwarding all packets to controller port.
      */
     public static FlowBuilder createDirectMacToMacFlow(final Short tableId, final int priority, final MacAddress srcMac,
             final MacAddress dstMac, final NodeConnectorRef dstPort) {
@@ -115,17 +110,10 @@ public class FlowUtils {
     }
 
     /**
-     * @param tableId
-     * @param priority
-     * @param flowId
-     * @return {@link FlowBuilder} forwarding all packets to controller port
+     * Returns a{@link FlowBuilder} forwarding all packets to controller port.
      */
-    public static FlowBuilder createFwdAllToControllerFlow(final Short tableId, final int priority, final FlowId flowId) {
-        FlowBuilder allToCtrlFlow = new FlowBuilder().setTableId(tableId).setFlowName("allPacketsToCtrl").setId(flowId)
-                .setKey(new FlowKey(flowId));
-
-        MatchBuilder matchBuilder = new MatchBuilder();
-
+    public static FlowBuilder createFwdAllToControllerFlow(final Short tableId, final int priority,
+            final FlowId flowId) {
         // Create output action -> send to controller
         OutputActionBuilder output = new OutputActionBuilder();
         output.setMaxLength(Integer.valueOf(0xffff));
@@ -137,7 +125,7 @@ public class FlowUtils {
         ab.setOrder(0);
         ab.setKey(new ActionKey(0));
 
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionList = new ArrayList<>();
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -152,10 +140,13 @@ public class FlowUtils {
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<Instruction>();
+        List<Instruction> instructions = new ArrayList<>();
         instructions.add(ib.build());
         isb.setInstruction(instructions);
 
+        MatchBuilder matchBuilder = new MatchBuilder();
+        FlowBuilder allToCtrlFlow = new FlowBuilder().setTableId(tableId).setFlowName("allPacketsToCtrl").setId(flowId)
+                .setKey(new FlowKey(flowId));
         allToCtrlFlow
             .setMatch(matchBuilder.build())
             .setInstructions(isb.build())

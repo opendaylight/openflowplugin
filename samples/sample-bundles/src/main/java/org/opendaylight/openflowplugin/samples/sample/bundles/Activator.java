@@ -89,9 +89,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Sample bundles activator
+ * Sample bundles activator.
  */
-public class Activator extends AbstractBrokerAwareActivator implements BindingAwareConsumer, ClusteredDataTreeChangeListener<FlowCapableNode>, AutoCloseable {
+public class Activator extends AbstractBrokerAwareActivator implements BindingAwareConsumer,
+        ClusteredDataTreeChangeListener<FlowCapableNode>, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(Activator.class);
 
@@ -112,9 +113,10 @@ public class Activator extends AbstractBrokerAwareActivator implements BindingAw
         LOG.debug("inSessionInitialized() passing");
         dataBroker = consumerContext.getSALService(DataBroker.class);
 
-        final InstanceIdentifier<FlowCapableNode> path = InstanceIdentifier.create(Nodes.class).child(Node.class).
-                augmentation(FlowCapableNode.class);
-        final DataTreeIdentifier<FlowCapableNode> identifier = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, path);
+        final InstanceIdentifier<FlowCapableNode> path = InstanceIdentifier.create(Nodes.class).child(Node.class)
+                .augmentation(FlowCapableNode.class);
+        final DataTreeIdentifier<FlowCapableNode> identifier =
+                new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL, path);
 
         dataBroker.registerDataTreeChangeListener(identifier, Activator.this);
         bundleService = consumerContext.getRpcService(SalBundleService.class);
@@ -124,9 +126,11 @@ public class Activator extends AbstractBrokerAwareActivator implements BindingAw
     public void onDataTreeChanged(@Nonnull Collection<DataTreeModification<FlowCapableNode>> modifications) {
         for (DataTreeModification modification : modifications) {
             if (modification.getRootNode().getModificationType() == ModificationType.WRITE) {
-                LOG.info("Node connected:  {}", modification.getRootPath().getRootIdentifier().firstIdentifierOf(Node.class));
+                LOG.info("Node connected:  {}",
+                        modification.getRootPath().getRootIdentifier().firstIdentifierOf(Node.class));
 
-                final NodeRef nodeRef = new NodeRef(modification.getRootPath().getRootIdentifier().firstIdentifierOf(Node.class));
+                final NodeRef nodeRef =
+                        new NodeRef(modification.getRootPath().getRootIdentifier().firstIdentifierOf(Node.class));
 
                 final ControlBundleInput openBundleInput = new ControlBundleInputBuilder()
                         .setNode(nodeRef)
@@ -152,23 +156,26 @@ public class Activator extends AbstractBrokerAwareActivator implements BindingAw
                         .build();
 
                 makeCompletableFuture(bundleService.controlBundle(openBundleInput))
-                        .thenComposeAsync(voidRpcResult -> {
-                            LOG.debug("Open successful: {}, msg: {}", voidRpcResult.isSuccessful(), voidRpcResult.getErrors());
+                    .thenComposeAsync(voidRpcResult -> {
+                        LOG.debug("Open successful: {}, msg: {}", voidRpcResult.isSuccessful(),
+                                voidRpcResult.getErrors());
 
-                            final CompletableFuture<RpcResult<Void>> addFuture =
-                                    makeCompletableFuture(bundleService.addBundleMessages(addBundleMessagesInput));
+                        final CompletableFuture<RpcResult<Void>> addFuture =
+                                makeCompletableFuture(bundleService.addBundleMessages(addBundleMessagesInput));
 
-                            return addFuture;
-                        }).thenComposeAsync(voidRpcResult -> {
-                            LOG.debug("AddBundleMessages successful: {}, msg: {}", voidRpcResult.isSuccessful(), voidRpcResult.getErrors());
+                        return addFuture;
+                    }).thenComposeAsync(voidRpcResult -> {
+                        LOG.debug("AddBundleMessages successful: {}, msg: {}", voidRpcResult.isSuccessful(),
+                                voidRpcResult.getErrors());
 
-                            final CompletableFuture<RpcResult<Void>> controlCommitFuture =
-                                    makeCompletableFuture(bundleService.controlBundle(commitBundleInput));
+                        final CompletableFuture<RpcResult<Void>> controlCommitFuture =
+                                makeCompletableFuture(bundleService.controlBundle(commitBundleInput));
 
-                            return controlCommitFuture;
-                        }).thenAccept(voidRpcResult -> {
-                            LOG.debug("Commit successful: {}, msg: {}", voidRpcResult.isSuccessful(), voidRpcResult.getErrors());
-                });
+                        return controlCommitFuture;
+                    }).thenAccept(voidRpcResult -> {
+                        LOG.debug("Commit successful: {}, msg: {}", voidRpcResult.isSuccessful(),
+                                voidRpcResult.getErrors());
+                    });
             }
         }
     }
@@ -193,17 +200,16 @@ public class Activator extends AbstractBrokerAwareActivator implements BindingAw
         List<Message> messages  = new ArrayList<>();
 
 
-        messages.add(new MessageBuilder().setNode(nodeRef).setBundleInnerMessage(
-                new BundleAddGroupCaseBuilder()
-                        .setAddGroupCaseData(new AddGroupCaseDataBuilder(createGroup(1l)).build()).build()).build());
+        messages.add(new MessageBuilder().setNode(nodeRef).setBundleInnerMessage(new BundleAddGroupCaseBuilder()
+            .setAddGroupCaseData(new AddGroupCaseDataBuilder(createGroup(1L)).build()).build()).build());
 
-        messages.add(new MessageBuilder().setNode(nodeRef).setBundleInnerMessage(
-                new BundleAddFlowCaseBuilder()
-                        .setAddFlowCaseData(new AddFlowCaseDataBuilder(createFlow("42", 1l, 1, (short) 1)).build()).build()).build());
+        messages.add(new MessageBuilder().setNode(nodeRef).setBundleInnerMessage(new BundleAddFlowCaseBuilder()
+                .setAddFlowCaseData(new AddFlowCaseDataBuilder(createFlow("42", 1L, 1, (short) 1)).build()).build())
+                .build());
 
-        messages.add(new MessageBuilder().setNode(nodeRef).setBundleInnerMessage(
-                new BundleAddFlowCaseBuilder()
-                        .setAddFlowCaseData(new AddFlowCaseDataBuilder(createFlow("43", 1l, 2, (short) 2)).build()).build()).build());
+        messages.add(new MessageBuilder().setNode(nodeRef).setBundleInnerMessage(new BundleAddFlowCaseBuilder()
+                .setAddFlowCaseData(new AddFlowCaseDataBuilder(createFlow("43", 1L, 2, (short) 2)).build()).build())
+                .build());
 
         LOG.debug("createMessages() passing {}", messages);
 
@@ -214,7 +220,7 @@ public class Activator extends AbstractBrokerAwareActivator implements BindingAw
         MatchBuilder matchBuilder = new MatchBuilder();
         matchBuilder.setEthernetMatch(new EthernetMatchBuilder()
                 .setEthernetType(new EthernetTypeBuilder()
-                        .setType(new EtherType(2048l)).build()).build());
+                        .setType(new EtherType(2048L)).build()).build());
 
         FlowBuilder flowBuilder = new FlowBuilder();
         flowBuilder.setMatch(matchBuilder.build());
@@ -250,7 +256,6 @@ public class Activator extends AbstractBrokerAwareActivator implements BindingAw
     }
 
     private static BucketsBuilder createBuckets() {
-        List<Bucket> bucketList = new ArrayList<>();
         List<Action> actionList = new ArrayList<>();
 
         actionList.add(new ActionBuilder()
@@ -260,9 +265,10 @@ public class Activator extends AbstractBrokerAwareActivator implements BindingAw
                         .build()).build());
 
         BucketBuilder bucketBuilder = new BucketBuilder();
-        bucketBuilder.setBucketId(new BucketId(12l));
+        bucketBuilder.setBucketId(new BucketId(12L));
         bucketBuilder.setAction(actionList);
 
+        List<Bucket> bucketList = new ArrayList<>();
         bucketList.add(bucketBuilder.build());
 
         actionList = new ArrayList<>();
@@ -291,7 +297,7 @@ public class Activator extends AbstractBrokerAwareActivator implements BindingAw
                 .build());
 
         bucketBuilder = new BucketBuilder();
-        bucketBuilder.setBucketId(new BucketId(13l));
+        bucketBuilder.setBucketId(new BucketId(13L));
         bucketBuilder.setAction(actionList);
 
         bucketList.add(bucketBuilder.build());
@@ -303,7 +309,6 @@ public class Activator extends AbstractBrokerAwareActivator implements BindingAw
     }
 
     private static InstructionsBuilder createGroupInstructions(long groupId) {
-        List<Action> actionList = new ArrayList<>();
         ActionBuilder actionBuilder = new ActionBuilder();
 
         GroupActionBuilder groupActionBuilder = new GroupActionBuilder();
@@ -312,13 +317,15 @@ public class Activator extends AbstractBrokerAwareActivator implements BindingAw
         actionBuilder.setAction(new GroupActionCaseBuilder().setGroupAction(groupActionBuilder.build()).build());
         actionBuilder.setOrder(1);
         actionBuilder.setKey(new ActionKey(0));
+        List<Action> actionList = new ArrayList<>();
         actionList.add(actionBuilder.build());
 
         ApplyActionsBuilder applyActionsBuilder = new ApplyActionsBuilder();
         applyActionsBuilder.setAction(actionList);
 
         InstructionBuilder instructionBuilder = new InstructionBuilder();
-        instructionBuilder.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(applyActionsBuilder.build()).build());
+        instructionBuilder.setInstruction(new ApplyActionsCaseBuilder()
+                .setApplyActions(applyActionsBuilder.build()).build());
         instructionBuilder.setOrder(0);
         instructionBuilder.setKey(new InstructionKey(0));
 

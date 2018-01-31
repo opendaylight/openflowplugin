@@ -9,16 +9,15 @@
 
 package org.opendaylight.openflowjava.protocol.impl.clients;
 
+import com.google.common.util.concurrent.SettableFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.ssl.SslHandler;
-
 import javax.net.ssl.SSLEngine;
 
-import com.google.common.util.concurrent.SettableFuture;
-
-/** Initializes secured {@link SimpleClient} pipeline
+/**
+ * Initializes secured {@link SimpleClient} pipeline.
  *
  * @author michal.polkorab
  */
@@ -29,6 +28,8 @@ public class SimpleClientInitializer extends ChannelInitializer<SocketChannel> {
     private ScenarioHandler scenarioHandler;
 
     /**
+     * Constructor.
+     *
      * @param isOnlineFuture future notifier of connected channel
      * @param secured true if {@link SimpleClient} should use encrypted communication
      */
@@ -55,9 +56,11 @@ public class SimpleClientInitializer extends ChannelInitializer<SocketChannel> {
     }
 
     /**
-     * @param scenarioHandler handler of scenario events
+     * Sets the ScenarioHandler.
+     *
+     * @param handler handler of scenario events
      */
-    public void setScenario(ScenarioHandler scenarioHandler) {
-        this.scenarioHandler = scenarioHandler;
+    public void setScenario(ScenarioHandler handler) {
+        this.scenarioHandler = handler;
     }
 }

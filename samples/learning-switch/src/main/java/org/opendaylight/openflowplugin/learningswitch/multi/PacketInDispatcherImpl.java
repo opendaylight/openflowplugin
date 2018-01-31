@@ -17,10 +17,10 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class PacketInDispatcherImpl implements PacketProcessingListener {
 
-    private Map<InstanceIdentifier<Node>, PacketProcessingListener> handlerMapping;
+    private final Map<InstanceIdentifier<Node>, PacketProcessingListener> handlerMapping;
 
     /**
-     * default constructor
+     * default constructor.
      */
     public PacketInDispatcherImpl() {
         handlerMapping = new HashMap<>();
@@ -29,7 +29,7 @@ public class PacketInDispatcherImpl implements PacketProcessingListener {
     @Override
     public void onPacketReceived(PacketReceived notification) {
         // find corresponding handler
-        /**
+        /*
          * Notification contains reference to ingress port
          * in a form of path in inventory: /nodes/node/node-connector
          *
@@ -52,9 +52,6 @@ public class PacketInDispatcherImpl implements PacketProcessingListener {
         }
     }
 
-    /**
-     * @return the handlerMapping
-     */
     public Map<InstanceIdentifier<Node>, PacketProcessingListener> getHandlerMapping() {
         return handlerMapping;
     }

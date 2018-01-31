@@ -17,12 +17,12 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for scenarioType complex type.
+ * Java class for scenarioType complex type.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "scenario", propOrder = {
     "step"
-})
+    })
 public class Scenario {
 
     @XmlElement(required = true)
