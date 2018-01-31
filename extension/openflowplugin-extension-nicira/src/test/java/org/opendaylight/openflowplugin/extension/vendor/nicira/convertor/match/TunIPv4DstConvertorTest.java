@@ -53,25 +53,28 @@ public class TunIPv4DstConvertorTest {
     public void setUp() throws Exception {
         final NxmNxTunIpv4DstBuilder nxmNxTunIpv4DstBuilder = new NxmNxTunIpv4DstBuilder()
                 .setIpv4Address(IPV4_ADDRESS);
-        final NxAugMatchNodesNodeTableFlowBuilder nxAugMatchNotifUpdateFlowStatsBuilder = new NxAugMatchNodesNodeTableFlowBuilder();
+        final NxAugMatchNodesNodeTableFlowBuilder nxAugMatchNotifUpdateFlowStatsBuilder =
+                new NxAugMatchNodesNodeTableFlowBuilder();
         nxAugMatchNotifUpdateFlowStatsBuilder.setNxmNxTunIpv4Dst(nxmNxTunIpv4DstBuilder.build());
 
         final Augmentation<Extension> extensionAugmentation = nxAugMatchNotifUpdateFlowStatsBuilder.build();
-        when(extension.getAugmentation(Matchers.<Class<Augmentation<Extension>>>any())).thenReturn(extensionAugmentation);
+        when(extension.getAugmentation(Matchers.<Class<Augmentation<Extension>>>any()))
+            .thenReturn(extensionAugmentation);
 
         tunIPv4DstConvertor = new TunIPv4DstConvertor();
     }
 
     @Test
     public void testConvert() throws Exception {
-        final MatchEntry matchEntry = tunIPv4DstConvertor.convert(extension);
-        Assert.assertEquals(IpConverter.Ipv4AddressToLong(IPV4_ADDRESS), ((TunIpv4DstCaseValue)matchEntry.getMatchEntryValue()).getTunIpv4DstValues().getValue().longValue());
+        final MatchEntry converted = tunIPv4DstConvertor.convert(extension);
+        Assert.assertEquals(IpConverter.ipv4AddressToLong(IPV4_ADDRESS),
+                ((TunIpv4DstCaseValue)converted.getMatchEntryValue()).getTunIpv4DstValues().getValue().longValue());
     }
 
     @Test
     public void testConvert1() throws Exception {
         final TunIpv4DstValuesBuilder tunIpv4DstValuesBuilder = new TunIpv4DstValuesBuilder()
-                .setValue(IpConverter.Ipv4AddressToLong(IPV4_ADDRESS));
+                .setValue(IpConverter.ipv4AddressToLong(IPV4_ADDRESS));
         final TunIpv4DstCaseValueBuilder tunIpv4DstCaseValueBuilder = new TunIpv4DstCaseValueBuilder()
                 .setTunIpv4DstValues(tunIpv4DstValuesBuilder.build());
 
@@ -79,21 +82,28 @@ public class TunIPv4DstConvertorTest {
 
         when(matchEntry.getMatchEntryValue()).thenReturn(tunIpv4DstCaseValue);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = tunIPv4DstConvertor.convert(matchEntry, MatchPath.PACKETRECEIVED_MATCH);
-        Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchNotifPacketIn)extensionAugment.getAugmentationObject()).getNxmNxTunIpv4Dst().getIpv4Address());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = tunIPv4DstConvertor
+                .convert(matchEntry, MatchPath.PACKET_RECEIVED_MATCH);
+        Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject())
+                .getNxmNxTunIpv4Dst().getIpv4Address());
         Assert.assertEquals(extensionAugment.getKey(), NxmNxTunIpv4DstKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = tunIPv4DstConvertor.convert(matchEntry, MatchPath.SWITCHFLOWREMOVED_MATCH);
-        Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchNotifSwitchFlowRemoved)extensionAugment1.getAugmentationObject()).getNxmNxTunIpv4Dst().getIpv4Address());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = tunIPv4DstConvertor
+                .convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
+        Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
+                .getNxmNxTunIpv4Dst().getIpv4Address());
         Assert.assertEquals(extensionAugment.getKey(), NxmNxTunIpv4DstKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = tunIPv4DstConvertor.convert(matchEntry, MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
-        Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchNodesNodeTableFlow)extensionAugment2.getAugmentationObject()).getNxmNxTunIpv4Dst().getIpv4Address());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = tunIPv4DstConvertor
+                .convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
+        Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
+                .getNxmNxTunIpv4Dst().getIpv4Address());
         Assert.assertEquals(extensionAugment.getKey(), NxmNxTunIpv4DstKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = tunIPv4DstConvertor.convert(matchEntry, MatchPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH);
-        Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchRpcGetFlowStats)extensionAugment3.getAugmentationObject()).getNxmNxTunIpv4Dst().getIpv4Address());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = tunIPv4DstConvertor
+                .convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
+        Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject())
+                .getNxmNxTunIpv4Dst().getIpv4Address());
         Assert.assertEquals(extensionAugment.getKey(), NxmNxTunIpv4DstKey.class);
     }
-
 }

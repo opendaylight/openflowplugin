@@ -30,31 +30,27 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.pop.nsh.grouping.NxPopNshBuilder;
 
 public class PopNshConvertor implements
-        ConvertorActionToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, Action>,
-        ConvertorActionFromOFJava<Action, ActionPath> {
+        ConvertorActionToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action,
+            Action>, ConvertorActionFromOFJava<Action, ActionPath> {
 
-    @Override
-    public org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action convert(Action input, ActionPath path) {
-        NxActionPopNsh action = ((ActionPopNsh) input.getActionChoice()).getNxActionPopNsh();
-        NxPopNshBuilder builder = new NxPopNshBuilder();
-        return resolveAction(builder.build(), path);
-    }
-
-    private static org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action resolveAction(NxPopNsh value, ActionPath path) {
+    private static org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action resolveAction(
+            NxPopNsh value, ActionPath path) {
         switch (path) {
-            case NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION:
+            case INVENTORY_FLOWNODE_TABLE_WRITE_ACTIONS:
                 return new NxActionPopNshNodesNodeTableFlowWriteActionsCaseBuilder().setNxPopNsh(value).build();
-            case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION:
+            case FLOWS_STATISTICS_UPDATE_WRITE_ACTIONS:
                 return new NxActionPopNshNotifFlowsStatisticsUpdateWriteActionsCaseBuilder().setNxPopNsh(value).build();
-            case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION:
+            case FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS:
                 return new NxActionPopNshNotifFlowsStatisticsUpdateApplyActionsCaseBuilder().setNxPopNsh(value).build();
-            case GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION:
+            case GROUP_DESC_STATS_UPDATED_BUCKET_ACTION:
                 return new NxActionPopNshNotifGroupDescStatsUpdatedCaseBuilder().setNxPopNsh(value).build();
-            case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION:
-                return new NxActionPopNshNotifDirectStatisticsUpdateWriteActionsCaseBuilder().setNxPopNsh(value).build();
-            case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION:
-                return new NxActionPopNshNotifDirectStatisticsUpdateApplyActionsCaseBuilder().setNxPopNsh(value).build();
-            case NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION:
+            case FLOWS_STATISTICS_RPC_WRITE_ACTIONS:
+                return new NxActionPopNshNotifDirectStatisticsUpdateWriteActionsCaseBuilder()
+                        .setNxPopNsh(value).build();
+            case FLOWS_STATISTICS_RPC_APPLY_ACTIONS:
+                return new NxActionPopNshNotifDirectStatisticsUpdateApplyActionsCaseBuilder()
+                        .setNxPopNsh(value).build();
+            case INVENTORY_FLOWNODE_TABLE_APPLY_ACTIONS:
                 return new NxActionPopNshNodesNodeTableFlowApplyActionsCaseBuilder().setNxPopNsh(value).build();
             default:
                 throw new CodecPreconditionException(path);
@@ -62,7 +58,16 @@ public class PopNshConvertor implements
     }
 
     @Override
-    public Action convert(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action nxActionArg) {
+    public org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action convert(
+            Action input, ActionPath path) {
+        NxActionPopNsh action = ((ActionPopNsh) input.getActionChoice()).getNxActionPopNsh();
+        NxPopNshBuilder builder = new NxPopNshBuilder();
+        return resolveAction(builder.build(), path);
+    }
+
+    @Override
+    public Action convert(
+            org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action nxActionArg) {
         Preconditions.checkArgument(nxActionArg instanceof NxActionPopNshGrouping);
         NxActionPopNshGrouping nxAction = (NxActionPopNshGrouping) nxActionArg;
         ActionPopNshBuilder builder = new ActionPopNshBuilder();
@@ -70,5 +75,4 @@ public class PopNshConvertor implements
         builder.setNxActionPopNsh(nxActionPopNshBuilder.build());
         return ActionUtil.createAction(builder.build());
     }
-
 }

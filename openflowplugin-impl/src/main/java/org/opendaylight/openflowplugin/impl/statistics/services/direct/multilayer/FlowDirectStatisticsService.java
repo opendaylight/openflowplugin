@@ -47,7 +47,7 @@ public class FlowDirectStatisticsService extends AbstractFlowDirectStatisticsSer
         super(requestContextStack, deviceContext, convertorExecutor, statisticsWriterProvider);
         data = new FlowStatsResponseConvertorData(getVersion());
         data.setDatapathId(getDatapathId());
-        data.setMatchPath(MatchPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH);
+        data.setMatchPath(MatchPath.FLOWS_STATISTICS_RPC_MATCH);
     }
 
     @Override

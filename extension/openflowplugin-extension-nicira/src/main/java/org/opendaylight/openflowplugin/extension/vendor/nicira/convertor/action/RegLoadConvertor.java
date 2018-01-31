@@ -31,17 +31,38 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.nx.reg.load.DstBuilder;
 
 /**
+ * Convert to/from SAL flow model to openflowjava model for NxActionRegLoad action.
+ *
  * @author msunal
  */
 public class RegLoadConvertor implements
-        ConvertorActionToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, Action>,
-        ConvertorActionFromOFJava<Action, ActionPath> {
+        ConvertorActionToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action,
+            Action>, ConvertorActionFromOFJava<Action, ActionPath> {
 
     @Override
-    public org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action convert(final Action input, final ActionPath path) {
+    public Action convert(
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action nxActionArg) {
+        Preconditions.checkArgument(nxActionArg instanceof NxActionRegLoadGrouping);
+
+        NxActionRegLoadGrouping nxAction = (NxActionRegLoadGrouping) nxActionArg;
+        Dst dst = nxAction.getNxRegLoad().getDst();
+
+
+        final ActionRegLoadBuilder actionRegLoadBuilder = new ActionRegLoadBuilder();
+        NxActionRegLoadBuilder nxActionRegLoadBuilder = new NxActionRegLoadBuilder();
+        nxActionRegLoadBuilder.setDst(RegMoveConvertor.resolveDst(dst.getDstChoice()));
+        nxActionRegLoadBuilder.setOfsNbits(dst.getStart() << 6 | dst.getEnd() - dst.getStart());
+        nxActionRegLoadBuilder.setValue(nxAction.getNxRegLoad().getValue());
+        actionRegLoadBuilder.setNxActionRegLoad(nxActionRegLoadBuilder.build());
+        return ActionUtil.createAction(actionRegLoadBuilder.build());
+    }
+
+    @Override
+    public org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action convert(
+            final Action input, final ActionPath path) {
         NxActionRegLoad actionRegLoad = ((ActionRegLoad) input.getActionChoice()).getNxActionRegLoad();
         DstBuilder dstBuilder = new DstBuilder();
-        dstBuilder.setDstChoice(RegMoveConvertor.resolveDst(actionRegLoad.getDst()));
+        dstBuilder.setDstChoice(RegMoveConvertor.resolveDstValue(actionRegLoad.getDst()));
         dstBuilder.setStart(resolveStart(actionRegLoad.getOfsNbits()));
         dstBuilder.setEnd(resolveEnd(actionRegLoad.getOfsNbits()));
         NxRegLoadBuilder nxRegLoadBuilder = new NxRegLoadBuilder();
@@ -56,54 +77,39 @@ public class RegLoadConvertor implements
 
     private static int resolveEnd(final int ofsNBints) {
         int ofs = extractSub(ofsNBints, 10, 6);
-        int nBits = extractSub(ofsNBints, 6, 0);
-        return ofs + nBits;
+        int numBits = extractSub(ofsNBints, 6, 0);
+        return ofs + numBits;
     }
 
-    private static int extractSub(final int l, final int nrBits, final int offset) {
-        final int rightShifted = l >>> offset;
+    private static int extractSub(final int value, final int nrBits, final int offset) {
+        final int rightShifted = value >>> offset;
         final int mask = (1 << nrBits) - 1;
         return rightShifted & mask;
     }
 
-    private static org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action resolveAction(final NxRegLoad value,
-                                                                                                                    final ActionPath path) {
+    private static org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action resolveAction(
+            final NxRegLoad value, final ActionPath path) {
         switch (path) {
-            case NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION:
+            case INVENTORY_FLOWNODE_TABLE_WRITE_ACTIONS:
                 return new NxActionRegLoadNodesNodeTableFlowWriteActionsCaseBuilder().setNxRegLoad(value).build();
-            case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION:
-                return new NxActionRegLoadNotifFlowsStatisticsUpdateWriteActionsCaseBuilder().setNxRegLoad(value).build();
-            case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION:
-                return new NxActionRegLoadNotifFlowsStatisticsUpdateApplyActionsCaseBuilder().setNxRegLoad(value).build();
-            case GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION:
+            case FLOWS_STATISTICS_UPDATE_WRITE_ACTIONS:
+                return new NxActionRegLoadNotifFlowsStatisticsUpdateWriteActionsCaseBuilder()
+                        .setNxRegLoad(value).build();
+            case FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS:
+                return new NxActionRegLoadNotifFlowsStatisticsUpdateApplyActionsCaseBuilder()
+                        .setNxRegLoad(value).build();
+            case GROUP_DESC_STATS_UPDATED_BUCKET_ACTION:
                 return new NxActionRegLoadNotifGroupDescStatsUpdatedCaseBuilder().setNxRegLoad(value).build();
-            case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION:
-                return new NxActionRegLoadNotifDirectStatisticsUpdateWriteActionsCaseBuilder().setNxRegLoad(value).build();
-            case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION:
-                return new NxActionRegLoadNotifDirectStatisticsUpdateApplyActionsCaseBuilder().setNxRegLoad(value).build();
-            case NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION:
+            case FLOWS_STATISTICS_RPC_WRITE_ACTIONS:
+                return new NxActionRegLoadNotifDirectStatisticsUpdateWriteActionsCaseBuilder()
+                        .setNxRegLoad(value).build();
+            case FLOWS_STATISTICS_RPC_APPLY_ACTIONS:
+                return new NxActionRegLoadNotifDirectStatisticsUpdateApplyActionsCaseBuilder()
+                        .setNxRegLoad(value).build();
+            case INVENTORY_FLOWNODE_TABLE_APPLY_ACTIONS:
                 return new NxActionRegLoadNodesNodeTableFlowApplyActionsCaseBuilder().setNxRegLoad(value).build();
             default:
                 throw new CodecPreconditionException(path);
         }
     }
-
-    @Override
-    public Action convert(final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action nxActionArg) {
-        Preconditions.checkArgument(nxActionArg instanceof NxActionRegLoadGrouping);
-
-        NxActionRegLoadGrouping nxAction = (NxActionRegLoadGrouping) nxActionArg;
-        Dst dst = nxAction.getNxRegLoad().getDst();
-
-
-        ActionRegLoadBuilder actionRegLoadBuilder = new ActionRegLoadBuilder();
-        NxActionRegLoadBuilder nxActionRegLoadBuilder = new NxActionRegLoadBuilder();
-        nxActionRegLoadBuilder.setDst(RegMoveConvertor.resolveDst(dst.getDstChoice()));
-        nxActionRegLoadBuilder.setOfsNbits((dst.getStart() << 6) | (dst.getEnd() - dst.getStart()));
-        nxActionRegLoadBuilder.setValue(nxAction.getNxRegLoad().getValue());
-        actionRegLoadBuilder.setNxActionRegLoad(nxActionRegLoadBuilder.build());
-        return ActionUtil.createAction(actionRegLoadBuilder.build());
-    }
-
-
 }
