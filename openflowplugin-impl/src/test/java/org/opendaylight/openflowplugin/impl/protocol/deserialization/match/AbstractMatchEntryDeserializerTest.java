@@ -38,7 +38,7 @@ public abstract class AbstractMatchEntryDeserializerTest extends AbstractDeseria
         deserializer = getRegistry().getDeserializer(new MessageCodeMatchKey(EncodeConstants.OF13_VERSION_ID,
                 EncodeConstants.EMPTY_LENGTH,
                 Match.class,
-                MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH));
+                MatchPath.FLOWS_STATISTICS_UPDATE_MATCH));
     }
 
     private void deserializeAlreadyFilledCase(ByteBuf inBuffer) {
