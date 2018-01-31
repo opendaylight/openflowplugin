@@ -24,7 +24,7 @@ import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
- * registration place for message converters provided by vendor extension
+ * Registry for message converters provided by vendor extension.
  */
 public interface ExtensionConverterRegistrator {
 
@@ -37,36 +37,47 @@ public interface ExtensionConverterRegistrator {
             ConvertorFromOFJava<MatchEntry, MatchPath> convertor);
 
     /**
-     * @param key       action case type + ofp-version
-     * @param convertor
+     * Registers an action converter.
+     *
+     * @param key action case type + ofp-version
+     * @param converter the converter
      * @return closable registration
      */
-    ObjectRegistration<ConvertorActionToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, Action>>
-    registerActionConvertor(
-            TypeVersionKey<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action> key,
-            ConvertorActionToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, Action> convertor);
+    ObjectRegistration<ConvertorActionToOFJava<
+        org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, Action>>
+            registerActionConvertor(TypeVersionKey<? extends
+                org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action> key,
+                ConvertorActionToOFJava<
+                    org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action,
+                    Action> converter);
 
     /**
-     * @param key       actionSubType, action type (Experimenter), experimenterId, version
-     * @param convertor
+     * Registers an action converter.
+     *
+     * @param key actionSubType, action type (Experimenter), experimenterId, version
+     * @param converter the converter
      * @return closable registration
      */
     ObjectRegistration<ConvertorActionFromOFJava<Action, ActionPath>> registerActionConvertor(
-            ActionSerializerKey<?> key, ConvertorActionFromOFJava<Action, ActionPath> convertor);
+            ActionSerializerKey<?> key, ConvertorActionFromOFJava<Action, ActionPath> converter);
 
     /**
-     * @param key       consists of: experimenter type, version
-     * @param convertor TO OFJava (suitable for both: symmetric and multipart)
+     * Registers a message converter.
+     *
+     * @param key consists of: experimenter type, version
+     * @param converter TO OFJava (suitable for both: symmetric and multipart)
      * @return closeable registration
      */
-    <I extends ExperimenterMessageOfChoice, O extends DataContainer> ObjectRegistration<ConverterMessageToOFJava<I, O>> registerMessageConvertor(
-            TypeVersionKey<I> key, ConverterMessageToOFJava<I, O> convertor);
+    <I extends ExperimenterMessageOfChoice, O extends DataContainer> ObjectRegistration<ConverterMessageToOFJava<I, O>>
+        registerMessageConvertor(TypeVersionKey<I> key, ConverterMessageToOFJava<I, O> converter);
 
     /**
-     * @param key       consists of: experimenter type, version
-     * @param convertor FROM OFJava (suitable for both: symmetric and multipart)
+     * Registers a message converter.
+     *
+     * @param key consists of: experimenter type, version
+     * @param converter FROM OFJava (suitable for both: symmetric and multipart)
      * @return closeable registration
      */
-    <I extends ExperimenterDataOfChoice> ObjectRegistration<ConvertorMessageFromOFJava<I, MessagePath>> registerMessageConvertor(
-            MessageTypeKey<?> key, ConvertorMessageFromOFJava<I, MessagePath> convertor);
+    <I extends ExperimenterDataOfChoice> ObjectRegistration<ConvertorMessageFromOFJava<I, MessagePath>>
+        registerMessageConvertor(MessageTypeKey<?> key, ConvertorMessageFromOFJava<I, MessagePath> converter);
 }

@@ -40,38 +40,15 @@ import org.opendaylight.yangtools.yang.binding.Augmentation;
 public class NspConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
     @Override
     public ExtensionAugment<? extends Augmentation<Extension>> convert(MatchEntry input, MatchPath path) {
-        NspCaseValue nspCaseValue = ((NspCaseValue) input.getMatchEntryValue());
+        NspCaseValue nspCaseValue = (NspCaseValue) input.getMatchEntryValue();
 
         return resolveAugmentation(new NxmNxNspBuilder().setValue(nspCaseValue.getNspValues().getNsp()).build(), path,
                 NxmNxNspKey.class);
     }
 
-    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(NxmNxNsp value,
-                                                                                           MatchPath path, Class<? extends ExtensionKey> key) {
-        switch (path) {
-            case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH:
-                return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,
-                        new NxAugMatchNodesNodeTableFlowBuilder().setNxmNxNsp(value).build(), key);
-            case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH:
-                return new ExtensionAugment<>(NxAugMatchRpcGetFlowStats.class,
-                        new NxAugMatchRpcGetFlowStatsBuilder().setNxmNxNsp(value).build(), key);
-            case PACKETRECEIVED_MATCH:
-                return new ExtensionAugment<>(NxAugMatchNotifPacketIn.class, new NxAugMatchNotifPacketInBuilder()
-                        .setNxmNxNsp(value).build(), key);
-            case SWITCHFLOWREMOVED_MATCH:
-                return new ExtensionAugment<>(NxAugMatchNotifSwitchFlowRemoved.class,
-                        new NxAugMatchNotifSwitchFlowRemovedBuilder().setNxmNxNsp(value).build(), key);
-            case PACKETINMESSAGE_MATCH:
-                return new ExtensionAugment<>(NxAugMatchPacketInMessage.class,
-                        new NxAugMatchPacketInMessageBuilder().setNxmNxNsp(value).build(), key);
-            default:
-                throw new CodecPreconditionException(path);
-        }
-    }
-
     @Override
     public MatchEntry convert(Extension extension) {
-        Optional<NxmNxNspGrouping> matchGrouping = MatchUtil.nspResolver.getExtension(extension);
+        Optional<NxmNxNspGrouping> matchGrouping = MatchUtil.NSP_RESOLVER.getExtension(extension);
         if (!matchGrouping.isPresent()) {
             throw new CodecPreconditionException(extension);
         }
@@ -79,11 +56,31 @@ public class NspConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFro
         NspCaseValueBuilder nspCaseValueBuilder = new NspCaseValueBuilder();
         nspCaseValueBuilder.setNspValues(new NspValuesBuilder()
                 .setNsp(value).build());
-
-
-        return MatchUtil.createDefaultMatchEntryBuilder(org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxNsp.class,
-                Nxm1Class.class,
-                nspCaseValueBuilder.build()).build();
+        return MatchUtil.createDefaultMatchEntryBuilder(
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxNsp.class,
+                Nxm1Class.class, nspCaseValueBuilder.build()).build();
     }
 
+    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(NxmNxNsp value,
+            MatchPath path, Class<? extends ExtensionKey> key) {
+        switch (path) {
+            case FLOWS_STATISTICS_UPDATE_MATCH:
+                return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,
+                        new NxAugMatchNodesNodeTableFlowBuilder().setNxmNxNsp(value).build(), key);
+            case FLOWS_STATISTICS_RPC_MATCH:
+                return new ExtensionAugment<>(NxAugMatchRpcGetFlowStats.class,
+                        new NxAugMatchRpcGetFlowStatsBuilder().setNxmNxNsp(value).build(), key);
+            case PACKET_RECEIVED_MATCH:
+                return new ExtensionAugment<>(NxAugMatchNotifPacketIn.class, new NxAugMatchNotifPacketInBuilder()
+                        .setNxmNxNsp(value).build(), key);
+            case SWITCH_FLOW_REMOVED_MATCH:
+                return new ExtensionAugment<>(NxAugMatchNotifSwitchFlowRemoved.class,
+                        new NxAugMatchNotifSwitchFlowRemovedBuilder().setNxmNxNsp(value).build(), key);
+            case PACKET_IN_MESSAGE_MATCH:
+                return new ExtensionAugment<>(NxAugMatchPacketInMessage.class,
+                        new NxAugMatchPacketInMessageBuilder().setNxmNxNsp(value).build(), key);
+            default:
+                throw new CodecPreconditionException(path);
+        }
+    }
 }

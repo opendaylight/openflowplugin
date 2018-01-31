@@ -51,8 +51,8 @@ public class BundleControlFactory implements OFDeserializer<BundleControlOnf>, D
     }
 
     private static BundleFlags createBundleFlags(final int flags) {
-        Boolean isAtomic = (flags & (1 << 0)) != 0;
-        Boolean isOrdered = (flags & (1 << 1)) != 0;
+        Boolean isAtomic = (flags & 1 << 0) != 0;
+        Boolean isOrdered = (flags & 1 << 1) != 0;
         return new BundleFlags(isAtomic, isOrdered);
     }
 
@@ -80,7 +80,8 @@ public class BundleControlFactory implements OFDeserializer<BundleControlOnf>, D
         OFDeserializer<BundlePropertyExperimenterData> deserializer = deserializerRegistry.getDeserializer(
                 new ExperimenterIdTypeDeserializerKey(EncodeConstants.OF13_VERSION_ID, experimenterId, expType,
                         BundlePropertyExperimenterData.class));
-        experimenterProperty.setBundlePropertyExperimenterData(deserializer.deserialize(message.readBytes(length - 12)));
+        experimenterProperty.setBundlePropertyExperimenterData(
+                deserializer.deserialize(message.readBytes(length - 12)));
 
         return new BundlePropertyBuilder().setType(BundlePropertyType.ONFETBPTEXPERIMENTER)
                 .setBundlePropertyEntry(experimenterProperty.build())
@@ -88,8 +89,8 @@ public class BundleControlFactory implements OFDeserializer<BundleControlOnf>, D
     }
 
     @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
-        this.deserializerRegistry = deserializerRegistry;
+    public void injectDeserializerRegistry(DeserializerRegistry registry) {
+        this.deserializerRegistry = registry;
     }
 
 }

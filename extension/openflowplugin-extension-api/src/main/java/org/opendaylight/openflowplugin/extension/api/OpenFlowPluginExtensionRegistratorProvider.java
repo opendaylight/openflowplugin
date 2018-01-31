@@ -12,9 +12,10 @@ package org.opendaylight.openflowplugin.extension.api;
  * Created by mirehak on 4/25/15.
  */
 public interface OpenFlowPluginExtensionRegistratorProvider {
+
     /**
-     * @return the extensionConverterRegistry - here extension converters can be registered in order to support
-     * vendor messages
+     * Returns the extensionConverterRegistry - here extension converters can be registered in order to support
+     * vendor messages.
      */
     ExtensionConverterRegistrator getExtensionConverterRegistrator();
 }
