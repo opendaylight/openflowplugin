@@ -13,7 +13,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
- * convert message from MD-SAL model into OFJava-API model
+ * Convert message from MD-SAL model into OFJava-API model.
  *
  * @param <F> input message model - MD-SAL model
  * @param <T> output message model - OFJava-API
@@ -21,18 +21,20 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
 public interface ConverterMessageToOFJava<F extends ExperimenterMessageOfChoice, T extends DataContainer> {
 
     /**
+     * Converts a message to MD-SAL model.
+     *
      * @param experimenterMessageCase where is vendor's augmentation
      * @return message converted to OFJava-API
      */
     T convert(F experimenterMessageCase) throws ConversionException;
 
     /**
-     * @return corresponding experimenter id (vendor id)
+     * Returns the corresponding experimenter id (vendor id).
      */
     ExperimenterId getExperimenterId();
 
     /**
-     * @return corresponding experimenter message type
+     * Returns the corresponding experimenter message type.
      */
     long getType();
 }

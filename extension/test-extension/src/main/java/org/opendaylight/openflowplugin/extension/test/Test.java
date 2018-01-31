@@ -1,17 +1,17 @@
 /**
  * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 package org.opendaylight.openflowplugin.extension.test;
 
+import com.google.common.util.concurrent.Futures;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
-
 import org.opendaylight.openflowplugin.extension.api.AugmentTuple;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecNwTtlCaseBuilder;
@@ -54,14 +54,13 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
-import com.google.common.util.concurrent.Futures;
-
 /**
- * @author msunal
+ * Implementation of TestService.
  *
+ * @author msunal
  */
 public class Test implements TestService {
-    
+
     private SalFlowService flowService;
 
 
@@ -84,32 +83,27 @@ public class Test implements TestService {
         flow.setTableId((short) 0);
 
         flow.setFlowName("NiciraFLOW");
-        
+
         // Construct the flow instance id
         final InstanceIdentifier<Node> flowInstanceId = InstanceIdentifier
                 .builder(Nodes.class) // File under nodes
-                .child(Node.class, new NodeKey(new NodeId("openflow:1"))).build(); // A particular node identified by nodeKey
+                // A particular node identified by nodeKey
+                .child(Node.class, new NodeKey(new NodeId("openflow:1"))).build();
         flow.setNode(new NodeRef(flowInstanceId));
-        
+
         pushFlowViaRpc(flow.build());
-        
+
         return Futures.immediateFuture(RpcResultBuilder.<Void>status(true).build());
     }
-    
-    /**
-     * @param addFlowInput
-     */
+
     private void pushFlowViaRpc(AddFlowInput addFlowInput) {
         flowService.addFlow(addFlowInput);
     }
 
-    /**
-     * @param flowService the flowService to set
-     */
     public void setFlowService(SalFlowService flowService) {
         this.flowService = flowService;
     }
-    
+
     private static MatchBuilder createMatchBld() {
         MatchBuilder match = new MatchBuilder();
         Ipv4MatchBuilder ipv4Match = new Ipv4MatchBuilder();
@@ -123,13 +117,13 @@ public class Test implements TestService {
         ethTypeBuilder.setType(new EtherType(0x0800L));
         eth.setEthernetType(ethTypeBuilder.build());
         match.setEthernetMatch(eth.build());
-        
+
 //        AugmentTuple<Match> extAugmentWrapper = createNxMatchAugment();
 //        match.addAugmentation(extAugmentWrapper.getAugmentationClass(), extAugmentWrapper.getAugmentationObject());
-        
+
         return match;
     }
-    
+
     private static AugmentTuple<Match> createNxMatchAugment() {
         // TODO add example
         return null;
@@ -137,14 +131,14 @@ public class Test implements TestService {
 
     private static InstructionsBuilder createDecNwTtlInstructionsBld() {
         // Add our drop action to a list
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionList = new ArrayList<>();
         actionList.add(createOFAction(0).build());
         actionList.add(createNxActionBld(1).build());
-        
+
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
         aab.setAction(actionList);
-       
+
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
         ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
@@ -153,17 +147,13 @@ public class Test implements TestService {
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<Instruction>();
+        List<Instruction> instructions = new ArrayList<>();
         instructions.add(ib.build());
         ib.setKey(new InstructionKey(0));
         isb.setInstruction(instructions);
         return isb;
     }
 
-    /**
-     * @param actionKeyVal 
-     * @return
-     */
     private static ActionBuilder createOFAction(int actionKeyVal) {
         DecNwTtlBuilder ta = new DecNwTtlBuilder();
         DecNwTtl decNwTtl = ta.build();
@@ -173,10 +163,6 @@ public class Test implements TestService {
         return ab;
     }
 
-    /**
-     * @param actionKeyVal TODO
-     * @return
-     */
     private static ActionBuilder createNxActionBld(int actionKeyVal) {
         // vendor part
         DstNxRegCaseBuilder nxRegCaseBld = new DstNxRegCaseBuilder().setNxReg(NxmNxReg0.class);
@@ -187,15 +173,14 @@ public class Test implements TestService {
         NxRegLoadBuilder nxRegLoadBuilder = new NxRegLoadBuilder();
         nxRegLoadBuilder.setDst(dstBld.build());
         nxRegLoadBuilder.setValue(BigInteger.valueOf(55L));
-        NxActionRegLoadNodesNodeTableFlowApplyActionsCaseBuilder topNxActionCaseBld = new NxActionRegLoadNodesNodeTableFlowApplyActionsCaseBuilder();
+        NxActionRegLoadNodesNodeTableFlowApplyActionsCaseBuilder topNxActionCaseBld =
+                new NxActionRegLoadNodesNodeTableFlowApplyActionsCaseBuilder();
         topNxActionCaseBld.setNxRegLoad(nxRegLoadBuilder.build());
-        
+
         // base part
         ActionBuilder abExt = new ActionBuilder();
         abExt.setKey(new ActionKey(actionKeyVal));
         abExt.setAction(topNxActionCaseBld.build());
         return abExt;
     }
-    
-
 }

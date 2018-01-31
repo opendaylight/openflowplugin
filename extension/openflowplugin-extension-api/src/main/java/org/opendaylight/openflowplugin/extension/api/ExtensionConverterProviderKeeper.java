@@ -14,13 +14,17 @@ import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionCon
  * Simple {@link ExtensionConverterProvider} place holder.
  */
 public interface ExtensionConverterProviderKeeper {
+
     /**
-     * @param extensionConverterProvider here extension converters will be kept in order to be accessible by inner infrastructure
+     * Sets the ExtensionConverterProvider. Extension converters will be kept in order to be accessible by inner
+     * infrastructure.
+     *
+     * @param extensionConverterProvider the ExtensionConverterProvider
      */
     void setExtensionConverterProvider(ExtensionConverterProvider extensionConverterProvider);
 
     /**
-     * @return extension converters registry access point for by inner infrastructure
+     * Returns the extension converters registry access point for by inner infrastructure.
      */
     ExtensionConverterProvider getExtensionConverterProvider();
 }

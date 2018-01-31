@@ -51,7 +51,7 @@ public class GroupDescStatsResponseConvertor extends Convertor<List<GroupDesc>, 
 
     private org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.Buckets toSALBucketsDesc(List<BucketsList> bucketDescStats, short version) {
         final ActionResponseConvertorData data = new ActionResponseConvertorData(version);
-        data.setActionPath(ActionPath.GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION);
+        data.setActionPath(ActionPath.GROUP_DESC_STATS_UPDATED_BUCKET_ACTION);
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.BucketsBuilder salBucketsDesc =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.BucketsBuilder();

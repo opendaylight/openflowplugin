@@ -44,9 +44,10 @@ public class FinTimeoutConvertorTest {
 
     @Before
     public void setUp() throws Exception {
-        final org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.fin.timeout.grouping.NxActionFinTimeout nxFinTimeout =
-                Mockito.mock(
-                        org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.fin.timeout.grouping.NxActionFinTimeout.class);
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action
+            .fin.timeout.grouping.NxActionFinTimeout nxFinTimeout =  Mockito.mock(org.opendaylight.yang.gen.v1.urn
+                .opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.fin.timeout.grouping
+                    .NxActionFinTimeout.class);
         when(actionsCase.getNxActionFinTimeout()).thenReturn(nxFinTimeout);
         when(nxFinTimeout.getFinIdleTimeout()).thenReturn(1);
         when(nxFinTimeout.getFinHardTimeout()).thenReturn(2);
@@ -73,22 +74,22 @@ public class FinTimeoutConvertorTest {
     public void testConvert1() throws Exception {
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult =
                 finTimeoutConvertor.convert(action,
-                        ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION);
+                        ActionPath.FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult1 =
                 finTimeoutConvertor.convert(action,
-                        ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION);
+                        ActionPath.FLOWS_STATISTICS_UPDATE_WRITE_ACTIONS);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult2 =
                 finTimeoutConvertor.convert(action,
-                        ActionPath.GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION);
+                        ActionPath.GROUP_DESC_STATS_UPDATED_BUCKET_ACTION);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult3 =
                 finTimeoutConvertor.convert(action,
-                        ActionPath.NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION);
+                        ActionPath.INVENTORY_FLOWNODE_TABLE_WRITE_ACTIONS);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult4 =
                 finTimeoutConvertor.convert(action,
-                        ActionPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION);
+                        ActionPath.FLOWS_STATISTICS_RPC_APPLY_ACTIONS);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult5 =
                 finTimeoutConvertor.convert(action,
-                        ActionPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION);
+                        ActionPath.FLOWS_STATISTICS_RPC_WRITE_ACTIONS);
 
         Assert.assertEquals(3, ((NxActionFinTimeoutNotifFlowsStatisticsUpdateApplyActionsCase) actionResult)
                 .getNxActionFinTimeout().getFinIdleTimeout().intValue());

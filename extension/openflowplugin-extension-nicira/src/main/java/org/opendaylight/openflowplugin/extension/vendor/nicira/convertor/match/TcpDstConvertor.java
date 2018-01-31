@@ -39,21 +39,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yangtools.yang.binding.Augmentation;
 
 /**
+ * Convert to/from SAL flow model to openflowjava model for TcpDstCase.
+ *
  * @author Aswin Suryanarayanan.
  */
 public class TcpDstConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava#convert
-     * (org.opendaylight.yangtools.yang.binding.DataContainer,
-     * org.opendaylight.openflowplugin.extension.api.path.AugmentationPath)
-     */
     @Override
     public ExtensionAugment<? extends Augmentation<Extension>> convert(MatchEntry input, MatchPath path) {
-        TcpDstCaseValue tcpDstCaseValue = ((TcpDstCaseValue) input.getMatchEntryValue());
+        TcpDstCaseValue tcpDstCaseValue = (TcpDstCaseValue) input.getMatchEntryValue();
         NxmOfTcpDstBuilder tcpDstBuilder = new NxmOfTcpDstBuilder();
         tcpDstBuilder.setPort(tcpDstCaseValue.getTcpDstValues().getPort());
         tcpDstBuilder.setMask(tcpDstCaseValue.getTcpDstValues().getMask());
@@ -61,18 +55,9 @@ public class TcpDstConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
                 NxmOfTcpDstKey.class);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava#convert
-     * (org
-     * .opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general
-     * .rev140714.general.extension.grouping.Extension)
-     */
     @Override
     public MatchEntry convert(Extension extension) {
-        Optional<NxmOfTcpDstGrouping> matchGrouping = MatchUtil.tcpDstResolver.getExtension(extension);
+        Optional<NxmOfTcpDstGrouping> matchGrouping = MatchUtil.TCP_DST_RESOLVER.getExtension(extension);
         if (!matchGrouping.isPresent()) {
             throw new CodecPreconditionException(extension);
         }
@@ -92,19 +77,19 @@ public class TcpDstConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
     private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(NxmOfTcpDst value,
                                                                    MatchPath path, Class<? extends ExtensionKey> key) {
         switch (path) {
-            case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH:
+            case FLOWS_STATISTICS_UPDATE_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,
                         new NxAugMatchNodesNodeTableFlowBuilder().setNxmOfTcpDst(value).build(), key);
-            case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH:
+            case FLOWS_STATISTICS_RPC_MATCH:
                 return new ExtensionAugment<>(NxAugMatchRpcGetFlowStats.class,
                         new NxAugMatchRpcGetFlowStatsBuilder().setNxmOfTcpDst(value).build(), key);
-            case PACKETRECEIVED_MATCH:
+            case PACKET_RECEIVED_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNotifPacketIn.class, new NxAugMatchNotifPacketInBuilder()
                         .setNxmOfTcpDst(value).build(), key);
-            case SWITCHFLOWREMOVED_MATCH:
+            case SWITCH_FLOW_REMOVED_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNotifSwitchFlowRemoved.class,
                         new NxAugMatchNotifSwitchFlowRemovedBuilder().setNxmOfTcpDst(value).build(), key);
-            case PACKETINMESSAGE_MATCH:
+            case PACKET_IN_MESSAGE_MATCH:
                 return new ExtensionAugment<>(NxAugMatchPacketInMessage.class,
                         new NxAugMatchPacketInMessageBuilder().setNxmOfTcpDst(value).build(), key);
             default:
