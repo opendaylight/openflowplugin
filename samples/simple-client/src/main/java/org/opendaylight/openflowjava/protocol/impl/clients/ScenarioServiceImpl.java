@@ -24,18 +24,19 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 /**
+ * Implementation of ScenarioService.
+ *
  * @author Jozef Bacigal
- *         Date: 9.3.2016
  */
 public class ScenarioServiceImpl implements ScenarioService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ScenarioServiceImpl.class);
 
-    private String XML_FILE_PATH_WITH_FILE_NAME = SIMPLE_CLIENT_SRC_MAIN_RESOURCES + SCENARIO_XML;
+    private String xmlFilePathWithFileName = SIMPLE_CLIENT_SRC_MAIN_RESOURCES + SCENARIO_XML;
 
-    public ScenarioServiceImpl(String scenarioFile){
+    public ScenarioServiceImpl(String scenarioFile) {
         if (null != scenarioFile && !scenarioFile.isEmpty()) {
-            this.XML_FILE_PATH_WITH_FILE_NAME = scenarioFile;
+            this.xmlFilePathWithFileName = scenarioFile;
         }
     }
 
@@ -50,8 +51,9 @@ public class ScenarioServiceImpl implements ScenarioService {
         Unmarshaller unmarshaller = jc.createUnmarshaller();
         unmarshaller.setSchema(schema);
 
-        Scenarios scenarios = (Scenarios) unmarshaller.unmarshal(new File(XML_FILE_PATH_WITH_FILE_NAME));
-        LOG.debug("Scenarios ({}) are un-marshaled from {}", scenarios.getScenario().size(), XML_FILE_PATH_WITH_FILE_NAME);
+        Scenarios scenarios = (Scenarios) unmarshaller.unmarshal(new File(xmlFilePathWithFileName));
+        LOG.debug("Scenarios ({}) are un-marshaled from {}", scenarios.getScenario().size(),
+                xmlFilePathWithFileName);
 
         boolean foundConfiguration = false;
         Scenario scenarioType = null;
@@ -75,11 +77,20 @@ public class ScenarioServiceImpl implements ScenarioService {
         SortedMap<Integer, ClientEvent> events = new TreeMap<>();
         Integer counter = 0;
         for (Step step : scenario.getStep()) {
-            LOG.debug("Step {}: {}, type {}, bytes {}", step.getOrder(), step.getName(), step.getEvent().value(), step.getBytes().toArray());
+            LOG.debug("Step {}: {}, type {}, bytes {}", step.getOrder(), step.getName(), step.getEvent().value(),
+                    step.getBytes().toArray());
             switch (step.getEvent()) {
-                case SLEEP_EVENT: events.put(counter++, new SleepEvent(1000)); break;
-                case SEND_EVENT: events.put(counter++, new SendEvent(ByteBufUtils.serializeList(step.getBytes()))); break;
-                case WAIT_FOR_MESSAGE_EVENT: events.put(counter++, new WaitForMessageEvent(ByteBufUtils.serializeList(step.getBytes()))); break;
+                case SLEEP_EVENT:
+                    events.put(counter++, new SleepEvent(1000));
+                    break;
+                case SEND_EVENT:
+                    events.put(counter++, new SendEvent(ByteBufUtils.serializeList(step.getBytes())));
+                    break;
+                case WAIT_FOR_MESSAGE_EVENT:
+                    events.put(counter++, new WaitForMessageEvent(ByteBufUtils.serializeList(step.getBytes())));
+                    break;
+                default:
+                    break;
             }
         }
         return events;
