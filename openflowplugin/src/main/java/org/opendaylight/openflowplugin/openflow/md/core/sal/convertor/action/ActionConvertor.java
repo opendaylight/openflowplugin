@@ -61,11 +61,11 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Con
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorProcessor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.OrderComparator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
-import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
- * Converts SAL actions into OF Library actions
+ * Converts SAL actions into OF Library actions.
  *
+ * <p>
  * Example usage:
  * <pre>
  * {@code
@@ -81,7 +81,8 @@ public final class ActionConvertor extends Convertor<
         List<Action>,
         ActionConvertorData> {
 
-    private static final ConvertorProcessor<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, Action, ActionConvertorData> PROCESSOR = new ConvertorProcessor<
+    private static final ConvertorProcessor<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112
+        .action.Action, Action, ActionConvertorData> PROCESSOR = new ConvertorProcessor<
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action,
             Action,
             ActionConvertorData>()
@@ -130,27 +131,33 @@ public final class ActionConvertor extends Convertor<
             .addCase(new SalToOfSetNwTosActionV10Case())
             // Try to convert action grouping using converters from openflowplugin-extension
             .addCase(new SalToOfGeneralExtensionGroupingCase());
-    private static final Set<Class<? extends DataContainer>> TYPES = Collections.singleton(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action.class);
-    private static final Ordering<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> ACTION_ORDERING =
-            Ordering.from(OrderComparator.<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>build());
+
+    private static final Set<Class<?>> TYPES = Collections.singleton(org.opendaylight.yang.gen.v1.urn.opendaylight
+            .action.types.rev131112.action.list.Action.class);
+    private static final Ordering<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112
+            .action.list.Action> ACTION_ORDERING = Ordering.from(OrderComparator.<org.opendaylight.yang.gen.v1.urn
+                    .opendaylight.action.types.rev131112.action.list.Action>build());
 
     @Override
-    public Collection<Class<? extends DataContainer>> getTypes() {
+    public Collection<Class<?>> getTypes() {
         return TYPES;
     }
 
     @Override
-    public List<Action> convert(List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> source, ActionConvertorData data) {
+    public List<Action> convert(List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action
+            .list.Action> source, ActionConvertorData data) {
         // Prepare list of converted actions
         final List<Action> result = new ArrayList<>();
 
         // Iterate over SAL actions, run them through tokenizer and then add them to list of converted actions
         if (source != null) {
-            final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> sortedActions =
-                    ACTION_ORDERING.sortedCopy(source);
+            final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>
+                sortedActions = ACTION_ORDERING.sortedCopy(source);
 
-            for (final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action action : sortedActions) {
-                final Optional<Action> convertedAction = PROCESSOR.process(action.getAction(), data, getConvertorExecutor());
+            for (final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action action :
+                    sortedActions) {
+                final Optional<Action> convertedAction = PROCESSOR.process(action.getAction(), data,
+                        getConvertorExecutor());
 
                 if (convertedAction.isPresent()) {
                     result.add(convertedAction.get());
