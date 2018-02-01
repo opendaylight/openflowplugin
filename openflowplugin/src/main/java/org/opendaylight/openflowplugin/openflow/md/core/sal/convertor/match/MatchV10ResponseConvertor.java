@@ -33,12 +33,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10;
-import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
- * Converts Openflow 1.0 specific flow match to MD-SAL format flow
- * match
+ * Converts Openflow 1.0 specific flow match to MD-SAL format flow match.
  *
+ * <p>
  * Example usage:
  * <pre>
  * {@code
@@ -96,8 +95,9 @@ public class MatchV10ResponseConvertor extends Convertor<MatchV10, MatchBuilder,
         }
         if (!source.getWildcards().isDLVLAN() && source.getDlVlan() != null) {
             VlanIdBuilder vlanIdBuilder = new VlanIdBuilder();
-            int vlanId = (source.getDlVlan() == (0xffff)) ? 0 : source.getDlVlan();
-            vlanIdBuilder.setVlanId(new org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId(vlanId));
+            int vlanId = source.getDlVlan() == 0xffff ? 0 : source.getDlVlan();
+            vlanIdBuilder.setVlanId(
+                    new org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId(vlanId));
             vlanIdBuilder.setVlanIdPresent(vlanId != 0);
             vlanMatchBuilder.setVlanId(vlanIdBuilder.build());
             matchBuilder.setVlanMatch(vlanMatchBuilder.build());
@@ -149,15 +149,13 @@ public class MatchV10ResponseConvertor extends Convertor<MatchV10, MatchBuilder,
                 TcpMatchBuilder tcpMatchBuilder = new TcpMatchBuilder();
                 boolean hasTcp = false;
                 if (!source.getWildcards().isTPSRC() && source.getTpSrc() != null) {
-                    tcpMatchBuilder
-                            .setTcpSourcePort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber(
-                                    source.getTpSrc()));
+                    tcpMatchBuilder.setTcpSourcePort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
+                            .inet.types.rev130715.PortNumber(source.getTpSrc()));
                     hasTcp = true;
                 }
                 if (!source.getWildcards().isTPDST() && source.getTpDst() != null) {
-                    tcpMatchBuilder
-                            .setTcpDestinationPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber(
-                                    source.getTpDst()));
+                    tcpMatchBuilder.setTcpDestinationPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang
+                            .ietf.inet.types.rev130715.PortNumber(source.getTpDst()));
                     hasTcp = true;
                 }
 
@@ -168,15 +166,13 @@ public class MatchV10ResponseConvertor extends Convertor<MatchV10, MatchBuilder,
                 UdpMatchBuilder udpMatchBuilder = new UdpMatchBuilder();
                 boolean hasUdp = false;
                 if (!source.getWildcards().isTPSRC() && source.getTpSrc() != null) {
-                    udpMatchBuilder
-                            .setUdpSourcePort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber(
-                                    source.getTpSrc()));
+                    udpMatchBuilder.setUdpSourcePort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
+                            .inet.types.rev130715.PortNumber(source.getTpSrc()));
                     hasUdp = true;
                 }
                 if (!source.getWildcards().isTPDST() && source.getTpDst() != null) {
-                    udpMatchBuilder
-                            .setUdpDestinationPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber(
-                                    source.getTpDst()));
+                    udpMatchBuilder.setUdpDestinationPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang
+                            .ietf.inet.types.rev130715.PortNumber(source.getTpDst()));
                     hasUdp = true;
                 }
 

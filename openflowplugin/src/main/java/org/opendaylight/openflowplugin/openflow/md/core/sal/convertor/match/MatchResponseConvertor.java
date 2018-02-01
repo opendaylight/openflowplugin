@@ -21,6 +21,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.case
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases.OfToSalEthDstCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases.OfToSalEthSrcCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases.OfToSalEthTypeCase;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases.OfToSalExperimenterIdCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases.OfToSalIcmpv4CodeCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases.OfToSalIcmpv4TypeCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases.OfToSalIcmpv6CodeCase;
@@ -47,7 +48,6 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.case
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases.OfToSalSctpDstCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases.OfToSalSctpSrcCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases.OfToSalTcpDstCase;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases.OfToSalExperimenterIdCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases.OfToSalTcpSrcCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases.OfToSalTunnelIdCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases.OfToSalTunnelIpv4DstCase;
@@ -74,19 +74,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.SctpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.field._case.SetFieldAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchEntriesGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.MatchEntryValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Dst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Src;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.field._case.SetFieldAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match;
-import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
- * Converts Openflow 1.3+ specific flow match to MD-SAL format flow
- * match
+ * Converts Openflow 1.3+ specific flow match to MD-SAL format flow match.
  *
+ * <p>
  * Example usage:
  * <pre>
  * {@code
@@ -96,8 +95,10 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  * }
  * </pre>
  */
-public class MatchResponseConvertor extends Convertor<MatchEntriesGrouping, MatchBuilder, VersionDatapathIdConvertorData> {
-    private static final ConvertorProcessor<MatchEntryValue, MatchBuilder, MatchResponseConvertorData> OF_TO_SAL_PROCESSOR = new ConvertorProcessor<MatchEntryValue, MatchBuilder, MatchResponseConvertorData>()
+public class MatchResponseConvertor extends Convertor<MatchEntriesGrouping, MatchBuilder,
+        VersionDatapathIdConvertorData> {
+    private static final ConvertorProcessor<MatchEntryValue, MatchBuilder, MatchResponseConvertorData>
+        OF_TO_SAL_PROCESSOR = new ConvertorProcessor<MatchEntryValue, MatchBuilder, MatchResponseConvertorData>()
             .addCase(new OfToSalInPortCase())
             .addCase(new OfToSalInPhyPortCase())
             .addCase(new OfToSalMetadataCase())
@@ -140,7 +141,8 @@ public class MatchResponseConvertor extends Convertor<MatchEntriesGrouping, Matc
             .addCase(new OfToSalTunnelIdCase())
             .addCase(new OfToSalExperimenterIdCase());
 
-    private static final ConvertorProcessor<MatchEntryValue, MatchBuilder, MatchResponseConvertorData> OF_TO_SAL_TUNNEL_PROCESSOR = new ConvertorProcessor<MatchEntryValue, MatchBuilder, MatchResponseConvertorData>()
+    private static final ConvertorProcessor<MatchEntryValue, MatchBuilder, MatchResponseConvertorData>
+        OF_TO_SAL_TUNNEL_PROCESSOR = new ConvertorProcessor<MatchEntryValue, MatchBuilder, MatchResponseConvertorData>()
             .addCase(new OfToSalTunnelIpv4SrcCase())
             .addCase(new OfToSalTunnelIpv4DstCase());
     private static final java.util.List<Class<?>> TYPES = Arrays.asList(Match.class, SetFieldAction.class);
@@ -175,15 +177,16 @@ public class MatchResponseConvertor extends Convertor<MatchEntriesGrouping, Matc
         data.setTcpFlagsMatchBuilder(new TcpFlagsMatchBuilder());
 
         for (MatchEntry ofMatch : source.getMatchEntry()) {
-            if (TunnelIpv4Dst.class.isAssignableFrom(ofMatch.getOxmMatchField()) ||
-                    TunnelIpv4Src.class.isAssignableFrom(ofMatch.getOxmMatchField())) {
-                /**
+            if (TunnelIpv4Dst.class.isAssignableFrom(ofMatch.getOxmMatchField())
+                    || TunnelIpv4Src.class.isAssignableFrom(ofMatch.getOxmMatchField())) {
+                /*
                  * TODO: Fix TunnelIpv4Src and Ipv4Dst, because current implementation do not work
                  * TunnelIpv4Src and TunnelIpv4Dst are not compatible with
                  * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField
                  * and so you cannot even set them to OxmMatchField.
                  * Creation of TunnelIpv4SrcCase and TunnelIpv4DstCase in
-                 * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value
+                 * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value
+                 *     .grouping.match.entry.value
                  * and proper use of it can fix this bug.
                  */
                 OF_TO_SAL_TUNNEL_PROCESSOR.process(ofMatch.getMatchEntryValue(), data, getConvertorExecutor());
