@@ -13,32 +13,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * provides activation and deactivation of drop responder service - responds on packetIn
+ * Provides activation and deactivation of drop responder service - responds on packetIn.
  */
 public class DropTestRpcProvider implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(DropTestRpcProvider.class);
 
     private SalFlowService flowService;
     private NotificationService notificationService;
-    private DropTestRpcSender commiter = new DropTestRpcSender();
+    private final DropTestRpcSender commiter = new DropTestRpcSender();
     private boolean active = false;
 
-    /**
-     * @param flowService value for setter
-     */
     public void setFlowService(final SalFlowService flowService) {
         this.flowService = flowService;
     }
 
-    /**
-     * @param notificationService value for setter
-     */
     public void setNotificationService(final NotificationService notificationService) {
         this.notificationService = notificationService;
     }
 
     /**
-     * activates drop responder
+     * Activates drop responder.
      */
     public void start() {
         commiter.setFlowService(flowService);
@@ -49,7 +43,7 @@ public class DropTestRpcProvider implements AutoCloseable {
     }
 
     /**
-     * @return message counts
+     * Returns the message counts.
      */
     public DropTestStats getStats() {
         if (this.commiter != null) {
@@ -60,7 +54,7 @@ public class DropTestRpcProvider implements AutoCloseable {
     }
 
     /**
-     * reset message counts
+     * Reset message counts.
      */
     public void clearStats() {
         if (commiter != null) {
@@ -78,7 +72,7 @@ public class DropTestRpcProvider implements AutoCloseable {
     }
 
     /**
-     * @return the active
+     * Returns the active state.
      */
     public boolean isActive() {
         return active;
