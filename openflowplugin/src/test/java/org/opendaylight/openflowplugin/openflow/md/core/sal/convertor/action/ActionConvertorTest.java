@@ -74,7 +74,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.EtherType;
 
 /**
- * test for {@link ActionConvertor}
+ * test for {@link ActionConvertor}.
  */
 public class ActionConvertorTest {
 
@@ -83,14 +83,14 @@ public class ActionConvertorTest {
 
     @Test
     public void testActionConvertorwithallParameters() {
-        OutputActionData();
-        CopyTtlData();
-        MplsTtlActionData();
+        outputActionData();
+        copyTtlData();
+        mplsTtlActionData();
         vlanActionData();
         mplsActionData();
         setQueueActionData();
         setGroupAction();
-        NwTtlAction();
+        nwTtlAction();
         pbbActionData();
         setFieldData();
         setExperimenterData();
@@ -100,10 +100,10 @@ public class ActionConvertorTest {
         data.setDatapathId(BigInteger.ONE);
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
 
-        Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action>> OFActionsList =
-                convertorManager.convert(actions, data);
+        Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping
+            .Action>> ofActionsList = convertorManager.convert(actions, data);
 
-        outputActions(OFActionsList.orElse(Collections.emptyList()));
+        outputActions(ofActionsList.orElse(Collections.emptyList()));
 
     }
 
@@ -114,10 +114,10 @@ public class ActionConvertorTest {
     }
 
     private void dropActionData() {
-        ActionBuilder AB = new ActionBuilder();
-        AB.setOrder(actionItem).setAction(new DropActionCaseBuilder().build());
+        ActionBuilder actionBuilder = new ActionBuilder();
+        actionBuilder.setOrder(actionItem).setAction(new DropActionCaseBuilder().build());
 
-        actions.add(actionItem++, AB.build());
+        actions.add(actionItem++, actionBuilder.build());
 
     }
 
@@ -129,10 +129,10 @@ public class ActionConvertorTest {
 
         SetFieldBuilder setFB = new SetFieldBuilder();
 
-        ActionBuilder AB = new ActionBuilder();
-        AB.setOrder(actionItem).setAction(new SetFieldCaseBuilder().setSetField(setFB.build()).build());
+        ActionBuilder actionBuilder = new ActionBuilder();
+        actionBuilder.setOrder(actionItem).setAction(new SetFieldCaseBuilder().setSetField(setFB.build()).build());
 
-        actions.add(actionItem++, AB.build());
+        actions.add(actionItem++, actionBuilder.build());
 
     }
 
@@ -140,36 +140,40 @@ public class ActionConvertorTest {
         PushPbbActionBuilder pushpbb = new PushPbbActionBuilder();
         pushpbb.setEthernetType(10);
 
-        ActionBuilder AB = new ActionBuilder();
-        AB.setOrder(actionItem).setAction(new PushPbbActionCaseBuilder().setPushPbbAction(pushpbb.build()).build());
+        ActionBuilder actionBuilder = new ActionBuilder();
+        actionBuilder.setOrder(actionItem).setAction(new PushPbbActionCaseBuilder()
+                .setPushPbbAction(pushpbb.build()).build());
 
-        actions.add(actionItem++, AB.build());
+        actions.add(actionItem++, actionBuilder.build());
 
         PopPbbActionBuilder popPBB = new PopPbbActionBuilder();
 
-        ActionBuilder AB1 = new ActionBuilder();
-        AB1.setOrder(actionItem).setAction(new PopPbbActionCaseBuilder().setPopPbbAction(popPBB.build()).build());
+        ActionBuilder actionBuilder1 = new ActionBuilder();
+        actionBuilder1.setOrder(actionItem).setAction(new PopPbbActionCaseBuilder()
+                .setPopPbbAction(popPBB.build()).build());
 
-        actions.add(actionItem++, AB1.build());
+        actions.add(actionItem++, actionBuilder1.build());
 
     }
 
-    private void NwTtlAction() {
+    private void nwTtlAction() {
         SetNwTtlActionBuilder setNwTtlActionBuilder = new SetNwTtlActionBuilder();
 
         setNwTtlActionBuilder.setNwTtl((short) 1);
-        ActionBuilder AB = new ActionBuilder();
-        AB.setOrder(actionItem).setAction(new SetNwTtlActionCaseBuilder().setSetNwTtlAction(setNwTtlActionBuilder.build()).build());
+        ActionBuilder actionBuilder = new ActionBuilder();
+        actionBuilder.setOrder(actionItem).setAction(new SetNwTtlActionCaseBuilder()
+                .setSetNwTtlAction(setNwTtlActionBuilder.build()).build());
 
-        actions.add(actionItem++, AB.build());
+        actions.add(actionItem++, actionBuilder.build());
 
         DecNwTtlBuilder necNwTtlBuilder = new DecNwTtlBuilder();
 
 
-        ActionBuilder AB1 = new ActionBuilder();
-        AB1.setOrder(actionItem).setAction(new DecNwTtlCaseBuilder().setDecNwTtl(necNwTtlBuilder.build()).build());
+        ActionBuilder actionBuilder1 = new ActionBuilder();
+        actionBuilder1.setOrder(actionItem).setAction(
+                new DecNwTtlCaseBuilder().setDecNwTtl(necNwTtlBuilder.build()).build());
 
-        actions.add(actionItem++, AB1.build());
+        actions.add(actionItem++, actionBuilder1.build());
 
     }
 
@@ -178,39 +182,42 @@ public class ActionConvertorTest {
         GroupActionBuilder grpIdAB = new GroupActionBuilder();
         grpIdAB.setGroup("98");
 
-        ActionBuilder AB = new ActionBuilder();
-        AB.setOrder(actionItem).setAction(new GroupActionCaseBuilder().setGroupAction(grpIdAB.build()).build());
+        ActionBuilder actionBuilder = new ActionBuilder();
+        actionBuilder.setOrder(actionItem).setAction(new GroupActionCaseBuilder()
+                .setGroupAction(grpIdAB.build()).build());
 
-        actions.add(actionItem++, AB.build());
+        actions.add(actionItem++, actionBuilder.build());
 
     }
 
     // TODO - check if this method is needed (private and never used locally) - see line 94
 
-    private static void outputActions(final List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action> oFActionsList) {
+    private static void outputActions(final List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common
+            .action.rev150203.actions.grouping.Action> ofActionsList) {
 
-        for (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action action : oFActionsList) {
-
+        for (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action
+                action : ofActionsList) {
             if (action.getActionChoice() instanceof OutputActionCase) {
                 OutputActionCase outputActionCase = (OutputActionCase) action.getActionChoice();
-                Assert.assertEquals((Integer) 10, (outputActionCase.getOutputAction().getMaxLength()));
+                Assert.assertEquals((Integer) 10, outputActionCase.getOutputAction().getMaxLength());
                 long port = 4294967293L;
-                Assert.assertEquals(port, (long) (outputActionCase.getOutputAction().getPort().getValue()));
+                Assert.assertEquals(port, (long) outputActionCase.getOutputAction().getPort().getValue());
 
 
             }
             if (action.getActionChoice() instanceof CopyTtlInCase) {
-                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(), CopyTtlInCase.class.getName());
+                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(),
+                        CopyTtlInCase.class.getName());
 
             }
             if (action.getActionChoice() instanceof CopyTtlOutCase) {
-                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(), CopyTtlOutCase.class.getName());
+                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(),
+                        CopyTtlOutCase.class.getName());
             }
 
-            if (action.getActionChoice() instanceof
-                    // TODO:getMplsTtl is missing.
-                    SetMplsTtlCase) {
-                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(), SetMplsTtlCase.class.getName());
+            if (action.getActionChoice() instanceof SetMplsTtlCase) {
+                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(),
+                        SetMplsTtlCase.class.getName());
 
             }
             if (action.getActionChoice() instanceof DecMplsTtlCase) {
@@ -229,34 +236,36 @@ public class ActionConvertorTest {
 
             if (action.getActionChoice() instanceof PopMplsCase) {
                 PopMplsCase popMplsCase = (PopMplsCase) action.getActionChoice();
-                Assert.assertEquals((Integer) 10, (popMplsCase.getPopMplsAction().getEthertype().getValue()));
+                Assert.assertEquals((Integer) 10, popMplsCase.getPopMplsAction().getEthertype().getValue());
             }
 
-            if (action.getActionChoice() instanceof
-
-                    // TODO:SetQueue,I dont have getQueueId
-                    SetQueueCase) {
-                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(), SetQueueCase.class.getName());
+            if (action.getActionChoice() instanceof SetQueueCase) {
+                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(),
+                        SetQueueCase.class.getName());
             }
 
             if (action.getActionChoice() instanceof GroupCase) {
                 GroupCase groupCase = (GroupCase) action.getActionChoice();
-                Assert.assertEquals(98, (long) (groupCase.getGroupAction().getGroupId()));
+                Assert.assertEquals(98, (long) groupCase.getGroupAction().getGroupId());
             }
 
             if (action.getActionChoice() instanceof PushVlanCase) {
-                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(), PushVlanCase.class.getName());
+                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(),
+                        PushVlanCase.class.getName());
             }
 
             if (action.getActionChoice() instanceof PopVlanCase) {
-                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(), PopVlanCase.class.getName());
+                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(),
+                        PopVlanCase.class.getName());
             }
 
             if (action.getActionChoice() instanceof SetNwTtlCase) {
-                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(), SetNwTtlCase.class.getName());
+                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(),
+                        SetNwTtlCase.class.getName());
             }
             if (action.getActionChoice() instanceof DecNwTtlCase) {
-                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(), DecNwTtlCase.class.getName());
+                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(),
+                        DecNwTtlCase.class.getName());
             }
             if (action.getActionChoice() instanceof PushPbbCase) {
                 PushPbbCase pushPbbCase = (PushPbbCase) action.getActionChoice();
@@ -266,7 +275,8 @@ public class ActionConvertorTest {
             }
 
             if (action.getActionChoice() instanceof PopMplsCase) {
-                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(), PopMplsCase.class.getName());
+                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(),
+                        PopMplsCase.class.getName());
             }
             if (action.getActionChoice() instanceof SetFieldCase) {
                 SetFieldCase setFieldCase = (SetFieldCase) action.getActionChoice();
@@ -289,53 +299,57 @@ public class ActionConvertorTest {
 
     }
 
-    private void OutputActionData() {
+    private void outputActionData() {
         OutputActionBuilder outputB = new OutputActionBuilder();
         outputB.setMaxLength(10);
         Uri uri = new Uri(OutputPortValues.CONTROLLER.toString());
         outputB.setOutputNodeConnector(uri);
 
-        ActionBuilder AB = new ActionBuilder();
-        AB.setOrder(actionItem).setAction(new OutputActionCaseBuilder().setOutputAction(outputB.build()).build());
+        ActionBuilder actionBuilder = new ActionBuilder();
+        actionBuilder.setOrder(actionItem).setAction(new OutputActionCaseBuilder()
+                .setOutputAction(outputB.build()).build());
 
-        actions.add(actionItem++, AB.build());
+        actions.add(actionItem++, actionBuilder.build());
 
     }
 
-    private void CopyTtlData() {
+    private void copyTtlData() {
         CopyTtlOutBuilder copyB = new CopyTtlOutBuilder();
 
-        ActionBuilder AB = new ActionBuilder();
-        AB.setOrder(actionItem).setAction(new CopyTtlOutCaseBuilder().setCopyTtlOut(copyB.build()).build());
+        ActionBuilder actionBuilder = new ActionBuilder();
+        actionBuilder.setOrder(actionItem).setAction(new CopyTtlOutCaseBuilder().setCopyTtlOut(copyB.build()).build());
 
-        actions.add(actionItem++, AB.build());
+        actions.add(actionItem++, actionBuilder.build());
 
         CopyTtlInBuilder copyTtlInBuilder = new CopyTtlInBuilder();
 
-        ActionBuilder AB1 = new ActionBuilder();
-        AB1.setOrder(actionItem).setAction(new CopyTtlInCaseBuilder().setCopyTtlIn(copyTtlInBuilder.build()).build());
+        ActionBuilder actionBuilder1 = new ActionBuilder();
+        actionBuilder1.setOrder(actionItem).setAction(new CopyTtlInCaseBuilder()
+                .setCopyTtlIn(copyTtlInBuilder.build()).build());
 
-        actions.add(actionItem++, AB1.build());
+        actions.add(actionItem++, actionBuilder1.build());
 
     }
 
-    private void MplsTtlActionData() {
+    private void mplsTtlActionData() {
 
         SetMplsTtlActionBuilder setMplsTtlActionB = new SetMplsTtlActionBuilder();
 
         setMplsTtlActionB.setMplsTtl((short) 10);
-        ActionBuilder AB1 = new ActionBuilder();
-        AB1.setOrder(actionItem).setAction(new SetMplsTtlActionCaseBuilder().setSetMplsTtlAction(setMplsTtlActionB.build()).build());
+        ActionBuilder actionBuilder1 = new ActionBuilder();
+        actionBuilder1.setOrder(actionItem).setAction(new SetMplsTtlActionCaseBuilder()
+                .setSetMplsTtlAction(setMplsTtlActionB.build()).build());
 
 
-        actions.add(actionItem++, AB1.build());
+        actions.add(actionItem++, actionBuilder1.build());
 
         DecMplsTtlBuilder decMplsTtlB = new DecMplsTtlBuilder();
 
-        ActionBuilder AB = new ActionBuilder();
-        AB.setOrder(actionItem).setAction(new DecMplsTtlCaseBuilder().setDecMplsTtl(decMplsTtlB.build()).build());
+        ActionBuilder actionBuilder = new ActionBuilder();
+        actionBuilder.setOrder(actionItem).setAction(new DecMplsTtlCaseBuilder()
+                .setDecMplsTtl(decMplsTtlB.build()).build());
 
-        actions.add(actionItem++, AB.build());
+        actions.add(actionItem++, actionBuilder.build());
     }
 
     private void vlanActionData() {
@@ -343,17 +357,19 @@ public class ActionConvertorTest {
 
         pvB.setVlanId(new VlanId(10));
 
-        ActionBuilder AB1 = new ActionBuilder();
-        AB1.setOrder(actionItem).setAction(new PushVlanActionCaseBuilder().setPushVlanAction(pvB.build()).build());
+        ActionBuilder actionBuilder1 = new ActionBuilder();
+        actionBuilder1.setOrder(actionItem).setAction(new PushVlanActionCaseBuilder()
+                .setPushVlanAction(pvB.build()).build());
 
-        actions.add(actionItem++, AB1.build());
+        actions.add(actionItem++, actionBuilder1.build());
 
         PopVlanActionBuilder popVAB = new PopVlanActionBuilder();
 
-        ActionBuilder AB = new ActionBuilder();
-        AB.setOrder(actionItem).setAction(new PopVlanActionCaseBuilder().setPopVlanAction(popVAB.build()).build());
+        ActionBuilder actionBuilder = new ActionBuilder();
+        actionBuilder.setOrder(actionItem).setAction(new PopVlanActionCaseBuilder()
+                .setPopVlanAction(popVAB.build()).build());
 
-        actions.add(actionItem++, AB.build());
+        actions.add(actionItem++, actionBuilder.build());
 
     }
 
@@ -362,18 +378,20 @@ public class ActionConvertorTest {
         PushMplsActionBuilder pushMB = new PushMplsActionBuilder();
         pushMB.setEthernetType(10);
 
-        ActionBuilder AB = new ActionBuilder();
-        AB.setOrder(actionItem).setAction(new PushMplsActionCaseBuilder().setPushMplsAction(pushMB.build()).build());
+        ActionBuilder actionBuilder = new ActionBuilder();
+        actionBuilder.setOrder(actionItem).setAction(new PushMplsActionCaseBuilder()
+                .setPushMplsAction(pushMB.build()).build());
 
-        actions.add(actionItem++, AB.build());
+        actions.add(actionItem++, actionBuilder.build());
 
         PopMplsActionBuilder popMB = new PopMplsActionBuilder();
         popMB.setEthernetType(10);
 
-        ActionBuilder AB1 = new ActionBuilder();
-        AB1.setOrder(actionItem).setAction(new PopMplsActionCaseBuilder().setPopMplsAction(popMB.build()).build());
+        ActionBuilder actionBuilder1 = new ActionBuilder();
+        actionBuilder1.setOrder(actionItem).setAction(new PopMplsActionCaseBuilder()
+                .setPopMplsAction(popMB.build()).build());
 
-        actions.add(actionItem++, AB1.build());
+        actions.add(actionItem++, actionBuilder1.build());
     }
 
     private void setQueueActionData() {
@@ -381,11 +399,10 @@ public class ActionConvertorTest {
         SetQueueActionBuilder setQB = new SetQueueActionBuilder();
         setQB.setQueue("99");
 
-        ActionBuilder AB1 = new ActionBuilder();
-        AB1.setOrder(actionItem).setAction(new SetQueueActionCaseBuilder().setSetQueueAction(setQB.build()).build());
+        ActionBuilder actionBuilder1 = new ActionBuilder();
+        actionBuilder1.setOrder(actionItem).setAction(new SetQueueActionCaseBuilder()
+                .setSetQueueAction(setQB.build()).build());
 
-        actions.add(actionItem++, AB1.build());
-
+        actions.add(actionItem++, actionBuilder1.build());
     }
-
 }

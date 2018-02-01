@@ -24,9 +24,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumberValuesV10;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-/**
- *
- */
 @RunWith(MockitoJUnitRunner.class)
 public class InventoryDataServiceUtilTest {
 
@@ -49,8 +46,8 @@ public class InventoryDataServiceUtilTest {
      */
     @Test
     public void testNodeConnectorBuilderFromDatapathIdPortNo() {
-        NodeConnectorBuilder nodeConnectorBuilder = InventoryDataServiceUtil.nodeConnectorBuilderFromDatapathIdPortNo(PATH_ID,
-                PORT_NO, OpenflowVersion.OF10);
+        NodeConnectorBuilder nodeConnectorBuilder = InventoryDataServiceUtil
+                .nodeConnectorBuilderFromDatapathIdPortNo(PATH_ID, PORT_NO, OpenflowVersion.OF10);
         assertNotNull(nodeConnectorBuilder);
 
         nodeConnectorBuilder = InventoryDataServiceUtil.nodeConnectorBuilderFromDatapathIdPortNo(PATH_ID,
@@ -63,13 +60,13 @@ public class InventoryDataServiceUtilTest {
     }
 
     /**
-     * Test method for {@link InventoryDataServiceUtil#nodeConnectorUpdatedBuilderFromDatapathIdPortNo(BigInteger datapathId,
-     * Long portNo, OpenflowVersion ofVersion)}
+     * Test method for {@link InventoryDataServiceUtil#nodeConnectorUpdatedBuilderFromDatapathIdPortNo(
+     * BigInteger datapathId, Long portNo, OpenflowVersion ofVersion)}.
      */
     @Test
     public void testNodeConnectorUpdatedBuilderFromDatapathIdPortNo() {
-        NodeConnectorUpdatedBuilder nodeConnectorUpdatedBuilder = InventoryDataServiceUtil.nodeConnectorUpdatedBuilderFromDatapathIdPortNo(PATH_ID,
-                PORT_NO, OpenflowVersion.OF10);
+        NodeConnectorUpdatedBuilder nodeConnectorUpdatedBuilder = InventoryDataServiceUtil
+                .nodeConnectorUpdatedBuilderFromDatapathIdPortNo(PATH_ID, PORT_NO, OpenflowVersion.OF10);
         assertNotNull(nodeConnectorUpdatedBuilder);
 
         nodeConnectorUpdatedBuilder = InventoryDataServiceUtil.nodeConnectorUpdatedBuilderFromDatapathIdPortNo(PATH_ID,
@@ -82,17 +79,19 @@ public class InventoryDataServiceUtilTest {
     }
 
     /**
-     * Test method for {@link InventoryDataServiceUtil#nodeConnectorInstanceIdentifierFromDatapathIdPortno(BigInteger datapathId, Long portNo, OpenflowVersion ofVersion)}
+     * Test method for {@link InventoryDataServiceUtil#nodeConnectorInstanceIdentifierFromDatapathIdPortno(
+     * BigInteger datapathId, Long portNo, OpenflowVersion ofVersion)}.
      */
     @Test
     public void testNodeConnectorInstanceIdentifierFromDatapathIdPortno() {
-        InstanceIdentifier<NodeConnector> nodeConnectorInstanceIdentifier = InventoryDataServiceUtil.nodeConnectorInstanceIdentifierFromDatapathIdPortno(BigInteger.ONE,
-                PORT_NO, OpenflowVersion.OF10);
+        InstanceIdentifier<NodeConnector> nodeConnectorInstanceIdentifier = InventoryDataServiceUtil
+                .nodeConnectorInstanceIdentifierFromDatapathIdPortno(BigInteger.ONE, PORT_NO, OpenflowVersion.OF10);
         assertNotNull(nodeConnectorInstanceIdentifier);
     }
 
     /**
-     * Test method for {@link InventoryDataServiceUtil#nodeConnectorRefFromDatapathIdPortno(BigInteger datapathId, Long portNo, OpenflowVersion ofVersion)}
+     * Test method for {@link InventoryDataServiceUtil#nodeConnectorRefFromDatapathIdPortno(
+     * BigInteger datapathId, Long portNo, OpenflowVersion ofVersion)}.
      */
     @Test
     public void testNodeConnectorRefFromDatapathIdPortno() {
@@ -114,19 +113,15 @@ public class InventoryDataServiceUtilTest {
     public void testDataPathIdFromNodeId() {
         String string = "openflow:";
         NodeId[] nodeIds = new NodeId[]{
-                // 0x00000000 000004d2
-                new NodeId(string + "1234"),
-                // 0x8db2089e 01391a86
-                new NodeId(string + "10210232779920710278"),
-                // 0xffffffff ffffffff
-                new NodeId(string + "18446744073709551615"),
+            // 0x00000000 000004d2
+            new NodeId(string + "1234"),
+            // 0x8db2089e 01391a86
+            new NodeId(string + "10210232779920710278"),
+            // 0xffffffff ffffffff
+            new NodeId(string + "18446744073709551615"),
         };
 
-        long[] expectedDPIDs = new long[]{
-                1234L,
-                -8236511293788841338L,
-                -1L
-        };
+        long[] expectedDPIDs = new long[] { 1234L, -8236511293788841338L, -1L };
 
         for (int i = 0; i < nodeIds.length; i++) {
             BigInteger datapathId = InventoryDataServiceUtil.dataPathIdFromNodeId(nodeIds[i]);
@@ -140,19 +135,15 @@ public class InventoryDataServiceUtilTest {
     @Test
     public void testLongToPaddedHex() {
         BigInteger[] dpids = new BigInteger[]{
-                // 0x00000000 000004d2
-                new BigInteger("1234"),
-                // 0x8db2089e 01391a86
-                new BigInteger("10210232779920710278"),
-                // 0xffffffff ffffffff
-                new BigInteger("18446744073709551615"),
+            // 0x00000000 000004d2
+            new BigInteger("1234"),
+            // 0x8db2089e 01391a86
+            new BigInteger("10210232779920710278"),
+            // 0xffffffff ffffffff
+            new BigInteger("18446744073709551615"),
         };
 
-        String[] expectedPaddedHexes = new String[]{
-                "00000000000004d2",
-                "8db2089e01391a86",
-                "ffffffffffffffff"
-        };
+        String[] expectedPaddedHexes = new String[] { "00000000000004d2", "8db2089e01391a86", "ffffffffffffffff" };
 
         for (int i = 0; i < dpids.length; i++) {
             String datapathIdHex = InventoryDataServiceUtil.bigIntegerToPaddedHex(dpids[i]);
@@ -165,23 +156,14 @@ public class InventoryDataServiceUtilTest {
      */
     @Test
     public void testNodeConnectorIDToPortNoString() {
-    	String[] nodeConnectorIDs = new String[]{
-    			"openflow:2",
-    			"openflow:2:3411",
-    			"INPORT",
-    			"openflow:628192264910264962"
-    	};
+        String[] nodeConnectorIDs = new String[] { "openflow:2", "openflow:2:3411", "INPORT",
+            "openflow:628192264910264962" };
 
-    	String[] expectedPortNoStrings = new String[]{
-    			"2",
-    			"3411",
-    			"INPORT",
-    			"628192264910264962"
-    	};
+        String[] expectedPortNoStrings = new String[] { "2", "3411", "INPORT", "628192264910264962" };
 
-    	for (int i = 0; i < nodeConnectorIDs.length; i++) {
-    		String portNoString = InventoryDataServiceUtil.portNoStringfromNodeConnectorID(nodeConnectorIDs[i]);
-    		Assert.assertEquals(expectedPortNoStrings[i], portNoString);
-    	}
+        for (int i = 0; i < nodeConnectorIDs.length; i++) {
+            String portNoString = InventoryDataServiceUtil.portNoStringfromNodeConnectorID(nodeConnectorIDs[i]);
+            Assert.assertEquals(expectedPortNoStrings[i], portNoString);
+        }
     }
 }
