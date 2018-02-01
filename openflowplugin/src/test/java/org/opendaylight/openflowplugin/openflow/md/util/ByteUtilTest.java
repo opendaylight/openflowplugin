@@ -19,61 +19,61 @@ import org.junit.Test;
  */
 public class ByteUtilTest {
 
-    private static final String hexString = "64,65,66,ff";
-    private static final String hexString00 = "00,00,00,00";
-    private static final String hexStringFF = "ff,ff,ff,ff";
+    private static final String HEX_STRING = "64,65,66,ff";
+    private static final String HEX_STRING00 = "00,00,00,00";
+    private static final String HEX_STRINGFF = "ff,ff,ff,ff";
 
-    private static final byte[] testBytes = {100, 101, 102, (byte) 255};
-    private static final byte[] testBytes00 = {0, 0, 0, 0};
-    private static final byte[] testBytesFF = {(byte) 255, (byte) 255, (byte) 255, (byte) 255};
+    private static final byte[] TEST_BYTES = {100, 101, 102, (byte) 255};
+    private static final byte[] TEST_BYTES00 = {0, 0, 0, 0};
+    private static final byte[] TEST_BYTESFF = {(byte) 255, (byte) 255, (byte) 255, (byte) 255};
 
-    private static final byte[] test3Bytes = {100, 101, 102};
-    private static final byte[] test3Bytes00 = {0, 0, 0};
-    private static final byte[] test3BytesFF = {(byte) 255, (byte) 255, (byte) 255};
+    private static final byte[] TEST3_BYTES = {100, 101, 102};
+    private static final byte[] TEST3_BYTES00 = {0, 0, 0};
+    private static final byte[] TEST3_BYTESFF = {(byte) 255, (byte) 255, (byte) 255};
 
-    private static final BigInteger bigInteger = new BigInteger("1684367103");
-    private static final BigInteger bigIntFF = new BigInteger("4294967295");
+    private static final BigInteger BIG_INTEGER = new BigInteger("1684367103");
+    private static final BigInteger BIG_INTFF = new BigInteger("4294967295");
 
-    private static final Integer mediumInteger = new Integer("6579558");
-    private static final Integer mediumIntegerFF = new Integer("16777215");
-    private static final int int00 = 0;
+    private static final Integer MEDIUM_INTEGER = new Integer("6579558");
+    private static final Integer MEDIUM_INTEGERFF = new Integer("16777215");
+    private static final int INT00 = 0;
 
-    private static final int shortByteLength = 2;
-    private static final int mediumByteLength = 3;
-    private static final int intByteLength = 4;
+    private static final int SHORT_BYTE_LENGTH = 2;
+    private static final int MEDIUM_BYTE_LENGTH = 3;
+    private static final int INT_BYTE_LENGTH = 4;
 
     /**
-     * test of {@link ByteUtil#bytesToHexstring(byte[], String)}
+     * test of {@link ByteUtil#bytesToHexstring(byte[], String)}.
      */
     @Test
     public void testBytesToHexstring() {
-        assertEquals(hexString, ByteUtil.bytesToHexstring(testBytes, ","));
-        assertEquals(hexString00, ByteUtil.bytesToHexstring(testBytes00, ","));
-        assertEquals(hexStringFF, ByteUtil.bytesToHexstring(testBytesFF, ","));
+        assertEquals(HEX_STRING, ByteUtil.bytesToHexstring(TEST_BYTES, ","));
+        assertEquals(HEX_STRING00, ByteUtil.bytesToHexstring(TEST_BYTES00, ","));
+        assertEquals(HEX_STRINGFF, ByteUtil.bytesToHexstring(TEST_BYTESFF, ","));
     }
 
     @Test
     public void testConvertBigIntegerToNBytes() {
-        byte[] bigIntAsBytes = ByteUtil.convertBigIntegerToNBytes(bigInteger, 4);
+        byte[] bigIntAsBytes = ByteUtil.convertBigIntegerToNBytes(BIG_INTEGER, 4);
         assertEquals(4, bigIntAsBytes.length);
 
-        bigIntAsBytes = ByteUtil.convertBigIntegerToNBytes(bigInteger, 6);
+        bigIntAsBytes = ByteUtil.convertBigIntegerToNBytes(BIG_INTEGER, 6);
         assertEquals(6, bigIntAsBytes.length);
 
-        bigIntAsBytes = ByteUtil.convertBigIntegerToNBytes(bigInteger, 8);
+        bigIntAsBytes = ByteUtil.convertBigIntegerToNBytes(BIG_INTEGER, 8);
         assertEquals(8, bigIntAsBytes.length);
     }
 
     @Test
     public void testBytesToUnsignedInt() {
-        long unsigned = ByteUtil.bytesToUnsignedInt(testBytes);
-        assertEquals(bigInteger.longValue(), unsigned);
+        long unsigned = ByteUtil.bytesToUnsignedInt(TEST_BYTES);
+        assertEquals(BIG_INTEGER.longValue(), unsigned);
 
-        unsigned = ByteUtil.bytesToUnsignedInt(testBytes00);
+        unsigned = ByteUtil.bytesToUnsignedInt(TEST_BYTES00);
         assertEquals(0, unsigned);
 
-        unsigned = ByteUtil.bytesToUnsignedInt(testBytesFF);
-        assertEquals(bigIntFF.longValue(), unsigned);
+        unsigned = ByteUtil.bytesToUnsignedInt(TEST_BYTESFF);
+        assertEquals(BIG_INTFF.longValue(), unsigned);
     }
 
     @Test
@@ -81,32 +81,32 @@ public class ByteUtilTest {
 
         byte[] twoBytes = {100, 101};
         int unsigned = ByteUtil.bytesToUnsignedShort(twoBytes);
-        assertEquals(bigInteger.shiftRight(16).shortValue(), unsigned);
+        assertEquals(BIG_INTEGER.shiftRight(16).shortValue(), unsigned);
 
         twoBytes = new byte[]{0, 0};
         unsigned = ByteUtil.bytesToUnsignedShort(twoBytes);
-        assertEquals(int00, unsigned);
+        assertEquals(INT00, unsigned);
 
         twoBytes = new byte[]{(byte) 255, (byte) 255};
         unsigned = ByteUtil.bytesToUnsignedShort(twoBytes);
-        assertEquals(bigIntFF.shiftRight(16).intValue(), unsigned);
+        assertEquals(BIG_INTFF.shiftRight(16).intValue(), unsigned);
     }
 
     @Test
     public void testBytesToUnsignedMedium() {
-        long unsigned = ByteUtil.bytesToUnsignedMedium(test3Bytes);
-        assertEquals(mediumInteger.longValue(), unsigned);
+        long unsigned = ByteUtil.bytesToUnsignedMedium(TEST3_BYTES);
+        assertEquals(MEDIUM_INTEGER.longValue(), unsigned);
 
-        unsigned = ByteUtil.bytesToUnsignedMedium(test3Bytes00);
+        unsigned = ByteUtil.bytesToUnsignedMedium(TEST3_BYTES00);
         assertEquals(0, unsigned);
 
-        unsigned = ByteUtil.bytesToUnsignedMedium(test3BytesFF);
-        assertEquals(mediumIntegerFF.longValue(), unsigned);
+        unsigned = ByteUtil.bytesToUnsignedMedium(TEST3_BYTESFF);
+        assertEquals(MEDIUM_INTEGERFF.longValue(), unsigned);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void exceptionTestBytesToUnsignedShort() {
-        ByteUtil.bytesToUnsignedShort(testBytes);
+        ByteUtil.bytesToUnsignedShort(TEST_BYTES);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -120,15 +120,15 @@ public class ByteUtilTest {
         long intValue = 255;
         byte[] bytes = ByteUtil.unsignedIntToBytes(intValue);
 
-        assertTrue(bytes.length == intByteLength);
+        assertTrue(bytes.length == INT_BYTE_LENGTH);
 
         intValue += 256;
         bytes = ByteUtil.unsignedIntToBytes(intValue);
-        assertTrue(bytes.length == intByteLength);
+        assertTrue(bytes.length == INT_BYTE_LENGTH);
 
         intValue += 256;
         bytes = ByteUtil.unsignedIntToBytes(intValue);
-        assertTrue(bytes.length == intByteLength);
+        assertTrue(bytes.length == INT_BYTE_LENGTH);
     }
 
     @Test
@@ -136,15 +136,15 @@ public class ByteUtilTest {
         int intValue = 255;
         byte[] bytes = ByteUtil.unsignedShortToBytes(intValue);
 
-        assertTrue(bytes.length == shortByteLength);
+        assertTrue(bytes.length == SHORT_BYTE_LENGTH);
 
         intValue += 256;
         bytes = ByteUtil.unsignedShortToBytes(intValue);
-        assertTrue(bytes.length == shortByteLength);
+        assertTrue(bytes.length == SHORT_BYTE_LENGTH);
 
         intValue += 256;
         bytes = ByteUtil.unsignedShortToBytes(intValue);
-        assertTrue(bytes.length == shortByteLength);
+        assertTrue(bytes.length == SHORT_BYTE_LENGTH);
     }
 
     @Test
@@ -152,15 +152,15 @@ public class ByteUtilTest {
         long intValue = 255;
         byte[] bytes = ByteUtil.unsignedMediumToBytes(intValue);
 
-        assertTrue(bytes.length == mediumByteLength);
+        assertTrue(bytes.length == MEDIUM_BYTE_LENGTH);
 
         intValue += 256;
         bytes = ByteUtil.unsignedMediumToBytes(intValue);
-        assertTrue(bytes.length == mediumByteLength);
+        assertTrue(bytes.length == MEDIUM_BYTE_LENGTH);
 
         intValue += 256;
         bytes = ByteUtil.unsignedMediumToBytes(intValue);
-        assertTrue(bytes.length == mediumByteLength);
+        assertTrue(bytes.length == MEDIUM_BYTE_LENGTH);
     }
 
 }
