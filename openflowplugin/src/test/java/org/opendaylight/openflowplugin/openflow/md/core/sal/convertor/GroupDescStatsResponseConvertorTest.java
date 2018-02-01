@@ -35,8 +35,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group.desc._case.multipart.reply.group.desc.GroupDescBuilder;
 
 /**
- * @author michal.polkorab
+ * Unit tests for GroupDescStats conversion.
  *
+ * @author michal.polkorab
  */
 public class GroupDescStatsResponseConvertorTest {
     private ConvertorManager convertorManager;
@@ -47,7 +48,7 @@ public class GroupDescStatsResponseConvertorTest {
     }
 
     /**
-     * Test empty GroupDescStats conversion
+     * Test empty GroupDescStats conversion.
      */
     @Test
     public void test() {
@@ -59,15 +60,15 @@ public class GroupDescStatsResponseConvertorTest {
     }
 
     /**
-     * Test single GroupDescStat conversion without buckets
+     * Test single GroupDescStat conversion without buckets.
      */
     @Test
     public void testSingleGroupDescStat() {
-        List<GroupDesc> groupDescStats = new ArrayList<>();
         GroupDescBuilder builder = new GroupDescBuilder();
         builder.setType(GroupType.OFPGTALL);
         builder.setGroupId(new GroupId(42L));
         builder.setBucketsList(new ArrayList<>());
+        List<GroupDesc> groupDescStats = new ArrayList<>();
         groupDescStats.add(builder.build());
 
         VersionConvertorData data = new VersionConvertorData(OFConstants.OFP_VERSION_1_3);
@@ -82,11 +83,10 @@ public class GroupDescStatsResponseConvertorTest {
     }
 
     /**
-     * Test single GroupDescStats conversion
+     * Test single GroupDescStats conversion.
      */
     @Test
     public void testGroupDescStats() {
-        List<GroupDesc> groupDescStats = new ArrayList<>();
 
         // **********************************************
         // First group desc
@@ -96,7 +96,6 @@ public class GroupDescStatsResponseConvertorTest {
         builder.setGroupId(new GroupId(42L));
 
         // Buckets for first group desc
-        List<BucketsList> bucketsList = new ArrayList<>();
         BucketsListBuilder bucketsBuilder = new BucketsListBuilder();
         bucketsBuilder.setWeight(16);
         bucketsBuilder.setWatchPort(new PortNumber(84L));
@@ -110,10 +109,12 @@ public class GroupDescStatsResponseConvertorTest {
 
         // Build bucket with actions
         bucketsBuilder.setAction(actions);
+        List<BucketsList> bucketsList = new ArrayList<>();
         bucketsList.add(bucketsBuilder.build());
 
         // Build first group desc
         builder.setBucketsList(bucketsList);
+        List<GroupDesc> groupDescStats = new ArrayList<>();
         groupDescStats.add(builder.build());
 
         // **********************************************
