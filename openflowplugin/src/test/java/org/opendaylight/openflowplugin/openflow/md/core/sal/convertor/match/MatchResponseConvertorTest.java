@@ -37,6 +37,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.EthD
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.EthSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.EthType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.InPort;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchEntriesGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmMatchType;
@@ -84,78 +85,73 @@ public class MatchResponseConvertorTest {
     }
 
     /**
-     * Test method for {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchResponseConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchEntriesGrouping, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)} }.
+     * Test method for {@link MatchResponseConvertor#convert(MatchEntriesGrouping, VersionDatapathIdConvertorData)} }.
      */
     @Test
     public void testFromOFMatchToSALMatch() {
         List<MatchEntry> entries = createDefaultMatchEntry();
 
         int[] vids = {
-                // Match packet with VLAN tag regardless of its value.
-                -1,
+            // Match packet with VLAN tag regardless of its value.
+            -1,
 
-                // Match untagged frame.
-                0,
+            // Match untagged frame.
+            0,
 
-                // Match packet with VLAN tag and VID equals the specified value.
-                1, 20, 4095,
+            // Match packet with VLAN tag and VID equals the specified value.
+            1, 20, 4095,
         };
 
         for (int vid : vids) {
-            List<MatchEntry> MatchEntry =
-                    new ArrayList<MatchEntry>(entries);
-            MatchEntry.add(toOfVlanVid(vid));
+            List<MatchEntry> matchEntry = new ArrayList<>(entries);
+            matchEntry.add(toOfVlanVid(vid));
             org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match ofMatch =
-                    createOFMatch(MatchEntry);
+                    createOFMatch(matchEntry);
 
             final VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
             data.setDatapathId(DPID);
             final MatchBuilder builder = convert(ofMatch, data);
             checkDefault(builder);
             VlanMatch vlanMatch = builder.getVlanMatch();
-            int expectedVid = (vid < 0) ? 0 : vid;
+            int expectedVid = vid < 0 ? 0 : vid;
             Boolean expectedCfi = vid != 0;
-            assertEquals(expectedVid, vlanMatch.getVlanId().getVlanId().
-                    getValue().intValue());
+            assertEquals(expectedVid, vlanMatch.getVlanId().getVlanId().getValue().intValue());
             assertEquals(expectedCfi, vlanMatch.getVlanId().isVlanIdPresent());
             assertEquals(null, vlanMatch.getVlanPcp());
         }
     }
 
     /**
-     * Test method for {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchV10ResponseConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)} }.
+     * Test method for {@link MatchV10ResponseConvertor#convert(MatchV10, VersionDatapathIdConvertorData)} }.
      */
     @Test
     public void testFromOFMatchV10ToSALMatch() {
         int[] vids = {
-                // Match untagged frame.
-                DL_VLAN_NONE,
+            // Match untagged frame.
+            DL_VLAN_NONE,
 
-                // Match packet with VLAN tag and VID equals the specified value.
-                1, 20, 4095,
+            // Match packet with VLAN tag and VID equals the specified value.
+            1, 20, 4095,
         };
-        short[] dscps = {
-                0, 1, 20, 40, 62, 63,
-        };
+        short[] dscps = { 0, 1, 20, 40, 62, 63, };
 
         FlowWildcardsV10Builder wcBuilder = new FlowWildcardsV10Builder();
         for (int vid : vids) {
             for (short dscp : dscps) {
                 short tos = (short) (dscp << 2);
                 MatchV10Builder builder = new MatchV10Builder();
-                builder.setDlSrc(MAC_SRC).setDlDst(MAC_DST).setDlVlan(vid).
-                        setDlVlanPcp(VLAN_PCP).setDlType(ETHTYPE_IPV4).
-                        setInPort(IN_PORT.intValue()).
-                        setNwSrc(IPV4_SRC).setNwDst(IPV4_DST).setNwTos(tos);
-                wcBuilder.setAll(false).setNwProto(true).setTpSrc(true).
-                        setTpDst(true);
+                builder.setDlSrc(MAC_SRC).setDlDst(MAC_DST).setDlVlan(vid).setDlVlanPcp(VLAN_PCP)
+                        .setDlType(ETHTYPE_IPV4).setInPort(IN_PORT.intValue()).setNwSrc(IPV4_SRC).setNwDst(IPV4_DST)
+                        .setNwTos(tos);
+                wcBuilder.setAll(false).setNwProto(true).setTpSrc(true).setTpDst(true);
                 if (vid == DL_VLAN_NONE) {
                     wcBuilder.setDlVlanPcp(true);
                 }
 
                 FlowWildcardsV10 wc = wcBuilder.build();
                 MatchV10 ofMatch = builder.setWildcards(wc).build();
-                final VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
+                final VersionDatapathIdConvertorData data =
+                        new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
                 data.setDatapathId(DPID);
                 Match match = convert(ofMatch, data).build();
                 checkDefaultV10(match, wc, vid);
@@ -181,18 +177,17 @@ public class MatchResponseConvertorTest {
         assertEquals(null, ethMatch.getEthernetSource().getMask());
         assertEquals(MAC_DST, ethMatch.getEthernetDestination().getAddress());
         assertEquals(null, ethMatch.getEthernetDestination().getMask());
-        assertEquals(ETHTYPE_IPV4, ethMatch.getEthernetType().getType().
-                getValue().intValue());
+        assertEquals(ETHTYPE_IPV4, ethMatch.getEthernetType().getType().getValue().intValue());
 
         NodeConnectorId inPort = builder.getInPort();
         assertEquals(URI_IN_PORT, inPort.getValue());
     }
 
-    private static org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match createOFMatch(final List<MatchEntry> entries) {
+    private static org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match
+            createOFMatch(final List<MatchEntry> entries) {
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder builder =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder();
-        return builder.setType(OxmMatchType.class).setMatchEntry(entries).
-                build();
+        return builder.setType(OxmMatchType.class).setMatchEntry(entries).build();
     }
 
     private static List<MatchEntry> createDefaultMatchEntry() {
@@ -257,7 +252,6 @@ public class MatchResponseConvertorTest {
         byte[] mask = null;
         builder.setOxmClass(OpenflowBasicClass.class);
         builder.setOxmMatchField(VlanVid.class);
-        VlanVidCaseBuilder vlanVidCaseBuilder = new VlanVidCaseBuilder();
         if (vid == 0) {
             // Match untagged frame.
             cfi = false;
@@ -274,6 +268,7 @@ public class MatchResponseConvertorTest {
         if (hasMask) {
             vlanVidBuilder.setMask(mask);
         }
+        VlanVidCaseBuilder vlanVidCaseBuilder = new VlanVidCaseBuilder();
         vlanVidCaseBuilder.setVlanVid(vlanVidBuilder.build());
         builder.setHasMask(hasMask);
         builder.setMatchEntryValue(vlanVidCaseBuilder.build());
@@ -307,8 +302,7 @@ public class MatchResponseConvertorTest {
             assertEquals(null, match.getLayer3Match());
         } else {
             assert ethMatch != null;
-            assertEquals(ETHTYPE_IPV4, ethMatch.getEthernetType().getType().
-                    getValue().intValue());
+            assertEquals(ETHTYPE_IPV4, ethMatch.getEthernetType().getType().getValue().intValue());
 
             Ipv4Match ipv4Match = (Ipv4Match) match.getLayer3Match();
             assertEquals(IPV4_SRC.getValue() + "/32",
@@ -330,8 +324,7 @@ public class MatchResponseConvertorTest {
                 expectedVid = vid;
                 expectedCfi = Boolean.TRUE;
             }
-            assertEquals(expectedVid, vlanMatch.getVlanId().getVlanId().
-                    getValue().intValue());
+            assertEquals(expectedVid, vlanMatch.getVlanId().getVlanId().getValue().intValue());
             assertEquals(expectedCfi, vlanMatch.getVlanId().isVlanIdPresent());
 
             if (wc.isDLVLANPCP()) {
@@ -349,7 +342,9 @@ public class MatchResponseConvertorTest {
         return salMatchOptional.orElse(new MatchBuilder());
     }
 
-    private MatchBuilder convert(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match match, VersionDatapathIdConvertorData data) {
+    private MatchBuilder convert(
+            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match match,
+            VersionDatapathIdConvertorData data) {
         final Optional<MatchBuilder> salMatchOptional = convertorManager.convert(match, data);
 
         return salMatchOptional.orElse(new MatchBuilder());

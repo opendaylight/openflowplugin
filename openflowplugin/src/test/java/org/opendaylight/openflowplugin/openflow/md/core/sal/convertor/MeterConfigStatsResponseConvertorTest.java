@@ -37,7 +37,7 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
 public class MeterConfigStatsResponseConvertorTest {
     private static final int PRESET_COUNT = 7;
 
-    private List<MeterConfig> createMeterConfigList(){
+    private List<MeterConfig> createMeterConfigList() {
         List<MeterConfig> meterConfigs = new ArrayList<>();
         MeterConfigBuilder meterConfigBuilder = new MeterConfigBuilder();
         for (int i = 0; i < PRESET_COUNT; i++) {
@@ -77,12 +77,13 @@ public class MeterConfigStatsResponseConvertorTest {
      */
     public void testToSALMeterConfigList() {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        Optional<List<MeterConfigStats>> meterConfigsOptional = convertorManager.convert(createMeterConfigList(), new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
+        Optional<List<MeterConfigStats>> meterConfigsOptional = convertorManager.convert(createMeterConfigList(),
+                new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
         List<MeterConfigStats> meterConfigs = meterConfigsOptional.orElse(Collections.emptyList());
 
         assertEquals(PRESET_COUNT, meterConfigs.size());
         int cnt = 0;
-        for (MeterConfigStats meterConfigStats: meterConfigs){
+        for (MeterConfigStats meterConfigStats: meterConfigs) {
             assertEquals(new Long(cnt), meterConfigStats.getMeterId().getValue());
             assertTrue(meterConfigStats.getFlags().isMeterBurst());
             assertFalse(meterConfigStats.getFlags().isMeterKbps());
@@ -93,13 +94,11 @@ public class MeterConfigStatsResponseConvertorTest {
         }
     }
 
-
-    private final class MockMeterBandBuilder implements org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.MeterBand {
-
+    private final class MockMeterBandBuilder implements org.opendaylight.yang.gen.v1.urn.opendaylight.openflow
+            .protocol.rev130731.meter.band.header.MeterBand {
         @Override
         public Class<? extends DataContainer> getImplementedInterface() {
             return MockMeterBandBuilder.class;
         }
     }
-
 }

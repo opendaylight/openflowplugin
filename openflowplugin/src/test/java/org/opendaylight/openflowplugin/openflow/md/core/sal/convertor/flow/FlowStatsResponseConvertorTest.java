@@ -54,7 +54,7 @@ public class FlowStatsResponseConvertorTest {
     private static final int PRESET_COUNT = 7;
 
     /**
-     * Test method for {@link FlowInstructionResponseConvertor#convert(java.util.List, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData)} }
+     * Test method for {@link FlowInstructionResponseConvertor#convert(List, VersionConvertorData)} }.
      */
     @Test
     public void testToSALInstruction() {
@@ -145,7 +145,7 @@ public class FlowStatsResponseConvertorTest {
         for (int i = 0; i < PRESET_COUNT; i++) {
             WriteMetadataCaseBuilder metadataCaseBuilder = new WriteMetadataCaseBuilder();
             WriteMetadataBuilder metadataBuilder = new WriteMetadataBuilder();
-            
+
             metadataBuilder.setMetadata(BigInteger.TEN.setBit(i).toByteArray());
             metadataBuilder.setMetadataMask(BigInteger.ONE.setBit(i).toByteArray());
             metadataCaseBuilder.setWriteMetadata(metadataBuilder.build());
