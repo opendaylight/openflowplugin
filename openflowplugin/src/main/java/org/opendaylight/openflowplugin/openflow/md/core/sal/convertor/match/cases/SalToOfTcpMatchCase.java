@@ -32,7 +32,8 @@ public class SalToOfTcpMatchCase extends ConvertorCase<TcpMatch, List<MatchEntry
     }
 
     @Override
-    public Optional<List<MatchEntry>> process(@Nonnull TcpMatch source, VersionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<List<MatchEntry>> process(@Nonnull TcpMatch source, VersionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         List<MatchEntry> result = new ArrayList<>();
 
         if (source.getTcpSourcePort() != null) {
