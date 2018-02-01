@@ -29,7 +29,8 @@ public class OfToSalEthDstCase extends ConvertorCase<EthDstCase, MatchBuilder, M
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull EthDstCase source, MatchResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<MatchBuilder> process(@Nonnull EthDstCase source, MatchResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final EthernetMatchBuilder ethMatchBuilder = data.getEthernetMatchBuilder();
 

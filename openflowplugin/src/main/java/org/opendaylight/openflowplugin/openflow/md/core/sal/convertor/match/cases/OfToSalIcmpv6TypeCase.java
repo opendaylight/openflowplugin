@@ -25,7 +25,8 @@ public class OfToSalIcmpv6TypeCase extends ConvertorCase<Icmpv6TypeCase, MatchBu
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull Icmpv6TypeCase source, MatchResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<MatchBuilder> process(@Nonnull Icmpv6TypeCase source, MatchResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final Icmpv6MatchBuilder icmpv6MatchBuilder = data.getIcmpv6MatchBuilder();
 

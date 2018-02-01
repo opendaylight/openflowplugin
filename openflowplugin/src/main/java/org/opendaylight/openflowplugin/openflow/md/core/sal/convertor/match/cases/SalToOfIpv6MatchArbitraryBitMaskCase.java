@@ -28,13 +28,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ipv6.dst._case.Ipv6DstBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ipv6.src._case.Ipv6SrcBuilder;
 
-public class SalToOfIpv6MatchArbitraryBitMaskCase extends ConvertorCase<Ipv6MatchArbitraryBitMask, List<MatchEntry>, VersionConvertorData> {
+public class SalToOfIpv6MatchArbitraryBitMaskCase extends ConvertorCase<Ipv6MatchArbitraryBitMask,
+        List<MatchEntry>, VersionConvertorData> {
     public SalToOfIpv6MatchArbitraryBitMaskCase() {
         super(Ipv6MatchArbitraryBitMask.class, true);
     }
 
     @Override
-    public Optional<List<MatchEntry>> process(@Nonnull Ipv6MatchArbitraryBitMask source, VersionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<List<MatchEntry>> process(@Nonnull Ipv6MatchArbitraryBitMask source, VersionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         List<MatchEntry> result = new ArrayList<>();
 
         if (source.getIpv6SourceAddressNoMask() != null) {
@@ -42,7 +44,6 @@ public class SalToOfIpv6MatchArbitraryBitMaskCase extends ConvertorCase<Ipv6Matc
             matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
             matchEntryBuilder.setOxmMatchField(Ipv6Src.class);
 
-            Ipv6SrcCaseBuilder ipv6SrcCaseBuilder = new Ipv6SrcCaseBuilder();
             Ipv6SrcBuilder ipv6SrcBuilder = new Ipv6SrcBuilder();
             ipv6SrcBuilder.setIpv6Address(source.getIpv6SourceAddressNoMask());
             Ipv6ArbitraryMask sourceArbitrarySubNetMask = source.getIpv6SourceArbitraryBitmask();
@@ -55,6 +56,8 @@ public class SalToOfIpv6MatchArbitraryBitMaskCase extends ConvertorCase<Ipv6Matc
                 }
             }
             matchEntryBuilder.setHasMask(hasMask);
+
+            Ipv6SrcCaseBuilder ipv6SrcCaseBuilder = new Ipv6SrcCaseBuilder();
             ipv6SrcCaseBuilder.setIpv6Src(ipv6SrcBuilder.build());
             matchEntryBuilder.setMatchEntryValue(ipv6SrcCaseBuilder.build());
             result.add(matchEntryBuilder.build());
@@ -65,7 +68,6 @@ public class SalToOfIpv6MatchArbitraryBitMaskCase extends ConvertorCase<Ipv6Matc
             matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
             matchEntryBuilder.setOxmMatchField(Ipv6Dst.class);
 
-            Ipv6DstCaseBuilder ipv6DstCaseBuilder = new Ipv6DstCaseBuilder();
             Ipv6DstBuilder ipv6DstBuilder = new Ipv6DstBuilder();
 
             ipv6DstBuilder.setIpv6Address(source.getIpv6DestinationAddressNoMask());
@@ -73,13 +75,16 @@ public class SalToOfIpv6MatchArbitraryBitMaskCase extends ConvertorCase<Ipv6Matc
 
             boolean hasMask = false;
             if (destinationArbitrarySubNetMask != null) {
-                byte[] maskByteArray = IpConversionUtil.convertIpv6ArbitraryMaskToByteArray(destinationArbitrarySubNetMask);
+                byte[] maskByteArray = IpConversionUtil.convertIpv6ArbitraryMaskToByteArray(
+                        destinationArbitrarySubNetMask);
                 if (maskByteArray != null) {
                     ipv6DstBuilder.setMask(maskByteArray);
                     hasMask = true;
                 }
             }
             matchEntryBuilder.setHasMask(hasMask);
+
+            Ipv6DstCaseBuilder ipv6DstCaseBuilder = new Ipv6DstCaseBuilder();
             ipv6DstCaseBuilder.setIpv6Dst(ipv6DstBuilder.build());
             matchEntryBuilder.setMatchEntryValue(ipv6DstCaseBuilder.build());
             result.add(matchEntryBuilder.build());

@@ -37,7 +37,8 @@ public class SalToOfTunnelIpv4MatchCase extends ConvertorCase<TunnelIpv4Match, L
     }
 
     @Override
-    public Optional<List<MatchEntry>> process(@Nonnull TunnelIpv4Match source, VersionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<List<MatchEntry>> process(@Nonnull TunnelIpv4Match source, VersionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         List<MatchEntry> result = new ArrayList<>();
 
         if (source.getTunnelIpv4Source() != null) {
@@ -46,7 +47,6 @@ public class SalToOfTunnelIpv4MatchCase extends ConvertorCase<TunnelIpv4Match, L
             matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
             matchEntryBuilder.setOxmMatchField(Ipv4Src.class);
 
-            Ipv4SrcCaseBuilder ipv4SrcCaseBuilder = new Ipv4SrcCaseBuilder();
             Ipv4SrcBuilder ipv4SrcBuilder = new Ipv4SrcBuilder();
 
             Iterator<String> addressParts = IpConversionUtil.splitToParts(ipv4Prefix);
@@ -61,6 +61,8 @@ public class SalToOfTunnelIpv4MatchCase extends ConvertorCase<TunnelIpv4Match, L
             }
 
             matchEntryBuilder.setHasMask(hasMask);
+
+            Ipv4SrcCaseBuilder ipv4SrcCaseBuilder = new Ipv4SrcCaseBuilder();
             ipv4SrcCaseBuilder.setIpv4Src(ipv4SrcBuilder.build());
             matchEntryBuilder.setMatchEntryValue(ipv4SrcCaseBuilder.build());
             result.add(matchEntryBuilder.build());
@@ -72,7 +74,6 @@ public class SalToOfTunnelIpv4MatchCase extends ConvertorCase<TunnelIpv4Match, L
             matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
             matchEntryBuilder.setOxmMatchField(Ipv4Dst.class);
 
-            Ipv4DstCaseBuilder ipv4DstCaseBuilder = new Ipv4DstCaseBuilder();
             Ipv4DstBuilder ipv4DstBuilder = new Ipv4DstBuilder();
 
             Iterator<String> addressParts = IpConversionUtil.splitToParts(ipv4Prefix);
@@ -87,6 +88,8 @@ public class SalToOfTunnelIpv4MatchCase extends ConvertorCase<TunnelIpv4Match, L
             }
 
             matchEntryBuilder.setHasMask(hasMask);
+
+            Ipv4DstCaseBuilder ipv4DstCaseBuilder = new Ipv4DstCaseBuilder();
             ipv4DstCaseBuilder.setIpv4Dst(ipv4DstBuilder.build());
             matchEntryBuilder.setMatchEntryValue(ipv4DstCaseBuilder.build());
             result.add(matchEntryBuilder.build());

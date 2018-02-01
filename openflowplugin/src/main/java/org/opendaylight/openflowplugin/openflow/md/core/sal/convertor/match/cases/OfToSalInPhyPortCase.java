@@ -27,7 +27,8 @@ public class OfToSalInPhyPortCase extends ConvertorCase<InPhyPortCase, MatchBuil
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull InPhyPortCase source, MatchResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<MatchBuilder> process(@Nonnull InPhyPortCase source, MatchResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final OpenflowVersion ofVersion = OpenflowVersion.get(data.getVersion());
         final BigInteger datapathId = data.getDatapathId();
@@ -35,7 +36,8 @@ public class OfToSalInPhyPortCase extends ConvertorCase<InPhyPortCase, MatchBuil
         final PortNumber portNumber = source.getInPhyPort().getPortNumber();
 
         if (portNumber != null) {
-            matchBuilder.setInPhyPort(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathId, portNumber.getValue(), ofVersion));
+            matchBuilder.setInPhyPort(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(
+                    datapathId, portNumber.getValue(), ofVersion));
         }
 
         return Optional.of(matchBuilder);
