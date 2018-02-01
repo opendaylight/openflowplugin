@@ -25,7 +25,8 @@ public class OfToSalCopyTtlOutCase extends ConvertorCase<CopyTtlOutCase, Action,
     }
 
     @Override
-    public Optional<Action> process(@Nonnull final CopyTtlOutCase source, final ActionResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final CopyTtlOutCase source, final ActionResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         CopyTtlOutBuilder copyTtlOutaction = new CopyTtlOutBuilder();
         return Optional.of(new CopyTtlOutCaseBuilder().setCopyTtlOut(copyTtlOutaction.build()).build());
     }

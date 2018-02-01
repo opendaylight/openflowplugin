@@ -26,7 +26,8 @@ public class SalToOfCopyTtlInCase extends ConvertorCase<CopyTtlInCase, Action, A
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final CopyTtlInCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final CopyTtlInCase source, final ActionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         return Optional.of(new ActionBuilder()
                 .setActionChoice(new CopyTtlInCaseBuilder().build())
                 .build());

@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
  * Decodes the SAL - Group Mod Message and encodes into a OF
  * Library for the OFPT_GROUP_MOD Message. Input:SAL Layer Group command data.
  *
+ * <p>
  * Example usage:
  * <pre>
  * {@code
@@ -52,7 +53,9 @@ import org.slf4j.LoggerFactory;
  * </pre>
  */
 public class GroupConvertor extends Convertor<Group, GroupModInputBuilder, VersionDatapathIdConvertorData> {
-    private static final List<Class<?>> TYPES = Arrays.asList(Group.class, AddGroupInput.class, RemoveGroupInput.class, UpdatedGroup.class);
+    private static final List<Class<?>> TYPES = Arrays.asList(Group.class, AddGroupInput.class,
+            RemoveGroupInput.class, UpdatedGroup.class);
+
     /**
      * Create default empty group mod input builder
      * Use this method, if result from convertor is empty.
@@ -72,7 +75,9 @@ public class GroupConvertor extends Convertor<Group, GroupModInputBuilder, Versi
     private static final Long OFPG_ANY = Long.parseLong("ffffffff", 16);
     private static final Long DEFAULT_WATCH_GROUP = OFPG_ANY;
     private static final Comparator<Bucket> COMPARATOR = (bucket1, bucket2) -> {
-        if (bucket1.getBucketId() == null || bucket2.getBucketId() == null) return 0;
+        if (bucket1.getBucketId() == null || bucket2.getBucketId() == null) {
+            return 0;
+        }
         return bucket1.getBucketId().getValue().compareTo(bucket2.getBucketId().getValue());
     };
 
@@ -81,8 +86,8 @@ public class GroupConvertor extends Convertor<Group, GroupModInputBuilder, Versi
         final ActionConvertorData data = new ActionConvertorData(version);
         data.setDatapathId(datapathid);
 
-        for (org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket groupBucket : buckets
-                .getBucket()) {
+        for (org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket groupBucket :
+                buckets.getBucket()) {
             BucketsListBuilder bucketBuilder = new BucketsListBuilder();
 
             salToOFBucketListWeight(groupBucket, bucketBuilder, groupType);
@@ -101,7 +106,8 @@ public class GroupConvertor extends Convertor<Group, GroupModInputBuilder, Versi
 
     }
 
-    private static void salToOFBucketListWatchPort(Bucket groupBucket, BucketsListBuilder bucketBuilder, int groupType) {
+    private static void salToOFBucketListWatchPort(Bucket groupBucket, BucketsListBuilder bucketBuilder,
+            int groupType) {
         if (null != groupBucket.getWatchPort()) {
             bucketBuilder.setWatchPort(new PortNumber(groupBucket.getWatchPort()));
         } else {
@@ -112,7 +118,8 @@ public class GroupConvertor extends Convertor<Group, GroupModInputBuilder, Versi
         }
     }
 
-    private static void salToOFBucketListWatchGroup(Bucket groupBucket, BucketsListBuilder bucketBuilder, int groupType) {
+    private static void salToOFBucketListWatchGroup(Bucket groupBucket, BucketsListBuilder bucketBuilder,
+            int groupType) {
         if (null != groupBucket.getWatchGroup()) {
             bucketBuilder.setWatchGroup(groupBucket.getWatchGroup());
         } else {
@@ -171,11 +178,12 @@ public class GroupConvertor extends Convertor<Group, GroupModInputBuilder, Versi
         // Only if the bucket is configured for the group then add it
         // During group deletion do not push the buckets
         if (groupModInputBuilder.getCommand() != GroupModCommand.OFPGCDELETE) {
-            if ((source.getBuckets() != null) && (source.getBuckets().getBucket().size() != 0)) {
+            if (source.getBuckets() != null && source.getBuckets().getBucket().size() != 0) {
 
                 Collections.sort(source.getBuckets().getBucket(), COMPARATOR);
 
-                List<BucketsList> bucketLists = salToOFBucketList(source.getBuckets(), data.getVersion(), source.getGroupType().getIntValue(), data.getDatapathId());
+                List<BucketsList> bucketLists = salToOFBucketList(source.getBuckets(), data.getVersion(),
+                        source.getGroupType().getIntValue(), data.getDatapathId());
                 groupModInputBuilder.setBucketsList(bucketLists);
             }
         }

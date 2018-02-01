@@ -27,13 +27,12 @@ public class OfToSalSetNwSrcCase extends ConvertorCase<SetNwSrcCase, Action, Act
     }
 
     @Override
-    public Optional<Action> process(@Nonnull final SetNwSrcCase source, final ActionResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final SetNwSrcCase source, final ActionResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         return Optional.of(new SetNwSrcActionCaseBuilder()
-                .setSetNwSrcAction(new SetNwSrcActionBuilder()
-                        .setAddress(new Ipv4Builder()
-                                .setIpv4Address(IpConversionUtil.createPrefix(source.getSetNwSrcAction().getIpAddress()))
-                                .build())
-                        .build())
+                .setSetNwSrcAction(new SetNwSrcActionBuilder().setAddress(new Ipv4Builder()
+                        .setIpv4Address(IpConversionUtil.createPrefix(source.getSetNwSrcAction().getIpAddress()))
+                        .build()).build())
                 .build());
     }
 }
