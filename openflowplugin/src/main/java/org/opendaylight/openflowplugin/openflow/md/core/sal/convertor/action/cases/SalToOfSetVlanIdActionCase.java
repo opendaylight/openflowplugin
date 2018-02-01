@@ -36,11 +36,8 @@ public class SalToOfSetVlanIdActionCase extends ConvertorCase<SetVlanIdActionCas
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final SetVlanIdActionCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
-        SetVlanIdAction setvlanidaction = source.getSetVlanIdAction();
-        SetFieldCaseBuilder setFieldCaseBuilder = new SetFieldCaseBuilder();
-        SetFieldActionBuilder setFieldBuilder = new SetFieldActionBuilder();
-        List<MatchEntry> entries = new ArrayList<>();
+    public Optional<Action> process(@Nonnull final SetVlanIdActionCase source, final ActionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         MatchEntryBuilder matchBuilder = new MatchEntryBuilder();
         matchBuilder.setOxmClass(OpenflowBasicClass.class);
         matchBuilder.setOxmMatchField(VlanVid.class);
@@ -48,11 +45,18 @@ public class SalToOfSetVlanIdActionCase extends ConvertorCase<SetVlanIdActionCas
         VlanVidCaseBuilder vlanVidCaseBuilder = new VlanVidCaseBuilder();
         VlanVidBuilder vlanVidBuilder = new VlanVidBuilder();
         vlanVidBuilder.setCfiBit(true);
+        SetVlanIdAction setvlanidaction = source.getSetVlanIdAction();
         vlanVidBuilder.setVlanVid(setvlanidaction.getVlanId().getValue());
         vlanVidCaseBuilder.setVlanVid(vlanVidBuilder.build());
         matchBuilder.setMatchEntryValue(vlanVidCaseBuilder.build());
+
+        List<MatchEntry> entries = new ArrayList<>();
         entries.add(matchBuilder.build());
+
+        SetFieldActionBuilder setFieldBuilder = new SetFieldActionBuilder();
         setFieldBuilder.setMatchEntry(entries);
+
+        SetFieldCaseBuilder setFieldCaseBuilder = new SetFieldCaseBuilder();
         setFieldCaseBuilder.setSetFieldAction(setFieldBuilder.build());
 
         return Optional.of(new ActionBuilder()

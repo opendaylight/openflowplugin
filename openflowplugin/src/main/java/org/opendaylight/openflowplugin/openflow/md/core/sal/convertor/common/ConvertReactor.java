@@ -14,15 +14,16 @@ import java.util.Map;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 
 /**
- * @param <FROM> source type for conversion
+ * Base class for a conversion reactor.
  *
+ * @param <F> source type for conversion
  */
-public abstract class ConvertReactor<FROM> {
+public abstract class ConvertReactor<F> {
     private final Map<ConvertorKey, ResultInjector<?, ?>> injectionMapping;
-    private final Map<Short, ConvertReactorConvertor<FROM, ?>> conversionMapping;
+    private final Map<Short, ConvertReactorConvertor<F, ?>> conversionMapping;
 
     protected ConvertReactor() {
-        final Map<Short, ConvertReactorConvertor<FROM, ?>> conversions = new HashMap<>();
+        final Map<Short, ConvertReactorConvertor<F, ?>> conversions = new HashMap<>();
         final Map<ConvertorKey, ResultInjector<?, ?>> injections = new HashMap<>();
         initMappings(conversions, injections);
 
@@ -32,41 +33,47 @@ public abstract class ConvertReactor<FROM> {
     }
 
     /**
-     * fill conversion and injection mappings
+     * Fill conversion and injection mappings.
+     *
      * @param conversions convert from
      * @param injections injection
      */
-    protected abstract void initMappings(Map<Short, ConvertReactorConvertor<FROM, ?>> conversions,
+    protected abstract void initMappings(Map<Short, ConvertReactorConvertor<F, ?>> conversions,
             Map<ConvertorKey, ResultInjector<?, ?>> injections);
 
     /**
-     * @param <RESULT> result
-     * @param <TARGET> target
+     * Converts a source to a target.
+     *
+     * @param <R> result
+     * @param <T> target
      * @param source convert from
      * @param version openflow version
      * @param target convert to
-     * @param convertorExecutor
+     * @param convertorExecutor the convertor executor
      */
     @SuppressWarnings("unchecked")
-    public <RESULT, TARGET> void convert(final FROM source, final short version, final TARGET target, final ConvertorExecutor convertorExecutor) {
+    public <R, T> void convert(final F source, final short version, final T target,
+            final ConvertorExecutor convertorExecutor) {
 
         //lookup converter
-        ConvertReactorConvertor<FROM, RESULT> convertor = (ConvertReactorConvertor<FROM, RESULT>) conversionMapping.get(version);
+        ConvertReactorConvertor<F, R> convertor = (ConvertReactorConvertor<F, R>) conversionMapping.get(version);
         if (convertor == null) {
-            throw new IllegalArgumentException("convertor for given version ["+version+"] not found");
+            throw new IllegalArgumentException("convertor for given version [" + version + "] not found");
         }
-        RESULT convertedItem = convertor.convert(source, convertorExecutor);
+        R convertedItem = convertor.convert(source, convertorExecutor);
 
         //lookup injection
         ConvertorKey key = buildInjectionKey(version, convertedItem, target);
-        ResultInjector<RESULT, TARGET> injection = (ResultInjector<RESULT, TARGET>) injectionMapping.get(key);
+        ResultInjector<R, T> injection = (ResultInjector<R, T>) injectionMapping.get(key);
         if (injection == null) {
-            throw new IllegalArgumentException("injector for given version and target ["+key+"] not found");
+            throw new IllegalArgumentException("injector for given version and target [" + key + "] not found");
         }
         injection.inject(convertedItem, target);
     }
 
     /**
+     * Builds an injection key.
+     *
      * @param version openflow version
      * @param convertedItem to be injected
      * @param target object

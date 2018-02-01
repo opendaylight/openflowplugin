@@ -29,7 +29,8 @@ public class SalToOfPushVlanActionCase extends ConvertorCase<PushVlanActionCase,
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final PushVlanActionCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final PushVlanActionCase source, final ActionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         PushVlanAction pushVlanAction = source.getPushVlanAction();
 
         PushVlanCaseBuilder pushVlanCaseBuilder = new PushVlanCaseBuilder();

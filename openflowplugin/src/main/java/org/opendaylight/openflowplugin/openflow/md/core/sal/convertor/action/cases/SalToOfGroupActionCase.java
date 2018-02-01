@@ -28,7 +28,8 @@ public class SalToOfGroupActionCase extends ConvertorCase<GroupActionCase, Actio
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final GroupActionCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final GroupActionCase source, final ActionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         GroupAction groupAction = source.getGroupAction();
         GroupActionBuilder groupActionBuilder = new GroupActionBuilder();
 
