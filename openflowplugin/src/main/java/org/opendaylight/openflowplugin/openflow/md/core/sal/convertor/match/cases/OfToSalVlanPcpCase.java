@@ -25,7 +25,8 @@ public class OfToSalVlanPcpCase extends ConvertorCase<VlanPcpCase, MatchBuilder,
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull VlanPcpCase source, MatchResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<MatchBuilder> process(@Nonnull VlanPcpCase source, MatchResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final VlanMatchBuilder vlanMatchBuilder = data.getVlanMatchBuilder();
 
