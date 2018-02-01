@@ -29,7 +29,8 @@ public class SalToOfSetTpDstActionV10Case extends ConvertorCase<SetTpDstActionCa
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final SetTpDstActionCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final SetTpDstActionCase source, final ActionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         SetTpDstAction settpdstaction = source.getSetTpDstAction();
         SetTpDstCaseBuilder setTpDstCaseBuilder = new SetTpDstCaseBuilder();
         SetTpDstActionBuilder setTpDstActionBuilder = new SetTpDstActionBuilder();

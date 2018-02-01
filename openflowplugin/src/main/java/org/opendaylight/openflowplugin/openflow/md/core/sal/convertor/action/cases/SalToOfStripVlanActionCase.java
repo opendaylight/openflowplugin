@@ -35,10 +35,8 @@ public class SalToOfStripVlanActionCase extends ConvertorCase<StripVlanActionCas
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final StripVlanActionCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
-        SetFieldCaseBuilder setFieldCaseBuilder = new SetFieldCaseBuilder();
-        SetFieldActionBuilder setFieldBuilder = new SetFieldActionBuilder();
-        List<MatchEntry> entries = new ArrayList<>();
+    public Optional<Action> process(@Nonnull final StripVlanActionCase source, final ActionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         MatchEntryBuilder matchBuilder = new MatchEntryBuilder();
         matchBuilder.setOxmClass(OpenflowBasicClass.class);
         matchBuilder.setOxmMatchField(VlanVid.class);
@@ -50,8 +48,14 @@ public class SalToOfStripVlanActionCase extends ConvertorCase<StripVlanActionCas
         vlanVidCaseBuilder.setVlanVid(vlanVidBuilder.build());
         matchBuilder.setMatchEntryValue(vlanVidCaseBuilder.build());
         matchBuilder.setHasMask(false);
+
+        List<MatchEntry> entries = new ArrayList<>();
         entries.add(matchBuilder.build());
+
+        SetFieldActionBuilder setFieldBuilder = new SetFieldActionBuilder();
         setFieldBuilder.setMatchEntry(entries);
+
+        SetFieldCaseBuilder setFieldCaseBuilder = new SetFieldCaseBuilder();
         setFieldCaseBuilder.setSetFieldAction(setFieldBuilder.build());
 
         return Optional.of(new ActionBuilder()

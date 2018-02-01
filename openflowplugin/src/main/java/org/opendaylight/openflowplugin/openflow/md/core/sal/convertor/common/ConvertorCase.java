@@ -16,15 +16,16 @@ import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 
 /**
- * The Convertor case used in {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorProcessor}.
+ * The Convertor case used in
+ * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorProcessor}.
  *
- * @param <FROM> the source type
- * @param <TO>   the result type
- * @param <DATA> the data type
+ * @param <F> the source type
+ * @param <T>   the result type
+ * @param <D> the data type
  */
-public abstract class ConvertorCase<FROM, TO, DATA extends ConvertorData> {
+public abstract class ConvertorCase<F, T, D extends ConvertorData> {
     private final List<Short> supportedVersions;
-    private final Class<FROM> type;
+    private final Class<F> type;
     private final boolean errorOnEmpty;
 
     /**
@@ -34,22 +35,22 @@ public abstract class ConvertorCase<FROM, TO, DATA extends ConvertorData> {
      * @param errorOnEmpty      the error on empty
      * @param supportedVersions the supported versions
      */
-    protected ConvertorCase(Class<FROM> type, boolean errorOnEmpty, Short... supportedVersions) {
+    protected ConvertorCase(Class<F> type, boolean errorOnEmpty, Short... supportedVersions) {
         this.type = type;
         this.errorOnEmpty = errorOnEmpty;
         this.supportedVersions = Arrays.asList(Preconditions.checkNotNull(supportedVersions));
     }
 
     /**
-     * Process source and return result, what can be empty
-     *
+     * Process source and return result, what can be empty.
      *
      * @param source the source
      * @param data   the data
      * @param convertorExecutor convertor executor
      * @return the optional
      */
-    public abstract Optional<TO> process(@Nonnull final FROM source, final DATA data, final ConvertorExecutor convertorExecutor);
+    public abstract Optional<T> process(@Nonnull final F source, final D data,
+            final ConvertorExecutor convertorExecutor);
 
     /**
      * Should {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorProcessor}
@@ -70,7 +71,7 @@ public abstract class ConvertorCase<FROM, TO, DATA extends ConvertorData> {
      * @param convertorExecutor convertor executor
      * @return the optional
      */
-    Optional<TO> processRaw(@Nonnull final Object source, final DATA data, final ConvertorExecutor convertorExecutor) {
+    Optional<T> processRaw(@Nonnull final Object source, final D data, final ConvertorExecutor convertorExecutor) {
         return process(getType().cast(source), data, convertorExecutor);
     }
 
@@ -79,7 +80,7 @@ public abstract class ConvertorCase<FROM, TO, DATA extends ConvertorData> {
      *
      * @return the type
      */
-    Class<FROM> getType() {
+    Class<F> getType() {
         return type;
     }
 
