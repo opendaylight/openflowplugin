@@ -25,7 +25,8 @@ public class OfToSalStripVlanCase extends ConvertorCase<StripVlanCase, Action, A
     }
 
     @Override
-    public Optional<Action> process(@Nonnull final StripVlanCase source, final ActionResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final StripVlanCase source, final ActionResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         PopVlanActionBuilder popVlan = new PopVlanActionBuilder();
         return Optional.of(new PopVlanActionCaseBuilder().setPopVlanAction(popVlan.build()).build());
     }

@@ -26,7 +26,8 @@ public class OfToSalSetVlanPcpCase extends ConvertorCase<SetVlanPcpCase, Action,
     }
 
     @Override
-    public Optional<Action> process(@Nonnull final SetVlanPcpCase source, final ActionResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final SetVlanPcpCase source, final ActionResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         return Optional.of(new SetVlanPcpActionCaseBuilder()
                 .setSetVlanPcpAction(new SetVlanPcpActionBuilder()
                         .setVlanPcp(new VlanPcp(source.getSetVlanPcpAction().getVlanPcp()))

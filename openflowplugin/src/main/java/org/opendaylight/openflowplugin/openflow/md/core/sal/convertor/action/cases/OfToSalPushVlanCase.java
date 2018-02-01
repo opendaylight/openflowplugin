@@ -26,7 +26,8 @@ public class OfToSalPushVlanCase extends ConvertorCase<PushVlanCase, Action, Act
     }
 
     @Override
-    public Optional<Action> process(@Nonnull final PushVlanCase source, final ActionResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final PushVlanCase source, final ActionResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         PushVlanAction pushVlanActionFromOF = source.getPushVlanAction();
         PushVlanActionBuilder pushVlanAction = new PushVlanActionBuilder();
         pushVlanAction.setEthernetType(pushVlanActionFromOF.getEthertype().getValue());

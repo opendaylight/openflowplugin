@@ -24,7 +24,10 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.Matc
 /**
  * Convertor manager factory.
  */
-public class ConvertorManagerFactory {
+public final class ConvertorManagerFactory {
+    private ConvertorManagerFactory() {
+    }
+
     /**
      * Create default convertor manager.
      *
@@ -35,7 +38,8 @@ public class ConvertorManagerFactory {
         final TableFeaturesResponseConvertor tableFeaturesResponseConvertor = new TableFeaturesResponseConvertor();
         final MeterConvertor meterConvertor = new MeterConvertor();
         final MeterStatsResponseConvertor meterStatsResponseConvertor = new MeterStatsResponseConvertor();
-        final MeterConfigStatsResponseConvertor meterConfigStatsResponseConvertor = new MeterConfigStatsResponseConvertor();
+        final MeterConfigStatsResponseConvertor meterConfigStatsResponseConvertor =
+                new MeterConfigStatsResponseConvertor();
         final PortConvertor portConvertor = new PortConvertor();
         final MatchConvertor matchConvertor = new MatchConvertor();
         final MatchV10Convertor matchV10Convertor = new MatchV10Convertor();
@@ -48,7 +52,8 @@ public class ConvertorManagerFactory {
         final GroupStatsResponseConvertor groupStatsResponseConvertor = new GroupStatsResponseConvertor();
         final PacketOutConvertor packetOutConvertor = new PacketOutConvertor();
         final FlowConvertor flowConvertor = new FlowConvertor();
-        final FlowInstructionResponseConvertor flowInstructionResponseConvertor = new FlowInstructionResponseConvertor();
+        final FlowInstructionResponseConvertor flowInstructionResponseConvertor =
+                new FlowInstructionResponseConvertor();
         final FlowStatsResponseConvertor flowStatsResponseConvertor = new FlowStatsResponseConvertor();
         final FlowFlagsConvertor flowFlagsConvertor = new FlowFlagsConvertor();
         final FlowFlagsV10Convertor flowFlagsV10Convertor = new FlowFlagsV10Convertor();
