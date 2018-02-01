@@ -14,7 +14,6 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionResponseConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanIdActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.vlan.id.action._case.SetVlanIdActionBuilder;
@@ -27,7 +26,8 @@ public class OfToSalSetVlanIdCase extends ConvertorCase<SetVlanVidCase, Action, 
     }
 
     @Override
-    public Optional<Action> process(@Nonnull final SetVlanVidCase source, final ActionResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final SetVlanVidCase source, final ActionResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         return Optional.of(new SetVlanIdActionCaseBuilder()
                 .setSetVlanIdAction(new SetVlanIdActionBuilder()
                         .setVlanId(new VlanId(source.getSetVlanVidAction().getVlanVid()))

@@ -34,14 +34,16 @@ public class OfToSalOutputActionCase extends ConvertorCase<OutputActionCase, Act
     }
 
     @Override
-    public Optional<Action> process(@Nonnull final OutputActionCase source, final ActionResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final OutputActionCase source, final ActionResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         final OpenflowVersion ofVersion = OpenflowVersion.get(data.getVersion());
 
         OutputActionBuilder outputAction = new OutputActionBuilder();
         OutputAction outputActionFromOF = source.getOutputAction();
 
         if (outputActionFromOF.getPort() != null) {
-            PortNumberUni protocolAgnosticPort = OpenflowPortsUtil.getProtocolAgnosticPort(ofVersion, outputActionFromOF.getPort().getValue());
+            PortNumberUni protocolAgnosticPort = OpenflowPortsUtil.getProtocolAgnosticPort(ofVersion,
+                    outputActionFromOF.getPort().getValue());
             String portNumberAsString = OpenflowPortsUtil.portNumberToString(protocolAgnosticPort);
             outputAction.setOutputNodeConnector(new Uri(portNumberAsString));
         } else {

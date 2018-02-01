@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 /**
  * Created by Anil Vishnoi (avishnoi@Brocade.com) on 8/2/16.
  */
-public class OFApprovedExperimenterIds {
+public interface OFApprovedExperimenterIds {
 
-    public static final long MATCH_TCP_FLAGS_EXP_ID = 1330529792;
+    long MATCH_TCP_FLAGS_EXP_ID = 1330529792;
 }

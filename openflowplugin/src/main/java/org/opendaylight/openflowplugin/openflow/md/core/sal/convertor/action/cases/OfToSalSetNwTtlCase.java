@@ -26,7 +26,8 @@ public class OfToSalSetNwTtlCase extends ConvertorCase<SetNwTtlCase, Action, Act
     }
 
     @Override
-    public Optional<Action> process(@Nonnull final SetNwTtlCase source, final ActionResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final SetNwTtlCase source, final ActionResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         SetNwTtlAction setNwTtlActionFromOf = source.getSetNwTtlAction();
         SetNwTtlActionBuilder setNwTtl = new SetNwTtlActionBuilder();
         setNwTtl.setNwTtl(setNwTtlActionFromOf.getNwTtl());

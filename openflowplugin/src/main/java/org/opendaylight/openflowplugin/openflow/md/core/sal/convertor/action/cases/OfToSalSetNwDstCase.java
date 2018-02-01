@@ -27,13 +27,12 @@ public class OfToSalSetNwDstCase extends ConvertorCase<SetNwDstCase, Action, Act
     }
 
     @Override
-    public Optional<Action> process(@Nonnull final SetNwDstCase source, final ActionResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final SetNwDstCase source, final ActionResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         return Optional.of(new SetNwDstActionCaseBuilder()
-                .setSetNwDstAction(new SetNwDstActionBuilder()
-                        .setAddress(new Ipv4Builder()
-                                .setIpv4Address(IpConversionUtil.createPrefix(source.getSetNwDstAction().getIpAddress()))
-                                .build())
-                        .build())
+                .setSetNwDstAction(new SetNwDstActionBuilder().setAddress(new Ipv4Builder()
+                        .setIpv4Address(IpConversionUtil.createPrefix(source.getSetNwDstAction().getIpAddress()))
+                        .build()).build())
                 .build());
     }
 }

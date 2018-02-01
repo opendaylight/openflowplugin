@@ -24,7 +24,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SalToOfGeneralExtensionGroupingCase extends ConvertorCase<GeneralExtensionGrouping, Action, ActionConvertorData> {
+public class SalToOfGeneralExtensionGroupingCase
+        extends ConvertorCase<GeneralExtensionGrouping, Action, ActionConvertorData> {
     private static final Logger LOG = LoggerFactory.getLogger(SalToOfGeneralExtensionGroupingCase.class);
 
     public SalToOfGeneralExtensionGroupingCase() {
@@ -33,16 +34,18 @@ public class SalToOfGeneralExtensionGroupingCase extends ConvertorCase<GeneralEx
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final GeneralExtensionGrouping source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final GeneralExtensionGrouping source, final ActionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         final short version = data.getVersion();
-        /**
+
+        /*
          * TODO: EXTENSION PROPOSAL (action, MD-SAL to OFJava)
          * - we might need sessionContext as converter input
          *
          */
-
         Extension extAction = source.getExtension();
-        ConverterExtensionKey<? extends ExtensionKey> key = new ConverterExtensionKey<>(source.getExtensionKey(), version);
+        ConverterExtensionKey<? extends ExtensionKey> key =
+                new ConverterExtensionKey<>(source.getExtensionKey(), version);
         ConvertorToOFJava<Action> convertor = OFSessionUtil.getExtensionConvertorProvider().getConverter(key);
         return convertor != null ? Optional.of(convertor.convert(extAction)) : Optional.empty();
     }

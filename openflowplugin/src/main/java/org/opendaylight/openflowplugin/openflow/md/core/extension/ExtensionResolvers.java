@@ -38,7 +38,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchRpcUpdateGroupUpdatedSetField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralExtensionListGrouping;
 
-public class ExtensionResolvers {
+public final class ExtensionResolvers {
+    private ExtensionResolvers() {
+    }
 
     private static GroupingLooseResolver<GeneralExtensionListGrouping> matchExtensionResolver =
             new GroupingLooseResolver<>(GeneralExtensionListGrouping.class)
@@ -73,10 +75,9 @@ public class ExtensionResolvers {
                     .add(GeneralAugMatchNotifGroupDescStatsUpdatedSetField.class);
 
     /**
-     * @return the matchExtensionResolver (covers match rpcs and inventory augmentations)
+     * Returns the matchExtensionResolver (covers match rpcs and inventory augmentations).
      */
     public static GroupingLooseResolver<GeneralExtensionListGrouping> getMatchExtensionResolver() {
         return matchExtensionResolver;
     }
-
 }

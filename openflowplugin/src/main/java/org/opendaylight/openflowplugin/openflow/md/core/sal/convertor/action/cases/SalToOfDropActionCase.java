@@ -24,7 +24,8 @@ public class SalToOfDropActionCase extends ConvertorCase<DropActionCase, Action,
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final DropActionCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final DropActionCase source, final ActionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         return Optional.empty();
     }
 }

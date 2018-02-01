@@ -18,26 +18,23 @@ import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.action.container.action.choice.ExperimenterIdCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public final class ActionExtensionHelper {
-
-    private static final Logger LOG = LoggerFactory
-            .getLogger(ActionExtensionHelper.class);
 
     private ActionExtensionHelper() {
         throw new IllegalAccessError("singleton enforcement");
     }
 
     /**
+     * Processes an alien action.
+     *
      * @param action openflow action
      * @param ofVersion openflow version
      * @param actionPath openflow action path
      * @return augmentation wrapper containing augmentation depending on matchPath
      */
     public static org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action
-    processAlienAction(final Action action, final OpenflowVersion ofVersion, final ActionPath actionPath) {
+            processAlienAction(final Action action, final OpenflowVersion ofVersion, final ActionPath actionPath) {
         ConvertorActionFromOFJava<Action, ActionPath> convertor = null;
         org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action alienAction = null;
         final ExtensionConverterProvider extensionConvertorProvider = OFSessionUtil.getExtensionConvertorProvider();
@@ -46,16 +43,17 @@ public final class ActionExtensionHelper {
             return null;
         }
 
-        if(action.getActionChoice() instanceof ExperimenterIdCase) {
+        if (action.getActionChoice() instanceof ExperimenterIdCase) {
             ExperimenterIdCase actionCase = (ExperimenterIdCase) action.getActionChoice();
-            /** TODO: EXTENSION PROPOSAL (action, OFJava to MD-SAL) */
+            // TODO: EXTENSION PROPOSAL (action, OFJava to MD-SAL)
             ExperimenterActionSerializerKey key = new ExperimenterActionSerializerKey(
                     ofVersion.getVersion(),
                     actionCase.getExperimenter().getExperimenter().getValue(),
                     actionCase.getExperimenter().getSubType());
             convertor = extensionConvertorProvider.getActionConverter(key);
-        } else if (action.getActionChoice() != null){
-            ActionSerializerKey<?> key = new ActionSerializerKey(EncodeConstants.OF13_VERSION_ID, action.getActionChoice().getImplementedInterface(), null);
+        } else if (action.getActionChoice() != null) {
+            ActionSerializerKey<?> key = new ActionSerializerKey(EncodeConstants.OF13_VERSION_ID,
+                    action.getActionChoice().getImplementedInterface(), null);
             convertor = extensionConvertorProvider.getActionConverter(key);
         }
 
