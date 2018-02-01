@@ -9,25 +9,21 @@
 package org.opendaylight.openflowplugin.droptestkaraf;
 
 import java.io.PrintStream;
-
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.testcommon.DropTestDsProvider;
 
-import com.google.common.base.Preconditions;
-
-@Command(scope = "drop-test", name = "dropAllPackets", description="drop packet responder involving dataStore and FRM")
+@Command(scope = "drop-test", name = "dropAllPackets",
+         description = "drop packet responder involving dataStore and FRM")
 public class DropAllPacketsCommandProvider extends OsgiCommandSupport {
 
-    @Argument(index = 0, name = "on-off", 
-            description = "target state of drop responder", 
+    @Argument(index = 0, name = "on-off",
+            description = "target state of drop responder",
             required = true, multiValued = false)
     String targetStateArg = null;
-    
-    
+
+
     @Override
     protected Object doExecute() throws Exception {
         PrintStream out = session.getConsole();

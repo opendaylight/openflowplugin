@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * provides activation and deactivation of drop responder service - responds on packetIn
+ * Provides activation and deactivation of drop responder service - responds on packetIn.
  */
 public class DropTestDsProvider implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(DropTestDsProvider.class);
@@ -24,36 +24,29 @@ public class DropTestDsProvider implements AutoCloseable {
     private boolean active = false;
 
     /**
-     * @return message counts
+     * Returns the message counts.
      */
     public DropTestStats getStats() {
         return commiter.getStats();
     }
 
     /**
-     * reset message counts
+     * Reset message counts.
      */
     public void clearStats() {
         commiter.clearStats();
     }
 
-    /**
-     * @param dataService value for setter
-     */
     public void setDataService(final DataBroker dataService) {
         this.dataService = dataService;
     }
 
-
-    /**
-     * @param notificationService value for setter
-     */
     public void setNotificationService(final NotificationService notificationService) {
         this.notificationService = notificationService;
     }
 
     /**
-     * activates the drop responder
+     * Activates the drop responder.
      */
     public void start() {
         commiter.setDataService(dataService);
@@ -73,7 +66,7 @@ public class DropTestDsProvider implements AutoCloseable {
     }
 
     /**
-     * @return the active
+     * Returns the active state.
      */
     public boolean isActive() {
         return active;

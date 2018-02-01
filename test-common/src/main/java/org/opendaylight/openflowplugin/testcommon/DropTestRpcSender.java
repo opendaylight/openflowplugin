@@ -13,7 +13,6 @@ import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.math.BigInteger;
-import java.util.concurrent.Callable;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
@@ -33,17 +32,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * provides cbench responder behavior: upon packetIn arrival addFlow action is sent out to
- * device using {@link SalFlowService} strategy
+ * Provides cbench responder behavior: upon packetIn arrival addFlow action is sent out to
+ * device using {@link SalFlowService} strategy.
  */
 public class DropTestRpcSender extends AbstractDropTest {
     private static final Logger LOG = LoggerFactory.getLogger(DropTestRpcSender.class);
 
     private SalFlowService flowService;
 
-    /**
-     * @param flowService the flowService to set
-     */
     public void setFlowService(final SalFlowService flowService) {
         this.flowService = flowService;
     }
@@ -73,19 +69,16 @@ public class DropTestRpcSender extends AbstractDropTest {
     private ListenerRegistration<DropTestRpcSender> notificationRegistration;
 
     /**
-     * start listening on packetIn
+     * Start listening on packetIn.
      */
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public void start() {
         final SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK,
                 STARTUP_LOOP_MAX_RETRIES);
         try {
-            notificationRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<DropTestRpcSender>>() {
-                @Override
-                public ListenerRegistration<DropTestRpcSender> call() throws Exception {
-                    return notificationService.registerNotificationListener(DropTestRpcSender.this);
-                }
-            });
-        } catch (final Exception e) {
+            notificationRegistration = looper.loopUntilNoException(
+                () -> notificationService.registerNotificationListener(DropTestRpcSender.this));
+        } catch (Exception e) {
             LOG.warn("DropTest sender notification listener registration fail!");
             LOG.debug("DropTest sender notification listener registration fail! ..", e);
             throw new IllegalStateException("DropTest startup fail! Try again later.", e);
@@ -93,7 +86,8 @@ public class DropTestRpcSender extends AbstractDropTest {
     }
 
     @Override
-    protected void processPacket(final InstanceIdentifier<Node> node, final Match match, final Instructions instructions) {
+    protected void processPacket(final InstanceIdentifier<Node> node, final Match match,
+            final Instructions instructions) {
         final AddFlowInputBuilder fb = BUILDER.get();
 
         // Finally build our flow
@@ -109,10 +103,11 @@ public class DropTestRpcSender extends AbstractDropTest {
         if (LOG.isDebugEnabled()) {
             LOG.debug("onPacketReceived - About to write flow (via SalFlowService) {}", flow);
         }
-        ListenableFuture<RpcResult<AddFlowOutput>> result = JdkFutureAdapters.listenInPoolThread(flowService.addFlow(flow));
+        ListenableFuture<RpcResult<AddFlowOutput>> result =
+                JdkFutureAdapters.listenInPoolThread(flowService.addFlow(flow));
         Futures.addCallback(result, new FutureCallback<RpcResult<AddFlowOutput>>() {
             @Override
-            public void onSuccess(final RpcResult<AddFlowOutput> o) {
+            public void onSuccess(final RpcResult<AddFlowOutput> result) {
                 countFutureSuccess();
             }
 
@@ -123,14 +118,12 @@ public class DropTestRpcSender extends AbstractDropTest {
         }, MoreExecutors.directExecutor());
     }
 
-    /**
-     * @param notificationService
-     */
     public void setNotificationService(final NotificationService notificationService) {
         this.notificationService = notificationService;
     }
 
     @Override
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public void close() {
         super.close();
         try {
@@ -138,7 +131,7 @@ public class DropTestRpcSender extends AbstractDropTest {
             if (notificationRegistration != null) {
                 notificationRegistration.close();
             }
-        } catch (final Exception e) {
+        } catch (RuntimeException e) {
             LOG.warn("unregistration of notification listener failed: {}", e.getMessage());
             LOG.debug("unregistration of notification listener failed.. ", e);
         }
