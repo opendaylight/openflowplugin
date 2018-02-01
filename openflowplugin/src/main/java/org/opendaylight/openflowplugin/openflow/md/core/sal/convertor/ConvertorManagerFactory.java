@@ -20,7 +20,10 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.Matc
 /**
  * Convertor manager factory.
  */
-public class ConvertorManagerFactory {
+public final class ConvertorManagerFactory {
+    private ConvertorManagerFactory() {
+    }
+
     /**
      * Create default convertor manager.
      *
@@ -31,7 +34,8 @@ public class ConvertorManagerFactory {
         final TableFeaturesResponseConvertor tableFeaturesResponseConvertor = new TableFeaturesResponseConvertor();
         final MeterConvertor meterConvertor = new MeterConvertor();
         final MeterStatsResponseConvertor meterStatsResponseConvertor = new MeterStatsResponseConvertor();
-        final MeterConfigStatsResponseConvertor meterConfigStatsResponseConvertor = new MeterConfigStatsResponseConvertor();
+        final MeterConfigStatsResponseConvertor meterConfigStatsResponseConvertor =
+                new MeterConfigStatsResponseConvertor();
         final PortConvertor portConvertor = new PortConvertor();
         final MatchResponseConvertor matchResponseConvertor = new MatchResponseConvertor();
         final MatchV10ResponseConvertor matchV10ResponseConvertor = new MatchV10ResponseConvertor();
@@ -42,7 +46,8 @@ public class ConvertorManagerFactory {
         final GroupStatsResponseConvertor groupStatsResponseConvertor = new GroupStatsResponseConvertor();
         final PacketOutConvertor packetOutConvertor = new PacketOutConvertor();
         final FlowConvertor flowConvertor = new FlowConvertor();
-        final FlowInstructionResponseConvertor flowInstructionResponseConvertor = new FlowInstructionResponseConvertor();
+        final FlowInstructionResponseConvertor flowInstructionResponseConvertor =
+                new FlowInstructionResponseConvertor();
         final FlowStatsResponseConvertor flowStatsResponseConvertor = new FlowStatsResponseConvertor();
 
         return new ConvertorManager(OFConstants.OFP_VERSION_1_0, OFConstants.OFP_VERSION_1_3)

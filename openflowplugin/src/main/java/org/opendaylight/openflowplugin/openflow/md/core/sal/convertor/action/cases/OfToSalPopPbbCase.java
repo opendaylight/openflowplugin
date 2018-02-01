@@ -25,7 +25,8 @@ public class OfToSalPopPbbCase extends ConvertorCase<PopPbbCase, Action, ActionR
     }
 
     @Override
-    public Optional<Action> process(@Nonnull final PopPbbCase source, final ActionResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final PopPbbCase source, final ActionResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         PopPbbActionBuilder popPbb = new PopPbbActionBuilder();
         return Optional.of(new PopPbbActionCaseBuilder().setPopPbbAction(popPbb.build()).build());
     }

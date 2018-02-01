@@ -39,7 +39,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.ExtensionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionListBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match;
 import org.opendaylight.yangtools.yang.binding.Augmentable;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
 import org.slf4j.Logger;
@@ -54,8 +53,9 @@ public final class MatchExtensionHelper {
         throw new IllegalAccessError("singleton enforcement");
     }
 
-
     /**
+     * Injects an extension.
+     *
      * @param matchEntry match entry
      * @param ofVersion openflow version
      * @param matchPath match path
@@ -85,16 +85,17 @@ public final class MatchExtensionHelper {
     }
 
     /**
+     * Processes all extensions.
+     *
      * @param matchEntries match entries
      * @param ofVersion openflow version
      * @param matchPath match path
-     * @param <EXT_POINT> extension point
+     * @param <E> extension point
      * @return augmentation wrapper containing augmentation depending on matchPath
      */
     @SuppressWarnings("unchecked")
-    public static <EXT_POINT extends Augmentable<EXT_POINT>>
-    AugmentTuple<EXT_POINT> processAllExtensions(Collection<MatchEntry> matchEntries,
-                                                 OpenflowVersion ofVersion, MatchPath matchPath) {
+    public static <E extends Augmentable<E>> AugmentTuple<E> processAllExtensions(Collection<MatchEntry> matchEntries,
+            OpenflowVersion ofVersion, MatchPath matchPath) {
         List<ExtensionList> extensionsList = new ArrayList<>();
 
         for (MatchEntry matchEntry : matchEntries) {
@@ -106,41 +107,45 @@ public final class MatchExtensionHelper {
             extensionsList.add(extensionListBld.build());
         }
 
-        AugmentTuple<EXT_POINT> augmentTuple = null;
+        AugmentTuple<E> augmentTuple = null;
         if (!extensionsList.isEmpty()) {
             switch (matchPath) {
-                case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH:
-                    GeneralAugMatchNotifUpdateFlowStatsBuilder generalExtMatchAugBld1 = new GeneralAugMatchNotifUpdateFlowStatsBuilder();
+                case FLOWS_STATISTICS_UPDATE_MATCH:
+                    GeneralAugMatchNotifUpdateFlowStatsBuilder generalExtMatchAugBld1 =
+                            new GeneralAugMatchNotifUpdateFlowStatsBuilder();
                     generalExtMatchAugBld1.setExtensionList(extensionsList);
-                    augmentTuple = (AugmentTuple<EXT_POINT>)
-                            new AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match>(
+                    augmentTuple = (AugmentTuple<E>)
+                            new AugmentTuple<>(
                                     GeneralAugMatchNotifUpdateFlowStats.class, generalExtMatchAugBld1.build());
                     break;
-                case PACKETRECEIVED_MATCH:
-                    GeneralAugMatchNotifPacketInBuilder generalExtMatchAugBld2 = new GeneralAugMatchNotifPacketInBuilder();
+                case PACKET_RECEIVED_MATCH:
+                    GeneralAugMatchNotifPacketInBuilder generalExtMatchAugBld2 =
+                            new GeneralAugMatchNotifPacketInBuilder();
                     generalExtMatchAugBld2.setExtensionList(extensionsList);
-                    augmentTuple = (AugmentTuple<EXT_POINT>)
-                            new AugmentTuple<Match>(GeneralAugMatchNotifPacketIn.class, generalExtMatchAugBld2.build());
+                    augmentTuple = (AugmentTuple<E>)
+                            new AugmentTuple<>(GeneralAugMatchNotifPacketIn.class, generalExtMatchAugBld2.build());
                     break;
-                case PACKETINMESSAGE_MATCH:
-                    GeneralAugMatchPacketInMessageBuilder generalExtMatchAugBld5 = new GeneralAugMatchPacketInMessageBuilder();
+                case PACKET_IN_MESSAGE_MATCH:
+                    GeneralAugMatchPacketInMessageBuilder generalExtMatchAugBld5 =
+                            new GeneralAugMatchPacketInMessageBuilder();
                     generalExtMatchAugBld5.setExtensionList(extensionsList);
-                    augmentTuple = (AugmentTuple<EXT_POINT>)
-                            new AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.in.message
-                                    .Match>(GeneralAugMatchPacketInMessage.class, generalExtMatchAugBld5.build());
+                    augmentTuple = (AugmentTuple<E>)
+                            new AugmentTuple<>(GeneralAugMatchPacketInMessage.class, generalExtMatchAugBld5.build());
                     break;
-                case SWITCHFLOWREMOVED_MATCH:
-                    GeneralAugMatchNotifSwitchFlowRemovedBuilder generalExtMatchAugBld3 = new GeneralAugMatchNotifSwitchFlowRemovedBuilder();
+                case SWITCH_FLOW_REMOVED_MATCH:
+                    GeneralAugMatchNotifSwitchFlowRemovedBuilder generalExtMatchAugBld3 =
+                            new GeneralAugMatchNotifSwitchFlowRemovedBuilder();
                     generalExtMatchAugBld3.setExtensionList(extensionsList);
-                    augmentTuple = (AugmentTuple<EXT_POINT>)
-                            new AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.mod.removed.Match>(
+                    augmentTuple = (AugmentTuple<E>)
+                            new AugmentTuple<>(
                                     GeneralAugMatchNotifSwitchFlowRemoved.class, generalExtMatchAugBld3.build());
                     break;
-                case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH:
-                    GeneralAugMatchRpcOutputFlowStatsBuilder generalExtMatchAugBld4 = new GeneralAugMatchRpcOutputFlowStatsBuilder();
+                case FLOWS_STATISTICS_RPC_MATCH:
+                    GeneralAugMatchRpcOutputFlowStatsBuilder generalExtMatchAugBld4 =
+                           new GeneralAugMatchRpcOutputFlowStatsBuilder();
                     generalExtMatchAugBld4.setExtensionList(extensionsList);
-                    augmentTuple = (AugmentTuple<EXT_POINT>)
-                            new AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match>(
+                    augmentTuple = (AugmentTuple<E>)
+                            new AugmentTuple<>(
                                     GeneralAugMatchRpcOutputFlowStats.class, generalExtMatchAugBld4.build());
                     break;
                 default:
@@ -152,19 +157,22 @@ public final class MatchExtensionHelper {
     }
 
     /**
-     * @param ofVersion
-     * @param matchPath
-     * @param matchEntry
-     * @return
+     * Processes an extension.
+     *
+     * @param ofVersion openflow version
+     * @param matchPath match path
+     * @param matchEntry match entry
+     * @return an ExtensionListBuilder
      */
     private static ExtensionListBuilder processExtension(MatchEntry matchEntry, short ofVersion, MatchPath matchPath) {
         ExtensionListBuilder extListBld = null;
 
-        /** TODO: EXTENSION PROPOSAL (match, OFJava to MD-SAL) */
+        // TODO: EXTENSION PROPOSAL (match, OFJava to MD-SAL)
         MatchEntrySerializerKey<? extends OxmClassBase, ? extends MatchField> key = new MatchEntrySerializerKey<>(
                 ofVersion, matchEntry.getOxmClass(), matchEntry.getOxmMatchField());
         if (null != OFSessionUtil.getExtensionConvertorProvider()) {
-            ConvertorFromOFJava<MatchEntry, MatchPath> convertor = OFSessionUtil.getExtensionConvertorProvider().getConverter(key);
+            ConvertorFromOFJava<MatchEntry, MatchPath> convertor =
+                    OFSessionUtil.getExtensionConvertorProvider().getConverter(key);
             if (convertor != null) {
                 ExtensionAugment<? extends Augmentation<Extension>> extensionMatch =
                         convertor.convert(matchEntry, matchPath);
@@ -178,5 +186,4 @@ public final class MatchExtensionHelper {
         }
         return extListBld;
     }
-
 }

@@ -32,7 +32,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
-import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.PathArgument;
 import org.slf4j.Logger;
@@ -41,6 +40,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Converts a MD-SAL packet out data into the OF library packet out input.
  *
+ * <p>
  * Example usage:
  * <pre>
  * {@code
@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PacketOutConvertor extends Convertor<TransmitPacketInput, PacketOutInput, PacketOutConvertorData> {
     private static final Logger LOG = LoggerFactory.getLogger(PacketOutConvertor.class);
-    private static final Set<Class<? extends DataContainer>> TYPES = Collections.singleton(TransmitPacketInput.class);
+    private static final Set<Class<?>> TYPES = Collections.singleton(TransmitPacketInput.class);
 
     /**
      * Create default empty meter mot input builder.
@@ -79,7 +79,7 @@ public class PacketOutConvertor extends Convertor<TransmitPacketInput, PacketOut
     }
 
     @Override
-    public Collection<Class<? extends DataContainer>> getTypes() {
+    public Collection<Class<?>> getTypes() {
         return TYPES;
     }
 
@@ -90,7 +90,6 @@ public class PacketOutConvertor extends Convertor<TransmitPacketInput, PacketOut
         PortNumber inPortNr;
         Long bufferId = OFConstants.OFP_NO_BUFFER;
         Iterable<PathArgument> inArgs = null;
-        PacketOutInputBuilder builder = new PacketOutInputBuilder();
 
         if (source.getIngress() != null) {
             inArgs = source.getIngress().getValue().getPathArguments();
@@ -121,7 +120,8 @@ public class PacketOutConvertor extends Convertor<TransmitPacketInput, PacketOut
         }
 
         List<Action> actions = new ArrayList<>();
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> inputActions = source.getAction();
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> inputActions =
+                source.getAction();
 
         if (inputActions != null) {
             final ActionConvertorData actionConvertorData = new ActionConvertorData(data.getVersion());
@@ -134,16 +134,17 @@ public class PacketOutConvertor extends Convertor<TransmitPacketInput, PacketOut
 
         } else {
             // TODO VD P! wait for way to move Actions (e.g. augmentation)
-            ActionBuilder aBuild = new ActionBuilder();
             OutputActionCaseBuilder outputActionCaseBuilder = new OutputActionCaseBuilder();
             OutputActionBuilder outputActionBuilder = new OutputActionBuilder();
             outputActionBuilder.setPort(outPort);
             outputActionBuilder.setMaxLength(OFConstants.OFPCML_NO_BUFFER);
             outputActionCaseBuilder.setOutputAction(outputActionBuilder.build());
-            aBuild.setActionChoice(outputActionCaseBuilder.build());
-            actions.add(aBuild.build());
+            ActionBuilder actionBuild = new ActionBuilder();
+            actionBuild.setActionChoice(outputActionCaseBuilder.build());
+            actions.add(actionBuild.build());
         }
 
+        PacketOutInputBuilder builder = new PacketOutInputBuilder();
         builder.setAction(actions);
         builder.setData(source.getPayload());
         builder.setVersion(data.getVersion());

@@ -47,11 +47,11 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Con
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorProcessor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.ActionChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
-import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
  * Converts OF actions associated with bucket to SAL Actions.
  *
+ * <p>
  * Example usage:
  * <pre>
  * {@code
@@ -66,7 +66,8 @@ public final class ActionResponseConvertor extends Convertor<
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action>,
         ActionResponseConvertorData> {
 
-    private static final ConvertorProcessor<ActionChoice, org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, ActionResponseConvertorData> PROCESSOR = new ConvertorProcessor<
+    private static final ConvertorProcessor<ActionChoice, org.opendaylight.yang.gen.v1.urn.opendaylight.action.types
+        .rev131112.action.Action, ActionResponseConvertorData> PROCESSOR = new ConvertorProcessor<
             ActionChoice,
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action,
             ActionResponseConvertorData>()
@@ -99,22 +100,25 @@ public final class ActionResponseConvertor extends Convertor<
             .addCase(new OfToSalSetVlanPcpCase())
             .addCase(new OfToSalSetVlanIdCase())
             .addCase(new OfToSalStripVlanCase());
-    private static final Set<Class<? extends DataContainer>> TYPES = Collections.singleton(Action.class);
+    private static final Set<Class<?>> TYPES = Collections.singleton(Action.class);
 
     @Override
-    public Collection<Class<? extends DataContainer>> getTypes() {
+    public Collection<Class<?>> getTypes() {
         return TYPES;
     }
 
     @Override
-    public List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action> convert(List<Action> source, ActionResponseConvertorData data) {
-        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action> result = new ArrayList<>();
+    public List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action>
+            convert(List<Action> source, ActionResponseConvertorData data) {
+        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action> result =
+                new ArrayList<>();
         final OpenflowVersion ofVersion = OpenflowVersion.get(data.getVersion());
 
         // Iterate over Openflow actions, run them through tokenizer and then add them to list of converted actions
         if (source != null) {
             for (final Action action : source) {
-                final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action> convertedAction = PROCESSOR.process(action.getActionChoice(), data, getConvertorExecutor());
+                final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action>
+                    convertedAction = PROCESSOR.process(action.getActionChoice(), data, getConvertorExecutor());
 
                 if (convertedAction.isPresent()) {
                     result.add(convertedAction.get());

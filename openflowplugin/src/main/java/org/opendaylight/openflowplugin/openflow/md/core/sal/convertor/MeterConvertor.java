@@ -40,12 +40,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.meter.band.experimenter._case.MeterBandExperimenterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.mod.Bands;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.mod.BandsBuilder;
-import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Converts a MD-SAL meter mod command into the OF library meter mod command.
+ *
  * <p>
  * Example usage:
  * <pre>
@@ -57,7 +57,8 @@ import org.slf4j.LoggerFactory;
  */
 public class MeterConvertor extends Convertor<Meter, MeterModInputBuilder, VersionConvertorData> {
     private static final Logger LOG = LoggerFactory.getLogger(MeterConvertor.class);
-    private static final List<Class<? extends DataContainer>> TYPES = Arrays.asList(Meter.class, AddMeterInput.class, RemoveMeterInput.class, UpdatedMeter.class);
+    private static final List<Class<?>> TYPES = Arrays.asList(Meter.class, AddMeterInput.class,
+            RemoveMeterInput.class, UpdatedMeter.class);
 
     /**
      * Create default empty meter mot input builder.
@@ -75,17 +76,15 @@ public class MeterConvertor extends Convertor<Meter, MeterModInputBuilder, Versi
     private static void getBandsFromSAL(MeterBandHeaders meterBandHeaders, List<Bands> bands) {
         for (MeterBandHeader meterBandHeader : meterBandHeaders.getMeterBandHeader()) {
             // The band types :drop,DSCP_Remark or experimenter.
-            if (null != meterBandHeader.getMeterBandTypes() &&
-                    null != meterBandHeader.getMeterBandTypes().getFlags()) {
-
+            if (null != meterBandHeader.getMeterBandTypes() && null != meterBandHeader.getMeterBandTypes().getFlags()) {
                 if (meterBandHeader.getMeterBandTypes().getFlags().isOfpmbtDrop()) {
                     if (meterBandHeader.getBandType() != null) {
-                        MeterBandDropCaseBuilder dropCaseBuilder = new MeterBandDropCaseBuilder();
                         MeterBandDropBuilder meterBandDropBuilder = new MeterBandDropBuilder();
                         meterBandDropBuilder.setType(MeterBandType.OFPMBTDROP);
                         Drop drop = (Drop) meterBandHeader.getBandType();
                         meterBandDropBuilder.setBurstSize(drop.getDropBurstSize());
                         meterBandDropBuilder.setRate(drop.getDropRate());
+                        MeterBandDropCaseBuilder dropCaseBuilder = new MeterBandDropCaseBuilder();
                         dropCaseBuilder.setMeterBandDrop(meterBandDropBuilder.build());
                         MeterBand meterBandItem = dropCaseBuilder.build();
                         BandsBuilder bandsB = new BandsBuilder();
@@ -97,13 +96,13 @@ public class MeterConvertor extends Convertor<Meter, MeterModInputBuilder, Versi
                     }
                 } else if (meterBandHeader.getMeterBandTypes().getFlags().isOfpmbtDscpRemark()) {
                     if (meterBandHeader.getBandType() != null) {
-                        MeterBandDscpRemarkCaseBuilder dscpCaseBuilder = new MeterBandDscpRemarkCaseBuilder();
                         MeterBandDscpRemarkBuilder meterBandDscpRemarkBuilder = new MeterBandDscpRemarkBuilder();
                         meterBandDscpRemarkBuilder.setType(MeterBandType.OFPMBTDSCPREMARK);
                         DscpRemark dscpRemark = (DscpRemark) meterBandHeader.getBandType();
                         meterBandDscpRemarkBuilder.setBurstSize(dscpRemark.getDscpRemarkBurstSize());
                         meterBandDscpRemarkBuilder.setRate(dscpRemark.getDscpRemarkRate());
                         meterBandDscpRemarkBuilder.setPrecLevel(dscpRemark.getPrecLevel());
+                        MeterBandDscpRemarkCaseBuilder dscpCaseBuilder = new MeterBandDscpRemarkCaseBuilder();
                         dscpCaseBuilder.setMeterBandDscpRemark(meterBandDscpRemarkBuilder.build());
                         MeterBand meterBandItem = dscpCaseBuilder.build();
                         BandsBuilder bandsB = new BandsBuilder();
@@ -115,7 +114,6 @@ public class MeterConvertor extends Convertor<Meter, MeterModInputBuilder, Versi
                     }
                 } else if (meterBandHeader.getMeterBandTypes().getFlags().isOfpmbtExperimenter()) {
                     if (meterBandHeader.getBandType() != null) {
-                        MeterBandExperimenterCaseBuilder experimenterCaseBuilder = new MeterBandExperimenterCaseBuilder();
                         MeterBandExperimenterBuilder meterBandExperimenterBuilder = new MeterBandExperimenterBuilder();
                         meterBandExperimenterBuilder.setType(MeterBandType.OFPMBTEXPERIMENTER);
                         Experimenter experimenter = (Experimenter) meterBandHeader.getBandType();
@@ -125,6 +123,8 @@ public class MeterConvertor extends Convertor<Meter, MeterModInputBuilder, Versi
                         expBuilder.setExperimenter(new ExperimenterId(experimenter.getExperimenter()));
                         meterBandExperimenterBuilder.addAugmentation(ExperimenterIdMeterBand.class, expBuilder.build());
                         // TODO - implement / finish experimenter meter band translation
+                        MeterBandExperimenterCaseBuilder experimenterCaseBuilder =
+                                new MeterBandExperimenterCaseBuilder();
                         experimenterCaseBuilder.setMeterBandExperimenter(meterBandExperimenterBuilder.build());
                         MeterBand meterBandItem = experimenterCaseBuilder.build();
                         BandsBuilder bandsB = new BandsBuilder();
@@ -147,7 +147,7 @@ public class MeterConvertor extends Convertor<Meter, MeterModInputBuilder, Versi
     }
 
     @Override
-    public Collection<Class<? extends DataContainer>> getTypes() {
+    public Collection<Class<?>> getTypes() {
         return  TYPES;
     }
 
