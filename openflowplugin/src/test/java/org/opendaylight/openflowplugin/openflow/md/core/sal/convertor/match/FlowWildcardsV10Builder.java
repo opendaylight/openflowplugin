@@ -30,67 +30,67 @@ public class FlowWildcardsV10Builder {
                                     inPort, nwProto, nwTos, tpDst, tpSrc);
     }
 
-    public FlowWildcardsV10Builder setAll(boolean b) {
-        dlDst = b;
-        dlSrc = b;
-        dlType = b;
-        dlVlan = b;
-        dlVlanPcp = b;
-        inPort = b;
-        nwProto = b;
-        nwTos = b;
-        tpDst = b;
-        tpSrc = b;
+    public FlowWildcardsV10Builder setAll(boolean value) {
+        dlDst = value;
+        dlSrc = value;
+        dlType = value;
+        dlVlan = value;
+        dlVlanPcp = value;
+        inPort = value;
+        nwProto = value;
+        nwTos = value;
+        tpDst = value;
+        tpSrc = value;
         return this;
     }
 
-    public FlowWildcardsV10Builder setDlDst(boolean b) {
-        dlDst = b;
+    public FlowWildcardsV10Builder setDlDst(boolean value) {
+        dlDst = value;
         return this;
     }
 
-    public FlowWildcardsV10Builder setDlSrc(boolean b) {
-        dlSrc = b;
+    public FlowWildcardsV10Builder setDlSrc(boolean value) {
+        dlSrc = value;
         return this;
     }
 
-    public FlowWildcardsV10Builder setDlType(boolean b) {
-        dlType = b;
+    public FlowWildcardsV10Builder setDlType(boolean value) {
+        dlType = value;
         return this;
     }
 
-    public FlowWildcardsV10Builder setDlVlan(boolean b) {
-        dlVlan = b;
+    public FlowWildcardsV10Builder setDlVlan(boolean value) {
+        dlVlan = value;
         return this;
     }
 
-    public FlowWildcardsV10Builder setDlVlanPcp(boolean b) {
-        dlVlanPcp = b;
+    public FlowWildcardsV10Builder setDlVlanPcp(boolean value) {
+        dlVlanPcp = value;
         return this;
     }
 
-    public FlowWildcardsV10Builder setInPort(boolean b) {
-        inPort = b;
+    public FlowWildcardsV10Builder setInPort(boolean value) {
+        inPort = value;
         return this;
     }
 
-    public FlowWildcardsV10Builder setNwProto(boolean b) {
-        nwProto = b;
+    public FlowWildcardsV10Builder setNwProto(boolean value) {
+        nwProto = value;
         return this;
     }
 
-    public FlowWildcardsV10Builder setNwTos(boolean b) {
-        nwTos = b;
+    public FlowWildcardsV10Builder setNwTos(boolean value) {
+        nwTos = value;
         return this;
     }
 
-    public FlowWildcardsV10Builder setTpDst(boolean b) {
-        tpDst = b;
+    public FlowWildcardsV10Builder setTpDst(boolean value) {
+        tpDst = value;
         return this;
     }
 
-    public FlowWildcardsV10Builder setTpSrc(boolean b) {
-        tpSrc = b;
+    public FlowWildcardsV10Builder setTpSrc(boolean value) {
+        tpSrc = value;
         return this;
     }
 }

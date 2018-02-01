@@ -18,6 +18,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.P
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 
 /**
+ * Unit tests for OpenflowPortsUtil.
+ *
  * @author: Kamal Rameshan (kramesha@cisco.com)
  * @since : 6/2/14
  */
@@ -27,11 +29,11 @@ public class OpenflowPortsUtilTest {
     private static Map<OpenflowVersion, Map<String, Long>> mapVersionToPorts;
 
     /**
-     * initiation before testing - once for all
+     * initiation before testing - once for all.
      */
     @BeforeClass
     public static void setupClass() {
-        mapOF10Ports = new HashMap<String, Long>();
+        mapOF10Ports = new HashMap<>();
         mapOF10Ports.put(OutputPortValues.MAX.getName(), 65280L);
         mapOF10Ports.put(OutputPortValues.INPORT.getName(), 65528L);
         mapOF10Ports.put(OutputPortValues.TABLE.getName(), 65529L);
@@ -42,7 +44,7 @@ public class OpenflowPortsUtilTest {
         mapOF10Ports.put(OutputPortValues.LOCAL.getName(), 65534L);
         mapOF10Ports.put(OutputPortValues.NONE.getName(), 65535L);
 
-        mapOF13Ports = new HashMap<String, Long>();
+        mapOF13Ports = new HashMap<>();
         mapOF13Ports.put(OutputPortValues.MAX.getName(), 4294967040L);
         mapOF13Ports.put(OutputPortValues.INPORT.getName(), 4294967288L);
         mapOF13Ports.put(OutputPortValues.TABLE.getName(), 4294967289L);
@@ -53,14 +55,14 @@ public class OpenflowPortsUtilTest {
         mapOF13Ports.put(OutputPortValues.LOCAL.getName(), 4294967294L);
         mapOF13Ports.put(OutputPortValues.ANY.getName(), 4294967295L);
 
-        mapVersionToPorts = new HashMap<OpenflowVersion, Map<String, Long>>();
+        mapVersionToPorts = new HashMap<>();
         mapVersionToPorts.put(OpenflowVersion.OF10, mapOF10Ports);
         mapVersionToPorts.put(OpenflowVersion.OF13, mapOF13Ports);
 
     }
 
     /**
-     * tearing down initiated values after all tests done
+     * tearing down initiated values after all tests done.
      */
     @AfterClass
     public static void tearDownClass() {
@@ -71,24 +73,24 @@ public class OpenflowPortsUtilTest {
 
     //helper
     private static void matchGetLogicalName(final OpenflowVersion version, final String logicalName) {
-        Assert.assertEquals("Controller reserve port not matching to logical-name for "+ version,
+        Assert.assertEquals("Controller reserve port not matching to logical-name for " + version,
                 logicalName,
                 OpenflowPortsUtil.getPortLogicalName(version, mapVersionToPorts.get(version).get(logicalName)));
     }
 
     //helper
     private static void matchGetPortfromLogicalName(final OpenflowVersion version, final String logicalName) {
-        Assert.assertEquals("Controller reserve port not matching to logical-name for "+ version,
-                mapVersionToPorts.get(version).get(logicalName), OpenflowPortsUtil.getPortFromLogicalName(version, logicalName));
+        Assert.assertEquals("Controller reserve port not matching to logical-name for " + version,
+                mapVersionToPorts.get(version).get(logicalName),
+                OpenflowPortsUtil.getPortFromLogicalName(version, logicalName));
     }
 
     /**
-     * test for method {@link OpenflowPortsUtil#getPortLogicalName(OpenflowVersion, Long)}
+     * test for method {@link OpenflowPortsUtil#getPortLogicalName(OpenflowVersion, Long)}.
      */
     @Test
     public void testGetPortLogicalName() {
 
-        String s = OutputPortValues.INPORT.getName();
         matchGetLogicalName(OpenflowVersion.OF10, OutputPortValues.MAX.getName());
         matchGetLogicalName(OpenflowVersion.OF10, OutputPortValues.INPORT.getName());
         matchGetLogicalName(OpenflowVersion.OF10, OutputPortValues.TABLE.getName());
@@ -114,13 +116,15 @@ public class OpenflowPortsUtilTest {
 
         Assert.assertNull("Invalid port number should return a null",
                 OpenflowPortsUtil.getPortLogicalName(OpenflowVersion.OF13, 99999L));
-        Assert.assertFalse(s.equals("a"));
+
+        String name = OutputPortValues.INPORT.getName();
+        Assert.assertFalse(name.equals("a"));
     }
 
 
 
     /**
-     * test for method {@link OpenflowPortsUtil#getPortFromLogicalName(OpenflowVersion, String)}
+     * test for method {@link OpenflowPortsUtil#getPortFromLogicalName(OpenflowVersion, String)}.
      */
     @Test
     public void testGetPortFromLogicalName() {
@@ -154,7 +158,7 @@ public class OpenflowPortsUtilTest {
     }
 
     /**
-     * test for method {@link OpenflowPortsUtil#checkPortValidity(OpenflowVersion, Long)} - OF-1.0
+     * test for method {@link OpenflowPortsUtil#checkPortValidity(OpenflowVersion, Long)} - OF-1.0.
      */
     @Test
     public void testCheckPortValidity10() {
@@ -168,7 +172,7 @@ public class OpenflowPortsUtilTest {
     }
 
     /**
-     * test for method {@link OpenflowPortsUtil#checkPortValidity(OpenflowVersion, Long)} - OF-1.3
+     * test for method {@link OpenflowPortsUtil#checkPortValidity(OpenflowVersion, Long)} - OF-1.3.
      */
     @Test
     public void testCheckPortValidity13() {
@@ -182,7 +186,7 @@ public class OpenflowPortsUtilTest {
     }
 
     /**
-     * test for method {@link OpenflowPortsUtil}
+     * test for method {@link OpenflowPortsUtil}.
      */
     @Test
     public void testPortNumberToString() {
@@ -197,7 +201,5 @@ public class OpenflowPortsUtilTest {
 
         portNumber = new PortNumberUni((String) null);
         Assert.assertNotNull(portNumber);
-
     }
-
 }

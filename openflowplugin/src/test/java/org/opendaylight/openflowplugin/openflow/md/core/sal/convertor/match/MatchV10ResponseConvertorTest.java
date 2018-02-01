@@ -32,15 +32,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10Builder;
 
 /**
- * @author michal.polkorab
+ * Unit tests for v1.0 match conversion.
  *
+ * @author michal.polkorab
  */
 public class MatchV10ResponseConvertorTest {
 
     private ConvertorManager convertorManager;
 
     /**
-     * Initializes OpenflowPortsUtil
+     * Initializes OpenflowPortsUtil.
      */
     @Before
     public void startUp() {
@@ -48,7 +49,7 @@ public class MatchV10ResponseConvertorTest {
     }
 
     /**
-     * Test {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchV10ResponseConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)}
+     * Test {@link MatchV10ResponseConvertor#convert(MatchV10, VersionDatapathIdConvertorData)}.
      */
     @Test
     public void test() {
@@ -71,7 +72,8 @@ public class MatchV10ResponseConvertorTest {
         builder.setTpDst(4096);
         MatchV10 match = builder.build();
 
-        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
+        final VersionDatapathIdConvertorData datapathIdConvertorData =
+                new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
         datapathIdConvertorData.setDatapathId(new BigInteger("42"));
 
         final Match salMatch = convert(match, datapathIdConvertorData).build();
@@ -81,8 +83,10 @@ public class MatchV10ResponseConvertorTest {
                 .getEthernetSource().getAddress());
         Assert.assertEquals("Wrong dl dst", new MacAddress("02:02:02:02:02:02"), salMatch.getEthernetMatch()
                 .getEthernetDestination().getAddress());
-        Assert.assertEquals("Wrong dl type", 15, salMatch.getEthernetMatch().getEthernetType().getType().getValue().intValue());
-        Assert.assertEquals("Wrong dl vlan", 128, salMatch.getVlanMatch().getVlanId().getVlanId().getValue().intValue());
+        Assert.assertEquals("Wrong dl type", 15,
+                salMatch.getEthernetMatch().getEthernetType().getType().getValue().intValue());
+        Assert.assertEquals("Wrong dl vlan", 128,
+                salMatch.getVlanMatch().getVlanId().getVlanId().getValue().intValue());
         Assert.assertEquals("Wrong dl vlan pcp", 2, salMatch.getVlanMatch().getVlanPcp().getValue().intValue());
         Ipv4Match ipv4Match = (Ipv4Match) salMatch.getLayer3Match();
         Assert.assertEquals("Wrong nw src address", "1.1.1.2/24", ipv4Match.getIpv4Source().getValue());
@@ -98,7 +102,7 @@ public class MatchV10ResponseConvertorTest {
     }
 
     /**
-     * Test {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchV10ResponseConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)}
+     * Test {@link MatchV10ResponseConvertor#convert(MatchV10, VersionDatapathIdConvertorData)}.
      */
     @Test
     public void testWildcardedMatch() {
@@ -121,7 +125,8 @@ public class MatchV10ResponseConvertorTest {
         builder.setTpDst(4096);
         MatchV10 match = builder.build();
 
-        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
+        final VersionDatapathIdConvertorData datapathIdConvertorData =
+                new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
         datapathIdConvertorData.setDatapathId(new BigInteger("42"));
 
         final Match salMatch = convert(match, datapathIdConvertorData).build();
@@ -136,7 +141,7 @@ public class MatchV10ResponseConvertorTest {
     }
 
     /**
-     * Test {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchV10ResponseConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)}
+     * Test {@link MatchV10ResponseConvertor#convert(MatchV10, VersionDatapathIdConvertorData)}.
      */
     @Test
     public void testWildcardedMatchWithNoValuesSet() {
@@ -145,7 +150,8 @@ public class MatchV10ResponseConvertorTest {
                 true, true, true, true, true, true));
         MatchV10 match = builder.build();
 
-        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
+        final VersionDatapathIdConvertorData datapathIdConvertorData =
+                new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
         datapathIdConvertorData.setDatapathId(new BigInteger("42"));
 
         final Match salMatch = convert(match, datapathIdConvertorData).build();
@@ -160,7 +166,7 @@ public class MatchV10ResponseConvertorTest {
     }
 
     /**
-     * Test {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchV10ResponseConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)}
+     * Test {@link MatchV10ResponseConvertor#convert(MatchV10, VersionDatapathIdConvertorData)}.
      */
     @Test
     public void testMatchWithValuesUnset() {
@@ -172,7 +178,8 @@ public class MatchV10ResponseConvertorTest {
         builder.setTpDst(4096);
         MatchV10 match = builder.build();
 
-        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
+        final VersionDatapathIdConvertorData datapathIdConvertorData =
+                new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
         datapathIdConvertorData.setDatapathId(new BigInteger("42"));
 
         final Match salMatch = convert(match, datapathIdConvertorData).build();
@@ -188,21 +195,22 @@ public class MatchV10ResponseConvertorTest {
     }
 
     /**
-     * Test {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchV10ResponseConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)}
+     * Test {@link MatchV10ResponseConvertor#convert(MatchV10, VersionDatapathIdConvertorData)}.
      */
-    @Test(expected=NullPointerException.class)
+    @Test(expected = NullPointerException.class)
     public void testEmptyMatch() {
         MatchV10Builder builder = new MatchV10Builder();
         MatchV10 match = builder.build();
 
-        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
+        final VersionDatapathIdConvertorData datapathIdConvertorData =
+                new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
         datapathIdConvertorData.setDatapathId(new BigInteger("42"));
 
         final Match salMatch = convert(match, datapathIdConvertorData).build();
     }
 
     /**
-     * ICMPv4 match test for {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchV10ResponseConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)}
+     * ICMPv4 match test for {@link MatchV10ResponseConvertor#convert(MatchV10, VersionDatapathIdConvertorData)}.
      */
     @Test
     public void testIcmpv4Match() {
@@ -210,13 +218,12 @@ public class MatchV10ResponseConvertorTest {
         Long dlType = 0x800L;
         FlowWildcardsV10 wc = new FlowWildcardsV10(
             true, true, false, true, true, true, true, true, true, true);
-        MatchV10Builder builder = new MatchV10Builder().
-            setWildcards(wc).
-            setDlType(dlType.intValue());
+        MatchV10Builder builder = new MatchV10Builder().setWildcards(wc).setDlType(dlType.intValue());
         MatchV10 match = builder.build();
 
         BigInteger dpid = BigInteger.valueOf(12345L);
-        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
+        final VersionDatapathIdConvertorData datapathIdConvertorData =
+                new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
         datapathIdConvertorData.setDatapathId(dpid);
 
         Match salMatch = convert(match, datapathIdConvertorData).build();
@@ -391,8 +398,7 @@ public class MatchV10ResponseConvertorTest {
         // Specify both ICMPv4 type and code.
         icmpType = 0;
         icmpCode = 8;
-        match = builder.setTpSrc(icmpType.intValue()).
-            setTpDst(icmpCode.intValue()).build();
+        match = builder.setTpSrc(icmpType.intValue()).setTpDst(icmpCode.intValue()).build();
         salMatch = convert(match, datapathIdConvertorData).build();
         etherMatch = salMatch.getEthernetMatch();
         ipMatch = salMatch.getIpMatch();
@@ -419,7 +425,7 @@ public class MatchV10ResponseConvertorTest {
     }
 
     /**
-     * TCP match test for {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchV10ResponseConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)}
+     * TCP match test for {@link MatchV10ResponseConvertor#convert(MatchV10, VersionDatapathIdConvertorData)}.
      */
     @Test
     public void testTcpMatch() {
@@ -428,13 +434,12 @@ public class MatchV10ResponseConvertorTest {
         Long dlType = 0x800L;
         FlowWildcardsV10 wc = new FlowWildcardsV10(
             true, true, false, true, true, true, false, true, true, true);
-        MatchV10Builder builder = new MatchV10Builder().
-            setWildcards(wc).
-            setDlType(dlType.intValue());
+        MatchV10Builder builder = new MatchV10Builder().setWildcards(wc).setDlType(dlType.intValue());
         MatchV10 match = builder.build();
 
         BigInteger dpid = BigInteger.valueOf(12345L);
-        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
+        final VersionDatapathIdConvertorData datapathIdConvertorData =
+                new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
         datapathIdConvertorData.setDatapathId(dpid);
 
         Match salMatch = convert(match, datapathIdConvertorData).build();
@@ -618,7 +623,7 @@ public class MatchV10ResponseConvertorTest {
     }
 
     /**
-     * UDP match test for {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchV10ResponseConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)}
+     * UDP match test for {@link MatchV10ResponseConvertor#convert(MatchV10, VersionDatapathIdConvertorData)}.
      */
     @Test
     public void testUdpMatch() {
@@ -627,13 +632,12 @@ public class MatchV10ResponseConvertorTest {
         Long dlType = 0x800L;
         FlowWildcardsV10 wc = new FlowWildcardsV10(
             true, true, false, true, true, true, false, true, true, true);
-        MatchV10Builder builder = new MatchV10Builder().
-            setWildcards(wc).
-            setDlType(dlType.intValue());
+        MatchV10Builder builder = new MatchV10Builder().setWildcards(wc).setDlType(dlType.intValue());
         MatchV10 match = builder.build();
 
         BigInteger dpid = BigInteger.valueOf(12345L);
-        final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
+        final VersionDatapathIdConvertorData datapathIdConvertorData =
+                new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
         datapathIdConvertorData.setDatapathId(dpid);
 
         Match salMatch = convert(match, datapathIdConvertorData).build();

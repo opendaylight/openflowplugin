@@ -23,7 +23,7 @@ public interface ConvertorExecutor {
      * @param data   convertor data
      * @return the result (can be empty, if no convertor was found)
      */
-    <F, T, D extends ConvertorData> Optional<T> convert(final F source, final D data);
+    <F, T, D extends ConvertorData> Optional<T> convert(F source, D data);
 
     /**
      * Lookup and use convertor by specified type, then converts source collection and returns converted result.
@@ -35,5 +35,5 @@ public interface ConvertorExecutor {
      * @param data   convertor data
      * @return the result (can be empty, if no convertor was found)
      */
-    <F, T, D extends ConvertorData> Optional<T> convert(final Collection<F> source, final D data);
+    <F, T, D extends ConvertorData> Optional<T> convert(Collection<F> source, D data);
 }

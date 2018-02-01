@@ -11,7 +11,6 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-
 import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Before;
@@ -26,8 +25,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.multipart.reply.group.group.stats.BucketStatsBuilder;
 
 /**
- * @author michal.polkorab
+ * Unit tests for GroupStats conversion.
  *
+ * @author michal.polkorab
  */
 public class GroupStatsResponseConvertorTest {
     private ConvertorManager convertorManager;
@@ -38,24 +38,24 @@ public class GroupStatsResponseConvertorTest {
     }
 
     /**
-     * Test empty GroupStats conversion
+     * Test empty GroupStats conversion.
      */
     @Test
     public void testEmptyGroupStats() {
         List<GroupStats> groupStats = new ArrayList<>();
 
         Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
-                .GroupStats>> salGroupStats = convertorManager.convert(groupStats, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
+                .GroupStats>> salGroupStats = convertorManager.convert(groupStats,
+                        new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
 
         Assert.assertFalse("Group stats response should be not present", salGroupStats.isPresent());
     }
 
     /**
-     * Test single GroupStat conversion
+     * Test single GroupStat conversion.
      */
     @Test
     public void testSingleGroupStat() {
-        List<GroupStats> groupStats = new ArrayList<>();
         GroupStatsBuilder statsBuilder = new GroupStatsBuilder();
         statsBuilder.setByteCount(new BigInteger("12345"));
         statsBuilder.setDurationNsec(1000000L);
@@ -64,10 +64,12 @@ public class GroupStatsResponseConvertorTest {
         statsBuilder.setPacketCount(new BigInteger("54321"));
         statsBuilder.setRefCount(24L);
         statsBuilder.setBucketStats(new ArrayList<BucketStats>());
+        List<GroupStats> groupStats = new ArrayList<>();
         groupStats.add(statsBuilder.build());
 
         Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
-                .GroupStats>> salGroupStatsOptional = convertorManager.convert(groupStats, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
+                .GroupStats>> salGroupStatsOptional = convertorManager.convert(groupStats,
+                        new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
         Assert.assertTrue("Group stats response convertor not found", salGroupStatsOptional.isPresent());
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
                 .GroupStats> salGroupStats = salGroupStatsOptional.get();
@@ -85,11 +87,10 @@ public class GroupStatsResponseConvertorTest {
     }
 
     /**
-     * Test two GroupStats conversion
+     * Test two GroupStats conversion.
      */
     @Test
     public void testTwoGroupStats() {
-        List<GroupStats> groupStats = new ArrayList<>();
         GroupStatsBuilder statsBuilder = new GroupStatsBuilder();
         statsBuilder.setByteCount(new BigInteger("12345"));
         statsBuilder.setDurationNsec(1000000L);
@@ -98,6 +99,8 @@ public class GroupStatsResponseConvertorTest {
         statsBuilder.setPacketCount(new BigInteger("54321"));
         statsBuilder.setRefCount(24L);
         statsBuilder.setBucketStats(new ArrayList<BucketStats>());
+
+        List<GroupStats> groupStats = new ArrayList<>();
         groupStats.add(statsBuilder.build());
         statsBuilder = new GroupStatsBuilder();
         statsBuilder.setByteCount(new BigInteger("1"));
@@ -110,7 +113,8 @@ public class GroupStatsResponseConvertorTest {
         groupStats.add(statsBuilder.build());
 
         Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
-                .GroupStats>> salGroupStatsOptional = convertorManager.convert(groupStats, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
+                .GroupStats>> salGroupStatsOptional = convertorManager.convert(groupStats,
+                        new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
         Assert.assertTrue("Group stats response convertor not found", salGroupStatsOptional.isPresent());
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
                 .GroupStats> salGroupStats = salGroupStatsOptional.get();
@@ -138,11 +142,10 @@ public class GroupStatsResponseConvertorTest {
     }
 
     /**
-     * Test GroupStats with buckets conversion
+     * Test GroupStats with buckets conversion.
      */
     @Test
     public void testGroupStatsWithBuckets() {
-        List<GroupStats> groupStats = new ArrayList<>();
         GroupStatsBuilder statsBuilder = new GroupStatsBuilder();
         statsBuilder.setByteCount(new BigInteger("12345"));
         statsBuilder.setDurationNsec(1000000L);
@@ -160,10 +163,13 @@ public class GroupStatsResponseConvertorTest {
         bucketStatsBuilder.setPacketCount(new BigInteger("456"));
         bucketStats.add(bucketStatsBuilder.build());
         statsBuilder.setBucketStats(bucketStats);
+
+        List<GroupStats> groupStats = new ArrayList<>();
         groupStats.add(statsBuilder.build());
 
         Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
-                .GroupStats>> salGroupStatsOptional = convertorManager.convert(groupStats, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
+                .GroupStats>> salGroupStatsOptional = convertorManager.convert(groupStats,
+                        new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
         Assert.assertTrue("Group stats response convertor not found", salGroupStatsOptional.isPresent());
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
                 .GroupStats> salGroupStats = salGroupStatsOptional.get();

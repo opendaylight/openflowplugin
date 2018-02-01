@@ -49,12 +49,11 @@ public abstract class ConvertorCase<F, T, D extends ConvertorData> {
      * @param convertorExecutor convertor executor
      * @return the optional
      */
-    public abstract Optional<T> process(@Nonnull final F source, final D data,
-            final ConvertorExecutor convertorExecutor);
+    public abstract Optional<T> process(@Nonnull F source, D data, ConvertorExecutor convertorExecutor);
 
     /**
      * Should {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorProcessor}
-     * throw error when result of process method is empty?
+     * throw error when result of process method is empty.
      *
      * @return the boolean
      */
