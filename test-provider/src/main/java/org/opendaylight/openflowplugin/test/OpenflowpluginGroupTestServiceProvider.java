@@ -41,7 +41,7 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable,
     private NotificationProviderService notificationService;
 
     /**
-     * get group registration
+     * Get group registration.
      *
      * @return {@link #groupRegistration}
      */
@@ -50,9 +50,7 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable,
     }
 
     /**
-     * set {@link #groupRegistration}
-     *
-     * @param groupRegistration
+     * Set {@link #groupRegistration}.
      */
     public void setGroupRegistration(
             final RoutedRpcRegistration<SalGroupService> groupRegistration) {
@@ -60,7 +58,7 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable,
     }
 
     /**
-     * get notification service
+     * Get notification service.
      *
      * @return {@link #notificationService}
      */
@@ -69,9 +67,7 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable,
     }
 
     /**
-     * set {@link #notificationService}
-     *
-     * @param notificationService
+     * Set {@link #notificationService}.
      */
     public void setNotificationService(
             final NotificationProviderService notificationService) {
@@ -106,7 +102,7 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable,
      */
     @Override
     public Future<RpcResult<AddGroupOutput>> addGroup(AddGroupInput input) {
-        String plus = ("addGroup - " + input);
+        String plus = "addGroup - " + input;
         OpenflowpluginGroupTestServiceProvider.LOG.info(plus);
         return null;
     }
@@ -123,7 +119,7 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable,
     @Override
     public Future<RpcResult<RemoveGroupOutput>> removeGroup(
             RemoveGroupInput input) {
-        String plus = ("removeGroup - " + input);
+        String plus = "removeGroup - " + input;
         OpenflowpluginGroupTestServiceProvider.LOG.info(plus);
         return null;
     }
@@ -140,30 +136,26 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable,
     @Override
     public Future<RpcResult<UpdateGroupOutput>> updateGroup(
             UpdateGroupInput input) {
-        String plus = ("updateGroup - " + input);
+        String plus = "updateGroup - " + input;
         OpenflowpluginGroupTestServiceProvider.LOG.info(plus);
         return null;
     }
 
-    /**
-     * @param ctx
-     * @return {@link ObjectRegistration}
-     */
     public ObjectRegistration<OpenflowpluginGroupTestServiceProvider> register(
             final ProviderContext ctx) {
         RoutedRpcRegistration<SalGroupService> addRoutedRpcImplementation = ctx
-                .<SalGroupService> addRoutedRpcImplementation(
+                .<SalGroupService>addRoutedRpcImplementation(
                         SalGroupService.class, this);
         setGroupRegistration(addRoutedRpcImplementation);
 
         InstanceIdentifierBuilder<Nodes> builder1 = InstanceIdentifier
-                .<Nodes> builder(Nodes.class);
+                .<Nodes>builder(Nodes.class);
 
         NodeId nodeId = new NodeId(OpenflowpluginTestActivator.NODE_ID);
         NodeKey nodeKey = new NodeKey(nodeId);
 
         InstanceIdentifierBuilder<Node> nodeIndentifier = builder1
-                .<Node, NodeKey> child(Node.class, nodeKey);
+                .<Node, NodeKey>child(Node.class, nodeKey);
         InstanceIdentifier<Node> instance = nodeIndentifier.build();
         groupRegistration.registerPath(NodeContext.class, instance);
         RoutedRpcRegistration<SalGroupService> groupRegistration1 = this
@@ -175,5 +167,4 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable,
             }
         };
     }
-
 }

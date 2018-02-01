@@ -112,26 +112,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.node.error.service.rev140410.NodeErrorListener;
-import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings("checkstyle:MethodName")
 public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowPluginBulkTransactionProvider.class);
     private DataBroker dataBroker;
     private final BundleContext ctx;
-    private NodeBuilder testNode;
     private ProviderContext pc;
-    private FlowBuilder testFlow;
     private final String originalFlowName = "Foo";
     private final NodeErrorListener nodeErrorListener = new NodeErrorListenerLoggingImpl();
-    private Registration listener1Reg;
-    private Registration listener2Reg;
-    private Node testNode12;
-    private final String originalGroupName = "Foo";
     private static NotificationService notificationService;
 
     public OpenflowPluginBulkTransactionProvider(BundleContext ctx) {
@@ -141,7 +135,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
     public void onSessionInitiated(ProviderContext session) {
         pc = session;
         notificationService = session.getSALService(NotificationService.class);
-        listener2Reg = notificationService.registerNotificationListener(nodeErrorListener);
+        notificationService.registerNotificationListener(nodeErrorListener);
         dataBroker = session.getSALService(DataBroker.class);
         ctx.registerService(CommandProvider.class.getName(), this, null);
         createTestFlow(createTestNode(null), null, null);
@@ -155,7 +149,6 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         NodeBuilder builder = new NodeBuilder();
         builder.setId(new NodeId(nodeId));
         builder.setKey(new NodeKey(builder.getId()));
-        testNode = builder;
         return builder;
     }
 
@@ -412,7 +405,6 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
                 LOG.warn("flow type not understood: {}", flowType);
         }
 
-        FlowKey key = new FlowKey(new FlowId(Long.toString(id)));
         if (null == flow.isBarrier()) {
             flow.setBarrier(Boolean.FALSE);
         }
@@ -434,10 +426,10 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         // flow
         flow.setOutPort(outputPort);
 
+        FlowKey key = new FlowKey(new FlowId(Long.toString(id)));
         flow.setKey(key);
         flow.setPriority(2);
         flow.setFlowName(originalFlowName + "X" + flowType);
-        testFlow = flow;
         return flow;
     }
 
@@ -445,20 +437,12 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         short table = 2;
         try {
             table = Short.parseShort(tableId);
-        } catch (Exception ex) {
+        } catch (NumberFormatException ex) {
             // ignore exception and continue with default value
         }
 
         return table;
 
-    }
-
-    private void createTestNode() {
-        NodeRef nodeOne = createNodeRef(OpenflowpluginTestActivator.NODE_ID);
-        NodeBuilder builder = new NodeBuilder();
-        builder.setId(new NodeId(OpenflowpluginTestActivator.NODE_ID));
-        builder.setKey(new NodeKey(builder.getId()));
-        testNode12 = builder.build();
     }
 
     public void _addFlows(CommandInterpreter ci) {
@@ -647,6 +631,8 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
                 tf2 = createTestFlow(tn, "f900", "9");
                 tf3 = createTestFlow(tn, "f1000", "10");
                 break;
+            default:
+                break;
         }
 
         InstanceIdentifier<Flow> path1 = InstanceIdentifier.create(Nodes.class).child(Node.class, tn.getKey())
@@ -677,7 +663,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modification.submit();
         Futures.addCallback(commitFuture, new FutureCallback<Void>() {
             @Override
-            public void onSuccess(Void aVoid) {
+            public void onSuccess(Void notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
             }
 
@@ -696,37 +682,45 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         InstanceIdentifier<Flow> path1 = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey(flow.getTableId())).child(Flow.class, flow.getKey());
-        modification.merge(LogicalDatastoreType.OPERATIONAL, nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build(), true);
+        modification.merge(LogicalDatastoreType.OPERATIONAL, nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build(),
+                true);
         modification.merge(LogicalDatastoreType.OPERATIONAL, path1, flow.build(), true);
-        modification.merge(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build(), true);
+        modification.merge(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(nodeBuilder),
+                nodeBuilder.build(), true);
         modification.merge(LogicalDatastoreType.CONFIGURATION, path1, flow.build(), true);
         InstanceIdentifier<Flow> path2 = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey(flow1.getTableId())).child(Flow.class, flow1.getKey());
-        modification.merge(LogicalDatastoreType.OPERATIONAL, nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build(), true);
+        modification.merge(LogicalDatastoreType.OPERATIONAL, nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build(),
+                true);
         modification.merge(LogicalDatastoreType.OPERATIONAL, path2, flow1.build(), true);
-        modification.merge(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build(), true);
+        modification.merge(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(nodeBuilder),
+                nodeBuilder.build(), true);
         modification.merge(LogicalDatastoreType.CONFIGURATION, path2, flow1.build(), true);
 
         InstanceIdentifier<Flow> path3 = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey(flow2.getTableId())).child(Flow.class, flow2.getKey());
-        modification.merge(LogicalDatastoreType.OPERATIONAL, nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build(), true);
+        modification.merge(LogicalDatastoreType.OPERATIONAL, nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build(),
+                true);
         modification.merge(LogicalDatastoreType.OPERATIONAL, path3, flow2.build(), true);
-        modification.merge(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build(), true);
+        modification.merge(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(nodeBuilder),
+                nodeBuilder.build(), true);
         modification.merge(LogicalDatastoreType.CONFIGURATION, path3, flow2.build(), true);
 
         InstanceIdentifier<Flow> path4 = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey(flow3.getTableId())).child(Flow.class, flow3.getKey());
-        modification.merge(LogicalDatastoreType.OPERATIONAL, nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build(), true);
+        modification.merge(LogicalDatastoreType.OPERATIONAL, nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build(),
+                true);
         modification.merge(LogicalDatastoreType.OPERATIONAL, path4, flow3.build(), true);
-        modification.merge(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build(), true);
+        modification.merge(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(nodeBuilder),
+                nodeBuilder.build(), true);
         modification.merge(LogicalDatastoreType.CONFIGURATION, path4, flow3.build(), true);
         CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modification.submit();
         Futures.addCallback(commitFuture, new FutureCallback<Void>() {
             @Override
-            public void onSuccess(Void aVoid) {
+            public void onSuccess(Void notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
             }
 
@@ -738,9 +732,6 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         }, MoreExecutors.directExecutor());
     }
 
-    /**
-     * @return
-     */
     private static InstructionsBuilder createDecNwTtlInstructions() {
         DecNwTtlBuilder ta = new DecNwTtlBuilder();
         DecNwTtl decNwTtl = ta.build();
@@ -748,7 +739,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         ab.setAction(new DecNwTtlCaseBuilder().setDecNwTtl(decNwTtl).build());
 
         // Add our drop action to a list
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionList = new ArrayList<>();
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -763,15 +754,12 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<Instruction>();
+        List<Instruction> instructions = new ArrayList<>();
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
     }
 
-    /**
-     * @return
-     */
     private static InstructionsBuilder createMeterInstructions() {
 
         MeterBuilder aab = new MeterBuilder();
@@ -782,7 +770,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<Instruction>();
+        List<Instruction> instructions = new ArrayList<>();
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -798,7 +786,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<Instruction>();
+        List<Instruction> instructions = new ArrayList<>();
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -811,7 +799,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         ab.setAction(new DropActionCaseBuilder().setDropAction(dropAction).build());
 
         // Add our drop action to a list
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionList = new ArrayList<>();
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -824,7 +812,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<Instruction>();
+        List<Instruction> instructions = new ArrayList<>();
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -832,7 +820,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
     private static InstructionsBuilder createAppyActionInstruction() {
 
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionList = new ArrayList<>();
         ActionBuilder ab = new ActionBuilder();
         ControllerActionBuilder controller = new ControllerActionBuilder();
         controller.setMaxLength(5);
@@ -848,14 +836,13 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<Instruction>();
+        List<Instruction> instructions = new ArrayList<>();
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
     }
 
     private static InstructionsBuilder createSentToControllerInstructions() {
-        List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
 
         OutputActionBuilder output = new OutputActionBuilder();
@@ -865,6 +852,8 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
         ab.setOrder(0);
         ab.setKey(new ActionKey(0));
+
+        List<Action> actionList = new ArrayList<>();
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -878,7 +867,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<Instruction>();
+        List<Instruction> instructions = new ArrayList<>();
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -886,7 +875,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
     private static InstructionsBuilder createAppyActionInstruction2() {
 
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionList = new ArrayList<>();
         ActionBuilder ab = new ActionBuilder();
 
         PushMplsActionBuilder push = new PushMplsActionBuilder();
@@ -903,7 +892,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<Instruction>();
+        List<Instruction> instructions = new ArrayList<>();
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -911,7 +900,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
     private static InstructionsBuilder createAppyActionInstruction3() {
 
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionList = new ArrayList<>();
         ActionBuilder ab = new ActionBuilder();
 
         PushPbbActionBuilder pbb = new PushPbbActionBuilder();
@@ -928,7 +917,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<Instruction>();
+        List<Instruction> instructions = new ArrayList<>();
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -936,7 +925,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
     private static InstructionsBuilder createAppyActionInstruction6() {
 
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionList = new ArrayList<>();
         ActionBuilder ab = new ActionBuilder();
 
         SetDlSrcActionBuilder src = new SetDlSrcActionBuilder();
@@ -954,7 +943,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<Instruction>();
+        List<Instruction> instructions = new ArrayList<>();
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -962,12 +951,12 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
     private static InstructionsBuilder createAppyActionInstruction7() {
 
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionList = new ArrayList<>();
         ActionBuilder ab = new ActionBuilder();
 
         SetVlanIdActionBuilder vl = new SetVlanIdActionBuilder();
-        VlanId a = new VlanId(4012);
-        vl.setVlanId(a);
+        VlanId vlanId = new VlanId(4012);
+        vl.setVlanId(vlanId);
         ab.setAction(new SetVlanIdActionCaseBuilder().setSetVlanIdAction(vl.build()).build());
         actionList.add(ab.build());
         // Create an Apply Action
@@ -980,7 +969,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<Instruction>();
+        List<Instruction> instructions = new ArrayList<>();
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -988,7 +977,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
     private static InstructionsBuilder createAppyActionInstruction8() {
 
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionList = new ArrayList<>();
         ActionBuilder ab = new ActionBuilder();
 
         SetVlanPcpActionBuilder pcp = new SetVlanPcpActionBuilder();
@@ -1006,7 +995,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<Instruction>();
+        List<Instruction> instructions = new ArrayList<>();
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1014,7 +1003,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
     private static InstructionsBuilder createAppyActionInstruction9() {
 
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionList = new ArrayList<>();
         ActionBuilder ab = new ActionBuilder();
 
         CopyTtlInBuilder ttlin = new CopyTtlInBuilder();
@@ -1030,21 +1019,21 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<Instruction>();
+        List<Instruction> instructions = new ArrayList<>();
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
     }
 
     private static InstructionsBuilder createAppyActionInstruction16() {
-
-        List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
 
         GroupActionBuilder groupActionB = new GroupActionBuilder();
         groupActionB.setGroupId(1L);
         groupActionB.setGroup("0");
         ab.setAction(new GroupActionCaseBuilder().setGroupAction(groupActionB.build()).build());
+
+        List<Action> actionList = new ArrayList<>();
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -1057,7 +1046,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<Instruction>();
+        List<Instruction> instructions = new ArrayList<>();
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1065,7 +1054,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
     private static InstructionsBuilder createAppyActionInstruction160() {
 
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionList = new ArrayList<>();
         ActionBuilder ab = new ActionBuilder();
 
         FloodAllActionBuilder fldall = new FloodAllActionBuilder();
@@ -1081,15 +1070,13 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<Instruction>();
+        List<Instruction> instructions = new ArrayList<>();
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
     }
 
     private static InstructionsBuilder createAppyActionInstruction26() {
-
-        List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
 
         SetNwDstActionBuilder setNwDstActionBuilder = new SetNwDstActionBuilder();
@@ -1098,6 +1085,8 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         ipdst.setIpv4Address(prefixdst);
         setNwDstActionBuilder.setAddress(ipdst.build());
         ab.setAction(new SetNwDstActionCaseBuilder().setSetNwDstAction(setNwDstActionBuilder.build()).build());
+
+        List<Action> actionList = new ArrayList<>();
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -1110,15 +1099,13 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<Instruction>();
+        List<Instruction> instructions = new ArrayList<>();
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
     }
 
     private static InstructionsBuilder createAppyActionInstruction27() {
-
-        List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
 
         SetNwSrcActionBuilder setNwsrcActionBuilder = new SetNwSrcActionBuilder();
@@ -1127,6 +1114,8 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         ipsrc.setIpv4Address(prefixsrc);
         setNwsrcActionBuilder.setAddress(ipsrc.build());
         ab.setAction(new SetNwSrcActionCaseBuilder().setSetNwSrcAction(setNwsrcActionBuilder.build()).build());
+
+        List<Action> actionList = new ArrayList<>();
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -1139,7 +1128,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<Instruction>();
+        List<Instruction> instructions = new ArrayList<>();
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1147,7 +1136,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
     private static InstructionsBuilder createAppyActionInstruction28() {
 
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionList = new ArrayList<>();
         ActionBuilder ab = new ActionBuilder();
 
         SetNwTosActionBuilder setNwTosActionBuilder = new SetNwTosActionBuilder();
@@ -1164,7 +1153,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<Instruction>();
+        List<Instruction> instructions = new ArrayList<>();
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1172,7 +1161,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
     private static InstructionsBuilder createAppyActionInstruction34() {
 
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionList = new ArrayList<>();
         ActionBuilder ab = new ActionBuilder();
 
         SwPathActionBuilder swPathAction = new SwPathActionBuilder();
@@ -1189,7 +1178,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<Instruction>();
+        List<Instruction> instructions = new ArrayList<>();
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1205,9 +1194,6 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         return match;
     }
 
-    /**
-     * @return
-     */
     private static MatchBuilder createMatch1() {
         MatchBuilder match = new MatchBuilder();
         Ipv4MatchBuilder ipv4Match = new Ipv4MatchBuilder();
@@ -1240,9 +1226,6 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         return match;
     }
 
-    /**
-     * @return
-     */
     private static MatchBuilder createMatch2() {
         MatchBuilder match = new MatchBuilder();
         Ipv4MatchBuilder ipv4Match = new Ipv4MatchBuilder();
@@ -1259,9 +1242,6 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         return match;
     }
 
-    /**
-     * @return
-     */
     private static MatchBuilder createMatch3() {
         MatchBuilder match = new MatchBuilder();
         EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
@@ -1298,11 +1278,6 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
     }
 
     private static MatchBuilder createEthernetMatch() {
-        MatchBuilder match = new MatchBuilder();
-
-        byte[] mask1 = new byte[]{(byte) -1, (byte) -1, 0, 0, 0, 0};
-        byte[] mask2 = new byte[]{(byte) -1, (byte) -1, (byte) -1, 0, 0, 0};
-
         EthernetMatchBuilder ethmatch = new EthernetMatchBuilder(); // ethernettype
         // match
         EthernetTypeBuilder ethtype = new EthernetTypeBuilder();
@@ -1324,14 +1299,13 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         // ethsrc.setMask(mask2);
 
         ethmatch.setEthernetSource(ethsrc.build());
+
+        MatchBuilder match = new MatchBuilder();
         match.setEthernetMatch(ethmatch.build());
         return match;
 
     }
 
-    /**
-     * @return
-     */
     private static MatchBuilder createL3IPv6Match() {
         MatchBuilder match = new MatchBuilder();
 
@@ -1344,8 +1318,6 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         Ipv6Prefix dstip6 = new Ipv6Prefix("2002::2/64");
         Ipv6Prefix srcip6 = new Ipv6Prefix("2001:0:0:0:0:0:0:1/56");
         Ipv6Address ndtarget = new Ipv6Address("2001:db8:0:1:fd97:f9f0:a810:782e");
-        MacAddress ndsll = new MacAddress("c2:00:54:f5:00:00");
-        MacAddress ndtll = new MacAddress("00:0c:29:0e:4c:67");
         Ipv6ExtHeaderBuilder nextheader = new Ipv6ExtHeaderBuilder();
         nextheader.setIpv6Exthdr(58);
         Ipv6LabelBuilder ipv6label = new Ipv6LabelBuilder();
@@ -1363,8 +1335,9 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         // ipv6match.setIpv6Source(srcip6);
         // ipv6match.setIpv6Destination(dstip6);
         // ipv6match.setIpv6ExtHeader(nextheader.build());
-        ipv6match.setIpv6NdSll(ndsll);
-        ipv6match.setIpv6NdTll(ndtll);
+
+        ipv6match.setIpv6NdSll(new MacAddress("c2:00:54:f5:00:00"));
+        ipv6match.setIpv6NdTll(new MacAddress("00:0c:29:0e:4c:67"));
         // ipv6match.setIpv6NdTarget(ndtarget);
         ipv6match.setIpv6Label(ipv6label.build());
 
@@ -1373,9 +1346,6 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         return match;
     }
 
-    /**
-     * @return
-     */
     private static MatchBuilder createICMPv6Match() {
 
         MatchBuilder match = new MatchBuilder();
@@ -1398,12 +1368,8 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         return match;
     }
 
-    /**
-     * @return
-     */
     private static MatchBuilder createMetadataMatch() {
         MatchBuilder match = new MatchBuilder();
-        byte[] metamask = new byte[]{(byte) -1, (byte) -1, (byte) -1, 0, 0, 0, (byte) 1, (byte) 1};
         MetadataBuilder metadata = new MetadataBuilder(); // metadata match
         metadata.setMetadata(BigInteger.valueOf(500L));
         // metadata.setMetadataMask(metamask);
@@ -1411,5 +1377,4 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
         return match;
     }
-
 }
