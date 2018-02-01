@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.testcommon;
 
 import java.math.BigInteger;
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
@@ -33,8 +32,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * provides cbench responder behavior: upon packetIn arrival addFlow action is sent out to
- * device using dataStore strategy (FRM involved)
+ * Provides cbench responder behavior: upon packetIn arrival addFlow action is sent out to
+ * device using dataStore strategy (FRM involved).
  */
 public class DropTestCommiter extends AbstractDropTest {
     private static final Logger LOG = LoggerFactory.getLogger(DropTestCommiter.class);
@@ -67,34 +66,29 @@ public class DropTestCommiter extends AbstractDropTest {
     private ListenerRegistration<DropTestCommiter> notificationRegistration;
 
     /**
-     * start listening on packetIn
+     * start listening on packetIn.
      */
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public void start() {
         final SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK,
                 STARTUP_LOOP_MAX_RETRIES);
         try {
-            notificationRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<DropTestCommiter>>() {
-                @Override
-                public ListenerRegistration<DropTestCommiter> call() throws Exception {
-                    return notificationService.registerNotificationListener(DropTestCommiter.this);
-                }
-            });
-        } catch (final Exception e) {
+            notificationRegistration = looper.loopUntilNoException(() ->
+                notificationService.registerNotificationListener(DropTestCommiter.this));
+        } catch (Exception e) {
             LOG.warn("DropTest committer notification listener registration fail!");
             LOG.debug("DropTest committer notification listener registration fail! ..", e);
             throw new IllegalStateException("DropTest startup fail! Try again later.", e);
         }
     }
 
-    /**
-     * @param dataService the dataService to set
-     */
     public void setDataService(final DataBroker dataService) {
         this.dataService = dataService;
     }
 
     @Override
-    protected void processPacket(final InstanceIdentifier<Node> node, final Match match, final Instructions instructions) {
+    protected void processPacket(final InstanceIdentifier<Node> node, final Match match,
+            final Instructions instructions) {
 
         // Finally build our flow
         final FlowBuilder fb = BUILDER.get();
@@ -124,6 +118,7 @@ public class DropTestCommiter extends AbstractDropTest {
     }
 
     @Override
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public void close() {
         super.close();
         try {
@@ -131,15 +126,12 @@ public class DropTestCommiter extends AbstractDropTest {
             if (notificationRegistration != null) {
                 notificationRegistration.close();
             }
-        } catch (final Exception e) {
+        } catch (RuntimeException e) {
             LOG.warn("unregistration of notification listener failed: {}", e.getMessage());
             LOG.debug("unregistration of notification listener failed.. ", e);
         }
     }
 
-    /**
-     * @param notificationService
-     */
     public void setNotificationService(final NotificationService notificationService) {
         this.notificationService = notificationService;
     }

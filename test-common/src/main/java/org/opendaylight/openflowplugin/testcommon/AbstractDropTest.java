@@ -8,13 +8,13 @@
 package org.opendaylight.openflowplugin.testcommon;
 
 import static org.opendaylight.openflowjava.util.ByteBufUtils.macAddressToString;
+
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
@@ -56,49 +56,54 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
     static final int STARTUP_LOOP_MAX_RETRIES = 8;
     private static final int PROCESSING_POOL_SIZE = 10000;
 
-    private final int POOL_THREAD_AMOUNT = 8;
+    private static final int POOL_THREAD_AMOUNT = 8;
     private final ExecutorService executorService;
 
 
-    private static final AtomicIntegerFieldUpdater<AbstractDropTest> SENT_UPDATER = AtomicIntegerFieldUpdater.newUpdater(AbstractDropTest.class, "sent");
+    private static final AtomicIntegerFieldUpdater<AbstractDropTest> SENT_UPDATER = AtomicIntegerFieldUpdater
+            .newUpdater(AbstractDropTest.class, "sent");
     private volatile int sent;
 
-    private static final AtomicIntegerFieldUpdater<AbstractDropTest> RCVD_UPDATER = AtomicIntegerFieldUpdater.newUpdater(AbstractDropTest.class, "rcvd");
+    private static final AtomicIntegerFieldUpdater<AbstractDropTest> RCVD_UPDATER = AtomicIntegerFieldUpdater
+            .newUpdater(AbstractDropTest.class, "rcvd");
     private volatile int rcvd;
 
-    private static final AtomicIntegerFieldUpdater<AbstractDropTest> EXCS_UPDATER = AtomicIntegerFieldUpdater.newUpdater(AbstractDropTest.class, "excs");
+    private static final AtomicIntegerFieldUpdater<AbstractDropTest> EXCS_UPDATER = AtomicIntegerFieldUpdater
+            .newUpdater(AbstractDropTest.class, "excs");
     private volatile int excs;
 
-    protected static final AtomicIntegerFieldUpdater<AbstractDropTest> RPC_FUTURE_SUCCESS_UPDATER = AtomicIntegerFieldUpdater.newUpdater(AbstractDropTest.class, "ftrSuccess");
+    protected static final AtomicIntegerFieldUpdater<AbstractDropTest> RPC_FUTURE_SUCCESS_UPDATER =
+            AtomicIntegerFieldUpdater.newUpdater(AbstractDropTest.class, "ftrSuccess");
     protected volatile int ftrSuccess;
 
-    protected static final AtomicIntegerFieldUpdater<AbstractDropTest> RPC_FUTURE_FAIL_UPDATER = AtomicIntegerFieldUpdater.newUpdater(AbstractDropTest.class, "ftrFailed");
+    protected static final AtomicIntegerFieldUpdater<AbstractDropTest> RPC_FUTURE_FAIL_UPDATER =
+            AtomicIntegerFieldUpdater.newUpdater(AbstractDropTest.class, "ftrFailed");
     protected volatile int ftrFailed;
 
-    protected static final AtomicIntegerFieldUpdater<AbstractDropTest> RUNABLES_EXECUTED = AtomicIntegerFieldUpdater.newUpdater(AbstractDropTest.class, "runablesExecuted");
+    protected static final AtomicIntegerFieldUpdater<AbstractDropTest> RUNABLES_EXECUTED = AtomicIntegerFieldUpdater
+            .newUpdater(AbstractDropTest.class, "runablesExecuted");
     protected volatile int runablesExecuted;
 
-    protected static final AtomicIntegerFieldUpdater<AbstractDropTest> RUNABLES_REJECTED = AtomicIntegerFieldUpdater.newUpdater(AbstractDropTest.class, "runablesRejected");
+    protected static final AtomicIntegerFieldUpdater<AbstractDropTest> RUNABLES_REJECTED = AtomicIntegerFieldUpdater
+            .newUpdater(AbstractDropTest.class, "runablesRejected");
     protected volatile int runablesRejected;
 
     public final DropTestStats getStats() {
-        return new DropTestStats(this.sent, this.rcvd, this.excs, this.ftrFailed, this.ftrSuccess, this.runablesExecuted, this.runablesRejected);
+        return new DropTestStats(this.sent, this.rcvd, this.excs, this.ftrFailed, this.ftrSuccess,
+                this.runablesExecuted, this.runablesRejected);
     }
 
-    public AbstractDropTest() {
-        final ArrayBlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<Runnable>(PROCESSING_POOL_SIZE);
+    AbstractDropTest() {
+        final ArrayBlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(PROCESSING_POOL_SIZE);
         final ThreadPoolExecutor threadPool = new ThreadPoolExecutor(POOL_THREAD_AMOUNT, POOL_THREAD_AMOUNT, 0,
                 TimeUnit.MILLISECONDS,
                 workQueue);
         threadPool.setThreadFactory(new ThreadFactoryBuilder().setNameFormat("dropTest-%d").build());
-        threadPool.setRejectedExecutionHandler(new RejectedExecutionHandler() {
-            @Override
-            public void rejectedExecution(final Runnable r, final ThreadPoolExecutor executor) {
-                try {
-                    workQueue.put(r);
-                } catch (final InterruptedException e) {
-                    throw new RejectedExecutionException("Interrupted while waiting on queue", e);
-                }
+        threadPool.setRejectedExecutionHandler((rejected, executor) -> {
+            try {
+                workQueue.put(rejected);
+            } catch (final InterruptedException e) {
+                throw new RejectedExecutionException("Interrupted while waiting on queue", e);
             }
         });
 
@@ -115,11 +120,11 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
         this.runablesRejected = 0;
     }
 
-    private final void incrementRunableExecuted() {
+    private void incrementRunableExecuted() {
         RUNABLES_EXECUTED.incrementAndGet(this);
     }
 
-    private final void incrementRunableRejected() {
+    private void incrementRunableRejected() {
         RUNABLES_REJECTED.incrementAndGet(this);
     }
 
@@ -130,14 +135,11 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
         RCVD_UPDATER.incrementAndGet(this);
 
         try {
-            executorService.submit(new Runnable() {
-                @Override
-                public void run() {
-                    incrementRunableExecuted();
-                    processPacket(notification);
-                }
+            executorService.execute(() -> {
+                incrementRunableExecuted();
+                processPacket(notification);
             });
-        } catch (final Exception e) {
+        } catch (RejectedExecutionException e) {
             incrementRunableRejected();
         }
         LOG.debug("onPacketReceived - Leaving", notification);
@@ -147,7 +149,8 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
 
     private static Instructions makeStaticDropActionInstructions() {
         // Create an DropAction
-        final DropActionCase dropAction = new DropActionCaseBuilder().setDropAction(new DropActionBuilder().build()).build();
+        final DropActionCase dropAction = new DropActionCaseBuilder().setDropAction(
+                new DropActionBuilder().build()).build();
         // Create an Action
         final Action ab = new ActionBuilder().setOrder(0).setAction(dropAction).build();
         // Create an Apply Action
@@ -159,6 +162,7 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
         return new InstructionsBuilder().setInstruction(Collections.singletonList(ib)).build();
     }
 
+    @SuppressWarnings("checkstyle:IllegalCatch")
     private void processPacket(final PacketReceived notification) {
         try {
             final byte[] rawPacket = notification.getPayload();
@@ -184,7 +188,7 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
             processPacket(ncri.firstIdentifierOf(Node.class), match.build(), DROP_INSTRUCTIONS);
 
             SENT_UPDATER.incrementAndGet(this);
-        } catch (final Exception e) {
+        } catch (RuntimeException e) {
             LOG.warn("Failed to process packet: {}", e.getMessage());
             LOG.debug("Failed to process packet.. ", e);
             EXCS_UPDATER.incrementAndGet(this);

@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2013 Cisco Systems, Inc. and others.  All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -19,11 +19,12 @@ import org.slf4j.LoggerFactory;
 public class OpenflowpluginTestActivator extends AbstractBindingAwareProvider {
     private static final Logger LOG = LoggerFactory
             .getLogger(OpenflowpluginTestActivator.class);
-    
+
     private static OpenflowpluginTestServiceProvider provider = new OpenflowpluginTestServiceProvider();
     private static OpenflowpluginGroupTestServiceProvider groupProvider = new OpenflowpluginGroupTestServiceProvider();
     private static OpenflowpluginMeterTestServiceProvider meterProvider = new OpenflowpluginMeterTestServiceProvider();
-    private static OpenflowpluginTableFeaturesTestServiceProvider tableProvider = new OpenflowpluginTableFeaturesTestServiceProvider();
+    private static OpenflowpluginTableFeaturesTestServiceProvider tableProvider =
+            new OpenflowpluginTableFeaturesTestServiceProvider();
 
     private OpenflowpluginTestCommandProvider cmdProvider;
 
@@ -47,7 +48,7 @@ public class OpenflowpluginTestActivator extends AbstractBindingAwareProvider {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.opendaylight.controller.sal.binding.api.BindingAwareProvider#
      * onSessionInitiated
      * (org.opendaylight.controller.sal.binding.api.BindingAwareBroker
@@ -56,11 +57,11 @@ public class OpenflowpluginTestActivator extends AbstractBindingAwareProvider {
     @Override
     public void onSessionInitiated(ProviderContext session) {
         DataBroker salService = session
-                .<DataBroker> getSALService(DataBroker.class);
+                .<DataBroker>getSALService(DataBroker.class);
         OpenflowpluginTestActivator.provider.setDataService(salService);
 
         NotificationProviderService salService1 = session
-                .<NotificationProviderService> getSALService(NotificationProviderService.class);
+                .<NotificationProviderService>getSALService(NotificationProviderService.class);
 
         OpenflowpluginTestActivator.provider
                 .setNotificationService(salService1);
@@ -84,50 +85,53 @@ public class OpenflowpluginTestActivator extends AbstractBindingAwareProvider {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.opendaylight.controller.sal.binding.api.AbstractBrokerAwareActivator
      * #startImpl(org.osgi.framework.BundleContext)
      */
+    @Override
     public void startImpl(final BundleContext ctx) {
         super.startImpl(ctx);
 
         OpenflowpluginTestCommandProvider openflowpluginTestCommandProvider = new OpenflowpluginTestCommandProvider(
                 ctx);
         this.cmdProvider = openflowpluginTestCommandProvider;
-        OpenflowpluginGroupTestCommandProvider openflowpluginGroupTestCommandProvider = new OpenflowpluginGroupTestCommandProvider(
-                ctx);
+        OpenflowpluginGroupTestCommandProvider openflowpluginGroupTestCommandProvider =
+                new OpenflowpluginGroupTestCommandProvider(ctx);
         this.cmdGroupProvider = openflowpluginGroupTestCommandProvider;
-        OpenflowpluginMeterTestCommandProvider openflowpluginMeterTestCommandProvider = new OpenflowpluginMeterTestCommandProvider(
-                ctx);
+        OpenflowpluginMeterTestCommandProvider openflowpluginMeterTestCommandProvider =
+                new OpenflowpluginMeterTestCommandProvider(ctx);
         this.cmdMeterProvider = openflowpluginMeterTestCommandProvider;
-        OpenflowpluginTableFeaturesTestCommandProvider openflowpluginTableFeaturesTestCommandProvider = new OpenflowpluginTableFeaturesTestCommandProvider(
-                ctx);
+        OpenflowpluginTableFeaturesTestCommandProvider openflowpluginTableFeaturesTestCommandProvider =
+                new OpenflowpluginTableFeaturesTestCommandProvider(ctx);
         this.cmdTableProvider = openflowpluginTableFeaturesTestCommandProvider;
-        OpenflowpluginStatsTestCommandProvider openflowpluginStatsTestCommandProvider = new OpenflowpluginStatsTestCommandProvider(
-                ctx);
+        OpenflowpluginStatsTestCommandProvider openflowpluginStatsTestCommandProvider =
+                new OpenflowpluginStatsTestCommandProvider(ctx);
         this.cmdStatsProvider = openflowpluginStatsTestCommandProvider;
-        OpenflowpluginTestNodeConnectorNotification openflowpluginTestNodeConnectorNotification = new OpenflowpluginTestNodeConnectorNotification(
-                ctx);
+        OpenflowpluginTestNodeConnectorNotification openflowpluginTestNodeConnectorNotification =
+                new OpenflowpluginTestNodeConnectorNotification(ctx);
         this.cmdNodeConnectorNotification = openflowpluginTestNodeConnectorNotification;
-        OpenflowpluginTestTopologyNotification openflowpluginTestTopologyNotification = new OpenflowpluginTestTopologyNotification(
-                ctx);
+        OpenflowpluginTestTopologyNotification openflowpluginTestTopologyNotification =
+                new OpenflowpluginTestTopologyNotification(ctx);
         this.cmdTopologyNotification = openflowpluginTestTopologyNotification;
-        OpenflowPluginBulkTransactionProvider openflowPluginBulkTransactionProvider = new OpenflowPluginBulkTransactionProvider(
-                ctx);
+        OpenflowPluginBulkTransactionProvider openflowPluginBulkTransactionProvider =
+                new OpenflowPluginBulkTransactionProvider(ctx);
         this.bulkCmdProvider = openflowPluginBulkTransactionProvider;
-        OpenflowPluginBulkGroupTransactionProvider openflowPluginBulkGroupTransactionProvider = new OpenflowPluginBulkGroupTransactionProvider(
-                ctx);
+        OpenflowPluginBulkGroupTransactionProvider openflowPluginBulkGroupTransactionProvider =
+                new OpenflowPluginBulkGroupTransactionProvider(ctx);
         this.groupCmdProvider = openflowPluginBulkGroupTransactionProvider;
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.opendaylight.controller.sal.binding.api.AbstractBrokerAwareActivator
      * #stopImpl(org.osgi.framework.BundleContext)
      */
+    @Override
+    @SuppressWarnings("checkstyle:IllegalCatch")
     protected void stopImpl(final BundleContext context) {
 
         try {
@@ -137,5 +141,4 @@ public class OpenflowpluginTestActivator extends AbstractBindingAwareProvider {
             LOG.error("Stopping bundle OpenflowpluginTestActivator failed.", e);
         }
     }
-
 }
