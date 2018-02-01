@@ -30,7 +30,8 @@ public class SalToOfSetNwDstActionV10Case extends ConvertorCase<SetNwDstActionCa
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final SetNwDstActionCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final SetNwDstActionCase source, final ActionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         final ActionBuilder builder = new ActionBuilder();
         final Address address = source.getSetNwDstAction().getAddress();
 

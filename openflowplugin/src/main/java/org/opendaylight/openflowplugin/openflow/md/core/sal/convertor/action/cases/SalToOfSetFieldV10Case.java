@@ -27,7 +27,8 @@ public class SalToOfSetFieldV10Case extends ConvertorCase<SetFieldCase, Action, 
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final SetFieldCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final SetFieldCase source, final ActionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         SetVlanVidCaseBuilder setVlanVidCaseBuilder = new SetVlanVidCaseBuilder();
 
         if (source.getSetField().getVlanMatch() != null) {

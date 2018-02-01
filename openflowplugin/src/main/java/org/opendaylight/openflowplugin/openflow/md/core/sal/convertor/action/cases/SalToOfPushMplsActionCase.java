@@ -28,7 +28,8 @@ public class SalToOfPushMplsActionCase extends ConvertorCase<PushMplsActionCase,
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final PushMplsActionCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final PushMplsActionCase source, final ActionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         PushMplsCaseBuilder pushMplsCaseBuilder = new PushMplsCaseBuilder();
         PushMplsActionBuilder pushMplsBuilder = new PushMplsActionBuilder();
         pushMplsBuilder.setEthertype(new EtherType(source.getPushMplsAction().getEthernetType()));

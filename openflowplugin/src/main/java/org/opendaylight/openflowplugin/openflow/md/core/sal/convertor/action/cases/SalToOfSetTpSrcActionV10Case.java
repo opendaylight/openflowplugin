@@ -33,7 +33,8 @@ public class SalToOfSetTpSrcActionV10Case extends ConvertorCase<SetTpSrcActionCa
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final SetTpSrcActionCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final SetTpSrcActionCase source, final ActionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         SetTpSrcAction settpsrcaction = source.getSetTpSrcAction();
         SetTpSrcCaseBuilder setTpSrcCaseBuilder = new SetTpSrcCaseBuilder();
         SetTpSrcActionBuilder setTpSrcActionBuilder = new SetTpSrcActionBuilder();
