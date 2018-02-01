@@ -25,7 +25,8 @@ public class OfToSalIpEcnCase extends ConvertorCase<IpEcnCase, MatchBuilder, Mat
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull IpEcnCase source, MatchResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<MatchBuilder> process(@Nonnull IpEcnCase source, MatchResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final IpMatchBuilder ipMatchBuilder = data.getIpMatchBuilder();
 
