@@ -28,7 +28,8 @@ public class SalToOfPopMplsActionCase extends ConvertorCase<PopMplsActionCase, A
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final PopMplsActionCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final PopMplsActionCase source, final ActionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         PopMplsCaseBuilder popMplsCaseBuilder = new PopMplsCaseBuilder();
         PopMplsActionBuilder popMplsBuilder = new PopMplsActionBuilder();
         popMplsBuilder.setEthertype(new EtherType(new EtherType(source.getPopMplsAction().getEthernetType())));
