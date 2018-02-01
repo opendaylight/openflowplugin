@@ -12,13 +12,13 @@ import java.util.Collection;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 
 /**
- * Converts OpenflowJava to MDSal model and vice versa
+ * Converts OpenflowJava to MDSal model and vice versa.
  *
- * @param <FROM> type of source
- * @param <TO>   type of result
- * @param <DATA> the type parameter
+ * @param <F> type of source
+ * @param <T>   type of result
+ * @param <D> the type parameter
  */
-public abstract class Convertor<FROM, TO, DATA extends ConvertorData> {
+public abstract class Convertor<F, T, D extends ConvertorData> {
     private ConvertorExecutor convertorExecutor;
 
     /**
@@ -48,11 +48,11 @@ public abstract class Convertor<FROM, TO, DATA extends ConvertorData> {
     public abstract Collection<Class<?>> getTypes();
 
     /**
-     * Converts source to result
+     * Converts source to result.
      *
      * @param source source
      * @param data   convertor data
      * @return converted source
      */
-    public abstract TO convert(FROM source, DATA data);
+    public abstract T convert(F source, D data);
 }
