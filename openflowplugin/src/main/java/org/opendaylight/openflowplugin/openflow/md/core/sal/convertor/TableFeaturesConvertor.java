@@ -154,6 +154,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Converts a MD-SAL table features into the OF library table features.
  *
+ * <p>
  * Example usage:
  * <pre>
  * {@code
@@ -168,13 +169,18 @@ public class TableFeaturesConvertor extends Convertor<
         VersionConvertorData> {
 
     private static final Logger LOG = LoggerFactory.getLogger(TableFeaturesConvertor.class);
-    private static final Ordering<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties> TABLE_FEATURE_PROPS_ORDERING =
-            Ordering.from(OrderComparator.<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties>build());
-    private static final Map<Class<?>, Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField>> SAL_TO_OF_TABLE_FEATURES;
-    private static final List<Class<?>> TYPES = Arrays.asList(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures.class, UpdatedTable.class);
+    private static final Ordering<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features
+        .table.features.table.properties.TableFeatureProperties> TABLE_FEATURE_PROPS_ORDERING =
+            Ordering.from(OrderComparator.<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
+                    .features.table.features.table.properties.TableFeatureProperties>build());
+    private static final Map<Class<?>, Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm
+            .rev150225.MatchField>> SAL_TO_OF_TABLE_FEATURES;
+    private static final List<Class<?>> TYPES = Arrays.asList(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types
+            .rev131026.TableFeatures.class, UpdatedTable.class);
 
     static {
-        Builder<Class<?>, Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField>> builder = ImmutableMap.builder();
+        Builder<Class<?>, Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm
+                .rev150225.MatchField>> builder = ImmutableMap.builder();
         builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.ArpOp.class, ArpOp.class);
         builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.ArpSha.class, ArpSha.class);
         builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.ArpSpa.class, ArpSpa.class);
@@ -183,11 +189,16 @@ public class TableFeaturesConvertor extends Convertor<
         builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.EthDst.class, EthDst.class);
         builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.EthSrc.class, EthSrc.class);
         builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.EthType.class, EthType.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Icmpv4Code.class, Icmpv4Code.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Icmpv4Type.class, Icmpv4Type.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Icmpv6Code.class, Icmpv6Code.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Icmpv6Type.class, Icmpv6Type.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.InPhyPort.class, InPhyPort.class);
+        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Icmpv4Code.class,
+                Icmpv4Code.class);
+        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Icmpv4Type.class,
+                Icmpv4Type.class);
+        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Icmpv6Code.class,
+                Icmpv6Code.class);
+        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Icmpv6Type.class,
+                Icmpv6Type.class);
+        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.InPhyPort.class,
+                InPhyPort.class);
         builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.InPort.class, InPort.class);
         builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.IpDscp.class, IpDscp.class);
         builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.IpEcn.class, IpEcn.class);
@@ -195,15 +206,21 @@ public class TableFeaturesConvertor extends Convertor<
         builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv4Dst.class, Ipv4Dst.class);
         builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv4Src.class, Ipv4Src.class);
         builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv6Dst.class, Ipv6Dst.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv6Exthdr.class, Ipv6Exthdr.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv6Flabel.class, Ipv6Flabel.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv6NdSll.class, Ipv6NdSll.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv6NdTarget.class, Ipv6NdTarget.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv6NdTll.class, Ipv6NdTll.class);
+        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv6Exthdr.class,
+                Ipv6Exthdr.class);
+        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv6Flabel.class,
+                Ipv6Flabel.class);
+        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv6NdSll.class,
+                Ipv6NdSll.class);
+        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv6NdTarget.class,
+                Ipv6NdTarget.class);
+        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv6NdTll.class,
+                Ipv6NdTll.class);
         builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv6Src.class, Ipv6Src.class);
         builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Metadata.class, Metadata.class);
         builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.MplsBos.class, MplsBos.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.MplsLabel.class, MplsLabel.class);
+        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.MplsLabel.class,
+                MplsLabel.class);
         builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.MplsTc.class, MplsTc.class);
         builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.PbbIsid.class, PbbIsid.class);
         builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.SctpDst.class, SctpDst.class);
@@ -215,29 +232,33 @@ public class TableFeaturesConvertor extends Convertor<
         builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.UdpSrc.class, UdpSrc.class);
         builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanPcp.class, VlanPcp.class);
         builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanVid.class, VlanVid.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Dst.class, Ipv4Dst.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Src.class, Ipv4Src.class);
+        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Dst.class,
+                Ipv4Dst.class);
+        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Src.class,
+                Ipv4Src.class);
         builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TcpFlags.class, TcpFlags.class);
         SAL_TO_OF_TABLE_FEATURES = builder.build();
     }
 
     private static List<TableFeatureProperties> toTableProperties(
-            final org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.TableProperties tableProperties) {
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features
+                .TableProperties tableProperties) {
         if (tableProperties == null) {
             return Collections.emptyList();
         }
 
         List<TableFeatureProperties> ofTablePropertiesList = new ArrayList<>();
 
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties>
-                sortedTableProperties = TABLE_FEATURE_PROPS_ORDERING.sortedCopy(tableProperties.getTableFeatureProperties());
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table
+            .properties.TableFeatureProperties> sortedTableProperties = TABLE_FEATURE_PROPS_ORDERING.sortedCopy(
+                    tableProperties.getTableFeatureProperties());
 
-        for (org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties
-                property : sortedTableProperties) {
+        for (org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table
+                .properties.TableFeatureProperties property : sortedTableProperties) {
             TableFeaturePropertiesBuilder propBuilder = new TableFeaturePropertiesBuilder();
 
-            org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.TableFeaturePropType propType = property
-                    .getTableFeaturePropType();
+            org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type
+                .TableFeaturePropType propType = property.getTableFeaturePropType();
 
             setTableFeatureProperty(propType);
 
@@ -282,9 +303,12 @@ public class TableFeaturesConvertor extends Convertor<
         LOG.debug("Unknown TableFeaturePropType [{}]", propType.getClass());
     }
 
-    private static void setTableFeatureProperty(final ApplySetfieldMiss propType, final TableFeaturePropertiesBuilder propBuilder) {
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch> setFieldMatch = null;
-        org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.apply.setfield.miss.ApplySetfieldMiss applySetfieldMiss = propType.getApplySetfieldMiss();
+    private static void setTableFeatureProperty(final ApplySetfieldMiss propType,
+            final TableFeaturePropertiesBuilder propBuilder) {
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch>
+            setFieldMatch = null;
+        org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop
+            .type.apply.setfield.miss.ApplySetfieldMiss applySetfieldMiss = propType.getApplySetfieldMiss();
 
         if (null != applySetfieldMiss) {
             setFieldMatch = applySetfieldMiss.getSetFieldMatch();
@@ -293,13 +317,16 @@ public class TableFeaturesConvertor extends Convertor<
         setSetFieldTableFeatureProperty(
                 propBuilder,
                 TableFeaturesPropType.OFPTFPTAPPLYSETFIELDMISS,
-                ((setFieldMatch == null) ? new ArrayList<>()
-                        : setFieldMatch));
+                setFieldMatch == null ? new ArrayList<>()
+                        : setFieldMatch);
     }
 
-    private static void setTableFeatureProperty(final ApplySetfield propType, final TableFeaturePropertiesBuilder propBuilder) {
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch> setFieldMatch = null;
-        org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.apply.setfield.ApplySetfield applySetfield = propType.getApplySetfield();
+    private static void setTableFeatureProperty(final ApplySetfield propType,
+            final TableFeaturePropertiesBuilder propBuilder) {
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch>
+            setFieldMatch = null;
+        org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop
+            .type.apply.setfield.ApplySetfield applySetfield = propType.getApplySetfield();
 
         if (null != applySetfield) {
             setFieldMatch = applySetfield.getSetFieldMatch();
@@ -308,13 +335,16 @@ public class TableFeaturesConvertor extends Convertor<
         setSetFieldTableFeatureProperty(
                 propBuilder,
                 TableFeaturesPropType.OFPTFPTAPPLYSETFIELD,
-                ((setFieldMatch == null) ? new ArrayList<>()
-                        : setFieldMatch));
+                setFieldMatch == null ? new ArrayList<>()
+                        : setFieldMatch);
     }
 
-    private static void setTableFeatureProperty(final WriteSetfieldMiss propType, final TableFeaturePropertiesBuilder propBuilder) {
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch> setFieldMatch = null;
-        org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.write.setfield.miss.WriteSetfieldMiss writeSetfieldMiss = propType.getWriteSetfieldMiss();
+    private static void setTableFeatureProperty(final WriteSetfieldMiss propType,
+            final TableFeaturePropertiesBuilder propBuilder) {
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch>
+            setFieldMatch = null;
+        org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop
+            .type.write.setfield.miss.WriteSetfieldMiss writeSetfieldMiss = propType.getWriteSetfieldMiss();
 
         if (null != writeSetfieldMiss) {
             setFieldMatch = writeSetfieldMiss.getSetFieldMatch();
@@ -323,13 +353,16 @@ public class TableFeaturesConvertor extends Convertor<
         setSetFieldTableFeatureProperty(
                 propBuilder,
                 TableFeaturesPropType.OFPTFPTWRITESETFIELDMISS,
-                ((setFieldMatch == null) ? new ArrayList<>()
-                        : setFieldMatch));
+                setFieldMatch == null ? new ArrayList<>()
+                        : setFieldMatch);
     }
 
-    private static void setTableFeatureProperty(final WriteSetfield propType, final TableFeaturePropertiesBuilder propBuilder) {
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch> setFieldMatch = null;
-        org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.write.setfield.WriteSetfield writeSetField = propType.getWriteSetfield();
+    private static void setTableFeatureProperty(final WriteSetfield propType,
+            final TableFeaturePropertiesBuilder propBuilder) {
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch>
+            setFieldMatch = null;
+        org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop
+            .type.write.setfield.WriteSetfield writeSetField = propType.getWriteSetfield();
 
         if (null != writeSetField) {
             setFieldMatch = writeSetField.getSetFieldMatch();
@@ -338,12 +371,14 @@ public class TableFeaturesConvertor extends Convertor<
         setSetFieldTableFeatureProperty(
                 propBuilder,
                 TableFeaturesPropType.OFPTFPTWRITESETFIELD,
-                ((setFieldMatch == null) ? new ArrayList<>()
-                        : setFieldMatch));
+                setFieldMatch == null ? new ArrayList<>()
+                        : setFieldMatch);
     }
 
-    private static void setTableFeatureProperty(final Wildcards propType, final TableFeaturePropertiesBuilder propBuilder) {
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch> setFieldMatch = null;
+    private static void setTableFeatureProperty(final Wildcards propType,
+            final TableFeaturePropertiesBuilder propBuilder) {
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch>
+            setFieldMatch = null;
         WildcardSetfield wildcardSetField = propType.getWildcardSetfield();
 
         if (null != wildcardSetField) {
@@ -353,13 +388,14 @@ public class TableFeaturesConvertor extends Convertor<
         setSetFieldTableFeatureProperty(
                 propBuilder,
                 TableFeaturesPropType.OFPTFPTWILDCARDS,
-                ((setFieldMatch == null) ? new ArrayList<>()
-                        : setFieldMatch));
+                setFieldMatch == null ? new ArrayList<>()
+                        : setFieldMatch);
     }
 
     private static void setTableFeatureProperty(final Match propType, final TableFeaturePropertiesBuilder propBuilder) {
         MatchSetfield matchSetField = propType.getMatchSetfield();
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch> setFieldMatch = null;
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch>
+            setFieldMatch = null;
 
         if (null != matchSetField) {
             setFieldMatch = matchSetField.getSetFieldMatch();
@@ -368,84 +404,95 @@ public class TableFeaturesConvertor extends Convertor<
         setSetFieldTableFeatureProperty(
                 propBuilder,
                 TableFeaturesPropType.OFPTFPTMATCH,
-                ((setFieldMatch == null) ? new ArrayList<>()
-                        : setFieldMatch));
+                setFieldMatch == null ? new ArrayList<>()
+                        : setFieldMatch);
     }
 
-    private static void setTableFeatureProperty(final ApplyActionsMiss propType, final TableFeaturePropertiesBuilder propBuilder) {
-        org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.apply.actions.miss.ApplyActionsMiss applyActionsMiss = propType
-                .getApplyActionsMiss();
+    private static void setTableFeatureProperty(final ApplyActionsMiss propType,
+            final TableFeaturePropertiesBuilder propBuilder) {
+        org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop
+            .type.apply.actions.miss.ApplyActionsMiss applyActionsMiss = propType.getApplyActionsMiss();
         setActionTableFeatureProperty(
                 propBuilder,
                 TableFeaturesPropType.OFPTFPTAPPLYACTIONSMISS,
-                ((applyActionsMiss == null) ? new ArrayList<>()
-                        : applyActionsMiss.getAction()));
+                applyActionsMiss == null ? new ArrayList<>()
+                        : applyActionsMiss.getAction());
     }
 
-    private static void setTableFeatureProperty(final ApplyActions propType, final TableFeaturePropertiesBuilder propBuilder) {
-        org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.apply.actions.ApplyActions applyActions = propType.getApplyActions();
+    private static void setTableFeatureProperty(final ApplyActions propType,
+            final TableFeaturePropertiesBuilder propBuilder) {
+        org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop
+            .type.apply.actions.ApplyActions applyActions = propType.getApplyActions();
         setActionTableFeatureProperty(
                 propBuilder,
                 TableFeaturesPropType.OFPTFPTAPPLYACTIONS,
-                ((applyActions == null) ? new ArrayList<>()
-                        : applyActions.getAction()));
+                applyActions == null ? new ArrayList<>()
+                        : applyActions.getAction());
     }
 
-    private static void setTableFeatureProperty(final WriteActionsMiss propType, final TableFeaturePropertiesBuilder propBuilder) {
-        org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.write.actions.miss.WriteActionsMiss writeActionsMiss = propType.getWriteActionsMiss();
+    private static void setTableFeatureProperty(final WriteActionsMiss propType,
+            final TableFeaturePropertiesBuilder propBuilder) {
+        org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop
+            .type.write.actions.miss.WriteActionsMiss writeActionsMiss = propType.getWriteActionsMiss();
         setActionTableFeatureProperty(
                 propBuilder,
                 TableFeaturesPropType.OFPTFPTWRITEACTIONSMISS,
-                ((writeActionsMiss == null) ? new ArrayList<>()
-                        : writeActionsMiss.getAction()));
+                writeActionsMiss == null ? new ArrayList<>()
+                        : writeActionsMiss.getAction());
     }
 
-    private static void setTableFeatureProperty(final WriteActions propType, final TableFeaturePropertiesBuilder propBuilder) {
-        org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.write.actions.WriteActions writeActions = propType.getWriteActions();
+    private static void setTableFeatureProperty(final WriteActions propType,
+            final TableFeaturePropertiesBuilder propBuilder) {
+        org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop
+            .type.write.actions.WriteActions writeActions = propType.getWriteActions();
         setActionTableFeatureProperty(
                 propBuilder,
                 TableFeaturesPropType.OFPTFPTWRITEACTIONS,
-                ((writeActions == null) ? new ArrayList<>()
-                        : writeActions.getAction()));
+                writeActions == null ? new ArrayList<>()
+                        : writeActions.getAction());
     }
 
-    private static void setTableFeatureProperty(final NextTableMiss propType, final TableFeaturePropertiesBuilder propBuilder) {
-        TablesMiss tables = propType
-                .getTablesMiss();
+    private static void setTableFeatureProperty(final NextTableMiss propType,
+            final TableFeaturePropertiesBuilder propBuilder) {
+        TablesMiss tables = propType.getTablesMiss();
         setNextTableFeatureProperty(propBuilder, TableFeaturesPropType.OFPTFPTNEXTTABLESMISS,
-                (tables == null) ? new ArrayList<>() : tables.getTableIds());
+                tables == null ? new ArrayList<>() : tables.getTableIds());
     }
 
-    private static void setTableFeatureProperty(final NextTable propType, final TableFeaturePropertiesBuilder propBuilder) {
-        org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.next.table.Tables tables = propType
-                .getTables();
+    private static void setTableFeatureProperty(final NextTable propType,
+            final TableFeaturePropertiesBuilder propBuilder) {
+        org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop
+            .type.next.table.Tables tables = propType.getTables();
         setNextTableFeatureProperty(propBuilder, TableFeaturesPropType.OFPTFPTNEXTTABLES,
-                (tables == null) ? new ArrayList<>() : tables.getTableIds());
+                tables == null ? new ArrayList<>() : tables.getTableIds());
     }
 
-    private static void setTableFeatureProperty(final InstructionsMiss propType, final TableFeaturePropertiesBuilder propBuilder) {
-        org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.instructions.miss.InstructionsMiss instructions = propType
-                .getInstructionsMiss();
+    private static void setTableFeatureProperty(final InstructionsMiss propType,
+            final TableFeaturePropertiesBuilder propBuilder) {
+        org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop
+            .type.instructions.miss.InstructionsMiss instructions = propType.getInstructionsMiss();
         setInstructionTableFeatureProperty(propBuilder, TableFeaturesPropType.OFPTFPTINSTRUCTIONSMISS,
-                (instructions == null) ? new ArrayList<>() : instructions.getInstruction());
+                instructions == null ? new ArrayList<>() : instructions.getInstruction());
     }
 
-    private static void setTableFeatureProperty(final Instructions propType, final TableFeaturePropertiesBuilder propBuilder) {
-        org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.instructions.Instructions instructions = propType
-                .getInstructions();
+    private static void setTableFeatureProperty(final Instructions propType,
+            final TableFeaturePropertiesBuilder propBuilder) {
+        org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop
+            .type.instructions.Instructions instructions = propType.getInstructions();
         setInstructionTableFeatureProperty(propBuilder, TableFeaturesPropType.OFPTFPTINSTRUCTIONS,
-                (instructions == null) ? new ArrayList<>() : instructions.getInstruction());
+                instructions == null ? new ArrayList<>() : instructions.getInstruction());
     }
 
     private static void setInstructionTableFeatureProperty(final TableFeaturePropertiesBuilder builder,
-                                                           final TableFeaturesPropType type, final List<Instruction> instructionList) {
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction> instructionTypeList = new ArrayList<>();
+            final TableFeaturesPropType type, final List<Instruction> instructionList) {
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping
+            .Instruction> instructionTypeList = new ArrayList<>();
 
         for (Instruction currInstruction : instructionList) {
             InstructionBuilder instructionType = new InstructionBuilder();
 
-            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction instruction = currInstruction
-                    .getInstruction();
+            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction instruction =
+                    currInstruction.getInstruction();
 
             if (instruction instanceof GoToTableCase) {
                 GotoTableCaseBuilder goToTableCaseBuilder = new GotoTableCaseBuilder();
@@ -477,8 +524,8 @@ public class TableFeaturesConvertor extends Convertor<
         builder.addAugmentation(InstructionRelatedTableFeatureProperty.class, propBuilder.build());
     }
 
-    private static void setNextTableFeatureProperty(final TableFeaturePropertiesBuilder builder, final TableFeaturesPropType type,
-                                                    final List<Short> tableIds) {
+    private static void setNextTableFeatureProperty(final TableFeaturePropertiesBuilder builder,
+            final TableFeaturesPropType type, final List<Short> tableIds) {
         List<NextTableIds> nextTableIdsList = new ArrayList<>();
 
         for (Short tableId : tableIds) {
@@ -494,12 +541,14 @@ public class TableFeaturesConvertor extends Convertor<
     }
 
     private static void setActionTableFeatureProperty(final TableFeaturePropertiesBuilder builder,
-                                                      final TableFeaturesPropType type,
-                                                      final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> salActions) {
+            final TableFeaturesPropType type,
+            final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>
+                salActions) {
 
         List<Action> actionList = new ArrayList<>();
 
-        for (org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action currAction : salActions) {
+        for (org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action currAction :
+                salActions) {
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionType = currAction
                     .getAction();
             ActionBuilder actionBuilder = new ActionBuilder();
@@ -567,15 +616,17 @@ public class TableFeaturesConvertor extends Convertor<
     private static void setSetFieldTableFeatureProperty(
             final TableFeaturePropertiesBuilder builder,
             final TableFeaturesPropType type,
-            final List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch> setFields) {
+            final List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match
+                .SetFieldMatch> setFields) {
         List<MatchEntry> matchEntriesList = new ArrayList<>();
 
-        for (org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch currMatch : setFields) {
-            Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.MatchField> currMatchType = currMatch
-                    .getMatchType();
+        for (org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch
+                currMatch : setFields) {
+            Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.MatchField>
+                currMatchType = currMatch.getMatchType();
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField> ofTableFeatureClass
-                    = SAL_TO_OF_TABLE_FEATURES.get(currMatchType);
+            Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField>
+                ofTableFeatureClass = SAL_TO_OF_TABLE_FEATURES.get(currMatchType);
             setMatchEntry(matchEntryBuilder, ofTableFeatureClass, currMatch.isHasMask());
             matchEntriesList.add(matchEntryBuilder.build());
         }
@@ -587,9 +638,9 @@ public class TableFeaturesConvertor extends Convertor<
     }
 
     private static void setMatchEntry(final MatchEntryBuilder builder,
-                                      final Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField> field,
-                                      final Boolean hasMask) {
-        if(field == TcpFlags.class) {
+            Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField> field,
+            final Boolean hasMask) {
+        if (field == TcpFlags.class) {
             builder.setOxmClass(ExperimenterClass.class);
         } else {
             builder.setOxmClass(OpenflowBasicClass.class);
@@ -604,12 +655,14 @@ public class TableFeaturesConvertor extends Convertor<
     }
 
     @Override
-    public List<TableFeatures> convert(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures source, VersionConvertorData data) {
+    public List<TableFeatures> convert(
+            org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures source,
+            VersionConvertorData data) {
         List<TableFeatures> ofTableFeaturesList = new ArrayList<>();
         TableFeaturesBuilder ofTableFeatures = new TableFeaturesBuilder();
 
-        for (org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures salTableFeatures : source
-                .getTableFeatures()) {
+        for (org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures
+                salTableFeatures : source.getTableFeatures()) {
             ofTableFeatures.setTableId(salTableFeatures.getTableId());
             ofTableFeatures.setName(salTableFeatures.getName());
             ofTableFeatures.setMetadataMatch(salTableFeatures.getMetadataMatch());
