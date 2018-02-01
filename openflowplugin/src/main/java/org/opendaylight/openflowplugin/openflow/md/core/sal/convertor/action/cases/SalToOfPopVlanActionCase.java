@@ -26,7 +26,8 @@ public class SalToOfPopVlanActionCase extends ConvertorCase<PopVlanActionCase, A
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final PopVlanActionCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final PopVlanActionCase source, final ActionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         return Optional.of(new ActionBuilder()
                 .setActionChoice(new PopVlanCaseBuilder().build())
                 .build());
