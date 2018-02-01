@@ -29,7 +29,8 @@ public class OfToSalIpv4SrcCase extends ConvertorCase<Ipv4SrcCase, MatchBuilder,
         super(Ipv4SrcCase.class, true, OFConstants.OFP_VERSION_1_0, OFConstants.OFP_VERSION_1_3);
     }
 
-    private static void setIpv4MatchBuilderFields(final Ipv4MatchBuilder ipv4MatchBuilder, final byte[] mask, final String ipv4PrefixStr) {
+    private static void setIpv4MatchBuilderFields(final Ipv4MatchBuilder ipv4MatchBuilder, final byte[] mask,
+            final String ipv4PrefixStr) {
         final Ipv4Prefix ipv4Prefix;
         if (mask != null) {
             ipv4Prefix = IpConversionUtil.createPrefix(new Ipv4Address(ipv4PrefixStr), mask);
@@ -65,10 +66,12 @@ public class OfToSalIpv4SrcCase extends ConvertorCase<Ipv4SrcCase, MatchBuilder,
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull Ipv4SrcCase source, MatchResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<MatchBuilder> process(@Nonnull Ipv4SrcCase source, MatchResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final Ipv4MatchBuilder ipv4MatchBuilder = data.getIpv4MatchBuilder();
-        final Ipv4MatchArbitraryBitMaskBuilder ipv4MatchArbitraryBitMaskBuilder = data.getIpv4MatchArbitraryBitMaskBuilder();
+        final Ipv4MatchArbitraryBitMaskBuilder ipv4MatchArbitraryBitMaskBuilder =
+                data.getIpv4MatchArbitraryBitMaskBuilder();
 
         Ipv4Src ipv4Address = source.getIpv4Src();
 
@@ -81,7 +84,8 @@ public class OfToSalIpv4SrcCase extends ConvertorCase<Ipv4SrcCase, MatchBuilder,
                 if (ipv4MatchBuilder.getIpv4Destination() != null) {
                     Ipv4Prefix ipv4PrefixDestinationAddress = ipv4MatchBuilder.getIpv4Destination();
                     Ipv4Address ipv4DstAddress = IpConversionUtil.extractIpv4Address(ipv4PrefixDestinationAddress);
-                    DottedQuad dstDottedQuadMask = IpConversionUtil.extractIpv4AddressMask(ipv4PrefixDestinationAddress);
+                    DottedQuad dstDottedQuadMask =
+                            IpConversionUtil.extractIpv4AddressMask(ipv4PrefixDestinationAddress);
 
                     setDstIpv4MatchArbitraryBitMaskBuilderFields(
                             ipv4MatchArbitraryBitMaskBuilder,

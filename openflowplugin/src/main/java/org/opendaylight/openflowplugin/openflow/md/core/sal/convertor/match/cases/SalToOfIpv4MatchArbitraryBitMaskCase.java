@@ -28,13 +28,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ipv4.dst._case.Ipv4DstBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ipv4.src._case.Ipv4SrcBuilder;
 
-public class SalToOfIpv4MatchArbitraryBitMaskCase extends ConvertorCase<Ipv4MatchArbitraryBitMask, List<MatchEntry>, VersionConvertorData> {
+public class SalToOfIpv4MatchArbitraryBitMaskCase extends ConvertorCase<Ipv4MatchArbitraryBitMask,
+        List<MatchEntry>, VersionConvertorData> {
     public SalToOfIpv4MatchArbitraryBitMaskCase() {
         super(Ipv4MatchArbitraryBitMask.class, true);
     }
 
     @Override
-    public Optional<List<MatchEntry>> process(@Nonnull Ipv4MatchArbitraryBitMask source, VersionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<List<MatchEntry>> process(@Nonnull Ipv4MatchArbitraryBitMask source, VersionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         List<MatchEntry> result = new ArrayList<>();
 
         if (source.getIpv4SourceAddressNoMask() != null) {
@@ -42,7 +44,6 @@ public class SalToOfIpv4MatchArbitraryBitMaskCase extends ConvertorCase<Ipv4Matc
             matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
             matchEntryBuilder.setOxmMatchField(Ipv4Src.class);
 
-            Ipv4SrcCaseBuilder ipv4SrcCaseBuilder = new Ipv4SrcCaseBuilder();
             Ipv4SrcBuilder ipv4SrcBuilder = new Ipv4SrcBuilder();
 
             ipv4SrcBuilder.setIpv4Address(source.getIpv4SourceAddressNoMask());
@@ -57,6 +58,8 @@ public class SalToOfIpv4MatchArbitraryBitMaskCase extends ConvertorCase<Ipv4Matc
                 }
             }
             matchEntryBuilder.setHasMask(hasMask);
+
+            Ipv4SrcCaseBuilder ipv4SrcCaseBuilder = new Ipv4SrcCaseBuilder();
             ipv4SrcCaseBuilder.setIpv4Src(ipv4SrcBuilder.build());
             matchEntryBuilder.setMatchEntryValue(ipv4SrcCaseBuilder.build());
             result.add(matchEntryBuilder.build());
@@ -67,7 +70,6 @@ public class SalToOfIpv4MatchArbitraryBitMaskCase extends ConvertorCase<Ipv4Matc
             matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
             matchEntryBuilder.setOxmMatchField(Ipv4Dst.class);
 
-            Ipv4DstCaseBuilder ipv4DstCaseBuilder = new Ipv4DstCaseBuilder();
             Ipv4DstBuilder ipv4DstBuilder = new Ipv4DstBuilder();
 
             ipv4DstBuilder.setIpv4Address(source.getIpv4DestinationAddressNoMask());
@@ -82,6 +84,8 @@ public class SalToOfIpv4MatchArbitraryBitMaskCase extends ConvertorCase<Ipv4Matc
                 }
             }
             matchEntryBuilder.setHasMask(hasMask);
+
+            Ipv4DstCaseBuilder ipv4DstCaseBuilder = new Ipv4DstCaseBuilder();
             ipv4DstCaseBuilder.setIpv4Dst(ipv4DstBuilder.build());
             matchEntryBuilder.setMatchEntryValue(ipv4DstCaseBuilder.build());
             result.add(matchEntryBuilder.build());
