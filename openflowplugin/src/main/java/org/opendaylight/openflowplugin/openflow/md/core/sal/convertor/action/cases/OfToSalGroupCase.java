@@ -26,7 +26,8 @@ public class OfToSalGroupCase extends ConvertorCase<GroupCase, Action, ActionRes
     }
 
     @Override
-    public Optional<Action> process(@Nonnull final GroupCase source, final ActionResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final GroupCase source, final ActionResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         GroupAction groupActionFromOF = source.getGroupAction();
         GroupActionBuilder groupAction = new GroupActionBuilder();
         groupAction.setGroupId(groupActionFromOF.getGroupId());
