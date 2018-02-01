@@ -27,12 +27,14 @@ public class IpConversionUtilTest {
     @Test
     public void canonicalBinaryV6AddressTest() {
 
-        byte [] ipv6binary = IpConversionUtil.canonicalBinaryV6Address(new Ipv6Address("0000:0000:0000:0000:0000:0000:0000:0001"));
+        byte [] ipv6binary = IpConversionUtil.canonicalBinaryV6Address(
+                new Ipv6Address("0000:0000:0000:0000:0000:0000:0000:0001"));
         byte [] expected = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,1};
 
         Assert.assertTrue("Incorrect canonicalization - binary", Arrays.equals(ipv6binary, expected));
         try {
-            Assert.assertEquals("Incorrect canonicalization - string", "::1", IpConversionUtil.byteArrayV6AddressToString(ipv6binary));
+            Assert.assertEquals("Incorrect canonicalization - string", "::1",
+                    IpConversionUtil.byteArrayV6AddressToString(ipv6binary));
         } catch (java.net.UnknownHostException e) {
             Assert.assertTrue("Incorrect canonicalization - wrong length of byte[]", false);
         }
@@ -41,13 +43,15 @@ public class IpConversionUtilTest {
     @Test
     public void canonicalBinaryV6AddressPrefixTest() {
 
-        byte [] ipv6binary = IpConversionUtil.canonicalBinaryV6Prefix(new Ipv6Prefix("0000:0000:0000:0000:0000:0000:0000:0001/64"));
+        byte [] ipv6binary = IpConversionUtil.canonicalBinaryV6Prefix(
+                new Ipv6Prefix("0000:0000:0000:0000:0000:0000:0000:0001/64"));
         byte [] expected = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 64};
 
         Assert.assertTrue("Incorrect canonicalization - binary", Arrays.equals(ipv6binary, expected));
         try {
-            Assert.assertEquals("Incorrect canonicalization - string", "::/64", IpConversionUtil.byteArrayV6PrefixToString(ipv6binary));
-        } catch (java.net.UnknownHostException e){
+            Assert.assertEquals("Incorrect canonicalization - string", "::/64",
+                    IpConversionUtil.byteArrayV6PrefixToString(ipv6binary));
+        } catch (java.net.UnknownHostException e) {
             Assert.assertTrue("Incorrect canonicalization - wrong length of byte[]", false);
         }
     }
@@ -78,9 +82,7 @@ public class IpConversionUtilTest {
                 {0, 0, 0, 0},
         };
 
-        int[] maskOutputs = new int[]{
-                32, 23, 1, 0
-        };
+        int[] maskOutputs = new int[] { 32, 23, 1, 0 };
 
         for (int i = 0; i < maskInputs.length; i++) {
             int mask = IpConversionUtil.countBits(maskInputs[i]);
@@ -91,11 +93,11 @@ public class IpConversionUtilTest {
     @Test
     public void convertArbitraryMaskToByteArrayTest() {
         int value = 0xffffffff;
-        byte[] bytes = new byte[]{
-                (byte)(value >>> 24), (byte)(value >> 16 & 0xff), (byte)(value >> 8 & 0xff), (byte)(value & 0xff) };
+        byte[] bytes = new byte[] { (byte) (value >>> 24), (byte) (value >> 16 & 0xff), (byte) (value >> 8 & 0xff),
+            (byte) (value & 0xff) };
         byte[] maskBytes;
         maskBytes = IpConversionUtil.convertArbitraryMaskToByteArray(new DottedQuad("255.255.255.255"));
-        for (int i=0; i<bytes.length;i++) {
+        for (int i = 0; i < bytes.length; i++) {
             int mask = maskBytes[i];
             Assert.assertEquals(bytes[i],mask);
         }
@@ -131,8 +133,9 @@ public class IpConversionUtilTest {
     @Test
     public void convertipv6ArbitraryMaskToByteArrayTest() {
         byte[] bytes = {-5,-96,-1,-74,-1,-16,-1,-16, -1,-16,-1,-16,-1,-16,-91,85};
-        byte[] maskBytes = IpConversionUtil.convertIpv6ArbitraryMaskToByteArray(new Ipv6ArbitraryMask("fbA0:FFB6:FFF0:FFF0:FFF0:FFF0:FFF0:A555"));
-        for(int i=0; i<bytes.length;i++){
+        byte[] maskBytes = IpConversionUtil.convertIpv6ArbitraryMaskToByteArray(
+                new Ipv6ArbitraryMask("fbA0:FFB6:FFF0:FFF0:FFF0:FFF0:FFF0:A555"));
+        for (int i = 0; i < bytes.length; i++) {
             int mask = maskBytes[i];
             Assert.assertEquals(bytes[i],mask);
         }
@@ -232,5 +235,4 @@ public class IpConversionUtilTest {
         compressedIpv6Address = IpConversionUtil.compressedIpv6AddressFormat(ipv6IpAddressMask);
         Assert.assertEquals(compressedIpv6Address.getValue(), "ffff:0:0:f000::1000");
     }
-
 }

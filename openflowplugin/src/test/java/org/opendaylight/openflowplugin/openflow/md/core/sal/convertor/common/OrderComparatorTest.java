@@ -7,13 +7,15 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common;
 
+import static org.junit.Assert.fail;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.Ordered;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
- * To test OrderComparator
+ * To test OrderComparator.
  */
 public class OrderComparatorTest {
 
@@ -21,8 +23,7 @@ public class OrderComparatorTest {
     public void testBothObjectsNull() {
         try {
             OrderComparator.<MockOrderedObject>build().compare(null, null);
-            org.junit.Assert.fail("Passing null to OrderCompartor should raise " +
-                "a NullPointerException");
+            fail("Passing null to OrderCompartor should raise a NullPointerException");
         } catch (NullPointerException npe) {
             // expected
         }
@@ -36,8 +37,7 @@ public class OrderComparatorTest {
             MockOrderedObject obj2 = null;
 
             OrderComparator.<MockOrderedObject>build().compare(obj1, obj2);
-            org.junit.Assert.fail("Passing null to OrderCompartor should raise " +
-                "a NullPointerException");
+            fail("Passing null to OrderCompartor should raise a NullPointerException");
         } catch (NullPointerException npe) {
             // expected
         }
@@ -48,8 +48,7 @@ public class OrderComparatorTest {
             obj2.setOrder(1);
 
             OrderComparator.<MockOrderedObject>build().compare(obj1, obj2);
-            org.junit.Assert.fail("Passing null to OrderCompartor should raise " +
-                "a NullPointerException");
+            fail("Passing null to OrderCompartor should raise a NullPointerException");
         } catch (NullPointerException npe) {
             // expected
         }
@@ -100,5 +99,4 @@ public class OrderComparatorTest {
             return Ordered.class;
         }
     }
-
 }
