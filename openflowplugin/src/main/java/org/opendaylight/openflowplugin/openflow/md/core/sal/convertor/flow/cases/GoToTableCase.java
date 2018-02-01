@@ -20,13 +20,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.InstructionBuilder;
 
-public class GoToTableCase extends ConvertorCase<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTableCase, Instruction, ActionConvertorData> {
+public class GoToTableCase extends ConvertorCase<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026
+        .instruction.instruction.GoToTableCase, Instruction, ActionConvertorData> {
     public GoToTableCase() {
-        super(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTableCase.class, true, OFConstants.OFP_VERSION_1_0, OFConstants.OFP_VERSION_1_3);
+        super(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction
+                .GoToTableCase.class, true, OFConstants.OFP_VERSION_1_0, OFConstants.OFP_VERSION_1_3);
     }
 
     @Override
-    public Optional<Instruction> process(final @Nonnull org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTableCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Instruction> process(final @Nonnull org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types
+            .rev131026.instruction.instruction.GoToTableCase source, final ActionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         GoToTable goToTable = source.getGoToTable();
         GotoTableCaseBuilder gotoTableCaseBuilder = new GotoTableCaseBuilder();
         GotoTableBuilder gotoTableBuilder = new GotoTableBuilder();

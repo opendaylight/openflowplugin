@@ -11,17 +11,19 @@ package org.opendaylight.openflowplugin.openflow.md.core.session;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.extension.api.core.session.ExtensionSessionManager;
 
-public abstract class OFSessionUtil {
+public final class OFSessionUtil {
+    private OFSessionUtil() {
+    }
 
     /**
-     * @return session manager singleton instance
+     * Returns the session manager singleton instance.
      */
     public static ExtensionSessionManager getSessionManager() {
         return ExtensionSessionManagerImpl.getInstance();
     }
 
     /**
-     * @return extension converters provider
+     * Returns the extension converters provider.
      */
     public static ExtensionConverterProvider getExtensionConvertorProvider() {
         return getSessionManager().getExtensionConverterProvider();
