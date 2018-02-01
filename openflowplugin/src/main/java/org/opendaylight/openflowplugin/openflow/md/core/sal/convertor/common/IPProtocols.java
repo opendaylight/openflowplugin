@@ -13,28 +13,28 @@ import com.google.common.collect.ImmutableMap.Builder;
 import java.util.Map;
 
 /**
+ * Enumerates IP protocols.
  * @author tkubas
- *
  */
-//TODO make a model in YANG for protocols 
+// TODO make a model in YANG for protocols
 public enum IPProtocols {
-    ICMP((short) 1), 
-    TCP((short) 6), 
-    UDP((short) 17), 
+    ICMP((short) 1),
+    TCP((short) 6),
+    UDP((short) 17),
     ICMPV6((short) 58);
 
     private short protocol;
-    
+
     private static final Map<Short, IPProtocols> VALUE_MAP;
     static {
         Builder<Short, IPProtocols> builder = ImmutableMap.builder();
-        for(IPProtocols protocols : IPProtocols.values()) {
+        for (IPProtocols protocols : IPProtocols.values()) {
             builder.put(protocols.protocol, protocols);
         }
         VALUE_MAP = builder.build();
     }
-    
-    private IPProtocols(short value) {
+
+    IPProtocols(short value) {
         this.protocol = value;
     }
 
