@@ -37,7 +37,7 @@ public class OpenflowpluginTableFeaturesTestServiceProvider implements
     private NotificationProviderService notificationService;
 
     /**
-     * get table registration
+     * Get table registration.
      *
      * @return {@link #tableRegistration}
      */
@@ -46,9 +46,7 @@ public class OpenflowpluginTableFeaturesTestServiceProvider implements
     }
 
     /**
-     * set {@link #tableRegistration}
-     *
-     * @param tableRegistration
+     * Set {@link #tableRegistration}.
      */
     public void setTableRegistration(
             final RoutedRpcRegistration<SalTableService> tableRegistration) {
@@ -56,7 +54,7 @@ public class OpenflowpluginTableFeaturesTestServiceProvider implements
     }
 
     /**
-     * get notification service
+     * Get notification service.
      *
      * @return {@link #notificationService}
      */
@@ -65,9 +63,7 @@ public class OpenflowpluginTableFeaturesTestServiceProvider implements
     }
 
     /**
-     * set {@link #notificationService}
-     *
-     * @param notificationService
+     * Set {@link #notificationService}.
      */
     public void setNotificationService(
             final NotificationProviderService notificationService) {
@@ -103,31 +99,27 @@ public class OpenflowpluginTableFeaturesTestServiceProvider implements
     @Override
     public Future<RpcResult<UpdateTableOutput>> updateTable(
             UpdateTableInput input) {
-        String plus = ("updateTable - " + input);
+        String plus = "updateTable - " + input;
         OpenflowpluginTableFeaturesTestServiceProvider.LOG.info(plus);
         return null;
     }
 
-    /**
-     * @param ctx
-     * @return {@link ObjectRegistration}
-     */
     public ObjectRegistration<OpenflowpluginTableFeaturesTestServiceProvider> register(
             final ProviderContext ctx) {
         RoutedRpcRegistration<SalTableService> addRoutedRpcImplementation = ctx
-                .<SalTableService> addRoutedRpcImplementation(
+                .<SalTableService>addRoutedRpcImplementation(
                         SalTableService.class, this);
 
         setTableRegistration(addRoutedRpcImplementation);
 
         InstanceIdentifierBuilder<Nodes> builder1 = InstanceIdentifier
-                .<Nodes> builder(Nodes.class);
+                .<Nodes>builder(Nodes.class);
 
         NodeId nodeId = new NodeId(OpenflowpluginTestActivator.NODE_ID);
         NodeKey nodeKey = new NodeKey(nodeId);
 
         InstanceIdentifierBuilder<Node> nodeIndentifier = builder1
-                .<Node, NodeKey> child(Node.class, nodeKey);
+                .<Node, NodeKey>child(Node.class, nodeKey);
 
         InstanceIdentifier<Node> instance = nodeIndentifier.build();
 
@@ -143,5 +135,4 @@ public class OpenflowpluginTableFeaturesTestServiceProvider implements
             }
         };
     }
-
 }

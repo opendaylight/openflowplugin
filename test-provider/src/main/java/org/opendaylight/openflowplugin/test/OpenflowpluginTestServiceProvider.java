@@ -44,7 +44,7 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
     private NotificationProviderService notificationProviderService;
 
     /**
-     * get data service
+     * Get data service.
      *
      * @return {@link #dataService}
      */
@@ -53,16 +53,14 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
     }
 
     /**
-     * set {@link #dataService}
-     *
-     * @param dataService
+     * Set {@link #dataService}.
      */
     public void setDataService(final DataBroker dataService) {
         this.dataService = dataService;
     }
 
     /**
-     * get flow registration
+     * Get flow registration.
      *
      * @return {@link #flowRegistration}
      */
@@ -71,9 +69,7 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
     }
 
     /**
-     * set {@link #flowRegistration}
-     *
-     * @param flowRegistration
+     * Set {@link #flowRegistration}.
      */
     public void setFlowRegistration(
             final RoutedRpcRegistration<SalFlowService> flowRegistration) {
@@ -81,7 +77,7 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
     }
 
     /**
-     * get notification service
+     * Get notification service.
      *
      * @return {@link #notificationProviderService}
      */
@@ -90,13 +86,10 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
     }
 
     /**
-     * set {@link #notificationProviderService}
-     *
-     * @param notificationProviderService
+     * Set {@link #notificationProviderService}.
      */
-    public void setNotificationService(
-            final NotificationProviderService notificationProviderService) {
-        this.notificationProviderService = notificationProviderService;
+    public void setNotificationService(final NotificationProviderService service) {
+        this.notificationProviderService = service;
     }
 
     public void start() {
@@ -127,7 +120,7 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
      */
     @Override
     public Future<RpcResult<AddFlowOutput>> addFlow(AddFlowInput input) {
-        String plus = ("addFlow - " + input);
+        String plus = "addFlow - " + input;
         OpenflowpluginTestServiceProvider.LOG.info(plus);
         return null;
     }
@@ -143,7 +136,7 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
      */
     @Override
     public Future<RpcResult<RemoveFlowOutput>> removeFlow(RemoveFlowInput input) {
-        String plus = ("removeFlow - " + input);
+        String plus = "removeFlow - " + input;
         OpenflowpluginTestServiceProvider.LOG.info(plus);
         return null;
     }
@@ -159,31 +152,27 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
      */
     @Override
     public Future<RpcResult<UpdateFlowOutput>> updateFlow(UpdateFlowInput input) {
-        String plus = ("updateFlow - " + input);
+        String plus = "updateFlow - " + input;
         OpenflowpluginTestServiceProvider.LOG.info(plus);
         return null;
     }
 
-    /**
-     * @param ctx
-     * @return {@link ObjectRegistration}
-     */
     public ObjectRegistration<OpenflowpluginTestServiceProvider> register(
             final ProviderContext ctx) {
         RoutedRpcRegistration<SalFlowService> addRoutedRpcImplementation = ctx
-                .<SalFlowService> addRoutedRpcImplementation(
+                .<SalFlowService>addRoutedRpcImplementation(
                         SalFlowService.class, this);
 
         setFlowRegistration(addRoutedRpcImplementation);
 
         InstanceIdentifierBuilder<Nodes> builderII = InstanceIdentifier
-                .<Nodes> builder(Nodes.class);
+                .<Nodes>builder(Nodes.class);
 
         NodeId nodeId = new NodeId(OpenflowpluginTestActivator.NODE_ID);
         NodeKey nodeKey = new NodeKey(nodeId);
 
         InstanceIdentifierBuilder<Node> nodeIdentifier = builderII
-                .<Node, NodeKey> child(Node.class, nodeKey);
+                .<Node, NodeKey>child(Node.class, nodeKey);
 
         InstanceIdentifier<Node> instance = nodeIdentifier.build();
 

@@ -42,7 +42,7 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
     private NotificationProviderService notificationService;
 
     /**
-     * get data service
+     * Gets the data service.
      *
      * @return {@link #dataService}
      */
@@ -51,16 +51,14 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
     }
 
     /**
-     * set {@link #dataService}
-     *
-     * @param dataService
+     * Sets the {@link #dataService}.
      */
     public void setDataService(final DataBroker dataService) {
         this.dataService = dataService;
     }
 
     /**
-     * get meter registration
+     * Gets the meter registration.
      *
      * @return {@link #meterRegistration}
      */
@@ -69,9 +67,7 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
     }
 
     /**
-     * set {@link #meterRegistration}
-     *
-     * @param meterRegistration
+     * Sets the {@link #meterRegistration}.
      */
     public void setMeterRegistration(
             final RoutedRpcRegistration<SalMeterService> meterRegistration) {
@@ -79,7 +75,7 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
     }
 
     /**
-     * get notification service
+     * Gets the notification service.
      *
      * @return {@link #notificationService}
      */
@@ -88,9 +84,7 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
     }
 
     /**
-     * set {@link #notificationService}
-     *
-     * @param notificationService
+     * Sets the {@link #notificationService}.
      */
     public void setNotificationService(
             final NotificationProviderService notificationService) {
@@ -107,6 +101,7 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
      *
      * @see java.lang.AutoCloseable#close()
      */
+    @Override
     public void close() {
         OpenflowpluginMeterTestServiceProvider.LOG
                 .info("SalMeterServiceProvide stopped.");
@@ -122,8 +117,9 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
      * #addMeter(org.opendaylight.yang.gen.v1.urn.opendaylight.meter
      * .service.rev130918.AddMeterInput)
      */
+    @Override
     public Future<RpcResult<AddMeterOutput>> addMeter(final AddMeterInput input) {
-        String plus = ("addMeter - " + input);
+        String plus = "addMeter - " + input;
         OpenflowpluginMeterTestServiceProvider.LOG.info(plus);
         return null;
     }
@@ -137,9 +133,10 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
      * #removeMeter(org.opendaylight.yang.gen.v1.urn.opendaylight
      * .meter.service.rev130918.RemoveMeterInput)
      */
+    @Override
     public Future<RpcResult<RemoveMeterOutput>> removeMeter(
             final RemoveMeterInput input) {
-        String plus = ("removeMeter - " + input);
+        String plus = "removeMeter - " + input;
         OpenflowpluginMeterTestServiceProvider.LOG.info(plus);
         return null;
     }
@@ -153,34 +150,31 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
      * #updateMeter(org.opendaylight.yang.gen.v1.urn.opendaylight
      * .meter.service.rev130918.UpdateMeterInput)
      */
+    @Override
     public Future<RpcResult<UpdateMeterOutput>> updateMeter(
             final UpdateMeterInput input) {
-        String plus = ("updateMeter - " + input);
+        String plus = "updateMeter - " + input;
         OpenflowpluginMeterTestServiceProvider.LOG.info(plus);
         return null;
     }
 
-    /**
-     * @param ctx
-     * @return {@link ObjectRegistration}
-     */
     public ObjectRegistration<OpenflowpluginMeterTestServiceProvider> register(
             final ProviderContext ctx) {
 
         RoutedRpcRegistration<SalMeterService> addRoutedRpcImplementation = ctx
-                .<SalMeterService> addRoutedRpcImplementation(
+                .<SalMeterService>addRoutedRpcImplementation(
                         SalMeterService.class, this);
 
         setMeterRegistration(addRoutedRpcImplementation);
 
         InstanceIdentifierBuilder<Nodes> builder1 = InstanceIdentifier
-                .<Nodes> builder(Nodes.class);
+                .<Nodes>builder(Nodes.class);
 
         NodeId nodeId = new NodeId(OpenflowpluginTestActivator.NODE_ID);
         NodeKey nodeKey = new NodeKey(nodeId);
 
         InstanceIdentifierBuilder<Node> nodeIndentifier = builder1
-                .<Node, NodeKey> child(Node.class, nodeKey);
+                .<Node, NodeKey>child(Node.class, nodeKey);
 
         InstanceIdentifier<Node> instance = nodeIndentifier.build();
 
@@ -197,5 +191,4 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
             }
         };
     }
-
 }

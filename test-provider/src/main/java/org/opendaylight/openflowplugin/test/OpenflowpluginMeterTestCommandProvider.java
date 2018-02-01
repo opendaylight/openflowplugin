@@ -50,6 +50,7 @@ import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings("checkstyle:MethodName")
 public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowpluginMeterTestCommandProvider.class);
@@ -136,8 +137,6 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         meter.setMeterId(new MeterId(9L));
         meter.setMeterName(originalMeterName);
         meter.setFlags(new MeterFlags(true, false, false, false));
-        MeterBandHeadersBuilder bandHeaders = new MeterBandHeadersBuilder();
-        List<MeterBandHeader> bandHdr = new ArrayList<MeterBandHeader>();
         MeterBandHeaderBuilder bandHeader = new MeterBandHeaderBuilder();
         bandHeader.setBandRate((long) 234);
         bandHeader.setBandBurstSize((long) 444);
@@ -151,7 +150,11 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         bandTypes.setFlags(bandType);
         bandHeader.setMeterBandTypes(bandTypes.build());
         bandHeader.setBandId(new BandId(0L));
+
+        List<MeterBandHeader> bandHdr = new ArrayList<>();
         bandHdr.add(bandHeader.build());
+
+        MeterBandHeadersBuilder bandHeaders = new MeterBandHeadersBuilder();
         bandHeaders.setMeterBandHeader(bandHdr);
         meter.setMeterBandHeaders(bandHeaders.build());
 
@@ -176,8 +179,6 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
             bandHeader.setBandRate((long) 123);
         }
         meter.setFlags(new MeterFlags(true, false, false, false));
-        MeterBandHeadersBuilder bandHeaders = new MeterBandHeadersBuilder();
-        List<MeterBandHeader> bandHdr = new ArrayList<MeterBandHeader>();
 
         bandHeader.setBandBurstSize((long) 444);
         DscpRemarkBuilder dscpRemark = new DscpRemarkBuilder();
@@ -190,7 +191,11 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         bandTypes.setFlags(bandType);
         bandHeader.setMeterBandTypes(bandTypes.build());
         bandHeader.setBandId(new BandId(0L));
+
+        List<MeterBandHeader> bandHdr = new ArrayList<>();
         bandHdr.add(bandHeader.build());
+
+        MeterBandHeadersBuilder bandHeaders = new MeterBandHeadersBuilder();
         bandHeaders.setMeterBandHeader(bandHdr);
         meter.setMeterBandHeaders(bandHeaders.build());
 
@@ -225,7 +230,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
             ci.println("User node added" + nref);
             createUserNode(nref);
         }
-        MeterBuilder mBuilder = createTestMeter();
+        createTestMeter();
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
         InstanceIdentifier<Meter> path1 = InstanceIdentifier.create(Nodes.class).child(Node.class, testNode.getKey())
                 .augmentation(FlowCapableNode.class).child(Meter.class, new MeterKey(testMeter.getMeterId()));
@@ -233,7 +238,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modification.submit();
         Futures.addCallback(commitFuture, new FutureCallback<Void>() {
             @Override
-            public void onSuccess(Void aVoid) {
+            public void onSuccess(Void notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
             }
 
@@ -260,12 +265,12 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
         switch (count) {
             case 1:
-                MeterBuilder mBuilder = createTestMeters("1", "remove");
+                createTestMeters("1", "remove");
                 InstanceIdentifier<Meter> path1 = InstanceIdentifier.create(Nodes.class)
                         .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
                         .child(Meter.class, new MeterKey(testMeter1.getMeterId()));
                 modification.delete(LogicalDatastoreType.CONFIGURATION, path1);
-                MeterBuilder mBuilder1 = createTestMeters("2", "remove");
+                createTestMeters("2", "remove");
                 InstanceIdentifier<Meter> path2 = InstanceIdentifier.create(Nodes.class)
                         .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
                         .child(Meter.class, new MeterKey(testMeter2.getMeterId()));
@@ -273,48 +278,49 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
 
                 break;
             case 2:
-                MeterBuilder mBuilder2 = createTestMeters("3", "remove");
+                createTestMeters("3", "remove");
                 InstanceIdentifier<Meter> path3 = InstanceIdentifier.create(Nodes.class)
                         .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
                         .child(Meter.class, new MeterKey(testMeter1.getMeterId()));
                 modification.delete(LogicalDatastoreType.CONFIGURATION, path3);
-                MeterBuilder mBuilder22 = createTestMeters("4", "remove");
+                createTestMeters("4", "remove");
                 InstanceIdentifier<Meter> path4 = InstanceIdentifier.create(Nodes.class)
                         .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
                         .child(Meter.class, new MeterKey(testMeter2.getMeterId()));
                 modification.delete(LogicalDatastoreType.CONFIGURATION, path4);
                 break;
             case 3:
-                MeterBuilder mBuilder3 = createTestMeters("5", "remove");
+                createTestMeters("5", "remove");
                 InstanceIdentifier<Meter> path5 = InstanceIdentifier.create(Nodes.class)
                         .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
                         .child(Meter.class, new MeterKey(testMeter1.getMeterId()));
                 modification.delete(LogicalDatastoreType.CONFIGURATION, path5);
-                MeterBuilder mBuilder4 = createTestMeters("6", "remove");
+                createTestMeters("6", "remove");
                 InstanceIdentifier<Meter> path6 = InstanceIdentifier.create(Nodes.class)
                         .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
                         .child(Meter.class, new MeterKey(testMeter2.getMeterId()));
                 modification.delete(LogicalDatastoreType.CONFIGURATION, path6);
                 break;
             case 4:
-                MeterBuilder mBuilder5 = createTestMeters("7", "remove");
+                createTestMeters("7", "remove");
                 InstanceIdentifier<Meter> path7 = InstanceIdentifier.create(Nodes.class)
                         .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
                         .child(Meter.class, new MeterKey(testMeter1.getMeterId()));
                 modification.delete(LogicalDatastoreType.CONFIGURATION, path7);
-                MeterBuilder mBuilder6 = createTestMeters("8", "remove");
+                createTestMeters("8", "remove");
                 InstanceIdentifier<Meter> path8 = InstanceIdentifier.create(Nodes.class)
                         .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
                         .child(Meter.class, new MeterKey(testMeter2.getMeterId()));
                 modification.delete(LogicalDatastoreType.CONFIGURATION, path8);
                 break;
-
+            default:
+                break;
         }
 
         CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modification.submit();
         Futures.addCallback(commitFuture, new FutureCallback<Void>() {
             @Override
-            public void onSuccess(Void aVoid) {
+            public void onSuccess(Void notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
             }
 
@@ -371,7 +377,8 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
                 createTestMeters("8", "add");
                 writeMeter(ci, testMeter1, testMeter2);
                 break;
-
+            default:
+                break;
         }
         // createTestMeters();
         // writeMeter(ci, testMeter);
@@ -386,7 +393,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modification.submit();
         Futures.addCallback(commitFuture, new FutureCallback<Void>() {
             @Override
-            public void onSuccess(Void aVoid) {
+            public void onSuccess(Void notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
             }
 
@@ -411,7 +418,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modification.submit();
         Futures.addCallback(commitFuture, new FutureCallback<Void>() {
             @Override
-            public void onSuccess(Void aVoid) {
+            public void onSuccess(Void notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
             }
 
@@ -461,6 +468,8 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
                 createTestMeters("3", "modify");
                 createTestMeters("4", "modify");
                 writeMeter(ci, testMeter1, testMeter2);
+                break;
+            default:
                 break;
         }
     }

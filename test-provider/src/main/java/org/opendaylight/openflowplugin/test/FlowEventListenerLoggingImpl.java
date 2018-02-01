@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * dummy implementation flushing events into log
+ * Dummy implementation flushing events into log.
  */
 public class FlowEventListenerLoggingImpl implements SalFlowListener {
 
