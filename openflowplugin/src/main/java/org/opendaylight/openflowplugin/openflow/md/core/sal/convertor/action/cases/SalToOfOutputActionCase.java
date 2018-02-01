@@ -36,7 +36,8 @@ public class SalToOfOutputActionCase extends ConvertorCase<OutputActionCase, Act
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final OutputActionCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final OutputActionCase source, final ActionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         final OutputAction outputAction = source.getOutputAction();
         final OutputActionBuilder outputBuilder = new OutputActionBuilder();
 

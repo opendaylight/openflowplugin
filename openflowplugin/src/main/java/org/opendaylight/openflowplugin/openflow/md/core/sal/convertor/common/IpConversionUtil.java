@@ -53,6 +53,7 @@ public final class IpConversionUtil {
      * the table is contiguous and save some space.
      */
     private static final byte[] PREFIX_BYTEARRAYS;
+
     static {
         final byte[] a = new byte[(INADDR6SZ * Byte.SIZE + 1) * INADDR6SZ];
 
@@ -101,11 +102,11 @@ public final class IpConversionUtil {
      *   that happens, it will be a simple fix here without chasing it across the whole plugin.
     */
 
-    public static Ipv4Prefix createPrefix(final Ipv4Address ipv4Address){
+    public static Ipv4Prefix createPrefix(final Ipv4Address ipv4Address) {
         return IetfInetUtil.INSTANCE.ipv4PrefixFor(ipv4Address);
     }
 
-    public static Ipv4Prefix createPrefix(final Ipv4Address ipv4Address, final String mask){
+    public static Ipv4Prefix createPrefix(final Ipv4Address ipv4Address, final String mask) {
         /*
          * Ipv4Address has already validated the address part of the prefix,
          * It is mandated to comply to the same regexp as the address
@@ -119,11 +120,11 @@ public final class IpConversionUtil {
         }
     }
 
-    public static Ipv4Prefix createPrefix(final Ipv4Address ipv4Address, final int intmask){
+    public static Ipv4Prefix createPrefix(final Ipv4Address ipv4Address, final int intmask) {
         return IetfInetUtil.INSTANCE.ipv4PrefixFor(ipv4Address, intmask);
     }
 
-    public static Ipv4Prefix createPrefix(final Ipv4Address ipv4Address, final byte [] bytemask){
+    public static Ipv4Prefix createPrefix(final Ipv4Address ipv4Address, final byte [] bytemask) {
         if (bytemask == null) {
             return createPrefix(ipv4Address);
         }
@@ -131,39 +132,11 @@ public final class IpConversionUtil {
         return IetfInetUtil.INSTANCE.ipv4PrefixFor(ipv4Address, countBits(bytemask));
     }
 
-    public static DottedQuad createArbitraryBitMask(final byte [] bitmask)  {
-        DottedQuad dottedQuad = null;
-        if (bitmask == null ) {
-            dottedQuad = new DottedQuad(DEFAULT_ARBITRARY_BIT_MASK);
-        } else {
-            try {
-                dottedQuad = new DottedQuad(InetAddress.getByAddress(bitmask).getHostAddress());
-            } catch (UnknownHostException e) {
-                LOG.error("Failed to create the dottedQuad notation for the given mask ", e);
-            }
-        }
-        return dottedQuad;
-    }
-
-    public static Ipv6ArbitraryMask createIpv6ArbitraryBitMask(final byte [] bitmask) {
-        Ipv6ArbitraryMask ipv6ArbitraryMask = null;
-        if (bitmask == null ) {
-            ipv6ArbitraryMask = new Ipv6ArbitraryMask(DEFAULT_IPV6_ARBITRARY_BITMASK);
-        } else {
-            try {
-                ipv6ArbitraryMask = new Ipv6ArbitraryMask(InetAddress.getByAddress(bitmask).getHostAddress());
-            } catch (UnknownHostException e) {
-                LOG.error("Failed to create the Ipv6ArbitraryMask notation for the given mask ", e);
-            }
-        }
-        return ipv6ArbitraryMask;
-    }
-
-    public static Ipv6Prefix createPrefix(final Ipv6Address ipv6Address){
+    public static Ipv6Prefix createPrefix(final Ipv6Address ipv6Address) {
         return IetfInetUtil.INSTANCE.ipv6PrefixFor(ipv6Address);
     }
 
-    public static Ipv6Prefix createPrefix(final Ipv6Address ipv6Address, final String mask){
+    public static Ipv6Prefix createPrefix(final Ipv6Address ipv6Address, final String mask) {
         /*
          * Ipv6Address has already validated the address part of the prefix,
          * It is mandated to comply to the same regexp as the address
@@ -177,16 +150,44 @@ public final class IpConversionUtil {
         }
     }
 
-    public static Ipv6Prefix createPrefix(final Ipv6Address ipv6Address, final int intmask){
+    public static Ipv6Prefix createPrefix(final Ipv6Address ipv6Address, final int intmask) {
         return IetfInetUtil.INSTANCE.ipv6PrefixFor(ipv6Address, intmask);
     }
 
-    public static Ipv6Prefix createPrefix(final Ipv6Address ipv6Address, final byte [] bytemask){
+    public static Ipv6Prefix createPrefix(final Ipv6Address ipv6Address, final byte [] bytemask) {
         if (bytemask == null) {
             return createPrefix(ipv6Address);
         }
 
         return IetfInetUtil.INSTANCE.ipv6PrefixFor(ipv6Address, countBits(bytemask));
+    }
+
+    public static DottedQuad createArbitraryBitMask(final byte [] bitmask)  {
+        DottedQuad dottedQuad = null;
+        if (bitmask == null) {
+            dottedQuad = new DottedQuad(DEFAULT_ARBITRARY_BIT_MASK);
+        } else {
+            try {
+                dottedQuad = new DottedQuad(InetAddress.getByAddress(bitmask).getHostAddress());
+            } catch (UnknownHostException e) {
+                LOG.error("Failed to create the dottedQuad notation for the given mask ", e);
+            }
+        }
+        return dottedQuad;
+    }
+
+    public static Ipv6ArbitraryMask createIpv6ArbitraryBitMask(final byte [] bitmask) {
+        Ipv6ArbitraryMask ipv6ArbitraryMask = null;
+        if (bitmask == null) {
+            ipv6ArbitraryMask = new Ipv6ArbitraryMask(DEFAULT_IPV6_ARBITRARY_BITMASK);
+        } else {
+            try {
+                ipv6ArbitraryMask = new Ipv6ArbitraryMask(InetAddress.getByAddress(bitmask).getHostAddress());
+            } catch (UnknownHostException e) {
+                LOG.error("Failed to create the Ipv6ArbitraryMask notation for the given mask ", e);
+            }
+        }
+        return ipv6ArbitraryMask;
     }
 
     public static Integer extractPrefix(final Ipv4Prefix ipv4Prefix) {
@@ -230,7 +231,7 @@ public final class IpConversionUtil {
 
 
      /**
-     * Convert Ipv6Address object to a valid Canonical v6 address in byte format
+     * Convert Ipv6Address object to a valid Canonical v6 address in byte format.
      *
      * @param ipv6Address - v6 Address object
      * @return - byte array of size 16. Last byte contains netmask
@@ -247,7 +248,7 @@ public final class IpConversionUtil {
 
 
     private static byte[] canonicalBinaryV6AddressFromString(final String ipv6Address) {
-       Iterable<String> splittedV6Address = Splitter.on("%")
+        Iterable<String> splittedV6Address = Splitter.on("%")
                 .trimResults()
                 .omitEmptyStrings()
                 .split(ipv6Address);
@@ -255,20 +256,17 @@ public final class IpConversionUtil {
 
         int colonp;
         char ch;
-        boolean saw_xdigit;
+        boolean sawXdigit;
 
         /* Isn't it fun - the above variable names are the same in BSD and Sun sources */
-
-        int val;
 
         char[] src = partsV6Address.get(0).toCharArray();
 
         byte[] dst = new byte[INADDR6SZ];
 
-        int src_length = src.length;
-
         colonp = -1;
-        int i = 0, j = 0;
+        int index1 = 0;
+        int index2 = 0;
 
         /* Leading :: requires some special handling. */
 
@@ -277,17 +275,17 @@ public final class IpConversionUtil {
          * in original Clingon. So does Dilbert.
          */
 
-        if (src[i] == ':') {
-            Preconditions.checkArgument(src[++i] == ':', "Invalid v6 address");
+        if (src[index1] == ':') {
+            Preconditions.checkArgument(src[++index1] == ':', "Invalid v6 address");
         }
 
-        int curtok = i;
-        saw_xdigit = false;
+        int curtok = index1;
+        sawXdigit = false;
 
-
-        val = 0;
-        while (i < src_length) {
-            ch = src[i++];
+        int srcLength = src.length;
+        int val = 0;
+        while (index1 < srcLength) {
+            ch = src[index1++];
             int chval = Character.digit(ch, 16);
 
             /* Business as usual - ipv6 address digit.
@@ -299,32 +297,32 @@ public final class IpConversionUtil {
             if (chval != -1) {
                 val <<= 4;
                 val |= chval;
-                saw_xdigit = true;
+                sawXdigit = true;
                 continue;
             }
 
             /* v6 separator */
 
             if (ch == ':') {
-                curtok = i;
-                if (!saw_xdigit) {
+                curtok = index1;
+                if (!sawXdigit) {
                     /* no need to check separator position validity - regexp does that */
-                    colonp = j;
+                    colonp = index2;
                     continue;
                 }
 
                 /* removed overrun check - the regexp checks for valid data */
 
-                dst[j++] = (byte) ((val >>> 8) & 0xff);
-                dst[j++] = (byte) (val & 0xff);
-                saw_xdigit = false;
+                dst[index2++] = (byte) (val >>> 8 & 0xff);
+                dst[index2++] = (byte) (val & 0xff);
+                sawXdigit = false;
                 val = 0;
                 continue;
             }
 
             /* frankenstein - v4 attached to v6, mixed notation */
 
-            if (ch == '.' && ((j + INADDR4SZ) <= INADDR6SZ)) {
+            if (ch == '.' && index2 + INADDR4SZ <= INADDR6SZ) {
 
                 /* this has passed the regexp so it is fairly safe to parse it
                  * straight away. As v4 addresses do not suffer from the same
@@ -332,46 +330,46 @@ public final class IpConversionUtil {
                  * straight away and be done with it
                  */
 
-                Preconditions.checkArgument(j != (INADDR6SZ - INADDR4SZ - 1), "Invalid v4 in v6 mapping");
+                Preconditions.checkArgument(index2 != INADDR6SZ - INADDR4SZ - 1, "Invalid v4 in v6 mapping");
 
-                InetAddress _inet_form = InetAddresses.forString(partsV6Address.get(0).substring(curtok, src_length));
+                InetAddress inetForm = InetAddresses.forString(partsV6Address.get(0).substring(curtok, srcLength));
 
-                Preconditions.checkArgument(_inet_form instanceof Inet4Address);
-                System.arraycopy(_inet_form.getAddress(), 0, dst, j, INADDR4SZ);
-                j += INADDR4SZ;
+                Preconditions.checkArgument(inetForm instanceof Inet4Address);
+                System.arraycopy(inetForm.getAddress(), 0, dst, index2, INADDR4SZ);
+                index2 += INADDR4SZ;
 
-                saw_xdigit = false;
+                sawXdigit = false;
                 break;
             }
             /* removed parser exit on invalid char - no need to do it, regexp checks it */
         }
-        if (saw_xdigit) {
-            Preconditions.checkArgument(j + INT16SZ <= INADDR6SZ, "Overrun in v6 parsing, should not occur");
-            dst[j++] = (byte) ((val >> 8) & 0xff);
-            dst[j++] = (byte) (val & 0xff);
+        if (sawXdigit) {
+            Preconditions.checkArgument(index2 + INT16SZ <= INADDR6SZ, "Overrun in v6 parsing, should not occur");
+            dst[index2++] = (byte) (val >> 8 & 0xff);
+            dst[index2++] = (byte) (val & 0xff);
         }
 
         if (colonp != -1) {
-            int n = j - colonp;
+            int to = index2 - colonp;
 
-            Preconditions.checkArgument(j != INADDR6SZ, "Overrun in v6 parsing, should not occur");
-            for (i = 1; i <= n; i++) {
-                dst[INADDR6SZ - i] = dst[colonp + n - i];
-                dst[colonp + n - i] = 0;
+            Preconditions.checkArgument(index2 != INADDR6SZ, "Overrun in v6 parsing, should not occur");
+            for (index1 = 1; index1 <= to; index1++) {
+                dst[INADDR6SZ - index1] = dst[colonp + to - index1];
+                dst[colonp + to - index1] = 0;
             }
-            j = INADDR6SZ;
+            index2 = INADDR6SZ;
         }
 
-        Preconditions.checkArgument(j == INADDR6SZ, "Overrun in v6 parsing, should not occur");
+        Preconditions.checkArgument(index2 == INADDR6SZ, "Overrun in v6 parsing, should not occur");
 
         return dst;
     }
 
-    public static String byteArrayV6AddressToString (final byte [] _binary_form) throws UnknownHostException {
+    public static String byteArrayV6AddressToString(final byte [] binaryForm) throws UnknownHostException {
         /* DO NOT DIY!!! - InetAddresses will actually print correct canonical
          * zero compressed form.
          */
-        return InetAddresses.toAddrString(InetAddress.getByAddress(_binary_form));
+        return InetAddresses.toAddrString(InetAddress.getByAddress(binaryForm));
     }
 
     private static int nextNibble(final int mask) {
@@ -381,11 +379,11 @@ public final class IpConversionUtil {
         if (mask > 8) {
             return 0xff;
         }
-        return 0xff << (8 - mask);
+        return 0xff << 8 - mask;
     }
 
     /**
-     * Convert Ipv6Prefix object to a valid Canonical v6 prefix in byte format
+     * Convert Ipv6Prefix object to a valid Canonical v6 prefix in byte format.
      *
      * @param ipv6Prefix - v6 prefix object
      * @return - byte array of size 16 + 1. Last byte contains netmask
@@ -397,7 +395,7 @@ public final class IpConversionUtil {
          * the input is validated via regexps in Ipv6Prefix()
          */
 
-        int mask = 128;
+        int initialMask = 128;
 
         Iterable<String> splittedV6Prefix = Splitter.on("/")
                 .trimResults()
@@ -408,8 +406,8 @@ public final class IpConversionUtil {
         boolean valid = true;
 
         try {
-            mask = Integer.parseInt(partsV6Prefix.get(1));
-            if (mask > 128) {
+            initialMask = Integer.parseInt(partsV6Prefix.get(1));
+            if (initialMask > 128) {
                 valid = false;
             }
         } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
@@ -421,22 +419,19 @@ public final class IpConversionUtil {
 
         int colonp;
         char ch;
-        boolean saw_xdigit;
+        boolean sawXdigit;
 
         /* Isn't it fun - the above variable names are the same in BSD and Sun sources */
-
-        int val;
 
         char[] src = partsV6Prefix.get(0).toCharArray();
 
         byte[] dst = new byte[INADDR6SZ + 1];
 
-        int m = mask;
-
-        int src_length = src.length;
+        int mask = initialMask;
 
         colonp = -1;
-        int i = 0, j = 0;
+        int index1 = 0;
+        int index2 = 0;
 
         /* Leading :: requires some special handling. */
 
@@ -445,17 +440,17 @@ public final class IpConversionUtil {
          * in original Clingon. So does Dilbert.
          */
 
-        if (src[i] == ':') {
-            Preconditions.checkArgument(src[++i] == ':', "Invalid v6 address");
+        if (src[index1] == ':') {
+            Preconditions.checkArgument(src[++index1] == ':', "Invalid v6 address");
         }
 
-        int curtok = i;
-        saw_xdigit = false;
+        int curtok = index1;
+        sawXdigit = false;
 
-
-        val = 0;
-        while (i < src_length) {
-            ch = src[i++];
+        int srcLength = src.length;
+        int val = 0;
+        while (index1 < srcLength) {
+            ch = src[index1++];
             int chval = Character.digit(ch, 16);
 
             /* Business as usual - ipv6 address digit.
@@ -467,37 +462,41 @@ public final class IpConversionUtil {
             if (chval != -1) {
                 val <<= 4;
                 val |= chval;
-                saw_xdigit = true;
+                sawXdigit = true;
                 continue;
             }
 
             /* v6 separator */
 
             if (ch == ':') {
-                curtok = i;
-                if (!saw_xdigit) {
+                curtok = index1;
+                if (!sawXdigit) {
                     /* no need to check separator position validity - regexp does that */
-                    colonp = j;
+                    colonp = index2;
                     continue;
                 }
 
                 /* removed overrun check - the regexp checks for valid data */
 
-                saw_xdigit = false;
+                sawXdigit = false;
 
-                if (m < 0) {
+                if (mask < 0) {
                     /* stop parsing if we are past the mask */
                     break;
                 }
 
-                dst[j] = (byte) ((val >> 8) & nextNibble(m)); j++; m = m - 8;
+                dst[index2] = (byte) (val >> 8 & nextNibble(mask));
+                index2++;
+                mask = mask - 8;
 
-                if (m < 0) {
+                if (mask < 0) {
                     /* stop parsing if we are past the mask */
                     break;
                 }
 
-                dst[j] = (byte) (val & nextNibble(m)); j++; m = m - 8;
+                dst[index2] = (byte) (val & nextNibble(mask));
+                index2++;
+                mask = mask - 8;
 
                 val = 0;
                 continue;
@@ -505,7 +504,7 @@ public final class IpConversionUtil {
 
             /* frankenstein - v4 attached to v6, mixed notation */
 
-            if (ch == '.' && ((j + INADDR4SZ) <= INADDR6SZ)) {
+            if (ch == '.' && index2 + INADDR4SZ <= INADDR6SZ) {
 
                 /* this has passed the regexp so it is fairly safe to parse it
                  * straight away. As v4 addresses do not suffer from the same
@@ -513,56 +512,61 @@ public final class IpConversionUtil {
                  * straight away and be done with it
                  */
 
-                Preconditions.checkArgument(j != (INADDR6SZ - INADDR4SZ - 1), "Invalid v4 in v6 mapping");
+                Preconditions.checkArgument(index2 != INADDR6SZ - INADDR4SZ - 1, "Invalid v4 in v6 mapping");
 
-                InetAddress _inet_form = InetAddresses.forString(partsV6Prefix.get(0).substring(curtok, src_length));
+                InetAddress inetForm = InetAddresses.forString(partsV6Prefix.get(0).substring(curtok, srcLength));
 
-                Preconditions.checkArgument(_inet_form instanceof Inet4Address);
-                System.arraycopy(_inet_form.getAddress(), 0, dst, j, INADDR4SZ);
-                j +=  INADDR4SZ;
+                Preconditions.checkArgument(inetForm instanceof Inet4Address);
+                System.arraycopy(inetForm.getAddress(), 0, dst, index2, INADDR4SZ);
+                index2 +=  INADDR4SZ;
 
-                saw_xdigit = false;
+                sawXdigit = false;
                 break;
             }
             /* removed parser exit on ivalid char - no need to do it, regexp checks it */
         }
-        if (saw_xdigit) {
-            Preconditions.checkArgument(j + INT16SZ <= INADDR6SZ, "Overrun in v6 parsing, should not occur");
-            dst[j] = (byte) ((val >> 8) & nextNibble(m)) ; j++; m = m - 8;
-            dst[j] = (byte) (val & nextNibble(m)); j++; m = m - 8;
+        if (sawXdigit) {
+            Preconditions.checkArgument(index2 + INT16SZ <= INADDR6SZ, "Overrun in v6 parsing, should not occur");
+            dst[index2] = (byte) (val >> 8 & nextNibble(mask));
+            index2++;
+            mask = mask - 8;
+            dst[index2] = (byte) (val & nextNibble(mask));
+            index2++;
+            mask = mask - 8;
         }
 
-        if ((j < INADDR6SZ) && (m < 0)) {
+        if (index2 < INADDR6SZ && mask < 0) {
             /* past the mask */
-            for (i = j; i < INADDR6SZ; i++) {
-                dst[i] = 0;
+            for (index1 = index2; index1 < INADDR6SZ; index1++) {
+                dst[index1] = 0;
             }
         } else {
             /* normal parsing */
             if (colonp != -1) {
-                int n = j - colonp;
+                int to = index2 - colonp;
 
-                Preconditions.checkArgument(j != INADDR6SZ, "Overrun in v6 parsing, should not occur");
-                for (i = 1; i <= n; i++) {
-                    dst[INADDR6SZ - i] = dst[colonp + n - i];
-                    dst[colonp + n - i] = 0;
+                Preconditions.checkArgument(index2 != INADDR6SZ, "Overrun in v6 parsing, should not occur");
+                for (index1 = 1; index1 <= to; index1++) {
+                    dst[INADDR6SZ - index1] = dst[colonp + to - index1];
+                    dst[colonp + to - index1] = 0;
                 }
-                j = INADDR6SZ;
+                index2 = INADDR6SZ;
             }
-            Preconditions.checkArgument(j == INADDR6SZ, "Overrun in v6 parsing, should not occur");
+            Preconditions.checkArgument(index2 == INADDR6SZ, "Overrun in v6 parsing, should not occur");
         }
 
-        dst[INADDR6SZ] = (byte) mask;
+        dst[INADDR6SZ] = (byte) initialMask;
         return dst;
     }
 
     /**
-     * Print a v6 prefix in byte array + 1 notation
-     * @param _binary_form - prefix, in byte [] form, last byte is netmask
+     * Print a v6 prefix in byte array + 1 notation.
+     *
+     * @param binaryForm - prefix, in byte [] form, last byte is netmask
      * @return string of v6 prefix
      * @throws UnknownHostException unknown host exception
      */
-    public static String byteArrayV6PrefixToString(final byte [] _binary_form) throws UnknownHostException {
+    public static String byteArrayV6PrefixToString(final byte [] binaryForm) throws UnknownHostException {
         /* NO DIY!!! - InetAddresses will actually print correct canonical
          * zero compressed form
          */
@@ -573,17 +577,17 @@ public final class IpConversionUtil {
         sb.append(
             InetAddresses.toAddrString(
                 InetAddress.getByAddress(
-                    Arrays.copyOf(_binary_form, INADDR6SZ)
+                    Arrays.copyOf(binaryForm, INADDR6SZ)
                 )
             )
         );
         sb.append('/');
-        sb.append(_binary_form[INADDR6SZ] & 0xff);
+        sb.append(binaryForm[INADDR6SZ] & 0xff);
         return sb.toString();
     }
 
     /**
-     * Check if the supplied IPv6Address has any prefix
+     * Check if the supplied IPv6Address has any prefix.
      *
      * @param ipv6Prefix Ipv6 prefix
      * @return prefix if there is one, else null
@@ -607,7 +611,7 @@ public final class IpConversionUtil {
     }
 
     /**
-     * Canonicalize a v6 prefix while in binary form
+     * Canonicalize a v6 prefix while in binary form.
      *
      * @param prefix - prefix, in byte [] form
      * @param mask - mask - number of bits
@@ -638,13 +642,14 @@ public final class IpConversionUtil {
     public static DottedQuad extractIpv4AddressMask(final Ipv4Prefix ipv4Prefix) {
         Iterator<String> addressParts = PREFIX_SPLITTER.split(ipv4Prefix.getValue()).iterator();
         addressParts.next();
-        Integer cidrMask =0;
+        Integer cidrMask = 0;
         if (addressParts.hasNext()) {
             cidrMask = Integer.parseInt(addressParts.next());
         }
         long maskBits = 0;
         maskBits = 0xffffffff << IPV4_ADDRESS_LENGTH - cidrMask;
-        String mask = String.format("%d.%d.%d.%d", (maskBits & 0x0000000000ff000000L) >> 24, (maskBits & 0x0000000000ff0000) >> 16, (maskBits & 0x0000000000ff00) >> 8, maskBits & 0xff);
+        String mask = String.format("%d.%d.%d.%d", (maskBits & 0x0000000000ff000000L) >> 24,
+                (maskBits & 0x0000000000ff0000) >> 16, (maskBits & 0x0000000000ff00) >> 8, maskBits & 0xff);
         DottedQuad netMask = new DottedQuad(mask);
         return netMask;
     }
@@ -658,7 +663,7 @@ public final class IpConversionUtil {
         }
         BitSet ipmask = new BitSet(128);
         ipmask.set(0,maskLength,true);
-        ipmask.set(maskLength+1,128,false);
+        ipmask.set(maskLength + 1,128,false);
         byte[] finalmask = new byte[16];
         System.arraycopy(ipmask.toByteArray(),0,finalmask,0,ipmask.toByteArray().length);
         InetAddress inetAddress = null;
@@ -682,10 +687,10 @@ public final class IpConversionUtil {
         return netmask;
     }
 
-    public static final byte[] convertArbitraryMaskToByteArray(DottedQuad mask) {
+    public static byte[] convertArbitraryMaskToByteArray(DottedQuad mask) {
         String maskValue;
         if (mask != null && mask.getValue() != null) {
-           maskValue  = mask.getValue();
+            maskValue  = mask.getValue();
         } else {
             maskValue = DEFAULT_ARBITRARY_BIT_MASK;
         }
@@ -693,7 +698,7 @@ public final class IpConversionUtil {
         try {
             maskInIpFormat = InetAddress.getByName(maskValue);
         } catch (UnknownHostException e) {
-            LOG.error ("Failed to resolve the ip address of the mask ",e);
+            LOG.error("Failed to resolve the ip address of the mask ", e);
         }
         byte[] bytes = maskInIpFormat.getAddress();
         return bytes;
@@ -703,11 +708,11 @@ public final class IpConversionUtil {
         if (byteMask == null) {
             return false;
         } else {
-            ArrayList<Integer> integerMaskArrayList = new ArrayList<Integer>();
+            ArrayList<Integer> integerMaskArrayList = new ArrayList<>();
             String maskInBits;
             // converting byte array to bits
             maskInBits = new BigInteger(1, byteMask).toString(2);
-            ArrayList<String> stringMaskArrayList = new ArrayList<String>(Arrays.asList(maskInBits.split("(?!^)")));
+            ArrayList<String> stringMaskArrayList = new ArrayList<>(Arrays.asList(maskInBits.split("(?!^)")));
             for (String string:stringMaskArrayList) {
                 integerMaskArrayList.add(Integer.parseInt(string));
             }
@@ -717,12 +722,12 @@ public final class IpConversionUtil {
 
     private static boolean checkArbitraryBitMask(ArrayList<Integer> arrayList) {
         // checks 0*1* case - Leading zeros in arrayList are truncated
-        if (arrayList.size()>0 && arrayList.size()<IPV4_ADDRESS_LENGTH) {
+        if (arrayList.size() > 0 && arrayList.size() < IPV4_ADDRESS_LENGTH) {
             return true;
         } else {
-            //checks 1*0*1 case
-            for (int i=0; i<arrayList.size()-1;i++) {
-                if (arrayList.get(i) ==0 && arrayList.get(i+1) == 1) {
+            // checks 1*0*1 case
+            for (int i = 0; i < arrayList.size() - 1; i++) {
+                if (arrayList.get(i) == 0 && arrayList.get(i + 1) == 1) {
                     return true;
                 }
             }
@@ -730,7 +735,7 @@ public final class IpConversionUtil {
         return false;
     }
 
-    public static final byte[] convertIpv6ArbitraryMaskToByteArray(final Ipv6ArbitraryMask mask) {
+    public static byte[] convertIpv6ArbitraryMaskToByteArray(final Ipv6ArbitraryMask mask) {
         String maskValue;
         if (mask != null && mask.getValue() != null) {
             maskValue  = mask.getValue();
@@ -741,7 +746,7 @@ public final class IpConversionUtil {
         try {
             maskInIpFormat = InetAddress.getByName(maskValue);
         } catch (UnknownHostException e) {
-            LOG.error ("Failed to convert mask string to ipv6 format mask ",e);
+            LOG.error("Failed to convert mask string to ipv6 format mask ",e);
         }
         return maskInIpFormat.getAddress();
     }
@@ -750,11 +755,11 @@ public final class IpConversionUtil {
         if (byteMask == null) {
             return false;
         } else {
-            ArrayList<Integer> integerMaskArrayList = new ArrayList<Integer>();
+            ArrayList<Integer> integerMaskArrayList = new ArrayList<>();
             String maskInBits;
             // converting byte array to bits
             maskInBits = new BigInteger(1, byteMask).toString(2);
-            ArrayList<String> stringMaskArrayList = new ArrayList<String>(Arrays.asList(maskInBits.split("(?!^)")));
+            ArrayList<String> stringMaskArrayList = new ArrayList<>(Arrays.asList(maskInBits.split("(?!^)")));
             for (String string:stringMaskArrayList) {
                 integerMaskArrayList.add(Integer.parseInt(string));
             }
@@ -768,8 +773,8 @@ public final class IpConversionUtil {
             return true;
         } else {
             //checks 1*0*1 case
-            for (int i=0; i<arrayList.size()-1;i++) {
-                if (arrayList.get(i) ==0 && arrayList.get(i+1) == 1) {
+            for (int i = 0; i < arrayList.size() - 1; i++) {
+                if (arrayList.get(i) == 0 && arrayList.get(i + 1) == 1) {
                     return true;
                 }
             }

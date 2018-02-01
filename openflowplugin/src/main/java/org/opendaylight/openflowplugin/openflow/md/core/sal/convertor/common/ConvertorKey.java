@@ -14,7 +14,7 @@ import com.google.common.base.Preconditions;
 
 
 /**
- * injection lookup key based on version and target object
+ * Injection lookup key based on version and target object.
  */
 public class ConvertorKey {
 
@@ -22,6 +22,8 @@ public class ConvertorKey {
     private final Class<?> targetClazz;
 
     /**
+     * Constructor.
+     *
      * @param version openflow version
      * @param targetClazz target class
      */
