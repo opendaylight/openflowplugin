@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
