@@ -19,6 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 public class FlowFlagsV10Convertor extends Convertor<FlowModFlags, FlowModFlagsV10, VersionConvertorData> {
     private static final List<Class<?>> TYPES = Collections.singletonList(
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags.class);
+
     /**
      * Create default empty flow flags
      * Use this method, if result from converter is empty.
