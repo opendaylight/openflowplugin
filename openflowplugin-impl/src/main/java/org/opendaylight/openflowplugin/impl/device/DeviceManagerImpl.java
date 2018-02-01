@@ -66,6 +66,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private long globalNotificationQuota;
     private boolean switchFeaturesMandatory;
     private boolean isFlowRemovedNotificationOn;
+    private boolean isStatisticsPollingOn;
     private boolean skipTableFeatures;
     private static final int SPY_RATE = 10;
 
@@ -160,6 +161,16 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     @Override
     public boolean isFlowRemovedNotificationOn() {
         return this.isFlowRemovedNotificationOn;
+    }
+
+    @Override
+    public void setStatisticsPollingOn(boolean statisticsPollingOn) {
+        isStatisticsPollingOn = statisticsPollingOn;
+    }
+
+    @Override
+    public boolean isStatisticsPollingOn() {
+        return isStatisticsPollingOn;
     }
 
     @Override

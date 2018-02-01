@@ -322,31 +322,34 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         //1. translate to general flow (table, priority, match, cookie)
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved flowRemovedNotification =
                 flowRemovedTranslator.translate(flowRemoved, deviceInfo, null);
-
-        if(myManager.isFlowRemovedNotificationOn()) {
+        LOG.debug("For nodeId={} isNotificationFlowRemovedOn={}", getDeviceInfo().getLOGValue(), myManager.isFlowRemovedNotificationOn());
+        if (myManager.isFlowRemovedNotificationOn()) {
             // Trigger off a notification
             notificationPublishService.offerNotification(flowRemovedNotification);
-        } else if(LOG.isDebugEnabled()) {
-            LOG.debug("For nodeId={} isNotificationFlowRemovedOn={}", getDeviceInfo().getLOGValue(), myManager.isFlowRemovedNotificationOn());
         }
 
-            //2. create registry key
-            final FlowRegistryKey flowRegKey = FlowRegistryKeyFactory.create(getDeviceInfo().getVersion(), flowRemovedNotification);
-            //3. lookup flowId
-            final FlowDescriptor flowDescriptor = deviceFlowRegistry.retrieveDescriptor(flowRegKey);
-            //4. if flowId present:
-            if (flowDescriptor != null) {
-                // a) construct flow path
+        //2. create registry key
+        final FlowRegistryKey flowRegKey = FlowRegistryKeyFactory.create(getDeviceInfo().getVersion(), flowRemovedNotification);
+
+        //3. lookup flowId
+        final FlowDescriptor flowDescriptor = deviceFlowRegistry.retrieveDescriptor(flowRegKey);
+
+        //4. if flowId present:
+        if (flowDescriptor != null) {
+            // a) construct flow path and delete from inventory if statistics is enabled
+            if (myManager.isStatisticsPollingOn()) {
                 final KeyedInstanceIdentifier<Flow, FlowKey> flowPath = getDeviceInfo().getNodeInstanceIdentifier()
                         .augmentation(FlowCapableNode.class)
                         .child(Table.class, flowDescriptor.getTableKey())
                         .child(Flow.class, new FlowKey(flowDescriptor.getFlowId()));
-                addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL,flowPath);
-                deviceFlowRegistry.addMark(flowRegKey);
-            } else {
-                LOG.debug("flow id not found: nodeId={} tableId={}, priority={}",
-                        getDeviceInfo().getNodeId(), flowRegKey.getTableId(), flowRemovedNotification.getPriority());
+                addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, flowPath);
+                submitTransaction();
             }
+            deviceFlowRegistry.addMark(flowRegKey);
+        } else {
+            LOG.debug("flow id not found: nodeId={} tableId={}, priority={}",
+                    getDeviceInfo().getNodeId(), flowRegKey.getTableId(), flowRemovedNotification.getPriority());
+        }
     }
 
     @Override

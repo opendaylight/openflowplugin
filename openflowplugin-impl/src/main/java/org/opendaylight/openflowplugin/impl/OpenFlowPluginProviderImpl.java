@@ -231,6 +231,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         deviceManager.setBarrierCountLimit(barrierCountLimit);
         deviceManager.setFlowRemovedNotificationOn(isFlowRemovedNotificationOn);
         deviceManager.setSkipTableFeatures(skipTableFeatures);
+        deviceManager.setStatisticsPollingOn(isStatisticsPollingOn);
 
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
 
