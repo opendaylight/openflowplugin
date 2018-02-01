@@ -25,7 +25,8 @@ public class OfToSalDecNwTtlCase extends ConvertorCase<DecNwTtlCase, Action, Act
     }
 
     @Override
-    public Optional<Action> process(@Nonnull final DecNwTtlCase source, final ActionResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final DecNwTtlCase source, final ActionResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         DecNwTtlBuilder decNwTtl = new DecNwTtlBuilder();
         return Optional.of(new DecNwTtlCaseBuilder().setDecNwTtl(decNwTtl.build()).build());
     }

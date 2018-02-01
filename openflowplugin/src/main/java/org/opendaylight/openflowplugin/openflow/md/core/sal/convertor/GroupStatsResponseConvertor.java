@@ -33,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 /**
  * Converts group related statistics messages coming from switch to MD-SAL messages.
  *
+ * <p>
  * Example usage:
  * <pre>
  * {@code
@@ -42,11 +43,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * </pre>
  */
 public class GroupStatsResponseConvertor extends Convertor<
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.multipart.reply.group.GroupStats>,
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart
+            .reply.body.multipart.reply.group._case.multipart.reply.group.GroupStats>,
         List<GroupStats>,
         VersionConvertorData> {
 
-    private static final Set<Class<?>> TYPES = Collections.singleton(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.multipart.reply.group.GroupStats.class);
+    private static final Set<Class<?>> TYPES = Collections.singleton(org.opendaylight.yang.gen.v1.urn.opendaylight
+            .openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.multipart
+                .reply.group.GroupStats.class);
 
     private Buckets toSALBuckets(List<BucketStats> bucketStats) {
         BucketsBuilder salBuckets = new BucketsBuilder();
@@ -75,11 +79,13 @@ public class GroupStatsResponseConvertor extends Convertor<
     }
 
     @Override
-    public List<GroupStats> convert(List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.multipart.reply.group.GroupStats> source, VersionConvertorData data) {
+    public List<GroupStats> convert(List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
+            .multipart.reply.multipart.reply.body.multipart.reply.group._case.multipart.reply.group.GroupStats> source,
+            VersionConvertorData data) {
         List<GroupStats> convertedSALGroups = new ArrayList<>();
 
-        for (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply
-                .multipart.reply.body.multipart.reply.group._case.multipart.reply.group.GroupStats groupStats : source) {
+        for (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply
+                .body.multipart.reply.group._case.multipart.reply.group.GroupStats groupStats : source) {
             GroupStatsBuilder salGroupStats = new GroupStatsBuilder();
 
             salGroupStats.setBuckets(toSALBuckets(groupStats.getBucketStats()));

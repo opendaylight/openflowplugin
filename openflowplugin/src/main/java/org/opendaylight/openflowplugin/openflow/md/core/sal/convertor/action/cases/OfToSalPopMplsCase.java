@@ -26,7 +26,8 @@ public class OfToSalPopMplsCase extends ConvertorCase<PopMplsCase, Action, Actio
     }
 
     @Override
-    public Optional<Action> process(@Nonnull final PopMplsCase source, final ActionResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final PopMplsCase source, final ActionResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         PopMplsAction popMplsActionFromOF = source.getPopMplsAction();
         PopMplsActionBuilder popMplsAction = new PopMplsActionBuilder();
         popMplsAction.setEthernetType(popMplsActionFromOF.getEthertype().getValue());
