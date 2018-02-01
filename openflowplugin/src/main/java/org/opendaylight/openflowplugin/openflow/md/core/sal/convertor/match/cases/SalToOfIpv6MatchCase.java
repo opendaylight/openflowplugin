@@ -52,7 +52,8 @@ public class SalToOfIpv6MatchCase extends ConvertorCase<Ipv6Match, List<MatchEnt
     }
 
     @Override
-    public Optional<List<MatchEntry>> process(@Nonnull Ipv6Match source, VersionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<List<MatchEntry>> process(@Nonnull Ipv6Match source, VersionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         List<MatchEntry> result = new ArrayList<>();
 
         if (source.getIpv6Source() != null) {
@@ -108,7 +109,8 @@ public class SalToOfIpv6MatchCase extends ConvertorCase<Ipv6Match, List<MatchEnt
 
             if (source.getIpv6Label().getFlabelMask() != null) {
                 hasmask = true;
-                ipv6FlabelBuilder.setMask(ByteUtil.unsignedIntToBytes(source.getIpv6Label().getFlabelMask().getValue()));
+                ipv6FlabelBuilder.setMask(ByteUtil.unsignedIntToBytes(
+                        source.getIpv6Label().getFlabelMask().getValue()));
             }
 
             ipv6FlabelCaseBuilder.setIpv6Flabel(ipv6FlabelBuilder.build());
@@ -170,18 +172,8 @@ public class SalToOfIpv6MatchCase extends ConvertorCase<Ipv6Match, List<MatchEnt
             Ipv6ExthdrCaseBuilder ipv6ExthdrCaseBuilder = new Ipv6ExthdrCaseBuilder();
             Ipv6ExthdrBuilder ipv6ExthdrBuilder = new Ipv6ExthdrBuilder();
 
-            Integer bitmap = source.getIpv6ExtHeader().getIpv6Exthdr();
-            final Boolean NONEXT = ((bitmap) & (1)) != 0;
-            final Boolean ESP = ((bitmap) & (1 << 1)) != 0;
-            final Boolean AUTH = ((bitmap) & (1 << 2)) != 0;
-            final Boolean DEST = ((bitmap) & (1 << 3)) != 0;
-            final Boolean FRAG = ((bitmap) & (1 << 4)) != 0;
-            final Boolean ROUTER = ((bitmap) & (1 << 5)) != 0;
-            final Boolean HOP = ((bitmap) & (1 << 6)) != 0;
-            final Boolean UNREP = ((bitmap) & (1 << 7)) != 0;
-            final Boolean UNSEQ = ((bitmap) & (1 << 8)) != 0;
-
-            ipv6ExthdrBuilder.setPseudoField(new Ipv6ExthdrFlags(AUTH, DEST, ESP, FRAG, HOP, NONEXT, ROUTER, UNREP, UNSEQ));
+            int bitmap = source.getIpv6ExtHeader().getIpv6Exthdr();
+            ipv6ExthdrBuilder.setPseudoField(makeIpv6ExthdrFlags(bitmap));
 
             if (source.getIpv6ExtHeader().getIpv6ExthdrMask() != null) {
                 hasmask = true;
@@ -195,5 +187,20 @@ public class SalToOfIpv6MatchCase extends ConvertorCase<Ipv6Match, List<MatchEnt
         }
 
         return Optional.of(result);
+    }
+
+    @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
+    private Ipv6ExthdrFlags makeIpv6ExthdrFlags(int bitmap) {
+        final Boolean NONEXT = (bitmap & 1) != 0;
+        final Boolean ESP = (bitmap & 1 << 1) != 0;
+        final Boolean AUTH = (bitmap & 1 << 2) != 0;
+        final Boolean DEST = (bitmap & 1 << 3) != 0;
+        final Boolean FRAG = (bitmap & 1 << 4) != 0;
+        final Boolean ROUTER = (bitmap & 1 << 5) != 0;
+        final Boolean HOP = (bitmap & 1 << 6) != 0;
+        final Boolean UNREP = (bitmap & 1 << 7) != 0;
+        final Boolean UNSEQ = (bitmap & 1 << 8) != 0;
+
+        return new Ipv6ExthdrFlags(AUTH, DEST, ESP, FRAG, HOP, NONEXT, ROUTER, UNREP, UNSEQ);
     }
 }

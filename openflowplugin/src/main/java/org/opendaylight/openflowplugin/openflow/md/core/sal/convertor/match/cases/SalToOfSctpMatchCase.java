@@ -32,7 +32,8 @@ public class SalToOfSctpMatchCase extends ConvertorCase<SctpMatch, List<MatchEnt
     }
 
     @Override
-    public Optional<List<MatchEntry>> process(@Nonnull SctpMatch source, VersionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<List<MatchEntry>> process(@Nonnull SctpMatch source, VersionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         List<MatchEntry> result = new ArrayList<>();
 
         if (source.getSctpSourcePort() != null) {

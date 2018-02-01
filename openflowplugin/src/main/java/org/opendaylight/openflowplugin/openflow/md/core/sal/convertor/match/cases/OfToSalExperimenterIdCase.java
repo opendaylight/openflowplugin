@@ -17,17 +17,19 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.data
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.TcpFlagsMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.approved.extensions.rev160802.TcpFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.approved.extensions.rev160802.TcpFlagsContainer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.approved.extensions.rev160802.TcpFlags;
 
-public class OfToSalExperimenterIdCase extends ConvertorCase<ExperimenterIdCase, MatchBuilder, MatchResponseConvertorData> {
+public class OfToSalExperimenterIdCase extends ConvertorCase<ExperimenterIdCase, MatchBuilder,
+        MatchResponseConvertorData> {
     public OfToSalExperimenterIdCase() {
         super(ExperimenterIdCase.class, true, OFConstants.OFP_VERSION_1_0, OFConstants.OFP_VERSION_1_3);
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull ExperimenterIdCase source, MatchResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<MatchBuilder> process(@Nonnull ExperimenterIdCase source, MatchResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
 
         if (data.getOxmMatchField().equals(TcpFlags.class)) {
@@ -35,9 +37,9 @@ public class OfToSalExperimenterIdCase extends ConvertorCase<ExperimenterIdCase,
             final TcpFlagsContainer tcpFlagsContainer = source.getAugmentation(TcpFlagsContainer.class);
 
             if (tcpFlagsContainer != null) {
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.
-                        approved.extensions.rev160802.oxm.container.match.entry.
-                        value.experimenter.id._case.TcpFlags tcpFlags = tcpFlagsContainer.getTcpFlags();
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow
+                        .approved.extensions.rev160802.oxm.container.match.entry
+                        .value.experimenter.id._case.TcpFlags tcpFlags = tcpFlagsContainer.getTcpFlags();
 
                 tcpFlagsMatchBuilder.setTcpFlags(tcpFlags.getFlags());
                 byte[] mask = tcpFlags.getMask();

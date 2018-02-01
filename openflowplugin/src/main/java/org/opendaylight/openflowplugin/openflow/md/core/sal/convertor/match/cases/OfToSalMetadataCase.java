@@ -26,7 +26,8 @@ public class OfToSalMetadataCase extends ConvertorCase<MetadataCase, MatchBuilde
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull MetadataCase source, MatchResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<MatchBuilder> process(@Nonnull MetadataCase source, MatchResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final MetadataBuilder metadataBuilder = new MetadataBuilder();
         final Metadata metadata = source.getMetadata();

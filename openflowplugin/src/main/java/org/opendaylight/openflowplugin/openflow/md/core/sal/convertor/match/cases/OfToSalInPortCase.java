@@ -27,7 +27,8 @@ public class OfToSalInPortCase extends ConvertorCase<InPortCase, MatchBuilder, M
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull InPortCase source, MatchResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<MatchBuilder> process(@Nonnull InPortCase source, MatchResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final OpenflowVersion ofVersion = OpenflowVersion.get(data.getVersion());
         final BigInteger datapathId = data.getDatapathId();
@@ -35,7 +36,8 @@ public class OfToSalInPortCase extends ConvertorCase<InPortCase, MatchBuilder, M
         final PortNumber portNumber = source.getInPort().getPortNumber();
 
         if (portNumber != null) {
-            matchBuilder.setInPort(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathId, portNumber.getValue(), ofVersion));
+            matchBuilder.setInPort(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(
+                    datapathId, portNumber.getValue(), ofVersion));
         }
 
         return Optional.of(matchBuilder);

@@ -27,7 +27,8 @@ public class OfToSalArpSpaCase extends ConvertorCase<ArpSpaCase, MatchBuilder, M
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull ArpSpaCase source, MatchResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<MatchBuilder> process(@Nonnull ArpSpaCase source, MatchResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final ArpMatchBuilder arpMatchBuilder = data.getArpMatchBuilder();
 

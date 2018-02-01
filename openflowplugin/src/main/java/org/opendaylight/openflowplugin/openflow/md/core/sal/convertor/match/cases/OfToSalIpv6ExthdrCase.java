@@ -29,7 +29,8 @@ public class OfToSalIpv6ExthdrCase extends ConvertorCase<Ipv6ExthdrCase, MatchBu
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull Ipv6ExthdrCase source, MatchResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<MatchBuilder> process(@Nonnull Ipv6ExthdrCase source, MatchResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final Ipv6MatchBuilder ipv6MatchBuilder = data.getIpv6MatchBuilder();
 
@@ -37,8 +38,8 @@ public class OfToSalIpv6ExthdrCase extends ConvertorCase<Ipv6ExthdrCase, MatchBu
 
         if (ipv6Exthdr != null) {
             Ipv6ExtHeaderBuilder ipv6ExtHeaderBuilder = new Ipv6ExtHeaderBuilder();
-            Ipv6ExthdrFlags pField = ipv6Exthdr.getPseudoField();
-            Integer bitmap = MatchConvertorUtil.ipv6ExthdrFlagsToInt(pField);
+            Ipv6ExthdrFlags headerFlags = ipv6Exthdr.getPseudoField();
+            Integer bitmap = MatchConvertorUtil.ipv6ExthdrFlagsToInt(headerFlags);
             ipv6ExtHeaderBuilder.setIpv6Exthdr(bitmap);
             byte[] mask = ipv6Exthdr.getMask();
 
