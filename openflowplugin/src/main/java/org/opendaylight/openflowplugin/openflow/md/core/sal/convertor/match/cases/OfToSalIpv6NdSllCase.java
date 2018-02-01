@@ -25,7 +25,8 @@ public class OfToSalIpv6NdSllCase extends ConvertorCase<Ipv6NdSllCase, MatchBuil
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull Ipv6NdSllCase source, MatchResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<MatchBuilder> process(@Nonnull Ipv6NdSllCase source, MatchResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final Ipv6MatchBuilder ipv6MatchBuilder = data.getIpv6MatchBuilder();
 
