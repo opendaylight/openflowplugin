@@ -26,7 +26,8 @@ public class OfToSalPushMplsCase extends ConvertorCase<PushMplsCase, Action, Act
     }
 
     @Override
-    public Optional<Action> process(@Nonnull final PushMplsCase source, final ActionResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final PushMplsCase source, final ActionResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         PushMplsAction pushMplsActionFromOF = source.getPushMplsAction();
         PushMplsActionBuilder pushMplsAction = new PushMplsActionBuilder();
         pushMplsAction.setEthernetType(pushMplsActionFromOF.getEthertype().getValue());
