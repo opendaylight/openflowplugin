@@ -29,7 +29,8 @@ public class OfToSalIpv4DstCase extends ConvertorCase<Ipv4DstCase, MatchBuilder,
         super(Ipv4DstCase.class, true, OFConstants.OFP_VERSION_1_0, OFConstants.OFP_VERSION_1_3);
     }
 
-    private static void setIpv4MatchBuilderFields(final Ipv4MatchBuilder ipv4MatchBuilder, final byte[] mask, final String ipv4PrefixStr) {
+    private static void setIpv4MatchBuilderFields(final Ipv4MatchBuilder ipv4MatchBuilder, final byte[] mask,
+            final String ipv4PrefixStr) {
         final Ipv4Prefix ipv4Prefix;
         if (mask != null) {
             ipv4Prefix = IpConversionUtil.createPrefix(new Ipv4Address(ipv4PrefixStr), mask);
@@ -65,10 +66,12 @@ public class OfToSalIpv4DstCase extends ConvertorCase<Ipv4DstCase, MatchBuilder,
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull Ipv4DstCase source, MatchResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<MatchBuilder> process(@Nonnull Ipv4DstCase source, MatchResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final Ipv4MatchBuilder ipv4MatchBuilder = data.getIpv4MatchBuilder();
-        final Ipv4MatchArbitraryBitMaskBuilder ipv4MatchArbitraryBitMaskBuilder = data.getIpv4MatchArbitraryBitMaskBuilder();
+        final Ipv4MatchArbitraryBitMaskBuilder ipv4MatchArbitraryBitMaskBuilder =
+                data.getIpv4MatchArbitraryBitMaskBuilder();
 
         Ipv4Dst ipv4Address = source.getIpv4Dst();
 

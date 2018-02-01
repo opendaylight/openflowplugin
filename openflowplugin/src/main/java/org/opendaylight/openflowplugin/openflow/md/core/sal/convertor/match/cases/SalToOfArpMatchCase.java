@@ -49,7 +49,8 @@ public class SalToOfArpMatchCase extends ConvertorCase<ArpMatch, List<MatchEntry
     }
 
     @Override
-    public Optional<List<MatchEntry>> process(@Nonnull ArpMatch source, VersionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<List<MatchEntry>> process(@Nonnull ArpMatch source, VersionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         List<MatchEntry> result = new ArrayList<>();
 
         if (source.getArpOp() != null) {
@@ -71,7 +72,6 @@ public class SalToOfArpMatchCase extends ConvertorCase<ArpMatch, List<MatchEntry
             matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
             matchEntryBuilder.setOxmMatchField(ArpSpa.class);
 
-            ArpSpaCaseBuilder arpSpaCaseBuilder = new ArpSpaCaseBuilder();
             ArpSpaBuilder arpSpaBuilder = new ArpSpaBuilder();
 
             Iterator<String> addressParts = IpConversionUtil.splitToParts(ipv4Prefix);
@@ -84,6 +84,8 @@ public class SalToOfArpMatchCase extends ConvertorCase<ArpMatch, List<MatchEntry
                 hasMask = true;
             }
             matchEntryBuilder.setHasMask(hasMask);
+
+            ArpSpaCaseBuilder arpSpaCaseBuilder = new ArpSpaCaseBuilder();
             arpSpaCaseBuilder.setArpSpa(arpSpaBuilder.build());
             matchEntryBuilder.setMatchEntryValue(arpSpaCaseBuilder.build());
             result.add(matchEntryBuilder.build());
@@ -95,7 +97,6 @@ public class SalToOfArpMatchCase extends ConvertorCase<ArpMatch, List<MatchEntry
             matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
             matchEntryBuilder.setOxmMatchField(ArpTpa.class);
 
-            ArpTpaCaseBuilder arpTpaCaseBuilder = new ArpTpaCaseBuilder();
             ArpTpaBuilder arpTpaBuilder = new ArpTpaBuilder();
 
             Iterator<String> addressParts = IpConversionUtil.splitToParts(ipv4Prefix);
@@ -108,6 +109,8 @@ public class SalToOfArpMatchCase extends ConvertorCase<ArpMatch, List<MatchEntry
                 hasMask = true;
             }
             matchEntryBuilder.setHasMask(hasMask);
+
+            ArpTpaCaseBuilder arpTpaCaseBuilder = new ArpTpaCaseBuilder();
             arpTpaCaseBuilder.setArpTpa(arpTpaBuilder.build());
             matchEntryBuilder.setMatchEntryValue(arpTpaCaseBuilder.build());
             result.add(matchEntryBuilder.build());
