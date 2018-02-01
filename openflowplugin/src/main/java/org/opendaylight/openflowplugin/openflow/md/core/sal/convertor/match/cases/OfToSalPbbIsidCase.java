@@ -27,7 +27,8 @@ public class OfToSalPbbIsidCase extends ConvertorCase<PbbIsidCase, MatchBuilder,
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull PbbIsidCase source, MatchResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<MatchBuilder> process(@Nonnull PbbIsidCase source, MatchResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final ProtocolMatchFieldsBuilder protocolMatchFieldsBuilder = data.getProtocolMatchFieldsBuilder();
 

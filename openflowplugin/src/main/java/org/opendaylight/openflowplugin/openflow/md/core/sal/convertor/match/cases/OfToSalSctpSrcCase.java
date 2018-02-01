@@ -26,7 +26,8 @@ public class OfToSalSctpSrcCase extends ConvertorCase<SctpSrcCase, MatchBuilder,
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull SctpSrcCase source, MatchResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<MatchBuilder> process(@Nonnull SctpSrcCase source, MatchResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final SctpMatchBuilder sctpMatchBuilder = data.getSctpMatchBuilder();
 
