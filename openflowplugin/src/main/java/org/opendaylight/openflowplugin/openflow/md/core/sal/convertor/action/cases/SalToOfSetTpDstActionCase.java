@@ -50,7 +50,8 @@ public class SalToOfSetTpDstActionCase extends ConvertorCase<SetTpDstActionCase,
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final SetTpDstActionCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final SetTpDstActionCase source, final ActionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         IPProtocols protocol = null;
 
         if (data.getIpProtocol() != null) {
@@ -58,8 +59,6 @@ public class SalToOfSetTpDstActionCase extends ConvertorCase<SetTpDstActionCase,
         }
 
         SetTpDstAction settpdstaction = source.getSetTpDstAction();
-        SetFieldCaseBuilder setFieldCaseBuilder = new SetFieldCaseBuilder();
-        SetFieldActionBuilder setFieldBuilder = new SetFieldActionBuilder();
 
         MatchEntryBuilder matchBuilder = new MatchEntryBuilder();
         matchBuilder.setOxmClass(OpenflowBasicClass.class);
@@ -89,7 +88,8 @@ public class SalToOfSetTpDstActionCase extends ConvertorCase<SetTpDstActionCase,
                     matchBuilder.setOxmMatchField(TcpDst.class);
                     TcpDstCaseBuilder tcpDstCaseBuilder = new TcpDstCaseBuilder();
                     TcpDstBuilder tcpDstBuilder = new TcpDstBuilder();
-                    tcpDstBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber(port));
+                    tcpDstBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types
+                            .rev130715.PortNumber(port));
                     tcpDstCaseBuilder.setTcpDst(tcpDstBuilder.build());
                     matchBuilder.setMatchEntryValue(tcpDstCaseBuilder.build());
                     break;
@@ -97,7 +97,8 @@ public class SalToOfSetTpDstActionCase extends ConvertorCase<SetTpDstActionCase,
                     matchBuilder.setOxmMatchField(UdpDst.class);
                     UdpDstCaseBuilder udpDstCaseBuilder = new UdpDstCaseBuilder();
                     UdpDstBuilder udpDstBuilder = new UdpDstBuilder();
-                    udpDstBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber(port));
+                    udpDstBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types
+                            .rev130715.PortNumber(port));
                     udpDstCaseBuilder.setUdpDst(udpDstBuilder.build());
                     matchBuilder.setMatchEntryValue(udpDstCaseBuilder.build());
                     break;
@@ -111,7 +112,11 @@ public class SalToOfSetTpDstActionCase extends ConvertorCase<SetTpDstActionCase,
 
         List<MatchEntry> entries = new ArrayList<>();
         entries.add(matchBuilder.build());
+
+        SetFieldActionBuilder setFieldBuilder = new SetFieldActionBuilder();
         setFieldBuilder.setMatchEntry(entries);
+
+        SetFieldCaseBuilder setFieldCaseBuilder = new SetFieldCaseBuilder();
         setFieldCaseBuilder.setSetFieldAction(setFieldBuilder.build());
 
         return Optional.of(new ActionBuilder()

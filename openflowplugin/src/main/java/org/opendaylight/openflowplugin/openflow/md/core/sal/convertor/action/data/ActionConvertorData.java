@@ -12,7 +12,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.Versi
 
 /**
  * Convertor data used in {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ActionConvertor}
- * containing Openflow version, datapath ID and IP protocol from flow
+ * containing Openflow version, datapath ID and IP protocol from flow.
  */
 public class ActionConvertorData extends VersionDatapathIdConvertorData {
     private Short ipProtocol;

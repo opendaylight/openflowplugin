@@ -12,8 +12,9 @@ import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorData;
 
 /**
- * Convertor data used in {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ActionResponseConvertor}
- * containing Openflow version and {@link org.opendaylight.openflowplugin.extension.api.path.ActionPath}
+ * Convertor data used in
+ * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ActionResponseConvertor}
+ * containing Openflow version and {@link org.opendaylight.openflowplugin.extension.api.path.ActionPath}.
  */
 public class ActionResponseConvertorData extends ConvertorData {
     private ActionPath actionPath;

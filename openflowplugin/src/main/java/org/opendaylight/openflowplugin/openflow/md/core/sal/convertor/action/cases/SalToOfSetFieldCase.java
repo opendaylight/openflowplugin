@@ -28,7 +28,8 @@ public class SalToOfSetFieldCase extends ConvertorCase<SetFieldCase, Action, Act
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final SetFieldCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final SetFieldCase source, final ActionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         final short version = data.getVersion();
         final SetFieldActionBuilder setFieldBuilder = new SetFieldActionBuilder();
 

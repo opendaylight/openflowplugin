@@ -34,7 +34,8 @@ public class SalToOfSetNwTosActionCase extends ConvertorCase<SetNwTosActionCase,
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final SetNwTosActionCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final SetNwTosActionCase source, final ActionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         SetNwTosAction setnwtosaction = source.getSetNwTosAction();
         SetFieldCaseBuilder setFieldCaseBuilder = new SetFieldCaseBuilder();
         SetFieldActionBuilder setFieldBuilder = new SetFieldActionBuilder();
