@@ -10,11 +10,11 @@ package org.opendaylight.openflowplugin.openflow.md.util;
 
 
 /**
- * OF-action related utilities
+ * OF-action related utilities.
  */
 public final class ActionUtil {
 
-    /** http://en.wikipedia.org/wiki/IPv4#Packet_structure (end of octet number 1, bit 14.+15.) */
+    /** http://en.wikipedia.org/wiki/IPv4#Packet_structure (end of octet number 1, bit 14.+15.). */
     public static final int ENC_FIELD_BIT_SIZE = 2;
 
     private ActionUtil() {
@@ -22,6 +22,8 @@ public final class ActionUtil {
     }
 
     /**
+     * Converts TOS to DSCP value.
+     *
      * @param tosValue TypeOfService value
      * @return DSCP value
      */
@@ -30,12 +32,12 @@ public final class ActionUtil {
     }
 
     /**
+     * Converts DSCP to TOS value.
+     *
      * @param dscpValue TypeOfService value
      * @return TOS value
      */
     public static Short dscpToTos(short dscpValue) {
         return (short) (dscpValue << ActionUtil.ENC_FIELD_BIT_SIZE);
     }
-
-
 }
