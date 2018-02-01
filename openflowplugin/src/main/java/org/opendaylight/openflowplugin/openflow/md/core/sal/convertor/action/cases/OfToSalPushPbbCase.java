@@ -26,7 +26,8 @@ public class OfToSalPushPbbCase extends ConvertorCase<PushPbbCase, Action, Actio
     }
 
     @Override
-    public Optional<Action> process(@Nonnull final PushPbbCase source, final ActionResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final PushPbbCase source, final ActionResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         PushPbbAction pushPbbActionFromOf = source.getPushPbbAction();
         PushPbbActionBuilder pushPbbAction = new PushPbbActionBuilder();
         pushPbbAction.setEthernetType(pushPbbActionFromOf.getEthertype().getValue());

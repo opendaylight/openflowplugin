@@ -26,7 +26,8 @@ public class SalToOfDecNwTtlCase extends ConvertorCase<DecNwTtlCase, Action, Act
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final DecNwTtlCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final DecNwTtlCase source, final ActionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         return Optional.of(new ActionBuilder()
                 .setActionChoice(new DecNwTtlCaseBuilder().build())
                 .build());

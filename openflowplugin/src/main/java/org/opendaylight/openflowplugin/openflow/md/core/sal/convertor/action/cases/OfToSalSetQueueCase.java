@@ -26,7 +26,8 @@ public class OfToSalSetQueueCase extends ConvertorCase<SetQueueCase, Action, Act
     }
 
     @Override
-    public Optional<Action> process(@Nonnull final SetQueueCase source, final ActionResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final SetQueueCase source, final ActionResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         SetQueueAction queueActionFromOF = source.getSetQueueAction();
         SetQueueActionBuilder setQueueAction = new SetQueueActionBuilder();
         setQueueAction.setQueueId(queueActionFromOF.getQueueId());

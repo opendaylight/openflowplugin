@@ -32,8 +32,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.desc._case.multipart.reply.port.desc.PortsBuilder;
 
 /**
- * Converts port mod, port status and port description MD-SAL messages to OF library data
+ * Converts port mod, port status and port description MD-SAL messages to OF library data.
  *
+ * <p>
  * Example usage:
  * <pre>
  * {@code
@@ -105,14 +106,15 @@ public class PortConvertor extends Convertor<Port, PortModInput, VersionConverto
     private static PortFeaturesV10 getPortFeaturesV10(
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures salPortFeatures) {
 
-        return new PortFeaturesV10(salPortFeatures.isHundredMbFd(), salPortFeatures.isHundredMbHd(), salPortFeatures.isTenGbFd(), salPortFeatures.isTenMbFd(), salPortFeatures.isTenMbHd(),
-                salPortFeatures.isOneGbFd(), salPortFeatures.isOneGbHd(), salPortFeatures.isAutoeng(), salPortFeatures.isCopper(), salPortFeatures.isFiber(),
-                salPortFeatures.isPause(), salPortFeatures.isPauseAsym());
+        return new PortFeaturesV10(salPortFeatures.isHundredMbFd(), salPortFeatures.isHundredMbHd(),
+                salPortFeatures.isTenGbFd(), salPortFeatures.isTenMbFd(), salPortFeatures.isTenMbHd(),
+                salPortFeatures.isOneGbFd(), salPortFeatures.isOneGbHd(), salPortFeatures.isAutoeng(),
+                salPortFeatures.isCopper(), salPortFeatures.isFiber(), salPortFeatures.isPause(),
+                salPortFeatures.isPauseAsym());
     }
 
     /**
-     * This method is called as a reply to OFPMP_PORT_DESCRIPTION
-     * message(OF1.3.1)
+     * This method is called as a reply to OFPMP_PORT_DESCRIPTION message(OF1.3.1).
      *
      * @param source  FlowCapablePort
      * @param version openflow version
@@ -123,29 +125,29 @@ public class PortConvertor extends Convertor<Port, PortModInput, VersionConverto
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.FlowCapablePort source,
             short version) {
 
-        PortsBuilder oFPortDescDataBuilder = new PortsBuilder();
+        PortsBuilder ofPortDescDataBuilder = new PortsBuilder();
 
-        oFPortDescDataBuilder.setPortNo(
-                OpenflowPortsUtil.getProtocolPortNumber(OpenflowVersion.get(version), source.getPortNumber())); // portNO
+        ofPortDescDataBuilder.setPortNo(OpenflowPortsUtil.getProtocolPortNumber(OpenflowVersion.get(version),
+                source.getPortNumber())); // portNO
 
-        oFPortDescDataBuilder.setHwAddr(source.getHardwareAddress());
-        oFPortDescDataBuilder.setName(source.getName());
+        ofPortDescDataBuilder.setHwAddr(source.getHardwareAddress());
+        ofPortDescDataBuilder.setName(source.getName());
 
         PortConfig config = maskPortConfigFields(source.getConfiguration());
 
-        oFPortDescDataBuilder.setConfig(config);
+        ofPortDescDataBuilder.setConfig(config);
 
         PortState portState = getPortState(source.getState());
 
-        oFPortDescDataBuilder.setState(portState);
-        oFPortDescDataBuilder.setCurrentFeatures(getPortFeatures(source.getCurrentFeature()));
-        oFPortDescDataBuilder.setAdvertisedFeatures(getPortFeatures(source.getAdvertisedFeatures()));
-        oFPortDescDataBuilder.setSupportedFeatures(getPortFeatures(source.getSupported()));
-        oFPortDescDataBuilder.setPeerFeatures(getPortFeatures(source.getPeerFeatures()));
-        oFPortDescDataBuilder.setCurrSpeed(source.getCurrentSpeed());
-        oFPortDescDataBuilder.setMaxSpeed(source.getMaximumSpeed());
+        ofPortDescDataBuilder.setState(portState);
+        ofPortDescDataBuilder.setCurrentFeatures(getPortFeatures(source.getCurrentFeature()));
+        ofPortDescDataBuilder.setAdvertisedFeatures(getPortFeatures(source.getAdvertisedFeatures()));
+        ofPortDescDataBuilder.setSupportedFeatures(getPortFeatures(source.getSupported()));
+        ofPortDescDataBuilder.setPeerFeatures(getPortFeatures(source.getPeerFeatures()));
+        ofPortDescDataBuilder.setCurrSpeed(source.getCurrentSpeed());
+        ofPortDescDataBuilder.setMaxSpeed(source.getMaximumSpeed());
 
-        return oFPortDescDataBuilder.build();
+        return ofPortDescDataBuilder.build();
 
     }
 
@@ -172,8 +174,8 @@ public class PortConvertor extends Convertor<Port, PortModInput, VersionConverto
 
         PortModInputBuilder portModInputBuilder = new PortModInputBuilder();
         portModInputBuilder.setAdvertise(getPortFeatures(source.getAdvertisedFeatures()));
-        portModInputBuilder.setPortNo(new PortNumber(
-                OpenflowPortsUtil.getProtocolPortNumber(OpenflowVersion.get(data.getVersion()), source.getPortNumber())));
+        portModInputBuilder.setPortNo(new PortNumber(OpenflowPortsUtil.getProtocolPortNumber(
+                OpenflowVersion.get(data.getVersion()), source.getPortNumber())));
 
         portModInputBuilder.setConfig(config);
         portModInputBuilder.setMask(MoreObjects.firstNonNull(maskPortConfigFields(source.getMask()),
