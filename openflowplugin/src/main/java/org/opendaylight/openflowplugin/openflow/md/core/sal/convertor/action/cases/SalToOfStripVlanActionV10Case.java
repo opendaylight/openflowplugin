@@ -26,7 +26,8 @@ public class SalToOfStripVlanActionV10Case extends ConvertorCase<StripVlanAction
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final StripVlanActionCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final StripVlanActionCase source, final ActionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         return Optional.of(new ActionBuilder()
                 .setActionChoice(new StripVlanCaseBuilder().build())
                 .build());

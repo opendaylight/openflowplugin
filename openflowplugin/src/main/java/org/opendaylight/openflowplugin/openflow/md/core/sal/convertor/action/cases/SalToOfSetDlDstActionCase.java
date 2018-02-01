@@ -36,12 +36,9 @@ public class SalToOfSetDlDstActionCase extends ConvertorCase<SetDlDstActionCase,
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final SetDlDstActionCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final SetDlDstActionCase source, final ActionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         SetDlDstAction setdldstaction = source.getSetDlDstAction();
-        SetFieldCaseBuilder setFieldCaseBuilder = new SetFieldCaseBuilder();
-        SetFieldActionBuilder setFieldBuilder = new SetFieldActionBuilder();
-
-        List<MatchEntry> entries = new ArrayList<>();
 
         MatchEntryBuilder matchBuilder = new MatchEntryBuilder();
         matchBuilder.setOxmClass(OpenflowBasicClass.class);
@@ -52,8 +49,14 @@ public class SalToOfSetDlDstActionCase extends ConvertorCase<SetDlDstActionCase,
         matchBuilder.setHasMask(false);
         ethDstCaseBuilder.setEthDst(ethDstBuilder.build());
         matchBuilder.setMatchEntryValue(ethDstCaseBuilder.build());
+
+        List<MatchEntry> entries = new ArrayList<>();
         entries.add(matchBuilder.build());
+
+        SetFieldActionBuilder setFieldBuilder = new SetFieldActionBuilder();
         setFieldBuilder.setMatchEntry(entries);
+
+        SetFieldCaseBuilder setFieldCaseBuilder = new SetFieldCaseBuilder();
         setFieldCaseBuilder.setSetFieldAction(setFieldBuilder.build());
 
         return Optional.of(new ActionBuilder()

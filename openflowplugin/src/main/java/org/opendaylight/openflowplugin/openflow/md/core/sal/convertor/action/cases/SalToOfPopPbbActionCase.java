@@ -26,7 +26,8 @@ public class SalToOfPopPbbActionCase extends ConvertorCase<PopPbbActionCase, Act
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final PopPbbActionCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final PopPbbActionCase source, final ActionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         return Optional.of(new ActionBuilder()
                 .setActionChoice(new PopPbbCaseBuilder().build())
                 .build());

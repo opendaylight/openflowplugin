@@ -47,7 +47,8 @@ public class SalToOfSetNwSrcActionCase extends ConvertorCase<SetNwSrcActionCase,
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final SetNwSrcActionCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final SetNwSrcActionCase source, final ActionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         final ActionBuilder builder = new ActionBuilder();
         final Address address = source.getSetNwSrcAction().getAddress();
 
@@ -55,9 +56,6 @@ public class SalToOfSetNwSrcActionCase extends ConvertorCase<SetNwSrcActionCase,
             Iterable<String> addressParts = PREFIX_SPLITTER.split(((Ipv4) address).getIpv4Address().getValue());
             Ipv4Address result = new Ipv4Address(addressParts.iterator().next());
 
-            SetFieldCaseBuilder setFieldCaseBuilder = new SetFieldCaseBuilder();
-            SetFieldActionBuilder setFieldBuilder = new SetFieldActionBuilder();
-            List<MatchEntry> entries = new ArrayList<>();
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
             matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
             matchEntryBuilder.setOxmMatchField(Ipv4Src.class);
@@ -71,15 +69,20 @@ public class SalToOfSetNwSrcActionCase extends ConvertorCase<SetNwSrcActionCase,
 
             matchEntryBuilder.setHasMask(false);
             matchEntryBuilder.setMatchEntryValue(ipv4SrcCaseBuilder.build());
+
+            List<MatchEntry> entries = new ArrayList<>();
             entries.add(matchEntryBuilder.build());
+
+            SetFieldActionBuilder setFieldBuilder = new SetFieldActionBuilder();
             setFieldBuilder.setMatchEntry(entries);
+
+            SetFieldCaseBuilder setFieldCaseBuilder = new SetFieldCaseBuilder();
             setFieldCaseBuilder.setSetFieldAction(setFieldBuilder.build());
             builder.setActionChoice(setFieldCaseBuilder.build());
         } else if (address instanceof Ipv6) {
             Iterable<String> addressParts = PREFIX_SPLITTER.split(((Ipv6) address).getIpv6Address().getValue());
             Ipv6Address result = new Ipv6Address(addressParts.iterator().next());
 
-            List<MatchEntry> matchEntriesList = new ArrayList<>();
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
             matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
             matchEntryBuilder.setOxmMatchField(Ipv6Src.class);
@@ -93,6 +96,8 @@ public class SalToOfSetNwSrcActionCase extends ConvertorCase<SetNwSrcActionCase,
 
             matchEntryBuilder.setHasMask(false);
             matchEntryBuilder.setMatchEntryValue(ipv6SrcCaseBuilder.build());
+
+            List<MatchEntry> matchEntriesList = new ArrayList<>();
             matchEntriesList.add(matchEntryBuilder.build());
 
             SetFieldCaseBuilder setFieldCaseBuilder = new SetFieldCaseBuilder();
