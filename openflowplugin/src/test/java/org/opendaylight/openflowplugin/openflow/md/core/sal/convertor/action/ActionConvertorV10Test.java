@@ -75,8 +75,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.output.action._case.OutputActionBuilder;
 
 /**
- * @author michal.polkorab
+ * Unit tests for v1.0 action converters.
  *
+ * @author michal.polkorab
  */
 public class ActionConvertorV10Test {
     private ConvertorManager convertorManager;
@@ -87,11 +88,10 @@ public class ActionConvertorV10Test {
     }
 
     /**
-     * Test {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ActionConvertor#convert(java.util.List, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData)}}
+     * Test {@link ActionConvertor#convert(List, ActionConvertorData)}}.
      */
     @Test
     public void testGetActions() {
-        List<Action> salActions = new ArrayList<>();
         ActionBuilder actionBuilder = new ActionBuilder();
         SetVlanPcpActionCaseBuilder vlanPcpCaseBuilder = new SetVlanPcpActionCaseBuilder();
         SetVlanPcpActionBuilder pcpBuilder = new SetVlanPcpActionBuilder();
@@ -99,6 +99,8 @@ public class ActionConvertorV10Test {
         vlanPcpCaseBuilder.setSetVlanPcpAction(pcpBuilder.build());
         actionBuilder.setAction(vlanPcpCaseBuilder.build());
         actionBuilder.setOrder(0);
+
+        List<Action> salActions = new ArrayList<>();
         salActions.add(actionBuilder.build());
 
         actionBuilder = new ActionBuilder();
@@ -140,11 +142,12 @@ public class ActionConvertorV10Test {
         salActions.add(actionBuilder.build());
 
         actionBuilder = new ActionBuilder();
-        SetNwDstActionCaseBuilder nwDstCaseBuilder = new SetNwDstActionCaseBuilder();
         SetNwDstActionBuilder nwDstBuilder = new SetNwDstActionBuilder();
         ipv4Builder = new Ipv4Builder();
         ipv4Builder.setIpv4Address(new Ipv4Prefix("10.0.0.2/32"));
         nwDstBuilder.setAddress(ipv4Builder.build());
+
+        SetNwDstActionCaseBuilder nwDstCaseBuilder = new SetNwDstActionCaseBuilder();
         nwDstCaseBuilder.setSetNwDstAction(nwDstBuilder.build());
         actionBuilder.setAction(nwDstCaseBuilder.build());
         actionBuilder.setOrder(5);
@@ -212,106 +215,124 @@ public class ActionConvertorV10Test {
         data.setDatapathId(new BigInteger("42"));
         data.setIpProtocol(FlowConvertorUtil.getIpProtocolFromFlow(flow));
 
-        Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action>> actionsOptional =
-                convertorManager.convert(salActions, data);
+        Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping
+            .Action>> actionsOptional = convertorManager.convert(salActions, data);
 
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action> actions = actionsOptional.orElse(Collections.emptyList());
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action>
+            actions = actionsOptional.orElse(Collections.emptyList());
 
         Assert.assertEquals("Wrong number of actions", 12, actions.size());
 
-        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action action = actions.get(0);
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action
+            action = actions.get(0);
         Assert.assertEquals("Wrong action type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
-                + ".action.rev150203.action.grouping.action.choice.SetVlanPcpCase", action.getActionChoice().getImplementedInterface().getName());
+                + ".action.rev150203.action.grouping.action.choice.SetVlanPcpCase",
+                action.getActionChoice().getImplementedInterface().getName());
         SetVlanPcpCase setVlanPcpCase = (SetVlanPcpCase) action.getActionChoice();
         Assert.assertEquals("Wrong vlan pcp", 7, setVlanPcpCase.getSetVlanPcpAction().getVlanPcp().intValue());
 
         action = actions.get(1);
         Assert.assertEquals("Wrong action type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
-                + ".action.rev150203.action.grouping.action.choice.StripVlanCase", action.getActionChoice().getImplementedInterface().getName());
+                + ".action.rev150203.action.grouping.action.choice.StripVlanCase",
+                action.getActionChoice().getImplementedInterface().getName());
 
         action = actions.get(2);
         Assert.assertEquals("Wrong action type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
-                + ".action.rev150203.action.grouping.action.choice.SetDlDstCase", action.getActionChoice().getImplementedInterface().getName());
+                + ".action.rev150203.action.grouping.action.choice.SetDlDstCase",
+                action.getActionChoice().getImplementedInterface().getName());
         SetDlDstCase setDlDstCase = (SetDlDstCase) action.getActionChoice();
-        Assert.assertEquals("Wrong dl dst", "00:00:00:00:00:06", setDlDstCase.getSetDlDstAction().getDlDstAddress().getValue());
+        Assert.assertEquals("Wrong dl dst", "00:00:00:00:00:06",
+                setDlDstCase.getSetDlDstAction().getDlDstAddress().getValue());
 
         action = actions.get(3);
         Assert.assertEquals("Wrong action type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
-                + ".action.rev150203.action.grouping.action.choice.SetDlSrcCase", action.getActionChoice().getImplementedInterface().getName());
+                + ".action.rev150203.action.grouping.action.choice.SetDlSrcCase",
+                action.getActionChoice().getImplementedInterface().getName());
         SetDlSrcCase setDlSrcCase = (SetDlSrcCase) action.getActionChoice();
-        Assert.assertEquals("Wrong dl src", "00:00:00:00:00:05", setDlSrcCase.getSetDlSrcAction().getDlSrcAddress().getValue());
+        Assert.assertEquals("Wrong dl src", "00:00:00:00:00:05",
+                setDlSrcCase.getSetDlSrcAction().getDlSrcAddress().getValue());
 
         action = actions.get(4);
         Assert.assertEquals("Wrong action type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
-                + ".action.rev150203.action.grouping.action.choice.SetNwSrcCase", action.getActionChoice().getImplementedInterface().getName());
+                + ".action.rev150203.action.grouping.action.choice.SetNwSrcCase",
+                action.getActionChoice().getImplementedInterface().getName());
         SetNwSrcCase setNwSrcCase = (SetNwSrcCase) action.getActionChoice();
         Assert.assertEquals("Wrong nw src", "10.0.0.0", setNwSrcCase.getSetNwSrcAction().getIpAddress().getValue());
 
         action = actions.get(5);
         Assert.assertEquals("Wrong action type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
-                + ".action.rev150203.action.grouping.action.choice.SetNwDstCase", action.getActionChoice().getImplementedInterface().getName());
+                + ".action.rev150203.action.grouping.action.choice.SetNwDstCase",
+                action.getActionChoice().getImplementedInterface().getName());
         SetNwDstCase setNwDstCase = (SetNwDstCase) action.getActionChoice();
         Assert.assertEquals("Wrong nw dst", "10.0.0.2", setNwDstCase.getSetNwDstAction().getIpAddress().getValue());
 
         action = actions.get(6);
         Assert.assertEquals("Wrong action type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
-                + ".action.rev150203.action.grouping.action.choice.SetTpSrcCase", action.getActionChoice().getImplementedInterface().getName());
+                + ".action.rev150203.action.grouping.action.choice.SetTpSrcCase",
+                action.getActionChoice().getImplementedInterface().getName());
         SetTpSrcCase setTpSrcCase = (SetTpSrcCase) action.getActionChoice();
         Assert.assertEquals("Wrong tp src", 54, setTpSrcCase.getSetTpSrcAction().getPort().getValue().intValue());
 
         action = actions.get(7);
         Assert.assertEquals("Wrong action type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
-                + ".action.rev150203.action.grouping.action.choice.SetTpDstCase", action.getActionChoice().getImplementedInterface().getName());
+                + ".action.rev150203.action.grouping.action.choice.SetTpDstCase",
+                action.getActionChoice().getImplementedInterface().getName());
         SetTpDstCase setTpDstCase = (SetTpDstCase) action.getActionChoice();
         Assert.assertEquals("Wrong tp dst", 45, setTpDstCase.getSetTpDstAction().getPort().getValue().intValue());
 
         action = actions.get(8);
         Assert.assertEquals("Wrong action type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
-                + ".action.rev150203.action.grouping.action.choice.SetNwTosCase", action.getActionChoice().getImplementedInterface().getName());
+                + ".action.rev150203.action.grouping.action.choice.SetNwTosCase",
+                action.getActionChoice().getImplementedInterface().getName());
         SetNwTosCase setNwTosCase = (SetNwTosCase) action.getActionChoice();
         Assert.assertEquals("Wrong nw tos", 18, setNwTosCase.getSetNwTosAction().getNwTos().intValue());
 
         action = actions.get(9);
         Assert.assertEquals("Wrong action type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
-                + ".action.rev150203.action.grouping.action.choice.SetVlanVidCase", action.getActionChoice().getImplementedInterface().getName());
+                + ".action.rev150203.action.grouping.action.choice.SetVlanVidCase",
+                action.getActionChoice().getImplementedInterface().getName());
         SetVlanVidCase setVlanVidCase = (SetVlanVidCase) action.getActionChoice();
         Assert.assertEquals("Wrong vlan id", 22, setVlanVidCase.getSetVlanVidAction().getVlanVid().intValue());
 
         action = actions.get(10);
         Assert.assertEquals("Wrong action type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
-                + ".action.rev150203.action.grouping.action.choice.StripVlanCase", action.getActionChoice().getImplementedInterface().getName());
+                + ".action.rev150203.action.grouping.action.choice.StripVlanCase",
+                action.getActionChoice().getImplementedInterface().getName());
 
         action = actions.get(11);
         Assert.assertEquals("Wrong action type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
-                + ".action.rev150203.action.grouping.action.choice.SetVlanVidCase", action.getActionChoice().getImplementedInterface().getName());
+                + ".action.rev150203.action.grouping.action.choice.SetVlanVidCase",
+                action.getActionChoice().getImplementedInterface().getName());
         setVlanVidCase = (SetVlanVidCase) action.getActionChoice();
         Assert.assertEquals("Wrong vlan id", 22, setVlanVidCase.getSetVlanVidAction().getVlanVid().intValue());
     }
 
     /**
-     * Test {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ActionResponseConvertor#convert(java.util.List, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionResponseConvertorData)}}
+     * Test {@link ActionResponseConvertor#convert(List, ActionResponseConvertorData)}}.
      */
     @Test
     public void testToMDSalActions() {
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action> actions = new ArrayList<>();
-        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder actionbuilder =
-                new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder();
-
         OutputActionCaseBuilder caseBuilder = new OutputActionCaseBuilder();
         OutputActionBuilder outputBuilder = new OutputActionBuilder();
-        outputBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber(14L));
+        outputBuilder.setPort(
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber(14L));
         outputBuilder.setMaxLength(555);
         caseBuilder.setOutputAction(outputBuilder.build());
-        actionbuilder.setActionChoice(caseBuilder.build());
-        actions.add(actionbuilder.build());
+
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder
+            actionBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions
+                .grouping.ActionBuilder();
+        actionBuilder.setActionChoice(caseBuilder.build());
+
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action>
+            actions = new ArrayList<>();
+        actions.add(actionBuilder.build());
 
         ActionResponseConvertorData data = new ActionResponseConvertorData(OFConstants.OFP_VERSION_1_0);
         data.setActionPath(ActionPath.FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS);
 
-        Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action
-        .Action>> mdSalActionsOptional =
-                convertorManager.convert(
-                        actions, data);
+        Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action>>
+            mdSalActionsOptional = convertorManager.convert(actions, data);
 
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action
                 .Action> mdSalActions = mdSalActionsOptional.orElse(Collections.emptyList());
@@ -321,7 +342,8 @@ public class ActionConvertorV10Test {
         Assert.assertEquals("Wrong action type", "org.opendaylight.yang.gen.v1.urn.opendaylight.action.types"
                 + ".rev131112.action.action.OutputActionCase", action.getImplementedInterface().getName());
         OutputActionCase outputAction = (OutputActionCase) action;
-        Assert.assertEquals("Wrong output port", "14", outputAction.getOutputAction().getOutputNodeConnector().getValue());
+        Assert.assertEquals("Wrong output port", "14",
+                outputAction.getOutputAction().getOutputNodeConnector().getValue());
         Assert.assertEquals("Wrong max length", 555, outputAction.getOutputAction().getMaxLength().intValue());
     }
 }

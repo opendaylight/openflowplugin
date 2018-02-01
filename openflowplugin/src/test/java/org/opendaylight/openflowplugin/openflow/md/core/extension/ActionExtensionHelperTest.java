@@ -44,13 +44,11 @@ public class ActionExtensionHelperTest {
     @Before
     public void setup() {
         OFSessionUtil.getSessionManager().setExtensionConverterProvider(extensionConverterProvider);
-        when(extensionConverterProvider.getActionConverter(any(MessageTypeKey.class))).thenReturn((ConvertorActionFromOFJava<DataContainer, AugmentationPath>) (input, path) -> new MockAction());
+        when(extensionConverterProvider.getActionConverter(any(MessageTypeKey.class)))
+            .thenReturn((ConvertorActionFromOFJava<DataContainer, AugmentationPath>) (input, path) -> new MockAction());
     }
 
     @Test
-    /**
-     * Trivial test for {@link ActionExtensionHelper#processAlienAction(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action, org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion, org.opendaylight.openflowplugin.extension.api.path.ActionPath)}
-     */
     public void testProcessAlienAction() {
         ActionBuilder actionBuilder = new ActionBuilder();
 

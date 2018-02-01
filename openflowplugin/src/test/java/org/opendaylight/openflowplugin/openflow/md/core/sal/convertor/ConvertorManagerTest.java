@@ -20,12 +20,13 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 
 /**
- * Test for {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager}
+ * Test for {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ConvertorManagerTest {
@@ -73,13 +74,13 @@ public class ConvertorManagerTest {
     }
 
     /**
-     * Test for {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager#convert(java.util.Collection, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorData)}
-     * @throws Exception
+     * Test for {@link ConvertorManager#convert(Collection, ConvertorData)}.
      */
     @Test
     public void testConvert1() throws Exception {
         final ConvertorManager convertorManager = new ConvertorManager(OFConstants.OFP_VERSION_1_3)
-                .registerConvertor(OFConstants.OFP_VERSION_1_3, new Convertor<List<Action>, String, VersionConvertorData>() {
+            .registerConvertor(OFConstants.OFP_VERSION_1_3,
+                new Convertor<List<Action>, String, VersionConvertorData>() {
                     @Override
                     public Collection<Class<?>> getTypes() {
                         return Collections.singleton(Action.class);

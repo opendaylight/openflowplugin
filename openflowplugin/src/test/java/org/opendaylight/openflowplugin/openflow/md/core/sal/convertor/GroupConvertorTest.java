@@ -7,12 +7,14 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import com.google.common.collect.ImmutableList;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
@@ -55,7 +57,7 @@ public class GroupConvertorTest {
     }
 
     /**
-     * test of {@link GroupConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)} }
+     * test of {@link GroupConvertor#convert(Group, VersionDatapathIdConvertorData)} }.
      */
     @Test
     public void testGroupModConvertorwithallParameters() {
@@ -65,9 +67,11 @@ public class GroupConvertorTest {
         addGroupBuilder.setGroupId(new GroupId(10L));
 
         addGroupBuilder.setGroupType(GroupTypes.GroupAll);
-        final List<Bucket> bucketList = new ArrayList<Bucket>();
-        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionsList = new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>();
-        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionsList1 = new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>();
+        final List<Bucket> bucketList = new ArrayList<>();
+        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>
+            actionsList = new ArrayList<>();
+        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>
+            actionsList1 = new ArrayList<>();
 
         int actionOrder = 0;
 
@@ -83,7 +87,8 @@ public class GroupConvertorTest {
         groupActionBuilder1.setGroup("006");
         final GroupAction groupIdaction1 = groupActionBuilder.build();
         final ActionBuilder actionsB1 = new ActionBuilder();
-        actionsB1.setOrder(actionOrder++).setAction(new GroupActionCaseBuilder().setGroupAction(groupIdaction1).build());
+        actionsB1.setOrder(actionOrder++).setAction(new GroupActionCaseBuilder()
+                .setGroupAction(groupIdaction1).build());
 
         actionsList.add(actionsB.build());
         actionsList.add(actionsB1.build());
@@ -118,7 +123,8 @@ public class GroupConvertorTest {
         final SetMplsTtlAction setMAction = setMplsTtlActionBuilder.build();
         final ActionBuilder actionsB3 = new ActionBuilder();
 
-        actionsB3.setOrder(actionOrder++).setAction(new SetMplsTtlActionCaseBuilder().setSetMplsTtlAction(setMAction).build());
+        actionsB3.setOrder(actionOrder++).setAction(new SetMplsTtlActionCaseBuilder()
+                .setSetMplsTtlAction(setMAction).build());
 
 
         actionsList1.add(actionsB2.build());
@@ -140,35 +146,35 @@ public class GroupConvertorTest {
 
         final GroupModInputBuilder outAddGroupInput = convert(addGroupBuilder.build(), data);
 
-        Assert.assertEquals(GroupModCommand.OFPGCADD, outAddGroupInput.getCommand());
-        Assert.assertEquals(GroupType.OFPGTALL, outAddGroupInput.getType());
+        assertEquals(GroupModCommand.OFPGCADD, outAddGroupInput.getCommand());
+        assertEquals(GroupType.OFPGTALL, outAddGroupInput.getType());
 
-        Assert.assertEquals(10L, (long) outAddGroupInput.getGroupId().getValue());
-        Assert.assertEquals(10, (int) outAddGroupInput.getBucketsList().get(0).getWeight());
-        Assert.assertEquals(20L, (long) outAddGroupInput.getBucketsList().get(0).getWatchPort().getValue());
-        Assert.assertEquals((Long) 22L, outAddGroupInput.getBucketsList().get(0).getWatchGroup());
+        assertEquals(10L, (long) outAddGroupInput.getGroupId().getValue());
+        assertEquals(10, (int) outAddGroupInput.getBucketsList().get(0).getWeight());
+        assertEquals(20L, (long) outAddGroupInput.getBucketsList().get(0).getWatchPort().getValue());
+        assertEquals((Long) 22L, outAddGroupInput.getBucketsList().get(0).getWatchGroup());
 
         final List<Action> outActionList = outAddGroupInput.getBucketsList().get(0).getAction();
         for (int outItem = 0; outItem < outActionList.size(); outItem++) {
             final Action action = outActionList
                     .get(outItem);
             if (action.getActionChoice() instanceof GroupActionCase) {
-                Assert.assertEquals((Long) 5L, ((GroupActionCase) action.getActionChoice()).getGroupAction().getGroupId());
+                assertEquals((Long) 5L, ((GroupActionCase) action.getActionChoice()).getGroupAction().getGroupId());
 
             }
             // TODO:setMplsTTL :OF layer doesnt have get();
         }
 
-        Assert.assertEquals((Integer) 50, outAddGroupInput.getBucketsList().get(1).getWeight());
-        Assert.assertEquals((long) 60, (long) outAddGroupInput.getBucketsList().get(1).getWatchPort().getValue());
-        Assert.assertEquals((Long) 70L, outAddGroupInput.getBucketsList().get(1).getWatchGroup());
+        assertEquals((Integer) 50, outAddGroupInput.getBucketsList().get(1).getWeight());
+        assertEquals((long) 60, (long) outAddGroupInput.getBucketsList().get(1).getWatchPort().getValue());
+        assertEquals((Long) 70L, outAddGroupInput.getBucketsList().get(1).getWatchGroup());
         final List<Action> outActionList1 = outAddGroupInput.getBucketsList().get(1).getAction();
         for (int outItem = 0; outItem < outActionList1.size(); outItem++) {
             final Action action = outActionList1
                     .get(outItem);
             if (action.getActionChoice() instanceof GroupActionCase) {
 
-                Assert.assertEquals((Long) 6L, ((GroupActionCase) action.getActionChoice()).getGroupAction().getGroupId());
+                assertEquals((Long) 6L, ((GroupActionCase) action.getActionChoice()).getGroupAction().getGroupId());
 
 
             }
@@ -178,7 +184,7 @@ public class GroupConvertorTest {
     }
 
     /**
-     * test of {@link GroupConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)} }
+     * test of {@link GroupConvertor#convert(Group, VersionDatapathIdConvertorData)} }.
      */
     @Test
     public void testGroupModConvertorNoBucket() {
@@ -192,12 +198,12 @@ public class GroupConvertorTest {
         data.setDatapathId(BigInteger.valueOf(1));
 
         final GroupModInputBuilder outAddGroupInput = convert(addGroupBuilder.build(), data);
-        Assert.assertEquals(GroupModCommand.OFPGCADD, outAddGroupInput.getCommand());
-        Assert.assertEquals(GroupType.OFPGTALL, outAddGroupInput.getType());
+        assertEquals(GroupModCommand.OFPGCADD, outAddGroupInput.getCommand());
+        assertEquals(GroupType.OFPGTALL, outAddGroupInput.getType());
     }
 
     /**
-     * test of {@link GroupConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)} }
+     * test of {@link GroupConvertor#convert(Group, VersionDatapathIdConvertorData)} }.
      */
     @Test
     public void testGroupModConvertorBucketwithNOWieghtValuesForGroupTypeFastFailure() {
@@ -209,9 +215,11 @@ public class GroupConvertorTest {
         addGroupBuilder.setGroupId(new GroupId(10L));
 
         addGroupBuilder.setGroupType(GroupTypes.GroupFf);
-        final List<Bucket> bucketList = new ArrayList<Bucket>();
-        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionsList = new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>();
-        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionsList1 = new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>();
+        final List<Bucket> bucketList = new ArrayList<>();
+        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>
+            actionsList = new ArrayList<>();
+        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>
+            actionsList1 = new ArrayList<>();
 
         // Action1: 005
         actionsList.add(assembleActionBuilder("005", actionOrder++).build());
@@ -252,17 +260,17 @@ public class GroupConvertorTest {
 
         final GroupModInputBuilder outAddGroupInput = convert(addGroupBuilder.build(), data);
 
-        Assert.assertEquals(GroupModCommand.OFPGCADD, outAddGroupInput.getCommand());
-        Assert.assertEquals(GroupType.OFPGTFF, outAddGroupInput.getType());
+        assertEquals(GroupModCommand.OFPGCADD, outAddGroupInput.getCommand());
+        assertEquals(GroupType.OFPGTFF, outAddGroupInput.getType());
 
-        Assert.assertEquals(10L, outAddGroupInput.getGroupId().getValue().longValue());
+        assertEquals(10L, outAddGroupInput.getGroupId().getValue().longValue());
 
         final List<Action> outActionList = outAddGroupInput.getBucketsList().get(0).getAction();
         for (int outItem = 0; outItem < outActionList.size(); outItem++) {
             final Action action = outActionList
                     .get(outItem);
             if (action.getActionChoice() instanceof GroupActionCase) {
-                Assert.assertEquals((Long) 5L, ((GroupActionCase) action.getActionChoice()).getGroupAction().getGroupId());
+                assertEquals((Long) 5L, ((GroupActionCase) action.getActionChoice()).getGroupAction().getGroupId());
             }
         }
 
@@ -271,20 +279,20 @@ public class GroupConvertorTest {
             final Action action = outActionList1
                     .get(outItem);
             if (action.getActionChoice() instanceof GroupActionCase) {
-                Assert.assertEquals((Long) 6L, ((GroupActionCase) action.getActionChoice()).getGroupAction().getGroupId());
+                assertEquals((Long) 6L, ((GroupActionCase) action.getActionChoice()).getGroupAction().getGroupId());
             }
         }
     }
 
     /**
-     * test of {@link GroupConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)} }
+     * test of {@link GroupConvertor#convert(Group, VersionDatapathIdConvertorData)} }.
      */
     @Test
     public void testGroupModConvertSortedBuckets() {
 
         final int actionOrder = 0;
 
-        final ArrayList<Bucket> bucket = new ArrayList<Bucket>();
+        final ArrayList<Bucket> bucket = new ArrayList<>();
 
         bucket.add(new BucketBuilder()
                 .setBucketId(new BucketId((long) 4))
@@ -372,27 +380,23 @@ public class GroupConvertorTest {
         final GroupModInputBuilder outAddGroupInput = convert(input, data);
 
         final List<BucketsList> bucketList = outAddGroupInput.getBucketsList();
-        Assert.assertEquals( Long.valueOf(1), bucketList.get(0).getWatchGroup());
-        Assert.assertEquals( Long.valueOf(3), bucketList.get(0).getWatchPort().getValue());
+        assertEquals(Long.valueOf(1), bucketList.get(0).getWatchGroup());
+        assertEquals(Long.valueOf(3), bucketList.get(0).getWatchPort().getValue());
 
-        Assert.assertEquals( Long.valueOf(1), bucketList.get(1).getWatchGroup());
-        Assert.assertEquals( Long.valueOf(4), bucketList.get(1).getWatchPort().getValue());
+        assertEquals(Long.valueOf(1), bucketList.get(1).getWatchGroup());
+        assertEquals(Long.valueOf(4), bucketList.get(1).getWatchPort().getValue());
 
-        Assert.assertEquals( Long.valueOf(1), bucketList.get(2).getWatchGroup());
-        Assert.assertEquals( Long.valueOf(5), bucketList.get(2).getWatchPort().getValue());
+        assertEquals(Long.valueOf(1), bucketList.get(2).getWatchGroup());
+        assertEquals(Long.valueOf(5), bucketList.get(2).getWatchPort().getValue());
 
-        Assert.assertEquals( Long.valueOf(1), bucketList.get(3).getWatchGroup());
-        Assert.assertEquals( Long.valueOf(6), bucketList.get(3).getWatchPort().getValue());
+        assertEquals(Long.valueOf(1), bucketList.get(3).getWatchGroup());
+        assertEquals(Long.valueOf(6), bucketList.get(3).getWatchPort().getValue());
 
-        Assert.assertEquals( Long.valueOf(1), bucketList.get(4).getWatchGroup());
-        Assert.assertEquals( Long.valueOf(2), bucketList.get(4).getWatchPort().getValue());
-
+        assertEquals(Long.valueOf(1), bucketList.get(4).getWatchGroup());
+        assertEquals(Long.valueOf(2), bucketList.get(4).getWatchPort().getValue());
 
     }
 
-    /**
-     * @return
-     */
     private static ActionBuilder assembleSetMplsTtlActionBuilder(final int actionOrder) {
         final SetMplsTtlActionBuilder setMplsTtlActionBuilder = new SetMplsTtlActionBuilder();
         setMplsTtlActionBuilder.setMplsTtl((short) 0X1);
@@ -403,9 +407,6 @@ public class GroupConvertorTest {
         return actionsB3;
     }
 
-    /**
-     * @return
-     */
     private static ActionBuilder assembleCopyTtlInBuilder(final int actionOrder) {
         final CopyTtlInBuilder copyTtlB = new CopyTtlInBuilder();
         final CopyTtlInCaseBuilder copyTtlInCaseBuilder = new CopyTtlInCaseBuilder();
@@ -415,10 +416,6 @@ public class GroupConvertorTest {
         return actionsB2;
     }
 
-    /**
-     * @param groupName name of group
-     * @return
-     */
     private static ActionBuilder assembleActionBuilder(final String groupName, final int actionOrder) {
         final GroupActionBuilder groupActionBuilder = new GroupActionBuilder();
         groupActionBuilder.setGroup(groupName);
@@ -430,7 +427,7 @@ public class GroupConvertorTest {
     }
 
     /**
-     * test of {@link GroupConvertor#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group, org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData)} }
+     * test of {@link GroupConvertor#convert(Group, VersionDatapathIdConvertorData)} }.
      */
     @Test
     public void testGroupModConvertorBucketwithNOWieghtValuesForGroupTypeAll() {
@@ -442,9 +439,11 @@ public class GroupConvertorTest {
         addGroupBuilder.setGroupId(new GroupId(10L));
 
         addGroupBuilder.setGroupType(GroupTypes.GroupAll);
-        final List<Bucket> bucketList = new ArrayList<Bucket>();
-        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionsList = new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>();
-        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionsList1 = new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>();
+        final List<Bucket> bucketList = new ArrayList<>();
+        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>
+            actionsList = new ArrayList<>();
+        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>
+            actionsList1 = new ArrayList<>();
 
         // Action1
         actionsList.add(assembleActionBuilder("005", actionOrder++).build());
@@ -483,17 +482,17 @@ public class GroupConvertorTest {
 
         final GroupModInputBuilder outAddGroupInput = convert(addGroupBuilder.build(), data);
 
-        Assert.assertEquals(GroupModCommand.OFPGCADD, outAddGroupInput.getCommand());
-        Assert.assertEquals(GroupType.OFPGTALL, outAddGroupInput.getType());
+        assertEquals(GroupModCommand.OFPGCADD, outAddGroupInput.getCommand());
+        assertEquals(GroupType.OFPGTALL, outAddGroupInput.getType());
 
-        Assert.assertEquals(10L, outAddGroupInput.getGroupId().getValue().longValue());
+        assertEquals(10L, outAddGroupInput.getGroupId().getValue().longValue());
 
         final List<Action> outActionList = outAddGroupInput.getBucketsList().get(0).getAction();
         for (int outItem = 0; outItem < outActionList.size(); outItem++) {
             final Action action = outActionList
                     .get(outItem);
             if (action.getActionChoice() instanceof GroupActionCase) {
-                Assert.assertEquals((Long) 5L, ((GroupActionCase) action.getActionChoice()).getGroupAction().getGroupId());
+                assertEquals((Long) 5L, ((GroupActionCase) action.getActionChoice()).getGroupAction().getGroupId());
 
             }
 
@@ -505,7 +504,7 @@ public class GroupConvertorTest {
                     .get(outItem);
             if (action.getActionChoice() instanceof GroupActionCase) {
 
-                Assert.assertEquals((Long) 6L, ((GroupActionCase) action.getActionChoice()).getGroupAction().getGroupId());
+                assertEquals((Long) 6L, ((GroupActionCase) action.getActionChoice()).getGroupAction().getGroupId());
 
             }
 
@@ -515,7 +514,7 @@ public class GroupConvertorTest {
 
     private GroupModInputBuilder convert(Group group, VersionDatapathIdConvertorData data) {
         final Optional<GroupModInputBuilder> outAddGroupInputOptional = convertorManager.convert(group, data);
-        Assert.assertTrue("Group convertor not found", outAddGroupInputOptional.isPresent());
+        assertTrue("Group convertor not found", outAddGroupInputOptional.isPresent());
         return outAddGroupInputOptional.get();
     }
 }

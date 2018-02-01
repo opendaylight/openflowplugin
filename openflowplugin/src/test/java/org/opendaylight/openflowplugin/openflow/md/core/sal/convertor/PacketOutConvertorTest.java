@@ -59,7 +59,7 @@ public class PacketOutConvertorTest {
     }
 
     /**
-     * Test for {@link PacketOutConvertor} with null parameters
+     * Test for {@link PacketOutConvertor} with null parameters.
      */
     @Test
     public void toPacketOutInputAllParmNullTest() {
@@ -68,20 +68,20 @@ public class PacketOutConvertorTest {
 
         Long bufferId = null;
 
-        String NODE_ID = "0";
+        String nodeId = "0";
         String port = "0";
 
-        NodeRef ref = createNodeRef(NODE_ID);
-        NodeConnectorKey nodeConnKey = PacketOutConvertorTest.createNodeConnKey(NODE_ID, port);
-        NodeConnectorRef nEgressConfRef = new NodeConnectorRef(
-                createNodeConnRef(NODE_ID, nodeConnKey));
+        NodeRef ref = createNodeRef(nodeId);
+        NodeConnectorKey nodeConnKey = PacketOutConvertorTest.createNodeConnKey(nodeId, port);
+        NodeConnectorRef egressConfRef = new NodeConnectorRef(
+                createNodeConnRef(nodeId, nodeConnKey));
 
         transmitPacketInputBuilder.setBufferId(bufferId);
         transmitPacketInputBuilder.setConnectionCookie(null);
         transmitPacketInputBuilder.setAction(null);
         transmitPacketInputBuilder.setNode(ref);
         transmitPacketInputBuilder.setPayload(null);
-        transmitPacketInputBuilder.setEgress(nEgressConfRef);
+        transmitPacketInputBuilder.setEgress(egressConfRef);
         transmitPacketInputBuilder.setIngress(null);
         TransmitPacketInput transmitPacketInput = transmitPacketInputBuilder
                 .build();
@@ -103,14 +103,12 @@ public class PacketOutConvertorTest {
     }
 
     /**
-     * Test for PacketOutConvertor
+     * Test for PacketOutConvertor.
      */
     @Test
     public void toPacketOutInputAllParmTest() {
-        TransmitPacketInputBuilder transmitPacketInputBuilder = new TransmitPacketInputBuilder();
-
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionList = new ArrayList<>();
-        org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder ab = new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder();
+        org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder ab =
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder();
 
         OutputActionBuilder output = new OutputActionBuilder();
         output.setMaxLength(OFConstants.OFPCML_NO_BUFFER);
@@ -120,6 +118,9 @@ public class PacketOutConvertorTest {
                 output.build()).build());
         ab.setOrder(0);
         ab.setKey(new ActionKey(0));
+
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionList =
+                new ArrayList<>();
         actionList.add(ab.build());
 
         Long bufferId = 0xfL;
@@ -127,35 +128,35 @@ public class PacketOutConvertorTest {
         Long valueForCookie = 0xeL;
         ConnectionCookie connCook = new ConnectionCookie(valueForCookie);
 
-        String NODE_ID = "node:1";
+        String nodeId = "node:1";
 
-        NodeRef ref = createNodeRef(NODE_ID);
+        NodeRef ref = createNodeRef(nodeId);
 
         String portO = "0xfffffffd";
-        NodeConnectorKey nEgrConKey = PacketOutConvertorTest.createNodeConnKey(NODE_ID, portO);
-        NodeConnectorRef nEgressConfRef = new NodeConnectorRef(
-                createNodeConnRef(NODE_ID, nEgrConKey));
+        NodeConnectorKey egrConKey = PacketOutConvertorTest.createNodeConnKey(nodeId, portO);
+        NodeConnectorRef egressConfRef = new NodeConnectorRef(
+                createNodeConnRef(nodeId, egrConKey));
 
         String inPort = "2";
-        NodeConnectorKey nIngrConKey = PacketOutConvertorTest.createNodeConnKey(NODE_ID, inPort);
-        NodeConnectorRef nIngressConRef = new NodeConnectorRef(
-                createNodeConnRef(NODE_ID, nIngrConKey));
+        NodeConnectorKey ingrConKey = PacketOutConvertorTest.createNodeConnKey(nodeId, inPort);
+        NodeConnectorRef ingressConRef = new NodeConnectorRef(
+                createNodeConnRef(nodeId, ingrConKey));
 
-        String _string = new String("sendOutputMsg_TEST");
-        byte[] msg = _string.getBytes();
+        String string = new String("sendOutputMsg_TEST");
+        byte[] msg = string.getBytes();
 
         byte[] payload = msg;
 
+        TransmitPacketInputBuilder transmitPacketInputBuilder = new TransmitPacketInputBuilder();
         transmitPacketInputBuilder.setAction(actionList);
         transmitPacketInputBuilder.setBufferId(bufferId);
         transmitPacketInputBuilder.setConnectionCookie(connCook);
-        transmitPacketInputBuilder.setEgress(nEgressConfRef);
-        transmitPacketInputBuilder.setIngress(nIngressConRef);
+        transmitPacketInputBuilder.setEgress(egressConfRef);
+        transmitPacketInputBuilder.setIngress(ingressConRef);
         transmitPacketInputBuilder.setNode(ref);
         transmitPacketInputBuilder.setPayload(payload);
 
-        TransmitPacketInput transmitPacketInput = transmitPacketInputBuilder
-                .build();
+        final TransmitPacketInput transmitPacketInput = transmitPacketInputBuilder.build();
 
         short version = (short) 0x04;
         byte[] datapathIdByte = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
@@ -189,89 +190,55 @@ public class PacketOutConvertorTest {
         Assert.assertArrayEquals(transmitPacketInput.getPayload(), message.getData());
     }
 
-    /**
-     * create action
-     *
-     * @param nConKey
-     * @param version
-     * @return
-     */
     private static List<Action> buildActionForNullTransmitPacketInputAction(
-            final NodeConnectorKey nConKey, final short version) {
+            final NodeConnectorKey nodeConKey, final short version) {
 
-        PortNumber outPort = getPortNumber(nConKey, version);
-        List<Action> actions = new ArrayList<>();
-        ActionBuilder aBuild = new ActionBuilder();
+        PortNumber outPort = getPortNumber(nodeConKey, version);
 
-        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.OutputActionCaseBuilder outputActionCaseBuilder =
-                new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.OutputActionCaseBuilder();
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice
+            .OutputActionCaseBuilder outputActionCaseBuilder =
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping
+                    .action.choice.OutputActionCaseBuilder();
 
-        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.output.action._case.OutputActionBuilder outputActionBuilder =
-                new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.output.action._case.OutputActionBuilder();
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice
+            .output.action._case.OutputActionBuilder outputActionBuilder =
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping
+                    .action.choice.output.action._case.OutputActionBuilder();
 
         outputActionBuilder.setPort(outPort);
         outputActionBuilder.setMaxLength(0xffff);
         outputActionCaseBuilder.setOutputAction(outputActionBuilder.build());
-        aBuild.setActionChoice(outputActionCaseBuilder.build());
-        actions.add(aBuild.build());
+        ActionBuilder actionBuilder = new ActionBuilder();
+        actionBuilder.setActionChoice(outputActionCaseBuilder.build());
+
+        List<Action> actions = new ArrayList<>();
+        actions.add(actionBuilder.build());
         return actions;
     }
 
-    /**
-     * create PortNumber
-     *
-     * @param nConKey
-     * @param ofVersion
-     * @return
-     */
-    private static PortNumber getPortNumber(final NodeConnectorKey nConKey,
-                                            final Short ofVersion) {
-        Long port = InventoryDataServiceUtil.portNumberfromNodeConnectorId(
-                OpenflowVersion.get(ofVersion), nConKey.getId());
+    private static PortNumber getPortNumber(final NodeConnectorKey nodeConKey, final Short ofVersion) {
+        Long port = InventoryDataServiceUtil.portNumberfromNodeConnectorId(OpenflowVersion.get(ofVersion),
+                nodeConKey.getId());
         return new PortNumber(port);
     }
 
-    /**
-     * create NodeConnectorRef
-     *
-     * @param nodeId
-     * @param nConKey
-     * @return
-     */
-    private static NodeConnectorRef createNodeConnRef(final String nodeId,
-                                                      final NodeConnectorKey nConKey) {
-
+    private static NodeConnectorRef createNodeConnRef(final String nodeId, final NodeConnectorKey nodeConKey) {
         InstanceIdentifier<NodeConnector> path = InstanceIdentifier
                 .<Nodes>builder(Nodes.class)
                 .<Node, NodeKey>child(Node.class,
                         new NodeKey(new NodeId(nodeId)))
                 .<NodeConnector, NodeConnectorKey>child(NodeConnector.class,
-                        nConKey).build();
+                        nodeConKey).build();
 
         return new NodeConnectorRef(path);
     }
 
-    /**
-     * create NodeConnectorKey
-     *
-     * @param nodeId
-     * @param port
-     * @return
-     */
-    private static NodeConnectorKey createNodeConnKey(final String nodeId,
-                                                      final String port) {
-        StringBuilder sBuild = new StringBuilder(nodeId).append(':').append(
-                port);
+    private static NodeConnectorKey createNodeConnKey(final String nodeId, final String port) {
+        StringBuilder builder = new StringBuilder(nodeId).append(':').append(port);
 
-        return new NodeConnectorKey(new NodeConnectorId(sBuild.toString()));
+        return new NodeConnectorKey(new NodeConnectorId(builder.toString()));
     }
 
-    /**
-     * create NodeRef
-     *
-     * @param nodeId
-     * @return
-     */
     private static NodeRef createNodeRef(final String nodeId) {
         NodeKey key = new NodeKey(new NodeId(nodeId));
         InstanceIdentifier<Node> path = InstanceIdentifier

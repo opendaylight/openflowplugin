@@ -17,5 +17,5 @@ public interface ConvertorRegistrator {
      *
      * @param convertor the convertor
      */
-    ConvertorManager registerConvertor(final short version, final Convertor<?, ?, ? extends ConvertorData> convertor);
+    ConvertorManager registerConvertor(short version, Convertor<?, ?, ? extends ConvertorData> convertor);
 }

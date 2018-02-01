@@ -18,7 +18,7 @@ import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionCon
 import org.opendaylight.openflowplugin.extension.api.core.session.ExtensionSessionManager;
 
 /**
- * test of {@link ExtensionSessionManagerImpl}
+ * test of {@link ExtensionSessionManagerImpl}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ExtensionSessionManagerImplTest {
@@ -30,7 +30,7 @@ public class ExtensionSessionManagerImplTest {
 
 
     /**
-     * prepare session manager
+     * prepare session manager.
      */
     @Before
     public void setUp() {
@@ -42,5 +42,4 @@ public class ExtensionSessionManagerImplTest {
         sm.setExtensionConverterProvider(extensionConverterManager);
         assertEquals(extensionConverterManager, sm.getExtensionConverterProvider());
     }
-
 }

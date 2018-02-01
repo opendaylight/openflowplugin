@@ -45,21 +45,24 @@ public class MatchExtensionHelperTest {
     @Mock
     private ExtensionConverterProvider extensionConverterProvider;
     private static final int PRESET_COUNT = 7;
-    private static final MatchEntrySerializerKey<? extends OxmClassBase, ? extends MatchField> key = new MatchEntrySerializerKey<>(OpenflowVersion.OF13.getVersion(), MockOxmClassBase.class, MockMatchField.class);
+    private static final MatchEntrySerializerKey<? extends OxmClassBase, ? extends MatchField> KEY =
+        new MatchEntrySerializerKey<>(OpenflowVersion.OF13.getVersion(), MockOxmClassBase.class, MockMatchField.class);
 
     @Before
     public void setup() {
         OFSessionUtil.getSessionManager().setExtensionConverterProvider(extensionConverterProvider);
-        when(extensionConverterProvider.getConverter(key)).thenReturn((ConvertorFromOFJava<DataContainer, AugmentationPath>) (input, path) -> {
-            MockAugmentation mockAugmentation = new MockAugmentation();
-            return new ExtensionAugment<>(MockAugmentation.class, mockAugmentation, MockExtensionKey.class);
-        });
+        when(extensionConverterProvider.getConverter(KEY))
+            .thenReturn((ConvertorFromOFJava<DataContainer, AugmentationPath>) (input, path) -> {
+                MockAugmentation mockAugmentation = new MockAugmentation();
+                return new ExtensionAugment<>(MockAugmentation.class, mockAugmentation, MockExtensionKey.class);
+            });
     }
 
 
     @Test
     /**
-     * Basic functionality test method for {@link org.opendaylight.openflowplugin.openflow.md.core.extension.MatchExtensionHelper#processAllExtensions(java.util.Collection, org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion, org.opendaylight.openflowplugin.extension.api.path.MatchPath)}
+     * Basic functionality test method for {@link MatchExtensionHelper#processAllExtensions(Collection,
+     * OpenflowVersion, MatchPath)}.
      */
     public void testProcessAllExtensions() {
 
@@ -81,11 +84,11 @@ public class MatchExtensionHelperTest {
     private static List<MatchEntry> createMatchEntrieses() {
         List<MatchEntry> matchEntries = new ArrayList<>();
         for (int i = 0; i < PRESET_COUNT; i++) {
-            MatchEntryBuilder MatchEntryBuilder = new MatchEntryBuilder();
-            MatchEntryBuilder.setHasMask(true);
-            MatchEntryBuilder.setOxmClass(MockOxmClassBase.class);
-            MatchEntryBuilder.setOxmMatchField(MockMatchField.class);
-            matchEntries.add(MatchEntryBuilder.build());
+            MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
+            matchEntryBuilder.setHasMask(true);
+            matchEntryBuilder.setOxmClass(MockOxmClassBase.class);
+            matchEntryBuilder.setOxmMatchField(MockMatchField.class);
+            matchEntries.add(matchEntryBuilder.build());
         }
         return matchEntries;
     }
