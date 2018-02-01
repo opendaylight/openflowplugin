@@ -18,13 +18,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.InstructionBuilder;
 
-public class ClearActionsCase extends ConvertorCase<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ClearActionsCase, Instruction, ActionConvertorData> {
+public class ClearActionsCase extends ConvertorCase<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026
+        .instruction.instruction.ClearActionsCase, Instruction, ActionConvertorData> {
     public ClearActionsCase() {
-        super(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ClearActionsCase.class, true, OFConstants.OFP_VERSION_1_0, OFConstants.OFP_VERSION_1_3);
+        super(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction
+                .ClearActionsCase.class, true, OFConstants.OFP_VERSION_1_0, OFConstants.OFP_VERSION_1_3);
     }
 
     @Override
-    public Optional<Instruction> process(final @Nonnull org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ClearActionsCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Instruction> process(final @Nonnull org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types
+            .rev131026.instruction.instruction.ClearActionsCase source, final ActionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         ClearActionsCaseBuilder clearActionsCaseBuilder = new ClearActionsCaseBuilder();
         InstructionBuilder instructionBuilder = new InstructionBuilder();
         instructionBuilder.setInstructionChoice(clearActionsCaseBuilder.build());
