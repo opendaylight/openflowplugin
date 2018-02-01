@@ -30,8 +30,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * dummy implementation flushing events into log
- *  @author kramesha
+ * Dummy implementation flushing events into log.
+ *
+ * @author kramesha
  */
 public class NodeErrorListenerLoggingImpl implements NodeErrorListener {
 
@@ -39,80 +40,95 @@ public class NodeErrorListenerLoggingImpl implements NodeErrorListener {
 
     @Override
     public void onBadActionErrorNotification(BadActionErrorNotification notification) {
-        LOG.error("Error notification ----" + toStr(notification.getType(), notification.getCode(), notification.getTransactionId().getValue()) );
+        LOG.error("Error notification ----"
+                + toStr(notification.getType(), notification.getCode(), notification.getTransactionId().getValue()));
     }
 
     @Override
     public void onBadInstructionErrorNotification(BadInstructionErrorNotification notification) {
-        LOG.error("Error notification ----" + toStr(notification.getType(), notification.getCode(), notification.getTransactionId().getValue()) );
+        LOG.error("Error notification ----"
+                + toStr(notification.getType(), notification.getCode(), notification.getTransactionId().getValue()));
     }
 
     @Override
     public void onBadMatchErrorNotification(BadMatchErrorNotification notification) {
-        LOG.error("Error notification ----" + toStr(notification.getType(), notification.getCode(), notification.getTransactionId().getValue()) );
+        LOG.error("Error notification ----"
+                + toStr(notification.getType(), notification.getCode(), notification.getTransactionId().getValue()));
     }
 
     @Override
     public void onBadRequestErrorNotification(BadRequestErrorNotification notification) {
-        LOG.error("Error notification ----" + toStr(notification.getType(), notification.getCode(), notification.getTransactionId().getValue()) );
+        LOG.error("Error notification ----"
+                + toStr(notification.getType(), notification.getCode(), notification.getTransactionId().getValue()));
     }
 
     @Override
     public void onExperimenterErrorNotification(ExperimenterErrorNotification notification) {
-        LOG.error("Error notification ----" + toStr(notification.getType(), notification.getCode(), notification.getTransactionId().getValue()) );
+        LOG.error("Error notification ----"
+                + toStr(notification.getType(), notification.getCode(), notification.getTransactionId().getValue()));
     }
 
     @Override
     public void onFlowModErrorNotification(FlowModErrorNotification notification) {
-        LOG.error("Error notification ----" + toStr(notification.getType(), notification.getCode(), notification.getTransactionId().getValue()) );
+        LOG.error("Error notification ----"
+                + toStr(notification.getType(), notification.getCode(), notification.getTransactionId().getValue()));
     }
 
     @Override
     public void onGroupModErrorNotification(GroupModErrorNotification notification) {
-        LOG.error("Error notification ----" + toStr(notification.getType(), notification.getCode(), notification.getTransactionId().getValue()) );
+        LOG.error("Error notification ----"
+                + toStr(notification.getType(), notification.getCode(), notification.getTransactionId().getValue()));
     }
 
     @Override
     public void onHelloFailedErrorNotification(HelloFailedErrorNotification notification) {
-        LOG.error("Error notification ----" + toStr(notification.getType(), notification.getCode(), notification.getTransactionId().getValue()) );
+        LOG.error("Error notification ----"
+                + toStr(notification.getType(), notification.getCode(), notification.getTransactionId().getValue()));
     }
 
     @Override
     public void onMeterModErrorNotification(MeterModErrorNotification notification) {
-        LOG.error("Error notification ----" + toStr(notification.getType(), notification.getCode(), notification.getTransactionId().getValue()) );
+        LOG.error("Error notification ----"
+                + toStr(notification.getType(), notification.getCode(), notification.getTransactionId().getValue()));
     }
 
     @Override
     public void onPortModErrorNotification(PortModErrorNotification notification) {
-        LOG.error("Error notification ----" + toStr(notification.getType(), notification.getCode(), notification.getTransactionId().getValue()) );
+        LOG.error("Error notification ----"
+                + toStr(notification.getType(), notification.getCode(), notification.getTransactionId().getValue()));
     }
 
     @Override
     public void onQueueOpErrorNotification(QueueOpErrorNotification notification) {
-        LOG.error("Error notification ----" + toStr(notification.getType(), notification.getCode(), notification.getTransactionId().getValue()) );
+        LOG.error("Error notification ----"
+                + toStr(notification.getType(), notification.getCode(), notification.getTransactionId().getValue()));
     }
 
     @Override
     public void onRoleRequestErrorNotification(RoleRequestErrorNotification notification) {
-        LOG.error("Error notification ----" + toStr(notification.getType(), notification.getCode(), notification.getTransactionId().getValue()) );
+        LOG.error("Error notification ----"
+                + toStr(notification.getType(), notification.getCode(), notification.getTransactionId().getValue()));
     }
 
     @Override
     public void onSwitchConfigErrorNotification(SwitchConfigErrorNotification notification) {
-        LOG.error("Error notification ----" + toStr(notification.getType(), notification.getCode(), notification.getTransactionId().getValue()) );
+        LOG.error("Error notification ----"
+                + toStr(notification.getType(), notification.getCode(), notification.getTransactionId().getValue()));
     }
 
     @Override
     public void onTableFeaturesErrorNotification(TableFeaturesErrorNotification notification) {
-        LOG.error("Error notification ----" + toStr(notification.getType(), notification.getCode(), notification.getTransactionId().getValue()) );
+        LOG.error("Error notification ----"
+                + toStr(notification.getType(), notification.getCode(), notification.getTransactionId().getValue()));
     }
 
     @Override
     public void onTableModErrorNotification(TableModErrorNotification notification) {
-        LOG.error("Error notification ----" + toStr(notification.getType(), notification.getCode(), notification.getTransactionId().getValue()) );
+        LOG.error("Error notification ----"
+                + toStr(notification.getType(), notification.getCode(), notification.getTransactionId().getValue()));
     }
 
     private String toStr(ErrorType type, int code, BigInteger xid) {
-        return "[Type="+type+", Code="+ code +", Xid ="+xid+"]";
+        return "[Type=" + type + ", Code=" + code + ", Xid =" + xid + "]";
     }
 }

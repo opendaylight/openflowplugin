@@ -37,7 +37,8 @@ public class DropTestStats {
         runablesRejected = 0;
     }
 
-    public DropTestStats(int sent, int rcvd, int excs, int ftrFailed, int ftrSuccess, int runablesExecuted, int runablesRejected) {
+    public DropTestStats(int sent, int rcvd, int excs, int ftrFailed, int ftrSuccess,
+            int runablesExecuted, int runablesRejected) {
         this.sent = sent;
         this.rcvd = rcvd;
         this.excs = excs;
