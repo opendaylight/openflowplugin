@@ -28,7 +28,8 @@ public class SalToOfSetVlanIdActionV10Case extends ConvertorCase<SetVlanIdAction
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final SetVlanIdActionCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final SetVlanIdActionCase source, final ActionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         SetVlanIdAction setvlanidaction = source.getSetVlanIdAction();
         SetVlanVidActionBuilder vlanidActionBuilder = new SetVlanVidActionBuilder();
         SetVlanVidCaseBuilder setVlanVidCaseBuilder = new SetVlanVidCaseBuilder();

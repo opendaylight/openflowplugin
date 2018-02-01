@@ -11,17 +11,18 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 
 /**
- * Converts OpenflowJava to MDSal model and vice versa
+ * Converts OpenflowJava to MDSal model and vice versa.
  *
  * @param <FROM> type of source
  * @param <TO>   type of result
  */
 public interface ConvertReactorConvertor<FROM, TO> {
+
     /**
-     * Converts source to result
+     * Converts source to result.
      *
      * @param source source
-     * @param convertorExecutor
+     * @param convertorExecutor the convertor executor
      * @return converted source
      */
     TO convert(FROM source, ConvertorExecutor convertorExecutor);

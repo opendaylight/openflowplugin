@@ -36,12 +36,10 @@ public class SalToOfSetDlSrcActionCase extends ConvertorCase<SetDlSrcActionCase,
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final SetDlSrcActionCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final SetDlSrcActionCase source, final ActionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         SetDlSrcAction setdlsrcaction = source.getSetDlSrcAction();
-        SetFieldCaseBuilder setFieldCaseBuilder = new SetFieldCaseBuilder();
-        SetFieldActionBuilder setFieldBuilder = new SetFieldActionBuilder();
 
-        List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder matchBuilder = new MatchEntryBuilder();
         matchBuilder.setOxmClass(OpenflowBasicClass.class);
         matchBuilder.setOxmMatchField(EthSrc.class);
@@ -51,8 +49,14 @@ public class SalToOfSetDlSrcActionCase extends ConvertorCase<SetDlSrcActionCase,
         matchBuilder.setHasMask(false);
         ethSrcCaseBuilder.setEthSrc(ethSrcBuilder.build());
         matchBuilder.setMatchEntryValue(ethSrcCaseBuilder.build());
+
+        List<MatchEntry> entries = new ArrayList<>();
         entries.add(matchBuilder.build());
+
+        SetFieldActionBuilder setFieldBuilder = new SetFieldActionBuilder();
         setFieldBuilder.setMatchEntry(entries);
+
+        SetFieldCaseBuilder setFieldCaseBuilder = new SetFieldCaseBuilder();
         setFieldCaseBuilder.setSetFieldAction(setFieldBuilder.build());
 
         return Optional.of(new ActionBuilder()

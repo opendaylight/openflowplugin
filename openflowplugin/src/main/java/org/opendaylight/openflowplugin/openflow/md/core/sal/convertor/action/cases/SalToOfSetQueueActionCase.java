@@ -28,7 +28,8 @@ public class SalToOfSetQueueActionCase extends ConvertorCase<SetQueueActionCase,
 
     @Nonnull
     @Override
-    public Optional<Action> process(@Nonnull final SetQueueActionCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(@Nonnull final SetQueueActionCase source, final ActionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         SetQueueAction setQueueAction = source.getSetQueueAction();
         SetQueueCaseBuilder setQueueCaseBuilder = new SetQueueCaseBuilder();
         SetQueueActionBuilder setQueueBuilder = new SetQueueActionBuilder();
