@@ -24,117 +24,77 @@ import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
- * @param <KEY> converter key
- * @param <CONVERTER> converter instance
+ * Closes converter registrations.
+ *
+ * @param <K> converter key
+ * @param <C> converter instance
  */
-public abstract class RegistrationCloser<KEY, CONVERTER> implements ObjectRegistration<CONVERTER> {
+public abstract class RegistrationCloser<K, C> implements ObjectRegistration<C> {
 
     private ExtensionConverterManagerImpl registrator;
-    private KEY key;
-    private CONVERTER converter;
+    private K key;
+    private C converter;
 
     /**
+     * Sets the registrator.
+     *
      * @param registrator the registrator to set
      */
     public void setRegistrator(ExtensionConverterManagerImpl registrator) {
         this.registrator = registrator;
     }
+
     /**
+     * Sets the key.
+     *
      * @param key the key to set
      */
-    public void setKey(KEY key) {
+    public void setKey(K key) {
         this.key = key;
     }
+
     /**
+     * Sets the converter.
+     *
      * @param converter the converter to set
      */
-    public void setConverter(CONVERTER converter) {
+    public void setConverter(C converter) {
         this.converter = converter;
     }
+
     /**
-     * @return the registrator
+     * Returns the registrator.
      */
     public ExtensionConverterManagerImpl getRegistrator() {
         return registrator;
     }
+
     /**
-     * @return the key
+     * Returns the key.
      */
-    public KEY getKey() {
+    public K getKey() {
         return key;
     }
+
     /**
-     * @return the converter
+     * Returns the converter.
      */
-    public CONVERTER getConverter() {
+    public C getConverter() {
         return converter;
     }
 
     @Override
-    public CONVERTER getInstance() {
+    public C getInstance() {
         return getConverter();
     }
 
     /**
-     * standalone deregistrator
-     * @param <TO> target type of wrapped convertor
-     */
-    public static class RegistrationCloserToOFJava<TO extends DataContainer> extends
-            RegistrationCloser<ConverterExtensionKey<? extends ExtensionKey>, ConvertorToOFJava<TO>> {
-
-        @Override
-        public void close() {
-            getRegistrator().unregister(getKey(), getConverter());
-        }
-    }
-
-    /**
-     * standalone deregistrator
-     * @param <FROM> source type of wrapped convertor
-     * @param <PATH> associated augmentation path
-     */
-    public static class RegistrationCloserFromOFJava<FROM extends DataContainer, PATH extends AugmentationPath> extends RegistrationCloser<MessageTypeKey<?>, ConvertorFromOFJava<FROM, PATH>> {
-
-        @Override
-        public void close() {
-            getRegistrator().unregister(getKey(), getConverter());
-        }
-    }
-
-    /**
-     * standalone deregistrator
-     * @param <TO> target type of wrapped convertor
-     */
-    public static class RegistrationCloserActionToOFJava<TO extends DataContainer> extends
-            RegistrationCloser<TypeVersionKey<? extends Action>, ConvertorActionToOFJava<Action, TO>> {
-
-        @Override
-        public void close() {
-            getRegistrator().unregister(getKey(), getConverter());
-        }
-    }
-
-    /**
-     * standalone deregistrator
-     * @param <FROM> source type of wrapped convertor
-     * @param <PATH> associated augmentation path
-     */
-    public static class RegistrationCloserActionFromOFJava<FROM extends DataContainer, PATH extends AugmentationPath> extends
-            RegistrationCloser<MessageTypeKey<?>, ConvertorActionFromOFJava<FROM, PATH>> {
-
-        @Override
-        public void close() {
-            getRegistrator().unregister(getKey(), getConverter());
-        }
-    }
-
-    /**
-     * standalone deregistrator
+     * Standalone deregistrator.
      *
-     * @param <TO> target type of wrapped convertor
+     * @param <T> target type of wrapped convertor
      */
-    public static class RegistrationCloserMessageToOFJava<TO extends DataContainer, K extends ExperimenterMessageOfChoice> extends
-            RegistrationCloser<TypeVersionKey<K>, ConverterMessageToOFJava<K, TO>> {
+    public static class RegistrationCloserToOFJava<T extends DataContainer> extends
+            RegistrationCloser<ConverterExtensionKey<? extends ExtensionKey>, ConvertorToOFJava<T>> {
 
         @Override
         public void close() {
@@ -143,13 +103,26 @@ public abstract class RegistrationCloser<KEY, CONVERTER> implements ObjectRegist
     }
 
     /**
-     * standalone deregistrator
+     * Standalone deregistrator.
      *
-     * @param <FROM> source type of wrapped convertor
-     * @param <PATH> associated augmentation path
+     * @param <F> source type of wrapped convertor
+     * @param <P> associated augmentation path
      */
-    public static class RegistrationCloserMessageFromOFJava<FROM extends DataContainer, PATH extends AugmentationPath> extends
-            RegistrationCloser<MessageTypeKey<?>, ConvertorMessageFromOFJava<FROM, PATH>> {
+    public static class RegistrationCloserFromOFJava<F extends DataContainer, P extends AugmentationPath>
+            extends RegistrationCloser<MessageTypeKey<?>, ConvertorFromOFJava<F, P>> {
+        @Override
+        public void close() {
+            getRegistrator().unregister(getKey(), getConverter());
+        }
+    }
+
+    /**
+     * Standalone deregistrator.
+     *
+     * @param <T> target type of wrapped convertor
+     */
+    public static class RegistrationCloserActionToOFJava<T extends DataContainer> extends
+            RegistrationCloser<TypeVersionKey<? extends Action>, ConvertorActionToOFJava<Action, T>> {
 
         @Override
         public void close() {
@@ -157,5 +130,48 @@ public abstract class RegistrationCloser<KEY, CONVERTER> implements ObjectRegist
         }
     }
 
+    /**
+     * Standalone deregistrator.
+     *
+     * @param <F> source type of wrapped convertor
+     * @param <P> associated augmentation path
+     */
+    public static class RegistrationCloserActionFromOFJava<F extends DataContainer, P extends AugmentationPath> extends
+            RegistrationCloser<MessageTypeKey<?>, ConvertorActionFromOFJava<F, P>> {
 
+        @Override
+        public void close() {
+            getRegistrator().unregister(getKey(), getConverter());
+        }
+    }
+
+    /**
+     * Standalone deregistrator.
+     *
+     * @param <T> target type of wrapped convertor
+     */
+    public static class RegistrationCloserMessageToOFJava<T extends DataContainer,
+            K extends ExperimenterMessageOfChoice>
+                extends RegistrationCloser<TypeVersionKey<K>, ConverterMessageToOFJava<K, T>> {
+
+        @Override
+        public void close() {
+            getRegistrator().unregister(getKey(), getConverter());
+        }
+    }
+
+    /**
+     * Standalone deregistrator.
+     *
+     * @param <F> source type of wrapped convertor
+     * @param <P> associated augmentation path
+     */
+    public static class RegistrationCloserMessageFromOFJava<F extends DataContainer, P extends AugmentationPath> extends
+            RegistrationCloser<MessageTypeKey<?>, ConvertorMessageFromOFJava<F, P>> {
+
+        @Override
+        public void close() {
+            getRegistrator().unregister(getKey(), getConverter());
+        }
+    }
 }
