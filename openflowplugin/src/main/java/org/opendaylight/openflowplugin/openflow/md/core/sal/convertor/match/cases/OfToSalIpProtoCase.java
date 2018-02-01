@@ -25,7 +25,8 @@ public class OfToSalIpProtoCase extends ConvertorCase<IpProtoCase, MatchBuilder,
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull IpProtoCase source, MatchResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<MatchBuilder> process(@Nonnull IpProtoCase source, MatchResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final IpMatchBuilder ipMatchBuilder = data.getIpMatchBuilder();
 

@@ -27,7 +27,8 @@ public class OfToSalVlanVidCase extends ConvertorCase<VlanVidCase, MatchBuilder,
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull VlanVidCase source, MatchResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<MatchBuilder> process(@Nonnull VlanVidCase source, MatchResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final VlanMatchBuilder vlanMatchBuilder = data.getVlanMatchBuilder();
 

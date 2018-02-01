@@ -25,7 +25,8 @@ public class OfToSalTcpSrcCase extends ConvertorCase<TcpSrcCase, MatchBuilder, M
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull TcpSrcCase source, MatchResponseConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<MatchBuilder> process(@Nonnull TcpSrcCase source, MatchResponseConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final TcpMatchBuilder tcpMatchBuilder = data.getTcpMatchBuilder();
 
