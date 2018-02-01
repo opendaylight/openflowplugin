@@ -127,7 +127,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionList;
 
 /**
- * Utility class for converting a MD-SAL Flow into the OF flow mod
+ * Utility class for converting a MD-SAL Flow into the OF flow mod.
  */
 public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionConvertorData> {
     private static final List<Class<?>> TYPES = Arrays.asList(
@@ -136,10 +136,12 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.mod.removed.Match.class,
             org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match.class,
             org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.in.message.Match.class,
-            org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.Match.class,
+            org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature
+                .prop.type.Match.class,
             SetField.class);
 
-    private static final ConvertorProcessor<Layer3Match, List<MatchEntry>, VersionConvertorData> LAYER3_PROCESSOR = new ConvertorProcessor<Layer3Match, List<MatchEntry>, VersionConvertorData>()
+    private static final ConvertorProcessor<Layer3Match, List<MatchEntry>, VersionConvertorData> LAYER3_PROCESSOR =
+        new ConvertorProcessor<Layer3Match, List<MatchEntry>, VersionConvertorData>()
             .addCase(new SalToOfIpv4MatchArbitraryBitMaskCase())
             .addCase(new SalToOfIpv4MatchCase())
             .addCase(new SalToOfTunnelIpv4MatchCase())
@@ -147,7 +149,8 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
             .addCase(new SalToOfIpv6MatchArbitraryBitMaskCase())
             .addCase(new SalToOfIpv6MatchCase());
 
-    private static final ConvertorProcessor<Layer4Match, List<MatchEntry>, VersionConvertorData> LAYER4_PROCESSOR = new ConvertorProcessor<Layer4Match, List<MatchEntry>, VersionConvertorData>()
+    private static final ConvertorProcessor<Layer4Match, List<MatchEntry>, VersionConvertorData> LAYER4_PROCESSOR =
+        new ConvertorProcessor<Layer4Match, List<MatchEntry>, VersionConvertorData>()
             .addCase(new SalToOfTcpMatchCase())
             .addCase(new SalToOfUdpMatchCase())
             .addCase(new SalToOfSctpMatchCase());
@@ -166,7 +169,7 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
     }
 
     private static void layer4Match(final List<MatchEntry> matchEntryList, final Layer4Match layer4Match,
-                                    ConvertorExecutor converterExecutor, final ExtensionConverterProvider extensionConvertorProvider) {
+            ConvertorExecutor converterExecutor, final ExtensionConverterProvider extensionConvertorProvider) {
         java.util.Optional<List<MatchEntry>> result = LAYER4_PROCESSOR.process(layer4Match, converterExecutor
         );
 
@@ -214,21 +217,25 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
     }
 
     private static void metadataMatch(final List<MatchEntry> matchEntryList,
-                                      final org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Metadata metadata) {
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Metadata metadata) {
         if (metadata == null) {
             return;
         }
 
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        boolean hasmask = metadata.getMetadataMask() != null;
+        final boolean hasmask = metadata.getMetadataMask() != null;
         matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
         matchEntryBuilder.setOxmMatchField(Metadata.class);
         MetadataCaseBuilder metadataCaseBuilder = new MetadataCaseBuilder();
-        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.metadata._case.MetadataBuilder metadataBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.metadata._case.MetadataBuilder();
-        metadataBuilder.setMetadata(ByteUtil.convertBigIntegerToNBytes(metadata.getMetadata(), OFConstants.SIZE_OF_LONG_IN_BYTES));
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry
+            .value.metadata._case.MetadataBuilder metadataBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight
+                .openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.metadata._case.MetadataBuilder();
+        metadataBuilder.setMetadata(ByteUtil.convertBigIntegerToNBytes(metadata.getMetadata(),
+                OFConstants.SIZE_OF_LONG_IN_BYTES));
 
         if (hasmask) {
-            metadataBuilder.setMask(ByteUtil.convertBigIntegerToNBytes(metadata.getMetadataMask(), OFConstants.SIZE_OF_LONG_IN_BYTES));
+            metadataBuilder.setMask(ByteUtil.convertBigIntegerToNBytes(metadata.getMetadataMask(),
+                    OFConstants.SIZE_OF_LONG_IN_BYTES));
         }
 
         metadataCaseBuilder.setMetadata(metadataBuilder.build());
@@ -238,22 +245,25 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
     }
 
     private static void tunnelMatch(final List<MatchEntry> matchEntryList,
-                                    final org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Tunnel tunnel) {
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Tunnel tunnel) {
         if (tunnel == null) {
             return;
         }
 
-        MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
         TunnelIdCaseBuilder tunnelIdCaseBuilder = new TunnelIdCaseBuilder();
         TunnelIdBuilder tunnelIdBuilder = new TunnelIdBuilder();
         boolean hasMask = tunnel.getTunnelMask() != null;
 
         if (hasMask) {
-            tunnelIdBuilder.setMask(ByteUtil.convertBigIntegerToNBytes(tunnel.getTunnelMask(), OFConstants.SIZE_OF_LONG_IN_BYTES));
+            tunnelIdBuilder.setMask(ByteUtil.convertBigIntegerToNBytes(tunnel.getTunnelMask(),
+                    OFConstants.SIZE_OF_LONG_IN_BYTES));
         }
 
-        tunnelIdBuilder.setTunnelId(ByteUtil.convertBigIntegerToNBytes(tunnel.getTunnelId(), OFConstants.SIZE_OF_LONG_IN_BYTES));
+        tunnelIdBuilder.setTunnelId(ByteUtil.convertBigIntegerToNBytes(tunnel.getTunnelId(),
+                OFConstants.SIZE_OF_LONG_IN_BYTES));
         tunnelIdCaseBuilder.setTunnelId(tunnelIdBuilder.build());
+
+        MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
         matchEntryBuilder.setMatchEntryValue(tunnelIdCaseBuilder.build());
         matchEntryBuilder.setHasMask(hasMask);
         matchEntryBuilder.setOxmMatchField(TunnelId.class);
@@ -340,7 +350,6 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
             matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
             matchEntryBuilder.setOxmMatchField(VlanVid.class);
-            VlanVidCaseBuilder vlanVidCaseBuilder = new VlanVidCaseBuilder();
             VlanVidBuilder vlanVidBuilder = new VlanVidBuilder();
             boolean setCfiBit = false;
             Integer vidEntryValue = 0;
@@ -360,6 +369,7 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
 
             vlanVidBuilder.setCfiBit(setCfiBit);
             vlanVidBuilder.setVlanVid(vidEntryValue);
+            VlanVidCaseBuilder vlanVidCaseBuilder = new VlanVidCaseBuilder();
             vlanVidCaseBuilder.setVlanVid(vlanVidBuilder.build());
             matchEntryBuilder.setMatchEntryValue(vlanVidCaseBuilder.build());
             matchEntryBuilder.setHasMask(hasmask);
@@ -432,7 +442,7 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
             TcpFlagsContainerBuilder tcpFlagsContainerBuilder = new TcpFlagsContainerBuilder();
             TcpFlagsBuilder tcpFlagsBuilder = new TcpFlagsBuilder();
             tcpFlagsBuilder.setFlags(tcpFlagsMatch.getTcpFlags());
-            if(tcpFlagsMatch.getTcpFlagsMask() != null) {
+            if (tcpFlagsMatch.getTcpFlagsMask() != null) {
                 matchEntryBuilder.setHasMask(true);
                 tcpFlagsBuilder.setMask(ByteUtil.unsignedShortToBytes(tcpFlagsMatch.getTcpFlagsMask()));
             }
@@ -451,7 +461,7 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
 
     private static MatchEntry toOfMplsPbb(final Pbb pbb) {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        boolean hasmask = pbb.getPbbMask() != null;
+        final boolean hasmask = pbb.getPbbMask() != null;
         matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
         matchEntryBuilder.setOxmMatchField(PbbIsid.class);
         PbbIsidCaseBuilder pbbIsidCaseBuilder = new PbbIsidCaseBuilder();
@@ -636,16 +646,18 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
         tunnelMatch(result, source.getTunnel());
         tcpFlagsMatch(result, source.getTcpFlagsMatch());
 
-        /**
+        /*
          * TODO: EXTENSION PROPOSAL (source, MD-SAL to OFJava)
          * - we might need version for conversion and for key
          */
-        Optional<GeneralExtensionListGrouping> extensionListOpt = ExtensionResolvers.getMatchExtensionResolver().getExtension(source);
+        Optional<GeneralExtensionListGrouping> extensionListOpt =
+                ExtensionResolvers.getMatchExtensionResolver().getExtension(source);
         if (extensionListOpt.isPresent()) {
             List<ExtensionList> extensionListList = extensionListOpt.get().getExtensionList();
             for (ExtensionList extensionItem : extensionListList) {
                 // TODO: get real version
-                ConverterExtensionKey<? extends ExtensionKey> key = new ConverterExtensionKey<>(extensionItem.getExtensionKey(), OFConstants.OFP_VERSION_1_3);
+                ConverterExtensionKey<? extends ExtensionKey> key =
+                        new ConverterExtensionKey<>(extensionItem.getExtensionKey(), OFConstants.OFP_VERSION_1_3);
                 ConvertorToOFJava<MatchEntry> convertor = extensionConvertorProvider.getConverter(key);
                 if (convertor == null) {
                     throw new IllegalStateException("No converter found for key: " + key.toString());

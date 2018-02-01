@@ -11,7 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorData;
 
 /**
- * Convertor data implementation containing only Openflow version
+ * Convertor data implementation containing only Openflow version.
  */
 public class VersionConvertorData extends ConvertorData {
     /**

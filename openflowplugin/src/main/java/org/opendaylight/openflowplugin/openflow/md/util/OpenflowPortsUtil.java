@@ -27,11 +27,13 @@ import org.slf4j.LoggerFactory;
  * This class is responsible for converting MDSAL given logical names to port numbers and back.
  * Any newer version of openflow can have a similar mapping or can/should be extended.
  */
-public class OpenflowPortsUtil {
+public final class OpenflowPortsUtil {
+    private OpenflowPortsUtil() {
+    }
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowPortsUtil.class);
-    private static final ImmutableBiMap<Short, ImmutableBiMap<String, Long>> versionPortMap;
-    private static final ImmutableBiMap<Short, ImmutableBiMap<Long, String>> versionInversePortMap;
+    private static final ImmutableBiMap<Short, ImmutableBiMap<String, Long>> VERSION_PORT_MAP;
+    private static final ImmutableBiMap<Short, ImmutableBiMap<Long, String>> VERSION_INVERSE_PORT_MAP;
 
     private static boolean inportWarnignAlreadyFired = false;
 
@@ -44,39 +46,50 @@ public class OpenflowPortsUtil {
                 .put(OutputPortValues.NORMAL.getName(), (long) PortNumberValuesV10.NORMAL.getIntValue()) //0xfffa
                 .put(OutputPortValues.FLOOD.getName(), (long) PortNumberValuesV10.FLOOD.getIntValue()) //0xfffb
                 .put(OutputPortValues.ALL.getName(), (long) PortNumberValuesV10.ALL.getIntValue()) //0xfffc
-                .put(OutputPortValues.CONTROLLER.getName(), (long) PortNumberValuesV10.CONTROLLER.getIntValue()) //0xfffd
+                .put(OutputPortValues.CONTROLLER.getName(),
+                        (long) PortNumberValuesV10.CONTROLLER.getIntValue()) //0xfffd
                 .put(OutputPortValues.LOCAL.getName(), (long) PortNumberValuesV10.LOCAL.getIntValue()) //0xfffe
                 .put(OutputPortValues.NONE.getName(), (long) PortNumberValuesV10.NONE.getIntValue()) //0xffff
                 .build();
 
         // openflow 1.3 reserved ports.
-        // PortNumberValues are defined in OFJava yang. And yang maps an int to all enums. Hence we need to create longs from (-ve) ints
+        // PortNumberValues are defined in OFJava yang. And yang maps an int to all enums. Hence we need to create
+        // longs from (-ve) ints
         // TODO: do we need to define these ports in yang?
         final ImmutableBiMap<String, Long> ofv13ports = new ImmutableBiMap.Builder<String, Long>()
-                .put(OutputPortValues.MAX.getName(), BinContent.intToUnsignedLong(PortNumberValues.MAX.getIntValue())) //0xffffff00
-                .put(OutputPortValues.INPORT.getName(), BinContent.intToUnsignedLong(PortNumberValues.INPORT.getIntValue())) //0xfffffff8
-                .put(OutputPortValues.TABLE.getName(), BinContent.intToUnsignedLong(PortNumberValues.TABLE.getIntValue())) //0xfffffff9
-                .put(OutputPortValues.NORMAL.getName(), BinContent.intToUnsignedLong(PortNumberValues.NORMAL.getIntValue())) //0xfffffffa
-                .put(OutputPortValues.FLOOD.getName(), BinContent.intToUnsignedLong(PortNumberValues.FLOOD.getIntValue())) //0xfffffffb
-                .put(OutputPortValues.ALL.getName(), BinContent.intToUnsignedLong(PortNumberValues.ALL.getIntValue())) //0xfffffffc
-                .put(OutputPortValues.CONTROLLER.getName(), BinContent.intToUnsignedLong(PortNumberValues.CONTROLLER.getIntValue())) //0xfffffffd
-                .put(OutputPortValues.LOCAL.getName(), BinContent.intToUnsignedLong(PortNumberValues.LOCAL.getIntValue())) //0xfffffffe
-                .put(OutputPortValues.ANY.getName(), BinContent.intToUnsignedLong(PortNumberValues.ANY.getIntValue())) //0xffffffff
+                .put(OutputPortValues.MAX.getName(),
+                        BinContent.intToUnsignedLong(PortNumberValues.MAX.getIntValue())) // 0xffffff00
+                .put(OutputPortValues.INPORT.getName(),
+                        BinContent.intToUnsignedLong(PortNumberValues.INPORT.getIntValue())) // 0xfffffff8
+                .put(OutputPortValues.TABLE.getName(),
+                        BinContent.intToUnsignedLong(PortNumberValues.TABLE.getIntValue())) // 0xfffffff9
+                .put(OutputPortValues.NORMAL.getName(),
+                        BinContent.intToUnsignedLong(PortNumberValues.NORMAL.getIntValue())) // 0xfffffffa
+                .put(OutputPortValues.FLOOD.getName(),
+                        BinContent.intToUnsignedLong(PortNumberValues.FLOOD.getIntValue())) // 0xfffffffb
+                .put(OutputPortValues.ALL.getName(),
+                        BinContent.intToUnsignedLong(PortNumberValues.ALL.getIntValue())) // 0xfffffffc
+                .put(OutputPortValues.CONTROLLER.getName(),
+                        BinContent.intToUnsignedLong(PortNumberValues.CONTROLLER.getIntValue())) // 0xfffffffd
+                .put(OutputPortValues.LOCAL.getName(),
+                        BinContent.intToUnsignedLong(PortNumberValues.LOCAL.getIntValue())) // 0xfffffffe
+                .put(OutputPortValues.ANY.getName(),
+                        BinContent.intToUnsignedLong(PortNumberValues.ANY.getIntValue())) // 0xffffffff
                 .build();
 
-        versionPortMap = new ImmutableBiMap.Builder<Short, ImmutableBiMap<String, Long>>()
+        VERSION_PORT_MAP = new ImmutableBiMap.Builder<Short, ImmutableBiMap<String, Long>>()
                 .put(OFConstants.OFP_VERSION_1_0, ofv10ports)
                 .put(OFConstants.OFP_VERSION_1_3, ofv13ports)
                 .build();
 
-        versionInversePortMap = new ImmutableBiMap.Builder<Short, ImmutableBiMap<Long, String>>()
+        VERSION_INVERSE_PORT_MAP = new ImmutableBiMap.Builder<Short, ImmutableBiMap<Long, String>>()
                 .put(OFConstants.OFP_VERSION_1_0, ofv10ports.inverse())
                 .put(OFConstants.OFP_VERSION_1_3, ofv13ports.inverse())
                 .build();
     }
 
     public static String getPortLogicalName(final short ofVersion, final Long portNumber) {
-        return versionInversePortMap.get(ofVersion).get(portNumber);
+        return VERSION_INVERSE_PORT_MAP.get(ofVersion).get(portNumber);
     }
 
     public static String getPortLogicalName(final OpenflowVersion ofVersion, final Long portNumber) {
@@ -97,9 +110,9 @@ public class OpenflowPortsUtil {
                 LOG.warn("Using '{}' in port field is not recommended use 'IN_PORT' instead", logicalNameOrPort);
                 inportWarnignAlreadyFired = true;
             }
-            port = versionPortMap.get(ofVersion.getVersion()).get(OutputPortValues.INPORT.getName());
+            port = VERSION_PORT_MAP.get(ofVersion.getVersion()).get(OutputPortValues.INPORT.getName());
         } else {
-            port = versionPortMap.get(ofVersion.getVersion()).get(logicalNameOrPort);
+            port = VERSION_PORT_MAP.get(ofVersion.getVersion()).get(logicalNameOrPort);
         }
         if (port == null) {
             try {
@@ -126,7 +139,7 @@ public class OpenflowPortsUtil {
         final String portLogicalName = port.getString();
 
         return portLogicalName != null
-                ? versionPortMap.get(ofVersion.getVersion()).get(portLogicalName)
+                ? VERSION_PORT_MAP.get(ofVersion.getVersion()).get(portLogicalName)
                 : port.getUint32();
     }
 
@@ -135,10 +148,12 @@ public class OpenflowPortsUtil {
     }
 
     public static boolean isPortReserved(final OpenflowVersion ofVersion, final Long portNumber) {
-        return versionInversePortMap.get(ofVersion.getVersion()).containsKey(portNumber);
+        return VERSION_INVERSE_PORT_MAP.get(ofVersion.getVersion()).containsKey(portNumber);
     }
 
     /**
+     * Checks port validity.
+     *
      * @param ofVersion OpenFlow version of the switch
      * @param portNumber port number
      * @return true if port number is valid for given protocol version
@@ -158,6 +173,8 @@ public class OpenflowPortsUtil {
     }
 
     /**
+     * Converts a port number to a string.
+     *
      * @param portNumber port number
      * @return string containing number or logical name
      */
@@ -172,7 +189,8 @@ public class OpenflowPortsUtil {
     }
 
     /**
-     * Converts port number to Uri
+     * Converts port number to Uri.
+     *
      * @param version openflow version
      * @param portNumber port number
      * @return port number uri
@@ -180,5 +198,4 @@ public class OpenflowPortsUtil {
     public static Uri getProtocolAgnosticPortUri(final short version, final long portNumber) {
         return new Uri(portNumberToString(getProtocolAgnosticPort(OpenflowVersion.get(version), portNumber)));
     }
-
 }

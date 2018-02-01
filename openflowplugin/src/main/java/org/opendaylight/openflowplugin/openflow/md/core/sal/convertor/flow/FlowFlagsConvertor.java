@@ -43,8 +43,9 @@ public class FlowFlagsConvertor extends Convertor<
     }
 
     @Override
-    public FlowModFlags convert(final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags source,
-                                final VersionConvertorData data) {
+    public FlowModFlags convert(
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags source,
+            final VersionConvertorData data) {
         return new FlowModFlags(
                 source.isCHECKOVERLAP(), source.isNOBYTCOUNTS(), source.isNOPKTCOUNTS(),
                 source.isRESETCOUNTS(), source.isSENDFLOWREM());

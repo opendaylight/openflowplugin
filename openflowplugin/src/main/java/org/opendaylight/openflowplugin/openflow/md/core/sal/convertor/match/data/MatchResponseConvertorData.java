@@ -29,9 +29,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 
 /**
- * Convertor data used in {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchResponseConvertor}
+ * Convertor data used in
+ * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchResponseConvertor}
  * containing Openflow version, datapath ID and various builders, because match response convertor cases depends
- * on each other and requires shared builders
+ * on each other and requires shared builders.
  */
 public class MatchResponseConvertorData extends VersionDatapathIdConvertorData {
     private MatchBuilder matchBuilder;

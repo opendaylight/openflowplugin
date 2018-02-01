@@ -22,9 +22,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.vlan.pcp._case.VlanPcpBuilder;
 
 /**
- * match related tools
+ * Match related tools.
  */
-public abstract class MatchConvertorUtil {
+public final class MatchConvertorUtil {
     // Pre-calculated masks for the 33 possible values. Do not give them out, but clone() them as they may
     // end up being leaked and vulnerable.
     private static final byte[][] IPV4_MASKS;
@@ -32,30 +32,33 @@ public abstract class MatchConvertorUtil {
     static {
         final byte[][] tmp = new byte[33][];
         for (int i = 0; i <= 32; ++i) {
-            final int mask = 0xffffffff << (32 - i);
+            final int mask = 0xffffffff << 32 - i;
             tmp[i] = new byte[]{(byte) (mask >>> 24), (byte) (mask >>> 16), (byte) (mask >>> 8), (byte) mask};
         }
 
         IPV4_MASKS = tmp;
     }
 
+    private MatchConvertorUtil() {
+    }
+
     /**
      * Ipv 6 exthdr flags to int integer.
      *
-     * @param pField ipv6 external header flag
+     * @param flags ipv6 external header flag
      * @return integer containing lower 9 bits filled with corresponding flags
      */
-    public static Integer ipv6ExthdrFlagsToInt(final Ipv6ExthdrFlags pField) {
+    public static Integer ipv6ExthdrFlagsToInt(final Ipv6ExthdrFlags flags) {
         Integer bitmap = 0;
-        bitmap |= pField.isNonext() ? 1 : 0;
-        bitmap |= pField.isEsp() ? (1 << 1) : 0;
-        bitmap |= pField.isAuth() ? (1 << 2) : 0;
-        bitmap |= pField.isDest() ? (1 << 3) : 0;
-        bitmap |= pField.isFrag() ? (1 << 4) : 0;
-        bitmap |= pField.isRouter() ? (1 << 5) : 0;
-        bitmap |= pField.isHop() ? (1 << 6) : 0;
-        bitmap |= pField.isUnrep() ? (1 << 7) : 0;
-        bitmap |= pField.isUnseq() ? (1 << 8) : 0;
+        bitmap |= flags.isNonext() ? 1 : 0;
+        bitmap |= flags.isEsp() ? 1 << 1 : 0;
+        bitmap |= flags.isAuth() ? 1 << 2 : 0;
+        bitmap |= flags.isDest() ? 1 << 3 : 0;
+        bitmap |= flags.isFrag() ? 1 << 4 : 0;
+        bitmap |= flags.isRouter() ? 1 << 5 : 0;
+        bitmap |= flags.isHop() ? 1 << 6 : 0;
+        bitmap |= flags.isUnrep() ? 1 << 7 : 0;
+        bitmap |= flags.isUnseq() ? 1 << 8 : 0;
         return bitmap;
     }
 

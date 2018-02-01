@@ -16,19 +16,23 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 
 /**
- * Flow related utils
+ * Flow related utils.
  */
-public abstract class FlowConvertorUtil {
+public final class FlowConvertorUtil {
+    private FlowConvertorUtil() {
+    }
 
     /**
-     * Method wrapping all the actions org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action
-     * in org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action, to set appropriate keys
-     * for actions.
+     * Method wrapping all the actions
+     * org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action
+     * in org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action, to set
+     * appropriate keys for actions.
      *
      * @param actionList the action list
      * @return the list
      */
-    public static List<Action> wrapActionList(List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action> actionList) {
+    public static List<Action> wrapActionList(List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types
+            .rev131112.action.Action> actionList) {
         List<Action> actions = new ArrayList<>();
 
         int actionKey = 0;

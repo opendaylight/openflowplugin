@@ -87,12 +87,19 @@ public abstract class InventoryDataServiceUtil {
     public static NodeConnectorId nodeConnectorIdfromDatapathPortNo(final BigInteger datapathid, final Long portNo,
                                                                     final OpenflowVersion ofVersion) {
         String logicalName = OpenflowPortsUtil.getPortLogicalName(ofVersion, portNo);
-        return new NodeConnectorId(OFConstants.OF_URI_PREFIX + datapathid + ":" + (logicalName == null ? portNo : logicalName));
+        return new NodeConnectorId(OFConstants.OF_URI_PREFIX + datapathid + ":" + (logicalName == null
+                ? portNo : logicalName));
     }
 
     @Nullable
     public static Long portNumberfromNodeConnectorId(final OpenflowVersion ofVersion, final NodeConnectorId ncId) {
         return portNumberfromNodeConnectorId(ofVersion, ncId.getValue());
+    }
+
+    @Nullable
+    public static Long portNumberfromNodeConnectorId(final OpenflowVersion ofVersion, @Nonnull final String ncId) {
+        String portNoString = portNoStringfromNodeConnectorID(ncId);
+        return OpenflowPortsUtil.getPortFromLogicalName(ofVersion, portNoString);
     }
 
     public static String portNoStringfromNodeConnectorID(final String ncID) {
@@ -103,24 +110,19 @@ public abstract class InventoryDataServiceUtil {
         // If the length is just one then this cannot be the new MD-SAL style node connector Id which
         // is of the form openflow:1:3.
 
-        return splitStringList.get(splitStringList.size()-1);
-    }
-
-    @Nullable
-    public static Long portNumberfromNodeConnectorId(final OpenflowVersion ofVersion, @Nonnull final String ncId) {
-        String portNoString = portNoStringfromNodeConnectorID(ncId);
-        return OpenflowPortsUtil.getPortFromLogicalName(ofVersion, portNoString);
+        return splitStringList.get(splitStringList.size() - 1);
     }
 
 
-    public static NodeConnectorRef nodeConnectorRefFromDatapathIdPortno(final BigInteger datapathId, final Long portNo, final OpenflowVersion ofVersion) {
+    public static NodeConnectorRef nodeConnectorRefFromDatapathIdPortno(final BigInteger datapathId, final Long portNo,
+            final OpenflowVersion ofVersion) {
         return new NodeConnectorRef(nodeConnectorInstanceIdentifierFromDatapathIdPortno(datapathId, portNo, ofVersion));
     }
 
     public static NodeConnectorRef nodeConnectorRefFromDatapathIdPortno(final BigInteger datapathId, final Long portNo,
-                                                                        final OpenflowVersion ofVersion,
-                                                                        final KeyedInstanceIdentifier<Node, NodeKey> nodePath) {
-        return new NodeConnectorRef(nodeConnectorInstanceIdentifierFromDatapathIdPortno(datapathId, portNo, ofVersion, nodePath));
+            final OpenflowVersion ofVersion, final KeyedInstanceIdentifier<Node, NodeKey> nodePath) {
+        return new NodeConnectorRef(
+                nodeConnectorInstanceIdentifierFromDatapathIdPortno(datapathId, portNo, ofVersion, nodePath));
     }
 
     public static InstanceIdentifier<NodeConnector> nodeConnectorInstanceIdentifierFromDatapathIdPortno(
@@ -131,27 +133,31 @@ public abstract class InventoryDataServiceUtil {
     }
 
     public static InstanceIdentifier<NodeConnector> nodeConnectorInstanceIdentifierFromDatapathIdPortno(
-            final BigInteger datapathId, final Long portNo, final OpenflowVersion ofVersion, final KeyedInstanceIdentifier<Node, NodeKey> nodePath) {
+            final BigInteger datapathId, final Long portNo, final OpenflowVersion ofVersion,
+            final KeyedInstanceIdentifier<Node, NodeKey> nodePath) {
         NodeConnectorId nodeConnectorId = nodeConnectorIdfromDatapathPortNo(datapathId, portNo, ofVersion);
         return nodePath.child(NodeConnector.class, new NodeConnectorKey(nodeConnectorId));
     }
 
-    public static NodeConnectorUpdatedBuilder nodeConnectorUpdatedBuilderFromDatapathIdPortNo(final BigInteger datapathId,
-                                                                                              final Long portNo, final OpenflowVersion ofVersion) {
+    public static NodeConnectorUpdatedBuilder nodeConnectorUpdatedBuilderFromDatapathIdPortNo(
+            final BigInteger datapathId, final Long portNo, final OpenflowVersion ofVersion) {
         NodeConnectorUpdatedBuilder builder = new NodeConnectorUpdatedBuilder();
         builder.setId(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathId, portNo, ofVersion));
-        builder.setNodeConnectorRef(InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(datapathId, portNo, ofVersion));
+        builder.setNodeConnectorRef(InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(
+                datapathId, portNo, ofVersion));
         return builder;
     }
 
     public static NodeConnectorBuilder nodeConnectorBuilderFromDatapathIdPortNo(final BigInteger datapathId,
-                                                                                final Long portNo, final OpenflowVersion ofVersion) {
+            final Long portNo, final OpenflowVersion ofVersion) {
         NodeConnectorBuilder builder = new NodeConnectorBuilder();
         builder.setId(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathId, portNo, ofVersion));
         return builder;
     }
 
     /**
+     * Converts a BigInteger to a padded hex value.
+     *
      * @param dataPathId datapath id in big interger value
      * @return string of size 16, padded with '0'
      */
@@ -159,8 +165,10 @@ public abstract class InventoryDataServiceUtil {
         return StringUtils.leftPad(dataPathId.toString(16), 16, "0");
     }
 
-    //TODO : create new module openflowplugin-util, move there this method along with TestProviderTransactionUtil#getDataObject
-    private static <T extends DataObject> T getDataObject(final ReadTransaction readOnlyTransaction, final InstanceIdentifier<T> identifier) {
+    // TODO : create new module openflowplugin-util, move there this method along with
+    // TestProviderTransactionUtil#getDataObject
+    private static <T extends DataObject> T getDataObject(final ReadTransaction readOnlyTransaction,
+            final InstanceIdentifier<T> identifier) {
         Optional<T> optionalData = null;
         try {
             optionalData = readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, identifier).get();
@@ -172,5 +180,4 @@ public abstract class InventoryDataServiceUtil {
         }
         return null;
     }
-
 }

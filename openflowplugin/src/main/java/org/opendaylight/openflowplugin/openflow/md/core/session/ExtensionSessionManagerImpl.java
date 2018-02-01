@@ -13,15 +13,14 @@ import org.opendaylight.openflowplugin.extension.api.core.session.ExtensionSessi
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ExtensionSessionManagerImpl implements ExtensionSessionManager {
+public final class ExtensionSessionManagerImpl implements ExtensionSessionManager {
 
     protected static final Logger LOG = LoggerFactory.getLogger(ExtensionSessionManagerImpl.class);
     private static ExtensionSessionManagerImpl INSTANCE;
     private ExtensionConverterProvider extensionConverterProvider;
 
-
     /**
-     * @return singleton instance
+     * Returns singleton instance.
      */
     public static ExtensionSessionManager getInstance() {
         if (INSTANCE == null) {
