@@ -527,6 +527,6 @@ public class TableFeaturesResponseConvertor extends Convertor<MultipartReplyTabl
     }
 
     private interface ActionExecutor {
-        void execute(final TableFeatureProperties property, final TableFeaturePropertiesBuilder propBuilder);
+        void execute(TableFeatureProperties property, TableFeaturePropertiesBuilder propBuilder);
     }
 }

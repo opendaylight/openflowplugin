@@ -53,7 +53,7 @@ public abstract class ConvertorCase<FROM, TO, DATA extends ConvertorData> {
 
     /**
      * Should {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorProcessor}
-     * throw error when result of process method is empty?
+     * throw error when result of process method is empty.
      *
      * @return the boolean
      */
