@@ -21,18 +21,24 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.InstructionBuilder;
 
-public class WriteMetadataCase extends ConvertorCase<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadataCase, Instruction, ActionConvertorData> {
+public class WriteMetadataCase extends ConvertorCase<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types
+        .rev131026.instruction.instruction.WriteMetadataCase, Instruction, ActionConvertorData> {
     public WriteMetadataCase() {
-        super(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadataCase.class, true, OFConstants.OFP_VERSION_1_0, OFConstants.OFP_VERSION_1_3);
+        super(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction
+                .WriteMetadataCase.class, true, OFConstants.OFP_VERSION_1_0, OFConstants.OFP_VERSION_1_3);
     }
 
     @Override
-    public Optional<Instruction> process(final @Nonnull org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadataCase source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
+    public Optional<Instruction> process(final @Nonnull org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types
+            .rev131026.instruction.instruction.WriteMetadataCase source, final ActionConvertorData data,
+            ConvertorExecutor convertorExecutor) {
         WriteMetadata writeMetadata = source.getWriteMetadata();
         WriteMetadataCaseBuilder writeMetadataCaseBuilder = new WriteMetadataCaseBuilder();
         WriteMetadataBuilder writeMetadataBuilder = new WriteMetadataBuilder();
-        writeMetadataBuilder.setMetadata(ByteUtil.convertBigIntegerToNBytes(writeMetadata.getMetadata(), OFConstants.SIZE_OF_LONG_IN_BYTES));
-        writeMetadataBuilder.setMetadataMask(ByteUtil.convertBigIntegerToNBytes(writeMetadata.getMetadataMask(), OFConstants.SIZE_OF_LONG_IN_BYTES));
+        writeMetadataBuilder.setMetadata(ByteUtil.convertBigIntegerToNBytes(writeMetadata.getMetadata(),
+                OFConstants.SIZE_OF_LONG_IN_BYTES));
+        writeMetadataBuilder.setMetadataMask(ByteUtil.convertBigIntegerToNBytes(writeMetadata.getMetadataMask(),
+                OFConstants.SIZE_OF_LONG_IN_BYTES));
         writeMetadataCaseBuilder.setWriteMetadata(writeMetadataBuilder.build());
         InstructionBuilder instructionBuilder = new InstructionBuilder();
         instructionBuilder.setInstructionChoice(writeMetadataCaseBuilder.build());
