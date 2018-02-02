@@ -15,7 +15,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.Nonnull;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -130,7 +129,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         }
         this.deviceMastershipManager = new DeviceMastershipManager(clusterSingletonServiceProvider, notificationService,
                 this.nodeListener, dataService);
-        flowNodeConnectorInventoryTranslatorImpl = new FlowNodeConnectorInventoryTranslatorImpl(this, dataService);
+        flowNodeConnectorInventoryTranslatorImpl = new FlowNodeConnectorInventoryTranslatorImpl(dataService);
 
         this.flowListener = new FlowForwarder(this, dataService);
         this.groupListener = new GroupForwarder(this, dataService);
@@ -300,7 +299,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                     staleMarkingEnabled = Boolean.valueOf(propertyValue);
                     break;
                 case RECONCILIATION_RETRY_COUNT:
-                    reconciliationRetryCount = Integer.valueOf(propertyValue);
+                    reconciliationRetryCount = Integer.parseInt(propertyValue);
                     break;
                 case BUNDLE_BASED_RECONCILIATION_ENABLED:
                     isBundleBasedReconciliationEnabled = Boolean.valueOf(propertyValue);

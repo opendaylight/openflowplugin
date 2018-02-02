@@ -32,7 +32,7 @@ public class GetAllNodesCommandProvider extends OsgiCommandSupport {
         List<OFNode> ofNodeList = ShellUtil.getAllNodes(dataBroker);
         if (ofNodeList.isEmpty()) {
             session.getConsole().println("No node is connected yet");
-        } else if (ofNodeList != null && ofNodeList.size() > 0) {
+        } else {
             StringBuilder stringBuilder = new StringBuilder();
             Formatter formatter = new Formatter(stringBuilder);
             session.getConsole().println("Number of nodes: " + ofNodeList.size());

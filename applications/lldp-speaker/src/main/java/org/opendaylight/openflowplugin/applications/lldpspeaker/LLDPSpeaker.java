@@ -10,16 +10,20 @@ package org.opendaylight.openflowplugin.applications.lldpspeaker;
 
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
+import org.opendaylight.openflowplugin.libraries.liblldp.PacketException;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
@@ -34,6 +38,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Tr
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.rev141023.OperStatus;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -139,9 +144,6 @@ public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoC
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void nodeConnectorAdded(final InstanceIdentifier<NodeConnector> nodeConnectorInstanceId,
                                    final FlowCapableNodeConnector flowConnector) {
@@ -169,17 +171,24 @@ public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoC
         }
 
         // Generate packet with destination switch and port
-        TransmitPacketInput packet = new TransmitPacketInputBuilder()
-                .setEgress(new NodeConnectorRef(nodeConnectorInstanceId))
-                .setNode(new NodeRef(nodeInstanceId)).setPayload(LLDPUtil.buildLldpFrame(nodeId,
-                        nodeConnectorId, srcMacAddress, outputPortNo, addressDestionation)).build();
+        TransmitPacketInput packet;
+        try {
+            packet = new TransmitPacketInputBuilder()
+                    .setEgress(new NodeConnectorRef(nodeConnectorInstanceId))
+                    .setNode(new NodeRef(nodeInstanceId)).setPayload(LLDPUtil.buildLldpFrame(nodeId,
+                            nodeConnectorId, srcMacAddress, outputPortNo, addressDestionation)).build();
+        } catch (NoSuchAlgorithmException | PacketException e) {
+            LOG.error("Error building LLDP frame", e);
+            return;
+        }
 
         // Save packet to node connector id -> packet map to transmit it periodically on the configured interval.
         nodeConnectorMap.put(nodeConnectorInstanceId, packet);
         LOG.debug("Port {} added to LLDPSpeaker.nodeConnectorMap", nodeConnectorId.getValue());
 
         // Transmit packet for first time immediately
-        packetProcessingService.transmitPacket(packet);
+        final Future<RpcResult<Void>> resultFuture = packetProcessingService.transmitPacket(packet);
+        JdkFutures.addErrorLogging(resultFuture, LOG, "transmitPacket");
     }
 
     @Override
