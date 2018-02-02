@@ -8,7 +8,9 @@
 
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
+import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -46,7 +48,10 @@ public class ErrorMessageFactory implements OFDeserializer<ErrorMessage>,
     private DeserializerRegistry registry;
 
     @Override
+    @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
     public ErrorMessage deserialize(ByteBuf rawMessage) {
+        Objects.requireNonNull(registry);
+
         int startIndex = rawMessage.readerIndex();
         ErrorMessageBuilder builder = new ErrorMessageBuilder();
         builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);

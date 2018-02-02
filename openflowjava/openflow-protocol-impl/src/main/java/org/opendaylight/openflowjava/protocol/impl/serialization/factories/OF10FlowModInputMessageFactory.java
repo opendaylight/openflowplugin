@@ -8,7 +8,9 @@
 
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
+import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
@@ -36,7 +38,10 @@ public class OF10FlowModInputMessageFactory implements OFSerializer<FlowModInput
     private SerializerRegistry registry;
 
     @Override
+    @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
     public void serialize(final FlowModInput message, final ByteBuf outBuffer) {
+        Objects.requireNonNull(registry);
+
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         OFSerializer<MatchV10> matchSerializer = registry.getSerializer(new MessageTypeKey<>(
                 message.getVersion(), MatchV10.class));

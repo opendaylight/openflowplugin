@@ -22,7 +22,11 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
  */
 public class SerializationFactory {
 
-    private SerializerRegistry registry;
+    private final SerializerRegistry registry;
+
+    public SerializationFactory(SerializerRegistry registry) {
+        this.registry = registry;
+    }
 
     /**
      * Transforms POJO message into ByteBuf.
@@ -36,14 +40,4 @@ public class SerializationFactory {
                 new MessageTypeKey<>(version, message.getImplementedInterface()));
         serializer.serialize(message, out);
     }
-
-    /**
-     * Sets the SerializerRegistry.
-     *
-     * @param serializerRegistry registry with serializers
-     */
-    public void setSerializerTable(SerializerRegistry serializerRegistry) {
-        this.registry = serializerRegistry;
-    }
-
 }

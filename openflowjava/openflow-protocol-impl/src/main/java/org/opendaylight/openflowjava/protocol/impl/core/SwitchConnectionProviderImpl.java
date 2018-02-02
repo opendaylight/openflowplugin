@@ -78,12 +78,10 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
             serializerRegistry.setGroupAddModConfig(connConfig.isGroupAddModEnabled());
         }
         serializerRegistry.init();
-        serializationFactory = new SerializationFactory();
-        serializationFactory.setSerializerTable(serializerRegistry);
+        serializationFactory = new SerializationFactory(serializerRegistry);
         deserializerRegistry = new DeserializerRegistryImpl();
         deserializerRegistry.init();
-        deserializationFactory = new DeserializationFactory();
-        deserializationFactory.setRegistry(deserializerRegistry);
+        deserializationFactory = new DeserializationFactory(deserializerRegistry);
     }
 
     @Override

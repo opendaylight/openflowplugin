@@ -7,9 +7,11 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -36,7 +38,10 @@ public class FlowModInputMessageFactory implements OFDeserializer<FlowModInput>,
     private DeserializerRegistry registry;
 
     @Override
+    @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
     public FlowModInput deserialize(ByteBuf rawMessage) {
+        Objects.requireNonNull(registry);
+
         FlowModInputBuilder builder = new FlowModInputBuilder();
         builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
         builder.setXid(rawMessage.readUnsignedInt());
@@ -68,11 +73,11 @@ public class FlowModInputMessageFactory implements OFDeserializer<FlowModInput>,
 
     @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
     private static FlowModFlags createFlowModFlagsFromBitmap(int input) {
-        final Boolean _oFPFFSENDFLOWREM = (input & 1 << 0) > 0;
-        final Boolean _oFPFFCHECKOVERLAP = (input & 1 << 1) > 0;
-        final Boolean _oFPFFRESETCOUNTS = (input & 1 << 2) > 0;
-        final Boolean _oFPFFNOPKTCOUNTS = (input & 1 << 3) > 0;
-        final Boolean _oFPFFNOBYTCOUNTS = (input & 1 << 4) > 0;
+        final Boolean _oFPFFSENDFLOWREM = (input & 1 << 0) != 0;
+        final Boolean _oFPFFCHECKOVERLAP = (input & 1 << 1) != 0;
+        final Boolean _oFPFFRESETCOUNTS = (input & 1 << 2) != 0;
+        final Boolean _oFPFFNOPKTCOUNTS = (input & 1 << 3) != 0;
+        final Boolean _oFPFFNOBYTCOUNTS = (input & 1 << 4) != 0;
         return new FlowModFlags(_oFPFFCHECKOVERLAP, _oFPFFNOBYTCOUNTS, _oFPFFNOPKTCOUNTS, _oFPFFRESETCOUNTS,
                 _oFPFFSENDFLOWREM);
     }

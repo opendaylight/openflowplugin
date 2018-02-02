@@ -42,6 +42,8 @@ public class ErrorMessageFactoryTest {
     @Before
     public void startUp() {
         errorFactory = new ErrorMessageFactory();
+        Mockito.when(registry.getDeserializer(Matchers.any(MessageCodeKey.class))).thenReturn(deserializer);
+        errorFactory.injectDeserializerRegistry(registry);
     }
 
     /**
@@ -390,8 +392,6 @@ public class ErrorMessageFactoryTest {
      */
     @Test
     public void testExperimenterError() {
-        Mockito.when(registry.getDeserializer(Matchers.any(MessageCodeKey.class))).thenReturn(deserializer);
-        errorFactory.injectDeserializerRegistry(registry);
         ByteBuf bb = BufferHelper.buildBuffer("FF FF 00 00 00 01");
         BufferHelper.deserialize(errorFactory, bb);
 

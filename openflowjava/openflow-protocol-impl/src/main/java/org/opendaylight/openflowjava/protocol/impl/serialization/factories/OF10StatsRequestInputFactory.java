@@ -8,7 +8,9 @@
 
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
+import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
@@ -39,6 +41,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  *
  * @author michal.polkorab
  */
+@SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
 public class OF10StatsRequestInputFactory implements OFSerializer<MultipartRequestInput>, SerializerRegistryInjector {
 
     private static final byte MESSAGE_TYPE = 16;
@@ -51,6 +54,8 @@ public class OF10StatsRequestInputFactory implements OFSerializer<MultipartReque
 
     @Override
     public void serialize(final MultipartRequestInput message, final ByteBuf outBuffer) {
+        Objects.requireNonNull(registry);
+
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.OFHEADER_SIZE);
         outBuffer.writeShort(message.getType().getIntValue());
         outBuffer.writeShort(createMultipartRequestFlagsBitmask(message.getFlags()));

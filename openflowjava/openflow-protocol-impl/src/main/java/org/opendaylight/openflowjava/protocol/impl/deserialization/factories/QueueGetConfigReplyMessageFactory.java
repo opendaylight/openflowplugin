@@ -8,9 +8,11 @@
 
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -34,6 +36,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author timotej.kubas
  * @author michal.polkorab
  */
+@SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
 public class QueueGetConfigReplyMessageFactory implements OFDeserializer<GetQueueConfigOutput>,
         DeserializerRegistryInjector {
 
@@ -46,6 +49,8 @@ public class QueueGetConfigReplyMessageFactory implements OFDeserializer<GetQueu
 
     @Override
     public GetQueueConfigOutput deserialize(ByteBuf rawMessage) {
+        Objects.requireNonNull(registry);
+
         GetQueueConfigOutputBuilder builder = new GetQueueConfigOutputBuilder();
         builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
         builder.setXid(rawMessage.readUnsignedInt());

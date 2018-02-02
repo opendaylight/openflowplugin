@@ -8,10 +8,13 @@
 
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -66,6 +69,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  *
  * @author michal.polkorab
  */
+@SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
 public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartReplyMessage>,
         DeserializerRegistryInjector {
 
@@ -84,6 +88,8 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
 
     @Override
     public MultipartReplyMessage deserialize(ByteBuf rawMessage) {
+        Objects.requireNonNull(registry);
+
         MultipartReplyMessageBuilder builder = new MultipartReplyMessageBuilder();
         builder.setVersion((short) EncodeConstants.OF10_VERSION_ID);
         builder.setXid(rawMessage.readUnsignedInt());
@@ -123,23 +129,23 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
         MultipartReplyDescBuilder descBuilder = new MultipartReplyDescBuilder();
         byte[] mfrDescBytes = new byte[DESC_STR_LEN];
         input.readBytes(mfrDescBytes);
-        String mfrDesc = new String(mfrDescBytes);
+        String mfrDesc = new String(mfrDescBytes, StandardCharsets.UTF_8);
         descBuilder.setMfrDesc(mfrDesc.trim());
         byte[] hwDescBytes = new byte[DESC_STR_LEN];
         input.readBytes(hwDescBytes);
-        String hwDesc = new String(hwDescBytes);
+        String hwDesc = new String(hwDescBytes, StandardCharsets.UTF_8);
         descBuilder.setHwDesc(hwDesc.trim());
         byte[] swDescBytes = new byte[DESC_STR_LEN];
         input.readBytes(swDescBytes);
-        String swDesc = new String(swDescBytes);
+        String swDesc = new String(swDescBytes, StandardCharsets.UTF_8);
         descBuilder.setSwDesc(swDesc.trim());
         byte[] serialNumBytes = new byte[SERIAL_NUM_LEN];
         input.readBytes(serialNumBytes);
-        String serialNum = new String(serialNumBytes);
+        String serialNum = new String(serialNumBytes, StandardCharsets.UTF_8);
         descBuilder.setSerialNum(serialNum.trim());
         byte[] dpDescBytes = new byte[DESC_STR_LEN];
         input.readBytes(dpDescBytes);
-        String dpDesc = new String(dpDescBytes);
+        String dpDesc = new String(dpDescBytes, StandardCharsets.UTF_8);
         descBuilder.setDpDesc(dpDesc.trim());
         caseBuilder.setMultipartReplyDesc(descBuilder.build());
         return caseBuilder.build();

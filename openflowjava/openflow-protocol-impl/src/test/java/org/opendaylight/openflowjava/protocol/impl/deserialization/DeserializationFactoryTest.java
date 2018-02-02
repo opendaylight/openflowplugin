@@ -29,8 +29,7 @@ public class DeserializationFactoryTest {
     public void test() {
         DeserializerRegistryImpl registry = new DeserializerRegistryImpl();
         registry.init();
-        DeserializationFactory factory = new DeserializationFactory();
-        factory.setRegistry(registry);
+        final DeserializationFactory factory = new DeserializationFactory(registry);
         ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer();
         buffer.writeByte(0);
         buffer.writeShort(EncodeConstants.OFHEADER_SIZE);
@@ -46,8 +45,7 @@ public class DeserializationFactoryTest {
     public void testNotExistingDeserializer() {
         DeserializerRegistryImpl registry = new DeserializerRegistryImpl();
         registry.init();
-        DeserializationFactory factory = new DeserializationFactory();
-        factory.setRegistry(registry);
+        final DeserializationFactory factory = new DeserializationFactory(registry);
         ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer();
         buffer.writeByte(0);
         buffer.writeShort(EncodeConstants.OFHEADER_SIZE);

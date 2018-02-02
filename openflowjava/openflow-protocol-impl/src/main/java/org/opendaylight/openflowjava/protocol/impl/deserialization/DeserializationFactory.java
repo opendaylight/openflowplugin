@@ -28,9 +28,11 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 public class DeserializationFactory {
 
     private final Map<TypeToClassKey, Class<?>> messageClassMap = new ConcurrentHashMap<>();
-    private DeserializerRegistry registry;
+    private final DeserializerRegistry registry;
 
-    public DeserializationFactory() {
+    public DeserializationFactory(final DeserializerRegistry registry) {
+        this.registry = registry;
+
         TypeToClassMapInitializer.initializeTypeToClassMap(messageClassMap);
 
         // Register type to class map for additional deserializers
@@ -78,9 +80,4 @@ public class DeserializationFactory {
 
         return messageClassMap.remove(key) != null;
     }
-
-    public void setRegistry(final DeserializerRegistry registry) {
-        this.registry = registry;
-    }
-
 }

@@ -17,7 +17,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  */
 public class DeviceRequestFailedException extends OutboundQueueException {
     private static final long serialVersionUID = 1L;
-    private final Error error;
+    private final transient Error error;
 
     public DeviceRequestFailedException(final String message, @Nonnull final Error error) {
         super(message);

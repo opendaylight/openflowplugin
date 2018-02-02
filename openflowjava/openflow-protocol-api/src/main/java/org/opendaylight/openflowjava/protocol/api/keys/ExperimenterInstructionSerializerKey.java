@@ -15,8 +15,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225
  *
  * @author michal.polkorab
  */
-public final class ExperimenterInstructionSerializerKey extends InstructionSerializerKey<ExperimenterIdCase>
-        implements ExperimenterSerializerKey {
+public final class ExperimenterInstructionSerializerKey extends InstructionSerializerKey<ExperimenterIdCase> {
 
     /**
      * Constructor.

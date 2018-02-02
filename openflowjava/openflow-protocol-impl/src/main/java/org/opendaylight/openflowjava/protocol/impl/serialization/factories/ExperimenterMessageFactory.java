@@ -27,12 +27,14 @@ public class ExperimenterMessageFactory implements OFSerializer<ExperimenterMess
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         outBuffer.writeInt(message.getExperimenter().getValue().intValue());
         outBuffer.writeInt(message.getExpType().intValue());
-        // TODO: Serializer for data field is vendor specific.
-        byte[] data = null;
 
-        if (data != null) {
-            outBuffer.writeBytes(data);
-        }
+        // TODO: Serializer for data field is vendor specific.
+//        byte[] data = null;
+//
+//        if (data != null) {
+//            outBuffer.writeBytes(data);
+//        }
+
         ByteBufUtils.updateOFHeaderLength(outBuffer);
     }
 }

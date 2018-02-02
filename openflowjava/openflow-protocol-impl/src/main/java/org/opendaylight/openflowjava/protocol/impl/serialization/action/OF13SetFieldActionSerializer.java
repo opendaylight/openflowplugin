@@ -8,7 +8,9 @@
 
 package org.opendaylight.openflowjava.protocol.impl.serialization.action;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
+import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
@@ -33,7 +35,10 @@ public class OF13SetFieldActionSerializer implements OFSerializer<Action>,
     private SerializerRegistry registry;
 
     @Override
+    @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
     public void serialize(Action action, ByteBuf outBuffer) {
+        Objects.requireNonNull(registry);
+
         final int startIndex = outBuffer.writerIndex();
         outBuffer.writeShort(ActionConstants.SET_FIELD_CODE);
         final int lengthIndex = outBuffer.writerIndex();

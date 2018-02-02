@@ -37,8 +37,7 @@ public abstract class AbstractDeserializerTest {
     public void setUp() throws Exception {
         registry = new DeserializerRegistryImpl();
         registry.init();
-        factory = new DeserializationFactory();
-        factory.setRegistry(registry);
+        factory = new DeserializationFactory(registry);
         provider = new DeserializerExtensionProviderImpl(registry, factory);
         DeserializerInjector.injectDeserializers(provider);
         MessageDeserializerInjector.injectLegacyDeserializers(provider);
