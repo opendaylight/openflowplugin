@@ -52,8 +52,8 @@ public class LLDPDiscoveryListener implements PacketProcessingListener {
                     LOG.debug("Publish add event for link {}", ld);
                     notificationService.publish(ld);
                 } else {
-                    LOG.trace("Skip publishing the add event for link because controller is non-owner of the " +
-                            "node {}. Link : {}", nodeKey.getId().getValue(), ld);
+                    LOG.trace("Skip publishing the add event for link because controller is non-owner of the "
+                            + "node {}. Link : {}", nodeKey.getId().getValue(), ld);
                 }
             } else {
                 LOG.debug("LLDP packet ignored. Unable to extract node-key from source node-connector reference.");
