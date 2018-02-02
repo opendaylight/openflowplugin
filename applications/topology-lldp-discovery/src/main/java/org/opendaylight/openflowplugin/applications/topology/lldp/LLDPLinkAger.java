@@ -18,16 +18,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
-import org.opendaylight.openflowplugin.applications.topology.lldp.utils.LLDPDiscoveryUtils;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationListener;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
+import org.opendaylight.openflowplugin.applications.topology.lldp.utils.LLDPDiscoveryUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscovered;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkRemovedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.lldp.discovery.config.rev160511.TopologyLldpDiscoveryConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 
 public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(LLDPLinkAger.class);
