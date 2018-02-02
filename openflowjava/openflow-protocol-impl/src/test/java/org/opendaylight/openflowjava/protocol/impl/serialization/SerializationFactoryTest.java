@@ -31,8 +31,7 @@ public class SerializationFactoryTest {
     public void test() {
         SerializerRegistry registry = new SerializerRegistryImpl();
         registry.init();
-        SerializationFactory factory = new SerializationFactory();
-        factory.setSerializerTable(registry);
+        final SerializationFactory factory = new SerializationFactory(registry);
         final ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer();
         HelloInputBuilder helloBuilder = new HelloInputBuilder();
         helloBuilder.setVersion((short) EncodeConstants.OF10_VERSION_ID);
@@ -49,8 +48,7 @@ public class SerializationFactoryTest {
     public void testNotExistingSerializer() {
         SerializerRegistry registry = new SerializerRegistryImpl();
         registry.init();
-        SerializationFactory factory = new SerializationFactory();
-        factory.setSerializerTable(registry);
+        final SerializationFactory factory = new SerializationFactory(registry);
         final ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer();
         HelloInputBuilder helloBuilder = new HelloInputBuilder();
         helloBuilder.setVersion((short) EncodeConstants.OF10_VERSION_ID);
