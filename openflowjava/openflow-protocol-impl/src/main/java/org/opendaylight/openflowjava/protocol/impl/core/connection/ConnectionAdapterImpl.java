@@ -142,8 +142,8 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
 
             if (alienMessageListener != null && alienMessageListener.onAlienMessage((OfHeader) message)) {
                 LOG.debug("Alien message {} received", message.getImplementedInterface());
-            } else if (outputManager == null || !outputManager.onMessage((OfHeader) message) || message instanceof
-                    EchoOutput) {
+            } else if (outputManager == null || !outputManager.onMessage((OfHeader) message)
+                    || message instanceof EchoOutput) {
                 final RpcResponseKey key = createRpcResponseKey((OfHeader) message);
                 final ResponseExpectedRpcListener<?> listener = findRpcResponse(key);
                 if (listener != null) {
@@ -183,12 +183,7 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
         versionDetector = (OFVersionDetector) channel.pipeline().get(PipelineHandlers.OF_VERSION_DETECTOR.name());
         Preconditions.checkState(versionDetector != null);
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                connectionReadyListener.onConnectionReady();
-            }
-        }).start();
+        new Thread(() -> connectionReadyListener.onConnectionReady()).start();
     }
 
     @Override
