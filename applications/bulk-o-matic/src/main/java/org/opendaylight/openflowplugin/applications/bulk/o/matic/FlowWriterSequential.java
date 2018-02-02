@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.applications.bulk.o.matic;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.MoreExecutors;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -108,11 +107,11 @@ public class FlowWriterSequential implements FlowCounterMBean {
             writeOpStatus.set(FlowCounter.OperationStatus.IN_PROGRESS.status());
 
             Short tableId = startTableId;
-            Integer sourceIp = 1;
 
             WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
             short calculatedTableId = tableId;
 
+            int sourceIp = 1;
             for (; sourceIp <= batchSize; sourceIp++) {
                 String flowId = "Flow-" + dpId + "." + calculatedTableId + "." + sourceIp;
                 LOG.debug("Adding flow with id: {}", flowId);
@@ -149,12 +148,12 @@ public class FlowWriterSequential implements FlowCounterMBean {
             }
         }
 
-        private class DsCallBack implements FutureCallback {
+        private class DsCallBack implements FutureCallback<Void> {
             private final String dpId;
-            private Integer sourceIp;
+            private int sourceIp;
             private final Short tableId;
 
-            DsCallBack(String dpId, Integer sourceIp, Short tableId) {
+            DsCallBack(String dpId, int sourceIp, Short tableId) {
                 this.dpId = dpId;
                 this.sourceIp = sourceIp;
                 short numberA = 1;
@@ -163,7 +162,7 @@ public class FlowWriterSequential implements FlowCounterMBean {
             }
 
             @Override
-            public void onSuccess(Object object) {
+            public void onSuccess(Void notUsed) {
                 if (sourceIp > flowsPerDpn) {
                     long dur = System.nanoTime() - startTime;
                     LOG.info("Completed all flows installation for: dpid: {}, tableId: {}, sourceIp: {} in {}ns", dpId,

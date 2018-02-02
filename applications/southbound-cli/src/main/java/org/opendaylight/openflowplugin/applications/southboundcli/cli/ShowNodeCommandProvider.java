@@ -8,8 +8,6 @@
 package org.opendaylight.openflowplugin.applications.southboundcli.cli;
 
 import java.util.Formatter;
-import java.util.HashSet;
-import java.util.Set;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.commands.Option;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
@@ -62,7 +60,6 @@ public class ShowNodeCommandProvider extends OsgiCommandSupport {
     }
 
     private void printNodeOutput(final OFNode ofNode) {
-        Set<String> portNames = new HashSet<>();
         String ofNodeId = ofNode.getNodeId().toString();
         String ofNodeName = ofNode.getNodeName();
         for (String port : ofNode.getPorts()) {

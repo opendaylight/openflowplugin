@@ -8,9 +8,9 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
-import com.google.common.base.Function;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
 import org.opendaylight.openflowplugin.applications.frsync.util.ReconciliationRegistry;
@@ -35,6 +35,7 @@ public class SyncReactorRetryDecorator implements SyncReactor {
         this.reconciliationRegistry = reconciliationRegistry;
     }
 
+    @Override
     public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
                                             final SyncupEntry syncupEntry) {
 
@@ -46,16 +47,13 @@ public class SyncReactorRetryDecorator implements SyncReactor {
 
         ListenableFuture<Boolean> syncupResult = delegate.syncup(flowcapableNodePath,syncupEntry);
 
-        return Futures.transform(syncupResult, new Function<Boolean, Boolean>() {
-            @Override
-            public Boolean apply(Boolean result) {
-                if (result) {
-                    reconciliationRegistry.unregisterIfRegistered(nodeId);
-                } else {
-                    reconciliationRegistry.register(nodeId);
-                }
-                return result;
+        return Futures.transform(syncupResult, result -> {
+            if (result) {
+                reconciliationRegistry.unregisterIfRegistered(nodeId);
+            } else {
+                reconciliationRegistry.register(nodeId);
             }
-        });
+            return result;
+        }, MoreExecutors.directExecutor());
     }
 }

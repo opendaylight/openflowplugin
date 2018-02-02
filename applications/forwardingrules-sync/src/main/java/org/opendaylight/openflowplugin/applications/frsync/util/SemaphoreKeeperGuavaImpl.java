@@ -32,9 +32,7 @@ public class SemaphoreKeeperGuavaImpl<K> implements SemaphoreKeeper<K> {
                 .build(new CacheLoader<K, Semaphore>() {
                     @Override
                     public Semaphore load(final K key) throws Exception {
-                        return new Semaphore(permits, fair) {
-                            private static final long serialVersionUID = 1L;
-                        };
+                        return new Semaphore(permits, fair);
                     }
                 });
     }

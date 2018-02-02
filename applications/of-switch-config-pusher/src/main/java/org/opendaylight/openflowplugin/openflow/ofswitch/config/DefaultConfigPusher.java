@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.openflow.ofswitch.config;
 
 import java.util.Collection;
+import java.util.concurrent.Future;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
@@ -16,6 +17,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -24,9 +26,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.NodeConfigService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.SwitchConfigFlag;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +40,7 @@ public class DefaultConfigPusher implements AutoCloseable, DataTreeChangeListene
     private static final int STARTUP_LOOP_MAX_RETRIES = 8;
     private final NodeConfigService nodeConfigService;
     private final DataBroker dataBroker;
-    private ListenerRegistration<DataTreeChangeListener> listenerRegistration;
+    private ListenerRegistration<?> listenerRegistration;
 
     public DefaultConfigPusher(NodeConfigService nodeConfigService, DataBroker dataBroker) {
         this.nodeConfigService = nodeConfigService;
@@ -76,7 +80,9 @@ public class DefaultConfigPusher implements AutoCloseable, DataTreeChangeListene
                 setConfigInputBuilder.setMissSearchLength(OFConstants.OFPCML_NO_BUFFER);
                 setConfigInputBuilder.setNode(new NodeRef(modification.getRootPath()
                         .getRootIdentifier().firstIdentifierOf(Node.class)));
-                nodeConfigService.setConfig(setConfigInputBuilder.build());
+                final Future<RpcResult<SetConfigOutput>> resultFuture =
+                        nodeConfigService.setConfig(setConfigInputBuilder.build());
+                JdkFutures.addErrorLogging(resultFuture, LOG, "addFlow");
             }
         }
     }

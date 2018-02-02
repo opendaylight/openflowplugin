@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.lldp;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.lldp.discovery.config.rev160511.TopologyLldpDiscoveryConfig;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
@@ -21,6 +22,7 @@ public class LLDPActivator implements AutoCloseable {
 
     private final ListenerRegistration<NotificationListener> lldpNotificationRegistration;
 
+    @SuppressFBWarnings("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD")
     public LLDPActivator(NotificationProviderService notificationService, LLDPDiscoveryListener lldpDiscoveryListener,
                          TopologyLldpDiscoveryConfig topologyLldpDiscoveryConfig) {
         lldpSecureKey = topologyLldpDiscoveryConfig.getLldpSecureKey();

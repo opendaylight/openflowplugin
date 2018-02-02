@@ -14,6 +14,7 @@ import com.google.common.hash.Hashing;
 import java.lang.management.ManagementFactory;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Objects;
@@ -150,7 +151,7 @@ public final class LLDPDiscoveryUtils {
         }
         final String pureValue = nodeConnectorId + finalKey;
 
-        final byte[] pureBytes = pureValue.getBytes();
+        final byte[] pureBytes = pureValue.getBytes(StandardCharsets.UTF_8);
         HashFunction hashFunction = Hashing.md5();
         Hasher hasher = hashFunction.newHasher();
         HashCode hashedValue = hasher.putBytes(pureBytes).hash();

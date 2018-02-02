@@ -10,6 +10,8 @@ package org.opendaylight.openflowplugin.applications.tablemissenforcer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doReturn;
 
 import java.util.Collections;
 import org.junit.After;
@@ -42,6 +44,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 /**
  * Test for {@link LLDPPacketPuntEnforcer}.
@@ -60,6 +63,7 @@ public class LLDPDataTreeChangeListenerTest {
 
     @Before
     public void setUp() {
+        doReturn(RpcResultBuilder.success().buildFuture()).when(flowService).addFlow(any());
         lldpPacketPuntEnforcer = new LLDPPacketPuntEnforcer(flowService, Mockito.mock(DataBroker.class));
         final DataTreeIdentifier<FlowCapableNode> identifier = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL,
                                                                                       NODE_IID);

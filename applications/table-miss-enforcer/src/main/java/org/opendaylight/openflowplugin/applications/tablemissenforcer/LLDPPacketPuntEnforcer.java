@@ -12,15 +12,15 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
@@ -35,6 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
@@ -51,8 +52,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeChangeListener<FlowCapableNode> {
+    private static final Logger LOG = LoggerFactory.getLogger(LLDPPacketPuntEnforcer.class);
     private static final long STARTUP_LOOP_TICK = 500L;
     private static final int STARTUP_LOOP_MAX_RETRIES = 8;
     private static final short TABLE_ID = (short) 0;
@@ -60,7 +65,7 @@ public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeC
     private static final String DEFAULT_FLOW_ID = "42";
     private final SalFlowService flowService;
     private final DataBroker dataBroker;
-    private ListenerRegistration<DataTreeChangeListener> listenerRegistration;
+    private ListenerRegistration<?> listenerRegistration;
 
     public LLDPPacketPuntEnforcer(SalFlowService flowService, DataBroker dataBroker) {
         this.flowService = flowService;
@@ -71,17 +76,12 @@ public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeC
     public void start() {
         final InstanceIdentifier<FlowCapableNode> path = InstanceIdentifier.create(Nodes.class).child(Node.class)
                 .augmentation(FlowCapableNode.class);
-        final DataTreeIdentifier<FlowCapableNode> identifier = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL,
-                                                                                      path);
+        final DataTreeIdentifier<FlowCapableNode> identifier = new DataTreeIdentifier<>(
+                LogicalDatastoreType.OPERATIONAL, path);
         SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
         try {
-            listenerRegistration = looper
-                    .loopUntilNoException(new Callable<ListenerRegistration<DataTreeChangeListener>>() {
-                        @Override
-                        public ListenerRegistration<DataTreeChangeListener> call() throws Exception {
-                            return dataBroker.registerDataTreeChangeListener(identifier, LLDPPacketPuntEnforcer.this);
-                        }
-                    });
+            listenerRegistration = looper.loopUntilNoException(() ->
+                dataBroker.registerDataTreeChangeListener(identifier, LLDPPacketPuntEnforcer.this));
         } catch (Exception e) {
             throw new IllegalStateException("registerDataTreeChangeListener failed", e);
         }
@@ -96,12 +96,13 @@ public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeC
 
     @Override
     public void onDataTreeChanged(@Nonnull final Collection<DataTreeModification<FlowCapableNode>> modifications) {
-        for (DataTreeModification modification : modifications) {
+        for (DataTreeModification<FlowCapableNode> modification : modifications) {
             if (modification.getRootNode().getModificationType() == ModificationType.WRITE) {
                 AddFlowInputBuilder addFlowInput = new AddFlowInputBuilder(createFlow());
                 addFlowInput.setNode(
                         new NodeRef(modification.getRootPath().getRootIdentifier().firstIdentifierOf(Node.class)));
-                this.flowService.addFlow(addFlowInput.build());
+                final Future<RpcResult<AddFlowOutput>> resultFuture = this.flowService.addFlow(addFlowInput.build());
+                JdkFutures.addErrorLogging(resultFuture, LOG, "addFlow");
             }
         }
     }
