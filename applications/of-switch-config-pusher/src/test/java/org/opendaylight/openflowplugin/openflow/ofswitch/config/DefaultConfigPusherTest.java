@@ -8,6 +8,9 @@
 
 package org.opendaylight.openflowplugin.openflow.ofswitch.config;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doReturn;
+
 import java.util.Collections;
 import org.junit.After;
 import org.junit.Assert;
@@ -35,6 +38,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.Nod
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.SwitchConfigFlag;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 /**
  * Test for {@link DefaultConfigPusher}.
@@ -53,6 +57,7 @@ public class DefaultConfigPusherTest {
 
     @Before
     public void setUp() throws Exception {
+        doReturn(RpcResultBuilder.success().buildFuture()).when(nodeConfigService).setConfig(any());
         defaultConfigPusher = new DefaultConfigPusher(nodeConfigService, Mockito.mock(DataBroker.class));
         final DataTreeIdentifier<FlowCapableNode> identifier =
                 new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, NODE_IID);

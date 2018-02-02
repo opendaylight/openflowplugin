@@ -13,6 +13,7 @@ import static org.opendaylight.openflowplugin.libraries.liblldp.LLDPTLV.CUSTOM_T
 
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
+import javax.annotation.Nonnull;
 import org.apache.commons.lang3.StringUtils;
 import org.opendaylight.openflowplugin.libraries.liblldp.EtherTypes;
 import org.opendaylight.openflowplugin.libraries.liblldp.Ethernet;
@@ -36,8 +37,10 @@ public final class LLDPUtil {
     private LLDPUtil() {
     }
 
+    @Nonnull
     static byte[] buildLldpFrame(final NodeId nodeId, final NodeConnectorId nodeConnectorId, final MacAddress src,
-                                 final Long outPortNo, final MacAddress destinationAddress) {
+            final Long outPortNo, final MacAddress destinationAddress)
+                    throws NoSuchAlgorithmException, PacketException {
         // Create discovery pkt
         LLDP discoveryPkt = new LLDP();
 
@@ -80,19 +83,12 @@ public final class LLDPUtil {
         discoveryPkt.addCustomTLV(customTlv);
 
         //Create LLDP CustomSec TLV
-        byte[] pureValue = new byte[1];
-        try {
-            pureValue = getValueForLLDPPacketIntegrityEnsuring(nodeConnectorId);
-            byte[] customSecValue = LLDPTLV.createCustomTLVValue(CUSTOM_TLV_SUB_TYPE_CUSTOM_SEC, pureValue);
-            LLDPTLV customSecTlv = new LLDPTLV();
-            customSecTlv.setType(LLDPTLV.TLVType.Custom.getValue()).setLength((short) customSecValue.length)
-                    .setValue(customSecValue);
-            discoveryPkt.addCustomTLV(customSecTlv);
-        } catch (NoSuchAlgorithmException e1) {
-            LOG.info("LLDP extra authenticator creation failed: {}", e1.getMessage());
-            LOG.debug("Reason why LLDP extra authenticator creation failed: ", e1);
-        }
-
+        byte[] pureValue = getValueForLLDPPacketIntegrityEnsuring(nodeConnectorId);
+        byte[] customSecValue = LLDPTLV.createCustomTLVValue(CUSTOM_TLV_SUB_TYPE_CUSTOM_SEC, pureValue);
+        LLDPTLV customSecTlv = new LLDPTLV();
+        customSecTlv.setType(LLDPTLV.TLVType.Custom.getValue()).setLength((short) customSecValue.length)
+            .setValue(customSecValue);
+        discoveryPkt.addCustomTLV(customSecTlv);
 
         // Create ethernet pkt
         byte[] sourceMac = HexEncode.bytesFromHexString(src.getValue());
@@ -104,17 +100,12 @@ public final class LLDPUtil {
             ethPkt.setDestinationMACAddress(HexEncode.bytesFromHexString(destinationAddress.getValue()));
         }
 
-        try {
-            return ethPkt.serialize();
-        } catch (PacketException e) {
-            LOG.warn("Error creating LLDP packet: {}", e.getMessage());
-            LOG.debug("Error creating LLDP packet.. ", e);
-        }
-        return null;
+        return ethPkt.serialize();
     }
 
+    @Nonnull
     static byte[] buildLldpFrame(final NodeId nodeId, final NodeConnectorId nodeConnectorId,
-                                 final MacAddress srcMacAddress, final Long outputPortNo) {
+            final MacAddress srcMacAddress, final Long outputPortNo) throws NoSuchAlgorithmException, PacketException {
         return buildLldpFrame(nodeId, nodeConnectorId, srcMacAddress, outputPortNo, null);
     }
 
