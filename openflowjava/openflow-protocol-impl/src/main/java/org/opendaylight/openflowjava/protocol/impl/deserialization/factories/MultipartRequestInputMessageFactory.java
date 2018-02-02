@@ -7,10 +7,12 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -98,9 +100,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  *
  * @author giuseppex.petralia@intel.com
  */
+@SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
 public class MultipartRequestInputMessageFactory
         implements OFDeserializer<MultipartRequestInput>, DeserializerRegistryInjector {
-    private DeserializerRegistry registry;
     private static final byte PADDING = 4;
     private static final byte FLOW_PADDING_1 = 3;
     private static final byte FLOW_PADDING_2 = 4;
@@ -111,6 +113,8 @@ public class MultipartRequestInputMessageFactory
     private static final byte MULTIPART_REQUEST_TABLE_FEATURES_STRUCTURE_LENGTH = 64;
     private static final byte COMMON_PROPERTY_LENGTH = 4;
 
+    private DeserializerRegistry registry;
+
     @Override
     public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
         registry = deserializerRegistry;
@@ -118,6 +122,8 @@ public class MultipartRequestInputMessageFactory
 
     @Override
     public MultipartRequestInput deserialize(ByteBuf rawMessage) {
+        Objects.requireNonNull(registry);
+
         MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();
         builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
         builder.setXid(rawMessage.readUnsignedInt());
@@ -184,7 +190,7 @@ public class MultipartRequestInputMessageFactory
 
     @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
     private static MultipartRequestFlags getMultipartRequestFlags(int input) {
-        final Boolean _oFPMPFREQMORE = (input & 1 << 0) > 0;
+        final Boolean _oFPMPFREQMORE = (input & 1 << 0) != 0;
         MultipartRequestFlags flag = new MultipartRequestFlags(_oFPMPFREQMORE);
         return flag;
     }

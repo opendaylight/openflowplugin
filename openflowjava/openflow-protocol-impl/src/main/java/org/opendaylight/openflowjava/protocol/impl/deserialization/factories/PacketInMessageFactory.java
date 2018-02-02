@@ -8,8 +8,10 @@
 
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
 import java.math.BigInteger;
+import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -36,7 +38,10 @@ public class PacketInMessageFactory implements OFDeserializer<PacketInMessage>,
     private DeserializerRegistry registry;
 
     @Override
+    @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
     public PacketInMessage deserialize(final ByteBuf rawMessage) {
+        Objects.requireNonNull(registry);
+
         PacketInMessageBuilder builder = new PacketInMessageBuilder();
         builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
         builder.setXid(rawMessage.readUnsignedInt());

@@ -8,6 +8,7 @@
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
@@ -92,7 +93,7 @@ public class OF10PortStatusMessageFactory implements OFSerializer<PortStatusMess
     }
 
     private void writeName(final String name, final ByteBuf outBuffer) {
-        byte[] nameBytes = name.getBytes();
+        byte[] nameBytes = name.getBytes(StandardCharsets.UTF_8);
         if (nameBytes.length < 16) {
             byte[] nameBytesPadding = new byte[16];
             int index = 0;
