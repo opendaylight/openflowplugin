@@ -13,18 +13,12 @@ import java.util.Collection;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.openflowplugin.applications.frm.FlowCapableNodeConnectorCommitter;
-import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public abstract class AbstractNodeConnectorCommitter<T extends DataObject>
         implements FlowCapableNodeConnectorCommitter<T> {
-    private final ForwardingRulesManager provider;
-
-    public AbstractNodeConnectorCommitter(ForwardingRulesManager provider) {
-        this.provider = Preconditions.checkNotNull(provider, "ForwardingRulesManager can not be null!");
-    }
 
     @Override
     public void onDataTreeChanged(Collection<DataTreeModification<T>> changes) {

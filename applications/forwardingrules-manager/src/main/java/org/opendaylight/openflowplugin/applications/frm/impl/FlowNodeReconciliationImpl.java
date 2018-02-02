@@ -300,7 +300,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             BigInteger dpnId = getDpnIdFromNodeName(node);
 
             ReadOnlyTransaction trans = provider.getReadTranaction();
-            Optional<FlowCapableNode> flowNode = Optional.absent();
+            Optional<FlowCapableNode> flowNode;
             // initialize the counter
             int counter = 0;
             try {
