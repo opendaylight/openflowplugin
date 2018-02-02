@@ -68,7 +68,7 @@ abstract class AbstractStackedOutboundQueue implements OutboundQueue {
 
         for (int i = unflushedSegments.size(); i <= segmentOffset; ++i) {
             final StackedSegment newSegment = StackedSegment.create(first.getBaseXid()
-                    + StackedSegment.SEGMENT_SIZE * i);
+                    + StackedSegment.SEGMENT_SIZE * (long)i);
             LOG.debug("Adding segment {}", newSegment);
             unflushedSegments.add(newSegment);
         }

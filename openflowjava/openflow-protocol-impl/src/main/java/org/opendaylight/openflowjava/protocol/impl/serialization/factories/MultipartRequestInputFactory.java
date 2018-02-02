@@ -9,6 +9,7 @@
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
@@ -263,8 +264,9 @@ public class MultipartRequestInputFactory implements OFSerializer<MultipartReque
                     output.writeShort(EncodeConstants.EMPTY_LENGTH);
                     output.writeByte(currTableFeature.getTableId());
                     output.writeZero(PADDING_IN_MULTIPART_REQUEST_TABLE_FEATURES_BODY);
-                    output.writeBytes(currTableFeature.getName().getBytes());
-                    output.writeZero(32 - currTableFeature.getName().getBytes().length);
+                    final byte[] nameBytes = currTableFeature.getName().getBytes(StandardCharsets.UTF_8);
+                    output.writeBytes(nameBytes);
+                    output.writeZero(32 - nameBytes.length);
                     output.writeLong(currTableFeature.getMetadataMatch().longValue());
                     output.writeLong(currTableFeature.getMetadataWrite().longValue());
                     output.writeInt(createTableConfigBitmask(currTableFeature.getConfig()));

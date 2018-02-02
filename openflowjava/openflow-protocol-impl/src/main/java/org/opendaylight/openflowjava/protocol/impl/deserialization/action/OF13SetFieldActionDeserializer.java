@@ -8,9 +8,11 @@
 
 package org.opendaylight.openflowjava.protocol.impl.deserialization.action;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -34,7 +36,10 @@ public class OF13SetFieldActionDeserializer extends AbstractActionDeserializer
     private DeserializerRegistry registry;
 
     @Override
+    @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
     public Action deserialize(ByteBuf input) {
+        Objects.requireNonNull(registry);
+
         final  org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping
             .ActionBuilder builder = new ActionBuilder();
         final int startIndex = input.readerIndex();
