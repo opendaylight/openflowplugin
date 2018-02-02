@@ -46,6 +46,11 @@
       <version>0.6.1-SNAPSHOT</version>
     </dependency>
     <dependency>
+      <groupId>org.opendaylight.infrautils</groupId>
+      <artifactId>infrautils-util</artifactId>
+      <version>${infrautils.version}</version>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>

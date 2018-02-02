@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.applications.lldpspeaker;
 
 import com.google.common.base.Optional;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -59,6 +60,7 @@ public class DeviceOwnershipStatusService implements EntityOwnershipListener {
     }
 
     @Override
+    @SuppressFBWarnings("BC_UNCONFIRMED_CAST_OF_RETURN_VALUE")
     public void ownershipChanged(final EntityOwnershipChange ownershipChange) {
         final String entityName = ownershipChange.getEntity().getIdentifier().firstKeyOf(Entity.class).getName();
         if (entityName != null && isOpenFlowEntity(entityName)) {
