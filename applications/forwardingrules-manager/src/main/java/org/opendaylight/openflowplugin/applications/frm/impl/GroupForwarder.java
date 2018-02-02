@@ -18,6 +18,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
@@ -27,6 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.Add
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.OriginalGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.UpdatedGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
@@ -100,7 +102,10 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
         builder.setGroupRef(new GroupRef(identifier));
         builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
-        this.provider.getSalGroupService().removeGroup(builder.build());
+
+        final Future<RpcResult<RemoveGroupOutput>> resultFuture =
+                this.provider.getSalGroupService().removeGroup(builder.build());
+        JdkFutures.addErrorLogging(resultFuture, LOG, "removeGroup");
     }
 
     // TODO: Pull this into ForwardingRulesCommiter and override it here
@@ -131,7 +136,9 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         builder.setUpdatedGroup(new UpdatedGroupBuilder(updatedGroup).build());
         builder.setOriginalGroup(new OriginalGroupBuilder(originalGroup).build());
 
-        this.provider.getSalGroupService().updateGroup(builder.build());
+        final Future<RpcResult<UpdateGroupOutput>> resultFuture =
+                this.provider.getSalGroupService().updateGroup(builder.build());
+        JdkFutures.addErrorLogging(resultFuture, LOG, "updateGroup");
     }
 
     @Override

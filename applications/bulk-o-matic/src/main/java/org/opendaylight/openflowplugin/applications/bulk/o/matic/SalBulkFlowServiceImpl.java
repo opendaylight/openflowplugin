@@ -32,6 +32,7 @@ import javax.management.ObjectName;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.AddFlowsDsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.AddFlowsRpcInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.BulkFlowBaseContentGrouping;
@@ -80,7 +81,8 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
     public SalBulkFlowServiceImpl(SalFlowService flowService, DataBroker dataBroker) {
         this.flowService = Preconditions.checkNotNull(flowService);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
-        register();
+
+        JdkFutures.addErrorLogging(register(), LOG, "register");
     }
 
     @Override

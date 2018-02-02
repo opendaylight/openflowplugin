@@ -47,7 +47,7 @@ public final class BulkOMaticUtils {
                 .append(number & 0xFF).append("/32").toString();
     }
 
-    public static Match getMatch(final Integer sourceIp) {
+    public static Match getMatch(final int sourceIp) {
         Ipv4Match ipv4Match = new Ipv4MatchBuilder().setIpv4Source(new Ipv4Prefix(ipIntToStr(sourceIp))).build();
         MatchBuilder matchBuilder = new MatchBuilder();
         matchBuilder.setLayer3Match(ipv4Match);

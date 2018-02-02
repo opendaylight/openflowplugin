@@ -14,11 +14,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -38,6 +38,7 @@ public final class ShellUtil {
     private ShellUtil() {
     }
 
+    @Nonnull
     public static List<OFNode> getAllNodes(final DataBroker broker) {
         List<Node> nodes = null;
         ReadOnlyTransaction tx = broker.newReadOnlyTransaction();
@@ -62,13 +63,11 @@ public final class ShellUtil {
                     name = node.<FlowCapableNode>getAugmentation(FlowCapableNode.class).getDescription();
                 } else {
                     LOG.error("Error while converting OFNode: {} to FlowCapableNode", node.getId());
-                    return null;
+                    return Collections.emptyList();
                 }
                 OFNode ofNode = new OFNode(Long.parseLong(nodeId[1]), name);
-                if (ofNode != null) {
-                    LOG.trace("Added OFNode: {} to the list", ofNode.getNodeId());
-                    nodeList.add(ofNode);
-                }
+                LOG.trace("Added OFNode: {} to the list", ofNode.getNodeId());
+                nodeList.add(ofNode);
             }
             Collections.sort(nodeList);
             return nodeList;
@@ -126,7 +125,6 @@ public final class ShellUtil {
                         LOG.error("Error for OFNode:{} while reading nodeConnectors {}", node.getId());
                         return null;
                     } else {
-                        MacAddress hardwareAddress = flowCapableNodeConnector.getHardwareAddress();
                         String portName = flowCapableNodeConnector.getName();
                         portList.add(portName);
                     }

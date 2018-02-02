@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.applications.frm;
 
 import com.google.common.collect.ImmutableMap;
+import java.util.Locale;
 import java.util.Map;
 
 public enum ForwardingRulesProperty {
@@ -48,6 +49,6 @@ public enum ForwardingRulesProperty {
      */
     @Override
     public String toString() {
-        return this.name().toLowerCase().replace('_', '-');
+        return this.name().toLowerCase(Locale.ROOT).replace('_', '-');
     }
 }

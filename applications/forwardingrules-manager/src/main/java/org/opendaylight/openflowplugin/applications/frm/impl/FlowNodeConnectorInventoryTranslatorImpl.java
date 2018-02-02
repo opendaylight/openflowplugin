@@ -18,7 +18,6 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeConnectorInventoryTranslator;
-import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -50,8 +49,7 @@ public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnec
             .synchronizedListMultimap(ArrayListMultimap.<BigInteger, String>create());
 
     @SuppressWarnings("IllegalCatch")
-    public FlowNodeConnectorInventoryTranslatorImpl(final ForwardingRulesManager manager, final DataBroker dataBroker) {
-        super(manager);
+    public FlowNodeConnectorInventoryTranslatorImpl(final DataBroker dataBroker) {
         Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
 
         final DataTreeIdentifier<FlowCapableNodeConnector> treeId =
