@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.applications.lldpspeaker;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -17,6 +18,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import com.google.common.base.Optional;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -27,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.mdsal.eos.common.api.EntityOwnershipState;
+import org.opendaylight.openflowplugin.libraries.liblldp.PacketException;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortNumberUni;
@@ -41,6 +44,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Tr
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.rev141023.OperStatus;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 /**
  * Tests for {@link LLDPSpeaker}.
@@ -52,12 +56,7 @@ public class LLDPSpeakerTest {
     private static final MacAddress MAC_ADDRESS = new MacAddress("01:23:45:67:89:AB");
     private static final FlowCapableNodeConnector FLOW_CAPABLE_NODE_CONNECTOR =
             TestUtils.createFlowCapableNodeConnector(MAC_ADDRESS, 1L).build();
-    private static final byte[] LLDP_FRAME = LLDPUtil.buildLldpFrame(new NodeId("openflow:1"),
-            new NodeConnectorId("openflow:1:1"), MAC_ADDRESS, 1L);
-    private static final TransmitPacketInput PACKET_INPUT = new TransmitPacketInputBuilder()
-            .setEgress(new NodeConnectorRef(ID))
-            .setNode(new NodeRef(ID.firstIdentifierOf(Node.class)))
-            .setPayload(LLDP_FRAME).build();
+    private TransmitPacketInput packetInput;
 
     @Mock
     private PacketProcessingService packetProcessingService;
@@ -68,19 +67,23 @@ public class LLDPSpeakerTest {
     @Mock
     private EntityOwnershipService entityOwnershipService;
 
-    private final MacAddress destinationMACAddress = null;
     private LLDPSpeaker lldpSpeaker;
 
     @Before
-    public void setUp() {
-        when(
-                scheduledExecutorService.scheduleAtFixedRate(
-                        any(Runnable.class), anyLong(), anyLong(),
-                        any(TimeUnit.class))).thenReturn(scheduledSpeakerTask);
+    public void setUp() throws NoSuchAlgorithmException, PacketException {
+        byte[] lldpFrame = LLDPUtil.buildLldpFrame(new NodeId("openflow:1"),
+                new NodeConnectorId("openflow:1:1"), MAC_ADDRESS, 1L);
+        packetInput = new TransmitPacketInputBuilder().setEgress(new NodeConnectorRef(ID))
+                .setNode(new NodeRef(ID.firstIdentifierOf(Node.class))).setPayload(lldpFrame).build();
+
+        when(scheduledExecutorService.scheduleAtFixedRate(any(Runnable.class), anyLong(), anyLong(),
+                any(TimeUnit.class))).thenReturn(scheduledSpeakerTask);
         lldpSpeaker = new LLDPSpeaker(packetProcessingService,
-                scheduledExecutorService, destinationMACAddress, entityOwnershipService);
+                scheduledExecutorService, null, entityOwnershipService);
         when(entityOwnershipService.getOwnershipState(any())).thenReturn(Optional.of(EntityOwnershipState.IS_OWNER));
         lldpSpeaker.setOperationalStatus(OperStatus.RUN);
+
+        doReturn(RpcResultBuilder.success().buildFuture()).when(packetProcessingService).transmitPacket(any());
     }
 
     /**
@@ -98,7 +101,7 @@ public class LLDPSpeakerTest {
         lldpSpeaker.run();
 
         // Check packet transmission
-        verify(packetProcessingService, times(1)).transmitPacket(PACKET_INPUT);
+        verify(packetProcessingService, times(1)).transmitPacket(packetInput);
         verifyNoMoreInteractions(packetProcessingService);
     }
 
@@ -120,7 +123,7 @@ public class LLDPSpeakerTest {
         lldpSpeaker.run();
 
         // Check packet transmission
-        verify(packetProcessingService, times(1)).transmitPacket(PACKET_INPUT);
+        verify(packetProcessingService, times(1)).transmitPacket(packetInput);
         verifyNoMoreInteractions(packetProcessingService);
     }
 
@@ -141,7 +144,7 @@ public class LLDPSpeakerTest {
 
         // Verify that LLDP frame sent only once (by nodeConnectorAdded),
         // e.g. no flood after removal
-        verify(packetProcessingService, times(1)).transmitPacket(PACKET_INPUT);
+        verify(packetProcessingService, times(1)).transmitPacket(packetInput);
         verifyNoMoreInteractions(packetProcessingService);
     }
 
@@ -158,7 +161,7 @@ public class LLDPSpeakerTest {
         }
 
         // Check packet transmission
-        verify(packetProcessingService, times(1)).transmitPacket(PACKET_INPUT);
+        verify(packetProcessingService, times(1)).transmitPacket(packetInput);
         verifyNoMoreInteractions(packetProcessingService);
     }
 

@@ -45,8 +45,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.Add
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
@@ -323,25 +321,22 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
     ListenableFuture<RpcResult<Void>> updateTableFeatures(final InstanceIdentifier<FlowCapableNode> nodeIdent,
                                                           final FlowCapableNode flowCapableNodeConfigured) {
         // CHECK if while pushing the update, updateTableInput can be null to emulate a table add
-        final List<Table> tableList = ReconcileUtil.safeTables(flowCapableNodeConfigured);
+        //final List<Table> tableList = ReconcileUtil.safeTables(flowCapableNodeConfigured);
 
         final List<ListenableFuture<RpcResult<UpdateTableOutput>>> allResults = new ArrayList<>();
-        for (Table table : tableList) {
-            TableKey tableKey = table.getKey();
-            KeyedInstanceIdentifier<TableFeatures, TableFeaturesKey> tableFeaturesII = nodeIdent
-                    .child(TableFeatures.class, new TableFeaturesKey(tableKey.getId()));
-            List<TableFeatures> tableFeatures = flowCapableNodeConfigured.getTableFeatures();
-            if (tableFeatures != null) {
-                for (TableFeatures tableFeaturesItem : tableFeatures) {
-                    // TODO uncomment java.lang.NullPointerException
-                    // at
-                    // org.opendaylight.openflowjava.protocol.impl.serialization.match.AbstractOxmMatchEntrySerializer
-                    //    .serializeHeader(AbstractOxmMatchEntrySerializer.java:31
-                    // allResults.add(JdkFutureAdapters.listenInPoolThread(
-                    // tableForwarder.update(tableFeaturesII, null, tableFeaturesItem, nodeIdent)));
-                }
-            }
-        }
+//        for (Table table : tableList) {
+//            List<TableFeatures> tableFeatures = flowCapableNodeConfigured.getTableFeatures();
+//            if (tableFeatures != null) {
+//                for (TableFeatures tableFeaturesItem : tableFeatures) {
+//                    // TODO uncomment java.lang.NullPointerException
+//                    // at
+//                    // org.opendaylight.openflowjava.protocol.impl.serialization.match.AbstractOxmMatchEntrySerializer
+//                    //    .serializeHeader(AbstractOxmMatchEntrySerializer.java:31
+//                    // allResults.add(JdkFutureAdapters.listenInPoolThread(
+//                    // tableForwarder.update(tableFeaturesII, null, tableFeaturesItem, nodeIdent)));
+//                }
+//            }
+//        }
 
         final ListenableFuture<RpcResult<Void>> singleVoidResult = Futures.transform(
                 Futures.allAsList(allResults),

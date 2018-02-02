@@ -22,7 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.applications.frsync.SyncPlanPushStrategy;
 import org.opendaylight.openflowplugin.applications.frsync.util.ItemSyncBox;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
@@ -161,7 +161,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                                                                                     final SyncCrudCounters counters) {
         return new FutureCallback<RpcResult<ProcessFlatBatchOutput>>() {
             @Override
-            public void onSuccess(@Nullable final RpcResult<ProcessFlatBatchOutput> result) {
+            public void onSuccess(@Nonnull final RpcResult<ProcessFlatBatchOutput> result) {
                 if (!result.isSuccessful() && result.getResult() != null
                         && !result.getResult().getBatchFailure().isEmpty()) {
                     Map<Range<Integer>, Batch> batchMap = mapBatchesToRanges(inputBatchBag, failureIndexLimit);

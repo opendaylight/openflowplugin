@@ -19,6 +19,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
@@ -36,6 +37,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Flow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
@@ -107,7 +109,9 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
             // into remove-flow input so that only a flow entry associated with
             // a given flow object is removed.
             builder.setTransactionUri(new Uri(provider.getNewTransactionId())).setStrict(Boolean.TRUE);
-            provider.getSalFlowService().removeFlow(builder.build());
+            final Future<RpcResult<RemoveFlowOutput>> resultFuture =
+                    provider.getSalFlowService().removeFlow(builder.build());
+            JdkFutures.addErrorLogging(resultFuture, LOG, "removeFlow");
         }
     }
 
@@ -155,7 +159,9 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
             builder.setUpdatedFlow(new UpdatedFlowBuilder(update).setStrict(Boolean.TRUE).build());
             builder.setOriginalFlow(new OriginalFlowBuilder(original).setStrict(Boolean.TRUE).build());
 
-            provider.getSalFlowService().updateFlow(builder.build());
+            final Future<RpcResult<UpdateFlowOutput>> resultFuture =
+                    provider.getSalFlowService().updateFlow(builder.build());
+            JdkFutures.addErrorLogging(resultFuture, LOG, "updateFlow");
         }
     }
 
