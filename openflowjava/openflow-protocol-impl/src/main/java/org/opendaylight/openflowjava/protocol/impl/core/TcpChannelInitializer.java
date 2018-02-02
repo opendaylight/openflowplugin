@@ -14,6 +14,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.util.concurrent.Future;
 import java.net.InetAddress;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -90,7 +91,8 @@ public class TcpChannelInitializer extends ProtocolChannelInitializer<SocketChan
                     LOG.debug("Requested Cipher Suites are: {}", suitesList);
                     String[] suites = suitesList.toArray(new String[suitesList.size()]);
                     engine.setEnabledCipherSuites(suites);
-                    LOG.debug("Cipher suites enabled in SSLEngine are: {}", engine.getEnabledCipherSuites().toString());
+                    LOG.debug("Cipher suites enabled in SSLEngine are: {}",
+                            Arrays.toString(engine.getEnabledCipherSuites()));
                 }
                 final SslHandler ssl = new SslHandler(engine);
                 final Future<Channel> handshakeFuture = ssl.handshakeFuture();

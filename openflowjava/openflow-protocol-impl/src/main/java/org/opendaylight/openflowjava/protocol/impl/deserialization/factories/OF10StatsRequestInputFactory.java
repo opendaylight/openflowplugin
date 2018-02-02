@@ -7,7 +7,9 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
+import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -45,6 +47,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  *
  * @author giuseppex.petralia@intel.com
  */
+@SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
 public class OF10StatsRequestInputFactory
         implements OFDeserializer<MultipartRequestInput>, DeserializerRegistryInjector {
     private DeserializerRegistry registry;
@@ -53,6 +56,8 @@ public class OF10StatsRequestInputFactory
 
     @Override
     public MultipartRequestInput deserialize(ByteBuf rawMessage) {
+        Objects.requireNonNull(registry);
+
         MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();
         builder.setVersion((short) EncodeConstants.OF10_VERSION_ID);
         builder.setXid(rawMessage.readUnsignedInt());
@@ -156,7 +161,7 @@ public class OF10StatsRequestInputFactory
 
     @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
     private static MultipartRequestFlags getMultipartRequestFlags(int input) {
-        final Boolean _oFPMPFREQMORE = (input & 1 << 0) > 0;
+        final Boolean _oFPMPFREQMORE = (input & 1 << 0) != 0;
         MultipartRequestFlags flag = new MultipartRequestFlags(_oFPMPFREQMORE);
         return flag;
     }

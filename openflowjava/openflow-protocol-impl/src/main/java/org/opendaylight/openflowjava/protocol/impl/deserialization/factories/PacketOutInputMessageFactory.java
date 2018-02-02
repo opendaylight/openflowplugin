@@ -41,9 +41,8 @@ public class PacketOutInputMessageFactory implements OFDeserializer<PacketOutInp
         builder.setAction(actions);
         byte[] data = new byte[rawMessage.readableBytes()];
         rawMessage.readBytes(data);
-        if (data != null) {
-            builder.setData(data);
-        }
+
+        builder.setData(data);
         return builder.build();
     }
 

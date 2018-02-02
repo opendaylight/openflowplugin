@@ -25,8 +25,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  */
 public class GetFeaturesOutputFactory implements OFSerializer<GetFeaturesOutput>, SerializerRegistryInjector {
 
-    @SuppressWarnings("unused")
-    private SerializerRegistry registry;
     private static final byte MESSAGE_TYPE = 6;
     private static final byte PADDING = 2;
 
@@ -45,7 +43,6 @@ public class GetFeaturesOutputFactory implements OFSerializer<GetFeaturesOutput>
 
     @Override
     public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
-        this.registry = serializerRegistry;
     }
 
     private static void writeCapabilities(Capabilities capabilities, ByteBuf outBuffer) {
