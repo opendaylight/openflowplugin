@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowplugin.applications.bulk.o.matic;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import com.google.common.base.Optional;
@@ -32,6 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,6 +62,8 @@ public class FlowWriterDirectOFRpcTest {
 
     @Before
     public void setUp() throws Exception {
+        doReturn(RpcResultBuilder.success().buildFuture()).when(mockSalFlowService).addFlow(any());
+
         when(mockDataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
         NodeBuilder nodeBuilder = new NodeBuilder()
                 .setId(new NodeId("1"));
