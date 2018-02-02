@@ -16,6 +16,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -335,7 +336,7 @@ public abstract class ByteBufUtils {
     public static String decodeNullTerminatedString(final ByteBuf rawMessage, final int length) {
         byte[] name = new byte[length];
         rawMessage.readBytes(name);
-        return new String(name).trim();
+        return new String(name, StandardCharsets.UTF_8).trim();
     }
 
     /**
