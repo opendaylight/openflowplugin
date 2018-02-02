@@ -8,7 +8,7 @@
 package org.opendaylight.openflowplugin.applications.topology.lldp;
 
 import com.google.common.collect.ImmutableMap;
-
+import java.util.Locale;
 import java.util.Map;
 
 public enum TopologyLLDPDiscoveryProperty {
@@ -46,6 +46,6 @@ public enum TopologyLLDPDiscoveryProperty {
      */
     @Override
     public String toString() {
-        return this.name().toLowerCase().replace('_', '-');
+        return this.name().toLowerCase(Locale.ROOT).replace('_', '-');
     }
 }
