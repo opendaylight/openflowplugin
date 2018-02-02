@@ -7,10 +7,13 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
@@ -28,14 +31,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.MultipartReplyBody;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyAggregateCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyDescCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyExperimenterCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyFlowCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyPortStatsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyQueueCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyTableCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.aggregate._case.MultipartReplyAggregate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.desc._case.MultipartReplyDesc;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.experimenter._case.MultipartReplyExperimenter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.MultipartReplyFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.multipart.reply.flow.FlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.stats._case.MultipartReplyPortStats;
@@ -50,6 +51,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  *
  * @author giuseppex.petralia@intel.com
  */
+@SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
 public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReplyMessage>, SerializerRegistryInjector {
 
     private SerializerRegistry registry;
@@ -72,6 +74,8 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
 
     @Override
     public void serialize(MultipartReplyMessage message, ByteBuf outBuffer) {
+        Objects.requireNonNull(registry);
+
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         outBuffer.writeShort(message.getType().getIntValue());
         writeFlags(message.getFlags(), outBuffer);
@@ -104,8 +108,8 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
     }
 
     private void serializeExperimenterBody(MultipartReplyBody body, ByteBuf outBuffer) {
-        MultipartReplyExperimenterCase experimenterCase = (MultipartReplyExperimenterCase) body;
-        MultipartReplyExperimenter experimenterBody = experimenterCase.getMultipartReplyExperimenter();
+//        MultipartReplyExperimenterCase experimenterCase = (MultipartReplyExperimenterCase) body;
+//        MultipartReplyExperimenter experimenterBody = experimenterCase.getMultipartReplyExperimenter();
         // TODO: experimenterBody does not have get methods
     }
 
@@ -192,7 +196,7 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
         for (FlowStats flowStats : flow.getFlowStats()) {
             ByteBuf flowStatsBuff = UnpooledByteBufAllocator.DEFAULT.buffer();
             flowStatsBuff.writeShort(EncodeConstants.EMPTY_LENGTH);
-            flowStatsBuff.writeByte(new Long(flowStats.getTableId()).byteValue());
+            flowStatsBuff.writeByte((byte)flowStats.getTableId().longValue());
             flowStatsBuff.writeZero(FLOW_STATS_PADDING_1);
             OFSerializer<MatchV10> matchSerializer = registry
                     .getSerializer(new MessageTypeKey<>(message.getVersion(), MatchV10.class));
@@ -230,7 +234,7 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
     }
 
     private void write256String(String toWrite, ByteBuf outBuffer) {
-        byte[] nameBytes = toWrite.getBytes();
+        byte[] nameBytes = toWrite.getBytes(StandardCharsets.UTF_8);
         if (nameBytes.length < 256) {
             byte[] nameBytesPadding = new byte[256];
             int index = 0;
@@ -248,7 +252,7 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
     }
 
     private void write16String(String toWrite, ByteBuf outBuffer) {
-        byte[] nameBytes = toWrite.getBytes();
+        byte[] nameBytes = toWrite.getBytes(StandardCharsets.UTF_8);
         if (nameBytes.length < 16) {
             byte[] nameBytesPadding = new byte[16];
             int index = 0;
@@ -266,7 +270,7 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
     }
 
     private void write32String(String toWrite, ByteBuf outBuffer) {
-        byte[] nameBytes = toWrite.getBytes();
+        byte[] nameBytes = toWrite.getBytes(StandardCharsets.UTF_8);
         if (nameBytes.length < 32) {
             byte[] nameBytesPadding = new byte[32];
             int index = 0;

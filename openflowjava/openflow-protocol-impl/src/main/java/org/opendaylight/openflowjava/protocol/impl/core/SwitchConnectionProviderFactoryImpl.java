@@ -8,6 +8,7 @@
 package org.opendaylight.openflowjava.protocol.impl.core;
 
 import com.google.common.base.MoreObjects;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -54,6 +55,7 @@ public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProv
         }
     }
 
+    @SuppressFBWarnings("PZLA_PREFER_ZERO_LENGTH_ARRAYS")
     private static byte[] address2bin(final String value) {
         //TODO: translate ipv4 or ipv6 into byte[]
         return null;

@@ -53,8 +53,6 @@ public class QueueGetConfigReplyMessageFactory implements OFSerializer<GetQueueC
                 propertyBuff.writeZero(PROPERTY_HEADER_PADDING);
                 switch (property.getProperty()) {
                     case OFPQTMINRATE:
-                        serializeRateBody(property.getAugmentation(RateQueueProperty.class), propertyBuff);
-                        break;
                     case OFPQTMAXRATE:
                         serializeRateBody(property.getAugmentation(RateQueueProperty.class), propertyBuff);
                         break;
