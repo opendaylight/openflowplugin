@@ -20,8 +20,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import org.apache.commons.lang3.ArrayUtils;
 import org.opendaylight.openflowplugin.applications.topology.lldp.LLDPActivator;
-import org.opendaylight.openflowplugin.libraries.liblldp.BitBufferHelper;
-import org.opendaylight.openflowplugin.libraries.liblldp.CustomTLVKey;
+import org.opendaylight.openflowplugin.libraries.liblldp.BufferException;
 import org.opendaylight.openflowplugin.libraries.liblldp.Ethernet;
 import org.opendaylight.openflowplugin.libraries.liblldp.LLDP;
 import org.opendaylight.openflowplugin.libraries.liblldp.LLDPTLV;
@@ -105,8 +104,7 @@ public final class LLDPDiscoveryUtils {
                     throw new Exception("Node id wasn't specified via systemNameId in LLDP packet.");
                 }
 
-                final LLDPTLV nodeConnectorIdLldptlv = lldp.getCustomTLV(new CustomTLVKey(
-                        BitBufferHelper.getInt(LLDPTLV.OFOUI), LLDPTLV.CUSTOM_TLV_SUB_TYPE_NODE_CONNECTOR_ID[0]));
+                final LLDPTLV nodeConnectorIdLldptlv = lldp.getCustomTLV(LLDPTLV.createPortSubTypeCustomTLVKey());
                 if (nodeConnectorIdLldptlv != null) {
                     srcNodeConnectorId = new NodeConnectorId(LLDPTLV.getCustomString(
                             nodeConnectorIdLldptlv.getValue(), nodeConnectorIdLldptlv.getLength()));
@@ -159,9 +157,8 @@ public final class LLDPDiscoveryUtils {
     }
 
     private static boolean checkExtraAuthenticator(LLDP lldp, NodeConnectorId srcNodeConnectorId)
-            throws NoSuchAlgorithmException {
-        final LLDPTLV hashLldptlv = lldp.getCustomTLV(
-                new CustomTLVKey(BitBufferHelper.getInt(LLDPTLV.OFOUI), LLDPTLV.CUSTOM_TLV_SUB_TYPE_CUSTOM_SEC[0]));
+            throws NoSuchAlgorithmException, BufferException {
+        final LLDPTLV hashLldptlv = lldp.getCustomTLV(LLDPTLV.createSecSubTypeCustomTLVKey());
         boolean secAuthenticatorOk = false;
         if (hashLldptlv != null) {
             byte[] rawTlvValue = hashLldptlv.getValue();

@@ -82,7 +82,7 @@ public enum EtherTypes {
 
     public static int getEtherTypeNumberInt(final String name) {
         if (name.matches(REGEX_NUMBER_STRING)) {
-            return Integer.valueOf(name);
+            return Integer.parseInt(name);
         }
         for (EtherTypes type : EtherTypes.values()) {
             if (type.description.equalsIgnoreCase(name)) {

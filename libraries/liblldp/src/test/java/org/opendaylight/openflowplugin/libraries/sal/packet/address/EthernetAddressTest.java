@@ -15,9 +15,10 @@
  */
 package org.opendaylight.openflowplugin.libraries.sal.packet.address;
 
+import static org.junit.Assert.fail;
+
 import org.junit.Assert;
 import org.junit.Test;
-import org.opendaylight.openflowplugin.libraries.liblldp.ConstructionException;
 import org.opendaylight.openflowplugin.libraries.liblldp.EthernetAddress;
 
 public class EthernetAddressTest {
@@ -30,8 +31,8 @@ public class EthernetAddressTest {
             ea1 = new EthernetAddress((byte[]) null);
 
             // Exception is expected if NOT raised test will fail
-            Assert.assertTrue(false);
-        } catch (final ConstructionException e) {
+            fail("Expected NullPointerException");
+        } catch (final NullPointerException e) {
             // expected
         }
 
@@ -40,8 +41,8 @@ public class EthernetAddressTest {
             ea1 = new EthernetAddress(new byte[] { (byte) 0x0, (byte) 0x0 });
 
             // Exception is expected if NOT raised test will fail
-            Assert.assertTrue(false);
-        } catch (final ConstructionException e) {
+            fail("Expected IllegalArgumentException");
+        } catch (final IllegalArgumentException e) {
             // expected
         }
 
@@ -51,65 +52,42 @@ public class EthernetAddressTest {
                 (byte) 0x0, (byte) 0x0, (byte) 0x0 });
 
             // Exception is expected if NOT raised test will fail
-            Assert.assertTrue(false);
-        } catch (final ConstructionException e) {
+            fail("Expected IllegalArgumentException");
+        } catch (final IllegalArgumentException e) {
             // expected
         }
     }
 
     @Test
     public void testEquality() {
-        EthernetAddress ea1;
-        EthernetAddress ea2;
-        try {
-            ea1 = new EthernetAddress(new byte[] { (byte) 0x0, (byte) 0x0,
-                (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x1 });
+        EthernetAddress ea1 = new EthernetAddress(new byte[] { (byte) 0x0, (byte) 0x0,
+            (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x1 });
 
-            ea2 = new EthernetAddress(new byte[] { (byte) 0x0, (byte) 0x0,
-                (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x1 });
-            Assert.assertTrue(ea1.equals(ea2));
-        } catch (final ConstructionException e) {
-            // Exception is NOT expected if raised test will fail
-            Assert.assertTrue(false);
-        }
+        EthernetAddress ea2 = new EthernetAddress(new byte[] { (byte) 0x0, (byte) 0x0,
+            (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x1 });
+        Assert.assertTrue(ea1.equals(ea2));
 
-        try {
-            ea1 = new EthernetAddress(new byte[] { (byte) 0x0, (byte) 0x0,
-                (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x1 });
+        ea1 = new EthernetAddress(new byte[] { (byte) 0x0, (byte) 0x0,
+            (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x1 });
 
-            ea2 = ea1.clone();
-            Assert.assertTrue(ea1.equals(ea2));
-        } catch (final ConstructionException e) {
-            // Exception is NOT expected if raised test will fail
-            Assert.assertTrue(false);
-        }
+        ea2 = ea1.clone();
+        Assert.assertTrue(ea1.equals(ea2));
 
         // Check for well knowns
-        try {
-            ea1 = EthernetAddress.BROADCASTMAC;
-            ea2 = new EthernetAddress(new byte[] { (byte) 0xff, (byte) 0xff,
-                (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff });
-            Assert.assertTrue(ea1.equals(ea2));
-        } catch (final ConstructionException e) {
-            // Exception is NOT expected if raised test will fail
-            Assert.assertTrue(false);
-        }
+
+        ea1 = EthernetAddress.BROADCASTMAC;
+        ea2 = new EthernetAddress(new byte[] { (byte) 0xff, (byte) 0xff,
+            (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff });
+        Assert.assertTrue(ea1.equals(ea2));
     }
 
     @Test
     public void testUnEquality() {
-        EthernetAddress ea1;
-        EthernetAddress ea2;
-        try {
-            ea1 = new EthernetAddress(new byte[] { (byte) 0x0, (byte) 0x0,
-                (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x2 });
+        EthernetAddress ea1 = new EthernetAddress(new byte[] { (byte) 0x0, (byte) 0x0,
+            (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x2 });
 
-            ea2 = new EthernetAddress(new byte[] { (byte) 0x0, (byte) 0x0,
-                (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x1 });
-            Assert.assertTrue(!ea1.equals(ea2));
-        } catch (final ConstructionException e) {
-            // Exception is NOT expected if raised test will fail
-            Assert.assertTrue(false);
-        }
+        EthernetAddress ea2 = new EthernetAddress(new byte[] { (byte) 0x0, (byte) 0x0,
+            (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x1 });
+        Assert.assertTrue(!ea1.equals(ea2));
     }
 }
