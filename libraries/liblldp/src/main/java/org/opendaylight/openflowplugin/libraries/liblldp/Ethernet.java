@@ -24,7 +24,7 @@ public class Ethernet extends Packet {
 
     // TODO: This has to be outside and it should be possible for osgi
     // to add new coming packet classes
-    public static final Map<Short, Class<? extends Packet>> ETHER_TYPE_CLASS_MAP = new HashMap<>();
+    private static final Map<Short, Class<? extends Packet>> ETHER_TYPE_CLASS_MAP = new HashMap<>();
 
     static {
         ETHER_TYPE_CLASS_MAP.put(EtherTypes.LLDP.shortValue(), LLDP.class);

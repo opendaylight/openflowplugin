@@ -396,7 +396,7 @@ public abstract class NetUtils {
             return false;
         }
         if (values.length >= 2) {
-            int prefix = Integer.valueOf(values[1]);
+            int prefix = Integer.parseInt(values[1]);
             if (prefix < 0 || prefix > 32) {
                 return false;
             }
@@ -429,7 +429,7 @@ public abstract class NetUtils {
         }
 
         if (values.length >= 2) {
-            int prefix = Integer.valueOf(values[1]);
+            int prefix = Integer.parseInt(values[1]);
             if (prefix < 0 || prefix > 128) {
                 return false;
             }
