@@ -5,13 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
-/**
- *
- */
 package org.opendaylight.openflowplugin.libraries.liblldp;
 
 import java.util.Arrays;
+import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,13 +65,13 @@ public abstract class BitBufferHelper {
             LOG.error("getShort", new BufferException("Container is too small for the number of requested bits"));
         }
         int startOffset = data.length * NetUtils.NUM_BITS_IN_A_BYTE - numBits;
-        byte[] bits = null;
         try {
-            bits = BitBufferHelper.getBits(data, startOffset, numBits);
+            byte[] bits = BitBufferHelper.getBits(data, startOffset, numBits);
+            return (short) toNumber(bits, numBits);
         } catch (final BufferException e) {
-            LOG.error("", e);
+            LOG.error("getBits failed", e);
         }
-        return (short) toNumber(bits, numBits);
+        return 0;
     }
 
     /**
@@ -101,13 +98,13 @@ public abstract class BitBufferHelper {
             LOG.error("getInt", new BufferException("Container is too small for the number of requested bits"));
         }
         int startOffset = data.length * NetUtils.NUM_BITS_IN_A_BYTE - numBits;
-        byte[] bits = null;
         try {
-            bits = BitBufferHelper.getBits(data, startOffset, numBits);
+            byte[] bits = BitBufferHelper.getBits(data, startOffset, numBits);
+            return (int) toNumber(bits, numBits);
         } catch (final BufferException e) {
-            LOG.error("", e);
+            LOG.error("getBits failed", e);
         }
-        return (int) toNumber(bits, numBits);
+        return 0;
     }
 
     /**
@@ -141,13 +138,13 @@ public abstract class BitBufferHelper {
             }
         }
         int startOffset = data.length * NetUtils.NUM_BITS_IN_A_BYTE - numBits;
-        byte[] bits = null;
         try {
-            bits = BitBufferHelper.getBits(data, startOffset, numBits);
+            byte[] bits = BitBufferHelper.getBits(data, startOffset, numBits);
+            return toNumber(bits, numBits);
         } catch (final BufferException e) {
-            LOG.error("", e);
+            LOG.error("getBits failed", e);
         }
-        return toNumber(bits, numBits);
+        return 0;
     }
 
     /**
@@ -170,6 +167,7 @@ public abstract class BitBufferHelper {
      *             when the startOffset and numBits parameters are not congruent
      *             with the data buffer size
      */
+    @Nonnull
     public static byte[] getBits(final byte[] data, final int startOffset, final int numBits) throws BufferException {
         int startByteOffset = 0;
         int extranumBits = numBits % NetUtils.NUM_BITS_IN_A_BYTE;

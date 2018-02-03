@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.libraries.liblldp;
 
 import java.util.Arrays;
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -19,8 +20,6 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlAccessorType(XmlAccessType.NONE)
 public class EthernetAddress extends DataLinkAddress {
     private static final long serialVersionUID = 1L;
-    @XmlTransient
-    private byte[] macAddress;
 
     public static final EthernetAddress BROADCASTMAC = createWellKnownAddress(new byte[] {
         (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff });
@@ -30,12 +29,11 @@ public class EthernetAddress extends DataLinkAddress {
     public static final String ADDRESS_NAME = "Ethernet MAC Address";
     public static final int SIZE = 6;
 
+    @XmlTransient
+    private byte[] macAddress;
+
     private static EthernetAddress createWellKnownAddress(final byte[] mac) {
-        try {
-            return new EthernetAddress(mac);
-        } catch (final ConstructionException ce) {
-            return null;
-        }
+        return new EthernetAddress(mac);
     }
 
     /* Private constructor to satisfy JAXB */
@@ -50,15 +48,13 @@ public class EthernetAddress extends DataLinkAddress {
      *
      * @param macAddress A byte array in big endian format representing the Ethernet MAC Address
      */
-    public EthernetAddress(final byte[] macAddress) throws ConstructionException {
+    public EthernetAddress(final byte[] macAddress) {
         super(ADDRESS_NAME);
 
-        if (macAddress == null) {
-            throw new ConstructionException("Null input parameter passed");
-        }
+        Objects.requireNonNull(macAddress);
 
         if (macAddress.length != SIZE) {
-            throw new ConstructionException(
+            throw new IllegalArgumentException(
                     "Wrong size of passed byte array, expected:" + SIZE
                             + " got:" + macAddress.length);
         }
@@ -69,19 +65,13 @@ public class EthernetAddress extends DataLinkAddress {
     @Override
     public EthernetAddress clone() {
         try {
-            return new EthernetAddress(this.macAddress.clone());
-        } catch (final ConstructionException ce) {
-            return null;
+            EthernetAddress cloned = (EthernetAddress)super.clone();
+            cloned.macAddress = this.macAddress.clone();
+            return cloned;
+        } catch (CloneNotSupportedException e) {
+            // This should never happen
+            throw new AssertionError(e);
         }
-    }
-
-    /**
-     * Return the Ethernet Mac address in byte array format.
-     *
-     * @return The Ethernet Mac address in byte array format
-     */
-    public byte[] getValue() {
-        return this.macAddress;
     }
 
     @Override
