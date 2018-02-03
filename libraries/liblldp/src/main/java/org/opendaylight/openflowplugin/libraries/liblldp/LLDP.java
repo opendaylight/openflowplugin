@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.libraries.liblldp;
 
 import com.google.common.collect.Iterables;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ public class LLDP extends Packet {
     private static final String TTL = "TTL";
     private static final int LLDP_DEFAULT_TLVS = 3;
     private static final LLDPTLV EMPTY_TLV = new LLDPTLV().setLength((short) 0).setType((byte) 0);
+    @SuppressFBWarnings("MS_PKGPROTECT")
     public static final byte[] LLDP_MULTICAST_MAC = { 1, (byte) 0x80, (byte) 0xc2, 0, 0, (byte) 0xe };
 
     private Map<Byte, LLDPTLV> mandatoryTLVs;

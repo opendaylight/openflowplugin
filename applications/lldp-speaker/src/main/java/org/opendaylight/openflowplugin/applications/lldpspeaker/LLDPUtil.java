@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.applications.lldpspeaker;
 
 import static org.opendaylight.openflowplugin.applications.topology.lldp.utils.LLDPDiscoveryUtils.getValueForLLDPPacketIntegrityEnsuring;
-import static org.opendaylight.openflowplugin.libraries.liblldp.LLDPTLV.CUSTOM_TLV_SUB_TYPE_CUSTOM_SEC;
 
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
@@ -84,7 +83,7 @@ public final class LLDPUtil {
 
         //Create LLDP CustomSec TLV
         byte[] pureValue = getValueForLLDPPacketIntegrityEnsuring(nodeConnectorId);
-        byte[] customSecValue = LLDPTLV.createCustomTLVValue(CUSTOM_TLV_SUB_TYPE_CUSTOM_SEC, pureValue);
+        byte[] customSecValue = LLDPTLV.createSecSubTypeCustomTLVValue(pureValue);
         LLDPTLV customSecTlv = new LLDPTLV();
         customSecTlv.setType(LLDPTLV.TLVType.Custom.getValue()).setLength((short) customSecValue.length)
             .setValue(customSecValue);

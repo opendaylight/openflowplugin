@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.libraries.liblldp;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -287,6 +288,7 @@ public abstract class Packet {
      *
      * @return The raw payload if not parsable as an array of bytes, null otherwise
      */
+    @SuppressFBWarnings("EI_EXPOSE_REP")
     public byte[] getRawPayload() {
         return rawPayload;
     }
@@ -326,6 +328,10 @@ public abstract class Packet {
 
     @Override
     public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+
         if (this == obj) {
             return true;
         }
@@ -339,14 +345,11 @@ public abstract class Packet {
         if (hdrFieldsMap == null || other.hdrFieldsMap == null) {
             return false;
         }
-        if (hdrFieldsMap != null && other.hdrFieldsMap != null) {
-            for (String field : hdrFieldsMap.keySet()) {
-                if (!Arrays.equals(hdrFieldsMap.get(field), other.hdrFieldsMap.get(field))) {
-                    return false;
-                }
+        for (Entry<String, byte[]> entry : hdrFieldsMap.entrySet()) {
+            String field = entry.getKey();
+            if (!Arrays.equals(entry.getValue(), other.hdrFieldsMap.get(field))) {
+                return false;
             }
-        } else {
-            return false;
         }
         return true;
     }
