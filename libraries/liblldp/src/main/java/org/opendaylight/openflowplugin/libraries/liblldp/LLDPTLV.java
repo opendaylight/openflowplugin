@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.libraries.liblldp;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -29,21 +30,20 @@ public class LLDPTLV extends Packet {
     private static final int LLDPTLV_FIELDS = 3;
 
     /** OpenFlow OUI. */
-    public static final byte[] OFOUI = new byte[] { (byte) 0x00, (byte) 0x26,
-        (byte) 0xe1 };
+    static final byte[] OFOUI = new byte[] { (byte) 0x00, (byte) 0x26, (byte) 0xe1 };
 
     /** Length of Organizationally defined subtype field of TLV in bytes.   */
     private static final byte CUSTOM_TLV_SUB_TYPE_LENGTH = (byte)1;
 
     /** OpenFlow subtype: nodeConnectorId of source. */
-    public static final byte[] CUSTOM_TLV_SUB_TYPE_NODE_CONNECTOR_ID = new byte[] { 0 };
+    private static final byte[] CUSTOM_TLV_SUB_TYPE_NODE_CONNECTOR_ID = new byte[] { 0 };
 
     /** OpenFlow subtype: custom sec = hash code of verification of origin of LLDP. */
-    public static final byte[] CUSTOM_TLV_SUB_TYPE_CUSTOM_SEC = new byte[] { 1 };
+    private static final byte[] CUSTOM_TLV_SUB_TYPE_CUSTOM_SEC = new byte[] { 1 };
 
-    public static final int CUSTOM_TLV_OFFSET = OFOUI.length + CUSTOM_TLV_SUB_TYPE_LENGTH;
-    public static final byte[] CHASSISID_SUB_TYPE = new byte[] { 4 }; // MAC address for the system
-    public static final byte[] PORTID_SUB_TYPE = new byte[] { 7 }; // locally assigned
+    private static final int CUSTOM_TLV_OFFSET = OFOUI.length + CUSTOM_TLV_SUB_TYPE_LENGTH;
+    private static final byte[] CHASSISID_SUB_TYPE = new byte[] { 4 }; // MAC address for the system
+    private static final byte[] PORTID_SUB_TYPE = new byte[] { 7 }; // locally assigned
 
     public enum TLVType {
         Unknown((byte) 0), ChassisID((byte) 1), PortID((byte) 2), TTL((byte) 3), PortDesc(
@@ -211,8 +211,7 @@ public class LLDPTLV extends Packet {
      * @return the SystemName TLV value in byte array
      */
     public static byte[] createSystemNameTLVValue(final String nodeId) {
-        byte[] nid = nodeId.getBytes();
-        return nid;
+        return nodeId.getBytes(StandardCharsets.UTF_8);
     }
 
     /**
@@ -294,6 +293,16 @@ public class LLDPTLV extends Packet {
     }
 
     /**
+     * Creates a custom TLV value including OUI of sub type custom sec and custom bytes value.
+     *
+     * @param customValue the custom value
+     * @return the custom TLV value in byte array
+     */
+    public static byte[] createSecSubTypeCustomTLVValue(final byte[] customValue) {
+        return createCustomTLVValue(CUSTOM_TLV_SUB_TYPE_CUSTOM_SEC, customValue);
+    }
+
+    /**
      * Retrieves the string from TLV value and returns it in HexString format.
      *
      * @param tlvValue
@@ -367,5 +376,13 @@ public class LLDPTLV extends Packet {
     public static byte extractCustomSubtype(final LLDPTLV lldptlv) {
         byte[] value = lldptlv.getValue();
         return BitBufferHelper.getByte(ArrayUtils.subarray(value, 3, 4));
+    }
+
+    public static CustomTLVKey createPortSubTypeCustomTLVKey() throws BufferException {
+        return new CustomTLVKey(BitBufferHelper.getInt(OFOUI), CUSTOM_TLV_SUB_TYPE_NODE_CONNECTOR_ID[0]);
+    }
+
+    public static CustomTLVKey createSecSubTypeCustomTLVKey() throws BufferException {
+        return new CustomTLVKey(BitBufferHelper.getInt(LLDPTLV.OFOUI), LLDPTLV.CUSTOM_TLV_SUB_TYPE_CUSTOM_SEC[0]);
     }
 }
