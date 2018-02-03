@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Abstract base class for a Datalink Address.
  */
 @XmlRootElement
-public abstract class DataLinkAddress implements Serializable {
+public abstract class DataLinkAddress implements Serializable, Cloneable {
     private static final long serialVersionUID = 1L;
     private String name;
 
@@ -32,14 +32,6 @@ public abstract class DataLinkAddress implements Serializable {
     protected DataLinkAddress(final String name) {
         this.name = name;
     }
-
-    /**
-     * Used to copy the DataLinkAddress in a polymorphic way.
-     *
-     * @return A clone of this DataLinkAddress
-     */
-    @Override
-    public abstract DataLinkAddress clone();
 
     /**
      * Allow to distinguish among different data link addresses.
