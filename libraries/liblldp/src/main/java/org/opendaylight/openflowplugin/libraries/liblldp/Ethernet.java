@@ -24,7 +24,7 @@ public class Ethernet extends Packet {
 
     // TODO: This has to be outside and it should be possible for osgi
     // to add new coming packet classes
-    public static final Map<Short, Class<? extends Packet>> ETHER_TYPE_CLASS_MAP = new HashMap<>();
+    private static final Map<Short, Class<? extends Packet>> ETHER_TYPE_CLASS_MAP = new HashMap<>();
 
     static {
         ETHER_TYPE_CLASS_MAP.put(EtherTypes.LLDP.shortValue(), LLDP.class);
@@ -60,10 +60,13 @@ public class Ethernet extends Packet {
     }
 
     @Override
-    public void setHeaderField(final String headerField, final byte[] readValue) {
+    public void setHeaderField(final String headerField, final byte[] readValue) throws PacketException {
         if (headerField.equals(ETHT)) {
-            payloadClass = ETHER_TYPE_CLASS_MAP.get(BitBufferHelper
-                    .getShort(readValue));
+            try {
+                payloadClass = ETHER_TYPE_CLASS_MAP.get(BitBufferHelper.getShort(readValue));
+            } catch (BufferException e) {
+                throw new PacketException("Error converting header value to short", e);
+            }
         }
         hdrFieldsMap.put(headerField, readValue);
     }
@@ -91,8 +94,12 @@ public class Ethernet extends Packet {
      *
      * @return short - the etherType
      */
-    public short getEtherType() {
-        return BitBufferHelper.getShort(fieldValues.get(ETHT));
+    public short getEtherType() throws PacketException {
+        try {
+            return BitBufferHelper.getShort(fieldValues.get(ETHT));
+        } catch (BufferException e) {
+            throw new PacketException("Error converting " + ETHT + " field to short", e);
+        }
     }
 
     public boolean isBroadcast() {
