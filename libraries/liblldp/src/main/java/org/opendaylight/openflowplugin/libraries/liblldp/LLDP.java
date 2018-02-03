@@ -23,7 +23,6 @@ public class LLDP extends Packet {
     private static final String TTL = "TTL";
     private static final int LLDP_DEFAULT_TLVS = 3;
     private static final LLDPTLV EMPTY_TLV = new LLDPTLV().setLength((short) 0).setType((byte) 0);
-    public static final byte[] LLDP_MULTICAST_MAC = { 1, (byte) 0x80, (byte) 0xc2, 0, 0, (byte) 0xe };
 
     private Map<Byte, LLDPTLV> mandatoryTLVs;
     private Map<Byte, LLDPTLV> optionalTLVs;
@@ -174,14 +173,14 @@ public class LLDP extends Packet {
         return customTLVs.values();
     }
 
-    public LLDP setOptionalTLVList(final List<LLDPTLV> optionalTLVList) {
+    public LLDP setOptionalTLVList(final List<LLDPTLV> optionalTLVList) throws PacketException {
         for (LLDPTLV tlv : optionalTLVList) {
             optionalTLVs.put(tlv.getType(), tlv);
         }
         return this;
     }
 
-    public LLDP addCustomTLV(final LLDPTLV customTLV) {
+    public LLDP addCustomTLV(final LLDPTLV customTLV) throws PacketException {
         CustomTLVKey key = new CustomTLVKey(LLDPTLV.extractCustomOUI(customTLV),
                 LLDPTLV.extractCustomSubtype(customTLV));
         customTLVs.put(key, customTLV);
@@ -254,7 +253,7 @@ public class LLDP extends Packet {
      *
      * @return int - LLDP Packet size in bytes
      */
-    private int getLLDPPacketLength() {
+    private int getLLDPPacketLength() throws PacketException {
         int len = 0;
 
         for (LLDPTLV lldptlv : Iterables.concat(mandatoryTLVs.values(), optionalTLVs.values(), customTLVs.values())) {
