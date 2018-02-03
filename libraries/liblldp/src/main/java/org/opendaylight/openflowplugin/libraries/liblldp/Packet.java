@@ -65,7 +65,7 @@ public abstract class Packet {
         this.payload = payload;
     }
 
-    public void setHeaderField(final String headerField, final byte[] readValue) {
+    public void setHeaderField(final String headerField, final byte[] readValue) throws PacketException {
         hdrFieldsMap.put(headerField, readValue);
     }
 
@@ -227,7 +227,7 @@ public abstract class Packet {
      *
      * @return int the header length in bits
      */
-    public int getHeaderSize() {
+    public int getHeaderSize() throws PacketException {
         int size = 0;
         /*
          * We need to iterate over the fields that were read in the frame
@@ -261,7 +261,7 @@ public abstract class Packet {
      *
      * @return Integer - number of bits of the requested field
      */
-    public int getfieldnumBits(final String fieldName) {
+    public int getfieldnumBits(final String fieldName) throws PacketException {
         return hdrFieldCoordMap.get(fieldName).getRight();
     }
 
@@ -279,16 +279,6 @@ public abstract class Packet {
         }
         ret.replace(ret.length() - 2, ret.length() - 1, "]");
         return ret.toString();
-    }
-
-    /**
-     * Returns the raw payload carried by this packet in case payload was not
-     * parsed. Caller can call this function in case the getPaylod() returns null.
-     *
-     * @return The raw payload if not parsable as an array of bytes, null otherwise
-     */
-    public byte[] getRawPayload() {
-        return rawPayload;
     }
 
     /**
@@ -326,6 +316,10 @@ public abstract class Packet {
 
     @Override
     public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+
         if (this == obj) {
             return true;
         }
@@ -339,14 +333,11 @@ public abstract class Packet {
         if (hdrFieldsMap == null || other.hdrFieldsMap == null) {
             return false;
         }
-        if (hdrFieldsMap != null && other.hdrFieldsMap != null) {
-            for (String field : hdrFieldsMap.keySet()) {
-                if (!Arrays.equals(hdrFieldsMap.get(field), other.hdrFieldsMap.get(field))) {
-                    return false;
-                }
+        for (Entry<String, byte[]> entry : hdrFieldsMap.entrySet()) {
+            String field = entry.getKey();
+            if (!Arrays.equals(entry.getValue(), other.hdrFieldsMap.get(field))) {
+                return false;
             }
-        } else {
-            return false;
         }
         return true;
     }

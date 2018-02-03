@@ -188,7 +188,7 @@ public class LLDPTest {
     }
 
     @Test
-    public void testGetCustomTLV() throws PacketException {
+    public void testGetCustomTLV() throws PacketException, BufferException {
         int ouiInt = BitBufferHelper.getInt(OUI);
         CustomTLVKey key = new CustomTLVKey(ouiInt, OUI_SUBTYPE_A[0]);
         LLDPTLV customTLV = lldpBuilder.getCustomTLV(key);
@@ -204,7 +204,7 @@ public class LLDPTest {
         assertEquals(OUI_SUBTYPE_A[0], LLDPTLV.extractCustomSubtype(customTLV));
     }
 
-    private static void checkCustomTlv(final LLDPTLV customItem, final String expectedValue) {
+    private static void checkCustomTlv(final LLDPTLV customItem, final String expectedValue) throws PacketException {
         Assert.assertEquals(127, customItem.getType());
         LOG.debug("custom TLV1.length: {}", customItem.getLength());
         Assert.assertEquals(expectedValue,

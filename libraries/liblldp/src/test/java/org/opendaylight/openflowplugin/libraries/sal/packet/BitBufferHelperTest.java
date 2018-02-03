@@ -11,11 +11,12 @@ package org.opendaylight.openflowplugin.libraries.sal.packet;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.libraries.liblldp.BitBufferHelper;
+import org.opendaylight.openflowplugin.libraries.liblldp.BufferException;
 
 public class BitBufferHelperTest {
 
     @Test
-    public void testGetByte() {
+    public void testGetByte() throws BufferException {
         byte[] data = { 100 };
         Assert.assertTrue(BitBufferHelper.getByte(data) == 100);
     }
@@ -315,7 +316,7 @@ public class BitBufferHelperTest {
     }
 
     @Test
-    public void testToLongGetter() {
+    public void testToLongGetter() throws BufferException {
         byte[] data = { 1, 1 };
         Assert.assertTrue(BitBufferHelper.getLong(data) == 257L);
     }

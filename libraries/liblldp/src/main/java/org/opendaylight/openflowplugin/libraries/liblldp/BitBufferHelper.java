@@ -12,6 +12,7 @@
 package org.opendaylight.openflowplugin.libraries.liblldp;
 
 import java.util.Arrays;
+import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,10 +37,11 @@ public abstract class BitBufferHelper {
      * Returns the first byte from the byte array.
      *
      * @return byte value
+     * @throws BufferException if the data is invalid
      */
-    public static byte getByte(final byte[] data) {
+    public static byte getByte(final byte[] data) throws BufferException {
         if (data.length * NetUtils.NUM_BITS_IN_A_BYTE > Byte.SIZE) {
-            LOG.error("getByte", new BufferException("Container is too small for the number of requested bits"));
+            throw new BufferException("Container is too small for the number of requested bits");
         }
         return data[0];
     }
@@ -49,10 +51,11 @@ public abstract class BitBufferHelper {
      * restricted to Short.SIZE
      *
      * @return short value
+     * @throws BufferException if the data is invalid
      */
-    public static short getShort(final byte[] data) {
+    public static short getShort(final byte[] data) throws BufferException {
         if (data.length > Short.SIZE) {
-            LOG.error("getShort", new BufferException("Container is too small for the number of requested bits"));
+            throw new BufferException("Container is too small for the number of requested bits");
         }
         return (short) toNumber(data);
     }
@@ -62,18 +65,14 @@ public abstract class BitBufferHelper {
      * Size of numBits is restricted to Short.SIZE
      *
      * @return short - the short value of byte array
+     * @throws BufferException if the data is invalid
      */
-    public static short getShort(final byte[] data, final int numBits) {
+    public static short getShort(final byte[] data, final int numBits) throws BufferException {
         if (numBits > Short.SIZE) {
-            LOG.error("getShort", new BufferException("Container is too small for the number of requested bits"));
+            throw new BufferException("Container is too small for the number of requested bits");
         }
         int startOffset = data.length * NetUtils.NUM_BITS_IN_A_BYTE - numBits;
-        byte[] bits = null;
-        try {
-            bits = BitBufferHelper.getBits(data, startOffset, numBits);
-        } catch (final BufferException e) {
-            LOG.error("", e);
-        }
+        byte[] bits = BitBufferHelper.getBits(data, startOffset, numBits);
         return (short) toNumber(bits, numBits);
     }
 
@@ -82,10 +81,11 @@ public abstract class BitBufferHelper {
      * restricted to Integer.SIZE
      *
      * @return int - the integer value of byte array
+     * @throws BufferException if the data is invalid
      */
-    public static int getInt(final byte[] data) {
+    public static int getInt(final byte[] data) throws BufferException {
         if (data.length > Integer.SIZE) {
-            LOG.error("getInt", new BufferException("Container is too small for the number of requested bits"));
+            throw new BufferException("Container is too small for the number of requested bits");
         }
         return (int) toNumber(data);
     }
@@ -95,18 +95,14 @@ public abstract class BitBufferHelper {
      * of numBits is restricted to Integer.SIZE
      *
      * @return int - the integer value of byte array
+     * @throws BufferException if the data is invalid
      */
-    public static int getInt(final byte[] data, final int numBits) {
+    public static int getInt(final byte[] data, final int numBits) throws BufferException {
         if (numBits > Integer.SIZE) {
-            LOG.error("getInt", new BufferException("Container is too small for the number of requested bits"));
+            throw new BufferException("Container is too small for the number of requested bits");
         }
         int startOffset = data.length * NetUtils.NUM_BITS_IN_A_BYTE - numBits;
-        byte[] bits = null;
-        try {
-            bits = BitBufferHelper.getBits(data, startOffset, numBits);
-        } catch (final BufferException e) {
-            LOG.error("", e);
-        }
+        byte[] bits =  BitBufferHelper.getBits(data, startOffset, numBits);
         return (int) toNumber(bits, numBits);
     }
 
@@ -115,10 +111,11 @@ public abstract class BitBufferHelper {
      * restricted to Long.SIZE
      *
      * @return long - the integer value of byte array
+     * @throws BufferException if the data is invalid
      */
-    public static long getLong(final byte[] data) {
+    public static long getLong(final byte[] data) throws BufferException {
         if (data.length > Long.SIZE) {
-            LOG.error("getLong", new BufferException("Container is too small for the number of requested bits"));
+            throw new BufferException("Container is too small for the number of requested bits");
         }
         return toNumber(data);
     }
@@ -128,25 +125,17 @@ public abstract class BitBufferHelper {
      * Size of numBits is restricted to Long.SIZE
      *
      * @return long - the integer value of byte array
+     * @throws BufferException if the data is invalid
      */
-    public static long getLong(final byte[] data, final int numBits) {
+    public static long getLong(final byte[] data, final int numBits) throws BufferException {
         if (numBits > Long.SIZE) {
-            LOG.error("getLong", new BufferException("Container is too small for the number of requested bits"));
+            throw new BufferException("Container is too small for the number of requested bits");
         }
         if (numBits > data.length * NetUtils.NUM_BITS_IN_A_BYTE) {
-            try {
-                throw new BufferException("Trying to read more bits than contained in the data buffer");
-            } catch (final BufferException e) {
-                LOG.error("", e);
-            }
+            throw new BufferException("Trying to read more bits than contained in the data buffer");
         }
         int startOffset = data.length * NetUtils.NUM_BITS_IN_A_BYTE - numBits;
-        byte[] bits = null;
-        try {
-            bits = BitBufferHelper.getBits(data, startOffset, numBits);
-        } catch (final BufferException e) {
-            LOG.error("", e);
-        }
+        byte[] bits = BitBufferHelper.getBits(data, startOffset, numBits);
         return toNumber(bits, numBits);
     }
 
@@ -170,6 +159,7 @@ public abstract class BitBufferHelper {
      *             when the startOffset and numBits parameters are not congruent
      *             with the data buffer size
      */
+    @Nonnull
     public static byte[] getBits(final byte[] data, final int startOffset, final int numBits) throws BufferException {
         int startByteOffset = 0;
         int extranumBits = numBits % NetUtils.NUM_BITS_IN_A_BYTE;
@@ -515,6 +505,7 @@ public abstract class BitBufferHelper {
      *            - number of bits to be right aligned
      * @return byte[]
      */
+    @Nonnull
     public static byte[] shiftBitsToLSB(final byte[] inputBytes, final int numBits) {
         int numBytes = inputBytes.length;
         int numBitstoShift = numBits % NetUtils.NUM_BITS_IN_A_BYTE;
