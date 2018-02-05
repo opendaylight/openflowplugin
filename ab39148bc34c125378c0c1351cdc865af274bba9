@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f59beac4_467759a4",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/match/CtMarkCodec.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 4269
+      },
+      "writtenOn": "2018-02-05T15:43:52Z",
+      "side": 1,
+      "message": "As per [1] ct_mark seems to be maskable. If this is a case where mark was not present, should we be checking hasmask bit then decide to whether deserialize mask  or not ?\n[1]http://openvswitch.org/support/dist-docs/ovs-fields.7.txt",
+      "revId": "ab39148bc34c125378c0c1351cdc865af274bba9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
