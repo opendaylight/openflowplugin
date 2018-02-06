@@ -16,6 +16,24 @@
       "revId": "ab39148bc34c125378c0c1351cdc865af274bba9",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "58029a8c_be12238c",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/match/CtMarkCodec.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 5444
+      },
+      "writtenOn": "2018-02-06T02:56:10Z",
+      "side": 1,
+      "message": "Yes, CtMark is maskable. I agree with Aswin that the better solution would be to check if the mask is present and only deserialize it if it is.\n\nAlso, if this code change fixes the \"deserialization failed\" errors, then the problematic flow is not the one  suggested in the OPNFLWPLUG-974 bug description:\n\ncookie\u003d0x6900000, duration\u003d327.336s, table\u003d213, n_packets\u003d5, n_bytes\u003d490, priority\u003d1003,ct_state\u003d+trk,icmp,metadata\u003d0xe0000000000/0xfffff0000000000 actions\u003dct(commit,zone\u003d5002,exec(set_field:0x1-\u003ect_mark)),resubmit(,17)\n\nwhich has the ct_mark set in the conntrack action.\n\nThe code change here is for CtMark match entries, not the conntrack action entry. So, the problematic flows are probably those with a match entry like ct_mark\u003d0x1, since those do not have a corresponding mask.",
+      "parentUuid": "f59beac4_467759a4",
+      "revId": "ab39148bc34c125378c0c1351cdc865af274bba9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
