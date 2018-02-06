@@ -34,6 +34,24 @@
       "revId": "ab39148bc34c125378c0c1351cdc865af274bba9",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9c5a2f50_fe9816da",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/match/CtMarkCodec.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-02-06T06:20:37Z",
+      "side": 1,
+      "message": "Thanks Bertrand for pointing about the flaws. Have added a check to check the mask as Aswin had suggested in the latest patch.",
+      "parentUuid": "58029a8c_be12238c",
+      "revId": "ab39148bc34c125378c0c1351cdc865af274bba9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
