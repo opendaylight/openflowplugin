@@ -189,7 +189,7 @@ public final class StatisticsGatheringUtils {
         try {
             Futures.transform(Futures.catchingAsync(future, Throwable.class, throwable -> {
                 return Futures.immediateFailedFuture(throwable);
-            }), (Function<Optional<FlowCapableNode>, Void>) flowCapNodeOpt -> {
+            }, MoreExecutors.directExecutor()), (Function<Optional<FlowCapableNode>, Void>) flowCapNodeOpt -> {
                     // we have to read actual tables with all information before we set empty Flow list,
                     // merge is expensive and not applicable for lists
                     if (flowCapNodeOpt != null && flowCapNodeOpt.isPresent()) {
@@ -201,7 +201,7 @@ public final class StatisticsGatheringUtils {
                         }
                     }
                     return null;
-                }).get();
+                }, MoreExecutors.directExecutor()).get();
         } catch (InterruptedException | ExecutionException ex) {
             LOG.debug("Failed to delete {} flows, exception: {}", deviceFlowRegistry.size(), ex);
         }

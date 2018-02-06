@@ -102,7 +102,7 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
                 writePhyPortInformation(deviceContext);
                 return null;
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     @SuppressWarnings("checkstyle:IllegalCatch")
@@ -165,7 +165,7 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
                         public Boolean apply(final RpcResult<List<MultipartReply>> input) {
                             return input.isSuccessful();
                         }
-                    });
+                    }, MoreExecutors.directExecutor());
         }
 
         final MultiLayerMultipartCollectorService service =
@@ -181,7 +181,7 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
                             .rev130731.MultipartReply>> input) {
                         return input.isSuccessful();
                     }
-                });
+                }, MoreExecutors.directExecutor());
     }
 
 }

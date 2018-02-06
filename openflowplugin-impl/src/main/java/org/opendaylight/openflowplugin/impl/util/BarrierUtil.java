@@ -66,9 +66,9 @@ public final class BarrierUtil {
                         resultPair.setRight(input);
                         return resultPair;
                     }
-                });
+                }, MoreExecutors.directExecutor());
         // append assembling transform to barrier result
-        return Futures.transform(compositeResult, compositeTransform);
+        return Futures.transform(compositeResult, compositeTransform, MoreExecutors.directExecutor());
     }
 
     /**

@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.impl.statistics.services.direct;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.List;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -70,10 +71,12 @@ abstract class AbstractDirectStatisticsService<I extends StoreStatsGrouping,
      */
     Future<RpcResult<O>> handleAndReply(final I input) {
         final ListenableFuture<RpcResult<List<T>>> rpcReply = handleServiceCall(input);
-        ListenableFuture<RpcResult<O>> rpcResult = Futures.transform(rpcReply, this::transformResult);
+        ListenableFuture<RpcResult<O>> rpcResult = Futures.transform(rpcReply,
+                this::transformResult,
+                MoreExecutors.directExecutor());
 
         if (Boolean.TRUE.equals(input.isStoreStats())) {
-            rpcResult = Futures.transform(rpcResult, this::storeResult);
+            rpcResult = Futures.transform(rpcResult, this::storeResult, MoreExecutors.directExecutor());
         }
 
         return rpcResult;

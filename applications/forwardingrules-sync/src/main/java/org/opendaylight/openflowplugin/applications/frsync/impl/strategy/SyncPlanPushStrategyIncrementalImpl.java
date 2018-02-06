@@ -201,14 +201,17 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
 
         final ListenableFuture<RpcResult<Void>> singleVoidAddResult = Futures.transform(
                 Futures.allAsList(allResults),
-                ReconcileUtil.<AddFlowOutput>createRpcResultCondenser("flow adding"));
+                ReconcileUtil.<AddFlowOutput>createRpcResultCondenser("flow adding"),
+                MoreExecutors.directExecutor());
 
         final ListenableFuture<RpcResult<Void>> singleVoidUpdateResult = Futures.transform(
                 Futures.allAsList(allUpdateResults),
-                ReconcileUtil.<UpdateFlowOutput>createRpcResultCondenser("flow updating"));
+                ReconcileUtil.<UpdateFlowOutput>createRpcResultCondenser("flow updating"),
+                MoreExecutors.directExecutor());
 
         return Futures.transform(Futures.allAsList(singleVoidAddResult, singleVoidUpdateResult),
-                ReconcileUtil.<Void>createRpcResultCondenser("flow add/update"));
+                ReconcileUtil.<Void>createRpcResultCondenser("flow add/update"),
+                MoreExecutors.directExecutor());
     }
 
     ListenableFuture<RpcResult<Void>> removeRedundantFlows(final NodeId nodeId,
@@ -238,7 +241,10 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
         }
 
         final ListenableFuture<RpcResult<Void>> singleVoidResult = Futures.transform(
-                Futures.allAsList(allResults), ReconcileUtil.<RemoveFlowOutput>createRpcResultCondenser("flow remove"));
+                Futures.allAsList(allResults),
+                ReconcileUtil.<RemoveFlowOutput>createRpcResultCondenser("flow remove"),
+                MoreExecutors.directExecutor());
+
         return Futures.transformAsync(singleVoidResult,
                 ReconcileUtil.chainBarrierFlush(PathUtil.digNodePath(nodeIdent), transactionService),
                 MoreExecutors.directExecutor());
@@ -268,7 +274,8 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
         }
 
         return Futures.transform(Futures.allAsList(allResults),
-                ReconcileUtil.<RemoveMeterOutput>createRpcResultCondenser("meter remove"));
+                ReconcileUtil.<RemoveMeterOutput>createRpcResultCondenser("meter remove"),
+                MoreExecutors.directExecutor());
     }
 
     ListenableFuture<RpcResult<Void>> removeRedundantGroups(final NodeId nodeId,
@@ -328,7 +335,8 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
 
         final ListenableFuture<RpcResult<Void>> singleVoidResult = Futures.transform(
                 Futures.allAsList(allResults),
-                ReconcileUtil.<RemoveGroupOutput>createRpcResultCondenser("group remove"));
+                ReconcileUtil.<RemoveGroupOutput>createRpcResultCondenser("group remove"),
+                MoreExecutors.directExecutor());
 
         return Futures.transformAsync(singleVoidResult,
                 ReconcileUtil.chainBarrierFlush(PathUtil.digNodePath(nodeIdent), transactionService),
@@ -359,7 +367,8 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
 
         final ListenableFuture<RpcResult<Void>> singleVoidResult = Futures.transform(
                 Futures.allAsList(allResults),
-                ReconcileUtil.<UpdateTableOutput>createRpcResultCondenser("table update"));
+                ReconcileUtil.<UpdateTableOutput>createRpcResultCondenser("table update"),
+                MoreExecutors.directExecutor());
 
         return Futures.transformAsync(singleVoidResult,
                 ReconcileUtil.chainBarrierFlush(PathUtil.digNodePath(nodeIdent), transactionService),
@@ -388,15 +397,19 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
         }
 
         final ListenableFuture<RpcResult<Void>> singleVoidAddResult = Futures.transform(
-                Futures.allAsList(allResults), ReconcileUtil.<AddGroupOutput>createRpcResultCondenser("group add"));
+                Futures.allAsList(allResults),
+                ReconcileUtil.<AddGroupOutput>createRpcResultCondenser("group add"),
+                MoreExecutors.directExecutor());
 
         final ListenableFuture<RpcResult<Void>> singleVoidUpdateResult = Futures.transform(
                 Futures.allAsList(allUpdateResults),
-                ReconcileUtil.<UpdateGroupOutput>createRpcResultCondenser("group update"));
+                ReconcileUtil.<UpdateGroupOutput>createRpcResultCondenser("group update"),
+                MoreExecutors.directExecutor());
 
         final ListenableFuture<RpcResult<Void>> summaryResult = Futures.transform(
                 Futures.allAsList(singleVoidAddResult, singleVoidUpdateResult),
-                ReconcileUtil.<Void>createRpcResultCondenser("group add/update"));
+                ReconcileUtil.<Void>createRpcResultCondenser("group add/update"),
+                MoreExecutors.directExecutor());
 
 
         return Futures.transformAsync(summaryResult, ReconcileUtil.chainBarrierFlush(
@@ -436,14 +449,18 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
         }
 
         final ListenableFuture<RpcResult<Void>> singleVoidAddResult = Futures.transform(
-                Futures.allAsList(allResults), ReconcileUtil.<AddMeterOutput>createRpcResultCondenser("meter add"));
+                Futures.allAsList(allResults),
+                ReconcileUtil.<AddMeterOutput>createRpcResultCondenser("meter add"),
+                MoreExecutors.directExecutor());
 
         final ListenableFuture<RpcResult<Void>> singleVoidUpdateResult = Futures.transform(
                 Futures.allAsList(allUpdateResults),
-                ReconcileUtil.<UpdateMeterOutput>createRpcResultCondenser("meter update"));
+                ReconcileUtil.<UpdateMeterOutput>createRpcResultCondenser("meter update"),
+                MoreExecutors.directExecutor());
 
         return Futures.transform(Futures.allAsList(singleVoidUpdateResult, singleVoidAddResult),
-                ReconcileUtil.<Void>createRpcResultCondenser("meter add/update"));
+                ReconcileUtil.<Void>createRpcResultCondenser("meter add/update"),
+                MoreExecutors.directExecutor());
     }
 
     ListenableFuture<RpcResult<Void>> addMissingGroups(final NodeId nodeId,

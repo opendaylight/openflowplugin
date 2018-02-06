@@ -93,7 +93,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                                     deviceContext.getDeviceInfo());
                             return null;
                         }
-                    });
+                    }, MoreExecutors.directExecutor());
             }, MoreExecutors.directExecutor());
 
     }
@@ -261,7 +261,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                                     .withRpcErrors(input.getErrors())
                                     .build();
                         }
-                    });
+                    }, MoreExecutors.directExecutor());
         }
 
         final MultiLayerMultipartCollectorService service =
@@ -290,7 +290,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                         .withRpcErrors(input.getErrors())
                         .build();
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 
 }
