@@ -50,11 +50,12 @@ public class CtMarkCodec extends AbstractMatchCodec {
         MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
         CtMarkCaseValueBuilder caseBuilder = new CtMarkCaseValueBuilder();
         CtMarkValuesBuilder ctMarkValuesBuilder = new CtMarkValuesBuilder();
+        if (matchEntryBuilder.isHasMask()) {
+            ctMarkValuesBuilder.setMask(message.readUnsignedInt());
+        }
         ctMarkValuesBuilder.setCtMark(message.readUnsignedInt());
-        ctMarkValuesBuilder.setMask(message.readUnsignedInt());
         caseBuilder.setCtMarkValues(ctMarkValuesBuilder.build());
         matchEntryBuilder.setMatchEntryValue(caseBuilder.build());
-        matchEntryBuilder.setHasMask(true);
         return matchEntryBuilder.build();
     }
 
