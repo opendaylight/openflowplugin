@@ -174,7 +174,7 @@ public final class StatisticsGatheringUtils {
             case OFPMPGROUPDESC:
                 LOG.debug("deleteAllKnownGroups OFPMPGROUPDESC device {}, group size - {}, ",
                         deviceInfo,deviceRegistry.getDeviceGroupRegistry().size());
-                deviceRegistry.getDeviceGroupRegistry().processMarks();
+               // deviceRegistry.getDeviceGroupRegistry().processMarks();
                 deleteAllKnownGroups(txFacade, instanceIdentifier, deviceRegistry.getDeviceGroupRegistry());
                 deviceRegistry.getDeviceGroupRegistry().processMarks();
                 break;
