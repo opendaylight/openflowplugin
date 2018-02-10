@@ -33,7 +33,7 @@ public class DeviceGroupRegistryImpl implements DeviceGroupRegistry {
 
     @Override
     public void addMark(final GroupId groupId) {
-        if (!marks.contains(groupId)) {
+        if (!marks.contains(groupId) && groupIds.size() > 1) {
             marks.add(groupId);
         }
     }

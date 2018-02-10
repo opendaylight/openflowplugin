@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.datastore.multipart;
 
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.NodeGroupStatistics;
@@ -21,8 +22,12 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class GroupStatsMultipartWriter extends AbstractMultipartWriter<GroupStatisticsReply> {
 
-    public GroupStatsMultipartWriter(final TxFacade txFacade, final InstanceIdentifier<Node> instanceIdentifier) {
+    private final DeviceRegistry registry;
+
+    public GroupStatsMultipartWriter(final TxFacade txFacade, final InstanceIdentifier<Node> instanceIdentifier,
+                                     DeviceRegistry deviceRegistry) {
         super(txFacade, instanceIdentifier);
+        this.registry = deviceRegistry;
     }
 
     @Override
@@ -33,14 +38,16 @@ public class GroupStatsMultipartWriter extends AbstractMultipartWriter<GroupStat
     @Override
     public void storeStatistics(final GroupStatisticsReply statistics, final boolean withParents) {
         statistics.getGroupStats()
-            .forEach(stat -> writeToTransaction(
-                getInstanceIdentifier()
-                    .augmentation(FlowCapableNode.class)
-                    .child(Group.class, new GroupKey(stat.getGroupId()))
-                    .augmentation(NodeGroupStatistics.class)
-                    .child(GroupStatistics.class),
-                new GroupStatisticsBuilder(stat).build(),
-                withParents));
+                .forEach(stat -> {
+                    writeToTransaction(
+                            getInstanceIdentifier()
+                                    .augmentation(FlowCapableNode.class)
+                                    .child(Group.class, new GroupKey(stat.getGroupId()))
+                                    .augmentation(NodeGroupStatistics.class)
+                                    .child(GroupStatistics.class),
+                            new GroupStatisticsBuilder(stat).build(),
+                            withParents);
+                    this.registry.getDeviceGroupRegistry().store(stat.getGroupId());
+                });
     }
-
 }

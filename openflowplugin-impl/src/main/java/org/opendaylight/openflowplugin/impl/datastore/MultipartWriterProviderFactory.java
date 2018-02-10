@@ -42,7 +42,8 @@ public class MultipartWriterProviderFactory {
 
         //  Periodic/direct statistics writers
         provider.register(MultipartType.OFPMPTABLE, new TableStatsMultipartWriter(deviceContext, instanceIdentifier));
-        provider.register(MultipartType.OFPMPGROUP, new GroupStatsMultipartWriter(deviceContext, instanceIdentifier));
+        provider.register(MultipartType.OFPMPGROUP, new GroupStatsMultipartWriter(deviceContext, instanceIdentifier,
+                deviceContext));
         provider.register(MultipartType.OFPMPMETER, new MeterStatsMultipartWriter(deviceContext, instanceIdentifier));
         provider.register(MultipartType.OFPMPPORTSTATS, new PortStatsMultipartWriter(deviceContext, instanceIdentifier, deviceContext.getPrimaryConnectionContext().getFeatures()));
         provider.register(MultipartType.OFPMPQUEUE, new QueueStatsMultipartWriter(deviceContext, instanceIdentifier));
