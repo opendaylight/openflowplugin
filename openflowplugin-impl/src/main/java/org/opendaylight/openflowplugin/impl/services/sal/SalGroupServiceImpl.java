@@ -11,12 +11,17 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.Future;
+
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerGroupService;
 import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerGroupService;
 import org.opendaylight.openflowplugin.impl.util.ErrorUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
@@ -25,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.Sal
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -135,7 +141,16 @@ public class SalGroupServiceImpl implements SalGroupService {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Group remove with id={} finished without error", input.getGroupId().getValue());
                     }
-                    deviceContext.getDeviceGroupRegistry().addMark(input.getGroupId());
+                    if (!deviceContext.isStatisticPoolingOn()) {
+                        deviceContext.addDeleteToTxChain( LogicalDatastoreType.OPERATIONAL,
+                                deviceContext.getDeviceInfo().getNodeInstanceIdentifier().augmentation
+                                        (FlowCapableNode.class).child(org
+                                        .opendaylight.yang
+                                        .gen.v1.urn.opendaylight
+                                        .group.types
+                                        .rev131018.groups.Group.class, new GroupKey(input.getGroupId())));
+                        deviceContext.getDeviceGroupRegistry().addMark(input.getGroupId()));
+                    }
                 } else {
                     LOG.warn("Group remove with id={} failed, errors={}", input.getGroupId().getValue(),
                         ErrorUtil.errorsToString(result.getErrors()));

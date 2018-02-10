@@ -235,6 +235,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
+    public boolean isStatisticPoolingOn() {
+        return myManager.isStatisticsPollingOn();
+    }
+
+    @Override
     public DeviceState getDeviceState() {
         return deviceState;
     }
