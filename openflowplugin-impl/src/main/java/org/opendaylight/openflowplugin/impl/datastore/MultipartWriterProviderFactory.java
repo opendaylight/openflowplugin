@@ -40,7 +40,7 @@ public class MultipartWriterProviderFactory {
         final InstanceIdentifier<Node> instanceIdentifier = deviceContext.getDeviceInfo().getNodeInstanceIdentifier();
         final MultipartWriterProvider provider = new MultipartWriterProvider();
 
-        //  Periodic/direct statistics writers
+        //  Periodic/direct statistics writers-
         provider.register(MultipartType.OFPMPTABLE, new TableStatsMultipartWriter(deviceContext, instanceIdentifier));
         provider.register(MultipartType.OFPMPGROUP, new GroupStatsMultipartWriter(deviceContext, instanceIdentifier));
         provider.register(MultipartType.OFPMPMETER, new MeterStatsMultipartWriter(deviceContext, instanceIdentifier));

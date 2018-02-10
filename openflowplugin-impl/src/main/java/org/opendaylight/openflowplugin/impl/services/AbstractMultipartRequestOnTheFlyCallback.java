@@ -149,7 +149,6 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
                 deviceRegistry.getDeviceMeterRegistry().processMarks();
                 break;
             case OFPMPGROUPDESC:
-                deviceRegistry.getDeviceGroupRegistry().processMarks();
                 StatisticsGatheringUtils.deleteAllKnownGroups(
                         getTxFacade(),
                         instanceIdentifier,
