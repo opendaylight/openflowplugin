@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5fb21a7e_7b4432d4",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 2264
+      },
+      "writtenOn": "2018-02-10T18:41:49Z",
+      "side": 1,
+      "message": "could you also add some wording around what in the patch and why it\u0027s needed? I guess we can also go read the jira ticket, but it\u0027s always nice to have it in git as well.",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 1
+      },
+      "revId": "4252cf328f946865f03a969f562f216575f1c61e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    }
+  ]
+}
