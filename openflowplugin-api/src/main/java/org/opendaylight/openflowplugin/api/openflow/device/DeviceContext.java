@@ -114,5 +114,7 @@ public interface DeviceContext extends
      * Method for initial submit transaction after successful initial gathering.
      */
     boolean initialSubmitTransaction();
+
+    boolean isStatisticPoolingOn();
 }
 
