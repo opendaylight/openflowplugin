@@ -11,6 +11,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.Future;
+
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerGroupService;
@@ -71,7 +72,6 @@ public class SalGroupServiceImpl implements SalGroupService {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Group add with id={} finished without error", input.getGroupId().getValue());
                     }
-                    LOG.debug("adding group to groupRegistry {}", input.getGroupId().getValue());
                 } else {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Group add with id={} failed, errors={}", input.getGroupId().getValue(),
@@ -135,7 +135,6 @@ public class SalGroupServiceImpl implements SalGroupService {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Group remove with id={} finished without error", input.getGroupId().getValue());
                     }
-                    deviceContext.getDeviceGroupRegistry().addMark(input.getGroupId());
                 } else {
                     LOG.warn("Group remove with id={} failed, errors={}", input.getGroupId().getValue(),
                         ErrorUtil.errorsToString(result.getErrors()));
