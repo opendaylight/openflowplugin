@@ -22,6 +22,23 @@
       "revId": "4252cf328f946865f03a969f562f216575f1c61e",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fb3ce465_afd13e81",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/sal/SalGroupServiceImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-02-11T02:03:07Z",
+      "side": 1,
+      "message": "Why deletion of group from operational required if the stats disabled? If stats is disabled group should not present in the datastore in the first place. This might throw exception \"no does not exists\"",
+      "revId": "4252cf328f946865f03a969f562f216575f1c61e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
