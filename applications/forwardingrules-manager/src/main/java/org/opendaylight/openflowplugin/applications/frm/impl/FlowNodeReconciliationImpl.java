@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -694,36 +695,73 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         }, MoreExecutors.directExecutor());
     }
 
-    private Flow getDeleteAllFlow() {
+    private Message getDeleteAllFlowMessage(final NodeRef nodeRef) {
         final FlowBuilder flowBuilder = new FlowBuilder();
         flowBuilder.setTableId(OFConstants.OFPTT_ALL);
-        return flowBuilder.build();
+        return new MessageBuilder().setNode(nodeRef)
+                .setBundleInnerMessage(new BundleRemoveFlowCaseBuilder()
+                        .setRemoveFlowCaseData(new RemoveFlowCaseDataBuilder(flowBuilder.build()).build())
+                        .build())
+                .build();
     }
-
-    private Group getDeleteAllGroup() {
+    private Message getDeleteAllGroupMessage(final NodeRef nodeRef) {
         final GroupBuilder groupBuilder = new GroupBuilder();
         groupBuilder.setGroupType(GroupTypes.GroupAll);
         groupBuilder.setGroupId(new GroupId(OFConstants.OFPG_ALL));
-        return groupBuilder.build();
+        return new MessageBuilder().setNode(nodeRef)
+                .setBundleInnerMessage(new BundleRemoveGroupCaseBuilder()
+                        .setRemoveGroupCaseData(new RemoveGroupCaseDataBuilder(groupBuilder.build()).build())
+                        .build())
+                .build();
+    }
+
+    private boolean isGroupChained(final Group group, final List<Long> installedGroupList) {
+        boolean okToInstall = true;
+        Buckets buckets = group.getBuckets();
+        List<Bucket> bucketList = buckets == null ? Collections.emptyList() : buckets.getBucket();
+
+        for (Bucket bucket : bucketList) {
+            List<Action> actions = bucket.getAction() == null ? Collections.emptyList() : bucket.getAction();
+
+            for (Action action : actions) {
+                if (action.getAction().getImplementedInterface().getName()
+                        .equals("org.opendaylight.yang.gen.v1.urn.opendaylight"
+                                + ".action.types.rev131112.action.action.GroupActionCase")) {
+                    Long groupId = ((GroupActionCase) action.getAction()).getGroupAction().getGroupId();
+                    if (!installedGroupList.contains(groupId)) {
+                        okToInstall = false;
+                    }
+                }
+            }
+        }
+        return okToInstall;
     }
 
     private Messages createMessages(final NodeRef nodeRef, final Optional<FlowCapableNode> flowNode) {
-        final List<Message> messages = new ArrayList<>();
-        messages.add(new MessageBuilder().setNode(nodeRef)
-                .setBundleInnerMessage(new BundleRemoveFlowCaseBuilder()
-                        .setRemoveFlowCaseData(new RemoveFlowCaseDataBuilder(getDeleteAllFlow()).build()).build())
-                .build());
+        final List<Message> messages = new LinkedList<>();
+        final List<Long> installedGroupList = new ArrayList<>();
+        final List<Group> chainedGroupList = new ArrayList<>();
 
-        messages.add(new MessageBuilder().setNode(nodeRef)
-                .setBundleInnerMessage(new BundleRemoveGroupCaseBuilder()
-                        .setRemoveGroupCaseData(new RemoveGroupCaseDataBuilder(getDeleteAllGroup()).build()).build())
-                .build());
+        messages.add(getDeleteAllGroupMessage(nodeRef));
+        messages.add(getDeleteAllFlowMessage(nodeRef));
 
         if (flowNode.get().getGroup() != null) {
             for (Group gr : flowNode.get().getGroup()) {
-                messages.add(new MessageBuilder().setNode(nodeRef).setBundleInnerMessage(new BundleAddGroupCaseBuilder()
-                        .setAddGroupCaseData(new AddGroupCaseDataBuilder(gr).build()).build()).build());
+                if (isGroupChained(gr, installedGroupList)) {
+                    messages.add(new MessageBuilder().setNode(nodeRef).setBundleInnerMessage(
+                            new BundleAddGroupCaseBuilder().setAddGroupCaseData(
+                                    new AddGroupCaseDataBuilder(gr).build()).build()).build());
+                    installedGroupList.add(gr.getGroupId().getValue());
+                } else {
+                    chainedGroupList.add(gr);
+                }
             }
+        }
+
+        for (Group group : chainedGroupList) {
+            messages.add(new MessageBuilder().setNode(nodeRef).setBundleInnerMessage(
+                    new BundleAddGroupCaseBuilder().setAddGroupCaseData(
+                            new AddGroupCaseDataBuilder(group).build()).build()).build());
         }
 
         if (flowNode.get().getTable() != null) {
