@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7f899a36_288c91a8",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/datastore/MultipartWriterProviderFactory.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-02-13T09:42:18Z",
+      "side": 1,
+      "message": "GroupStatsMultipartWriter constructor is taking deviceContext as first argument. Why you need to pass it again?",
+      "range": {
+        "startLine": 46,
+        "startChar": 15,
+        "endLine": 46,
+        "endChar": 29
+      },
+      "revId": "d2d7409d6e2a18fb66b29965a25f13e26f929cc4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0802728b_8d17247c",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/group/DeviceGroupRegistryImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-02-13T09:42:18Z",
+      "side": 1,
+      "message": "when the group id will be cleared from the list, if we have only one group?",
+      "range": {
+        "startLine": 36,
+        "startChar": 40,
+        "endLine": 36,
+        "endChar": 49
+      },
+      "revId": "d2d7409d6e2a18fb66b29965a25f13e26f929cc4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8c602c52_1bdcbb0c",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/sal/SalGroupServiceImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-02-13T09:42:18Z",
+      "side": 1,
+      "message": "remove the code if not needed",
+      "range": {
+        "startLine": 144,
+        "startChar": 20,
+        "endLine": 152,
+        "endChar": 27
+      },
+      "revId": "d2d7409d6e2a18fb66b29965a25f13e26f929cc4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
