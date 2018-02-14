@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
+import org.opendaylight.openflowplugin.api.openflow.device.initialization.SwitchInitializer;
+import org.opendaylight.openflowplugin.api.openflow.device.initialization.SwitchInitializerRegistration;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.MasterChecker;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeException;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeRegistration;
@@ -20,11 +22,13 @@ import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeS
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.api.openflow.mastership.ReconciliationFrameworkEvent;
 import org.opendaylight.openflowplugin.api.openflow.mastership.ReconciliationFrameworkRegistration;
+import org.opendaylight.openflowplugin.impl.device.initialization.SwitchInitializerDelegate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
 
 public final class MastershipChangeServiceManagerImpl implements MastershipChangeServiceManager {
 
     private final List<MastershipChangeService> serviceGroup = new ArrayList<>();
+    private final List<SwitchInitializer> switchInitializers = new ArrayList<>();
     private ReconciliationFrameworkEvent rfService = null;
     private MasterChecker masterChecker;
 
@@ -52,13 +56,30 @@ public final class MastershipChangeServiceManagerImpl implements MastershipChang
     }
 
     @Override
+    public SwitchInitializerRegistration registerSwitchInitializer(
+            @Nonnull SwitchInitializer additionalSwitchInitializer
+    ) {
+        final SwitchInitializerRegistration registration =
+                new SwitchInitializerDelegate(
+                        additionalSwitchInitializer, () -> switchInitializers.remove(additionalSwitchInitializer)
+                );
+        switchInitializers.add(additionalSwitchInitializer);
+        if (masterChecker != null && masterChecker.isAnyDeviceMastered()) {
+            fireOnDevicePreparedAfterRegistration(additionalSwitchInitializer);
+        }
+        return registration;
+    }
+
+    @Override
     public void close() {
         serviceGroup.clear();
+        switchInitializers.clear();
     }
 
     @Override
     public void becomeMaster(@Nonnull final DeviceInfo deviceInfo) {
         serviceGroup.forEach(mastershipChangeService -> mastershipChangeService.onBecomeOwner(deviceInfo));
+        switchInitializers.forEach(switchInitializer -> switchInitializer.onDevicePrepared(deviceInfo));
     }
 
     @Override
@@ -89,7 +110,16 @@ public final class MastershipChangeServiceManagerImpl implements MastershipChang
         return serviceGroup.size();
     }
 
+    @VisibleForTesting
+    int switchServiceGroupListSize() {
+        return switchInitializers.size();
+    }
+
     private void fireBecomeOwnerAfterRegistration(@Nonnull final MastershipChangeService service) {
         masterChecker.listOfMasteredDevices().forEach(service::onBecomeOwner);
+    }
+
+    private void fireOnDevicePreparedAfterRegistration(@Nonnull final SwitchInitializer service) {
+        masterChecker.listOfMasteredDevices().forEach(service::onDevicePrepared);
     }
 }

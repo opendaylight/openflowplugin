@@ -17,6 +17,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
+import org.opendaylight.openflowplugin.api.openflow.device.initialization.SwitchInitializer;
+import org.opendaylight.openflowplugin.api.openflow.device.initialization.SwitchInitializerRegistration;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.MasterChecker;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeException;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeRegistration;
@@ -40,15 +42,21 @@ public class MastershipChangeServiceManagerImplTest {
     private ReconciliationFrameworkEvent event;
     @Mock
     private ReconciliationFrameworkEvent secondEvent;
+    @Mock
+    private SwitchInitializer switchInitializer;
+    @Mock
+    private SwitchInitializer secondSwitchInitializer;
 
     private final MastershipChangeServiceManager manager = new MastershipChangeServiceManagerImpl();
     private MastershipChangeRegistration registration;
     private ReconciliationFrameworkRegistration registrationRF;
+    private SwitchInitializerRegistration swRegistration;
 
     @Before
     public void setUp() throws Exception {
         registration = manager.register(service);
         registrationRF = manager.reconciliationFrameworkRegistration(event);
+        swRegistration = manager.registerSwitchInitializer(switchInitializer);
     }
 
     @Test
@@ -65,7 +73,20 @@ public class MastershipChangeServiceManagerImplTest {
     }
 
     @Test
-    public void uregisterTwice() throws Exception {
+    public void registerSW() throws Exception {
+        Assert.assertNotNull(swRegistration);
+    }
+
+    @Test
+    public void registerTwiceSW() throws Exception {
+        SwitchInitializerRegistration swRegistration2;
+        swRegistration2 = manager.registerSwitchInitializer(secondSwitchInitializer);
+        Assert.assertNotNull(swRegistration);
+        Assert.assertNotNull(swRegistration2);
+    }
+
+    @Test
+    public void unregisterTwice() throws Exception {
         MastershipChangeRegistration registration2;
         registration2 = manager.register(secondService);
         Assert.assertTrue(((MastershipChangeServiceManagerImpl)manager).serviceGroupListSize() == 2);
@@ -73,6 +94,17 @@ public class MastershipChangeServiceManagerImplTest {
         Assert.assertTrue(((MastershipChangeServiceManagerImpl)manager).serviceGroupListSize() == 1);
         registration2.close();
         Assert.assertTrue(((MastershipChangeServiceManagerImpl)manager).serviceGroupListSize() == 0);
+    }
+
+    @Test
+    public void unregisterTwiceSw() throws Exception {
+        SwitchInitializerRegistration swRegistration2;
+        swRegistration2 = manager.registerSwitchInitializer(secondSwitchInitializer);
+        Assert.assertTrue(((MastershipChangeServiceManagerImpl)manager).switchServiceGroupListSize() == 2);
+        swRegistration.close();
+        Assert.assertTrue(((MastershipChangeServiceManagerImpl)manager).switchServiceGroupListSize() == 1);
+        swRegistration2.close();
+        Assert.assertTrue(((MastershipChangeServiceManagerImpl)manager).switchServiceGroupListSize() == 0);
     }
 
     @Test
@@ -86,7 +118,7 @@ public class MastershipChangeServiceManagerImplTest {
     }
 
     @Test
-    public void unregosteringRF() throws Exception {
+    public void unregisterRF() throws Exception {
         registrationRF.close();
         ReconciliationFrameworkRegistration registration1;
         registration1 = manager.reconciliationFrameworkRegistration(secondEvent);
@@ -123,6 +155,17 @@ public class MastershipChangeServiceManagerImplTest {
         Mockito.when(masterChecker.listOfMasteredDevices()).thenReturn(deviceInfos);
         manager.register(secondService);
         Mockito.verify(secondService).onBecomeOwner(deviceInfo);
+    }
+
+    @Test
+    public void evokeEventAfterRegistrationSw() throws Exception {
+        List<DeviceInfo> deviceInfos = new ArrayList<>();
+        deviceInfos.add(deviceInfo);
+        manager.setMasterChecker(masterChecker);
+        Mockito.when(masterChecker.isAnyDeviceMastered()).thenReturn(true);
+        Mockito.when(masterChecker.listOfMasteredDevices()).thenReturn(deviceInfos);
+        manager.registerSwitchInitializer(secondSwitchInitializer);
+        Mockito.verify(secondSwitchInitializer).onDevicePrepared(deviceInfo);
     }
 
 }

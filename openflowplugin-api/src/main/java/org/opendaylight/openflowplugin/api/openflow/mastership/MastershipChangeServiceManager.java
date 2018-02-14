@@ -8,11 +8,14 @@
 package org.opendaylight.openflowplugin.api.openflow.mastership;
 
 import javax.annotation.Nonnull;
+import org.opendaylight.openflowplugin.api.openflow.device.initialization.SwitchInitializer;
+import org.opendaylight.openflowplugin.api.openflow.device.initialization.SwitchInitializerRegistration;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.OwnershipChangeListener;
 
 /**
  * Provider to register mastership change listener.
  * Provider to set mastership reconciliation framework.
+ * Provider to set switch initializer.
  * @since 0.5.0 Nitrogen
  */
 public interface MastershipChangeServiceManager extends OwnershipChangeListener, AutoCloseable {
@@ -36,6 +39,16 @@ public interface MastershipChangeServiceManager extends OwnershipChangeListener,
      */
     ReconciliationFrameworkRegistration reconciliationFrameworkRegistration(
             @Nonnull ReconciliationFrameworkEvent mastershipRFRegistration) throws MastershipChangeException;
+
+    /**
+     * Setter for additional switch initializer.
+     * @param additionalSwitchInitializer switch initializer
+     * @return registration object, which can be closed to unregister
+     * @see SwitchInitializer
+     */
+    SwitchInitializerRegistration registerSwitchInitializer(
+            @Nonnull SwitchInitializer additionalSwitchInitializer
+            );
 
     @Override
     void close();
