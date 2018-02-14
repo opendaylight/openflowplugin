@@ -30,6 +30,7 @@
         <module>odl-openflowplugin-app-forwardingrules-sync</module>
         <module>odl-openflowplugin-app-reconciliation-framework</module>
         <module>odl-openflowplugin-app-southbound-cli</module>
+        <module>odl-openflowplugin-libraries</module>
     </modules>
 
 </project>
