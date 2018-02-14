@@ -320,6 +320,13 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>odl-openflowplugin-libraries</artifactId>
+                <classifier>features</classifier>
+                <type>xml</type>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>odl-openflowplugin-app-forwardingrules-sync</artifactId>
                 <classifier>features</classifier>
                 <type>xml</type>
