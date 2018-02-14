@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.opendaylight.controller</groupId>
     <artifactId>config-parent</artifactId>
-    <version>0.7.2-SNAPSHOT</version>
+    <version>0.7.2</version>
     <relativePath/>
   </parent>
   <groupId>org.opendaylight.openflowplugin.applications</groupId>
   <artifactId>topology-lldp-discovery</artifactId>
-  <version>0.5.2-SNAPSHOT</version>
+  <version>0.5.2</version>
   <packaging>bundle</packaging>
 
   <dependencyManagement>
@@ -48,7 +48,7 @@
     <dependency>
       <groupId>org.opendaylight.controller</groupId>
       <artifactId>liblldp</artifactId>
-      <version>0.13.2-SNAPSHOT</version>
+      <version>0.13.2</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.openflowplugin</groupId>
