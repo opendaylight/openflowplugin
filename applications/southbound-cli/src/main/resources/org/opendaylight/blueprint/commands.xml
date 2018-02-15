@@ -3,6 +3,8 @@
 
     <reference id="dataBrokerRef"
                interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"/>
+    <reference id="frmReconciliationServiceRef"
+               interface="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev171004.ForwardingrulesManagerReconciliationService"/>
 
     <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
         <command name="openflow/getallnodes">
@@ -13,6 +15,11 @@
         <command name="openflow/shownode">
             <action class="org.opendaylight.openflowplugin.applications.southboundcli.cli.ShowNodeCommandProvider">
                 <property name="dataBroker" ref="dataBrokerRef" />
+            </action>
+        </command>
+        <command name="openflow/execresync">
+            <action class="org.opendaylight.openflowplugin.applications.southboundcli.cli.ExecResync">
+                <property name="frmReconciliationService" ref="frmReconciliationServiceRef"/>
             </action>
         </command>
     </command-bundle>

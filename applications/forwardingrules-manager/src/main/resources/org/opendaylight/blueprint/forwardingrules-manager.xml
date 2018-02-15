@@ -24,6 +24,15 @@
     <argument ref="notificationService"/>
     <argument ref="configurationService"/>
     <argument ref="reconciliationservice"/>
-
   </bean>
+
+  <bean id="forwardingRulesManagerReconciliationService"
+          class="org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerReconciliationServiceImpl">
+    <argument ref="frmManager"/>
+  </bean>
+    <service ref="forwardingRulesManagerReconciliationService"
+             interface="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev171004.ForwardingrulesManagerReconciliationService"
+             odl:type="default"/>
+
+
 </blueprint>
