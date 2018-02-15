@@ -11,12 +11,11 @@ package org.opendaylight.openflowplugin.libraries.liblldp;
 import java.math.BigInteger;
 
 /**
- * The class provides methods to convert hex encode strings.
+ * The class provides methods to convert hex encode strings
+ *
+ *
  */
-public final class HexEncode {
-    private HexEncode() {
-    }
-
+public class HexEncode {
     /**
      * This method converts byte array into String format without ":" inserted.
      *
@@ -32,8 +31,8 @@ public final class HexEncode {
         }
 
         StringBuilder buf = new StringBuilder();
-        for (byte b : bytes) {
-            short u8byte = (short) (b & 0xff);
+        for (int i = 0; i < bytes.length; i++) {
+            short u8byte = (short) (bytes[i] & 0xff);
             String tmp = Integer.toHexString(u8byte);
             if (tmp.length() == 1) {
                 buf.append("0");
@@ -44,19 +43,19 @@ public final class HexEncode {
     }
 
     public static String longToHexString(final long val) {
-        char[] arr = Long.toHexString(val).toCharArray();
+        char arr[] = Long.toHexString(val).toCharArray();
         StringBuilder buf = new StringBuilder();
         // prepend the right number of leading zeros
-        int index = 0;
-        for (; index < 16 - arr.length; index++) {
+        int i = 0;
+        for (; i < (16 - arr.length); i++) {
             buf.append("0");
-            if ((index & 0x01) == 1) {
+            if ((i & 0x01) == 1) {
                 buf.append(":");
             }
         }
         for (int j = 0; j < arr.length; j++) {
             buf.append(arr[j]);
-            if ((index + j & 0x01) == 1 && j < arr.length - 1) {
+            if ((((i + j) & 0x01) == 1) && (j < (arr.length - 1))) {
                 buf.append(":");
             }
         }

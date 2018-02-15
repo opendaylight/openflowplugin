@@ -12,7 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The enum contains the most common 802.3 ethernet types and 802.2 + SNAP protocol ids.
+ * The enum contains the most common 802.3 ethernet types and 802.2 + SNAP protocol ids
+ *
+ *
+ *
  */
 public enum EtherTypes {
     PVSTP("PVSTP", 0x010B), // 802.2 + SNAP (Spanning Tree)
@@ -25,7 +28,7 @@ public enum EtherTypes {
     LLDP("LLDP", 0x88CC), OLDQINQ("Old QINQ", 0x9100), // Old non-standard QinQ
     CISCOQINQ("Cisco QINQ", 0x9200); // Cisco non-standard QinQ
 
-    private static final String REGEX_NUMBER_STRING = "^[0-9]+$";
+    private static final String regexNumberString = "^[0-9]+$";
     private String description;
     private int number;
 
@@ -34,7 +37,6 @@ public enum EtherTypes {
         this.number = number;
     }
 
-    @Override
     public String toString() {
         return description;
     }
@@ -69,7 +71,7 @@ public enum EtherTypes {
     }
 
     public static short getEtherTypeNumberShort(final String name) {
-        if (name.matches(REGEX_NUMBER_STRING)) {
+        if (name.matches(regexNumberString)) {
             return Short.valueOf(name);
         }
         for (EtherTypes type : EtherTypes.values()) {
@@ -81,7 +83,7 @@ public enum EtherTypes {
     }
 
     public static int getEtherTypeNumberInt(final String name) {
-        if (name.matches(REGEX_NUMBER_STRING)) {
+        if (name.matches(regexNumberString)) {
             return Integer.valueOf(name);
         }
         for (EtherTypes type : EtherTypes.values()) {

@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.libraries.liblldp;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,8 +19,9 @@ import org.slf4j.LoggerFactory;
 /**
  * Abstract class which represents the generic network packet object It provides
  * the basic methods which are common for all the packets, like serialize and
- * deserialize.
+ * deserialize
  */
+
 public abstract class Packet {
     protected static final Logger LOG = LoggerFactory.getLogger(Packet.class);
     // Access level granted to this packet
@@ -71,21 +73,20 @@ public abstract class Packet {
 
     /**
      * This method deserializes the data bits obtained from the wire into the
-     * respective header and payload which are of type Packet.
+     * respective header and payload which are of type Packet
      *
      * @param data - data from wire to deserialize
      * @param bitOffset bit position where packet header starts in data
      *        array
      * @param size size of packet in bits
      * @return Packet
-     * @throws PacketException if deserialization fails
+     * @throws PacketException
      */
     public Packet deserialize(final byte[] data, final int bitOffset, final int size)
             throws PacketException {
 
         // Deserialize the header fields one by one
-        int startOffset = 0;
-        int numBits = 0;
+        int startOffset = 0, numBits = 0;
         for (Entry<String, Pair<Integer, Integer>> pairs : hdrFieldCoordMap
                 .entrySet()) {
             String hdrField = pairs.getKey();
@@ -97,7 +98,7 @@ public abstract class Packet {
                 hdrFieldBytes = BitBufferHelper.getBits(data, startOffset,
                         numBits);
             } catch (final BufferException e) {
-                throw new PacketException("getBits failed", e);
+                throw new PacketException(e.getMessage());
             }
 
             /*
@@ -107,20 +108,23 @@ public abstract class Packet {
             this.setHeaderField(hdrField, hdrFieldBytes);
 
             if (LOG.isTraceEnabled()) {
-                LOG.trace("{}: {}: {} (offset {} bitsize {})", this.getClass().getSimpleName(), hdrField,
-                        HexEncode.bytesToHexString(hdrFieldBytes), startOffset, numBits);
+                LOG.trace("{}: {}: {} (offset {} bitsize {})",
+                        new Object[] { this.getClass().getSimpleName(), hdrField,
+                        HexEncode.bytesToHexString(hdrFieldBytes),
+                        startOffset, numBits });
             }
         }
 
         // Deserialize the payload now
         int payloadStart = startOffset + numBits;
-        int payloadSize = data.length * NetUtils.NUM_BITS_IN_A_BYTE - payloadStart;
+        int payloadSize = data.length * NetUtils.NumBitsInAByte - payloadStart;
 
         if (payloadClass != null) {
             try {
                 payload = payloadClass.newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new PacketException("Error parsing payload for Ethernet packet", e);
+            } catch (final Exception e) {
+                throw new RuntimeException(
+                        "Error parsing payload for Ethernet packet", e);
             }
             payload.deserialize(data, payloadStart, payloadSize);
             payload.setParent(this);
@@ -129,8 +133,8 @@ public abstract class Packet {
              *  The payload class was not set, it means no class for parsing
              *  this payload is present. Let's store the raw payload if any.
              */
-            int start = payloadStart / NetUtils.NUM_BITS_IN_A_BYTE;
-            int stop = start + payloadSize / NetUtils.NUM_BITS_IN_A_BYTE;
+            int start = payloadStart / NetUtils.NumBitsInAByte;
+            int stop = start + payloadSize / NetUtils.NumBitsInAByte;
             rawPayload = Arrays.copyOfRange(data, start, stop);
         }
 
@@ -143,10 +147,10 @@ public abstract class Packet {
 
     /**
      * This method serializes the header and payload from the respective
-     * packet class, into a single stream of bytes to be sent on the wire.
+     * packet class, into a single stream of bytes to be sent on the wire
      *
      * @return The byte array representing the serialized Packet
-     * @throws PacketException if serialization fails
+     * @throws PacketException
      */
     public byte[] serialize() throws PacketException {
 
@@ -160,8 +164,8 @@ public abstract class Packet {
         int payloadSize = payloadBytes == null ? 0 : payloadBytes.length;
 
         // Allocate the buffer to contain the full (header + payload) packet
-        int headerSize = this.getHeaderSize() / NetUtils.NUM_BITS_IN_A_BYTE;
-        byte[] packetBytes = new byte[headerSize + payloadSize];
+        int headerSize = this.getHeaderSize() / NetUtils.NumBitsInAByte;
+        byte packetBytes[] = new byte[headerSize + payloadSize];
         if (payloadBytes != null) {
             System.arraycopy(payloadBytes, 0, packetBytes, headerSize, payloadSize);
         }
@@ -177,7 +181,7 @@ public abstract class Packet {
                     BitBufferHelper.setBytes(packetBytes, fieldBytes,
                             getfieldOffset(field), getfieldnumBits(field));
                 } catch (final BufferException e) {
-                    throw new PacketException("setBytes failed", e);
+                    throw new PacketException(e.getMessage());
                 }
             }
         }
@@ -201,9 +205,10 @@ public abstract class Packet {
      * for IPv4
      *
      * @param myBytes serialized bytes
-     * @throws PacketException on failure
+     * @throws PacketException
      */
-    protected void postSerializeCustomOperation(byte[] myBytes) throws PacketException {
+    protected void postSerializeCustomOperation(byte[] myBytes)
+            throws PacketException {
         // no op
     }
 
@@ -216,14 +221,15 @@ public abstract class Packet {
      *
      * @param data The byte stream representing the Ethernet frame
      * @param startBitOffset The bit offset from where the byte array corresponding to this Packet starts in the frame
-     * @throws PacketException on failure
+     * @throws PacketException
      */
-    protected void postDeserializeCustomOperation(byte[] data, int startBitOffset) throws PacketException {
+    protected void postDeserializeCustomOperation(byte[] data, int startBitOffset)
+            throws PacketException {
         // no op
     }
 
     /**
-     * Gets the header length in bits.
+     * Gets the header length in bits
      *
      * @return int the header length in bits
      */
@@ -277,7 +283,7 @@ public abstract class Packet {
             ret.append(HexEncode.bytesToHexString(value));
             ret.append(", ");
         }
-        ret.replace(ret.length() - 2, ret.length() - 1, "]");
+        ret.replace(ret.length()-2, ret.length()-1, "]");
         return ret.toString();
     }
 
@@ -292,12 +298,12 @@ public abstract class Packet {
     }
 
     /**
-     * Set a raw payload in the packet class.
+     * Set a raw payload in the packet class
      *
-     * @param bytes The raw payload as byte array
+     * @param payload The raw payload as byte array
      */
-    public void setRawPayload(final byte[] bytes) {
-        this.rawPayload = Arrays.copyOf(bytes, bytes.length);
+    public void setRawPayload(final byte[] payload) {
+        this.rawPayload = Arrays.copyOf(payload, payload.length);
     }
 
     /**

@@ -32,7 +32,6 @@ public class EthernetAddressTest {
             // Exception is expected if NOT raised test will fail
             Assert.assertTrue(false);
         } catch (final ConstructionException e) {
-            // expected
         }
 
         // Array too short
@@ -42,18 +41,17 @@ public class EthernetAddressTest {
             // Exception is expected if NOT raised test will fail
             Assert.assertTrue(false);
         } catch (final ConstructionException e) {
-            // expected
         }
 
         // Array too long
         try {
-            ea1 = new EthernetAddress(new byte[] { (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0,
-                (byte) 0x0, (byte) 0x0, (byte) 0x0 });
+            ea1 = new EthernetAddress(new byte[] { (byte) 0x0, (byte) 0x0,
+                    (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0,
+                    (byte) 0x0 });
 
             // Exception is expected if NOT raised test will fail
             Assert.assertTrue(false);
         } catch (final ConstructionException e) {
-            // expected
         }
     }
 
@@ -63,10 +61,10 @@ public class EthernetAddressTest {
         EthernetAddress ea2;
         try {
             ea1 = new EthernetAddress(new byte[] { (byte) 0x0, (byte) 0x0,
-                (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x1 });
+                    (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x1 });
 
             ea2 = new EthernetAddress(new byte[] { (byte) 0x0, (byte) 0x0,
-                (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x1 });
+                    (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x1 });
             Assert.assertTrue(ea1.equals(ea2));
         } catch (final ConstructionException e) {
             // Exception is NOT expected if raised test will fail
@@ -75,7 +73,7 @@ public class EthernetAddressTest {
 
         try {
             ea1 = new EthernetAddress(new byte[] { (byte) 0x0, (byte) 0x0,
-                (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x1 });
+                    (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x1 });
 
             ea2 = ea1.clone();
             Assert.assertTrue(ea1.equals(ea2));
@@ -88,7 +86,7 @@ public class EthernetAddressTest {
         try {
             ea1 = EthernetAddress.BROADCASTMAC;
             ea2 = new EthernetAddress(new byte[] { (byte) 0xff, (byte) 0xff,
-                (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff });
+                    (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff });
             Assert.assertTrue(ea1.equals(ea2));
         } catch (final ConstructionException e) {
             // Exception is NOT expected if raised test will fail
@@ -102,10 +100,10 @@ public class EthernetAddressTest {
         EthernetAddress ea2;
         try {
             ea1 = new EthernetAddress(new byte[] { (byte) 0x0, (byte) 0x0,
-                (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x2 });
+                    (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x2 });
 
             ea2 = new EthernetAddress(new byte[] { (byte) 0x0, (byte) 0x0,
-                (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x1 });
+                    (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x1 });
             Assert.assertTrue(!ea1.equals(ea2));
         } catch (final ConstructionException e) {
             // Exception is NOT expected if raised test will fail

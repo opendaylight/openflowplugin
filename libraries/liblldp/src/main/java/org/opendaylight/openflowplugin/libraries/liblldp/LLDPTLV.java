@@ -8,42 +8,47 @@
 
 package org.opendaylight.openflowplugin.libraries.liblldp;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.slf4j.LoggerFactory;
+
+import org.slf4j.Logger;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 /**
- * Class that represents the LLDPTLV objects.
+ * Class that represents the LLDPTLV objects
  */
-@SuppressWarnings("checkstyle:AbbreviationAsWordInName")
+
 public class LLDPTLV extends Packet {
     private static final String TYPE = "Type";
     private static final String LENGTH = "Length";
     private static final String VALUE = "Value";
-    private static final int LLDPTLV_FIELDS = 3;
+    private static final int LLDPTLVFields = 3;
 
-    /** OpenFlow OUI. */
+    /** OpenFlow OUI */
     public static final byte[] OFOUI = new byte[] { (byte) 0x00, (byte) 0x26,
         (byte) 0xe1 };
 
-    /** Length of Organizationally defined subtype field of TLV in bytes.   */
-    private static final byte CUSTOM_TLV_SUB_TYPE_LENGTH = (byte)1;
+    /** Length of Organizationally defined subtype field of TLV in bytes   */
+    private static final byte customTlvSubTypeLength = (byte)1;
 
-    /** OpenFlow subtype: nodeConnectorId of source. */
+    /** OpenFlow subtype: nodeConnectorId of source */
     public static final byte[] CUSTOM_TLV_SUB_TYPE_NODE_CONNECTOR_ID = new byte[] { 0 };
 
-    /** OpenFlow subtype: custom sec = hash code of verification of origin of LLDP. */
+    /** OpenFlow subtype: custom sec = hash code of verification of origin of LLDP */
     public static final byte[] CUSTOM_TLV_SUB_TYPE_CUSTOM_SEC = new byte[] { 1 };
 
-    public static final int CUSTOM_TLV_OFFSET = OFOUI.length + CUSTOM_TLV_SUB_TYPE_LENGTH;
-    public static final byte[] CHASSISID_SUB_TYPE = new byte[] { 4 }; // MAC address for the system
-    public static final byte[] PORTID_SUB_TYPE = new byte[] { 7 }; // locally assigned
+    public static final int customTlvOffset = OFOUI.length + customTlvSubTypeLength;
+    public static final byte chassisIDSubType[] = new byte[] { 4 }; // MAC address for the system
+    public static final byte portIDSubType[] = new byte[] { 7 }; // locally assigned
+
+    private static final Logger LOG = LoggerFactory.getLogger(LLDPTLV.class);
 
     public enum TLVType {
         Unknown((byte) 0), ChassisID((byte) 1), PortID((byte) 2), TTL((byte) 3), PortDesc(
@@ -61,28 +66,31 @@ public class LLDPTLV extends Packet {
         }
     }
 
-    private static final Map<String, Pair<Integer, Integer>> FIELD_COORDINATES = new LinkedHashMap<>();
+    private static Map<String, Pair<Integer, Integer>> fieldCoordinates = new LinkedHashMap<String, Pair<Integer, Integer>>() {
+        private static final long serialVersionUID = 1L;
 
-    static {
-        FIELD_COORDINATES.put(TYPE, new MutablePair<>(0, 7));
-        FIELD_COORDINATES.put(LENGTH, new MutablePair<>(7, 9));
-        FIELD_COORDINATES.put(VALUE, new MutablePair<>(16, 0));
-    }
+        {
+            put(TYPE, new MutablePair<>(0, 7));
+            put(LENGTH, new MutablePair<>(7, 9));
+            put(VALUE, new MutablePair<>(16, 0));
+        }
+    };
 
     protected Map<String, byte[]> fieldValues;
 
     /**
-     * Default constructor that creates and sets the hash map values and sets the payload to null.
+     * Default constructor that creates and sets the hash map values and sets
+     * the payload to null
      */
     public LLDPTLV() {
         payload = null;
-        fieldValues = new HashMap<>(LLDPTLV_FIELDS);
-        hdrFieldCoordMap = FIELD_COORDINATES;
+        fieldValues = new HashMap<>(LLDPTLVFields);
+        hdrFieldCoordMap = fieldCoordinates;
         hdrFieldsMap = fieldValues;
     }
 
     /**
-     * Constructor that writes the passed LLDPTLV values to the hdrFieldsMap.
+     * Constructor that writes the passed LLDPTLV values to the hdrFieldsMap
      */
     public LLDPTLV(final LLDPTLV other) {
         for (Map.Entry<String, byte[]> entry : other.hdrFieldsMap.entrySet()) {
@@ -91,30 +99,28 @@ public class LLDPTLV extends Packet {
     }
 
     /**
-     * Returns the length of TLV.
+     * @return int - the length of TLV
      */
     public int getLength() {
         return (int) BitBufferHelper.toNumber(fieldValues.get(LENGTH),
-                FIELD_COORDINATES.get(LENGTH).getRight().intValue());
+                fieldCoordinates.get(LENGTH).getRight().intValue());
     }
 
     /**
-     * Returns the type of TLV.
+     * @return byte - the type of TLV
      */
     public byte getType() {
         return BitBufferHelper.getByte(fieldValues.get(TYPE));
     }
 
     /**
-     * Returns the value field of TLV.
+     * @return byte[] - the value field of TLV
      */
     public byte[] getValue() {
         return fieldValues.get(VALUE);
     }
 
     /**
-     * Sets the type.
-     *
      * @param type the type to set
      * @return LLDPTLV
      */
@@ -125,8 +131,6 @@ public class LLDPTLV extends Packet {
     }
 
     /**
-     * Sets the length.
-     *
      * @param length the length to set
      * @return LLDPTLV
      */
@@ -136,8 +140,6 @@ public class LLDPTLV extends Packet {
     }
 
     /**
-     * Sets the value.
-     *
      * @param value the value to set
      * @return LLDPTLV
      */
@@ -156,7 +158,7 @@ public class LLDPTLV extends Packet {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result
-                + (fieldValues == null ? 0 : fieldValues.hashCode());
+                + ((fieldValues == null) ? 0 : fieldValues.hashCode());
         return result;
     }
 
@@ -185,48 +187,48 @@ public class LLDPTLV extends Packet {
     @Override
     public int getfieldnumBits(final String fieldName) {
         if (fieldName.equals(VALUE)) {
-            return NetUtils.NUM_BITS_IN_A_BYTE * BitBufferHelper.getShort(
-                    fieldValues.get(LENGTH), FIELD_COORDINATES.get(LENGTH)
-                    .getRight().intValue());
+            return (NetUtils.NumBitsInAByte * BitBufferHelper.getShort(
+                    fieldValues.get(LENGTH), fieldCoordinates.get(LENGTH)
+                    .getRight().intValue()));
         }
-        return FIELD_COORDINATES.get(fieldName).getRight();
+        return fieldCoordinates.get(fieldName).getRight();
     }
 
     /**
-     * Returns the size in bits of the whole TLV.
+     * Returns the size in bits of the whole TLV
      *
      * @return int - size in bits of full TLV
      */
     public int getTLVSize() {
-        return LLDPTLV.FIELD_COORDINATES.get(TYPE).getRight() + // static
-                LLDPTLV.FIELD_COORDINATES.get(LENGTH).getRight() + // static
-                getfieldnumBits(VALUE); // variable
+        return (LLDPTLV.fieldCoordinates.get(TYPE).getRight() + // static
+                LLDPTLV.fieldCoordinates.get(LENGTH).getRight() + // static
+                getfieldnumBits(VALUE)); // variable
     }
 
     /**
-     * Creates the SystemName TLV value.
+     * Creates the SystemName TLV value
      *
      * @param nodeId
      *            node identifier string
      * @return the SystemName TLV value in byte array
      */
-    public static byte[] createSystemNameTLVValue(final String nodeId) {
+    static public byte[] createSystemNameTLVValue(final String nodeId) {
         byte[] nid = nodeId.getBytes();
         return nid;
     }
 
     /**
-     * Creates the ChassisID TLV value including the subtype and ChassisID string.
+     * Creates the ChassisID TLV value including the subtype and ChassisID
+     * string
      *
      * @param nodeId
      *            node identifier string
      * @return the ChassisID TLV value in byte array
      */
-    public static byte[] createChassisIDTLVValue(final String nodeId) {
+    static public byte[] createChassisIDTLVValue(final String nodeId) {
         byte[] nid = HexEncode.bytesFromHexString(nodeId);
         byte[] cid = new byte[6];
-        int srcPos = 0;
-        int dstPos = 0;
+        int srcPos = 0, dstPos = 0;
 
         if (nid.length > cid.length) {
             srcPos = nid.length - cid.length;
@@ -235,66 +237,65 @@ public class LLDPTLV extends Packet {
         }
         System.arraycopy(nid, srcPos, cid, dstPos, cid.length);
 
-        byte[] cidValue = new byte[cid.length + CHASSISID_SUB_TYPE.length];
+        byte[] cidValue = new byte[cid.length + chassisIDSubType.length];
 
-        System.arraycopy(CHASSISID_SUB_TYPE, 0, cidValue, 0,
-                CHASSISID_SUB_TYPE.length);
-        System.arraycopy(cid, 0, cidValue, CHASSISID_SUB_TYPE.length, cid.length);
+        System.arraycopy(chassisIDSubType, 0, cidValue, 0,
+                chassisIDSubType.length);
+        System.arraycopy(cid, 0, cidValue, chassisIDSubType.length, cid.length);
 
         return cidValue;
     }
 
     /**
-     * Creates the PortID TLV value including the subtype and PortID string.
+     * Creates the PortID TLV value including the subtype and PortID string
      *
      * @param portId
      *            port identifier string
      * @return the PortID TLV value in byte array
      */
-    public static byte[] createPortIDTLVValue(final String portId) {
+    static public byte[] createPortIDTLVValue(final String portId) {
         byte[] pid = portId.getBytes(Charset.defaultCharset());
-        byte[] pidValue = new byte[pid.length + PORTID_SUB_TYPE.length];
+        byte[] pidValue = new byte[pid.length + portIDSubType.length];
 
-        System.arraycopy(PORTID_SUB_TYPE, 0, pidValue, 0, PORTID_SUB_TYPE.length);
-        System.arraycopy(pid, 0, pidValue, PORTID_SUB_TYPE.length, pid.length);
+        System.arraycopy(portIDSubType, 0, pidValue, 0, portIDSubType.length);
+        System.arraycopy(pid, 0, pidValue, portIDSubType.length, pid.length);
 
         return pidValue;
     }
 
     /**
-     * Creates the custom TLV value including OUI, subtype and custom string.
+     * Creates the custom TLV value including OUI, subtype and custom string
      *
      * @param customString
      *            port identifier string
      * @return the custom TLV value in byte array
      * @see #createCustomTLVValue(byte[],byte[])
      */
-    public static byte[] createCustomTLVValue(final String customString) {
+    static public byte[] createCustomTLVValue(final String customString) {
         byte[] customByteArray = customString.getBytes(Charset.defaultCharset());
         return createCustomTLVValue(CUSTOM_TLV_SUB_TYPE_NODE_CONNECTOR_ID, customByteArray);
     }
 
     /**
-     * Creates the custom TLV value including OUI, subtype and custom string.
-     *
+     * Creates the custom TLV value including OUI, subtype and custom string
      * @param subtype openflow subtype
      * @param customByteArray
      *            port identifier string
      * @return the custom TLV value in byte array
      */
-    public static byte[] createCustomTLVValue(final byte[] subtype, final byte[] customByteArray) {
-        byte[] customValue = new byte[CUSTOM_TLV_OFFSET + customByteArray.length];
+    static public byte[] createCustomTLVValue(final byte[] subtype, final byte[] customByteArray) {
+        byte[] customValue = new byte[customTlvOffset + customByteArray.length];
 
         System.arraycopy(OFOUI, 0, customValue, 0, OFOUI.length);
         System.arraycopy(subtype, 0, customValue, OFOUI.length, 1);
-        System.arraycopy(customByteArray, 0, customValue, CUSTOM_TLV_OFFSET,
+        System.arraycopy(customByteArray, 0, customValue, customTlvOffset,
                 customByteArray.length);
 
         return customValue;
     }
 
     /**
-     * Retrieves the string from TLV value and returns it in HexString format.
+     * Retrieves the string from TLV value and returns it in HexString format
      *
      * @param tlvValue
      *            the TLV value
@@ -302,15 +303,15 @@ public class LLDPTLV extends Packet {
      *            the TLV length
      * @return the HexString
      */
-    public static String getHexStringValue(final byte[] tlvValue, final int tlvLen) {
-        byte[] cidBytes = new byte[tlvLen - CHASSISID_SUB_TYPE.length];
-        System.arraycopy(tlvValue, CHASSISID_SUB_TYPE.length, cidBytes, 0,
+    static public String getHexStringValue(final byte[] tlvValue, final int tlvLen) {
+        byte[] cidBytes = new byte[tlvLen - chassisIDSubType.length];
+        System.arraycopy(tlvValue, chassisIDSubType.length, cidBytes, 0,
                 cidBytes.length);
         return HexEncode.bytesToHexStringFormat(cidBytes);
     }
 
     /**
-     * Retrieves the string from TLV value.
+     * Retrieves the string from TLV value
      *
      * @param tlvValue
      *            the TLV value
@@ -318,22 +319,23 @@ public class LLDPTLV extends Packet {
      *            the TLV length
      * @return the string
      */
-    public static String getStringValue(final byte[] tlvValue, final int tlvLen) {
-        byte[] pidSubType = new byte[PORTID_SUB_TYPE.length];
-        byte[] pidBytes = new byte[tlvLen - PORTID_SUB_TYPE.length];
+    static public String getStringValue(final byte[] tlvValue, final int tlvLen) {
+        byte[] pidSubType = new byte[portIDSubType.length];
+        byte[] pidBytes = new byte[tlvLen - portIDSubType.length];
         System.arraycopy(tlvValue, 0, pidSubType, 0,
                 pidSubType.length);
-        System.arraycopy(tlvValue, PORTID_SUB_TYPE.length, pidBytes, 0,
+        System.arraycopy(tlvValue, portIDSubType.length, pidBytes, 0,
                 pidBytes.length);
         if (pidSubType[0] == (byte) 0x3) {
             return HexEncode.bytesToHexStringFormat(pidBytes);
         } else {
-            return new String(pidBytes, Charset.defaultCharset());
+            return (new String(pidBytes, Charset.defaultCharset()));
         }
     }
 
     /**
-     * Retrieves the custom string from the Custom TLV value which includes OUI, subtype and custom string.
+     * Retrieves the custom string from the Custom TLV value which includes OUI,
+     * subtype and custom string
      *
      * @param customTlvValue
      *            the custom TLV value
@@ -341,18 +343,18 @@ public class LLDPTLV extends Packet {
      *            the custom TLV length
      * @return the custom string
      */
-    public static String getCustomString(final byte[] customTlvValue, final int customTlvLen) {
+    static public String getCustomString(final byte[] customTlvValue, final int customTlvLen) {
         String customString = "";
         byte[] vendor = new byte[3];
         System.arraycopy(customTlvValue, 0, vendor, 0, vendor.length);
         if (Arrays.equals(vendor, LLDPTLV.OFOUI)) {
-            int customArrayLength = customTlvLen - CUSTOM_TLV_OFFSET;
+            int customArrayLength = customTlvLen - customTlvOffset;
             byte[] customArray = new byte[customArrayLength];
-            System.arraycopy(customTlvValue, CUSTOM_TLV_OFFSET, customArray, 0, customArrayLength);
+            System.arraycopy(customTlvValue, customTlvOffset, customArray, 0,
+                    customArrayLength);
             try {
                 customString = new String(customArray, "UTF-8");
             } catch (final UnsupportedEncodingException e) {
-                LOG.warn("Error creating string from the custom TLV value: {}", Arrays.toString(customTlvValue), e);
             }
         }
 

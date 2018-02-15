@@ -11,11 +11,12 @@ package org.opendaylight.openflowplugin.libraries.liblldp;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 /**
- * Class that represents the Ethernet frame objects.
+ * Class that represents the Ethernet frame objects
  */
 public class Ethernet extends Packet {
     private static final String DMAC = "DestinationMACAddress";
@@ -24,53 +25,52 @@ public class Ethernet extends Packet {
 
     // TODO: This has to be outside and it should be possible for osgi
     // to add new coming packet classes
-    public static final Map<Short, Class<? extends Packet>> ETHER_TYPE_CLASS_MAP = new HashMap<>();
-
+    public static final Map<Short, Class<? extends Packet>> etherTypeClassMap;
     static {
-        ETHER_TYPE_CLASS_MAP.put(EtherTypes.LLDP.shortValue(), LLDP.class);
+        etherTypeClassMap = new HashMap<>();
+        etherTypeClassMap.put(EtherTypes.LLDP.shortValue(), LLDP.class);
     }
-
-    private static final Map<String, Pair<Integer, Integer>> FIELD_COORDINATES = new LinkedHashMap<>();
-
-    static {
-        FIELD_COORDINATES.put(DMAC, new ImmutablePair<>(0, 48));
-        FIELD_COORDINATES.put(SMAC, new ImmutablePair<>(48, 48));
-        FIELD_COORDINATES.put(ETHT, new ImmutablePair<>(96, 16));
-    }
-
+    private static Map<String, Pair<Integer, Integer>> fieldCoordinates = new LinkedHashMap<String, Pair<Integer, Integer>>() {
+        private static final long serialVersionUID = 1L;
+        {
+            put(DMAC, new ImmutablePair<>(0, 48));
+            put(SMAC, new ImmutablePair<>(48, 48));
+            put(ETHT, new ImmutablePair<>(96, 16));
+        }
+    };
     private final Map<String, byte[]> fieldValues;
 
     /**
-     * Default constructor that creates and sets the HashMap.
+     * Default constructor that creates and sets the HashMap
      */
     public Ethernet() {
         fieldValues = new HashMap<>();
-        hdrFieldCoordMap = FIELD_COORDINATES;
+        hdrFieldCoordMap = fieldCoordinates;
         hdrFieldsMap = fieldValues;
     }
 
     /**
-     * Constructor that sets the access level for the packet and creates and sets the HashMap.
+     * Constructor that sets the access level for the packet and
+     * creates and sets the HashMap
      */
     public Ethernet(final boolean writeAccess) {
         super(writeAccess);
         fieldValues = new HashMap<>();
-        hdrFieldCoordMap = FIELD_COORDINATES;
+        hdrFieldCoordMap = fieldCoordinates;
         hdrFieldsMap = fieldValues;
     }
 
     @Override
     public void setHeaderField(final String headerField, final byte[] readValue) {
         if (headerField.equals(ETHT)) {
-            payloadClass = ETHER_TYPE_CLASS_MAP.get(BitBufferHelper
+            payloadClass = etherTypeClassMap.get(BitBufferHelper
                     .getShort(readValue));
         }
         hdrFieldsMap.put(headerField, readValue);
     }
 
     /**
-     * Gets the destination MAC address stored.
-     *
+     * Gets the destination MAC address stored
      * @return byte[] - the destinationMACAddress
      */
     public byte[] getDestinationMACAddress() {
@@ -78,8 +78,7 @@ public class Ethernet extends Packet {
     }
 
     /**
-     * Gets the source MAC address stored.
-     *
+     * Gets the source MAC address stored
      * @return byte[] - the sourceMACAddress
      */
     public byte[] getSourceMACAddress() {
@@ -87,25 +86,23 @@ public class Ethernet extends Packet {
     }
 
     /**
-     * Gets the etherType stored.
-     *
+     * Gets the etherType stored
      * @return short - the etherType
      */
     public short getEtherType() {
         return BitBufferHelper.getShort(fieldValues.get(ETHT));
     }
 
-    public boolean isBroadcast() {
+    public boolean isBroadcast(){
         return NetUtils.isBroadcastMACAddr(getDestinationMACAddress());
     }
 
-    public boolean isMulticast() {
+    public boolean isMulticast(){
         return NetUtils.isMulticastMACAddr(getDestinationMACAddress());
     }
 
     /**
-     * Sets the destination MAC address for the current Ethernet object instance.
-     *
+     * Sets the destination MAC address for the current Ethernet object instance
      * @param destinationMACAddress the destinationMACAddress to set
      */
     public Ethernet setDestinationMACAddress(final byte[] destinationMACAddress) {
@@ -114,8 +111,7 @@ public class Ethernet extends Packet {
     }
 
     /**
-     * Sets the source MAC address for the current Ethernet object instance.
-     *
+     * Sets the source MAC address for the current Ethernet object instance
      * @param sourceMACAddress the sourceMACAddress to set
      */
     public Ethernet setSourceMACAddress(final byte[] sourceMACAddress) {
@@ -124,8 +120,7 @@ public class Ethernet extends Packet {
     }
 
     /**
-     * Sets the etherType for the current Ethernet object instance.
-     *
+     * Sets the etherType for the current Ethernet object instance
      * @param etherType the etherType to set
      */
     public Ethernet setEtherType(final short etherType) {
@@ -133,4 +128,5 @@ public class Ethernet extends Packet {
         fieldValues.put(ETHT, ethType);
         return this;
     }
+
 }

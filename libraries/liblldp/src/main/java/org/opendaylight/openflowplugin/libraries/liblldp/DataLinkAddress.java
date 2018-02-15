@@ -9,13 +9,22 @@
 package org.opendaylight.openflowplugin.libraries.liblldp;
 
 import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Abstract base class for a Datalink Address.
+ * @file   DataLinkAddress.java
+ *
+ * @brief  Abstract base class for a Datalink Address
+ *
+ */
+
+/**
+ * Abstract base class for a Datalink Address
+ *
  */
 @XmlRootElement
-public abstract class DataLinkAddress implements Serializable {
+abstract public class DataLinkAddress implements Serializable {
     private static final long serialVersionUID = 1L;
     private String name;
 
@@ -24,25 +33,27 @@ public abstract class DataLinkAddress implements Serializable {
     }
 
     /**
-     * Constructor of super class.
+     * Constructor of super class
      *
      * @param name Create a new DataLink, not for general use but
-     *     available only for sub classes
+     * available only for sub classes
      */
     protected DataLinkAddress(final String name) {
         this.name = name;
     }
 
     /**
-     * Used to copy the DataLinkAddress in a polymorphic way.
+     * Used to copy the DataLinkAddress in a polymorphic way
+     *
      *
      * @return A clone of this DataLinkAddress
      */
     @Override
-    public abstract DataLinkAddress clone();
+    abstract public DataLinkAddress clone();
 
     /**
-     * Allow to distinguish among different data link addresses.
+     * Allow to distinguish among different data link addresses
+     *
      *
      * @return Name of the DataLinkAdress we are working on
      */
@@ -54,7 +65,7 @@ public abstract class DataLinkAddress implements Serializable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + (name == null ? 0 : name.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
         return result;
     }
 
