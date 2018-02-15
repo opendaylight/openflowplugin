@@ -11,9 +11,12 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -32,12 +35,16 @@ public class DeviceMastership implements ClusterSingletonService, AutoCloseable 
     private final AtomicBoolean deviceMastered = new AtomicBoolean(false);
     private final AtomicBoolean isDeviceInOperDS = new AtomicBoolean(false);
     private final InstanceIdentifier<FlowCapableNode> fcnIID;
+    private final InstanceIdentifier<Node> path;
+    private final BindingAwareBroker.RoutedRpcRegistration routedRpcReg;
 
-    public DeviceMastership(final NodeId nodeId) {
+    public DeviceMastership(final NodeId nodeId, final BindingAwareBroker.RoutedRpcRegistration routedRpcReg) {
         this.nodeId = nodeId;
         this.identifier = ServiceGroupIdentifier.create(nodeId.getValue());
         fcnIID = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId))
                 .augmentation(FlowCapableNode.class);
+        path = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
+        this.routedRpcReg = routedRpcReg;
     }
 
     @Override
@@ -72,5 +79,15 @@ public class DeviceMastership implements ClusterSingletonService, AutoCloseable 
 
     public void reconcile() {
         deviceMastered.set(true);
+    }
+
+    public void registerReconciliationRpc() {
+        LOG.info("The path is registered : {}",path);
+        routedRpcReg.registerPath(NodeContext.class, path);
+    }
+
+    public void deregisterReconciliationRpc() {
+        LOG.info("The path is unregistered : {}",path);
+        routedRpcReg.unregisterPath(NodeContext.class, path);
     }
 }
