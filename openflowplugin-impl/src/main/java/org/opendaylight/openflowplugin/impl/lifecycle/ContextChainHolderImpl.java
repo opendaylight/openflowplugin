@@ -114,7 +114,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         contextChain.addContext(statisticsContext);
         contextChainMap.put(deviceInfo, contextChain);
         connectingDevices.remove(deviceInfo);
-        LOG.debug("Context chain" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfo);
+        LOG.debug("Context chain created with contextchain {} with statisticscontext {}" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfo, contextChain.toString(), statisticsContext);
         deviceContext.onPublished();
         contextChain.registerServices(singletonServiceProvider);
         return contextChain;
