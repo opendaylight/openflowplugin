@@ -8,7 +8,10 @@
 
 package org.opendaylight.openflowplugin.applications.frm;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationNotificationListener;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
  * Implementation provider of this interface will implement reconciliation
@@ -20,4 +23,5 @@ import org.opendaylight.openflowplugin.applications.reconciliation.Reconciliatio
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
  */
 public interface FlowNodeReconciliation extends ReconciliationNotificationListener, AutoCloseable {
+    ListenableFuture<Boolean> reconcileConfiguration(InstanceIdentifier<FlowCapableNode> connectedNode);
 }

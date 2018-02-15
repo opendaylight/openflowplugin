@@ -1,0 +1,33 @@
+module admin-reconciliation {
+
+    namespace "urn:opendaylight:params:xml:ns:yang:openflowplugin:app:admin-reconciliation:service";
+    prefix admin-reconciliation;
+
+    revision "2018-02-27" {
+        description "Initial revision for admin reconciliation";
+    }
+
+    rpc exec-reconciliation {
+        description "Requests the execution of an administrative reconciliation between the controller and
+                     one or several or all Nodes"
+        input {
+            leaf-list nodes {
+                description "List of nodes to be reconciled";
+                type uint64;
+            }
+
+            leaf reconcile-all-nodes {
+                description "Flag to indicate that all nodes must be reconciled";
+                type boolean;
+                mandatory false;
+                default false;
+            }
+        }
+
+        output {
+             leaf result {
+                 type boolean;
+             }
+        }
+    }
+}
