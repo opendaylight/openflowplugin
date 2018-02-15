@@ -77,6 +77,7 @@ public class ContextChainImpl implements ContextChain {
     public void instantiateServiceInstance() {
 
         try {
+            LOG.info("Starting clustering services for node {} for contexts {}", deviceInfo, printcontexts(contexts));
             contexts.forEach(this::initializeContextService);
             LOG.info("Started clustering services for node {}", deviceInfo);
         } catch (final Exception ex) {
@@ -84,6 +85,15 @@ public class ContextChainImpl implements ContextChain {
             executorService.submit(() -> mastershipChangeListener
                     .onNotAbleToStartMastershipMandatory(deviceInfo, ex.getMessage()));
         }
+    }
+
+    public String printcontexts(List<OFPContext> contexts) {
+        String a = "";
+        for (OFPContext context : contexts) {
+            a.concat(context.toString());
+            a.concat(" ");
+        }
+        return a;
     }
 
     @Override
@@ -243,6 +253,8 @@ public class ContextChainImpl implements ContextChain {
     }
 
     private void initializeContextService(final OFPContext context) {
+        LOG.info("Inside initializeContextService for node {} with state {}", deviceInfo,
+                primaryConnection.getConnectionState() );
         if (ConnectionContext.CONNECTION_STATE.WORKING.equals(primaryConnection.getConnectionState())) {
             context.instantiateServiceInstance();
         } else {

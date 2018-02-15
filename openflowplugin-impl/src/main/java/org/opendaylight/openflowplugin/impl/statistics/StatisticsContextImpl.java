@@ -347,12 +347,14 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         Futures.addCallback(this.gatherDynamicData(), new FutureCallback<Boolean>() {
             @Override
             public void onSuccess(@Nullable Boolean aBoolean) {
+                LOG.info("Starting statistics context cluster services for node {} in devicecontext {}", deviceInfo.getLOGValue(), ContextChainMastershipState.INITIAL_GATHERING);
                 mastershipChangeListener.onMasterRoleAcquired(
                         deviceInfo,
                         ContextChainMastershipState.INITIAL_GATHERING
                 );
 
                 if (deviceContext.initialSubmitTransaction()) {
+                    LOG.info("Starting statistics context cluster services for node {} in devicecontext {}", deviceInfo.getLOGValue(), ContextChainMastershipState.INITIAL_SUBMIT);
                     mastershipChangeListener.onMasterRoleAcquired(
                             deviceInfo,
                             ContextChainMastershipState.INITIAL_SUBMIT
@@ -362,6 +364,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
                         myManager.startScheduling(deviceInfo);
                     }
                 } else {
+                    LOG.info("Starting statistics context cluster services for node {} in devicecontext {} with reason {}", deviceInfo.getLOGValue(), "Initial transaction cannot be submitted.");
                     mastershipChangeListener.onNotAbleToStartMastershipMandatory(
                             deviceInfo,
                             "Initial transaction cannot be submitted."
