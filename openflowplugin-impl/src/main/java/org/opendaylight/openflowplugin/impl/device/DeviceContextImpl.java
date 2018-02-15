@@ -21,11 +21,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
@@ -60,6 +56,7 @@ import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRe
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.common.txchain.TransactionChainManager;
+import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderKeeper;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
@@ -643,19 +640,52 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     .get()
                     .initialize(this, switchFeaturesMandatory, skipTableFeatures, writerProvider, convertorExecutor);
 
+
+
+
+
+            SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(500,
+                    8);
             try {
-                initialize.get(DEVICE_INIT_TIMEOUT, TimeUnit.MILLISECONDS);
-            } catch (TimeoutException ex) {
+                looper.loopUntilNoException(new Callable<Void>() {
+                    @Override
+                    public Void call() throws Exception {
+                        return initialize.get(DEVICE_INIT_TIMEOUT, TimeUnit.MILLISECONDS);
+
+                    }
+                });
+            }
+            catch (TimeoutException ex) {
                 initialize.cancel(true);
                 throw new RuntimeException(String.format("Failed to initialize device %s in %ss: %s",
                         deviceInfo.toString(),
                         String.valueOf(DEVICE_INIT_TIMEOUT / 1000),
                         ex.toString()));
-            } catch (ExecutionException | InterruptedException ex) {
+            }
+            catch (Exception ex) {
                 throw new RuntimeException(String.format("Device %s cannot be initialized: %s",
                         deviceInfo.toString(),
                         ex.toString()));
             }
+
+
+
+
+
+
+//            try {
+//                initialize.get(DEVICE_INIT_TIMEOUT, TimeUnit.MILLISECONDS);
+//            } catch (TimeoutException ex) {
+//                initialize.cancel(true);
+//                throw new RuntimeException(String.format("Failed to initialize device %s in %ss: %s",
+//                        deviceInfo.toString(),
+//                        String.valueOf(DEVICE_INIT_TIMEOUT / 1000),
+//                        ex.toString()));
+//            } catch (ExecutionException | InterruptedException ex) {
+//                throw new RuntimeException(String.format("Device %s cannot be initialized: %s",
+//                        deviceInfo.toString(),
+//                        ex.toString()));
+//            }
         } else {
             throw new RuntimeException(String.format("Unsupported version %s for device %s",
                     deviceInfo.getVersion(),
