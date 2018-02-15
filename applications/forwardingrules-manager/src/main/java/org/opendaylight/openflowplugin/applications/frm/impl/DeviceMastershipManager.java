@@ -23,6 +23,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
@@ -59,10 +60,12 @@ public class DeviceMastershipManager
     private final Object lockObj = new Object();
     private ListenerRegistration<DeviceMastershipManager> listenerRegistration;
     private Set<InstanceIdentifier<FlowCapableNode>> activeNodes = Collections.emptySet();
+    private RoutedRpcRegistration routedRpcReg;
 
     public DeviceMastershipManager(final ClusterSingletonServiceProvider clusterSingletonService,
-            final NotificationProviderService notificationService, final FlowNodeReconciliation reconcliationAgent,
-            final DataBroker dataBroker) {
+                                   final NotificationProviderService notificationService,
+                                   final FlowNodeReconciliation reconcliationAgent,
+                                   final DataBroker dataBroker) {
         this.clusterSingletonService = clusterSingletonService;
         this.notifListenerRegistration = notificationService.registerNotificationListener(this);
         this.reconcliationAgent = reconcliationAgent;
@@ -98,8 +101,9 @@ public class DeviceMastershipManager
     public void onNodeUpdated(NodeUpdated notification) {
         LOG.debug("NodeUpdate notification received : {}", notification);
         DeviceMastership membership = deviceMasterships.computeIfAbsent(notification.getId(),
-            device -> new DeviceMastership(notification.getId()));
+            device -> new DeviceMastership(notification.getId(), routedRpcReg));
         membership.reconcile();
+        membership.registerReconciliationRpc();
     }
 
     @Override
@@ -113,6 +117,7 @@ public class DeviceMastershipManager
         NodeId nodeId = notification.getNodeRef().getValue().firstKeyOf(Node.class).getId();
         final DeviceMastership mastership = deviceMasterships.remove(nodeId);
         if (mastership != null) {
+            mastership.deregisterReconciliationRpc();
             mastership.close();
             LOG.info("Unregistered FRM cluster singleton service for service id : {}", nodeId.getValue());
         }
@@ -215,6 +220,10 @@ public class DeviceMastershipManager
             deviceMasterships.get(nodeId).setDeviceOperationalStatus(status);
             LOG.debug("Operational status of device {} is set to {}", nodeId, status);
         }
+    }
+
+    public void setRoutedRpcReg(RoutedRpcRegistration routedRpcReg) {
+        this.routedRpcReg = routedRpcReg;
     }
 
     @SuppressWarnings("IllegalCatch")

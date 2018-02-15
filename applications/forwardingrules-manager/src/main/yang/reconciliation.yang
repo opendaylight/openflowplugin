@@ -1,0 +1,28 @@
+module reconciliation {
+
+    namespace "urn:opendaylight:params:xml:ns:yang:openflowplugin:app:reconciliation:service";
+    prefix frm-reconciliation;
+
+    import flow-capable-transaction {prefix tr; revision-date "2015-03-04";}
+    import opendaylight-inventory {prefix inv; revision-date "2013-08-19";}
+
+    revision "2018-02-27" {
+        description "Initial revision of trigger based frm reconciliation";
+    }
+
+    rpc init-reconciliation {
+
+        input {
+            uses "inv:node-context-ref";
+            leaf nodeId {
+                type uint64;
+            }
+        }
+
+        output {
+            leaf result {
+                type boolean;
+            }
+        }
+    }
+}
