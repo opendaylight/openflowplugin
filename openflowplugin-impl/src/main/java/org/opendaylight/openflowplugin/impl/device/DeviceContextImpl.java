@@ -60,6 +60,7 @@ import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRe
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.common.txchain.TransactionChainManager;
+import org.opendaylight.openflowplugin.common.wait.TaskException;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderKeeper;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
@@ -224,14 +225,19 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public boolean initialSubmitTransaction() {
+    public boolean initialSubmitTransaction(){
         if (!initialized.get()) {
             return false;
         }
-
-        final boolean initialSubmit = transactionChainManager.initialSubmitWriteTransaction();
-        isInitialTransactionSubmitted.set(initialSubmit);
-        return initialSubmit;
+        try {
+            final boolean initialSubmit = transactionChainManager.initialSubmitWriteTransaction();
+            isInitialTransactionSubmitted.set(initialSubmit);
+            return initialSubmit;
+        }
+        catch (TaskException ex) {
+            LOG.info("Caught taskexception");
+        }
+        return false;
     }
 
     @Override
