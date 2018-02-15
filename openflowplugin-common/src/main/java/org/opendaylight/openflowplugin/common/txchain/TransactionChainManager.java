@@ -16,7 +16,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import javax.annotation.Nonnull;
@@ -32,6 +31,8 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainClosedException;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
+import org.opendaylight.openflowplugin.common.wait.TaskException;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -174,18 +175,16 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
             final CheckedFuture<Void, TransactionCommitFailedException> submitFuture = wTx.submit();
             lastSubmittedFuture = submitFuture;
             wTx = null;
-
             if (initCommit) {
                 try {
-                    submitFuture.get(5L, TimeUnit.SECONDS);
-                } catch (InterruptedException | ExecutionException | TimeoutException ex) {
-                    LOG.error("Exception during INITIAL transaction submitting. ", ex);
-                    return false;
+                    SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(500, 4);
+                    looper.loopUntilNoException(() -> submitFuture.get(5L, TimeUnit.SECONDS));
+                } catch (Exception ex) {
+                    throw new TaskException("SimpleTaskRetryLooper failed after 8 tries");
                 }
                 initCommit = false;
                 return true;
             }
-
             Futures.addCallback(submitFuture, new FutureCallback<Void>() {
                 @Override
                 public void onSuccess(final Void result) {
@@ -296,6 +295,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
 
     private void enableSubmit() {
         synchronized (txLock) {
+            LOG.debug("Enabling submit for node {}", this.nodeId);
             /* !!!IMPORTANT: never set true without transactionChain */
             submitIsEnabled = transactionChain != null;
         }
