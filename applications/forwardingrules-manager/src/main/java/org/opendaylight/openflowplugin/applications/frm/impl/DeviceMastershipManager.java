@@ -23,7 +23,9 @@ import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
@@ -37,6 +39,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.OpendaylightInventoryListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconciliationService;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -59,14 +62,23 @@ public class DeviceMastershipManager
     private final Object lockObj = new Object();
     private ListenerRegistration<DeviceMastershipManager> listenerRegistration;
     private Set<InstanceIdentifier<FlowCapableNode>> activeNodes = Collections.emptySet();
+    private final RpcProviderRegistry rpcRegistry;
+    private final ForwardingRulesManagerImpl forwardingRulesManager;
+    private final RoutedRpcRegistration routedRpcReg;
 
     public DeviceMastershipManager(final ClusterSingletonServiceProvider clusterSingletonService,
-            final NotificationProviderService notificationService, final FlowNodeReconciliation reconcliationAgent,
-            final DataBroker dataBroker) {
+                                   final NotificationProviderService notificationService,
+                                   final FlowNodeReconciliation reconcliationAgent,
+                                   final DataBroker dataBroker, final RpcProviderRegistry rpcRegistry,
+                                   final ForwardingRulesManagerImpl forwardingRulesManager) {
         this.clusterSingletonService = clusterSingletonService;
         this.notifListenerRegistration = notificationService.registerNotificationListener(this);
         this.reconcliationAgent = reconcliationAgent;
         this.dataBroker = dataBroker;
+        this.rpcRegistry = rpcRegistry;
+        this.forwardingRulesManager = forwardingRulesManager;
+        this.routedRpcReg = rpcRegistry.addRoutedRpcImplementation(ReconciliationService.class,
+                new ReconciliationServiceImpl(forwardingRulesManager));
         registerNodeListener();
     }
 
@@ -98,8 +110,9 @@ public class DeviceMastershipManager
     public void onNodeUpdated(NodeUpdated notification) {
         LOG.debug("NodeUpdate notification received : {}", notification);
         DeviceMastership membership = deviceMasterships.computeIfAbsent(notification.getId(),
-            device -> new DeviceMastership(notification.getId()));
+            device -> new DeviceMastership(notification.getId(), routedRpcReg));
         membership.reconcile();
+        membership.registerReconciliationRpc();
     }
 
     @Override
@@ -113,6 +126,7 @@ public class DeviceMastershipManager
         NodeId nodeId = notification.getNodeRef().getValue().firstKeyOf(Node.class).getId();
         final DeviceMastership mastership = deviceMasterships.remove(nodeId);
         if (mastership != null) {
+            mastership.deregisterReconciliationRpc();
             mastership.close();
             LOG.info("Unregistered FRM cluster singleton service for service id : {}", nodeId.getValue());
         }

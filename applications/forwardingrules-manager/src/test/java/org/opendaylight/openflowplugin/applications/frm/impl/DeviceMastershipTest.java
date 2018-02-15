@@ -12,7 +12,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 
 /**
@@ -22,10 +24,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 public class DeviceMastershipTest {
     private static final NodeId NODE_ID = new NodeId("testNode");
     private DeviceMastership deviceMastership;
+    @Mock
+    private BindingAwareBroker.RoutedRpcRegistration routedRpcRegistration;
 
     @Before
     public void setUp() throws Exception {
-        deviceMastership = new DeviceMastership(NODE_ID);
+        deviceMastership = new DeviceMastership(NODE_ID, routedRpcRegistration);
     }
 
     @Test
