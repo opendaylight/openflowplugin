@@ -13,22 +13,21 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import org.junit.Before;
-import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.List;
 
+import com.google.common.primitives.Bytes;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.internal.ArrayComparisonFailure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.primitives.Bytes;
-
 /**
- * Test of {@link LLDP} serialization feature (TODO: and deserialization)
+ * Test of {@link LLDP} serialization feature (TODO: and deserialization).
  */
 public class LLDPTest {
 
@@ -54,11 +53,13 @@ public class LLDPTest {
 
     private static final byte[] OUI_SUBTYPE_A = new byte[] { (byte) 0 };
     private static final byte[] CUSTOM_SUBTYPE_A_VALUE = "first custom value A".getBytes();
-    private static final short CUSTOM_SUBTYPE_A_LENGTH = (short) (OUI.length + OUI_SUBTYPE_A.length + CUSTOM_SUBTYPE_A_VALUE.length);
+    private static final short CUSTOM_SUBTYPE_A_LENGTH =
+            (short) (OUI.length + OUI_SUBTYPE_A.length + CUSTOM_SUBTYPE_A_VALUE.length);
 
     private static final byte[] OUI_SUBTYPE_B = new byte[] { (byte) 1 };
     private static final byte[] CUSTOM_SUBTYPE_B_VALUE = "second custom value B".getBytes();
-    private static final short CUSTOM_SUBTYPE_B_LENGTH = (short) (OUI.length + OUI_SUBTYPE_B.length + CUSTOM_SUBTYPE_B_VALUE.length);
+    private static final short CUSTOM_SUBTYPE_B_LENGTH =
+            (short) (OUI.length + OUI_SUBTYPE_B.length + CUSTOM_SUBTYPE_B_VALUE.length);
 
     private static final byte[] BYTES_BEFORE_CUSTOM_A = new byte[] { 0x00, 0x26, (byte) 0xe1, OUI_SUBTYPE_A[0] };
     private static final byte[] BYTES_BEFORE_CUSTOM_B = new byte[] { 0x00, 0x26, (byte) 0xe1, OUI_SUBTYPE_B[0] };
@@ -70,10 +71,9 @@ public class LLDPTest {
     }
 
     /**
-     * Tests whether serialization of LLDP packet is correct
+     * Tests whether serialization of LLDP packet is correct.
      *
      * @see LLDP#serialize()
-     * @throws PacketException
      */
     @Test
     public void testSerialize() throws PacketException {
@@ -112,10 +112,9 @@ public class LLDPTest {
     }
 
     /**
-     * Tests whether serialization of LLDP packet is correct
+     * Tests whether serialization of LLDP packet is correct.
      *
      * @see LLDP#deserialize(byte[], int, int)
-     * @throws Exception
      */
     @Test
     public void testDeserialize() throws Exception {
@@ -131,7 +130,7 @@ public class LLDPTest {
                         awaitedBytes((byte) 0b11111110, CUSTOM_SUBTYPE_B_LENGTH, CUSTOM_SUBTYPE_B_VALUE,
                                 BYTES_BEFORE_CUSTOM_B));
 
-        lldpBuilder.deserialize(rawLldpTlv, 0, rawLldpTlv.length * NetUtils.NumBitsInAByte);
+        lldpBuilder.deserialize(rawLldpTlv, 0, rawLldpTlv.length * NetUtils.NUM_BITS_IN_A_BYTE);
         Assert.assertEquals("chassis", new String(lldpBuilder.getChassisId().getValue()));
         Assert.assertArrayEquals(TTL_VALUE, lldpBuilder.getTtl().getValue());
         Assert.assertEquals("dummy port id", new String(lldpBuilder.getPortId().getValue()));
@@ -154,18 +153,16 @@ public class LLDPTest {
 
         // custom items check
         Iterable<LLDPTLV> customTlvs = lldpBuilder.getCustomTlvList();
-        Iterator<LLDPTLV> iteratorLLDPTLV = customTlvs.iterator();
-        assertEquals(true, iteratorLLDPTLV.hasNext());
-        checkCustomTlv(iteratorLLDPTLV.next(), "first custom value A");
-        assertEquals(true, iteratorLLDPTLV.hasNext());
-        checkCustomTlv(iteratorLLDPTLV.next(), "second custom value B");
-        assertEquals(false, iteratorLLDPTLV.hasNext());
+        Iterator<LLDPTLV> iterator = customTlvs.iterator();
+        assertEquals(true, iterator.hasNext());
+        checkCustomTlv(iterator.next(), "first custom value A");
+        assertEquals(true, iterator.hasNext());
+        checkCustomTlv(iterator.next(), "second custom value B");
+        assertEquals(false, iterator.hasNext());
     }
 
     /**
-     * Test of {@link LLDP#addCustomTLV(LLDPTLV)}
-     *
-     * @throws PacketException
+     * Test of {@link LLDP#addCustomTLV(LLDPTLV)}.
      */
     @Test
     public void testAddCustomTLV() throws PacketException {
@@ -207,10 +204,6 @@ public class LLDPTest {
         assertEquals(OUI_SUBTYPE_A[0], LLDPTLV.extractCustomSubtype(customTLV));
     }
 
-    /**
-     * @param customItem
-     * @param expectedValue
-     */
     private static void checkCustomTlv(final LLDPTLV customItem, final String expectedValue) {
         Assert.assertEquals(127, customItem.getType());
         LOG.debug("custom TLV1.length: {}", customItem.getLength());
@@ -218,8 +211,9 @@ public class LLDPTest {
                 new String(LLDPTLV.getCustomString(customItem.getValue(), customItem.getLength())));
     }
 
-    private static int checkTLV(final byte[] serializedData, final int offset, final byte typeTLVBits, final String typeTLVName,
-            final short lengthTLV, final byte[] valueTLV, final byte... bytesBeforeValue) throws ArrayComparisonFailure {
+    private static int checkTLV(final byte[] serializedData, final int offset, final byte typeTLVBits,
+            final String typeTLVName, final short lengthTLV, final byte[] valueTLV, final byte... bytesBeforeValue)
+            throws ArrayComparisonFailure {
         byte[] concreteTlvAwaited = awaitedBytes(typeTLVBits, lengthTLV, valueTLV, bytesBeforeValue);
         int concreteTlvAwaitLength = concreteTlvAwaited.length;
         assertArrayEquals("Serialization problem " + typeTLVName, concreteTlvAwaited,
@@ -227,7 +221,8 @@ public class LLDPTest {
         return offset + concreteTlvAwaitLength;
     }
 
-    private static byte[] awaitedBytes(final byte typeTLV, final short length, final byte[] value, final byte[] bytesBeforeValue) {
+    private static byte[] awaitedBytes(final byte typeTLV, final short length, final byte[] value,
+            final byte[] bytesBeforeValue) {
         byte[] awaited = ArrayUtils.EMPTY_BYTE_ARRAY;
 
         // 0 - the less meaning byte (right), 1 most meaning byte (left)
@@ -240,8 +235,8 @@ public class LLDPTest {
         return awaited;
     }
 
-    private static LLDPTLV dummyCustomTlv(final byte tlvType, final byte[] oui, final byte[] ouiSubtype, final short customLength,
-            final byte[] subtypeValue) {
+    private static LLDPTLV dummyCustomTlv(final byte tlvType, final byte[] oui, final byte[] ouiSubtype,
+            final short customLength, final byte[] subtypeValue) {
         byte[] fullCustomValue = new byte[0];
         fullCustomValue = ArrayUtils.addAll(fullCustomValue, oui);
         fullCustomValue = ArrayUtils.addAll(fullCustomValue, ouiSubtype);
