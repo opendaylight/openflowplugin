@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
+           odl:use-default-for-reference-types="true">
+
+  <reference id="mastershipChangeServiceManager"
+             interface="org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager"/>
+  <bean id="switchInitializerApplicationImpl"
+        class="org.opendaylight.openflowplugin.applications.initializer.impl.SwitchInitializerApplicationImpl"
+        init-method="start"
+        destroy-method="close">
+    <argument ref="mastershipChangeServiceManager"/>
+  </bean>
+  <service ref="switchInitializerApplicationImpl"
+           interface="org.opendaylight.openflowplugin.applications.initializer.SwitchInitializerApplication"
+           odl:type="default"/>
+
+</blueprint>
