@@ -20,7 +20,7 @@ import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
-import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
@@ -39,6 +39,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfig;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconciliationService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
@@ -72,6 +73,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private final NotificationProviderService notificationService;
     private final SalBundleService salBundleService;
     private final AutoCloseable configurationServiceRegistration;
+    private final RpcProviderRegistry rpcRegistry;
     private ForwardingRulesCommiter<Flow> flowListener;
     private ForwardingRulesCommiter<Group> groupListener;
     private ForwardingRulesCommiter<Meter> meterListener;
@@ -87,7 +89,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private int reconciliationRetryCount;
     private boolean isBundleBasedReconciliationEnabled;
 
-    public ForwardingRulesManagerImpl(final DataBroker dataBroker, final RpcConsumerRegistry rpcRegistry,
+    public ForwardingRulesManagerImpl(final DataBroker dataBroker, final RpcProviderRegistry rpcRegistry,
             final ForwardingRulesManagerConfig config, final ClusterSingletonServiceProvider clusterSingletonService,
             final NotificationProviderService notificationService, final ConfigurationService configurationService,
             final ReconciliationManager reconciliationManager) {
@@ -102,8 +104,9 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         this.notificationService = Preconditions.checkNotNull(notificationService,
                 "Notification publisher configurationService is" + " not available");
         this.reconciliationManager = reconciliationManager;
+        this.rpcRegistry = rpcRegistry;
 
-        Preconditions.checkArgument(rpcRegistry != null, "RpcConsumerRegistry can not be null !");
+        Preconditions.checkArgument(rpcRegistry != null, "RpcProviderRegistry can not be null !");
 
         this.salFlowService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalFlowService.class),
                 "RPC SalFlowService not found.");
@@ -129,6 +132,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         }
         this.deviceMastershipManager = new DeviceMastershipManager(clusterSingletonServiceProvider, notificationService,
                 this.nodeListener, dataService);
+        this.deviceMastershipManager.setRoutedRpcReg(rpcRegistry.addRoutedRpcImplementation(ReconciliationService.class,
+                new ReconciliationServiceImpl(this)));
         flowNodeConnectorInventoryTranslatorImpl = new FlowNodeConnectorInventoryTranslatorImpl(dataService);
 
         this.flowListener = new FlowForwarder(this, dataService);
@@ -271,6 +276,10 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     @Override
     public FlowNodeConnectorInventoryTranslatorImpl getFlowNodeConnectorInventoryTranslatorImpl() {
         return flowNodeConnectorInventoryTranslatorImpl;
+    }
+
+    public FlowNodeReconciliation getNodeListener() {
+        return nodeListener;
     }
 
     @Override
