@@ -23,13 +23,16 @@ import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdated;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
@@ -37,6 +40,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.OpendaylightInventoryListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev171004.ForwardingrulesManagerReconciliationService;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -59,14 +63,24 @@ public class DeviceMastershipManager
     private final Object lockObj = new Object();
     private ListenerRegistration<DeviceMastershipManager> listenerRegistration;
     private Set<InstanceIdentifier<FlowCapableNode>> activeNodes = Collections.emptySet();
+    private final RpcProviderRegistry rpcRegistry;
+    private final ForwardingRulesManagerImpl forwardingRulesManager;
+    private RoutedRpcRegistration routedRpcReg;
 
     public DeviceMastershipManager(final ClusterSingletonServiceProvider clusterSingletonService,
-            final NotificationProviderService notificationService, final FlowNodeReconciliation reconcliationAgent,
-            final DataBroker dataBroker) {
+                                   final NotificationProviderService notificationService, final FlowNodeReconciliation reconcliationAgent,
+                                   final DataBroker dataBroker, final RpcProviderRegistry rpcRegistry, final
+                                   ForwardingRulesManagerImpl forwardingRulesManager) {
         this.clusterSingletonService = clusterSingletonService;
         this.notifListenerRegistration = notificationService.registerNotificationListener(this);
         this.reconcliationAgent = reconcliationAgent;
         this.dataBroker = dataBroker;
+        this.rpcRegistry = rpcRegistry;
+        this.forwardingRulesManager = forwardingRulesManager;
+        routedRpcReg = rpcRegistry.addRoutedRpcImplementation(
+                ForwardingrulesManagerReconciliationService.class,
+                new ForwardingRulesManagerReconciliationServiceImpl(forwardingRulesManager));
+        LOG.info("The registration is:{}", routedRpcReg);
         registerNodeListener();
     }
 
@@ -154,6 +168,10 @@ public class DeviceMastershipManager
 
     public void remove(InstanceIdentifier<FlowCapableNode> identifier, FlowCapableNode del,
             InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        NodeId nodeId =  nodeIdent.firstKeyOf(Node.class).getId();
+        InstanceIdentifier path = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
+        LOG.info("The path is:{}", path);
+        routedRpcReg.unregisterPath(NodeContext.class , path);
         if (compareInstanceIdentifierTail(identifier, II_TO_FLOW_CAPABLE_NODE)) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Node removed: {}", nodeIdent.firstKeyOf(Node.class).getId().getValue());
@@ -174,6 +192,10 @@ public class DeviceMastershipManager
 
     public void add(InstanceIdentifier<FlowCapableNode> identifier, FlowCapableNode add,
             InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        NodeId nodeId =  nodeIdent.firstKeyOf(Node.class).getId();
+        InstanceIdentifier path = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
+        LOG.info("The path is:{}", path);
+        routedRpcReg.registerPath(NodeContext.class, path);
         if (compareInstanceIdentifierTail(identifier, II_TO_FLOW_CAPABLE_NODE)) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Node added: {}", nodeIdent.firstKeyOf(Node.class).getId().getValue());
