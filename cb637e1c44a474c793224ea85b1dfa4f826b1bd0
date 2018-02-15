@@ -128,6 +128,24 @@
       "revId": "cb637e1c44a474c793224ea85b1dfa4f826b1bd0",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fbefb969_88f15954",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/flow/DeviceFlowRegistryImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 291,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-02-15T09:37:04Z",
+      "side": 1,
+      "message": "If you use synchronization for reading, but won\u0027t use it while updating the registry, that will lead to the nondeterministic iteration order of the registery. So iteration is the best way to ensure the proper iteration order as well as ignoring the exception.",
+      "parentUuid": "882c6b47_cf36bc67",
+      "revId": "cb637e1c44a474c793224ea85b1dfa4f826b1bd0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
