@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
@@ -30,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.RpcService;
 
 /**
  * Test for {@link DeviceMastershipManager}.
@@ -48,11 +50,14 @@ public class DeviceMastershipManagerTest {
     private FlowNodeReconciliation reconciliationAgent;
     @Mock
     private DataBroker dataBroker;
+    @Mock
+    private RoutedRpcRegistration routedRpcReg;
 
     @Before
     public void setUp() throws Exception {
         deviceMastershipManager = new DeviceMastershipManager(clusterSingletonService, notificationService,
                 reconciliationAgent, dataBroker);
+        deviceMastershipManager.setRoutedRpcReg(routedRpcReg);
         Mockito.when(clusterSingletonService.registerClusterSingletonService(Matchers.<ClusterSingletonService>any()))
                 .thenReturn(registration);
     }
@@ -90,4 +95,7 @@ public class DeviceMastershipManagerTest {
         deviceMastershipManager.getDeviceMasterships().get(NODE_ID).closeServiceInstance();
         Assert.assertFalse(deviceMastershipManager.isDeviceMastered(NODE_ID));
     }
+
+    //Stub for RpcService class.
+    public class TestRoutedRpcService implements RpcService {}
 }
