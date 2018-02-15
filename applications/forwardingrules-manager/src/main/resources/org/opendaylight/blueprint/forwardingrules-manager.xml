@@ -24,6 +24,14 @@
     <argument ref="notificationService"/>
     <argument ref="configurationService"/>
     <argument ref="reconciliationservice"/>
-
   </bean>
+
+  <bean id="ReconciliationService"
+          class="org.opendaylight.openflowplugin.applications.frm.impl.ReconciliationServiceImpl">
+    <argument ref="frmManager"/>
+  </bean>
+  <service ref="ReconciliationService"
+          interface="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconciliationService"
+          odl:type="default"/>
+
 </blueprint>
