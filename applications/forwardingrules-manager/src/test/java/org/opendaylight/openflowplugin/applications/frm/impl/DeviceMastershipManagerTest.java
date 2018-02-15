@@ -18,6 +18,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
@@ -48,11 +49,15 @@ public class DeviceMastershipManagerTest {
     private FlowNodeReconciliation reconciliationAgent;
     @Mock
     private DataBroker dataBroker;
+    @Mock
+    private RpcProviderRegistry rpcRegistry;
+    @Mock
+    private ForwardingRulesManagerImpl forwardingRulesManager;
 
     @Before
     public void setUp() throws Exception {
         deviceMastershipManager = new DeviceMastershipManager(clusterSingletonService, notificationService,
-                reconciliationAgent, dataBroker);
+                reconciliationAgent, dataBroker, rpcRegistry, forwardingRulesManager);
         Mockito.when(clusterSingletonService.registerClusterSingletonService(Matchers.<ClusterSingletonService>any()))
                 .thenReturn(registration);
     }
