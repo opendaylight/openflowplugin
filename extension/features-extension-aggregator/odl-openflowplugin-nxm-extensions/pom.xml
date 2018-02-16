@@ -16,6 +16,19 @@
 
     <name>OpenDaylight :: Openflow Plugin :: Nicira Extensions</name>
 
+    <dependencyManagement>
+        <dependencies>
+            <!-- This project -->
+            <dependency>
+                <groupId>org.opendaylight.openflowplugin</groupId>
+                <artifactId>openflowplugin-artifacts</artifactId>
+                <version>${project.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <!-- feature dependencies -->
         <dependency>

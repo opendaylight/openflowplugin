@@ -20,7 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  * @author msunal
  *
  */
-public interface NiciraExtensionCodecRegistrator {
+public interface NiciraExtensionCodecRegistrator  extends AutoCloseable{
 
     void registerActionDeserializer(NiciraActionDeserializerKey key, OFDeserializer<Action> deserializer);
 
