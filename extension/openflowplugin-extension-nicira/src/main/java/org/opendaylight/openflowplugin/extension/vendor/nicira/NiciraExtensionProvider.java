@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.extension.vendor.nicira;
 
 import org.opendaylight.openflowjava.nx.codec.match.TunIpv4DstCodec;
+import org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxTunIpv4DstKey;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.TunIPv4DstConvertor;
 
@@ -273,9 +274,6 @@ public class NiciraExtensionProvider implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(NiciraExtensionProvider.class);
 
-    private ExtensionConverterRegistrator extensionConverterRegistrator;
-    private Set<ObjectRegistration<?>> registrations;
-
     private static final RegConvertor REG_CONVERTOR = new RegConvertor();
     private static final TunIdConvertor TUN_ID_CONVERTOR = new TunIdConvertor();
     private static final ArpOpConvertor ARP_OP_CONVERTOR = new ArpOpConvertor();
@@ -319,30 +317,14 @@ public class NiciraExtensionProvider implements AutoCloseable {
     private static final CtStateConvertor CT_STATE_CONVERTOR = new CtStateConvertor();
     private static final CtZoneConvertor CT_ZONE_CONVERTOR = new CtZoneConvertor();
 
-    @Override
-    public void close() {
-        for (AutoCloseable janitor : registrations) {
-            try {
-                janitor.close();
-            } catch (Exception e) {
-                LOG.warn("closing of extension converter failed", e);
-            }
-        }
-        extensionConverterRegistrator = null;
-    }
-
-    /**
-     * @param extensionConverterRegistrator
-     */
-    public void setExtensionConverterRegistrator(final ExtensionConverterRegistrator extensionConverterRegistrator) {
-        this.extensionConverterRegistrator = extensionConverterRegistrator;
-    }
+    private final ExtensionConverterRegistrator extensionConverterRegistrator;
+    private final Set<ObjectRegistration<?>> registrations;
 
     /**
      * register appropriate converters
      */
-    public void registerConverters() {
-        Preconditions.checkNotNull(extensionConverterRegistrator);
+    public NiciraExtensionProvider(final OpenFlowPluginExtensionRegistratorProvider provider) {
+        this.extensionConverterRegistrator = Preconditions.checkNotNull(provider.getExtensionConverterRegistrator());
         registrations = new HashSet<>();
         // src=dataStore/config
         registerAction13(NxActionRegLoadNodesNodeTableFlowApplyActionsCase.class, REG_LOAD_CONVERTOR);
@@ -649,6 +631,19 @@ public class NiciraExtensionProvider implements AutoCloseable {
                 new ConverterExtensionKey<>(NxmNxCtMarkKey.class, EncodeConstants.OF13_VERSION_ID), CT_MARK_CONVERTOR));
         registrations.add(
                 extensionConverterRegistrator.registerMatchConvertor(CtMarkCodec.SERIALIZER_KEY, CT_MARK_CONVERTOR));
+    }
+
+    @Override
+    public void close() {
+        registrations.forEach(janitor -> {
+            try {
+                janitor.close();
+            } catch (Exception e) {
+                LOG.warn("closing of extension converter failed", e);
+            }
+        });
+
+        registrations.clear();
     }
 
     /**
