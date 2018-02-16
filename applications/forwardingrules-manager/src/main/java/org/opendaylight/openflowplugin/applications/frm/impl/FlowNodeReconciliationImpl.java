@@ -311,6 +311,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             }
 
             if (flowNode.isPresent()) {
+                LOG.debug("FlowNode present - Reconciliation for Datapath ID {}", dpnId);
                 /* Tables - have to be pushed before groups */
                 // CHECK if while pushing the update, updateTableInput can be null to emulate a
                 // table add

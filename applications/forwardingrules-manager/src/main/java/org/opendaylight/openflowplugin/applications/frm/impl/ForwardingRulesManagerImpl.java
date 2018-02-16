@@ -11,23 +11,21 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.CheckedFuture;
+
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.Nonnull;
 
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
+import org.opendaylight.controller.md.sal.binding.api.*;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
-import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
-import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
-import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
-import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesProperty;
+import org.opendaylight.openflowplugin.applications.frm.*;
 import org.opendaylight.openflowplugin.applications.reconciliation.NotificationRegistration;
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -39,10 +37,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.upgrade.state.rev180215.OpenflowUpgradeState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
+import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,6 +78,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private ForwardingRulesCommiter<Meter> meterListener;
     private ForwardingRulesCommiter<TableFeatures> tableListener;
     private FlowNodeReconciliation nodeListener;
+    private UpgradeReconciliation upgradeListener;
     private NotificationRegistration reconciliationNotificationRegistration;
     private FlowNodeConnectorInventoryTranslatorImpl flowNodeConnectorInventoryTranslatorImpl;
     private DeviceMastershipManager deviceMastershipManager;
@@ -87,6 +88,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private boolean staleMarkingEnabled;
     private int reconciliationRetryCount;
     private boolean isBundleBasedReconciliationEnabled;
+
+    private OpenflowUpgradeState.UpgradeState isUpgrade;
 
     public ForwardingRulesManagerImpl(final DataBroker dataBroker, final RpcConsumerRegistry rpcRegistry,
             final ForwardingRulesManagerConfig config, final ClusterSingletonServiceProvider clusterSingletonService,
@@ -122,6 +125,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     public void start() {
         this.nodeListener = new FlowNodeReconciliationImpl(this, dataService, SERVICE_NAME, FRM_RECONCILIATION_PRIORITY,
                 ResultState.DONOTHING);
+        this.upgradeListener = new UpgradeReconciliationImpl(this,dataService,"upgrade",1, ResultState.DONOTHING);
+        this.reconciliationNotificationRegistration = reconciliationManager.registerService(this.upgradeListener);
         if (this.isReconciliationDisabled()) {
             LOG.debug("Reconciliation is disabled by user");
         } else {

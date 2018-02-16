@@ -1,0 +1,27 @@
+module openflow-upgrade-state {
+	yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:openflow:upgrade:state";
+    prefix "openflow-upgrade-state";
+
+    description
+        "Upgrade state";
+
+    revision "2018-02-15" {
+        description
+            "Initial proposal.";
+    }
+
+container openflow-upgrade-state {
+    leaf upgrade-state {
+        description "Upgrade state.";
+        type enumeration {
+            enum START_UPGRADE {
+                description "Start upgrade.";
+            }
+            enum END_UPGRADE {
+                description "End upgrade.";
+            }
+        }
+    }
+}
+}
