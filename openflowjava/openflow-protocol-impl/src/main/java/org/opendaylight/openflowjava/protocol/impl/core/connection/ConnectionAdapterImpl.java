@@ -18,6 +18,7 @@ import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandle
 import org.opendaylight.openflowjava.protocol.api.extensibility.AlienMessageListener;
 import org.opendaylight.openflowjava.protocol.impl.core.OFVersionDetector;
 import org.opendaylight.openflowjava.protocol.impl.core.PipelineHandlers;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
@@ -141,7 +142,8 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
 
             if (alienMessageListener != null && alienMessageListener.onAlienMessage((OfHeader) message)) {
                 LOG.debug("Alien message {} received", message.getImplementedInterface());
-            } else if (outputManager == null || !outputManager.onMessage((OfHeader) message)) {
+            } else if (outputManager == null || !outputManager.onMessage((OfHeader) message) || message instanceof
+                    EchoOutput) {
                 final RpcResponseKey key = createRpcResponseKey((OfHeader) message);
                 final ResponseExpectedRpcListener<?> listener = findRpcResponse(key);
                 if (listener != null) {
