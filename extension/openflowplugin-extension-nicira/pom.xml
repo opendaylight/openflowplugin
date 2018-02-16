@@ -31,17 +31,6 @@
                             <codeGenerators>
                                 <generator>
                                     <codeGeneratorClass>
-                                        org.opendaylight.controller.config.yangjmxgenerator.plugin.JMXGenerator
-                                    </codeGeneratorClass>
-                                    <outputBaseDir>${project.build.directory}/generated-sources/config</outputBaseDir>
-                                    <additionalConfiguration>
-                                        <namespaceToPackage1>
-                                            urn:opendaylight:params:xml:ns:yang:controller:config==org.opendaylight.controller.config.yang
-                                        </namespaceToPackage1>
-                                    </additionalConfiguration>
-                                </generator>
-                                <generator>
-                                    <codeGeneratorClass>
                                         org.opendaylight.mdsal.binding.maven.api.gen.plugin.CodeGeneratorImpl
                                     </codeGeneratorClass>
                                     <outputBaseDir>${project.build.directory}/generated-sources/sal</outputBaseDir>
@@ -85,23 +74,18 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>openflowjava-extension-nicira-api</artifactId>
         </dependency>
-        <dependency>
-            <!-- configSubsystem yang should be moved to API and this would be doomed for removal -->
-            <groupId>org.opendaylight.openflowplugin</groupId>
-            <artifactId>openflowplugin</artifactId>
-        </dependency>
 
         <!-- MD-SAL models -->
         <dependency>
-            <groupId>org.opendaylight.openflowplugin.model</groupId>
+            <groupId>${project.groupId}.model</groupId>
             <artifactId>model-flow-base</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowplugin.model</groupId>
+            <groupId>${project.groupId}.model</groupId>
             <artifactId>model-flow-service</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowplugin.model</groupId>
+            <groupId>${project.groupId}.model</groupId>
             <artifactId>model-flow-statistics</artifactId>
         </dependency>
         <dependency>
