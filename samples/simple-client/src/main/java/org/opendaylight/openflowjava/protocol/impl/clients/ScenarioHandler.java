@@ -28,7 +28,7 @@ public class ScenarioHandler extends Thread {
     private final BlockingQueue<byte[]> ofMsg;
     private ChannelHandlerContext ctx;
     private int eventNumber;
-    private boolean scenarioFinished = false;
+    private volatile boolean scenarioFinished = false;
     private int freeze = 2;
     private long sleepBetweenTries = 100L;
     private boolean finishedOK = true;
@@ -94,7 +94,7 @@ public class ScenarioHandler extends Thread {
         LOG.debug("Scenario finished");
         synchronized (this) {
             scenarioFinished = true;
-            this.notify();
+            this.notifyAll();
         }
     }
 
