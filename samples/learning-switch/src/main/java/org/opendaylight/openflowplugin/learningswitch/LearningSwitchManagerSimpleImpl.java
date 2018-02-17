@@ -79,10 +79,8 @@ public class LearningSwitchManagerSimpleImpl
         LOG.debug("start() -->");
         FlowCommitWrapper dataStoreAccessor = new FlowCommitWrapperImpl(data);
 
-        LearningSwitchHandlerSimpleImpl learningSwitchHandler = new LearningSwitchHandlerSimpleImpl();
-        learningSwitchHandler.setRegistrationPublisher(this);
-        learningSwitchHandler.setDataStoreAccessor(dataStoreAccessor);
-        learningSwitchHandler.setPacketProcessingService(packetProcessingService);
+        LearningSwitchHandlerSimpleImpl learningSwitchHandler = new LearningSwitchHandlerSimpleImpl(dataStoreAccessor,
+                packetProcessingService, this);
         packetInRegistration = notificationService.registerNotificationListener(learningSwitchHandler);
 
         WakeupOnNode wakeupListener = new WakeupOnNode();
