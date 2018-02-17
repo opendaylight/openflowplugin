@@ -8,7 +8,8 @@
 
 package org.opendaylight.openflowplugin.learningswitch.multi;
 
-import org.opendaylight.openflowplugin.learningswitch.DataTreeChangeListenerRegistrationHolder;
+import java.util.Objects;
+import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.learningswitch.FlowCommitWrapper;
 import org.opendaylight.openflowplugin.learningswitch.InstanceIdentifierUtils;
 import org.opendaylight.openflowplugin.learningswitch.LearningSwitchHandler;
@@ -23,9 +24,18 @@ import org.slf4j.LoggerFactory;
 public class MultipleLearningSwitchHandlerFacadeImpl implements LearningSwitchHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(MultipleLearningSwitchHandlerFacadeImpl.class);
-    private FlowCommitWrapper dataStoreAccessor;
-    private PacketProcessingService packetProcessingService;
-    private PacketInDispatcherImpl packetInDispatcher;
+    private final FlowCommitWrapper dataStoreAccessor;
+    private final PacketProcessingService packetProcessingService;
+    private final PacketInDispatcherImpl packetInDispatcher;
+
+    public MultipleLearningSwitchHandlerFacadeImpl(@Nonnull FlowCommitWrapper dataStoreAccessor,
+            @Nonnull PacketProcessingService packetProcessingService,
+            @Nonnull PacketInDispatcherImpl packetInDispatcher) {
+        this.dataStoreAccessor = Objects.requireNonNull(dataStoreAccessor);
+        this.packetProcessingService = Objects.requireNonNull(packetProcessingService);
+        this.packetInDispatcher = Objects.requireNonNull(packetInDispatcher);
+    }
+
 
     @Override
     public synchronized void onSwitchAppeared(InstanceIdentifier<Table> appearedTablePath) {
@@ -43,12 +53,8 @@ public class MultipleLearningSwitchHandlerFacadeImpl implements LearningSwitchHa
          */
         if (!packetInDispatcher.getHandlerMapping().containsKey(nodePath)) {
             // delegate this node (owning appearedTable) to SimpleLearningSwitchHandler
-            LearningSwitchHandlerSimpleImpl simpleLearningSwitch = new LearningSwitchHandlerSimpleImpl();
-            /**
-             * We set runtime dependencies
-             */
-            simpleLearningSwitch.setDataStoreAccessor(dataStoreAccessor);
-            simpleLearningSwitch.setPacketProcessingService(packetProcessingService);
+            LearningSwitchHandlerSimpleImpl simpleLearningSwitch = new LearningSwitchHandlerSimpleImpl(
+                    dataStoreAccessor, packetProcessingService, null);
 
             /**
              * We propagate table event to newly instantiated instance of learning switch
@@ -59,26 +65,5 @@ public class MultipleLearningSwitchHandlerFacadeImpl implements LearningSwitchHa
              */
             packetInDispatcher.getHandlerMapping().put(nodePath, simpleLearningSwitch);
         }
-    }
-
-    @Override
-    public void setRegistrationPublisher(
-            DataTreeChangeListenerRegistrationHolder registrationPublisher) {
-        //NOOP
-    }
-
-    @Override
-    public void setDataStoreAccessor(FlowCommitWrapper dataStoreAccessor) {
-        this.dataStoreAccessor = dataStoreAccessor;
-    }
-
-    @Override
-    public void setPacketProcessingService(
-            PacketProcessingService packetProcessingService) {
-        this.packetProcessingService = packetProcessingService;
-    }
-
-    public void setPacketInDispatcher(PacketInDispatcherImpl packetInDispatcher) {
-        this.packetInDispatcher = packetInDispatcher;
     }
 }
