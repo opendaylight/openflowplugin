@@ -86,11 +86,8 @@ public class LearningSwitchManagerMultiImpl implements DataTreeChangeListenerReg
         FlowCommitWrapper dataStoreAccessor = new FlowCommitWrapperImpl(data);
 
         PacketInDispatcherImpl packetInDispatcher = new PacketInDispatcherImpl();
-        MultipleLearningSwitchHandlerFacadeImpl learningSwitchHandler = new MultipleLearningSwitchHandlerFacadeImpl();
-        learningSwitchHandler.setRegistrationPublisher(this);
-        learningSwitchHandler.setDataStoreAccessor(dataStoreAccessor);
-        learningSwitchHandler.setPacketProcessingService(packetProcessingService);
-        learningSwitchHandler.setPacketInDispatcher(packetInDispatcher);
+        MultipleLearningSwitchHandlerFacadeImpl learningSwitchHandler = new MultipleLearningSwitchHandlerFacadeImpl(
+                dataStoreAccessor, packetProcessingService, packetInDispatcher);
         packetInRegistration = notificationService.registerNotificationListener(packetInDispatcher);
 
         WakeupOnNode wakeupListener = new WakeupOnNode();

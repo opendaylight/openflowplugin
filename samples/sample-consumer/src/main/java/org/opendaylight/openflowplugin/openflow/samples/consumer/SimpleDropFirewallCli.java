@@ -28,12 +28,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 
 public class SimpleDropFirewallCli {
 
-    private SimpleDropFirewall service;
-
-    public void setService(final SimpleDropFirewall service) {
-        this.service = service;
-    }
-
     /**
      * Form of input is: node name node-connector number source ip-address destinatinon ip-address.
      *
