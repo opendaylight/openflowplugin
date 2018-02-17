@@ -14,8 +14,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -49,21 +53,29 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, P
     private static final byte[] ETH_TYPE_IPV4 = new byte[] { 0x08, 0x00 };
     private static final int DIRECT_FLOW_PRIORITY = 512;
 
-    private DataTreeChangeListenerRegistrationHolder registrationPublisher;
-    private FlowCommitWrapper dataStoreAccessor;
-    private PacketProcessingService packetProcessingService;
+    private final DataTreeChangeListenerRegistrationHolder registrationPublisher;
+    private final FlowCommitWrapper dataStoreAccessor;
+    private final PacketProcessingService packetProcessingService;
 
-    private boolean isLearning = false;
+    private volatile boolean isLearning = false;
 
     private NodeId nodeId;
     private final AtomicLong flowIdInc = new AtomicLong();
     private final AtomicLong flowCookieInc = new AtomicLong(0x2a00000000000000L);
 
     private InstanceIdentifier<Node> nodePath;
-    private InstanceIdentifier<Table> tablePath;
+    private volatile InstanceIdentifier<Table> tablePath;
 
     private Map<MacAddress, NodeConnectorRef> mac2portMapping;
-    private Set<String> coveredMacPaths;
+    private final Set<String> coveredMacPaths = new HashSet<>();
+
+    public LearningSwitchHandlerSimpleImpl(@Nonnull FlowCommitWrapper dataStoreAccessor,
+            @Nonnull PacketProcessingService packetProcessingService,
+            @Nullable DataTreeChangeListenerRegistrationHolder registrationPublisher) {
+        this.dataStoreAccessor = Objects.requireNonNull(dataStoreAccessor);
+        this.packetProcessingService = Objects.requireNonNull(packetProcessingService);
+        this.registrationPublisher = registrationPublisher;
+    }
 
     @Override
     public synchronized void onSwitchAppeared(InstanceIdentifier<Table> appearedTablePath) {
@@ -86,7 +98,6 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, P
         nodePath = tablePath.firstIdentifierOf(Node.class);
         nodeId = nodePath.firstKeyOf(Node.class, NodeKey.class).getId();
         mac2portMapping = new HashMap<>();
-        coveredMacPaths = new HashSet<>();
 
         // start forwarding all packages to controller
         FlowId flowId = new FlowId(String.valueOf(flowIdInc.getAndIncrement()));
@@ -101,21 +112,6 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, P
 
         LOG.debug("writing packetForwardToController flow");
         dataStoreAccessor.writeFlowToConfig(flowPath, allToCtrlFlow.build());
-    }
-
-    @Override
-    public void setRegistrationPublisher(DataTreeChangeListenerRegistrationHolder registrationPublisher) {
-        this.registrationPublisher = registrationPublisher;
-    }
-
-    @Override
-    public void setDataStoreAccessor(FlowCommitWrapper dataStoreAccessor) {
-        this.dataStoreAccessor = dataStoreAccessor;
-    }
-
-    @Override
-    public void setPacketProcessingService(PacketProcessingService packetProcessingService) {
-        this.packetProcessingService = packetProcessingService;
     }
 
     @Override
@@ -228,6 +224,6 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, P
                 .setEgress(egress)
                 .setIngress(ingress)
                 .build();
-        packetProcessingService.transmitPacket(input);
+        JdkFutures.addErrorLogging(packetProcessingService.transmitPacket(input), LOG, "transmitPacket");
     }
 }
