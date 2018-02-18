@@ -14,9 +14,7 @@ import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.CodecPreconditionException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionPushNsh;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionPushNshBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.push.nsh.grouping.NxActionPushNsh;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.push.nsh.grouping.NxActionPushNshBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxActionPushNshGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.flows.statistics.update.flow.and.statistics.map.list.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionPushNshNotifFlowsStatisticsUpdateApplyActionsCaseBuilder;
@@ -62,7 +60,6 @@ public class PushNshConvertor implements
     @Override
     public org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action convert(
             Action input, ActionPath path) {
-        NxActionPushNsh action = ((ActionPushNsh) input.getActionChoice()).getNxActionPushNsh();
         NxPushNshBuilder builder = new NxPushNshBuilder();
         return resolveAction(builder.build(), path);
     }
@@ -71,7 +68,6 @@ public class PushNshConvertor implements
     public Action convert(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action nxActionArg) {
         Preconditions.checkArgument(nxActionArg instanceof NxActionPushNshGrouping);
-        NxActionPushNshGrouping nxAction = (NxActionPushNshGrouping) nxActionArg;
         ActionPushNshBuilder builder = new ActionPushNshBuilder();
         NxActionPushNshBuilder nxActionPushNshBuilder = new NxActionPushNshBuilder();
         builder.setNxActionPushNsh(nxActionPushNshBuilder.build());

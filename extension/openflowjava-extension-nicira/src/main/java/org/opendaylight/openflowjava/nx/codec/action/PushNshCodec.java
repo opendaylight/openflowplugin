@@ -32,7 +32,6 @@ public class PushNshCodec extends AbstractActionCodec {
 
     @Override
     public void serialize(Action input, ByteBuf outBuffer) {
-        ActionPushNsh action = (ActionPushNsh) input.getActionChoice();
         serializeHeader(LENGTH, NXAST_PUSH_NSH_SUBTYPE, outBuffer);
         outBuffer.writeZero(PADDING);
     }
