@@ -14,9 +14,7 @@ import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.CodecPreconditionException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionPopNsh;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionPopNshBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.pop.nsh.grouping.NxActionPopNsh;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.pop.nsh.grouping.NxActionPopNshBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxActionPopNshGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.flows.statistics.update.flow.and.statistics.map.list.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionPopNshNotifFlowsStatisticsUpdateApplyActionsCaseBuilder;
@@ -60,7 +58,6 @@ public class PopNshConvertor implements
     @Override
     public org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action convert(
             Action input, ActionPath path) {
-        NxActionPopNsh action = ((ActionPopNsh) input.getActionChoice()).getNxActionPopNsh();
         NxPopNshBuilder builder = new NxPopNshBuilder();
         return resolveAction(builder.build(), path);
     }
@@ -69,7 +66,6 @@ public class PopNshConvertor implements
     public Action convert(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action nxActionArg) {
         Preconditions.checkArgument(nxActionArg instanceof NxActionPopNshGrouping);
-        NxActionPopNshGrouping nxAction = (NxActionPopNshGrouping) nxActionArg;
         ActionPopNshBuilder builder = new ActionPopNshBuilder();
         NxActionPopNshBuilder nxActionPopNshBuilder = new NxActionPopNshBuilder();
         builder.setNxActionPopNsh(nxActionPopNshBuilder.build());

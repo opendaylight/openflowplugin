@@ -8,9 +8,11 @@
 
 package org.opendaylight.openflowplugin.extension.onf.deserializer;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -70,7 +72,10 @@ public class BundleControlFactory implements OFDeserializer<BundleControlOnf>, D
         return properties;
     }
 
+    @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
     private BundleProperty createExperimenterBundleProperty(final int length, final ByteBuf message) {
+        Objects.requireNonNull(deserializerRegistry);
+
         BundlePropertyExperimenterBuilder experimenterProperty = new BundlePropertyExperimenterBuilder();
         long experimenterId = message.readUnsignedInt();
         long expType = message.readUnsignedInt();

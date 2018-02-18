@@ -32,7 +32,6 @@ public class PopNshCodec extends AbstractActionCodec {
 
     @Override
     public void serialize(Action input, ByteBuf outBuffer) {
-        ActionPopNsh action = (ActionPopNsh) input.getActionChoice();
         serializeHeader(LENGTH, NXAST_POP_NSH_SUBTYPE, outBuffer);
         outBuffer.writeZero(PADDING);
     }
