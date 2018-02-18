@@ -49,21 +49,19 @@ public class NspConvertorTest {
     public void setUp() throws Exception {
         final NxmNxNspBuilder nxmNxNspBuilder = new NxmNxNspBuilder()
                 .setValue(Long.valueOf(1L));
-        final NxAugMatchNodesNodeTableFlowBuilder nxAugMatchNotifUpdateFlowStatsBuilder =
-                new NxAugMatchNodesNodeTableFlowBuilder();
+        final NxAugMatchNodesNodeTableFlowBuilder nxAugMatchNotifUpdateFlowStatsBuilder = new NxAugMatchNodesNodeTableFlowBuilder();
         nxAugMatchNotifUpdateFlowStatsBuilder.setNxmNxNsp(nxmNxNspBuilder.build());
 
         final Augmentation<Extension> extensionAugmentation = nxAugMatchNotifUpdateFlowStatsBuilder.build();
-        when(extension.getAugmentation(Matchers.<Class<Augmentation<Extension>>>any()))
-            .thenReturn(extensionAugmentation);
+        when(extension.getAugmentation(Matchers.<Class<Augmentation<Extension>>>any())).thenReturn(extensionAugmentation);
 
         nspConvertor = new NspConvertor();
     }
 
     @Test
     public void testConvert() throws Exception {
-        final MatchEntry converted = nspConvertor.convert(extension);
-        Assert.assertEquals(1, ((NspCaseValue)converted.getMatchEntryValue()).getNspValues().getNsp().intValue());
+        final MatchEntry matchEntry = nspConvertor.convert(extension);
+        Assert.assertEquals(1, ((NspCaseValue)matchEntry.getMatchEntryValue()).getNspValues().getNsp().intValue());
     }
 
     @Test
@@ -77,28 +75,20 @@ public class NspConvertorTest {
 
         when(matchEntry.getMatchEntryValue()).thenReturn(nspCaseValue);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = nspConvertor.convert(matchEntry,
-                MatchPath.PACKET_RECEIVED_MATCH);
-        Assert.assertEquals(2, ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmNxNsp()
-                .getValue().longValue());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = nspConvertor.convert(matchEntry, MatchPath.PACKETRECEIVED_MATCH);
+        Assert.assertEquals(2, ((NxAugMatchNotifPacketIn)extensionAugment.getAugmentationObject()).getNxmNxNsp().getValue().longValue());
         Assert.assertEquals(extensionAugment.getKey(), NxmNxNspKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = nspConvertor.convert(matchEntry,
-                MatchPath.SWITCH_FLOW_REMOVED_MATCH);
-        Assert.assertEquals(2, ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
-                .getNxmNxNsp().getValue().longValue());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = nspConvertor.convert(matchEntry, MatchPath.SWITCHFLOWREMOVED_MATCH);
+        Assert.assertEquals(2, ((NxAugMatchNotifSwitchFlowRemoved)extensionAugment1.getAugmentationObject()).getNxmNxNsp().getValue().longValue());
         Assert.assertEquals(extensionAugment.getKey(), NxmNxNspKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = nspConvertor.convert(matchEntry,
-                MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
-        Assert.assertEquals(2, ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject()).getNxmNxNsp()
-                .getValue().longValue());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = nspConvertor.convert(matchEntry, MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
+        Assert.assertEquals(2, ((NxAugMatchNodesNodeTableFlow)extensionAugment2.getAugmentationObject()).getNxmNxNsp().getValue().longValue());
         Assert.assertEquals(extensionAugment.getKey(), NxmNxNspKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = nspConvertor.convert(matchEntry,
-                MatchPath.FLOWS_STATISTICS_RPC_MATCH);
-        Assert.assertEquals(2, ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject()).getNxmNxNsp()
-                .getValue().longValue());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = nspConvertor.convert(matchEntry, MatchPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH);
+        Assert.assertEquals(2, ((NxAugMatchRpcGetFlowStats)extensionAugment3.getAugmentationObject()).getNxmNxNsp().getValue().longValue());
         Assert.assertEquals(extensionAugment.getKey(), NxmNxNspKey.class);
     }
 }

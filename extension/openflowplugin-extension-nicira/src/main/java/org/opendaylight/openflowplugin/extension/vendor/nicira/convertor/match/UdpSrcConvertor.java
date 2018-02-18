@@ -39,25 +39,39 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yangtools.yang.binding.Augmentation;
 
 /**
- * Convert to/from SAL flow model to openflowjava model for CtZoneCase.
- *
  * @author Aswin Suryanarayanan.
  */
 public class UdpSrcConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava#convert
+     * (org.opendaylight.yangtools.yang.binding.DataContainer,
+     * org.opendaylight.openflowplugin.extension.api.path.AugmentationPath)
+     */
     @Override
     public ExtensionAugment<? extends Augmentation<Extension>> convert(MatchEntry input, MatchPath path) {
-        UdpSrcCaseValue udpSrcCaseValue = (UdpSrcCaseValue) input.getMatchEntryValue();
+        UdpSrcCaseValue udpSrcCaseValue = ((UdpSrcCaseValue) input.getMatchEntryValue());
         NxmOfUdpSrcBuilder udpSrcBuilder = new NxmOfUdpSrcBuilder();
         udpSrcBuilder.setPort(udpSrcCaseValue.getUdpSrcValues().getPort());
         udpSrcBuilder.setMask(udpSrcCaseValue.getUdpSrcValues().getMask());
         return resolveAugmentation(udpSrcBuilder.build(), path,
                 NxmOfUdpSrcKey.class);
     }
-
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava#convert
+     * (org
+     * .opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general
+     * .rev140714.general.extension.grouping.Extension)
+     */
     @Override
     public MatchEntry convert(Extension extension) {
-        Optional<NxmOfUdpSrcGrouping> matchGrouping = MatchUtil.UDP_SRC_RESOLVER.getExtension(extension);
+        Optional<NxmOfUdpSrcGrouping> matchGrouping = MatchUtil.udpSrcResolver.getExtension(extension);
         if (!matchGrouping.isPresent()) {
             throw new CodecPreconditionException(extension);
         }
@@ -77,19 +91,19 @@ public class UdpSrcConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
     private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(NxmOfUdpSrc value,
                                                                    MatchPath path, Class<? extends ExtensionKey> key) {
         switch (path) {
-            case FLOWS_STATISTICS_UPDATE_MATCH:
+            case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,
                         new NxAugMatchNodesNodeTableFlowBuilder().setNxmOfUdpSrc(value).build(), key);
-            case FLOWS_STATISTICS_RPC_MATCH:
+            case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH:
                 return new ExtensionAugment<>(NxAugMatchRpcGetFlowStats.class,
                         new NxAugMatchRpcGetFlowStatsBuilder().setNxmOfUdpSrc(value).build(), key);
-            case PACKET_RECEIVED_MATCH:
+            case PACKETRECEIVED_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNotifPacketIn.class, new NxAugMatchNotifPacketInBuilder()
                         .setNxmOfUdpSrc(value).build(), key);
-            case SWITCH_FLOW_REMOVED_MATCH:
+            case SWITCHFLOWREMOVED_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNotifSwitchFlowRemoved.class,
                         new NxAugMatchNotifSwitchFlowRemovedBuilder().setNxmOfUdpSrc(value).build(), key);
-            case PACKET_IN_MESSAGE_MATCH:
+            case PACKETINMESSAGE_MATCH:
                 return new ExtensionAugment<>(NxAugMatchPacketInMessage.class,
                         new NxAugMatchPacketInMessageBuilder().setNxmOfUdpSrc(value).build(), key);
             default:

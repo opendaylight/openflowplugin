@@ -44,7 +44,12 @@ public class ActionExtensionHelperTest {
     @Before
     public void setup() {
         OFSessionUtil.getSessionManager().setExtensionConverterProvider(extensionConverterProvider);
-        when(extensionConverterProvider.getActionConverter(any(MessageTypeKey.class))).thenReturn((ConvertorActionFromOFJava<DataContainer, AugmentationPath>) (input, path) -> new MockAction());
+        when(extensionConverterProvider.getActionConverter(any(MessageTypeKey.class))).thenReturn(new ConvertorActionFromOFJava<DataContainer, AugmentationPath>() {
+            @Override
+            public Action convert(DataContainer input, AugmentationPath path) {
+                return new MockAction();
+            }
+        });
     }
 
     @Test
@@ -60,8 +65,7 @@ public class ActionExtensionHelperTest {
         experimenterBuilder.setExperimenter(new ExperimenterId(42L));
         experimenterIdCaseBuilder.setExperimenter(experimenterBuilder.build());
         actionBuilder.setActionChoice(experimenterIdCaseBuilder.build());
-        Action action = ActionExtensionHelper.processAlienAction(actionBuilder.build(), OpenflowVersion.OF13,
-                ActionPath.FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS);
+        Action action = ActionExtensionHelper.processAlienAction(actionBuilder.build(), OpenflowVersion.OF13, ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION);
         assertNotNull(action);
         assertEquals(MockAction.class, action.getImplementedInterface());
     }

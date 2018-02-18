@@ -53,24 +53,20 @@ public class UdpDstConvertorTest {
         final NxmOfUdpDstBuilder nxmOfUdpDstBuilder = new NxmOfUdpDstBuilder()
                 .setMask(1)
                 .setPort(DEFAULT_PORT);
-        final NxAugMatchNodesNodeTableFlowBuilder nxAugMatchNotifUpdateFlowStatsBuilder =
-                new NxAugMatchNodesNodeTableFlowBuilder();
+        final NxAugMatchNodesNodeTableFlowBuilder nxAugMatchNotifUpdateFlowStatsBuilder = new NxAugMatchNodesNodeTableFlowBuilder();
         nxAugMatchNotifUpdateFlowStatsBuilder.setNxmOfUdpDst(nxmOfUdpDstBuilder.build());
 
         final Augmentation<Extension> extensionAugmentation = nxAugMatchNotifUpdateFlowStatsBuilder.build();
-        when(extension.getAugmentation(Matchers.<Class<Augmentation<Extension>>>any()))
-            .thenReturn(extensionAugmentation);
+        when(extension.getAugmentation(Matchers.<Class<Augmentation<Extension>>>any())).thenReturn(extensionAugmentation);
 
         udpDstConvertor = new UdpDstConvertor();
     }
 
     @Test
     public void testConvert() throws Exception {
-        final MatchEntry converted = udpDstConvertor.convert(extension);
-        Assert.assertEquals(Integer.valueOf(1),
-                ((UdpDstCaseValue) converted.getMatchEntryValue()).getUdpDstValues().getMask());
-        Assert.assertEquals(DEFAULT_PORT,
-                ((UdpDstCaseValue) converted.getMatchEntryValue()).getUdpDstValues().getPort());
+        final MatchEntry matchEntry = udpDstConvertor.convert(extension);
+        Assert.assertEquals(Integer.valueOf(1), ((UdpDstCaseValue)matchEntry.getMatchEntryValue()).getUdpDstValues().getMask());
+        Assert.assertEquals(DEFAULT_PORT, ((UdpDstCaseValue)matchEntry.getMatchEntryValue()).getUdpDstValues().getPort());
     }
 
     @Test
@@ -85,37 +81,25 @@ public class UdpDstConvertorTest {
 
         when(matchEntry.getMatchEntryValue()).thenReturn(udpDstCaseValue);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = udpDstConvertor.convert(matchEntry,
-                MatchPath.PACKET_RECEIVED_MATCH);
-        Assert.assertEquals(Integer.valueOf(2),
-                ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmOfUdpDst().getMask());
-        Assert.assertEquals(DEFAULT_PORT,
-                ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmOfUdpDst().getPort());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = udpDstConvertor.convert(matchEntry, MatchPath.PACKETRECEIVED_MATCH);
+        Assert.assertEquals(Integer.valueOf(2), ((NxAugMatchNotifPacketIn)extensionAugment.getAugmentationObject()).getNxmOfUdpDst().getMask());
+        Assert.assertEquals(DEFAULT_PORT, ((NxAugMatchNotifPacketIn)extensionAugment.getAugmentationObject()).getNxmOfUdpDst().getPort());
         Assert.assertEquals(extensionAugment.getKey(), NxmOfUdpDstKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = udpDstConvertor
-                .convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
-        Assert.assertEquals(Integer.valueOf(2),
-                ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject()).getNxmOfUdpDst()
-                        .getMask());
-        Assert.assertEquals(DEFAULT_PORT, ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
-                .getNxmOfUdpDst().getPort());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = udpDstConvertor.convert(matchEntry, MatchPath.SWITCHFLOWREMOVED_MATCH);
+        Assert.assertEquals(Integer.valueOf(2), ((NxAugMatchNotifSwitchFlowRemoved)extensionAugment1.getAugmentationObject()).getNxmOfUdpDst().getMask());
+        Assert.assertEquals(DEFAULT_PORT, ((NxAugMatchNotifSwitchFlowRemoved)extensionAugment1.getAugmentationObject()).getNxmOfUdpDst().getPort());
         Assert.assertEquals(extensionAugment.getKey(), NxmOfUdpDstKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = udpDstConvertor
-                .convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
-        Assert.assertEquals(Integer.valueOf(2),
-                ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject()).getNxmOfUdpDst().getMask());
-        Assert.assertEquals(DEFAULT_PORT,
-                ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject()).getNxmOfUdpDst().getPort());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = udpDstConvertor.convert(matchEntry, MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
+        Assert.assertEquals(Integer.valueOf(2), ((NxAugMatchNodesNodeTableFlow)extensionAugment2.getAugmentationObject()).getNxmOfUdpDst().getMask());
+        Assert.assertEquals(DEFAULT_PORT, ((NxAugMatchNodesNodeTableFlow)extensionAugment2.getAugmentationObject()).getNxmOfUdpDst().getPort());
         Assert.assertEquals(extensionAugment.getKey(), NxmOfUdpDstKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = udpDstConvertor
-                .convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
-        Assert.assertEquals(Integer.valueOf(2),
-                ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject()).getNxmOfUdpDst().getMask());
-        Assert.assertEquals(DEFAULT_PORT,
-                ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject()).getNxmOfUdpDst().getPort());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = udpDstConvertor.convert(matchEntry, MatchPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH);
+        Assert.assertEquals(Integer.valueOf(2), ((NxAugMatchRpcGetFlowStats)extensionAugment3.getAugmentationObject()).getNxmOfUdpDst().getMask());
+        Assert.assertEquals(DEFAULT_PORT, ((NxAugMatchRpcGetFlowStats)extensionAugment3.getAugmentationObject()).getNxmOfUdpDst().getPort());
         Assert.assertEquals(extensionAugment.getKey(), NxmOfUdpDstKey.class);
     }
+
 }

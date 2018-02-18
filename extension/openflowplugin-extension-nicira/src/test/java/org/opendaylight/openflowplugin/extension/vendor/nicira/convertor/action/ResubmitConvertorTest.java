@@ -74,46 +74,34 @@ public class ResubmitConvertorTest {
     @Test
     public void testConvert1() throws Exception {
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult
-                = resubmitConvertor.convert(action, ActionPath.FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS);
+                = resubmitConvertor.convert(action, ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult1
-                = resubmitConvertor.convert(action, ActionPath.FLOWS_STATISTICS_UPDATE_WRITE_ACTIONS);
+                = resubmitConvertor.convert(action, ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult2
-                = resubmitConvertor.convert(action, ActionPath.GROUP_DESC_STATS_UPDATED_BUCKET_ACTION);
+                = resubmitConvertor.convert(action, ActionPath.GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult3
-                = resubmitConvertor.convert(action, ActionPath.INVENTORY_FLOWNODE_TABLE_WRITE_ACTIONS);
+                = resubmitConvertor.convert(action, ActionPath.NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult4
-                = resubmitConvertor.convert(action, ActionPath.FLOWS_STATISTICS_RPC_APPLY_ACTIONS);
+                = resubmitConvertor.convert(action, ActionPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult5
-                = resubmitConvertor.convert(action, ActionPath.FLOWS_STATISTICS_RPC_WRITE_ACTIONS);
+                = resubmitConvertor.convert(action, ActionPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION);
 
-        Assert.assertEquals(3, ((NxActionResubmitNotifFlowsStatisticsUpdateApplyActionsCase) actionResult)
-                .getNxResubmit().getInPort().intValue());
-        Assert.assertEquals(4, ((NxActionResubmitNotifFlowsStatisticsUpdateApplyActionsCase) actionResult)
-                .getNxResubmit().getTable().intValue());
+        Assert.assertEquals(3, ((NxActionResubmitNotifFlowsStatisticsUpdateApplyActionsCase) actionResult).getNxResubmit().getInPort().intValue());
+        Assert.assertEquals(4, ((NxActionResubmitNotifFlowsStatisticsUpdateApplyActionsCase) actionResult).getNxResubmit().getTable().intValue());
 
-        Assert.assertEquals(3, ((NxActionResubmitNotifFlowsStatisticsUpdateWriteActionsCase) actionResult1)
-                .getNxResubmit().getInPort().intValue());
-        Assert.assertEquals(4, ((NxActionResubmitNotifFlowsStatisticsUpdateWriteActionsCase) actionResult1)
-                .getNxResubmit().getTable().intValue());
+        Assert.assertEquals(3, ((NxActionResubmitNotifFlowsStatisticsUpdateWriteActionsCase) actionResult1).getNxResubmit().getInPort().intValue());
+        Assert.assertEquals(4, ((NxActionResubmitNotifFlowsStatisticsUpdateWriteActionsCase) actionResult1).getNxResubmit().getTable().intValue());
 
-        Assert.assertEquals(3, ((NxActionResubmitNotifGroupDescStatsUpdatedCase) actionResult2).getNxResubmit()
-                .getInPort().intValue());
-        Assert.assertEquals(4,
-                ((NxActionResubmitNotifGroupDescStatsUpdatedCase) actionResult2).getNxResubmit().getTable().intValue());
+        Assert.assertEquals(3, ((NxActionResubmitNotifGroupDescStatsUpdatedCase) actionResult2).getNxResubmit().getInPort().intValue());
+        Assert.assertEquals(4, ((NxActionResubmitNotifGroupDescStatsUpdatedCase) actionResult2).getNxResubmit().getTable().intValue());
 
-        Assert.assertEquals(3, ((NxActionResubmitNodesNodeTableFlowWriteActionsCase) actionResult3).getNxResubmit()
-                .getInPort().intValue());
-        Assert.assertEquals(4, ((NxActionResubmitNodesNodeTableFlowWriteActionsCase) actionResult3).getNxResubmit()
-                .getTable().intValue());
+        Assert.assertEquals(3, ((NxActionResubmitNodesNodeTableFlowWriteActionsCase) actionResult3).getNxResubmit().getInPort().intValue());
+        Assert.assertEquals(4, ((NxActionResubmitNodesNodeTableFlowWriteActionsCase) actionResult3).getNxResubmit().getTable().intValue());
 
-        Assert.assertEquals(3, ((NxActionResubmitNotifDirectStatisticsUpdateApplyActionsCase) actionResult4)
-                .getNxResubmit().getInPort().intValue());
-        Assert.assertEquals(4, ((NxActionResubmitNotifDirectStatisticsUpdateApplyActionsCase) actionResult4)
-                .getNxResubmit().getTable().intValue());
+        Assert.assertEquals(3, ((NxActionResubmitNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxResubmit().getInPort().intValue());
+        Assert.assertEquals(4, ((NxActionResubmitNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxResubmit().getTable().intValue());
 
-        Assert.assertEquals(3, ((NxActionResubmitNotifDirectStatisticsUpdateWriteActionsCase) actionResult5)
-                .getNxResubmit().getInPort().intValue());
-        Assert.assertEquals(4, ((NxActionResubmitNotifDirectStatisticsUpdateWriteActionsCase) actionResult5)
-                .getNxResubmit().getTable().intValue());
+        Assert.assertEquals(3, ((NxActionResubmitNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxResubmit().getInPort().intValue());
+        Assert.assertEquals(4, ((NxActionResubmitNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxResubmit().getTable().intValue());
     }
 }

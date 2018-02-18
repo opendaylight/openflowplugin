@@ -11,14 +11,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
- * Enumerates the match paths.
- *
  * @author msunal
+ *
  */
 public enum MatchPath implements AugmentationPath {
 
     /**
-     * openflowplugin-extension-general.yang.
+     * openflowplugin-extension-general.yang
      * <pre>
      * module: sal-flow
      * notifications:
@@ -26,10 +25,9 @@ public enum MatchPath implements AugmentationPath {
      *    |  +--ro match
      * </pre>
      */
-    SWITCH_FLOW_REMOVED_MATCH(null),
-
+    SWITCHFLOWREMOVED_MATCH(null),
     /**
-     * openflowplugin-extension-general.yang.
+     * openflowplugin-extension-general.yang
      * <pre>
      * module: packet-processing
      * notifications:
@@ -37,10 +35,9 @@ public enum MatchPath implements AugmentationPath {
      *       +--ro match
      * </pre>
      */
-    PACKET_RECEIVED_MATCH(null),
-
+    PACKETRECEIVED_MATCH(null),
     /**
-     * openflowplugin-extension-general.yang.
+     * openflowplugin-extension-general.yang
      * <pre>
      * module: packet-processing
      * container:
@@ -48,10 +45,9 @@ public enum MatchPath implements AugmentationPath {
      *       +--ro match
      * </pre>
      */
-    PACKET_IN_MESSAGE_MATCH(null),
-
+    PACKETINMESSAGE_MATCH(null),
     /**
-     * openflowplugin-extension-general.yang.
+     * openflowplugin-extension-general.yang
      * <pre>
      * module: opendaylight-flow-statistics
      * notifications:
@@ -60,10 +56,9 @@ public enum MatchPath implements AugmentationPath {
      *    |  |  +--ro match
      * </pre>
      */
-    FLOWS_STATISTICS_UPDATE_MATCH(null),
-
+    FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH(null),
     /**
-     * openflowplugin-extension-general.yang.
+     * openflowplugin-extension-general.yang
      * <pre>
      * module: opendaylight-direct-statistics
      * rpc:
@@ -72,11 +67,11 @@ public enum MatchPath implements AugmentationPath {
      *    |  |  +--ro match
      * </pre>
      */
-    FLOWS_STATISTICS_RPC_MATCH(null);
+    RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH(null);
 
     private final InstanceIdentifier<Extension> iid;
 
-    MatchPath(InstanceIdentifier<Extension> iid) {
+    private MatchPath(InstanceIdentifier<Extension> iid) {
         this.iid = iid;
     }
 

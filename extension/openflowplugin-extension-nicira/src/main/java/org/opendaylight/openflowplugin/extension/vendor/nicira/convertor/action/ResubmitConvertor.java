@@ -30,15 +30,44 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.resubmit.grouping.NxResubmitBuilder;
 
 /**
- * Convert to/from SAL flow model to openflowjava model for Resubmit action.
+ * Convert to/from SAL flow model to openflowjava model for Resubmit action
  */
 public class ResubmitConvertor implements
-        ConvertorActionToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action,
-            Action>, ConvertorActionFromOFJava<Action, ActionPath> {
+        ConvertorActionToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, Action>,
+        ConvertorActionFromOFJava<Action, ActionPath> {
 
     @Override
-    public Action convert(
-            final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action nxActionArg) {
+    public org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action convert(final Action input, final ActionPath path) {
+        NxActionResubmit action = ((ActionResubmit) input.getActionChoice()).getNxActionResubmit();
+        NxResubmitBuilder builder = new NxResubmitBuilder();
+        builder.setInPort(action.getInPort());
+        builder.setTable(action.getTable());
+        return resolveAction(builder.build(), path);
+    }
+
+    private static org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action resolveAction(final NxResubmit value, final ActionPath path) {
+        switch (path) {
+            case NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION:
+                return new NxActionResubmitNodesNodeTableFlowWriteActionsCaseBuilder().setNxResubmit(value).build();
+            case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION:
+                return new NxActionResubmitNotifFlowsStatisticsUpdateWriteActionsCaseBuilder().setNxResubmit(value).build();
+            case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION:
+                return new NxActionResubmitNotifFlowsStatisticsUpdateApplyActionsCaseBuilder().setNxResubmit(value).build();
+            case GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION:
+                return new NxActionResubmitNotifGroupDescStatsUpdatedCaseBuilder().setNxResubmit(value).build();
+            case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION:
+                return new NxActionResubmitNotifDirectStatisticsUpdateWriteActionsCaseBuilder().setNxResubmit(value).build();
+            case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION:
+                return new NxActionResubmitNotifDirectStatisticsUpdateApplyActionsCaseBuilder().setNxResubmit(value).build();
+            case NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION:
+                return new NxActionResubmitNodesNodeTableFlowApplyActionsCaseBuilder().setNxResubmit(value).build();
+            default:
+                throw new CodecPreconditionException(path);
+        }
+    }
+
+    @Override
+    public Action convert(final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action nxActionArg) {
         Preconditions.checkArgument(nxActionArg instanceof NxActionResubmitGrouping);
         NxActionResubmitGrouping nxAction = (NxActionResubmitGrouping) nxActionArg;
         ActionResubmitBuilder builder = new ActionResubmitBuilder();
@@ -49,39 +78,4 @@ public class ResubmitConvertor implements
         return ActionUtil.createAction(builder.build());
     }
 
-    @Override
-    public org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action convert(
-            final Action input, final ActionPath path) {
-        NxActionResubmit action = ((ActionResubmit) input.getActionChoice()).getNxActionResubmit();
-        NxResubmitBuilder builder = new NxResubmitBuilder();
-        builder.setInPort(action.getInPort());
-        builder.setTable(action.getTable());
-        return resolveAction(builder.build(), path);
-    }
-
-    private static org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action resolveAction(
-            final NxResubmit value, final ActionPath path) {
-        switch (path) {
-            case INVENTORY_FLOWNODE_TABLE_WRITE_ACTIONS:
-                return new NxActionResubmitNodesNodeTableFlowWriteActionsCaseBuilder().setNxResubmit(value).build();
-            case FLOWS_STATISTICS_UPDATE_WRITE_ACTIONS:
-                return new NxActionResubmitNotifFlowsStatisticsUpdateWriteActionsCaseBuilder()
-                        .setNxResubmit(value).build();
-            case FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS:
-                return new NxActionResubmitNotifFlowsStatisticsUpdateApplyActionsCaseBuilder()
-                        .setNxResubmit(value).build();
-            case GROUP_DESC_STATS_UPDATED_BUCKET_ACTION:
-                return new NxActionResubmitNotifGroupDescStatsUpdatedCaseBuilder().setNxResubmit(value).build();
-            case FLOWS_STATISTICS_RPC_WRITE_ACTIONS:
-                return new NxActionResubmitNotifDirectStatisticsUpdateWriteActionsCaseBuilder()
-                        .setNxResubmit(value).build();
-            case FLOWS_STATISTICS_RPC_APPLY_ACTIONS:
-                return new NxActionResubmitNotifDirectStatisticsUpdateApplyActionsCaseBuilder()
-                        .setNxResubmit(value).build();
-            case INVENTORY_FLOWNODE_TABLE_APPLY_ACTIONS:
-                return new NxActionResubmitNodesNodeTableFlowApplyActionsCaseBuilder().setNxResubmit(value).build();
-            default:
-                throw new CodecPreconditionException(path);
-        }
-    }
 }

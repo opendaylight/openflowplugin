@@ -52,7 +52,7 @@ public final class FlowStatisticsToNotificationTransformer {
                                                                 final ConvertorExecutor convertorExecutor) {
         final FlowStatsResponseConvertorData data = new FlowStatsResponseConvertorData(ofVersion.getVersion());
         data.setDatapathId(deviceInfo.getDatapathId());
-        data.setMatchPath(MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
+        data.setMatchPath(MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
         final FlowsStatisticsUpdateBuilder notification = new FlowsStatisticsUpdateBuilder();
         final List<FlowAndStatisticsMapList> statsList = new ArrayList<>();
         notification.setId(deviceInfo.getNodeId());

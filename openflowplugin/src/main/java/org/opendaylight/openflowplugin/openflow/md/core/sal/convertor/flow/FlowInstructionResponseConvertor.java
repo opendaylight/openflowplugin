@@ -42,6 +42,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.GotoTableCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.MeterCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.WriteActionsCase;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
  * Converts Openflow 1.3+ specific instructions to MD-SAL format flow instruction
@@ -77,12 +78,12 @@ public final class FlowInstructionResponseConvertor extends Convertor<
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.
                 Instruction switchInst : source) {
             if (switchInst.getInstructionChoice() instanceof ApplyActionsCase) {
-                ApplyActionsCase actionsInstruction = (ApplyActionsCase) switchInst.getInstructionChoice();
+                ApplyActionsCase actionsInstruction = ((ApplyActionsCase) switchInst.getInstructionChoice());
                 ApplyActionsCaseBuilder applyActionsCaseBuilder = new ApplyActionsCaseBuilder();
                 ApplyActionsBuilder applyActionsBuilder = new ApplyActionsBuilder();
 
                 final ActionResponseConvertorData actionResponseConvertorData = new ActionResponseConvertorData(data.getVersion());
-                actionResponseConvertorData.setActionPath(ActionPath.FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS);
+                actionResponseConvertorData.setActionPath(ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION);
 
                 final Optional<List<Action>> actions = getConvertorExecutor().convert(
                         actionsInstruction.getApplyActions().getAction(), actionResponseConvertorData);
@@ -94,7 +95,7 @@ public final class FlowInstructionResponseConvertor extends Convertor<
                 ClearActionsCaseBuilder clearActionsCaseBuilder = new ClearActionsCaseBuilder();
                 salInstruction = clearActionsCaseBuilder.build();
             } else if (switchInst.getInstructionChoice() instanceof GotoTableCase) {
-                GotoTableCase gotoTableCase = (GotoTableCase) switchInst.getInstructionChoice();
+                GotoTableCase gotoTableCase = ((GotoTableCase) switchInst.getInstructionChoice());
 
                 GoToTableCaseBuilder goToTableCaseBuilder = new GoToTableCaseBuilder();
                 GoToTableBuilder goToTableBuilder = new GoToTableBuilder();
@@ -103,7 +104,7 @@ public final class FlowInstructionResponseConvertor extends Convertor<
 
                 salInstruction = goToTableCaseBuilder.build();
             } else if (switchInst.getInstructionChoice() instanceof MeterCase) {
-                MeterCase meterIdInstruction = (MeterCase) switchInst.getInstructionChoice();
+                MeterCase meterIdInstruction = ((MeterCase) switchInst.getInstructionChoice());
 
                 MeterCaseBuilder meterCaseBuilder = new MeterCaseBuilder();
                 MeterBuilder meterBuilder = new MeterBuilder();
@@ -112,12 +113,12 @@ public final class FlowInstructionResponseConvertor extends Convertor<
 
                 salInstruction = meterCaseBuilder.build();
             } else if (switchInst.getInstructionChoice() instanceof WriteActionsCase) {
-                WriteActionsCase writeActionsCase = (WriteActionsCase) switchInst.getInstructionChoice();
+                WriteActionsCase writeActionsCase = ((WriteActionsCase) switchInst.getInstructionChoice());
                 WriteActionsCaseBuilder writeActionsCaseBuilder = new WriteActionsCaseBuilder();
                 WriteActionsBuilder writeActionsBuilder = new WriteActionsBuilder();
 
                 final ActionResponseConvertorData actionResponseConvertorData = new ActionResponseConvertorData(data.getVersion());
-                actionResponseConvertorData.setActionPath(ActionPath.FLOWS_STATISTICS_UPDATE_WRITE_ACTIONS);
+                actionResponseConvertorData.setActionPath(ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION);
 
                 final Optional<List<Action>> actions = getConvertorExecutor().convert(
                         writeActionsCase.getWriteActions().getAction(), actionResponseConvertorData);
@@ -127,7 +128,7 @@ public final class FlowInstructionResponseConvertor extends Convertor<
                 salInstruction = writeActionsCaseBuilder.build();
             } else if (switchInst.getInstructionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.WriteMetadataCase) {
                 org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.WriteMetadataCase writeMetadataCase =
-                        (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.WriteMetadataCase) switchInst.getInstructionChoice();
+                        ((org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.WriteMetadataCase) switchInst.getInstructionChoice());
                 WriteMetadataCaseBuilder writeMetadataCaseBuilder = new WriteMetadataCaseBuilder();
                 WriteMetadataBuilder writeMetadataBuilder = new WriteMetadataBuilder();
                 writeMetadataBuilder.setMetadata(new BigInteger(OFConstants.SIGNUM_UNSIGNED, writeMetadataCase.getWriteMetadata().getMetadata()));

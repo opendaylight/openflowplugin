@@ -130,50 +130,31 @@ public class RegMoveConvertorTest {
     @Test
     public void testConvert1() throws Exception {
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult
-                = regMoveConvertor.convert(action, ActionPath.FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS);
+                = regMoveConvertor.convert(action, ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult1
-                = regMoveConvertor.convert(action, ActionPath.INVENTORY_FLOWNODE_TABLE_WRITE_ACTIONS);
+                = regMoveConvertor.convert(action, ActionPath.NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult2
-                = regMoveConvertor.convert(action, ActionPath.FLOWS_STATISTICS_UPDATE_WRITE_ACTIONS);
+                = regMoveConvertor.convert(action, ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult3
-                = regMoveConvertor.convert(action, ActionPath.GROUP_DESC_STATS_UPDATED_BUCKET_ACTION);
+                = regMoveConvertor.convert(action, ActionPath.GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult4
-                = regMoveConvertor.convert(action, ActionPath.FLOWS_STATISTICS_RPC_APPLY_ACTIONS);
+                = regMoveConvertor.convert(action, ActionPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult5
-                = regMoveConvertor.convert(action, ActionPath.FLOWS_STATISTICS_RPC_WRITE_ACTIONS);
+                = regMoveConvertor.convert(action, ActionPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION);
 
-        Assert.assertEquals(Integer.valueOf(0),
-                ((NxActionRegMoveNotifFlowsStatisticsUpdateApplyActionsCase) actionResult).getNxRegMove().getDst()
-                        .getStart());
-        Assert.assertEquals(Integer.valueOf(6),
-                ((NxActionRegMoveNotifFlowsStatisticsUpdateApplyActionsCase) actionResult).getNxRegMove().getDst()
-                        .getEnd());
-        Assert.assertEquals(Integer.valueOf(0),
-                ((NxActionRegMoveNodesNodeTableFlowWriteActionsCase) actionResult1).getNxRegMove().getDst().getStart());
-        Assert.assertEquals(Integer.valueOf(6),
-                ((NxActionRegMoveNodesNodeTableFlowWriteActionsCase) actionResult1).getNxRegMove().getDst().getEnd());
-        Assert.assertEquals(Integer.valueOf(0),
-                ((NxActionRegMoveNotifFlowsStatisticsUpdateWriteActionsCase) actionResult2).getNxRegMove().getDst()
-                        .getStart());
-        Assert.assertEquals(Integer.valueOf(6),
-                ((NxActionRegMoveNotifFlowsStatisticsUpdateWriteActionsCase) actionResult2).getNxRegMove().getDst()
-                        .getEnd());
-        Assert.assertEquals(Integer.valueOf(0),
-                ((NxActionRegMoveNotifGroupDescStatsUpdatedCase) actionResult3).getNxRegMove().getDst().getStart());
-        Assert.assertEquals(Integer.valueOf(6),
-                ((NxActionRegMoveNotifGroupDescStatsUpdatedCase) actionResult3).getNxRegMove().getDst().getEnd());
-        Assert.assertEquals(Integer.valueOf(0),
-                ((NxActionRegMoveNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxRegMove().getDst()
-                        .getStart());
-        Assert.assertEquals(Integer.valueOf(6),
-                ((NxActionRegMoveNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxRegMove().getDst()
-                        .getEnd());
-        Assert.assertEquals(Integer.valueOf(0),
-                ((NxActionRegMoveNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxRegMove().getDst()
-                        .getStart());
-        Assert.assertEquals(Integer.valueOf(6),
-                ((NxActionRegMoveNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxRegMove().getDst()
-                        .getEnd());
+        Assert.assertEquals(Integer.valueOf(0), ((NxActionRegMoveNotifFlowsStatisticsUpdateApplyActionsCase) actionResult).getNxRegMove().getDst().getStart());
+        Assert.assertEquals(Integer.valueOf(6), ((NxActionRegMoveNotifFlowsStatisticsUpdateApplyActionsCase) actionResult).getNxRegMove().getDst().getEnd());
+        Assert.assertEquals(Integer.valueOf(0), ((NxActionRegMoveNodesNodeTableFlowWriteActionsCase) actionResult1).getNxRegMove().getDst().getStart());
+        Assert.assertEquals(Integer.valueOf(6), ((NxActionRegMoveNodesNodeTableFlowWriteActionsCase) actionResult1).getNxRegMove().getDst().getEnd());
+        Assert.assertEquals(Integer.valueOf(0), ((NxActionRegMoveNotifFlowsStatisticsUpdateWriteActionsCase) actionResult2).getNxRegMove().getDst().getStart());
+        Assert.assertEquals(Integer.valueOf(6), ((NxActionRegMoveNotifFlowsStatisticsUpdateWriteActionsCase) actionResult2).getNxRegMove().getDst().getEnd());
+        Assert.assertEquals(Integer.valueOf(0), ((NxActionRegMoveNotifGroupDescStatsUpdatedCase) actionResult3).getNxRegMove().getDst().getStart());
+        Assert.assertEquals(Integer.valueOf(6), ((NxActionRegMoveNotifGroupDescStatsUpdatedCase) actionResult3).getNxRegMove().getDst().getEnd());
+        Assert.assertEquals(Integer.valueOf(0), ((NxActionRegMoveNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxRegMove().getDst().getStart());
+        Assert.assertEquals(Integer.valueOf(6), ((NxActionRegMoveNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxRegMove().getDst().getEnd());
+        Assert.assertEquals(Integer.valueOf(0), ((NxActionRegMoveNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxRegMove().getDst().getStart());
+        Assert.assertEquals(Integer.valueOf(6), ((NxActionRegMoveNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxRegMove().getDst().getEnd());
+
     }
 
     @Test
@@ -266,85 +247,48 @@ public class RegMoveConvertorTest {
 
     @Test
     public void testResolveSrc1() throws Exception {
-        Assert.assertTrue(RegMoveConvertor.resolveSrcValue(
-                NiciraMatchCodecs.TUN_ID_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcNxTunIdCase);
-        Assert.assertTrue(RegMoveConvertor.resolveSrcValue(
-                NiciraMatchCodecs.ARP_SHA_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcNxArpShaCase);
-        Assert.assertTrue(RegMoveConvertor.resolveSrcValue(
-                NiciraMatchCodecs.ARP_THA_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcNxArpThaCase);
-        Assert.assertTrue(RegMoveConvertor.resolveSrcValue(
-                NiciraMatchCodecs.ARP_OP_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcOfArpOpCase);
-        Assert.assertTrue(RegMoveConvertor.resolveSrcValue(
-                NiciraMatchCodecs.ARP_SPA_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcOfArpSpaCase);
-        Assert.assertTrue(RegMoveConvertor.resolveSrcValue(
-                NiciraMatchCodecs.ARP_TPA_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcOfArpTpaCase);
-        Assert.assertTrue(RegMoveConvertor.resolveSrcValue(
-                NiciraMatchCodecs.ETH_DST_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcOfEthDstCase);
-        Assert.assertTrue(RegMoveConvertor.resolveSrcValue(
-                NiciraMatchCodecs.ETH_SRC_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcOfEthSrcCase);
-        Assert.assertTrue(RegMoveConvertor.resolveSrcValue(
-                NiciraMatchCodecs.ETH_TYPE_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcOfEthTypeCase);
-        Assert.assertTrue(RegMoveConvertor.resolveSrcValue(NiciraMatchCodecs.TUN_IPV4_DST_CODEC
-                .getHeaderWithoutHasMask().toLong()) instanceof SrcNxTunIpv4DstCase);
-        Assert.assertTrue(RegMoveConvertor.resolveSrcValue(NiciraMatchCodecs.TUN_IPV4_SRC_CODEC
-                .getHeaderWithoutHasMask().toLong()) instanceof SrcNxTunIpv4SrcCase);
-        Assert.assertTrue(RegMoveConvertor.resolveSrcValue(
-                NiciraMatchCodecs.NSP_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcNxNspCase);
-        Assert.assertTrue(RegMoveConvertor.resolveSrcValue(
-                NiciraMatchCodecs.NSI_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcNxNsiCase);
-        Assert.assertTrue(RegMoveConvertor.resolveSrcValue(
-                NiciraMatchCodecs.NSC1_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcNxNshc1Case);
-        Assert.assertTrue(RegMoveConvertor.resolveSrcValue(
-                NiciraMatchCodecs.NSC2_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcNxNshc2Case);
-        Assert.assertTrue(RegMoveConvertor.resolveSrcValue(
-                NiciraMatchCodecs.NSC3_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcNxNshc3Case);
-        Assert.assertTrue(RegMoveConvertor.resolveSrcValue(
-                NiciraMatchCodecs.NSC4_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcNxNshc4Case);
-        Assert.assertTrue(RegMoveConvertor.resolveSrcValue(
-                NiciraMatchCodecs.IP_DST_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcOfIpDstCase);
-        Assert.assertTrue(RegMoveConvertor.resolveSrcValue(
-                NiciraMatchCodecs.IP_SRC_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcOfIpSrcCase);
+        Assert.assertTrue(RegMoveConvertor.resolveSrc(NiciraMatchCodecs.TUN_ID_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcNxTunIdCase);
+        Assert.assertTrue(RegMoveConvertor.resolveSrc(NiciraMatchCodecs.ARP_SHA_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcNxArpShaCase);
+        Assert.assertTrue(RegMoveConvertor.resolveSrc(NiciraMatchCodecs.ARP_THA_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcNxArpThaCase);
+        Assert.assertTrue(RegMoveConvertor.resolveSrc(NiciraMatchCodecs.ARP_OP_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcOfArpOpCase);
+        Assert.assertTrue(RegMoveConvertor.resolveSrc(NiciraMatchCodecs.ARP_SPA_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcOfArpSpaCase);
+        Assert.assertTrue(RegMoveConvertor.resolveSrc(NiciraMatchCodecs.ARP_TPA_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcOfArpTpaCase);
+        Assert.assertTrue(RegMoveConvertor.resolveSrc(NiciraMatchCodecs.ETH_DST_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcOfEthDstCase);
+        Assert.assertTrue(RegMoveConvertor.resolveSrc(NiciraMatchCodecs.ETH_SRC_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcOfEthSrcCase);
+        Assert.assertTrue(RegMoveConvertor.resolveSrc(NiciraMatchCodecs.ETH_TYPE_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcOfEthTypeCase);
+        Assert.assertTrue(RegMoveConvertor.resolveSrc(NiciraMatchCodecs.TUN_IPV4_DST_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcNxTunIpv4DstCase);
+        Assert.assertTrue(RegMoveConvertor.resolveSrc(NiciraMatchCodecs.TUN_IPV4_SRC_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcNxTunIpv4SrcCase);
+        Assert.assertTrue(RegMoveConvertor.resolveSrc(NiciraMatchCodecs.NSP_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcNxNspCase);
+        Assert.assertTrue(RegMoveConvertor.resolveSrc(NiciraMatchCodecs.NSI_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcNxNsiCase);
+        Assert.assertTrue(RegMoveConvertor.resolveSrc(NiciraMatchCodecs.NSC1_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcNxNshc1Case);
+        Assert.assertTrue(RegMoveConvertor.resolveSrc(NiciraMatchCodecs.NSC2_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcNxNshc2Case);
+        Assert.assertTrue(RegMoveConvertor.resolveSrc(NiciraMatchCodecs.NSC3_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcNxNshc3Case);
+        Assert.assertTrue(RegMoveConvertor.resolveSrc(NiciraMatchCodecs.NSC4_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcNxNshc4Case);
+        Assert.assertTrue(RegMoveConvertor.resolveSrc(NiciraMatchCodecs.IP_DST_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcOfIpDstCase);
+        Assert.assertTrue(RegMoveConvertor.resolveSrc(NiciraMatchCodecs.IP_SRC_CODEC.getHeaderWithoutHasMask().toLong()) instanceof SrcOfIpSrcCase);
     }
 
     @Test
     public void testResolveDst1() throws Exception {
-        Assert.assertTrue(RegMoveConvertor.resolveDstValue(
-                NiciraMatchCodecs.TUN_ID_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstNxTunIdCase);
-        Assert.assertTrue(RegMoveConvertor.resolveDstValue(
-                NiciraMatchCodecs.ARP_SHA_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstNxArpShaCase);
-        Assert.assertTrue(RegMoveConvertor.resolveDstValue(
-                NiciraMatchCodecs.ARP_THA_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstNxArpThaCase);
-        Assert.assertTrue(RegMoveConvertor.resolveDstValue(
-                NiciraMatchCodecs.ARP_OP_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstOfArpOpCase);
-        Assert.assertTrue(RegMoveConvertor.resolveDstValue(
-                NiciraMatchCodecs.ARP_SPA_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstOfArpSpaCase);
-        Assert.assertTrue(RegMoveConvertor.resolveDstValue(
-                NiciraMatchCodecs.ARP_TPA_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstOfArpTpaCase);
-        Assert.assertTrue(RegMoveConvertor.resolveDstValue(
-                NiciraMatchCodecs.ETH_DST_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstOfEthDstCase);
-        Assert.assertTrue(RegMoveConvertor.resolveDstValue(
-                NiciraMatchCodecs.ETH_SRC_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstOfEthSrcCase);
-        Assert.assertTrue(RegMoveConvertor.resolveDstValue(NiciraMatchCodecs.TUN_IPV4_DST_CODEC
-                .getHeaderWithoutHasMask().toLong()) instanceof DstNxTunIpv4DstCase);
-        Assert.assertTrue(RegMoveConvertor.resolveDstValue(NiciraMatchCodecs.TUN_IPV4_SRC_CODEC
-                .getHeaderWithoutHasMask().toLong()) instanceof DstNxTunIpv4SrcCase);
-        Assert.assertTrue(RegMoveConvertor.resolveDstValue(
-                NiciraMatchCodecs.NSP_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstNxNspCase);
-        Assert.assertTrue(RegMoveConvertor.resolveDstValue(
-                NiciraMatchCodecs.NSI_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstNxNsiCase);
-        Assert.assertTrue(RegMoveConvertor.resolveDstValue(
-                NiciraMatchCodecs.NSC1_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstNxNshc1Case);
-        Assert.assertTrue(RegMoveConvertor.resolveDstValue(
-                NiciraMatchCodecs.NSC2_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstNxNshc2Case);
-        Assert.assertTrue(RegMoveConvertor.resolveDstValue(
-                NiciraMatchCodecs.NSC3_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstNxNshc3Case);
-        Assert.assertTrue(RegMoveConvertor.resolveDstValue(
-                NiciraMatchCodecs.NSC4_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstNxNshc4Case);
-        Assert.assertTrue(RegMoveConvertor.resolveDstValue(
-                NiciraMatchCodecs.IP_DST_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstOfIpDstCase);
-        Assert.assertTrue(RegMoveConvertor.resolveDstValue(
-                NiciraMatchCodecs.IP_SRC_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstOfIpSrcCase);
-        Assert.assertTrue(RegMoveConvertor.resolveDstValue(
-                NiciraMatchCodecs.ICMP_TYPE_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstOfIcmpTypeCase);
+        Assert.assertTrue(RegMoveConvertor.resolveDst(NiciraMatchCodecs.TUN_ID_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstNxTunIdCase);
+        Assert.assertTrue(RegMoveConvertor.resolveDst(NiciraMatchCodecs.ARP_SHA_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstNxArpShaCase);
+        Assert.assertTrue(RegMoveConvertor.resolveDst(NiciraMatchCodecs.ARP_THA_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstNxArpThaCase);
+        Assert.assertTrue(RegMoveConvertor.resolveDst(NiciraMatchCodecs.ARP_OP_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstOfArpOpCase);
+        Assert.assertTrue(RegMoveConvertor.resolveDst(NiciraMatchCodecs.ARP_SPA_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstOfArpSpaCase);
+        Assert.assertTrue(RegMoveConvertor.resolveDst(NiciraMatchCodecs.ARP_TPA_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstOfArpTpaCase);
+        Assert.assertTrue(RegMoveConvertor.resolveDst(NiciraMatchCodecs.ETH_DST_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstOfEthDstCase);
+        Assert.assertTrue(RegMoveConvertor.resolveDst(NiciraMatchCodecs.ETH_SRC_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstOfEthSrcCase);
+        Assert.assertTrue(RegMoveConvertor.resolveDst(NiciraMatchCodecs.TUN_IPV4_DST_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstNxTunIpv4DstCase);
+        Assert.assertTrue(RegMoveConvertor.resolveDst(NiciraMatchCodecs.TUN_IPV4_SRC_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstNxTunIpv4SrcCase);
+        Assert.assertTrue(RegMoveConvertor.resolveDst(NiciraMatchCodecs.NSP_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstNxNspCase);
+        Assert.assertTrue(RegMoveConvertor.resolveDst(NiciraMatchCodecs.NSI_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstNxNsiCase);
+        Assert.assertTrue(RegMoveConvertor.resolveDst(NiciraMatchCodecs.NSC1_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstNxNshc1Case);
+        Assert.assertTrue(RegMoveConvertor.resolveDst(NiciraMatchCodecs.NSC2_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstNxNshc2Case);
+        Assert.assertTrue(RegMoveConvertor.resolveDst(NiciraMatchCodecs.NSC3_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstNxNshc3Case);
+        Assert.assertTrue(RegMoveConvertor.resolveDst(NiciraMatchCodecs.NSC4_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstNxNshc4Case);
+        Assert.assertTrue(RegMoveConvertor.resolveDst(NiciraMatchCodecs.IP_DST_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstOfIpDstCase);
+        Assert.assertTrue(RegMoveConvertor.resolveDst(NiciraMatchCodecs.IP_SRC_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstOfIpSrcCase);
+        Assert.assertTrue(RegMoveConvertor.resolveDst(NiciraMatchCodecs.ICMP_TYPE_CODEC.getHeaderWithoutHasMask().toLong()) instanceof DstOfIcmpTypeCase);
     }
+
 }

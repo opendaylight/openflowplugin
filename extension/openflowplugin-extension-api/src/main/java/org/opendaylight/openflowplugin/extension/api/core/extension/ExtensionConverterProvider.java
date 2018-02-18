@@ -9,11 +9,11 @@ package org.opendaylight.openflowplugin.extension.api.core.extension;
 
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey;
-import org.opendaylight.openflowplugin.extension.api.ConverterMessageToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
+import org.opendaylight.openflowplugin.extension.api.ConverterMessageToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.api.path.AugmentationPath;
@@ -24,54 +24,46 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
 public interface ExtensionConverterProvider {
 
     /**
-     * Lookup converter.
-     *
-     * @param key the message type key
+     * lookup converter
+     * @param key
      * @return found converter
      */
     <F extends DataContainer, P extends AugmentationPath> ConvertorFromOFJava<F, P> getConverter(MessageTypeKey<?> key);
 
     /**
-     * Lookup converter.
-     *
-     * @param key the converter extension key
+     * lookup converter
+     * @param key
      * @return found converter
      */
     <T extends DataContainer> ConvertorToOFJava<T> getConverter(ConverterExtensionKey<?> key);
 
     /**
-     * Lookup converter.
-     *
-     * @param key the type version key
+     * @param key
      * @return found converter
      */
     <F extends Action, T extends DataContainer> ConvertorActionToOFJava<F, T> getConverter(TypeVersionKey<F> key);
 
     /**
-     * Lookup converter.
-     * TODO: this method should be compatible with {@link #getConverter(MessageTypeKey)} after matches are migrated
-     * to similar structure
-     * @param key the message type key
+     * lookup converter<br>
+     * TODO: this method should be compatible with {@link #getConverter(MessageTypeKey)} after matches are migrated to similar structure
+     * @param key
      * @return found converter
      */
-    <F extends DataContainer, P extends AugmentationPath> ConvertorActionFromOFJava<F, P> getActionConverter(
-            MessageTypeKey<?> key);
+    <F extends DataContainer, P extends AugmentationPath> ConvertorActionFromOFJava<F, P> getActionConverter(MessageTypeKey<?> key);
 
     /**
-     * Lookup converter for experimenter message.
+     * lookup converter for experimenter message
      *
-     * @param key the type version key
+     * @param key
      * @return found converter
      */
-    <F extends ExperimenterMessageOfChoice, T extends DataContainer> ConverterMessageToOFJava<F, T> getMessageConverter(
-            TypeVersionKey<F> key);
+    <F extends ExperimenterMessageOfChoice, T extends DataContainer> ConverterMessageToOFJava<F, T> getMessageConverter(TypeVersionKey<F> key);
 
     /**
-     * Lookup converter for experimenter message.
+     * lookup converter for experimenter message
      *
-     * @param key the message type key
+     * @param key
      * @return found converter
      */
-    <F extends DataContainer, P extends AugmentationPath> ConvertorMessageFromOFJava<F, P> getMessageConverter(
-            MessageTypeKey<?> key);
+    <F extends DataContainer, P extends AugmentationPath> ConvertorMessageFromOFJava<F, P> getMessageConverter(MessageTypeKey<?> key);
 }

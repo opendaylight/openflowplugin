@@ -165,45 +165,22 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcOfIpSrcCaseBuilder;
 
 /**
- * Convert to/from SAL flow model to openflowjava model for NxActionRegMove action.
- *
  * @author msunal
  * @author Josh Hershberg (jhershbe@redhat.com)
  */
 public class RegMoveConvertor implements
-        ConvertorActionToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action,
-            Action>, ConvertorActionFromOFJava<Action, ActionPath> {
+        ConvertorActionToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, Action>,
+        ConvertorActionFromOFJava<Action, ActionPath> {
 
     @Override
-    public Action convert(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action nxActionArg) {
-        Preconditions.checkArgument(nxActionArg instanceof NxActionRegMoveGrouping);
-        NxActionRegMoveGrouping nxAction = (NxActionRegMoveGrouping) nxActionArg;
-
-        Dst dst = nxAction.getNxRegMove().getDst();
-        Src src = nxAction.getNxRegMove().getSrc();
-        final ActionRegMoveBuilder actionRegMoveBuilder = new ActionRegMoveBuilder();
-        NxActionRegMoveBuilder nxActionRegMove = new NxActionRegMoveBuilder();
-
-        nxActionRegMove.setDst(resolveDst(dst.getDstChoice()));
-        nxActionRegMove.setDstOfs(dst.getStart());
-        nxActionRegMove.setSrc(resolveSrc(src.getSrcChoice()));
-        nxActionRegMove.setSrcOfs(src.getStart());
-        nxActionRegMove.setNBits(dst.getEnd() - dst.getStart() + 1);
-        actionRegMoveBuilder.setNxActionRegMove(nxActionRegMove.build());
-        return ActionUtil.createAction(actionRegMoveBuilder.build());
-    }
-
-    @Override
-    public org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action convert(
-            Action input, ActionPath path) {
+    public org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action convert(Action input, ActionPath path) {
         NxActionRegMove actionRegMove = ((ActionRegMove) input.getActionChoice()).getNxActionRegMove();
         DstBuilder dstBuilder = new DstBuilder();
-        dstBuilder.setDstChoice(resolveDstValue(actionRegMove.getDst()));
+        dstBuilder.setDstChoice(resolveDst(actionRegMove.getDst()));
         dstBuilder.setStart(actionRegMove.getDstOfs());
         dstBuilder.setEnd(actionRegMove.getDstOfs() + actionRegMove.getNBits() - 1);
         SrcBuilder srcBuilder = new SrcBuilder();
-        srcBuilder.setSrcChoice(resolveSrcValue(actionRegMove.getSrc()));
+        srcBuilder.setSrcChoice(resolveSrc(actionRegMove.getSrc()));
         srcBuilder.setStart(actionRegMove.getSrcOfs());
         srcBuilder.setEnd(actionRegMove.getSrcOfs() + actionRegMove.getNBits() - 1);
         NxRegMoveBuilder nxRegMoveBuilder = new NxRegMoveBuilder();
@@ -212,8 +189,8 @@ public class RegMoveConvertor implements
         return resolveAction(nxRegMoveBuilder.build(), path);
     }
 
-    public static DstChoice resolveDstValue(long dstValue) {
-        Class<? extends NxmNxReg> potentialDst = resolveCodec(dstValue);
+    public static DstChoice resolveDst(long dstValue) {
+        Class<? extends NxmNxReg> potentialDst = resolveReg(dstValue);
         if (potentialDst != null) {
             return new DstNxRegCaseBuilder().setNxReg(potentialDst).build();
         }
@@ -308,8 +285,8 @@ public class RegMoveConvertor implements
         throw new CodecPreconditionException("Missing codec for " + new NxmHeader(dstValue));
     }
 
-    static SrcChoice resolveSrcValue(long srcValue) {
-        Class<? extends NxmNxReg> potentialSrc = resolveCodec(srcValue);
+    static SrcChoice resolveSrc(long srcValue) {
+        Class<? extends NxmNxReg> potentialSrc = resolveReg(srcValue);
         if (potentialSrc != null) {
             return new SrcNxRegCaseBuilder().setNxReg(potentialSrc).build();
         }
@@ -401,7 +378,7 @@ public class RegMoveConvertor implements
         throw new CodecPreconditionException("Missing codec for " + new NxmHeader(srcValue));
     }
 
-    private static Class<? extends NxmNxReg> resolveCodec(long value) {
+    private static Class<? extends NxmNxReg> resolveReg(long value) {
         if (value == NiciraMatchCodecs.REG0_CODEC.getHeaderWithoutHasMask().toLong()) {
             return NxmNxReg0.class;
         }
@@ -432,27 +409,42 @@ public class RegMoveConvertor implements
     private static org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action resolveAction(
             NxRegMove value, ActionPath path) {
         switch (path) {
-            case INVENTORY_FLOWNODE_TABLE_WRITE_ACTIONS:
+            case NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION:
                 return new NxActionRegMoveNodesNodeTableFlowWriteActionsCaseBuilder().setNxRegMove(value).build();
-            case FLOWS_STATISTICS_UPDATE_WRITE_ACTIONS:
-                return new NxActionRegMoveNotifFlowsStatisticsUpdateWriteActionsCaseBuilder()
-                        .setNxRegMove(value).build();
-            case FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS:
-                return new NxActionRegMoveNotifFlowsStatisticsUpdateApplyActionsCaseBuilder()
-                        .setNxRegMove(value).build();
-            case GROUP_DESC_STATS_UPDATED_BUCKET_ACTION:
+            case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION:
+                return new NxActionRegMoveNotifFlowsStatisticsUpdateWriteActionsCaseBuilder().setNxRegMove(value).build();
+            case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION:
+                return new NxActionRegMoveNotifFlowsStatisticsUpdateApplyActionsCaseBuilder().setNxRegMove(value).build();
+            case GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION:
                 return new NxActionRegMoveNotifGroupDescStatsUpdatedCaseBuilder().setNxRegMove(value).build();
-            case FLOWS_STATISTICS_RPC_WRITE_ACTIONS:
-                return new NxActionRegMoveNotifDirectStatisticsUpdateWriteActionsCaseBuilder()
-                        .setNxRegMove(value).build();
-            case FLOWS_STATISTICS_RPC_APPLY_ACTIONS:
-                return new NxActionRegMoveNotifDirectStatisticsUpdateApplyActionsCaseBuilder()
-                        .setNxRegMove(value).build();
-            case INVENTORY_FLOWNODE_TABLE_APPLY_ACTIONS:
+            case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION:
+                return new NxActionRegMoveNotifDirectStatisticsUpdateWriteActionsCaseBuilder().setNxRegMove(value).build();
+            case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION:
+                return new NxActionRegMoveNotifDirectStatisticsUpdateApplyActionsCaseBuilder().setNxRegMove(value).build();
+            case NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION:
                 return new NxActionRegMoveNodesNodeTableFlowApplyActionsCaseBuilder().setNxRegMove(value).build();
             default:
                 throw new CodecPreconditionException(path);
         }
+    }
+
+    @Override
+    public Action convert(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action nxActionArg) {
+        Preconditions.checkArgument(nxActionArg instanceof NxActionRegMoveGrouping);
+        NxActionRegMoveGrouping nxAction = (NxActionRegMoveGrouping) nxActionArg;
+
+        Dst dst = nxAction.getNxRegMove().getDst();
+        Src src = nxAction.getNxRegMove().getSrc();
+        ActionRegMoveBuilder actionRegMoveBuilder = new ActionRegMoveBuilder();
+        NxActionRegMoveBuilder nxActionRegMove = new NxActionRegMoveBuilder();
+
+        nxActionRegMove.setDst(resolveDst(dst.getDstChoice()));
+        nxActionRegMove.setDstOfs(dst.getStart());
+        nxActionRegMove.setSrc(resolveSrc(src.getSrcChoice()));
+        nxActionRegMove.setSrcOfs(src.getStart());
+        nxActionRegMove.setNBits(dst.getEnd() - dst.getStart() + 1);
+        actionRegMoveBuilder.setNxActionRegMove(nxActionRegMove.build());
+        return ActionUtil.createAction(actionRegMoveBuilder.build());
     }
 
     public static long resolveDst(DstChoice dstChoice) {
@@ -688,4 +680,5 @@ public class RegMoveConvertor implements
         }
         throw new CodecPreconditionException("Missing codec for nxm_nx_reg?" + reg);
     }
+
 }

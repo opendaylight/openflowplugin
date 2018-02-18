@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.opendaylight.openflowplugin.extension.onf.BundleTestUtils;
@@ -94,44 +95,32 @@ public class BundleAddMessageConverterTest {
 
     @Test
     public void testConvertAddFlowCase() throws Exception {
-        testConvert(new BundleAddFlowCaseBuilder().setAddFlowCaseData(new AddFlowCaseDataBuilder().build()).build(),
-                BundleFlowModCase.class);
+        testConvert(new BundleAddFlowCaseBuilder().setAddFlowCaseData(new AddFlowCaseDataBuilder().build()).build(), BundleFlowModCase.class);
     }
 
     @Test
     public void testConvertUpdateFlowCase() throws Exception {
-        testConvert(new BundleUpdateFlowCaseBuilder().setUpdateFlowCaseData(new UpdateFlowCaseDataBuilder().build())
-                .build(), BundleFlowModCase.class);
+        testConvert(new BundleUpdateFlowCaseBuilder().setUpdateFlowCaseData(new UpdateFlowCaseDataBuilder().build()).build(), BundleFlowModCase.class);
     }
 
     @Test
     public void testConvertRemoveFlowCase() throws Exception {
-        testConvert(new BundleRemoveFlowCaseBuilder().setRemoveFlowCaseData(new RemoveFlowCaseDataBuilder().build())
-                .build(), BundleFlowModCase.class);
+        testConvert(new BundleRemoveFlowCaseBuilder().setRemoveFlowCaseData(new RemoveFlowCaseDataBuilder().build()).build(), BundleFlowModCase.class);
     }
 
     @Test
     public void testConvertAddGroupCase() throws Exception {
-        testConvert(
-                new BundleAddGroupCaseBuilder()
-                        .setAddGroupCaseData(new AddGroupCaseDataBuilder().setGroupId(GROUP_ID).build()).build(),
-                BundleGroupModCase.class);
+        testConvert(new BundleAddGroupCaseBuilder().setAddGroupCaseData(new AddGroupCaseDataBuilder().setGroupId(GROUP_ID).build()).build(), BundleGroupModCase.class);
     }
 
     @Test
     public void testConvertUpdateGroupCase() throws Exception {
-        testConvert(
-                new BundleUpdateGroupCaseBuilder()
-                        .setUpdateGroupCaseData(new UpdateGroupCaseDataBuilder().setGroupId(GROUP_ID).build()).build(),
-                BundleGroupModCase.class);
+        testConvert(new BundleUpdateGroupCaseBuilder().setUpdateGroupCaseData(new UpdateGroupCaseDataBuilder().setGroupId(GROUP_ID).build()).build(), BundleGroupModCase.class);
     }
 
     @Test
     public void testConvertRemoveGroupCase() throws Exception {
-        testConvert(
-                new BundleRemoveGroupCaseBuilder()
-                        .setRemoveGroupCaseData(new RemoveGroupCaseDataBuilder().setGroupId(GROUP_ID).build()).build(),
-                BundleGroupModCase.class);
+        testConvert(new BundleRemoveGroupCaseBuilder().setRemoveGroupCaseData(new RemoveGroupCaseDataBuilder().setGroupId(GROUP_ID).build()).build(), BundleGroupModCase.class);
     }
 
     @Test
@@ -139,8 +128,7 @@ public class BundleAddMessageConverterTest {
         testConvert(new BundleUpdatePortCaseBuilder()
                 .setUpdatePortCaseData(new UpdatePortCaseDataBuilder()
                 .setPort(new PortBuilder()
-                            .setPort(Collections.singletonList(new org.opendaylight.yang.gen.v1.urn.opendaylight.flow
-                                        .types.port.rev130925.port.mod.port.PortBuilder()
+                            .setPort(Collections.singletonList(new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.PortBuilder()
                                     .setConfiguration(Mockito.mock(PortConfig.class))
                                     .setAdvertisedFeatures(Mockito.mock(PortFeatures.class))
                                     .setPortNumber(Mockito.mock(PortNumberUni.class))
@@ -155,49 +143,34 @@ public class BundleAddMessageConverterTest {
     }
 
     private void testConvert(final boolean withProperty) throws Exception {
-        final BundleInnerMessage message = new BundleAddFlowCaseBuilder()
-                .setAddFlowCaseData(new AddFlowCaseDataBuilder().build()).build();
+        final BundleInnerMessage message = new BundleAddFlowCaseBuilder().setAddFlowCaseData(new AddFlowCaseDataBuilder().build()).build();
         testConvert(message, BundleFlowModCase.class, withProperty);
     }
 
-    private void testConvert(final BundleInnerMessage message, Class clazz, final boolean withProperty)
-            throws Exception {
+    private void testConvert(final BundleInnerMessage message, Class clazz, final boolean withProperty) throws Exception {
         final BundleAddMessageSal original = createMessage(withProperty, message);
         final BundleAddMessageOnf converted = converter.convert(original);
-        Assert.assertEquals("Wrong BundleId", new BundleId(original.getSalAddMessageData().getBundleId().getValue()),
-                converted.getOnfAddMessageGroupingData().getBundleId());
-        Assert.assertEquals("Wrong flags",
-                new BundleFlags(original.getSalAddMessageData().getFlags().isAtomic(),
-                        original.getSalAddMessageData().getFlags().isOrdered()),
-                converted.getOnfAddMessageGroupingData().getFlags());
-        Assert.assertEquals("Wrong inner message conversion", clazz,
-                converted.getOnfAddMessageGroupingData().getBundleInnerMessage().getImplementedInterface());
+        Assert.assertEquals("Wrong BundleId", new BundleId(original.getSalAddMessageData().getBundleId().getValue()), converted.getOnfAddMessageGroupingData().getBundleId());
+        Assert.assertEquals("Wrong flags", new BundleFlags(original.getSalAddMessageData().getFlags().isAtomic(), original.getSalAddMessageData().getFlags().isOrdered()), converted.getOnfAddMessageGroupingData().getFlags());
+        Assert.assertEquals("Wrong inner message conversion", clazz, converted.getOnfAddMessageGroupingData().getBundleInnerMessage().getImplementedInterface());
         if (withProperty) {
-            final BundlePropertyExperimenter originalProperty = (BundlePropertyExperimenter) original
-                    .getSalAddMessageData().getBundleProperty().get(0).getBundlePropertyEntry();
-            final BundlePropertyExperimenter convertedProperty = (BundlePropertyExperimenter) converted
-                    .getOnfAddMessageGroupingData().getBundleProperty().get(0).getBundlePropertyEntry();
-            Assert.assertEquals("Wrong property ExperimenterId", new ExperimenterId(originalProperty.getExperimenter()),
-                    convertedProperty.getExperimenter());
-            Assert.assertEquals("Wrong property experimenter type", originalProperty.getExpType(),
-                    convertedProperty.getExpType());
-            Assert.assertEquals("Wrong property data", originalProperty.getBundlePropertyExperimenterData(),
-                    convertedProperty.getBundlePropertyExperimenterData());
+            final BundlePropertyExperimenter originalProperty = (BundlePropertyExperimenter) original.getSalAddMessageData().getBundleProperty().get(0).getBundlePropertyEntry();
+            final BundlePropertyExperimenter convertedProperty = ((BundlePropertyExperimenter) converted.getOnfAddMessageGroupingData().getBundleProperty().get(0).getBundlePropertyEntry());
+            Assert.assertEquals("Wrong property ExperimenterId", new ExperimenterId(originalProperty.getExperimenter()), convertedProperty.getExperimenter());
+            Assert.assertEquals("Wrong property experimenter type", originalProperty.getExpType(), convertedProperty.getExpType());
+            Assert.assertEquals("Wrong property data", originalProperty.getBundlePropertyExperimenterData(), convertedProperty.getBundlePropertyExperimenterData());
         } else {
-            Assert.assertTrue("Properties not empty",
-                    converted.getOnfAddMessageGroupingData().getBundleProperty().isEmpty());
+            Assert.assertTrue("Properties not empty", converted.getOnfAddMessageGroupingData().getBundleProperty().isEmpty());
         }
     }
 
-    private static BundleAddMessageSal createMessage(final boolean withProperty,
-            final BundleInnerMessage innerMessage) {
+    private static BundleAddMessageSal createMessage(final boolean withProperty, final BundleInnerMessage innerMessage) {
         final SalAddMessageDataBuilder dataBuilder = new SalAddMessageDataBuilder();
         dataBuilder.setBundleId(new BundleId(1L));
         dataBuilder.setFlags(new BundleFlags(true, false));
         List<BundleProperty> properties = new ArrayList<>();
         if (withProperty) {
-            properties.add(
-                    BundleTestUtils.createExperimenterProperty(Mockito.mock(BundlePropertyExperimenterData.class)));
+            properties.add(BundleTestUtils.createExperimenterProperty(Mockito.mock(BundlePropertyExperimenterData.class)));
         }
         dataBuilder.setBundleProperty(properties);
         dataBuilder.setBundleInnerMessage(innerMessage);

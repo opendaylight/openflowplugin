@@ -69,7 +69,7 @@ public class CtMarkConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
      */
     @Override
     public MatchEntry convert(Extension extension) {
-        Optional<NxmNxCtMarkGrouping> matchGrouping = MatchUtil.CT_MARK_RESOLVER.getExtension(extension);
+        Optional<NxmNxCtMarkGrouping> matchGrouping = MatchUtil.ctMarkResolver.getExtension(extension);
         if (!matchGrouping.isPresent()) {
             throw new CodecPreconditionException(extension);
         }
@@ -89,19 +89,19 @@ public class CtMarkConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
     private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(NxmNxCtMark value,
                                                                    MatchPath path, Class<? extends ExtensionKey> key) {
         switch (path) {
-            case FLOWS_STATISTICS_UPDATE_MATCH:
+            case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,
                         new NxAugMatchNodesNodeTableFlowBuilder().setNxmNxCtMark(value).build(), key);
-            case FLOWS_STATISTICS_RPC_MATCH:
+            case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH:
                 return new ExtensionAugment<>(NxAugMatchRpcGetFlowStats.class,
                         new NxAugMatchRpcGetFlowStatsBuilder().setNxmNxCtMark(value).build(), key);
-            case PACKET_RECEIVED_MATCH:
+            case PACKETRECEIVED_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNotifPacketIn.class, new NxAugMatchNotifPacketInBuilder()
                         .setNxmNxCtMark(value).build(), key);
-            case SWITCH_FLOW_REMOVED_MATCH:
+            case SWITCHFLOWREMOVED_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNotifSwitchFlowRemoved.class,
                         new NxAugMatchNotifSwitchFlowRemovedBuilder().setNxmNxCtMark(value).build(), key);
-            case PACKET_IN_MESSAGE_MATCH:
+            case PACKETINMESSAGE_MATCH:
                 return new ExtensionAugment<>(NxAugMatchPacketInMessage.class,
                         new NxAugMatchPacketInMessageBuilder().setNxmNxCtMark(value).build(), key);
             default:

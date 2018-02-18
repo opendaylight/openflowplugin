@@ -58,17 +58,15 @@ public class ArpThaConvertorTest {
                 .setNxmNxArpTha(nxArpThaBuilder.build());
         final Augmentation<Extension> extensionAugmentation = nxAugMatchRpcAddFlowBuilder.build();
 
-        when(extension.getAugmentation(Matchers.<Class<Augmentation<Extension>>>any()))
-            .thenReturn(extensionAugmentation);
+        when(extension.getAugmentation(Matchers.<Class<Augmentation<Extension>>>any())).thenReturn(extensionAugmentation);
 
         arpThaConvertor = new ArpThaConvertor();
     }
 
     @Test
     public void testConvertToOFJava() throws Exception {
-        final MatchEntry converted = arpThaConvertor.convert(extension);
-        Assert.assertEquals(MAC_ADDRESS.getValue(),
-                ((ArpThaCaseValue) converted.getMatchEntryValue()).getArpThaValues().getMacAddress().getValue());
+        final MatchEntry matchEntry = arpThaConvertor.convert(extension);
+        Assert.assertEquals(MAC_ADDRESS.getValue(), ((ArpThaCaseValue)matchEntry.getMatchEntryValue()).getArpThaValues().getMacAddress().getValue());
     }
 
     @Test
@@ -81,31 +79,22 @@ public class ArpThaConvertorTest {
 
         when(matchEntry.getMatchEntryValue()).thenReturn(arpThaCaseValue);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = arpThaConvertor.convert(matchEntry,
-                MatchPath.PACKET_RECEIVED_MATCH);
-        Assert.assertEquals(arpThaCaseValue.getArpThaValues().getMacAddress(),
-                ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmNxArpTha().getMacAddress());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = arpThaConvertor.convert(matchEntry, MatchPath.PACKETRECEIVED_MATCH);
+        Assert.assertEquals(arpThaCaseValue.getArpThaValues().getMacAddress(), ((NxAugMatchNotifPacketIn)extensionAugment.getAugmentationObject()).getNxmNxArpTha().getMacAddress());
         Assert.assertEquals(extensionAugment.getKey(), NxmNxArpThaKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = arpThaConvertor
-                .convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
-        Assert.assertEquals(arpThaCaseValue.getArpThaValues().getMacAddress(),
-                ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject()).getNxmNxArpTha()
-                        .getMacAddress());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = arpThaConvertor.convert(matchEntry, MatchPath.SWITCHFLOWREMOVED_MATCH);
+        Assert.assertEquals(arpThaCaseValue.getArpThaValues().getMacAddress(), ((NxAugMatchNotifSwitchFlowRemoved)extensionAugment1.getAugmentationObject()).getNxmNxArpTha().getMacAddress());
         Assert.assertEquals(extensionAugment.getKey(), NxmNxArpThaKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = arpThaConvertor
-                .convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
-        Assert.assertEquals(arpThaCaseValue.getArpThaValues().getMacAddress(),
-                ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject()).getNxmNxArpTha()
-                        .getMacAddress());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = arpThaConvertor.convert(matchEntry, MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
+        Assert.assertEquals(arpThaCaseValue.getArpThaValues().getMacAddress(), ((NxAugMatchNodesNodeTableFlow)extensionAugment2.getAugmentationObject()).getNxmNxArpTha().getMacAddress());
         Assert.assertEquals(extensionAugment.getKey(), NxmNxArpThaKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = arpThaConvertor
-                .convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
-        Assert.assertEquals(arpThaCaseValue.getArpThaValues().getMacAddress(),
-                ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject()).getNxmNxArpTha()
-                        .getMacAddress());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = arpThaConvertor.convert(matchEntry, MatchPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH);
+        Assert.assertEquals(arpThaCaseValue.getArpThaValues().getMacAddress(), ((NxAugMatchRpcGetFlowStats)extensionAugment3.getAugmentationObject()).getNxmNxArpTha().getMacAddress());
         Assert.assertEquals(extensionAugment.getKey(), NxmNxArpThaKey.class);
+
     }
+
 }

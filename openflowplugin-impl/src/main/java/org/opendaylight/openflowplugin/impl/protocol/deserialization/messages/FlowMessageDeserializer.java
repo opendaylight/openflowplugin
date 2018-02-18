@@ -41,7 +41,7 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
 
     private static final MessageCodeKey MATCH_KEY = new MessageCodeMatchKey(EncodeConstants.OF13_VERSION_ID,
             EncodeConstants.EMPTY_VALUE, Match.class,
-            MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
+            MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
 
     private DeserializerRegistry registry;
 
@@ -76,7 +76,7 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
             final int startIndex = message.readerIndex();
             int offset = 0;
 
-            while (message.readerIndex() - startIndex < length) {
+            while ((message.readerIndex() - startIndex) < length) {
                 final int type = message.getUnsignedShort(message.readerIndex());
                 OFDeserializer<Instruction> deserializer = null;
 
@@ -84,13 +84,13 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
                     deserializer = registry.getDeserializer(
                             new MessageCodeActionExperimenterKey(
                                 EncodeConstants.OF13_VERSION_ID, type, Instruction.class,
-                                ActionPath.INVENTORY_FLOWNODE_TABLE_APPLY_ACTIONS,
+                                ActionPath.NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION,
                                 null));
                 } else if (InstructionConstants.WRITE_ACTIONS_TYPE == type) {
                     deserializer = registry.getDeserializer(
                             new MessageCodeActionExperimenterKey(
                                 EncodeConstants.OF13_VERSION_ID, type, Instruction.class,
-                                ActionPath.INVENTORY_FLOWNODE_TABLE_WRITE_ACTIONS,
+                                ActionPath.NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION,
                                 null));
                 } else {
                     Long expId = null;
@@ -123,11 +123,11 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
     }
 
     private static FlowModFlags createFlowModFlagsFromBitmap(int input) {
-        final Boolean ofp_FF_SendFlowRem = (input & 1 << 0) > 0;
-        final Boolean ofp_FF_CheckOverlap = (input & 1 << 1) > 0;
-        final Boolean ofp_FF_ResetCounts = (input & 1 << 2) > 0;
-        final Boolean ofp_FF_NoPktCounts = (input & 1 << 3) > 0;
-        final Boolean ofp_FF_NoBytCounts = (input & 1 << 4) > 0;
+        final Boolean ofp_FF_SendFlowRem = (input & (1 << 0)) > 0;
+        final Boolean ofp_FF_CheckOverlap = (input & (1 << 1)) > 0;
+        final Boolean ofp_FF_ResetCounts = (input & (1 << 2)) > 0;
+        final Boolean ofp_FF_NoPktCounts = (input & (1 << 3)) > 0;
+        final Boolean ofp_FF_NoBytCounts = (input & (1 << 4)) > 0;
         return new FlowModFlags(ofp_FF_CheckOverlap, ofp_FF_NoBytCounts, ofp_FF_NoPktCounts, ofp_FF_ResetCounts,
                 ofp_FF_SendFlowRem);
     }

@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.openflow.md.core.extension;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
-
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Before;
@@ -50,9 +49,12 @@ public class MatchExtensionHelperTest {
     @Before
     public void setup() {
         OFSessionUtil.getSessionManager().setExtensionConverterProvider(extensionConverterProvider);
-        when(extensionConverterProvider.getConverter(key)).thenReturn((ConvertorFromOFJava<DataContainer, AugmentationPath>) (input, path) -> {
-            MockAugmentation mockAugmentation = new MockAugmentation();
-            return new ExtensionAugment<>(MockAugmentation.class, mockAugmentation, MockExtensionKey.class);
+        when(extensionConverterProvider.getConverter(key)).thenReturn(new ConvertorFromOFJava<DataContainer, AugmentationPath>() {
+            @Override
+            public ExtensionAugment<? extends Augmentation<Extension>> convert(final DataContainer input, final AugmentationPath path) {
+                MockAugmentation mockAugmentation = new MockAugmentation();
+                return new ExtensionAugment<MockAugmentation>(MockAugmentation.class, mockAugmentation, MockExtensionKey.class);
+            }
         });
     }
 
@@ -64,16 +66,13 @@ public class MatchExtensionHelperTest {
     public void testProcessAllExtensions() {
 
         List<MatchEntry> matchEntries = createMatchEntrieses();
-        AugmentTuple augmentTuple = MatchExtensionHelper.processAllExtensions(matchEntries, OpenflowVersion.OF13,
-                MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
+        AugmentTuple augmentTuple = MatchExtensionHelper.processAllExtensions(matchEntries, OpenflowVersion.OF13, MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
         assertNotNull(augmentTuple);
 
-        augmentTuple = MatchExtensionHelper.processAllExtensions(matchEntries, OpenflowVersion.OF13,
-                MatchPath.PACKET_RECEIVED_MATCH);
+        augmentTuple = MatchExtensionHelper.processAllExtensions(matchEntries, OpenflowVersion.OF13, MatchPath.PACKETRECEIVED_MATCH);
         assertNotNull(augmentTuple);
 
-        augmentTuple = MatchExtensionHelper.processAllExtensions(matchEntries, OpenflowVersion.OF13,
-                MatchPath.SWITCH_FLOW_REMOVED_MATCH);
+        augmentTuple = MatchExtensionHelper.processAllExtensions(matchEntries, OpenflowVersion.OF13, MatchPath.SWITCHFLOWREMOVED_MATCH);
         assertNotNull(augmentTuple);
     }
 

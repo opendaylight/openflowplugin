@@ -16,14 +16,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
 /**
- * Unit tests for TypeVersionKey.
- *
  * @author michal.polkorab
+ *
  */
 public class TypeVersionKeyTest {
 
     /**
-     * Tests {@link TypeVersionKey#equals(Object)} and {@link TypeVersionKey#hashCode()}.
+     * Tests {@link TypeVersionKey#equals(Object)} and {@link TypeVersionKey#hashCode()}
      */
     @Test
     public void test() {

@@ -42,8 +42,8 @@ public class OnfExtensionProvider {
     private final SwitchConnectionProvider switchConnectionProvider;
     private final ExtensionConverterRegistrator converterRegistrator;
 
-    private static final BundleControlConverter BUNDLE_CONTROL_CONVERTER = new BundleControlConverter();
-    private static final BundleAddMessageConverter BUNDLE_ADD_MESSAGE_CONVERTER = new BundleAddMessageConverter();
+    private static final BundleControlConverter bundleControlConverter = new BundleControlConverter();
+    private static final BundleAddMessageConverter bundleAddMessageConverter = new BundleAddMessageConverter();
 
     public OnfExtensionProvider(final SwitchConnectionProvider switchConnectionProvider,
                                 final OpenFlowPluginExtensionRegistratorProvider converterRegistrator) {
@@ -95,15 +95,13 @@ public class OnfExtensionProvider {
 
     private void registerConverters() {
         converterRegistrator.registerMessageConvertor(
-                new TypeVersionKey<>(BundleControlSal.class, OFConstants.OFP_VERSION_1_3), BUNDLE_CONTROL_CONVERTER);
+                new TypeVersionKey<>(BundleControlSal.class, OFConstants.OFP_VERSION_1_3), bundleControlConverter);
         converterRegistrator.registerMessageConvertor(
-                new MessageTypeKey<>(OFConstants.OFP_VERSION_1_3, BundleControlOnf.class), BUNDLE_CONTROL_CONVERTER);
+                new MessageTypeKey<>(OFConstants.OFP_VERSION_1_3, BundleControlOnf.class), bundleControlConverter);
         converterRegistrator.registerMessageConvertor(
-                new TypeVersionKey<>(BundleAddMessageSal.class, OFConstants.OFP_VERSION_1_3),
-                    BUNDLE_ADD_MESSAGE_CONVERTER);
+                new TypeVersionKey<>(BundleAddMessageSal.class, OFConstants.OFP_VERSION_1_3), bundleAddMessageConverter);
         converterRegistrator.registerMessageConvertor(
-                new MessageTypeKey<>(OFConstants.OFP_VERSION_1_3, BundleAddMessageOnf.class),
-                    BUNDLE_ADD_MESSAGE_CONVERTER);
+                new MessageTypeKey<>(OFConstants.OFP_VERSION_1_3, BundleAddMessageOnf.class), bundleAddMessageConverter);
     }
 
 }

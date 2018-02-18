@@ -27,12 +27,10 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
  */
 public class GroupingLooseResolver<G> {
 
-    private final Class<G> commonInterface;
-    private final Set<Class<? extends Augmentation<?>>> classes;
+    private Class<G> commonInterface;
+    private Set<Class<? extends Augmentation<?>>> classes;
 
     /**
-     * Constructor.
-     *
      * @param commonInterface common interface
      */
     public GroupingLooseResolver(Class<G> commonInterface) {
@@ -41,8 +39,7 @@ public class GroupingLooseResolver<G> {
     }
 
     /**
-     * Get augmentation classes.
-     *
+     * Get augmentation classes
      * @return list of augmentation classes
      */
     public Set<Class<? extends Augmentation<?>>> getClasses() {
@@ -50,8 +47,6 @@ public class GroupingLooseResolver<G> {
     }
 
     /**
-     * Adds an augmentation class.
-     *
      * @param cls equivalent augmentation class
      * @return this for chaining
      */
@@ -63,8 +58,6 @@ public class GroupingLooseResolver<G> {
     }
 
     /**
-     * Gets the extension for the give data.
-     *
      * @param data expected to match <tt>&lt;T extends Augmentable&lt;T&gt;&gt;</tt>
      * @return shared grouping
      */
@@ -82,4 +75,5 @@ public class GroupingLooseResolver<G> {
 
         return Optional.empty();
     }
+
 }

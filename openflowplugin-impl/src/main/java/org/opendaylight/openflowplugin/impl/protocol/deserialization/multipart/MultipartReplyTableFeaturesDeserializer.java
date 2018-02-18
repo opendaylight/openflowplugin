@@ -283,7 +283,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
 
         final int startIndex = message.readerIndex();
 
-        while (message.readerIndex() - startIndex < length) {
+        while ((message.readerIndex() - startIndex) < length) {
             MATCH_FIELD_DESERIALIZER
                     .deserialize(message)
                     .map(matchFields::add)
@@ -316,7 +316,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
         final int startIndex = message.readerIndex();
         int offset = 0;
 
-        while (message.readerIndex() - startIndex < length) {
+        while ((message.readerIndex() - startIndex) < length) {
             try {
                 instructions.add(new InstructionBuilder()
                         .setKey(new InstructionKey(offset))
@@ -340,13 +340,14 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
         final int startIndex = message.readerIndex();
         int offset = 0;
 
-        while (message.readerIndex() - startIndex < length) {
+        while ((message.readerIndex() - startIndex) < length) {
             try {
                 actions.add(new ActionBuilder()
                         .setKey(new ActionKey(offset))
                         .setOrder(offset)
                         .setAction(ActionUtil.readActionHeader(EncodeConstants.OF13_VERSION_ID, message, registry,
-                                ActionPath.FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS))
+                                ActionPath
+                                        .FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION))
                         .build());
 
                 offset++;

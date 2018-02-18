@@ -38,21 +38,60 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yangtools.yang.binding.Augmentation;
 
 /**
- * Convert to/from SAL flow model to openflowjava model for TunIdCase.
- *
  * @author msunal
  */
 public class TunIdConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava#convert
+     * (org.opendaylight.yangtools.yang.binding.DataContainer,
+     * org.opendaylight.openflowplugin.extension.api.path.AugmentationPath)
+     */
     @Override
     public ExtensionAugment<? extends Augmentation<Extension>> convert(final MatchEntry input, final MatchPath path) {
-        TunIdCaseValue tunnelIdCase = (TunIdCaseValue) input.getMatchEntryValue();
-        return resolveAugmentation(new NxmNxTunIdBuilder().setValue(tunnelIdCase.getTunIdValues().getValue()).build(),
-                path, NxmNxTunIdKey.class);
+        TunIdCaseValue tunnelIdCase = ((TunIdCaseValue) input.getMatchEntryValue());
+        return resolveAugmentation(new NxmNxTunIdBuilder().setValue(tunnelIdCase.getTunIdValues().getValue()).build(), path,
+                NxmNxTunIdKey.class);
     }
 
+    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmNxTunId value,
+                                                                                           final MatchPath path, final Class<? extends ExtensionKey> key) {
+        switch (path) {
+            case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH:
+                return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,
+                        new NxAugMatchNodesNodeTableFlowBuilder().setNxmNxTunId(value).build(), key);
+            case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH:
+                return new ExtensionAugment<>(NxAugMatchRpcGetFlowStats.class,
+                        new NxAugMatchRpcGetFlowStatsBuilder().setNxmNxTunId(value).build(), key);
+            case PACKETRECEIVED_MATCH:
+                return new ExtensionAugment<>(NxAugMatchNotifPacketIn.class, new NxAugMatchNotifPacketInBuilder()
+                        .setNxmNxTunId(value).build(), key);
+            case SWITCHFLOWREMOVED_MATCH:
+                return new ExtensionAugment<>(NxAugMatchNotifSwitchFlowRemoved.class,
+                        new NxAugMatchNotifSwitchFlowRemovedBuilder().setNxmNxTunId(value).build(), key);
+            case PACKETINMESSAGE_MATCH:
+                return new ExtensionAugment<>(NxAugMatchPacketInMessage.class,
+                        new NxAugMatchPacketInMessageBuilder().setNxmNxTunId(value).build(), key);
+            default:
+                throw new CodecPreconditionException(path);
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava#convert
+     * (org
+     * .opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general
+     * .rev140714.general.extension.grouping.Extension)
+     */
     @Override
     public MatchEntry convert(final Extension extension) {
-        Optional<NxmNxTunIdGrouping> matchGrouping = MatchUtil.TUN_ID_RESOLVER.getExtension(extension);
+        Optional<NxmNxTunIdGrouping> matchGrouping = MatchUtil.tunIdResolver.getExtension(extension);
         if (!matchGrouping.isPresent()) {
             throw new CodecPreconditionException(extension);
         }
@@ -64,32 +103,10 @@ public class TunIdConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorF
         tunnelIdBuilder.setValue(value);
         tunnelIdCaseBuilder.setTunIdValues(tunnelIdBuilder.build());
 
-        return MatchUtil.createDefaultMatchEntryBuilder(
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxTunId.class,
-                Nxm1Class.class, tunnelIdCaseBuilder.build()).build();
+        return MatchUtil.createDefaultMatchEntryBuilder(org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxTunId.class,
+                Nxm1Class.class,
+                tunnelIdCaseBuilder.build()).build();
 
     }
 
-    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmNxTunId value,
-            final MatchPath path, final Class<? extends ExtensionKey> key) {
-        switch (path) {
-            case FLOWS_STATISTICS_UPDATE_MATCH:
-                return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,
-                        new NxAugMatchNodesNodeTableFlowBuilder().setNxmNxTunId(value).build(), key);
-            case FLOWS_STATISTICS_RPC_MATCH:
-                return new ExtensionAugment<>(NxAugMatchRpcGetFlowStats.class,
-                        new NxAugMatchRpcGetFlowStatsBuilder().setNxmNxTunId(value).build(), key);
-            case PACKET_RECEIVED_MATCH:
-                return new ExtensionAugment<>(NxAugMatchNotifPacketIn.class, new NxAugMatchNotifPacketInBuilder()
-                        .setNxmNxTunId(value).build(), key);
-            case SWITCH_FLOW_REMOVED_MATCH:
-                return new ExtensionAugment<>(NxAugMatchNotifSwitchFlowRemoved.class,
-                        new NxAugMatchNotifSwitchFlowRemovedBuilder().setNxmNxTunId(value).build(), key);
-            case PACKET_IN_MESSAGE_MATCH:
-                return new ExtensionAugment<>(NxAugMatchPacketInMessage.class,
-                        new NxAugMatchPacketInMessageBuilder().setNxmNxTunId(value).build(), key);
-            default:
-                throw new CodecPreconditionException(path);
-        }
-    }
 }

@@ -51,13 +51,11 @@ public class CtZoneConvertorTest {
 
         final NxmNxCtZoneBuilder nxmNxCtZoneBuilder = new NxmNxCtZoneBuilder()
                 .setCtZone(1);
-        final NxAugMatchNodesNodeTableFlowBuilder nxAugMatchNotifUpdateFlowStatsBuilder =
-                new NxAugMatchNodesNodeTableFlowBuilder();
+        final NxAugMatchNodesNodeTableFlowBuilder nxAugMatchNotifUpdateFlowStatsBuilder = new NxAugMatchNodesNodeTableFlowBuilder();
         nxAugMatchNotifUpdateFlowStatsBuilder.setNxmNxCtZone(nxmNxCtZoneBuilder.build());
 
         final Augmentation<Extension> extensionAugmentation = nxAugMatchNotifUpdateFlowStatsBuilder.build();
-        when(extension.getAugmentation(Matchers.<Class<Augmentation<Extension>>>any()))
-            .thenReturn(extensionAugmentation);
+        when(extension.getAugmentation(Matchers.<Class<Augmentation<Extension>>>any())).thenReturn(extensionAugmentation);
 
         ctZoneConvertor = new CtZoneConvertor();
 
@@ -65,9 +63,8 @@ public class CtZoneConvertorTest {
 
     @Test
     public void testConvert() throws Exception {
-        final MatchEntry converted = ctZoneConvertor.convert(extension);
-        Assert.assertEquals(1L,
-                ((CtZoneCaseValue) converted.getMatchEntryValue()).getCtZoneValues().getCtZone().longValue());
+        final MatchEntry matchEntry = ctZoneConvertor.convert(extension);
+        Assert.assertEquals(1L, ((CtZoneCaseValue)matchEntry.getMatchEntryValue()).getCtZoneValues().getCtZone().longValue());
     }
 
     @Test
@@ -81,28 +78,22 @@ public class CtZoneConvertorTest {
 
         when(matchEntry.getMatchEntryValue()).thenReturn(ctZoneCaseValue);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = ctZoneConvertor.convert(matchEntry,
-                MatchPath.PACKET_RECEIVED_MATCH);
-        Assert.assertEquals(2L, ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmNxCtZone()
-                .getCtZone().longValue());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = ctZoneConvertor.convert(matchEntry, MatchPath.PACKETRECEIVED_MATCH);
+        Assert.assertEquals(2L, ((NxAugMatchNotifPacketIn)extensionAugment.getAugmentationObject()).getNxmNxCtZone().getCtZone().longValue());
         Assert.assertEquals(extensionAugment.getKey(), NxmNxCtZoneKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = ctZoneConvertor
-                .convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
-        Assert.assertEquals(2L, ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
-                .getNxmNxCtZone().getCtZone().longValue());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = ctZoneConvertor.convert(matchEntry, MatchPath.SWITCHFLOWREMOVED_MATCH);
+        Assert.assertEquals(2L, ((NxAugMatchNotifSwitchFlowRemoved)extensionAugment1.getAugmentationObject()).getNxmNxCtZone().getCtZone().longValue());
         Assert.assertEquals(extensionAugment.getKey(), NxmNxCtZoneKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = ctZoneConvertor
-                .convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
-        Assert.assertEquals(2L, ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
-                .getNxmNxCtZone().getCtZone().longValue());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = ctZoneConvertor.convert(matchEntry, MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
+        Assert.assertEquals(2L, ((NxAugMatchNodesNodeTableFlow)extensionAugment2.getAugmentationObject()).getNxmNxCtZone().getCtZone().longValue());
         Assert.assertEquals(extensionAugment.getKey(), NxmNxCtZoneKey.class);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = ctZoneConvertor
-                .convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
-        Assert.assertEquals(2L, ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject()).getNxmNxCtZone()
-                .getCtZone().longValue());
+        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = ctZoneConvertor.convert(matchEntry, MatchPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH);
+        Assert.assertEquals(2L, ((NxAugMatchRpcGetFlowStats)extensionAugment3.getAugmentationObject()).getNxmNxCtZone().getCtZone().longValue());
         Assert.assertEquals(extensionAugment.getKey(), NxmNxCtZoneKey.class);
+
     }
+
 }

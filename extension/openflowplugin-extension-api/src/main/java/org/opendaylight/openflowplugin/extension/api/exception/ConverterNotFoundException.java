@@ -9,7 +9,7 @@
 package org.opendaylight.openflowplugin.extension.api.exception;
 
 /**
- * For case when converter is not available.
+ * For case when converter is not available
  */
 public class ConverterNotFoundException extends ConversionException {
 
