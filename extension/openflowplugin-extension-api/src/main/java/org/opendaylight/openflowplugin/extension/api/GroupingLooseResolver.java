@@ -14,6 +14,8 @@ import java.util.Set;
 import org.opendaylight.yangtools.yang.binding.Augmentable;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides augmentation resolving upon given {@link Augmentable}.
@@ -26,6 +28,7 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
  * @param <G> grouping
  */
 public class GroupingLooseResolver<G> {
+    private static final Logger LOG = LoggerFactory.getLogger(GroupingLooseResolver.class);
 
     private final Class<G> commonInterface;
     private final Set<Class<? extends Augmentation<?>>> classes;
@@ -70,7 +73,17 @@ public class GroupingLooseResolver<G> {
      */
     @SuppressWarnings("unchecked")
     public <T extends Augmentable<T>> Optional<G> getExtension(DataObject data) {
-        T guessData = (T) data;
+        // The type of 'data' should really be T for compile-time checking. Several call sites do not pass an
+        // Augmentable DataObject type which would result in a ClassCastException at runtime. This is clearly
+        // broken - those call sites need to be analyzed to determine the correct behavior in order for this method
+        // signature to be changed but for now catch ClassCastException.
+        T guessData;
+        try {
+            guessData = (T) data;
+        } catch (ClassCastException e) {
+            LOG.warn("Cannot cast to Augmentable", e);
+            return Optional.empty();
+        }
 
         for (Class<? extends Augmentation<?>> cls : classes) {
             Augmentation<T> potential = guessData
