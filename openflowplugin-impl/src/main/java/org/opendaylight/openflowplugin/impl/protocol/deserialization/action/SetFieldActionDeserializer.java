@@ -29,7 +29,7 @@ public class SetFieldActionDeserializer extends AbstractActionDeserializer
             EncodeConstants.OF13_VERSION_ID,
             EncodeConstants.EMPTY_LENGTH,
             Match.class,
-            MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
+            MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
 
     private DeserializerRegistry registry;
 

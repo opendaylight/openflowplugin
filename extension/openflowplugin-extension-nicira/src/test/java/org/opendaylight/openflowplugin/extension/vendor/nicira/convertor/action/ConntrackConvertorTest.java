@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,6 +35,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.actions.NxActionNatCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.actions.nx.action.nat._case.NxActionNat;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.actions.nx.action.nat._case.NxActionNatBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Test for {@link ConntrackConvertor}.
@@ -87,7 +90,7 @@ public class ConntrackConvertorTest {
         NxActionNat natactionCase = ((NxActionNatCase) actionsCase.getNxConntrack().getCtActions().get(0)
                 .getOfpactActions()).getNxActionNat();
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions
-            .nx.action.nat._case.NxActionNat nataction = ((org.opendaylight
+            .nx.action.nat._case.NxActionNat nataction = ( (org.opendaylight
                     .yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions
                     .NxActionNatCase) actionConntrack.getNxActionConntrack().getCtActions().get(0).getOfpactActions())
             .getNxActionNat();
@@ -140,17 +143,17 @@ public class ConntrackConvertorTest {
         final Action groupingAction = actionBuilder.build();
 
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action
-                = conntrackConvertor.convert(groupingAction, ActionPath.INVENTORY_FLOWNODE_TABLE_WRITE_ACTIONS);
+                = conntrackConvertor.convert(groupingAction, ActionPath.NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action1
-                = conntrackConvertor.convert(groupingAction, ActionPath.FLOWS_STATISTICS_UPDATE_WRITE_ACTIONS);
+                = conntrackConvertor.convert(groupingAction, ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action2
-                = conntrackConvertor.convert(groupingAction, ActionPath.FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS);
+                = conntrackConvertor.convert(groupingAction, ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action3
-                = conntrackConvertor.convert(groupingAction, ActionPath.GROUP_DESC_STATS_UPDATED_BUCKET_ACTION);
+                = conntrackConvertor.convert(groupingAction, ActionPath.GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action4
-                = conntrackConvertor.convert(groupingAction, ActionPath.FLOWS_STATISTICS_RPC_WRITE_ACTIONS);
+                = conntrackConvertor.convert(groupingAction, ActionPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action5
-                = conntrackConvertor.convert(groupingAction, ActionPath.FLOWS_STATISTICS_RPC_APPLY_ACTIONS);
+                = conntrackConvertor.convert(groupingAction, ActionPath.RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION);
 
         Assert.assertEquals(1, ((NxActionConntrackNodesNodeTableFlowWriteActionsCase) action).getNxConntrack()
                 .getConntrackZone().longValue());

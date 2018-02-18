@@ -45,13 +45,15 @@ public final class InstructionUtil {
             deserializer = registry.getDeserializer(
                     new MessageCodeActionExperimenterKey(
                             version, type, Instruction.class,
-                            ActionPath.FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS,
+                            ActionPath
+                                    .FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION,
                             null));
         } else if (InstructionConstants.WRITE_ACTIONS_TYPE == type) {
             deserializer = registry.getDeserializer(
                     new MessageCodeActionExperimenterKey(
                             version, type, Instruction.class,
-                            ActionPath.FLOWS_STATISTICS_UPDATE_WRITE_ACTIONS,
+                            ActionPath
+                                    .FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION,
                             null));
         } else {
             Long expId = null;
@@ -86,13 +88,15 @@ public final class InstructionUtil {
             deserializer = registry.getDeserializer(
                     new MessageCodeActionExperimenterKey(
                             version, type, Instruction.class,
-                            ActionPath.INVENTORY_FLOWNODE_TABLE_APPLY_ACTIONS,
+                            ActionPath
+                                    .NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION,
                             null));
         } else if (InstructionConstants.WRITE_ACTIONS_TYPE == type) {
             deserializer = registry.getDeserializer(
                     new MessageCodeActionExperimenterKey(
                             version, type, Instruction.class,
-                            ActionPath.INVENTORY_FLOWNODE_TABLE_WRITE_ACTIONS,
+                            ActionPath
+                                    .NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION,
                             null));
         } else {
             Long expId = null;

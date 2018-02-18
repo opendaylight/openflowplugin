@@ -11,20 +11,19 @@ package org.opendaylight.openflowplugin.extension.api;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 
 /**
- * Interface for bundle data injection.
+ * Interface for bundle data injection
  */
 public interface BundleMessageDataInjector {
     /**
-     * Set xid.
-     *
+     * Set xid
      * @param xid request id
      */
     void setXid(long xid);
 
     /**
-     * Set node id.
-     *
+     * Set node id
      * @param node node id
      */
     void setNode(NodeRef node);
+
 }

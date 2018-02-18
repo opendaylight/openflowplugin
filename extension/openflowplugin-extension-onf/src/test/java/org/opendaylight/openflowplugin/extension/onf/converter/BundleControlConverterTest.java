@@ -103,17 +103,14 @@ public class BundleControlConverterTest {
                     .getBundleProperty()
                     .get(0)
                     .getBundlePropertyEntry();
-            final BundlePropertyExperimenter convertedProperty = (BundlePropertyExperimenter) ofjMessage
+            final BundlePropertyExperimenter convertedProperty = ((BundlePropertyExperimenter) ofjMessage
                     .getOnfControlGroupingData()
                     .getBundleProperty()
                     .get(0)
-                    .getBundlePropertyEntry();
-            Assert.assertEquals("Wrong property ExperimenterId", new ExperimenterId(originalProperty.getExperimenter()),
-                    convertedProperty.getExperimenter());
-            Assert.assertEquals("Wrong property experimenter type", originalProperty.getExpType(),
-                    convertedProperty.getExpType());
-            Assert.assertEquals("Wrong property data", originalProperty.getBundlePropertyExperimenterData(),
-                    convertedProperty.getBundlePropertyExperimenterData());
+                    .getBundlePropertyEntry());
+            Assert.assertEquals("Wrong property ExperimenterId", new ExperimenterId(originalProperty.getExperimenter()), convertedProperty.getExperimenter());
+            Assert.assertEquals("Wrong property experimenter type", originalProperty.getExpType(), convertedProperty.getExpType());
+            Assert.assertEquals("Wrong property data", originalProperty.getBundlePropertyExperimenterData(), convertedProperty.getBundlePropertyExperimenterData());
         } else {
             Assert.assertTrue("Properties not empty",
                     ofjMessage
@@ -130,8 +127,7 @@ public class BundleControlConverterTest {
         dataBuilder.setFlags(new BundleFlags(true, false));
         List<BundleProperty> properties = new ArrayList<>();
         if (withProperty) {
-            properties.add(BundleTestUtils.createExperimenterProperty(
-                    Mockito.mock(BundlePropertyExperimenterData.class)));
+            properties.add(BundleTestUtils.createExperimenterProperty(Mockito.mock(BundlePropertyExperimenterData.class)));
         }
         dataBuilder.setBundleProperty(properties);
         return new BundleControlSalBuilder().setSalControlData(dataBuilder.build()).build();
@@ -145,10 +141,10 @@ public class BundleControlConverterTest {
         dataBuilder.setFlags(new BundleFlags(false, false));
         List<BundleProperty> properties = new ArrayList<>();
         if (withProperty) {
-            properties.add(BundleTestUtils.createExperimenterProperty(
-                    Mockito.mock(BundlePropertyExperimenterData.class)));
+            properties.add(BundleTestUtils.createExperimenterProperty(Mockito.mock(BundlePropertyExperimenterData.class)));
         }
         dataBuilder.setBundleProperty(properties);
         return new BundleControlOnfBuilder().setOnfControlGroupingData(dataBuilder.build()).build();
     }
+
 }

@@ -9,8 +9,8 @@ package org.opendaylight.openflowplugin.extension.api;
 
 
 /**
- * Lookup and register key for extension converters, basic case expects this to
- * correlate with input model type.
+ * lookup and register key for extension converters, basic case expects this to
+ * correlate with input model type
  *
  * @param <T> type of key
  */
@@ -25,7 +25,7 @@ public class TypeVersionKey<T> {
     }
 
     /**
-     * Returns the key type.
+     * @return key type
      */
     public Class<? extends T> getType() {
         return type;
@@ -69,4 +69,5 @@ public class TypeVersionKey<T> {
     public String toString() {
         return getClass().getSimpleName() + " [type=" + type + ", ofVersion=" + ofVersion + "]";
     }
+
 }

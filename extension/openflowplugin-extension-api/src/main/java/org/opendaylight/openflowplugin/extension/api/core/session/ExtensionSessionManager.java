@@ -13,14 +13,13 @@ import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionCon
 public interface ExtensionSessionManager {
 
     /**
-     * Sets the ExtensionConverterProvider.
-     *
      * @param extensionConverterProvider extension converter provider
      */
     void setExtensionConverterProvider(ExtensionConverterProvider extensionConverterProvider);
 
     /**
-     * Returns the ExtensionConverterProvider.
+     * @return extensionConverterProvider
      */
     ExtensionConverterProvider getExtensionConverterProvider();
+
 }

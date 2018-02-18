@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
- *
+ * 
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -11,9 +11,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
- * Enumerates the extension action paths.
- *
  * @author msunal
+ *
  */
 public enum ActionPath implements AugmentationPath {
 
@@ -34,8 +33,7 @@ public enum ActionPath implements AugmentationPath {
      *          |  |  |        |        +--rw (action)?
      * </pre>
      */
-    INVENTORY_FLOWNODE_TABLE_WRITE_ACTIONS(null),
-
+    NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION(null),
     /**
      * openflowplugin-extension-general.yang
      * <pre>
@@ -51,17 +49,16 @@ public enum ActionPath implements AugmentationPath {
      *          |  |  |        |  +--rw flownode:apply-actions
      *          |  |  |        |     +--rw flownode:action* [order]
      *          |  |  |        |        +--rw (action)?
-     *
+     * 
      * </pre>
      */
-    INVENTORY_FLOWNODE_TABLE_APPLY_ACTIONS(null),
-
+    NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION(null),
     /**
      * openflowplugin-extension-general.yang
      * <pre>
      * module: opendaylight-flow-statistics
      * notifications:
-     *    +---n flows-statistics-update
+     *    +---n flows-statistics-update             
      *    |  +--ro flow-and-statistics-map-list* [flow-id]
      *    |  |  +--ro instructions
      *    |  |  |  +--ro instruction* [order]
@@ -72,14 +69,13 @@ public enum ActionPath implements AugmentationPath {
      *    |  |  |        |        +--ro (action)?
      * </pre>
      */
-    FLOWS_STATISTICS_UPDATE_WRITE_ACTIONS(null),
-
+    FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION(null),
     /**
      * openflowplugin-extension-general.yang
      * <pre>
      * module: opendaylight-flow-statistics
      * notifications:
-     *    +---n flows-statistics-update
+     *    +---n flows-statistics-update             
      *    |  +--ro flow-and-statistics-map-list* [flow-id]
      *    |  |  +--ro instructions
      *    |  |  |  +--ro instruction* [order]
@@ -90,14 +86,13 @@ public enum ActionPath implements AugmentationPath {
      *    |  |  |        |        +--ro (action)?
      * </pre>
      */
-    FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS(null),
-
+    FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION(null),
     /**
      * openflowplugin-extension-general.yang
      * <pre>
      * module: opendaylight-group-statistics
      * notifications:
-     *    +---n group-desc-stats-updated
+     *    +---n group-desc-stats-updated    
      *    |  +--ro group-desc-stats* [group-id]
      *    |  |  +--ro buckets
      *    |  |     +--ro bucket* [bucket-id]
@@ -105,8 +100,7 @@ public enum ActionPath implements AugmentationPath {
      *    |  |           +--ro (action)?
      * </pre>
      */
-    GROUP_DESC_STATS_UPDATED_BUCKET_ACTION(null),
-
+    GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION(null),
     /**
      * openflowplugin-extension-general.yang
      * <pre>
@@ -123,8 +117,7 @@ public enum ActionPath implements AugmentationPath {
      *    |  |  |        |        +--ro (action)?
      * </pre>
      */
-    FLOWS_STATISTICS_RPC_WRITE_ACTIONS(null),
-
+    RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION(null),
     /**
      * openflowplugin-extension-general.yang
      * <pre>
@@ -141,11 +134,11 @@ public enum ActionPath implements AugmentationPath {
      *    |  |  |        |        +--ro (action)?
      * </pre>
      */
-    FLOWS_STATISTICS_RPC_APPLY_ACTIONS(null);
+    RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION(null);
 
     private final InstanceIdentifier<Extension> iid;
 
-    ActionPath(InstanceIdentifier<Extension> iid) {
+    private ActionPath(InstanceIdentifier<Extension> iid) {
         this.iid = iid;
     }
 
@@ -153,4 +146,5 @@ public enum ActionPath implements AugmentationPath {
     public final InstanceIdentifier<Extension> getInstanceIdentifier() {
         return iid;
     }
+
 }

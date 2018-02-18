@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
- *
+ * 
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -9,20 +9,18 @@ package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import java.util.List;
-import java.util.ListIterator;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 
+import java.util.List;
+import java.util.ListIterator;
+
 /**
- * IP conversion utilities.
- *
  * @author msunal
+ *
  */
 public final class IpConverter {
-    private IpConverter() {
-    }
 
-    public static long ipv4AddressToLong(Ipv4Address ipv4Address) {
+    public static long Ipv4AddressToLong(Ipv4Address ipv4Address) {
         long result = 0 ;
         Iterable<String> splitted = Splitter.on('.')
                 .trimResults()
@@ -32,10 +30,10 @@ public final class IpConverter {
         List<String> splittedAddress = Lists.newArrayList(splitted.iterator());
         int maxIndex = splittedAddress.size() - 1;
         ListIterator<String> listIter = splittedAddress.listIterator();
-        while (listIter.hasNext()) {
+        while(listIter.hasNext()) {
             String current = listIter.next();
-            int index = splittedAddress.indexOf(current);
-            result |= Long.parseLong(current) << (maxIndex - index) * 8;
+            int i = splittedAddress.indexOf(current);
+            result |= (Long.parseLong(current) << ((maxIndex-i) * 8));
         }
         return result & 0xFFFFFFFF;
     }

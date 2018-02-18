@@ -40,6 +40,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.statistics.types.rev130925.duration.DurationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.multipart.reply.flow.FlowStats;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
  * Converts flow related statistics messages coming from openflow switch to MD-SAL messages.
@@ -68,7 +69,7 @@ public class FlowStatsResponseConvertor extends Convertor<List<FlowStats>, List<
                                                       final short version,
                                                       final Short ipProtocol) {
         ActionResponseConvertorData actionResponseConvertorData = new ActionResponseConvertorData(version);
-        actionResponseConvertorData.setActionPath(ActionPath.FLOWS_STATISTICS_UPDATE_WRITE_ACTIONS);
+        actionResponseConvertorData.setActionPath(ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION);
         actionResponseConvertorData.setIpProtocol(ipProtocol);
 
         InstructionsBuilder instructionsBuilder = new InstructionsBuilder();

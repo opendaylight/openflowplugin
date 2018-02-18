@@ -34,8 +34,8 @@ public abstract class AbstractBundleMessageFactory<T extends DataContainer> impl
     protected SerializerRegistry serializerRegistry;
 
     @Override
-    public void injectSerializerRegistry(SerializerRegistry registry) {
-        this.serializerRegistry = registry;
+    public void injectSerializerRegistry(SerializerRegistry serializerRegistry) {
+        this.serializerRegistry = serializerRegistry;
     }
 
     static void writeBundleFlags(final BundleFlags bundleFlags, final ByteBuf outBuffer) {
@@ -47,12 +47,11 @@ public abstract class AbstractBundleMessageFactory<T extends DataContainer> impl
         for (BundleProperty property : properties) {
             BundlePropertyType type = property.getType();
             if (type != null && type.equals(BundlePropertyType.ONFETBPTEXPERIMENTER)) {
-                final int startIndex = outBuffer.writerIndex();
+                int startIndex = outBuffer.writerIndex();
                 outBuffer.writeShort(type.getIntValue());
                 int lengthIndex = outBuffer.writerIndex();
                 outBuffer.writeShort(EncodeConstants.EMPTY_LENGTH);
-                writeBundleExperimenterProperty((BundlePropertyExperimenter)property.getBundlePropertyEntry(),
-                        outBuffer);
+                writeBundleExperimenterProperty((BundlePropertyExperimenter)property.getBundlePropertyEntry(), outBuffer);
                 outBuffer.setShort(lengthIndex, outBuffer.writerIndex() - startIndex);
             } else {
                 LOG.warn("Trying to serialize unknown bundle property (type: {}), skipping",
@@ -74,13 +73,14 @@ public abstract class AbstractBundleMessageFactory<T extends DataContainer> impl
 
     private static short fillBitMask(final boolean... values) {
         short bitmask = 0;
-        short index = 0;
+        short i = 0;
         for (boolean v : values) {
             if (v) {
-                bitmask |= 1 << index;
+                bitmask |= 1 << i;
             }
-            ++index;
+            ++i;
         }
         return bitmask;
     }
+
 }

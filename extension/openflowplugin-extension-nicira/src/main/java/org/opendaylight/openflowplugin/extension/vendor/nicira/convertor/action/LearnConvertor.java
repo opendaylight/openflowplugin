@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action;
 
-import com.google.common.base.Preconditions;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
@@ -29,27 +28,47 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.learn.grouping.NxLearn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.learn.grouping.NxLearnBuilder;
 
+import com.google.common.base.Preconditions;
+
 /**
- * Convert to/from SAL flow model to openflowjava model for NxLearn action.
- *
  * @author Slava Radune
  */
+
 public class LearnConvertor implements
-        ConvertorActionToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action,
-            Action>, ConvertorActionFromOFJava<Action, ActionPath> {
+        ConvertorActionToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, Action>,
+        ConvertorActionFromOFJava<Action, ActionPath> {
 
     @Override
-    public org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action convert(
-            final Action input, final ActionPath path) {
+    public org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action convert(final Action input, final ActionPath path) {
         NxActionLearn action = ((ActionLearn) input.getActionChoice()).getNxActionLearn();
         NxLearnBuilder builder = new NxLearnBuilder();
         LearnConvertorUtil.convertUp(action, builder);
         return resolveAction(builder.build(), path);
     }
 
+    private static org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action resolveAction(final NxLearn value, final ActionPath path) {
+        switch (path) {
+            case NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION:
+                return new NxActionLearnNodesNodeTableFlowWriteActionsCaseBuilder().setNxLearn(value).build();
+            case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION:
+                return new NxActionLearnNotifFlowsStatisticsUpdateWriteActionsCaseBuilder().setNxLearn(value).build();
+            case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION:
+                return new NxActionLearnNotifFlowsStatisticsUpdateApplyActionsCaseBuilder().setNxLearn(value).build();
+            case GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION:
+                return new NxActionLearnNotifGroupDescStatsUpdatedCaseBuilder().setNxLearn(value).build();
+            case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION:
+                return new NxActionLearnNotifDirectStatisticsUpdateWriteActionsCaseBuilder().setNxLearn(value).build();
+            case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION:
+                return new NxActionLearnNotifDirectStatisticsUpdateApplyActionsCaseBuilder().setNxLearn(value).build();
+            case NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION:
+                return new NxActionLearnNodesNodeTableFlowApplyActionsCaseBuilder().setNxLearn(value).build();
+            default:
+                throw new CodecPreconditionException(path);
+        }
+    }
+
     @Override
-    public Action convert(
-            final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action nxActionArg) {
+    public Action convert(final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action nxActionArg) {
         Preconditions.checkArgument(nxActionArg instanceof NxActionLearnGrouping);
         NxActionLearnGrouping nxAction = (NxActionLearnGrouping) nxActionArg;
 
@@ -60,25 +79,4 @@ public class LearnConvertor implements
         return ActionUtil.createAction(actionLearnBuilder.build());
     }
 
-    private static org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action resolveAction(
-            final NxLearn value, final ActionPath path) {
-        switch (path) {
-            case INVENTORY_FLOWNODE_TABLE_WRITE_ACTIONS:
-                return new NxActionLearnNodesNodeTableFlowWriteActionsCaseBuilder().setNxLearn(value).build();
-            case FLOWS_STATISTICS_UPDATE_WRITE_ACTIONS:
-                return new NxActionLearnNotifFlowsStatisticsUpdateWriteActionsCaseBuilder().setNxLearn(value).build();
-            case FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS:
-                return new NxActionLearnNotifFlowsStatisticsUpdateApplyActionsCaseBuilder().setNxLearn(value).build();
-            case GROUP_DESC_STATS_UPDATED_BUCKET_ACTION:
-                return new NxActionLearnNotifGroupDescStatsUpdatedCaseBuilder().setNxLearn(value).build();
-            case FLOWS_STATISTICS_RPC_WRITE_ACTIONS:
-                return new NxActionLearnNotifDirectStatisticsUpdateWriteActionsCaseBuilder().setNxLearn(value).build();
-            case FLOWS_STATISTICS_RPC_APPLY_ACTIONS:
-                return new NxActionLearnNotifDirectStatisticsUpdateApplyActionsCaseBuilder().setNxLearn(value).build();
-            case INVENTORY_FLOWNODE_TABLE_APPLY_ACTIONS:
-                return new NxActionLearnNodesNodeTableFlowApplyActionsCaseBuilder().setNxLearn(value).build();
-            default:
-                throw new CodecPreconditionException(path);
-        }
-    }
 }

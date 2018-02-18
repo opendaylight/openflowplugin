@@ -133,7 +133,7 @@ public class ActionConvertorV13Test {
     public void testToMDSalActions() {
         List<Action> actions = new ArrayList<>();
         ActionResponseConvertorData data = new ActionResponseConvertorData(OFConstants.OFP_VERSION_1_3);
-        data.setActionPath(ActionPath.FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS);
+        data.setActionPath(ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION);
 
         Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action
                 .Action>> mdSalActions = convertorManager.convert(actions, data);
@@ -274,7 +274,7 @@ public class ActionConvertorV13Test {
         actions.add(actionBuilder.build());
 
         ActionResponseConvertorData data = new ActionResponseConvertorData(OFConstants.OFP_VERSION_1_3);
-        data.setActionPath(ActionPath.FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS);
+        data.setActionPath(ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION);
 
         Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action
                 .Action>> mdSalActionsOptional = convertorManager.convert(actions, data);

@@ -39,54 +39,71 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yangtools.yang.binding.Augmentation;
 
 /**
- * Convert to/from SAL flow model to openflowjava model for ArpSpaCase.
- *
  * @author msunal
  */
 public class ArpSpaConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava#convert
+     * (org.opendaylight.yangtools.yang.binding.DataContainer,
+     * org.opendaylight.openflowplugin.extension.api.path.AugmentationPath)
+     */
     @Override
     public ExtensionAugment<? extends Augmentation<Extension>> convert(MatchEntry input, MatchPath path) {
-        ArpSpaCaseValue arpSpaCaseValue = (ArpSpaCaseValue) input.getMatchEntryValue();
+        ArpSpaCaseValue arpSpaCaseValue = ((ArpSpaCaseValue) input.getMatchEntryValue());
         Ipv4Address ipv4Address = IpConverter.longToIpv4Address(arpSpaCaseValue.getArpSpaValues().getValue());
         return resolveAugmentation(new NxmOfArpSpaBuilder().setIpv4Address(ipv4Address).build(), path,
                 NxmOfArpSpaKey.class);
     }
 
-    @Override
-    public MatchEntry convert(Extension extension) {
-        Optional<NxmOfArpSpaGrouping> matchGrouping = MatchUtil.ARP_SPA_RESOLVER.getExtension(extension);
-        if (!matchGrouping.isPresent()) {
-            throw new CodecPreconditionException(extension);
-        }
-        Long value = IpConverter.ipv4AddressToLong(matchGrouping.get().getNxmOfArpSpa().getIpv4Address());
-        ArpSpaCaseValueBuilder arpSpaCaseValueBuilder = new ArpSpaCaseValueBuilder();
-        arpSpaCaseValueBuilder.setArpSpaValues(new ArpSpaValuesBuilder()
-                .setValue(value).build());
-        return MatchUtil.createDefaultMatchEntryBuilder(org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx
-                .match.rev140421.NxmOfArpSpa.class, Nxm0Class.class, arpSpaCaseValueBuilder.build()).build();
-    }
-
     private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(NxmOfArpSpa value,
-            MatchPath path, Class<? extends ExtensionKey> key) {
+                                                                                           MatchPath path, Class<? extends ExtensionKey> key) {
         switch (path) {
-            case FLOWS_STATISTICS_UPDATE_MATCH:
+            case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,
                         new NxAugMatchNodesNodeTableFlowBuilder().setNxmOfArpSpa(value).build(), key);
-            case FLOWS_STATISTICS_RPC_MATCH:
+            case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_MATCH:
                 return new ExtensionAugment<>(NxAugMatchRpcGetFlowStats.class,
                         new NxAugMatchRpcGetFlowStatsBuilder().setNxmOfArpSpa(value).build(), key);
-            case PACKET_RECEIVED_MATCH:
+            case PACKETRECEIVED_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNotifPacketIn.class, new NxAugMatchNotifPacketInBuilder()
                         .setNxmOfArpSpa(value).build(), key);
-            case SWITCH_FLOW_REMOVED_MATCH:
+            case SWITCHFLOWREMOVED_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNotifSwitchFlowRemoved.class,
                         new NxAugMatchNotifSwitchFlowRemovedBuilder().setNxmOfArpSpa(value).build(), key);
-            case PACKET_IN_MESSAGE_MATCH:
+            case PACKETINMESSAGE_MATCH:
                 return new ExtensionAugment<>(NxAugMatchPacketInMessage.class,
                         new NxAugMatchPacketInMessageBuilder().setNxmOfArpSpa(value).build(), key);
             default:
                 throw new CodecPreconditionException(path);
         }
     }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava#convert
+     * (org
+     * .opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general
+     * .rev140714.general.extension.grouping.Extension)
+     */
+    @Override
+    public MatchEntry convert(Extension extension) {
+        Optional<NxmOfArpSpaGrouping> matchGrouping = MatchUtil.arpSpaResolver.getExtension(extension);
+        if (!matchGrouping.isPresent()) {
+            throw new CodecPreconditionException(extension);
+        }
+        Long value = IpConverter.Ipv4AddressToLong(matchGrouping.get().getNxmOfArpSpa().getIpv4Address());
+        ArpSpaCaseValueBuilder arpSpaCaseValueBuilder = new ArpSpaCaseValueBuilder();
+        arpSpaCaseValueBuilder.setArpSpaValues(new ArpSpaValuesBuilder()
+                .setValue(value).build());
+        return MatchUtil.createDefaultMatchEntryBuilder(org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmOfArpSpa.class,
+                Nxm0Class.class,
+                arpSpaCaseValueBuilder.build()).build();
+    }
+
 }

@@ -28,7 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionFinTimeoutNodesNodeTableFlowWriteActionsCaseBuilder;
 
 /**
- * Convert to/from SAL flow model to openflowjava model for FinTimeout action.
+ * Convert to/from SAL flow model to openflowjava model for FinTimeout action
  */
 public class FinTimeoutConvertor
         implements ConvertorActionToOFJava<
@@ -39,13 +39,41 @@ public class FinTimeoutConvertor
     public org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action convert(
             final Action input, final ActionPath path) {
         NxActionFinTimeout action = ((ActionFinTimeout) input.getActionChoice()).getNxActionFinTimeout();
-        org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.fin
-            .timeout.grouping.NxActionFinTimeoutBuilder builder = new org.opendaylight.yang.gen.v1.urn.opendaylight
-                .openflowplugin.extension.nicira.action.rev140714.nx.action.fin.timeout.grouping
-                    .NxActionFinTimeoutBuilder();
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.fin.timeout.grouping.NxActionFinTimeoutBuilder builder =
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.fin.timeout.grouping.NxActionFinTimeoutBuilder();
         builder.setFinIdleTimeout(action.getFinIdleTimeout());
         builder.setFinHardTimeout(action.getFinHardTimeout());
         return resolveAction(builder.build(), path);
+    }
+
+    private static org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action resolveAction(
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.fin.timeout.grouping.NxActionFinTimeout nxActionFinTimeout,
+            final ActionPath path) {
+        switch (path) {
+            case NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION:
+                return new NxActionFinTimeoutNodesNodeTableFlowWriteActionsCaseBuilder()
+                        .setNxActionFinTimeout(nxActionFinTimeout).build();
+            case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION:
+                return new NxActionFinTimeoutNotifFlowsStatisticsUpdateWriteActionsCaseBuilder()
+                        .setNxActionFinTimeout(nxActionFinTimeout).build();
+            case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION:
+                return new NxActionFinTimeoutNotifFlowsStatisticsUpdateApplyActionsCaseBuilder()
+                        .setNxActionFinTimeout(nxActionFinTimeout).build();
+            case GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION:
+                return new NxActionFinTimeoutNotifGroupDescStatsUpdatedCaseBuilder()
+                        .setNxActionFinTimeout(nxActionFinTimeout).build();
+            case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION:
+                return new NxActionFinTimeoutNotifDirectStatisticsUpdateWriteActionsCaseBuilder()
+                        .setNxActionFinTimeout(nxActionFinTimeout).build();
+            case RPCFLOWSSTATISTICS_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION:
+                return new NxActionFinTimeoutNotifDirectStatisticsUpdateApplyActionsCaseBuilder()
+                        .setNxActionFinTimeout(nxActionFinTimeout).build();
+            case NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION:
+                return new NxActionFinTimeoutNodesNodeTableFlowApplyActionsCaseBuilder()
+                        .setNxActionFinTimeout(nxActionFinTimeout).build();
+            default:
+                throw new CodecPreconditionException(path);
+        }
     }
 
     @Override
@@ -61,34 +89,4 @@ public class FinTimeoutConvertor
         return ActionUtil.createAction(builder.build());
     }
 
-    private static org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action resolveAction(
-            final org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx
-                .action.fin.timeout.grouping.NxActionFinTimeout nxActionFinTimeout,
-            final ActionPath path) {
-        switch (path) {
-            case INVENTORY_FLOWNODE_TABLE_WRITE_ACTIONS:
-                return new NxActionFinTimeoutNodesNodeTableFlowWriteActionsCaseBuilder()
-                        .setNxActionFinTimeout(nxActionFinTimeout).build();
-            case FLOWS_STATISTICS_UPDATE_WRITE_ACTIONS:
-                return new NxActionFinTimeoutNotifFlowsStatisticsUpdateWriteActionsCaseBuilder()
-                        .setNxActionFinTimeout(nxActionFinTimeout).build();
-            case FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS:
-                return new NxActionFinTimeoutNotifFlowsStatisticsUpdateApplyActionsCaseBuilder()
-                        .setNxActionFinTimeout(nxActionFinTimeout).build();
-            case GROUP_DESC_STATS_UPDATED_BUCKET_ACTION:
-                return new NxActionFinTimeoutNotifGroupDescStatsUpdatedCaseBuilder()
-                        .setNxActionFinTimeout(nxActionFinTimeout).build();
-            case FLOWS_STATISTICS_RPC_WRITE_ACTIONS:
-                return new NxActionFinTimeoutNotifDirectStatisticsUpdateWriteActionsCaseBuilder()
-                        .setNxActionFinTimeout(nxActionFinTimeout).build();
-            case FLOWS_STATISTICS_RPC_APPLY_ACTIONS:
-                return new NxActionFinTimeoutNotifDirectStatisticsUpdateApplyActionsCaseBuilder()
-                        .setNxActionFinTimeout(nxActionFinTimeout).build();
-            case INVENTORY_FLOWNODE_TABLE_APPLY_ACTIONS:
-                return new NxActionFinTimeoutNodesNodeTableFlowApplyActionsCaseBuilder()
-                        .setNxActionFinTimeout(nxActionFinTimeout).build();
-            default:
-                throw new CodecPreconditionException(path);
-        }
-    }
 }
