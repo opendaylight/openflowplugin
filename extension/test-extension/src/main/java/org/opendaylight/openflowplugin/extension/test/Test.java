@@ -12,7 +12,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
-import org.opendaylight.openflowplugin.extension.api.AugmentTuple;
+import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecNwTtlCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.nw.ttl._case.DecNwTtl;
@@ -26,7 +26,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalF
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActionsBuilder;
@@ -53,6 +52,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.test.rev130819.TestService;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of TestService.
@@ -60,6 +61,7 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
  * @author msunal
  */
 public class Test implements TestService {
+    private static final Logger LOG = LoggerFactory.getLogger(Test.class);
 
     private SalFlowService flowService;
 
@@ -97,7 +99,9 @@ public class Test implements TestService {
     }
 
     private void pushFlowViaRpc(AddFlowInput addFlowInput) {
-        flowService.addFlow(addFlowInput);
+        if (flowService != null) {
+            JdkFutures.addErrorLogging(flowService.addFlow(addFlowInput), LOG, "addFlow");
+        }
     }
 
     public void setFlowService(SalFlowService flowService) {
@@ -122,11 +126,6 @@ public class Test implements TestService {
 //        match.addAugmentation(extAugmentWrapper.getAugmentationClass(), extAugmentWrapper.getAugmentationObject());
 
         return match;
-    }
-
-    private static AugmentTuple<Match> createNxMatchAugment() {
-        // TODO add example
-        return null;
     }
 
     private static InstructionsBuilder createDecNwTtlInstructionsBld() {
