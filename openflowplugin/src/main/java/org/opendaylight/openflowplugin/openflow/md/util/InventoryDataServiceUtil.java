@@ -7,16 +7,12 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.util;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
 import java.math.BigInteger;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
-import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
@@ -31,7 +27,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
@@ -163,21 +158,5 @@ public abstract class InventoryDataServiceUtil {
      */
     public static String bigIntegerToPaddedHex(final BigInteger dataPathId) {
         return StringUtils.leftPad(dataPathId.toString(16), 16, "0");
-    }
-
-    // TODO : create new module openflowplugin-util, move there this method along with
-    // TestProviderTransactionUtil#getDataObject
-    private static <T extends DataObject> T getDataObject(final ReadTransaction readOnlyTransaction,
-            final InstanceIdentifier<T> identifier) {
-        Optional<T> optionalData = null;
-        try {
-            optionalData = readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, identifier).get();
-            if (optionalData.isPresent()) {
-                return optionalData.get();
-            }
-        } catch (ExecutionException | InterruptedException e) {
-            LOG.error("Read transaction for identifier {} failed.", identifier, e);
-        }
-        return null;
     }
 }

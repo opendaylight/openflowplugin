@@ -15,6 +15,7 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.net.InetAddresses;
 import com.google.common.primitives.UnsignedBytes;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.math.BigInteger;
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -24,6 +25,7 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
+import javax.annotation.Nullable;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IetfInetUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
@@ -654,6 +656,7 @@ public final class IpConversionUtil {
         return netMask;
     }
 
+    @Nullable
     public static Ipv6ArbitraryMask extractIpv6AddressMask(final Ipv6Prefix ipv6Prefix) {
         Iterator<String> addressParts = PREFIX_SPLITTER.split(ipv6Prefix.getValue()).iterator();
         addressParts.next();
@@ -671,6 +674,7 @@ public final class IpConversionUtil {
             inetAddress = InetAddress.getByAddress(finalmask);
         } catch (UnknownHostException e) {
             LOG.error("Failed to convert the Ipv6 subnetmask from integer to mask value ", e);
+            return null;
         }
         return new Ipv6ArbitraryMask(inetAddress.getHostAddress());
     }
@@ -687,6 +691,8 @@ public final class IpConversionUtil {
         return netmask;
     }
 
+    @Nullable
+    @SuppressFBWarnings("PZLA_PREFER_ZERO_LENGTH_ARRAYS")
     public static byte[] convertArbitraryMaskToByteArray(DottedQuad mask) {
         String maskValue;
         if (mask != null && mask.getValue() != null) {
@@ -699,6 +705,7 @@ public final class IpConversionUtil {
             maskInIpFormat = InetAddress.getByName(maskValue);
         } catch (UnknownHostException e) {
             LOG.error("Failed to resolve the ip address of the mask ", e);
+            return null;
         }
         byte[] bytes = maskInIpFormat.getAddress();
         return bytes;
@@ -735,6 +742,8 @@ public final class IpConversionUtil {
         return false;
     }
 
+    @Nullable
+    @SuppressFBWarnings("PZLA_PREFER_ZERO_LENGTH_ARRAYS")
     public static byte[] convertIpv6ArbitraryMaskToByteArray(final Ipv6ArbitraryMask mask) {
         String maskValue;
         if (mask != null && mask.getValue() != null) {
@@ -747,6 +756,7 @@ public final class IpConversionUtil {
             maskInIpFormat = InetAddress.getByName(maskValue);
         } catch (UnknownHostException e) {
             LOG.error("Failed to convert mask string to ipv6 format mask ",e);
+            return null;
         }
         return maskInIpFormat.getAddress();
     }

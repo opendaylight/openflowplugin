@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.openflow.md.util;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * OF-action related utilities.
@@ -27,6 +28,7 @@ public final class ActionUtil {
      * @param tosValue TypeOfService value
      * @return DSCP value
      */
+    @SuppressFBWarnings("ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT")
     public static Short tosToDscp(short tosValue) {
         return (short) (tosValue >>> ActionUtil.ENC_FIELD_BIT_SIZE);
     }

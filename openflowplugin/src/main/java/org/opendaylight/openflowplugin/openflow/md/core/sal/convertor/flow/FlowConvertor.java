@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Ordering;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -133,7 +134,7 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
     /**
      * default match entries - empty.
      */
-    public static final List<MatchEntry> DEFAULT_MATCH_ENTRIES = new ArrayList<>();
+    public static final List<MatchEntry> DEFAULT_MATCH_ENTRIES = ImmutableList.of();
 
     // Default values for when things are null
     private static final TableId DEFAULT_TABLE_ID = new TableId(0L);

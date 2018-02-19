@@ -14,19 +14,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class ExtensionSessionManagerImpl implements ExtensionSessionManager {
+    private static final Logger LOG = LoggerFactory.getLogger(ExtensionSessionManagerImpl.class);
 
-    protected static final Logger LOG = LoggerFactory.getLogger(ExtensionSessionManagerImpl.class);
-    private static ExtensionSessionManagerImpl INSTANCE;
+    private static ExtensionSessionManagerImpl INSTANCE = new ExtensionSessionManagerImpl();
+
     private ExtensionConverterProvider extensionConverterProvider;
 
     /**
      * Returns singleton instance.
      */
     public static ExtensionSessionManager getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ExtensionSessionManagerImpl();
-        }
-
         return INSTANCE;
     }
 
