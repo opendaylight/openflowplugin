@@ -9,8 +9,10 @@ package org.opendaylight.openflowplugin.openflow.md.util;
 
 import com.google.common.base.Preconditions;
 import com.google.common.io.BaseEncoding;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.math.BigInteger;
 import java.util.Arrays;
+import javax.annotation.Nullable;
 
 public final class ByteUtil {
     private ByteUtil() {
@@ -34,7 +36,7 @@ public final class ByteUtil {
      */
     public static String bytesToHexstring(final byte[] bytes, final String delimiter) {
         BaseEncoding be = HEX_16_ENCODING;
-        if (delimiter != DEFAULT_HEX_SEPARATOR) {
+        if (!DEFAULT_HEX_SEPARATOR.equals(delimiter)) {
             be = PLAIN_HEX_16_ENCODING.withSeparator(delimiter, 2);
         }
         return be.encode(bytes);
@@ -47,7 +49,9 @@ public final class ByteUtil {
      * @param numBytes convert to number of bytes
      * @return byte array containing n * 8 bits.
      */
-    public static byte[] convertBigIntegerToNBytes(final BigInteger bigInteger, final int numBytes) {
+    @Nullable
+    @SuppressFBWarnings("PZLA_PREFER_ZERO_LENGTH_ARRAYS")
+    public static byte[] convertBigIntegerToNBytes(@Nullable final BigInteger bigInteger, final int numBytes) {
         if (bigInteger == null) {
             return null;
         }

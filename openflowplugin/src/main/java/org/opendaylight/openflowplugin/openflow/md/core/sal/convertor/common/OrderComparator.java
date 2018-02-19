@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.Ordered;
 
@@ -16,7 +17,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.Orde
  *
  * @param <T> T
  */
-public class OrderComparator<T extends Ordered> implements Comparator<T> {
+public class OrderComparator<T extends Ordered> implements Comparator<T>, Serializable {
+    private static final long serialVersionUID = 1L;
 
     @SuppressWarnings("rawtypes")
     private static final OrderComparator INSTANCE = new OrderComparator();

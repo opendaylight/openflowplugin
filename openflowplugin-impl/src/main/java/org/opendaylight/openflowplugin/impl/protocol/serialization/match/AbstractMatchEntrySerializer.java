@@ -56,7 +56,11 @@ public abstract class AbstractMatchEntrySerializer implements HeaderSerializer<M
      * @param length mask length
      */
     protected static void writeMask(byte[] mask, ByteBuf outBuffer, int length) {
-        if (mask != null && mask.length != length) {
+        if (mask == null) {
+            return;
+        }
+
+        if (mask.length != length) {
             throw new IllegalArgumentException("incorrect length of mask: "
                     + mask.length + ", expected: " + length);
         }
