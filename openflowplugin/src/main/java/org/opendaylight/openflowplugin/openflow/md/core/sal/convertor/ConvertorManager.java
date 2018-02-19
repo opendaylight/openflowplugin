@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -146,10 +147,11 @@ public class ConvertorManager implements ConvertorExecutor, ConvertorRegistrator
             convertor = Optional.ofNullable(convertorsForVersion.get(type));
 
             if (!convertor.isPresent()) {
-                for (final Class<?> convertorType : convertorsForVersion.keySet()) {
+                for (Entry<Class<?>, Convertor<?, ?, ? extends ConvertorData>> entry :
+                            convertorsForVersion.entrySet()) {
+                    final Class<?> convertorType = entry.getKey();
                     if (type.isAssignableFrom(convertorType)) {
-                        final Convertor<?, ?, ? extends ConvertorData> foundConvertor =
-                                convertorsForVersion.get(convertorType);
+                        final Convertor<?, ?, ? extends ConvertorData> foundConvertor = entry.getValue();
                         convertor = Optional.ofNullable(foundConvertor);
 
                         if (convertor.isPresent()) {
