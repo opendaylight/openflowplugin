@@ -68,6 +68,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.StaleGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.StaleGroupKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
@@ -478,6 +479,8 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                     if (LOG.isTraceEnabled()) {
                         LOG.trace("add-group RPC completed: node={}, id={}",
                                 nodeIdentity.firstKeyOf(Node.class).getId().getValue(), groupId);
+                        final NodeId nodeId = nodeIdentity.firstIdentifierOf(Node.class).firstKeyOf(Node.class, NodeKey.class).getId();
+                        provider.getDevicesGroupRegistry().storeGroup(nodeId, groupId);
                     }
                 }
 

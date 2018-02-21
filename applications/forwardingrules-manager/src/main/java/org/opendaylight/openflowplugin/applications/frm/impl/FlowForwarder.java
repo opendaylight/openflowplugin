@@ -7,13 +7,22 @@
  */
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
@@ -22,6 +31,8 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFaile
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -30,6 +41,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlowKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowTableRef;
@@ -39,9 +51,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Upda
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -163,7 +182,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     public Future<RpcResult<AddFlowOutput>> add(final InstanceIdentifier<Flow> identifier, final Flow addDataObj,
             final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
-        Future<RpcResult<AddFlowOutput>> future;
+        Future<RpcResult<AddFlowOutput>> future = Futures.immediateFuture(null);
         final TableKey tableKey = identifier.firstKeyOf(Table.class, TableKey.class);
         if (tableIdValidationPrecondition(tableKey, addDataObj)) {
             final AddFlowInputBuilder builder = new AddFlowInputBuilder(addDataObj);
@@ -172,9 +191,19 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
             builder.setFlowRef(new FlowRef(identifier));
             builder.setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey)));
             builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
-            future = provider.getSalFlowService().addFlow(builder.build());
-        } else {
-            future = Futures.<RpcResult<AddFlowOutput>>immediateFuture(null);
+
+            Long groupId = isFlowDepenendsOnGroup(addDataObj);
+            if (groupId != null) {
+                if (isGroupExistsOnDevice(nodeIdent, groupId)) {
+                    future = provider.getSalFlowService().addFlow(builder.build());
+                } else {
+                    Future<? extends RpcResult<?>> groupFuture = pushDependentGroup(nodeIdent, groupId);
+                    Futures.addCallback(JdkFutureAdapters.listenInPoolThread(groupFuture),
+                            new AddFlowCallBack(builder.build(), future) , MoreExecutors.directExecutor());
+                }
+            } else {
+                future = provider.getSalFlowService().addFlow(builder.build());
+            }
         }
 
         return future;
@@ -243,5 +272,71 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
         return nodeIdent.child(Table.class, new TableKey(staleFlow.getTableId())).child(
                 org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlow.class,
                 new StaleFlowKey(new FlowId(staleFlow.getId())));
+    }
+
+    private Future<? extends RpcResult<?>> pushDependentGroup(final InstanceIdentifier<FlowCapableNode> nodeIdent,
+                                                              final Long groupId) {
+        InstanceIdentifier<Group> groupIdent = buildGroupInstanceIdentifier(nodeIdent, groupId);
+        Optional<Group> group;
+        LOG.info("Reading the group from config inventory: {}", groupId);
+        try {
+            group = provider.getReadTranaction().read(LogicalDatastoreType.CONFIGURATION, groupIdent).get();
+            return provider.getGroupCommiter().add(groupIdent, group.get(), nodeIdent);
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.error("Error while reading group from config datastore for the group ID {}", groupId, e);
+        }
+        return Futures.immediateFuture(null);
+    }
+
+    private Long isFlowDepenendsOnGroup(final Flow flow) {
+        List<Instruction> instructions = flow.getInstructions().getInstruction();
+        for (Instruction instruction : instructions) {
+            List<Action> actions = Collections.emptyList();
+            if (instruction.getInstruction().getImplementedInterface().getName().equals(
+                    "org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase")) {
+                actions = ((ApplyActionsCase) (instruction.getInstruction())).getApplyActions().getAction();
+            }
+            for (Action action : actions) {
+                if (action.getAction().getImplementedInterface().getName().equals(
+                        "org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase")) {
+                    return ((GroupActionCase) action.getAction()).getGroupAction().getGroupId();
+                }
+            }
+        }
+        return null;
+    }
+
+    private boolean isGroupExistsOnDevice(final InstanceIdentifier<FlowCapableNode> nodeIdent, final Long groupId) {
+        NodeId nodeId = nodeIdent.firstIdentifierOf(Node.class).firstKeyOf(Node.class, NodeKey.class).getId();
+        return provider.getDevicesGroupRegistry().isGroupExits(nodeId, groupId);
+    }
+
+    private InstanceIdentifier<Group> buildGroupInstanceIdentifier(final InstanceIdentifier<FlowCapableNode> nodeIdent,
+                                                                   final Long groupId) {
+        NodeId nodeId = nodeIdent.firstIdentifierOf(Node.class).firstKeyOf(Node.class, NodeKey.class).getId();
+        InstanceIdentifier<Group> groupInstanceId = InstanceIdentifier.builder(Nodes.class)
+                .child(Node.class, new NodeKey(nodeId)).augmentation(FlowCapableNode.class)
+                .child(Group.class, new GroupKey(new GroupId(groupId))).build();
+        return groupInstanceId;
+    }
+
+    private final class AddFlowCallBack implements FutureCallback<RpcResult<?>> {
+        private final AddFlowInput addFlowInput;
+        private Future<RpcResult<AddFlowOutput>> future;
+
+        private AddFlowCallBack(final AddFlowInput addFlowInput, Future<RpcResult<AddFlowOutput>> future) {
+            this.addFlowInput = addFlowInput;
+            this.future = future;
+        }
+
+        @Override
+        public void onSuccess(RpcResult<?> rpcResult) {
+            future  = provider.getSalFlowService().addFlow(addFlowInput);
+        }
+
+        @Override
+        public void onFailure(Throwable throwable) {
+
+        }
     }
 }
