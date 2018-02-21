@@ -73,6 +73,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private final NotificationProviderService notificationService;
     private final SalBundleService salBundleService;
     private final AutoCloseable configurationServiceRegistration;
+    private final ReconciliationManager reconciliationManager;
     private ForwardingRulesCommiter<Flow> flowListener;
     private ForwardingRulesCommiter<Group> groupListener;
     private ForwardingRulesCommiter<Meter> meterListener;
@@ -81,7 +82,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private NotificationRegistration reconciliationNotificationRegistration;
     private FlowNodeConnectorInventoryTranslatorImpl flowNodeConnectorInventoryTranslatorImpl;
     private DeviceMastershipManager deviceMastershipManager;
-    private final ReconciliationManager reconciliationManager;
+    private DevicesGroupRegistry devicesGroupRegistry;
 
     private boolean disableReconciliation;
     private boolean staleMarkingEnabled;
@@ -136,6 +137,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         this.groupListener = new GroupForwarder(this, dataService);
         this.meterListener = new MeterForwarder(this, dataService);
         this.tableListener = new TableForwarder(this, dataService);
+        this.devicesGroupRegistry = new DevicesGroupRegistry();
         LOG.info("ForwardingRulesManager has started successfully.");
     }
 
@@ -247,6 +249,11 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     @Override
     public ForwardingRulesCommiter<Meter> getMeterCommiter() {
         return meterListener;
+    }
+
+    @Override
+    public DevicesGroupRegistry getDevicesGroupRegistry() {
+        return this.devicesGroupRegistry;
     }
 
     @Override
