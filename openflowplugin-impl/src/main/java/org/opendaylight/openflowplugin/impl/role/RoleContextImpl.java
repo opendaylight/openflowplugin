@@ -35,6 +35,7 @@ import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.openflowplugin.impl.services.util.RequestContextUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleInput;
@@ -55,14 +56,17 @@ public class RoleContextImpl implements RoleContext {
     private final AtomicReference<ListenableFuture<RpcResult<SetRoleOutput>>> lastRoleFuture = new AtomicReference<>();
     private final Collection<RequestContext<?>> requestContexts = new HashSet<>();
     private final Timeout slaveTask;
+    private final OpenflowProviderConfig config;
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
     private SalRoleService roleService;
 
     RoleContextImpl(@Nonnull final DeviceInfo deviceInfo,
                     @Nonnull final HashedWheelTimer timer,
-                    final long checkRoleMasterTimeout) {
+                    final long checkRoleMasterTimeout,
+                    final OpenflowProviderConfig config) {
         this.deviceInfo = deviceInfo;
         this.timer = timer;
+        this.config = config;
         slaveTask = timer.newTimeout((timerTask) -> makeDeviceSlave(), checkRoleMasterTimeout, TimeUnit.MILLISECONDS);
 
         LOG.info("Started timer for setting SLAVE role on device {} if no role will be set in {}s.",
@@ -144,6 +148,12 @@ public class RoleContextImpl implements RoleContext {
     }
 
     private ListenableFuture<RpcResult<SetRoleOutput>> sendRoleChangeToDevice(final OfpRole newRole) {
+        final Boolean isEqualRole = config.isEnableEqualRole();
+        if (isEqualRole) {
+            LOG.warn("Skip sending role change request to device {} as user enabled"
+                    + " equal role for controller", deviceInfo);
+            return Futures.immediateFuture(null);
+        }
         LOG.debug("Sending new role {} to device {}", newRole, deviceInfo);
 
         if (deviceInfo.getVersion() >= OFConstants.OFP_VERSION_1_3) {
