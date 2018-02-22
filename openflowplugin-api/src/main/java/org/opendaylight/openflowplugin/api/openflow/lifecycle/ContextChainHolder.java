@@ -51,6 +51,12 @@ public interface ContextChainHolder extends
      */
     <T extends OFPManager> void addManager(T manager);
 
+    /**
+     * Return true if controller instance is owner of the device.
+     * @return {@link Boolean}
+     */
+    boolean isOwner(String nodeId);
+
     @Override
     void close() throws Exception;
 
