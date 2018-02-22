@@ -29,6 +29,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainHolder;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderKeeper;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
@@ -66,6 +67,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private TranslatorLibrary translatorLibrary;
     private ExtensionConverterProvider extensionConverterProvider;
     private ScheduledThreadPoolExecutor spyPool;
+    private ContextChainHolder contextChainHolder;
 
     public DeviceManagerImpl(@Nonnull final OpenflowProviderConfig config,
                              @Nonnull final DataBroker dataBroker,
@@ -161,7 +163,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 config.isUseSingleLayerSerialization(),
                 deviceInitializerProvider,
                 config.isEnableFlowRemovedNotification(),
-                config.isSwitchFeaturesMandatory());
+                config.isSwitchFeaturesMandatory(),
+                contextChainHolder);
 
         ((ExtensionConverterProviderKeeper) deviceContext).setExtensionConverterProvider(extensionConverterProvider);
         deviceContext.setNotificationPublishService(notificationPublishService);
@@ -214,6 +217,11 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
             LOG.info("Publishing node removed notification for {}", instanceIdentifier.firstKeyOf(Node.class).getId());
             notificationPublishService.offerNotification(builder.build());
         }
+    }
+
+    @Override
+    public void setContextChainHolder(@Nonnull ContextChainHolder contextChainHolder) {
+        this.contextChainHolder = contextChainHolder;
     }
 
     @Override
