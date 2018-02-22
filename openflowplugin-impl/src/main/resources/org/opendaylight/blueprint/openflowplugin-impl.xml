@@ -12,4 +12,8 @@
 
   <bean id="mastershipChangeServiceManager" class="org.opendaylight.openflowplugin.impl.mastership.MastershipChangeServiceManagerImpl"/>
   <service ref="mastershipChangeServiceManager" interface="org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager"/>
+
+  <bean id="contextChainHolderImpl" class="org.opendaylight.openflowplugin.impl.lifecycle.ContextChainHolderImpl"/>
+  <service id="contextChainHolder" interface="org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainHolder"/>
+
 </blueprint>
