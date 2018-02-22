@@ -28,6 +28,8 @@ public interface OpenFlowPluginProviderFactory {
                                        RpcProviderRegistry rpcRegistry,
                                        NotificationPublishService notificationPublishService,
                                        EntityOwnershipService entityOwnershipService,
+                                       org.opendaylight.controller.md.sal.common.api.clustering
+                                               .EntityOwnershipService clusteredEntityOwnershipService,
                                        List<SwitchConnectionProvider> switchConnectionProviders,
                                        ClusterSingletonServiceProvider singletonServiceProvider,
                                        MastershipChangeServiceManager mastershipChangeServiceManager,

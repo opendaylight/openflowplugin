@@ -8,6 +8,7 @@
     <reference id="rpcRegistry" interface="org.opendaylight.controller.sal.binding.api.RpcProviderRegistry"/>
     <reference id="notificationPublishService" interface="org.opendaylight.controller.md.sal.binding.api.NotificationPublishService"/>
     <reference id="entityOwnershipService" interface="org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService"/>
+    <reference id="clusteredEntityOwnershipService" interface="org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipService"/>
     <reference id="clusterSingletonServiceProvider" interface="org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider"/>
     <reference id="diagStatusService" interface="org.opendaylight.infrautils.diagstatus.DiagStatusService" />
     <reference id="systemReadyMonitor" interface="org.opendaylight.infrautils.ready.SystemReadyMonitor" />
@@ -50,6 +51,8 @@
 
     <service ref="configurationService" interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService"/>
 
+    <service id="contextChainHolder" interface="org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainHolder"/>
+
     <bean id="openflowPluginProvider"
           factory-ref="openflowPluginProviderFactory"
           factory-method="newInstance"
@@ -59,6 +62,7 @@
         <argument ref="rpcRegistry"/>
         <argument ref="notificationPublishService"/>
         <argument ref="entityOwnershipService"/>
+        <argument ref="clusteredEntityOwnershipService"/>
         <argument>
             <list>
                 <ref component-id="defaultSwitchConnProvider"/>
