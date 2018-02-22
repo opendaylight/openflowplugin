@@ -58,6 +58,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint16Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint32Type;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfigBuilder;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
@@ -101,6 +102,8 @@ public class DeviceManagerImplTest {
     private NotificationPublishService notificationPublishService;
     @Mock
     private TranslatorLibrary translatorLibrary;
+    @Mock
+    private OpenflowProviderConfig config;
 
     private DeviceManagerImpl deviceManager;
 

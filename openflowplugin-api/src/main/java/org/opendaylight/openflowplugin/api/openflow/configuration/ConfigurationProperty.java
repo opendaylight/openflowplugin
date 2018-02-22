@@ -83,7 +83,11 @@ public enum ConfigurationProperty {
     /**
      * Thread pool timeout property type.
      */
-    THREAD_POOL_TIMEOUT;
+    THREAD_POOL_TIMEOUT,
+    /**
+     * Enable or disable equal role functionality.
+     */
+    ENABLE_EQUAL_ROLE;
 
     private static final Map<String, ConfigurationProperty> KEY_VALUE_MAP;
 
