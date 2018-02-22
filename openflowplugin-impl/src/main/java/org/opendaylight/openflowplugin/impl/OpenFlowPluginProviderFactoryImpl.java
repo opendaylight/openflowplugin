@@ -37,6 +37,8 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
                                               final RpcProviderRegistry rpcRegistry,
                                               final NotificationPublishService notificationPublishService,
                                               final EntityOwnershipService entityOwnershipService,
+                                              final org.opendaylight.controller.md.sal.common.api.clustering
+                                                          .EntityOwnershipService clusteredEntityOwnershipService,
                                               final List<SwitchConnectionProvider> switchConnectionProviders,
                                               final ClusterSingletonServiceProvider singletonServiceProvider,
                                               final MastershipChangeServiceManager mastershipChangeServiceManager,
@@ -51,6 +53,7 @@ public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProvider
                 notificationPublishService,
                 singletonServiceProvider,
                 entityOwnershipService,
+                clusteredEntityOwnershipService,
                 mastershipChangeServiceManager,
                 ofPluginDiagstatusProvider,
                 systemReadyMonitor);
