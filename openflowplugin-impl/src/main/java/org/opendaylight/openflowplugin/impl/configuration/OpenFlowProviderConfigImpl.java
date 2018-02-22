@@ -109,6 +109,11 @@ public class OpenFlowProviderConfigImpl implements OpenflowProviderConfig {
     }
 
     @Override
+    public Boolean isEnableEqualRole() {
+        return service.getProperty(ConfigurationProperty.ENABLE_EQUAL_ROLE.toString(), Boolean::valueOf);
+    }
+
+    @Override
     public NonZeroUint32Type getBasicTimerDelay() {
         final Long property = service.getProperty(
                 ConfigurationProperty.BASIC_TIMER_DELAY.toString(),
