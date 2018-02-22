@@ -12,6 +12,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainHolder;
 import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
@@ -42,5 +43,7 @@ public interface DeviceManager extends
 
     void sendNodeRemovedNotification(
             @Nonnull KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier);
+
+    void setContextChainHolder(@Nonnull ContextChainHolder contextChainHolder);
 }
 

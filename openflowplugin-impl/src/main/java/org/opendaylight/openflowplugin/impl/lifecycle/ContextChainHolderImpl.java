@@ -263,6 +263,11 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     }
 
     @Override
+    public ContextChain getContextChain(final DeviceInfo deviceInfo) {
+        return contextChainMap.get(deviceInfo);
+    }
+
+    @Override
     public void close() throws Exception {
         Map<DeviceInfo, ContextChain> copyOfChains = new HashMap<>(contextChainMap);
         copyOfChains.keySet().forEach(this::destroyContextChain);
