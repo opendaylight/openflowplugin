@@ -77,6 +77,9 @@ public class ContextChainHolderImplTest {
     @Mock
     private EntityOwnershipService entityOwnershipService;
     @Mock
+    private org.opendaylight.controller.md.sal.common.api.clustering
+            .EntityOwnershipService clusteredEntityOwnershipService;
+    @Mock
     private EntityOwnershipListenerRegistration entityOwnershipListenerRegistration;
     @Mock
     private ReconciliationFrameworkEvent reconciliationFrameworkEvent;
@@ -116,6 +119,7 @@ public class ContextChainHolderImplTest {
                 executorService,
                 singletonServicesProvider,
                 entityOwnershipService,
+                clusteredEntityOwnershipService,
                 manager);
         contextChainHolder.addManager(statisticsManager);
         contextChainHolder.addManager(rpcManager);

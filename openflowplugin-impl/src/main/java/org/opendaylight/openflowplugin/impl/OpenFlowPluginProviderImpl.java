@@ -108,6 +108,8 @@ public class OpenFlowPluginProviderImpl implements
     private final ClusterSingletonServiceProvider singletonServicesProvider;
     private final OpenflowProviderConfig config;
     private final EntityOwnershipService entityOwnershipService;
+    private final org.opendaylight.controller.md.sal.common.api.clustering
+            .EntityOwnershipService clusteredEntityOwnershipService;
     private final MastershipChangeServiceManager mastershipChangeServiceManager;
     private DeviceManager deviceManager;
     private RpcManager rpcManager;
@@ -129,6 +131,8 @@ public class OpenFlowPluginProviderImpl implements
                                final NotificationPublishService notificationPublishService,
                                final ClusterSingletonServiceProvider singletonServiceProvider,
                                final EntityOwnershipService entityOwnershipService,
+                               final org.opendaylight.controller.md.sal.common.api.clustering
+                                       .EntityOwnershipService clusteredEntityOwnershipService,
                                final MastershipChangeServiceManager mastershipChangeServiceManager,
                                final OpenflowPluginDiagStatusProvider openflowPluginStatusMonitor,
                                final SystemReadyMonitor systemReadyMonitor) {
@@ -138,6 +142,7 @@ public class OpenFlowPluginProviderImpl implements
         this.notificationPublishService = notificationPublishService;
         this.singletonServicesProvider = singletonServiceProvider;
         this.entityOwnershipService = entityOwnershipService;
+        this.clusteredEntityOwnershipService = clusteredEntityOwnershipService;
         convertorManager = ConvertorManagerFactory.createDefaultManager();
         extensionConverterManager = new ExtensionConverterManagerImpl();
         deviceInitializerProvider = DeviceInitializerProviderFactory.createDefaultProvider();
@@ -258,6 +263,7 @@ public class OpenFlowPluginProviderImpl implements
                 executorService,
                 singletonServicesProvider,
                 entityOwnershipService,
+                clusteredEntityOwnershipService,
                 mastershipChangeServiceManager);
 
         contextChainHolder.addManager(deviceManager);

@@ -24,10 +24,13 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.opendaylight.controller.md.sal.common.api.clustering.EntityOwnershipState;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipChange;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipListenerRegistration;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
+import org.opendaylight.mdsal.eos.dom.api.DOMEntity;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionStatus;
@@ -62,6 +65,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     private static final String CONTEXT_CREATED_FOR_CONNECTION = " context created for connection: {}";
     private static final long REMOVE_DEVICE_FROM_DS_TIMEOUT = 5000L;
     private static final String ASYNC_SERVICE_ENTITY_TYPE = "org.opendaylight.mdsal.AsyncServiceCloseEntityType";
+    private static final String ENTITY_TYPE = "org.opendaylight.mdsal.ServiceEntityType";
 
     private final Map<DeviceInfo, ContextChain> contextChainMap = new ConcurrentHashMap<>();
     private final Map<DeviceInfo, ? super ConnectionContext> connectingDevices = new ConcurrentHashMap<>();
@@ -73,15 +77,20 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     private RpcManager rpcManager;
     private StatisticsManager statisticsManager;
     private RoleManager roleManager;
+    private final org.opendaylight.controller.md.sal.common.api.clustering
+            .EntityOwnershipService clusteredEntityOwnershipService;
 
     public ContextChainHolderImpl(final ExecutorService executorService,
                                   final ClusterSingletonServiceProvider singletonServiceProvider,
                                   final EntityOwnershipService entityOwnershipService,
+                                  final org.opendaylight.controller.md.sal.common.api.clustering
+                                          .EntityOwnershipService clusteredEntityOwnershipService,
                                   final OwnershipChangeListener ownershipChangeListener) {
         this.singletonServiceProvider = singletonServiceProvider;
         this.executorService = executorService;
         this.ownershipChangeListener = ownershipChangeListener;
         this.ownershipChangeListener.setMasterChecker(this);
+        this.clusteredEntityOwnershipService = clusteredEntityOwnershipService;
         this.eosListenerRegistration = Objects
                 .requireNonNull(entityOwnershipService.registerListener(ASYNC_SERVICE_ENTITY_TYPE, this));
     }
@@ -263,6 +272,21 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     }
 
     @Override
+    public boolean isOwner(final String nodeId) {
+        org.opendaylight.controller.md.sal.common.api.clustering
+                .EntityOwnershipChange change = null;
+
+        com.google.common.base.Optional<org.opendaylight.controller.md.sal.common.api.clustering
+                .EntityOwnershipChange> optional = getCurrentOwnershipStatus(nodeId);
+        if (optional.isPresent()) {
+            change = optional.get();
+        } else {
+            LOG.debug("Fetching ownership status failed for node {}", nodeId);
+        }
+        return (change != null && change.isOwner());
+    }
+
+    @Override
     public void close() throws Exception {
         Map<DeviceInfo, ContextChain> copyOfChains = new HashMap<>(contextChainMap);
         copyOfChains.keySet().forEach(this::destroyContextChain);
@@ -307,6 +331,37 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
             deviceManager.sendNodeRemovedNotification(deviceInfo.getNodeInstanceIdentifier());
             contextChain.close();
         });
+    }
+
+    private com.google.common.base.Optional<org.opendaylight.controller.md.sal.common.api.clustering
+            .EntityOwnershipChange> getCurrentOwnershipStatus(final String nodeId) {
+        final com.google.common.base.Optional<org.opendaylight.controller.md.sal.common.api.clustering
+                .EntityOwnershipChange> change;
+        final org.opendaylight.controller.md.sal.common.api.clustering
+                .Entity entity = createNodeEntity(nodeId);
+        final com.google.common.base.Optional<EntityOwnershipState> optional = clusteredEntityOwnershipService
+                .getOwnershipState(entity);
+
+        if (optional.isPresent()) {
+            LOG.debug("Fetched ownership status for node {} is {}", nodeId, optional.get());
+            final EntityOwnershipState ownershipState = optional.get();
+            final boolean isOwner = ownershipState.isOwner();
+            final boolean hasOwner = ownershipState.hasOwner();
+            change = com.google.common.base.Optional.of(new org.opendaylight.controller.md.sal.common.api.clustering
+                    .EntityOwnershipChange(entity, false, isOwner, hasOwner, false));
+        } else {
+            change = com.google.common.base.Optional.absent();
+        }
+        return change;
+    }
+
+    private org.opendaylight.controller.md.sal.common.api.clustering
+            .Entity createNodeEntity(
+            final String nodeId) {
+        final DOMEntity domEntity = new DOMEntity(ENTITY_TYPE,
+                ServiceGroupIdentifier.create(nodeId).getValue());
+        return new org.opendaylight.controller.md.sal.common.api.clustering
+                .Entity(domEntity.getType(), domEntity.getIdentifier());
     }
 
     @Override
