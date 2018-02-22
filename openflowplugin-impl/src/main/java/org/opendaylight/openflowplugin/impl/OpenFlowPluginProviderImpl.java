@@ -103,6 +103,8 @@ public class OpenFlowPluginProviderImpl implements
     private final ClusterSingletonServiceProvider singletonServicesProvider;
     private final OpenflowProviderConfig config;
     private final EntityOwnershipService entityOwnershipService;
+    private final org.opendaylight.controller.md.sal.common.api.clustering
+            .EntityOwnershipService clusteredEntityOwnershipService;
     private final MastershipChangeServiceManager mastershipChangeServiceManager;
     private DeviceManager deviceManager;
     private RpcManager rpcManager;
@@ -123,6 +125,8 @@ public class OpenFlowPluginProviderImpl implements
                                final NotificationPublishService notificationPublishService,
                                final ClusterSingletonServiceProvider singletonServiceProvider,
                                final EntityOwnershipService entityOwnershipService,
+                               final org.opendaylight.controller.md.sal.common.api.clustering
+                                       .EntityOwnershipService clusteredEntityOwnershipService,
                                final MastershipChangeServiceManager mastershipChangeServiceManager) {
         this.switchConnectionProviders = switchConnectionProviders;
         this.dataBroker = dataBroker;
@@ -130,6 +134,7 @@ public class OpenFlowPluginProviderImpl implements
         this.notificationPublishService = notificationPublishService;
         this.singletonServicesProvider = singletonServiceProvider;
         this.entityOwnershipService = entityOwnershipService;
+        this.clusteredEntityOwnershipService = clusteredEntityOwnershipService;
         convertorManager = ConvertorManagerFactory.createDefaultManager();
         extensionConverterManager = new ExtensionConverterManagerImpl();
         deviceInitializerProvider = DeviceInitializerProviderFactory.createDefaultProvider();
@@ -233,12 +238,13 @@ public class OpenFlowPluginProviderImpl implements
                 convertorManager,
                 executorService);
 
-        roleManager = new RoleManagerImpl(hashedWheelTimer);
+        roleManager = new RoleManagerImpl(hashedWheelTimer, config);
 
         contextChainHolder = new ContextChainHolderImpl(
                 executorService,
                 singletonServicesProvider,
                 entityOwnershipService,
+                clusteredEntityOwnershipService,
                 mastershipChangeServiceManager);
 
         contextChainHolder.addManager(deviceManager);
@@ -250,6 +256,7 @@ public class OpenFlowPluginProviderImpl implements
         connectionManager.setDeviceConnectedHandler(contextChainHolder);
         connectionManager.setDeviceDisconnectedHandler(contextChainHolder);
 
+        deviceManager.setContextChainHolder(contextChainHolder);
         deviceManager.initialize();
         startSwitchConnections();
     }

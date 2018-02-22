@@ -137,5 +137,11 @@ module openflow-provider-config {
             type boolean;
             default "true";
         }
+
+        leaf enable-equal-role {
+            description "When true, the Equal role functionality is enabled.";
+            type boolean;
+            default "false";
+        }
     }
 }

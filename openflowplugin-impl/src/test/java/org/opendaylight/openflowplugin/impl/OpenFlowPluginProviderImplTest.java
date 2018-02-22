@@ -54,6 +54,10 @@ public class OpenFlowPluginProviderImplTest {
     EntityOwnershipService entityOwnershipService;
 
     @Mock
+    org.opendaylight.controller.md.sal.common.api.clustering
+            .EntityOwnershipService clusteredEntityOwnershipService;
+
+    @Mock
     EntityOwnershipListenerRegistration entityOwnershipListenerRegistration;
 
     @Mock
@@ -112,6 +116,7 @@ public class OpenFlowPluginProviderImplTest {
                 rpcProviderRegistry,
                 notificationPublishService,
                 entityOwnershipService,
+                clusteredEntityOwnershipService,
                 Lists.newArrayList(switchConnectionProvider),
                 clusterSingletonServiceProvider,
                 mastershipChangeServiceManager);

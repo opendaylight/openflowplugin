@@ -52,6 +52,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainHolder;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
@@ -167,6 +168,8 @@ public class DeviceContextImplTest {
     private AbstractDeviceInitializer abstractDeviceInitializer;
     @Mock
     private SalRoleService salRoleService;
+    @Mock
+    private ContextChainHolder contextChainHolder;
 
     private final AtomicLong atomicLong = new AtomicLong(0);
 
@@ -208,6 +211,7 @@ public class DeviceContextImplTest {
         Mockito.when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         Mockito.when(featuresOutput.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
         Mockito.when(featuresOutput.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
+        Mockito.when(contextChainHolder.isOwner(any(String.class))).thenReturn(true);
 
         final PacketReceived packetReceived = new PacketReceivedBuilder()
                 .setMatch(new org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received
@@ -244,7 +248,8 @@ public class DeviceContextImplTest {
                 convertorExecutor,
                 false, timer, false,
                 deviceInitializerProvider,
-                true, false);
+                true, false,
+                contextChainHolder);
 
         ((DeviceContextImpl) deviceContext).lazyTransactionManagerInitialization();
         deviceContextSpy = Mockito.spy(deviceContext);
