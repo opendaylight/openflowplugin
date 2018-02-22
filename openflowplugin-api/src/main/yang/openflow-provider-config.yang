@@ -137,5 +137,20 @@ module openflow-provider-config {
             type boolean;
             default "true";
         }
+
+        leaf enable-equal-role {
+                description "When true, openflowplugin won't send any specific role
+                request down to the switch after plugin internally decides the
+                ownership of the device using Entity Ownership Service. In this
+                scenario, controller connection for the device will be in equal
+                role. The behavior will be same for single node setup and clustered
+                setup. In clustered scenario, all the controller will be in equal
+                role for the device. In this case device will send all asynchronous
+                event messages (e.g packet_in) to all the controllers, but openflowplugin
+                will drop these events for the controller instances that is internally
+                not owning the device.";
+            type boolean;
+            default "false";
+        }
     }
 }
