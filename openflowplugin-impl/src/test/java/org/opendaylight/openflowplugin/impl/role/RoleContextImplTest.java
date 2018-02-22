@@ -30,6 +30,7 @@ import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleInputBuilder;
@@ -48,6 +49,8 @@ public class RoleContextImplTest {
     private DeviceContext deviceContext;
     @Mock
     private Future<RpcResult<SetRoleOutput>> setRoleFuture;
+    @Mock
+    private OpenflowProviderConfig config;
     private RoleContext roleContext;
 
     @Before
@@ -57,7 +60,7 @@ public class RoleContextImplTest {
         when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         when(roleService.setRole(any())).thenReturn(Futures.immediateFuture(null));
 
-        roleContext = new RoleContextImpl(deviceInfo, new HashedWheelTimer(), 20000);
+        roleContext = new RoleContextImpl(deviceInfo, new HashedWheelTimer(), 20000, config);
         roleContext.registerMastershipWatcher(contextChainMastershipWatcher);
         roleContext.setRoleService(roleService);
     }

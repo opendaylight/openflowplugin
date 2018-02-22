@@ -74,6 +74,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     private RpcManager rpcManager;
     private StatisticsManager statisticsManager;
     private RoleManager roleManager;
+    private EntityOwnershipService entityOwnershipService;
 
     public ContextChainHolderImpl(final ExecutorService executorService,
                                   final ClusterSingletonServiceProvider singletonServiceProvider,
@@ -85,6 +86,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         this.ownershipChangeListener.setMasterChecker(this);
         this.eosListenerRegistration = Objects
                 .requireNonNull(entityOwnershipService.registerListener(ASYNC_SERVICE_ENTITY_TYPE, this));
+        this.entityOwnershipService = entityOwnershipService;
     }
 
     @Override
@@ -261,6 +263,11 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     boolean checkAllManagers() {
         return Objects.nonNull(deviceManager) && Objects.nonNull(rpcManager) && Objects.nonNull(statisticsManager)
                 && Objects.nonNull(roleManager);
+    }
+
+    @Override
+    public ContextChain getContextChain(final DeviceInfo deviceInfo) {
+        return contextChainMap.get(deviceInfo);
     }
 
     @Override

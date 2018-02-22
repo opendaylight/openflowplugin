@@ -44,6 +44,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChain;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainHolder;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipWatcher;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainState;
@@ -147,6 +149,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final AtomicBoolean initialized = new AtomicBoolean(false);
     private final AtomicBoolean hasState = new AtomicBoolean(false);
     private final AtomicBoolean isInitialTransactionSubmitted = new AtomicBoolean(false);
+    private final ContextChainHolder contextChainHolder;
     private NotificationPublishService notificationPublishService;
     private TransactionChainManager transactionChainManager;
     private DeviceFlowRegistry deviceFlowRegistry;
@@ -165,7 +168,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                       final boolean useSingleLayerSerialization,
                       final DeviceInitializerProvider deviceInitializerProvider,
                       final boolean isFlowRemovedNotificationOn,
-                      final boolean switchFeaturesMandatory) {
+                      final boolean switchFeaturesMandatory,
+                      final ContextChainHolder contextChainHolder) {
 
         this.primaryConnectionContext = primaryConnectionContext;
         this.deviceInfo = primaryConnectionContext.getDeviceInfo();
@@ -176,6 +180,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.deviceState = new DeviceStateImpl();
         this.dataBroker = dataBroker;
         this.messageSpy = messageSpy;
+        this.contextChainHolder = contextChainHolder;
 
         this.packetInLimiter = new PacketInRateLimiter(primaryConnectionContext.getConnectionAdapter(),
                 /*initial*/ LOW_WATERMARK, /*initial*/HIGH_WATERMARK, this.messageSpy, REJECTED_DRAIN_FACTOR);
@@ -293,13 +298,19 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public void processFlowRemovedMessage(final FlowRemoved flowRemoved) {
-        //1. translate to general flow (table, priority, match, cookie)
-        final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved flowRemovedNotification =
-                flowRemovedTranslator.translate(flowRemoved, deviceInfo, null);
+        if (isMasterOfDevice()) {
+            //1. translate to general flow (table, priority, match, cookie)
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819
+                    .FlowRemoved flowRemovedNotification = flowRemovedTranslator
+                    .translate(flowRemoved, deviceInfo, null);
 
-        if (isFlowRemovedNotificationOn) {
-            // Trigger off a notification
-            notificationPublishService.offerNotification(flowRemovedNotification);
+            if (isFlowRemovedNotificationOn) {
+                // Trigger off a notification
+                notificationPublishService.offerNotification(flowRemovedNotification);
+            }
+        } else {
+            LOG.debug("Controller is not owner of the device {}, skipping Flow Removed message",
+                    deviceInfo.getLOGValue());
         }
     }
 
@@ -349,8 +360,18 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public void processPacketInMessage(final PacketInMessage packetInMessage) {
-        final PacketReceived packetReceived = packetInTranslator.translate(packetInMessage, getDeviceInfo(), null);
-        handlePacketInMessage(packetReceived, packetInMessage.getImplementedInterface(), packetReceived.getMatch());
+        if (isMasterOfDevice()) {
+            final PacketReceived packetReceived = packetInTranslator.translate(packetInMessage, getDeviceInfo(), null);
+            handlePacketInMessage(packetReceived, packetInMessage.getImplementedInterface(), packetReceived.getMatch());
+        } else {
+            LOG.debug("Controller is not owner of the device {}, skipping packet_in message", deviceInfo.getLOGValue());
+        }
+    }
+
+    private Boolean isMasterOfDevice() {
+        final ContextChain contextChain = contextChainHolder.getContextChain(deviceInfo);
+        return contextChain.isMastered(ContextChainMastershipState.CHECK, false);
+
     }
 
     private void handlePacketInMessage(final PacketIn packetIn,
@@ -428,31 +449,36 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public void processExperimenterMessage(final ExperimenterMessage notification) {
-        // lookup converter
-        final ExperimenterDataOfChoice vendorData = notification.getExperimenterDataOfChoice();
-        final MessageTypeKey<? extends ExperimenterDataOfChoice> key = new MessageTypeKey<>(
-                getDeviceInfo().getVersion(),
-                (Class<? extends ExperimenterDataOfChoice>) vendorData.getImplementedInterface());
-        final ConvertorMessageFromOFJava<ExperimenterDataOfChoice, MessagePath> messageConverter =
-                extensionConverterProvider.getMessageConverter(key);
-        if (messageConverter == null) {
-            LOG.warn("custom converter for {}[OF:{}] not found",
-                    notification.getExperimenterDataOfChoice().getImplementedInterface(),
-                    getDeviceInfo().getVersion());
-            return;
-        }
-        // build notification
-        final ExperimenterMessageOfChoice messageOfChoice;
-        try {
-            messageOfChoice = messageConverter.convert(vendorData, MessagePath.MESSAGE_NOTIFICATION);
-            final ExperimenterMessageFromDevBuilder experimenterMessageFromDevBld = new
-                    ExperimenterMessageFromDevBuilder()
-                    .setNode(new NodeRef(getDeviceInfo().getNodeInstanceIdentifier()))
-                    .setExperimenterMessageOfChoice(messageOfChoice);
-            // publish
-            notificationPublishService.offerNotification(experimenterMessageFromDevBld.build());
-        } catch (final ConversionException e) {
-            LOG.error("Conversion of experimenter notification failed", e);
+        if (isMasterOfDevice()) {
+            // lookup converter
+            final ExperimenterDataOfChoice vendorData = notification.getExperimenterDataOfChoice();
+            final MessageTypeKey<? extends ExperimenterDataOfChoice> key = new MessageTypeKey<>(
+                    getDeviceInfo().getVersion(),
+                    (Class<? extends ExperimenterDataOfChoice>) vendorData.getImplementedInterface());
+            final ConvertorMessageFromOFJava<ExperimenterDataOfChoice, MessagePath> messageConverter =
+                    extensionConverterProvider.getMessageConverter(key);
+            if (messageConverter == null) {
+                LOG.warn("custom converter for {}[OF:{}] not found",
+                        notification.getExperimenterDataOfChoice().getImplementedInterface(),
+                        getDeviceInfo().getVersion());
+                return;
+            }
+            // build notification
+            final ExperimenterMessageOfChoice messageOfChoice;
+            try {
+                messageOfChoice = messageConverter.convert(vendorData, MessagePath.MESSAGE_NOTIFICATION);
+                final ExperimenterMessageFromDevBuilder experimenterMessageFromDevBld = new
+                        ExperimenterMessageFromDevBuilder()
+                        .setNode(new NodeRef(getDeviceInfo().getNodeInstanceIdentifier()))
+                        .setExperimenterMessageOfChoice(messageOfChoice);
+                // publish
+                notificationPublishService.offerNotification(experimenterMessageFromDevBld.build());
+            } catch (final ConversionException e) {
+                LOG.error("Conversion of experimenter notification failed", e);
+            }
+        } else {
+            LOG.debug("Controller is not owner of the device {}, skipping experimenter message",
+                    deviceInfo.getLOGValue());
         }
     }
 

@@ -18,6 +18,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
 import org.opendaylight.openflowplugin.impl.services.sal.SalRoleServiceImpl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 
 public class RoleManagerImpl implements RoleManager {
     // Timeout after what we will give up on waiting for master role
@@ -25,9 +26,12 @@ public class RoleManagerImpl implements RoleManager {
 
     private final ConcurrentMap<DeviceInfo, RoleContext> contexts = new ConcurrentHashMap<>();
     private final HashedWheelTimer timer;
+    private final OpenflowProviderConfig config;
 
-    public RoleManagerImpl(final HashedWheelTimer timer) {
+    public RoleManagerImpl(final HashedWheelTimer timer,
+                           final OpenflowProviderConfig config) {
         this.timer = timer;
+        this.config = config;
     }
 
     @Override
@@ -35,7 +39,7 @@ public class RoleManagerImpl implements RoleManager {
         final DeviceInfo deviceInfo = deviceContext.getDeviceInfo();
         final RoleContextImpl roleContext = new RoleContextImpl(
                 deviceContext.getDeviceInfo(),
-                timer, CHECK_ROLE_MASTER_TIMEOUT);
+                timer, CHECK_ROLE_MASTER_TIMEOUT, config);
 
         roleContext.setRoleService(new SalRoleServiceImpl(roleContext, deviceContext));
         contexts.put(deviceInfo, roleContext);
