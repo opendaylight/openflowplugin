@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipListener;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
@@ -50,6 +51,12 @@ public interface ContextChainHolder extends
      * @param <T> {@link OFPManager}
      */
     <T extends OFPManager> void addManager(T manager);
+
+    /**
+     * Return the {@link ContextChain} for a given {@link DeviceInfo}.
+     * @return {@link ContextChain}
+     */
+    ContextChain getContextChain(DeviceInfo deviceInfo);
 
     @Override
     void close() throws Exception;
