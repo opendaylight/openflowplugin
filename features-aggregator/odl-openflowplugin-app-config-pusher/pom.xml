@@ -12,7 +12,7 @@
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>odl-openflowplugin-app-config-pusher</artifactId>
     <packaging>feature</packaging>
-    <version>0.5.2-SNAPSHOT</version>
+    <version>0.5.3-SNAPSHOT</version>
 
     <name>OpenDaylight :: Openflow Plugin :: Application - default config-pusher</name>
 
