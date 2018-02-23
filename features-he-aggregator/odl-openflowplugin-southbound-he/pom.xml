@@ -5,20 +5,20 @@
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>single-feature-parent</artifactId>
-        <version>1.8.3-SNAPSHOT</version>
+        <version>1.8.4-SNAPSHOT</version>
         <relativePath/>
     </parent>
 
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>odl-openflowplugin-southbound-he</artifactId>
     <packaging>feature</packaging>
-    <version>0.4.3-SNAPSHOT</version>
+    <version>0.4.4-SNAPSHOT</version>
 
     <name>OpenDaylight :: Openflow Plugin :: He southbound API implementation</name>
 
     <properties>
-        <mdsal.version>1.5.3-SNAPSHOT</mdsal.version>
-        <lldp.version>0.12.3-SNAPSHOT</lldp.version>
+        <mdsal.version>1.5.4-SNAPSHOT</mdsal.version>
+        <lldp.version>0.12.4-SNAPSHOT</lldp.version>
     </properties>
 
     <dependencyManagement>
