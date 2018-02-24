@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b91d7c70_d93dd2b8",
+        "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/LLDPDiscoveryListener.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-02-24T00:04:26Z",
+      "side": 1,
+      "message": "This is not correct log message, please rephrase it to something like -\" Node connector reference don\u0027t have node information\"",
+      "revId": "5eb98be1196e0c356092c83b4039eb1898b8967f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8463cdf2_f4f5d058",
+        "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/LLDPLinkAger.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-02-24T00:04:26Z",
+      "side": 1,
+      "message": "checkstyle \" `+` should be on next line.",
+      "revId": "5eb98be1196e0c356092c83b4039eb1898b8967f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "aef3614b_3cdd4d9b",
+        "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/utils/LLDPDiscoveryUtils.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 200,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-02-24T00:04:26Z",
+      "side": 1,
+      "message": "it should be error.",
+      "revId": "5eb98be1196e0c356092c83b4039eb1898b8967f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
