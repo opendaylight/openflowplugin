@@ -77,7 +77,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                 switch (targetWorkMode) {
                     case COLLECTALL:
                         context.enableGathering();
-                        // FIXME: is it a genuine fall through or an error?
+                        break;
                     case FULLYDISABLED:
                         context.disableGathering();
                         break;
@@ -107,10 +107,9 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                 converterExecutor,
                 statisticsWriterProvider,
                 executorService,
+                config,
                 !isStatisticsFullyDisabled && config.isIsStatisticsPollingOn(),
-                useReconciliationFramework,
-                config.getBasicTimerDelay().getValue(),
-                config.getMaximumTimerDelay().getValue());
+                useReconciliationFramework);
 
         contexts.put(deviceContext.getDeviceInfo(), statisticsContext);
         return statisticsContext;

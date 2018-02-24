@@ -37,7 +37,7 @@ import org.osgi.service.cm.ConfigurationAdmin;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ConfigurationServiceFactoryImplTest {
-    private static final int CONFIG_PROP_COUNT = 16;
+    private static final int CONFIG_PROP_COUNT = 22;
     private static final boolean IS_STATISTICS_POLLING_ON = true;
     private static final int BARRIER_COUNT_LIMIT = 2000;
     private static final long BARRIER_INTERVAL_TIMEOUT_LIMIT = 3000;
@@ -79,6 +79,13 @@ public class ConfigurationServiceFactoryImplTest {
     @Before
     public void setUp() throws Exception {
         when(config.isIsStatisticsPollingOn()).thenReturn(IS_STATISTICS_POLLING_ON);
+        when(config.isIsFlowStatisticsPollingOn()).thenReturn(IS_STATISTICS_POLLING_ON);
+        when(config.isIsTableStatisticsPollingOn()).thenReturn(IS_STATISTICS_POLLING_ON);
+        when(config.isIsFlowStatisticsPollingOn()).thenReturn(IS_STATISTICS_POLLING_ON);
+        when(config.isIsGroupStatisticsPollingOn()).thenReturn(IS_STATISTICS_POLLING_ON);
+        when(config.isIsMeterStatisticsPollingOn()).thenReturn(IS_STATISTICS_POLLING_ON);
+        when(config.isIsQueueStatisticsPollingOn()).thenReturn(IS_STATISTICS_POLLING_ON);
+        when(config.isIsPortStatisticsPollingOn()).thenReturn(IS_STATISTICS_POLLING_ON);
         when(config.getBarrierCountLimit()).thenReturn(new NonZeroUint16Type(BARRIER_COUNT_LIMIT));
         when(config.getBarrierIntervalTimeoutLimit()).thenReturn(new NonZeroUint32Type(BARRIER_INTERVAL_TIMEOUT_LIMIT));
         when(config.getEchoReplyTimeout()).thenReturn(new NonZeroUint32Type(ECHO_REPLY_TIMEOUT));
