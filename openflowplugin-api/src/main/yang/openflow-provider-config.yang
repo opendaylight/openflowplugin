@@ -47,6 +47,48 @@ module openflow-provider-config {
 
         leaf is-statistics-polling-on {
             description "If enabled, periodic statistics gathering will be
+                turned on. If false takes precedence over the per-capability configuration.";
+            type boolean;
+            default "true";
+        }
+
+        leaf is-table-statistics-polling-on {
+            description "If enabled, periodic table statistics gathering will be
+                turned on";
+            type boolean;
+            default "true";
+        }
+
+        leaf is-flow-statistics-polling-on {
+            description "If enabled, periodic flow statistics gathering will be
+                turned on";
+            type boolean;
+            default "true";
+        }
+
+        leaf is-group-statistics-polling-on {
+            description "If enabled, periodic group statistics gathering will be
+                turned on";
+            type boolean;
+            default "true";
+        }
+
+        leaf is-meter-statistics-polling-on {
+            description "If enabled, periodic meter statistics gathering will be
+                turned on";
+            type boolean;
+            default "true";
+        }
+
+        leaf is-port-statistics-polling-on {
+            description "If enabled, periodic port statistics gathering will be
+                turned on";
+            type boolean;
+            default "true";
+        }
+
+        leaf is-queue-statistics-polling-on {
+            description "If enabled, periodic queue statistics gathering will be
                 turned on";
             type boolean;
             default "true";
