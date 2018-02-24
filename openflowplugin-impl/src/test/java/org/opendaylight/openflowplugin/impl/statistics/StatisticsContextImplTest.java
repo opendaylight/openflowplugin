@@ -23,6 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
@@ -32,6 +33,8 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorM
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint32Type;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
@@ -45,21 +48,35 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
     private static final Long TEST_XID = 55L;
     private StatisticsContextImpl<MultipartReply> statisticsContext;
     private ConvertorManager convertorManager;
+    @Mock
+    private OpenflowProviderConfig config =
+            Mockito.mock(OpenflowProviderConfig.class);
 
     @Before
     public void setUp() throws Exception {
         convertorManager = ConvertorManagerFactory.createDefaultManager();
         when(mockedDeviceInfo.reserveXidForDeviceMessage()).thenReturn(TEST_XID);
         Mockito.when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
+        Mockito.when(config.isIsTableStatisticsPollingOn()).thenReturn(true);
+        Mockito.when(config.isIsFlowStatisticsPollingOn()).thenReturn(true);
+        Mockito.when(config.isIsGroupStatisticsPollingOn()).thenReturn(true);
+        Mockito.when(config.isIsMeterStatisticsPollingOn()).thenReturn(true);
+        Mockito.when(config.isIsPortStatisticsPollingOn()).thenReturn(true);
+        Mockito.when(config.isIsQueueStatisticsPollingOn()).thenReturn(true);
+        Mockito.when(config.getBasicTimerDelay()).thenReturn(new NonZeroUint32Type(3000L));
+        Mockito.when(config.getMaximumTimerDelay()).thenReturn(new NonZeroUint32Type(50000L));
+
         initStatisticsContext();
     }
 
     private void initStatisticsContext() {
         statisticsContext = new StatisticsContextImpl<>(mockedDeviceContext, convertorManager,
-                                                        MultipartWriterProviderFactory
-                                                                .createDefaultProvider(mockedDeviceContext),
-                                                        MoreExecutors.newDirectExecutorService(), true, false, 3000,
-                                                        50000);
+                MultipartWriterProviderFactory
+                        .createDefaultProvider(mockedDeviceContext),
+                MoreExecutors.newDirectExecutorService(),
+                config,
+                true,
+                false);
 
         statisticsContext.setStatisticsGatheringService(mockedStatisticsGatheringService);
         statisticsContext.setStatisticsGatheringOnTheFlyService(mockedStatisticsOnFlyGatheringService);
@@ -81,13 +98,13 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
     public void testClose() throws Exception {
         final StatisticsContextImpl<MultipartReply> statisticsContext =
                 new StatisticsContextImpl<>(mockedDeviceContext,
-                                            convertorManager,
-                                            MultipartWriterProviderFactory
-                                                    .createDefaultProvider(mockedDeviceContext),
-                                            MoreExecutors.newDirectExecutorService(),
-                                            true,
-                                            false,
-                                            3000,50000);
+                        convertorManager,
+                        MultipartWriterProviderFactory
+                                .createDefaultProvider(mockedDeviceContext),
+                        MoreExecutors.newDirectExecutorService(),
+                        config,
+                        true,
+                        false);
 
         final RequestContext<Object> requestContext = statisticsContext.createRequestContext();
         statisticsContext.close();
