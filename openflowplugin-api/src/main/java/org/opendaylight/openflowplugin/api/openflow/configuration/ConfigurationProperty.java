@@ -24,6 +24,30 @@ public enum ConfigurationProperty {
      */
     IS_STATISTICS_POLLING_ON,
     /**
+     * Is table statistics polling on property type.
+     */
+    IS_TABLE_STATISTICS_POLLING_ON,
+    /**
+     * Is flow statistics polling on property type.
+     */
+    IS_FLOW_STATISTICS_POLLING_ON,
+    /**
+     * Is group statistics polling on property type.
+     */
+    IS_GROUP_STATISTICS_POLLING_ON,
+    /**
+     * Is meter statistics polling on property type.
+     */
+    IS_METER_STATISTICS_POLLING_ON,
+    /**
+     * Is port statistics polling on property type.
+     */
+    IS_PORT_STATISTICS_POLLING_ON,
+    /**
+     * Is queue statistics polling on property type.
+     */
+    IS_QUEUE_STATISTICS_POLLING_ON,
+    /**
      * Barrier count limit property type.
      */
     BARRIER_COUNT_LIMIT,
