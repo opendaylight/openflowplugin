@@ -13,6 +13,8 @@ import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationS
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint16Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint32Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.openflow.provider.config.PerCapabilityStatisticsConfig;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.openflow.provider.config.PerCapabilityStatisticsConfigBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
@@ -45,6 +47,24 @@ public class OpenFlowProviderConfigImpl implements OpenflowProviderConfig {
     @Override
     public Boolean isIsStatisticsPollingOn() {
         return service.getProperty(ConfigurationProperty.IS_STATISTICS_POLLING_ON.toString(), Boolean::valueOf);
+    }
+
+    @Override
+    public PerCapabilityStatisticsConfig getPerCapabilityStatisticsConfig() {
+        final PerCapabilityStatisticsConfigBuilder configBuilder = new PerCapabilityStatisticsConfigBuilder();
+        configBuilder.setIsTableStatisticsPollingOn(
+                service.getProperty(ConfigurationProperty.IS_TABLE_STATISTICS_POLLING_ON.toString(), Boolean::valueOf));
+        configBuilder.setIsFlowStatisticsPollingOn(
+                service.getProperty(ConfigurationProperty.IS_FLOW_STATISTICS_POLLING_ON.toString(), Boolean::valueOf));
+        configBuilder.setIsGroupStatisticsPollingOn(
+                service.getProperty(ConfigurationProperty.IS_GROUP_STATISTICS_POLLING_ON.toString(), Boolean::valueOf));
+        configBuilder.setIsMeterStatisticsPollingOn(
+                service.getProperty(ConfigurationProperty.IS_METER_STATISTICS_POLLING_ON.toString(), Boolean::valueOf));
+        configBuilder.setIsPortStatisticsPollingOn(
+                service.getProperty(ConfigurationProperty.IS_PORT_STATISTICS_POLLING_ON.toString(), Boolean::valueOf));
+        configBuilder.setIsQueueStatisticsPollingOn(
+                service.getProperty(ConfigurationProperty.IS_QUEUE_STATISTICS_POLLING_ON.toString(), Boolean::valueOf));
+        return configBuilder.build();
     }
 
     @Override

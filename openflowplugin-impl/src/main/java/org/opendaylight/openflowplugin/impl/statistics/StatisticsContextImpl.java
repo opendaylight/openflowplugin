@@ -45,6 +45,7 @@ import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.Statis
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.openflow.provider.config.PerCapabilityStatisticsConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,6 +63,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     private final MultipartWriterProvider statisticsWriterProvider;
     private final DeviceInfo deviceInfo;
     private final TimeCounter timeCounter = new TimeCounter();
+    private final PerCapabilityStatisticsConfig perCapabilityStatisticsConfig;
     private final long statisticsPollingInterval;
     private final long maximumPollingDelay;
     private final boolean isUsingReconciliationFramework;
@@ -76,13 +78,15 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     StatisticsContextImpl(@Nonnull final DeviceContext deviceContext,
                           @Nonnull final ConvertorExecutor convertorExecutor,
                           @Nonnull final MultipartWriterProvider statisticsWriterProvider,
-                          @Nonnull final ListeningExecutorService executorService, boolean isStatisticsPollingOn,
-                          boolean isUsingReconciliationFramework, long statisticsPollingInterval,
-                          long maximumPollingDelay) {
+                          @Nonnull final ListeningExecutorService executorService,
+                          @Nonnull final PerCapabilityStatisticsConfig perCapabilityStatisticsConfig,
+                            boolean isStatisticsPollingOn, boolean isUsingReconciliationFramework,
+                            long statisticsPollingInterval, long maximumPollingDelay) {
         this.deviceContext = deviceContext;
         this.devState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         this.executorService = executorService;
         this.isStatisticsPollingOn = isStatisticsPollingOn;
+        this.perCapabilityStatisticsConfig = perCapabilityStatisticsConfig;
         this.convertorExecutor = convertorExecutor;
         this.deviceInfo = deviceContext.getDeviceInfo();
         this.statisticsPollingInterval = statisticsPollingInterval;
@@ -151,29 +155,29 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     public void instantiateServiceInstance() {
         final List<MultipartType> statListForCollecting = new ArrayList<>();
 
-        if (devState.isTableStatisticsAvailable()) {
+        if (devState.isTableStatisticsAvailable() && perCapabilityStatisticsConfig.isIsTableStatisticsPollingOn()) {
             statListForCollecting.add(MultipartType.OFPMPTABLE);
         }
 
-        if (devState.isFlowStatisticsAvailable()) {
+        if (devState.isFlowStatisticsAvailable() && perCapabilityStatisticsConfig.isIsFlowStatisticsPollingOn()) {
             statListForCollecting.add(MultipartType.OFPMPFLOW);
         }
 
-        if (devState.isGroupAvailable()) {
+        if (devState.isGroupAvailable() && perCapabilityStatisticsConfig.isIsGroupStatisticsPollingOn()) {
             statListForCollecting.add(MultipartType.OFPMPGROUPDESC);
             statListForCollecting.add(MultipartType.OFPMPGROUP);
         }
 
-        if (devState.isMetersAvailable()) {
+        if (devState.isMetersAvailable() && perCapabilityStatisticsConfig.isIsMeterStatisticsPollingOn()) {
             statListForCollecting.add(MultipartType.OFPMPMETERCONFIG);
             statListForCollecting.add(MultipartType.OFPMPMETER);
         }
 
-        if (devState.isPortStatisticsAvailable()) {
+        if (devState.isPortStatisticsAvailable() && perCapabilityStatisticsConfig.isIsPortStatisticsPollingOn()) {
             statListForCollecting.add(MultipartType.OFPMPPORTSTATS);
         }
 
-        if (devState.isQueueStatisticsAvailable()) {
+        if (devState.isQueueStatisticsAvailable() && perCapabilityStatisticsConfig.isIsQueueStatisticsPollingOn()) {
             statListForCollecting.add(MultipartType.OFPMPQUEUE);
         }
 

@@ -37,7 +37,7 @@ import org.osgi.service.cm.ConfigurationAdmin;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ConfigurationServiceFactoryImplTest {
-    private static final int CONFIG_PROP_COUNT = 16;
+    private static final int CONFIG_PROP_COUNT = 22;
     private static final boolean IS_STATISTICS_POLLING_ON = true;
     private static final int BARRIER_COUNT_LIMIT = 2000;
     private static final long BARRIER_INTERVAL_TIMEOUT_LIMIT = 3000;
