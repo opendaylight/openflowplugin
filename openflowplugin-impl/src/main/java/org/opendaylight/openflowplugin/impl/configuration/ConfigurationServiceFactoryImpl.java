@@ -68,6 +68,18 @@ public class ConfigurationServiceFactoryImpl implements ConfigurationServiceFact
                             providerConfig.getEchoReplyTimeout().getValue().toString())
                     .put(ConfigurationProperty.IS_STATISTICS_POLLING_ON.toString(),
                             providerConfig.isIsStatisticsPollingOn().toString())
+                    .put(ConfigurationProperty.IS_TABLE_STATISTICS_POLLING_ON.toString(),
+                            providerConfig.isIsStatisticsPollingOn().toString())
+                    .put(ConfigurationProperty.IS_FLOW_STATISTICS_POLLING_ON.toString(),
+                            providerConfig.isIsStatisticsPollingOn().toString())
+                    .put(ConfigurationProperty.IS_GROUP_STATISTICS_POLLING_ON.toString(),
+                            providerConfig.isIsStatisticsPollingOn().toString())
+                    .put(ConfigurationProperty.IS_METER_STATISTICS_POLLING_ON.toString(),
+                            providerConfig.isIsStatisticsPollingOn().toString())
+                    .put(ConfigurationProperty.IS_PORT_STATISTICS_POLLING_ON.toString(),
+                            providerConfig.isIsStatisticsPollingOn().toString())
+                    .put(ConfigurationProperty.IS_QUEUE_STATISTICS_POLLING_ON.toString(),
+                            providerConfig.isIsStatisticsPollingOn().toString())
                     .put(ConfigurationProperty.SKIP_TABLE_FEATURES.toString(),
                             providerConfig.isSkipTableFeatures().toString())
                     .put(ConfigurationProperty.BASIC_TIMER_DELAY.toString(),

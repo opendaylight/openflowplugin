@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.statistics;
 
 import static com.google.common.util.concurrent.Futures.immediateFuture;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -19,22 +20,28 @@ import com.google.common.util.concurrent.MoreExecutors;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.mockito.Matchers;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.openflow.provider.config.PerCapabilityStatisticsConfig;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 @RunWith(Parameterized.class)
 public class StatisticsContextImplParamTest extends StatisticsContextImpMockInitiation {
 
+    @Mock
+    private PerCapabilityStatisticsConfig perCapabilityStatisticsConfig = mock(PerCapabilityStatisticsConfig.class);
 
     public StatisticsContextImplParamTest(final boolean isTable, final boolean isFlow,
                                           final boolean isGroup, final boolean isMeter,
@@ -60,6 +67,16 @@ public class StatisticsContextImplParamTest extends StatisticsContextImpMockInit
         });
     }
 
+    @Before
+    public void setUp() {
+        Mockito.when(perCapabilityStatisticsConfig.isIsTableStatisticsPollingOn()).thenReturn(true);
+        Mockito.when(perCapabilityStatisticsConfig.isIsFlowStatisticsPollingOn()).thenReturn(true);
+        Mockito.when(perCapabilityStatisticsConfig.isIsGroupStatisticsPollingOn()).thenReturn(true);
+        Mockito.when(perCapabilityStatisticsConfig.isIsMeterStatisticsPollingOn()).thenReturn(true);
+        Mockito.when(perCapabilityStatisticsConfig.isIsPortStatisticsPollingOn()).thenReturn(true);
+        Mockito.when(perCapabilityStatisticsConfig.isIsQueueStatisticsPollingOn()).thenReturn(true);
+    }
+
     @Test
     public void gatherDynamicDataTest() throws InterruptedException {
 
@@ -76,6 +93,7 @@ public class StatisticsContextImplParamTest extends StatisticsContextImpMockInit
                 mockedDeviceContext, convertorManager,
                 MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext),
                 MoreExecutors.newDirectExecutorService(),
+                perCapabilityStatisticsConfig,
                 true, false, 3000, 50000);
 
         final ListenableFuture<RpcResult<List<MultipartReply>>> rpcResult = immediateFuture(RpcResultBuilder
