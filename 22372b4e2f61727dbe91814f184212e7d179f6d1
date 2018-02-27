@@ -1,0 +1,123 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "591f8a77_365673fd",
+        "filename": "openflowplugin-api/src/main/yang/openflow-provider-config.yang",
+        "patchSetId": 5
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-02-27T21:30:41Z",
+      "side": 1,
+      "message": "I think we need to clarify this API a bit. Please rephrase it to \"When true, openflowplugin won\u0027t send any specific role request down to the switch after plugin internally decides the ownership of the device using Entity Ownership Service. In this scenario, controller connection for the device will be in equal role. The behavior will be same for single node setup and clustered setup. In clustered scenario, all the controller will be in equal role for the device. In this case device will send all asynchronous event messages (e.g packet_in) to all the controllers, but openflowplugin will drop these events for the controller instances that is internally not owning the device.\"",
+      "revId": "22372b4e2f61727dbe91814f184212e7d179f6d1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d9b9d197_7be668e7",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
+        "patchSetId": 5
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-02-27T21:30:41Z",
+      "side": 1,
+      "message": "same here : \"When true, openflowplugin won\u0027t send any specific role request down to the switch after plugin internally decides the ownership of the device using Entity Ownership Service. In this scenario, controller connection for the device will be in equal role. The behavior will be same for single node setup and clustered setup. In clustered scenario, all the controller will be in equal role for the device. In this case device will send all asynchronous event messages (e.g packet_in) to all the controllers, but openflowplugin will drop these events for the controller instances that is internally not owning the device.\"",
+      "revId": "22372b4e2f61727dbe91814f184212e7d179f6d1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ec8f173c_3fae8d6e",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/org/opendaylight/blueprint/openflowplugin.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-02-27T21:30:41Z",
+      "side": 1,
+      "message": "These API\u0027s are now deprecated. Please use the EntityOwnershipService from org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService as defined above.",
+      "revId": "22372b4e2f61727dbe91814f184212e7d179f6d1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "41f6bc79_aabd78b1",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderFactoryImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-02-27T21:30:41Z",
+      "side": 1,
+      "message": "We don\u0027t need two instances of the same EOS, please use the instance that is already passed to the constructor.",
+      "revId": "22372b4e2f61727dbe91814f184212e7d179f6d1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "32a21f4f_3e5a2d5a",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleContextImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-02-27T21:30:41Z",
+      "side": 1,
+      "message": "Please rephrase it to \"(Skip sending role change request to device {} as user enabled equal role for controller\", deviceInfo). Also please make it info.",
+      "revId": "22372b4e2f61727dbe91814f184212e7d179f6d1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8f793c20_548058b3",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleContextImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-02-27T21:30:41Z",
+      "side": 1,
+      "message": "Please return Futures.immediateFuture(null);",
+      "revId": "22372b4e2f61727dbe91814f184212e7d179f6d1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dafcca77_7633b619",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImplTest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-02-27T21:30:41Z",
+      "side": 1,
+      "message": "i think all these need to be reverted once you move to the existing entityOwnershipService.",
+      "revId": "22372b4e2f61727dbe91814f184212e7d179f6d1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
