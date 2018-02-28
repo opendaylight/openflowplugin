@@ -14,8 +14,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import javax.annotation.Nonnull;
-import org.opendaylight.controller.md.sal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
@@ -40,9 +40,8 @@ import org.slf4j.LoggerFactory;
  * NodeConnectorInventoryEventTranslator is listening for changes in inventory operational DOM tree
  * and update LLDPSpeaker and topology.
  */
-public class NodeConnectorInventoryEventTranslator<T extends DataObject>
-        implements ClusteredDataTreeChangeListener<T>, AutoCloseable {
-    private static final Logger LOG = LoggerFactory.getLogger(NodeConnectorInventoryEventTranslator.class);
+public class NodeConnectorInventoryEventTranslator<T extends DataObject> implements DataTreeChangeListener<T>,
+        AutoCloseable {
 
     private static final InstanceIdentifier<State> II_TO_STATE = InstanceIdentifier.builder(Nodes.class)
             .child(Node.class).child(NodeConnector.class).augmentation(FlowCapableNodeConnector.class)
@@ -54,6 +53,7 @@ public class NodeConnectorInventoryEventTranslator<T extends DataObject>
 
     private static final long STARTUP_LOOP_TICK = 500L;
     private static final int STARTUP_LOOP_MAX_RETRIES = 8;
+    private static final Logger LOG = LoggerFactory.getLogger(NodeConnectorInventoryEventTranslator.class);
 
     private final ListenerRegistration<DataTreeChangeListener> listenerOnPortRegistration;
     private final ListenerRegistration<DataTreeChangeListener> listenerOnPortStateRegistration;
@@ -70,12 +70,24 @@ public class NodeConnectorInventoryEventTranslator<T extends DataObject>
                                                                                      II_TO_STATE);
         final SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
         try {
-            listenerOnPortRegistration = looper.loopUntilNoException(() ->
-                    dataBroker.registerDataTreeChangeListener(dtiToNodeConnector,
-                            NodeConnectorInventoryEventTranslator.this));
-            listenerOnPortStateRegistration = looper.loopUntilNoException(() ->
-                    dataBroker.registerDataTreeChangeListener(dtiToNodeConnectorState,
-                            NodeConnectorInventoryEventTranslator.this));
+            listenerOnPortRegistration = looper
+                    .loopUntilNoException(new Callable<ListenerRegistration<DataTreeChangeListener>>() {
+                        @Override
+                        public ListenerRegistration<DataTreeChangeListener> call() throws Exception {
+                            return dataBroker.registerDataTreeChangeListener(dtiToNodeConnector,
+                                                                             NodeConnectorInventoryEventTranslator
+                                                                                     .this);
+                        }
+                    });
+            listenerOnPortStateRegistration = looper
+                    .loopUntilNoException(new Callable<ListenerRegistration<DataTreeChangeListener>>() {
+                        @Override
+                        public ListenerRegistration<DataTreeChangeListener> call() throws Exception {
+                            return dataBroker.registerDataTreeChangeListener(dtiToNodeConnectorState,
+                                                                             NodeConnectorInventoryEventTranslator
+                                                                                     .this);
+                        }
+                    });
         } catch (Exception e) {
             LOG.error("DataTreeChangeListeners registration failed: {}", e);
             throw new IllegalStateException("NodeConnectorInventoryEventTranslator startup failed!", e);
@@ -185,4 +197,5 @@ public class NodeConnectorInventoryEventTranslator<T extends DataObject>
             observer.nodeConnectorRemoved(nodeConnectorInstanceId);
         }
     }
+
 }
