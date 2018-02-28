@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "877f1345_c3ed73c4",
+        "filename": "openflowplugin-api/src/main/yang/openflow-provider-config.yang",
+        "patchSetId": 5
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 7890
+      },
+      "writtenOn": "2018-02-28T00:22:21Z",
+      "side": 1,
+      "message": "I just sent a new patch with those changes.",
+      "parentUuid": "591f8a77_365673fd",
+      "revId": "22372b4e2f61727dbe91814f184212e7d179f6d1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d9b9d197_7be668e7",
         "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
         "patchSetId": 5
@@ -30,6 +48,24 @@
       "writtenOn": "2018-02-27T21:30:41Z",
       "side": 1,
       "message": "same here : \"When true, openflowplugin won\u0027t send any specific role request down to the switch after plugin internally decides the ownership of the device using Entity Ownership Service. In this scenario, controller connection for the device will be in equal role. The behavior will be same for single node setup and clustered setup. In clustered scenario, all the controller will be in equal role for the device. In this case device will send all asynchronous event messages (e.g packet_in) to all the controllers, but openflowplugin will drop these events for the controller instances that is internally not owning the device.\"",
+      "revId": "22372b4e2f61727dbe91814f184212e7d179f6d1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7f7c482e_e775b55a",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
+        "patchSetId": 5
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 7890
+      },
+      "writtenOn": "2018-02-28T00:22:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d9b9d197_7be668e7",
       "revId": "22372b4e2f61727dbe91814f184212e7d179f6d1",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "3d381a59_6708c5fb",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/org/opendaylight/blueprint/openflowplugin.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 7890
+      },
+      "writtenOn": "2018-02-28T00:22:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ec8f173c_3fae8d6e",
+      "revId": "22372b4e2f61727dbe91814f184212e7d179f6d1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "41f6bc79_aabd78b1",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderFactoryImpl.java",
         "patchSetId": 5
@@ -64,6 +118,24 @@
       "writtenOn": "2018-02-27T21:30:41Z",
       "side": 1,
       "message": "We don\u0027t need two instances of the same EOS, please use the instance that is already passed to the constructor.",
+      "revId": "22372b4e2f61727dbe91814f184212e7d179f6d1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "acd9b2ac_c50717b2",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderFactoryImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 7890
+      },
+      "writtenOn": "2018-02-28T00:22:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "41f6bc79_aabd78b1",
       "revId": "22372b4e2f61727dbe91814f184212e7d179f6d1",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "55cc7167_f9303c2f",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleContextImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 7890
+      },
+      "writtenOn": "2018-02-28T00:22:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "32a21f4f_3e5a2d5a",
+      "revId": "22372b4e2f61727dbe91814f184212e7d179f6d1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8f793c20_548058b3",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleContextImpl.java",
         "patchSetId": 5
@@ -104,6 +194,24 @@
     },
     {
       "key": {
+        "uuid": "941fda48_79a48a52",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleContextImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 7890
+      },
+      "writtenOn": "2018-02-28T00:22:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8f793c20_548058b3",
+      "revId": "22372b4e2f61727dbe91814f184212e7d179f6d1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "dafcca77_7633b619",
         "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImplTest.java",
         "patchSetId": 5
@@ -115,6 +223,24 @@
       "writtenOn": "2018-02-27T21:30:41Z",
       "side": 1,
       "message": "i think all these need to be reverted once you move to the existing entityOwnershipService.",
+      "revId": "22372b4e2f61727dbe91814f184212e7d179f6d1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "56dcdd3d_70eb6a42",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImplTest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 7890
+      },
+      "writtenOn": "2018-02-28T00:22:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dafcca77_7633b619",
       "revId": "22372b4e2f61727dbe91814f184212e7d179f6d1",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
