@@ -38,9 +38,10 @@ public class LLDPDiscoveryListener implements PacketProcessingListener {
     @Override
     public void onPacketReceived(PacketReceived lldp) {
         NodeConnectorRef src = LLDPDiscoveryUtils.lldpToNodeConnectorRef(lldp.getPayload(), true);
-        if(src != null) {
-            NodeKey nodeKey = src.getValue().firstKeyOf(Node.class);
-            LOG.debug("LLDP packet received for node {}", nodeKey);
+
+        if (src != null) {
+            final NodeKey nodeKey = lldp.getIngress().getValue().firstKeyOf(Node.class);
+            LOG.debug("LLDP packet received for destination node {}", nodeKey);
             if (nodeKey != null) {
                 LinkDiscoveredBuilder ldb = new LinkDiscoveredBuilder();
                 ldb.setDestination(lldp.getIngress());
@@ -56,7 +57,7 @@ public class LLDPDiscoveryListener implements PacketProcessingListener {
                             "node {}. Link : {}", nodeKey.getId().getValue(), ld);
                 }
             } else {
-                LOG.debug("LLDP packet ignored. Unable to extract node-key from source node-connector reference");
+                LOG.debug("LLDP packet ignored. Unable to extract node-key from packet-in ingress.");
             }
         }
     }
