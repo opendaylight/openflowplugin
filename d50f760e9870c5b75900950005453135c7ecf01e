@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa6cf720_2d144ce9",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/lifecycle/ContextChainHolderImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 329,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-03-01T05:30:02Z",
+      "side": 1,
+      "message": "complete package not required, only Optional should be sufficient as you have give the expanded package for google Optional",
+      "range": {
+        "startLine": 329,
+        "startChar": 12,
+        "endLine": 329,
+        "endChar": 22
+      },
+      "revId": "d50f760e9870c5b75900950005453135c7ecf01e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
