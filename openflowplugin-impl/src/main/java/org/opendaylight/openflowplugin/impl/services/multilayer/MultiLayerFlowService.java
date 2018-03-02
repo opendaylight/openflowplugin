@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -69,7 +70,7 @@ public final class MultiLayerFlowService<O extends DataObject> extends AbstractS
         final SettableFuture<RpcResult<O>> finalFuture = SettableFuture.create();
         Futures.addCallback(allFutures, new FutureCallback<List<RpcResult<O>>>() {
             @Override
-            public void onSuccess(final List<RpcResult<O>> results) {
+            public void onSuccess(@Nonnull final List<RpcResult<O>> results) {
                 final ArrayList<RpcError> errors = new ArrayList();
                 for (RpcResult<O> flowModResult : results) {
                     if (flowModResult == null) {

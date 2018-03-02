@@ -18,6 +18,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Future;
+import javax.annotation.Nonnull;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ErrorHandler;
@@ -328,7 +329,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
         ListenableFuture<RpcResult<Void>> rpcResultListenableFuture = JdkFutureAdapters.listenInPoolThread(helloResult);
         Futures.addCallback(rpcResultListenableFuture, new FutureCallback<RpcResult<Void>>() {
             @Override
-            public void onSuccess(RpcResult<Void> result) {
+            public void onSuccess(@Nonnull RpcResult<Void> result) {
                 if (result.isSuccessful()) {
                     LOG.debug("hello successfully sent, xid={}, addr={}", helloXid,
                               connectionAdapter.getRemoteAddress());
@@ -380,7 +381,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
         Futures.addCallback(JdkFutureAdapters.listenInPoolThread(featuresFuture),
                 new FutureCallback<RpcResult<GetFeaturesOutput>>() {
                     @Override
-                    public void onSuccess(RpcResult<GetFeaturesOutput> rpcFeatures) {
+                    public void onSuccess(@Nonnull RpcResult<GetFeaturesOutput> rpcFeatures) {
                         LOG.trace("features are back");
                         if (rpcFeatures.isSuccessful()) {
                             GetFeaturesOutput featureOutput = rpcFeatures.getResult();

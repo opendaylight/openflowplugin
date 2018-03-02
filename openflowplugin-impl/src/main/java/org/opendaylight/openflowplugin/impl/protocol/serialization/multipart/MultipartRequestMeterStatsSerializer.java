@@ -14,18 +14,13 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.multipart.request.multipart.request.body.MultipartRequestMeterStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.request.MultipartRequestBody;
 
-public class MultipartRequestMeterStatsSerializer implements OFSerializer<MultipartRequestBody> {
+public class MultipartRequestMeterStatsSerializer implements OFSerializer<MultipartRequestMeterStats> {
 
     private static final byte PADDING_IN_MULTIPART_REQUEST_METER_BODY = 4;
 
     @Override
-    public void serialize(final MultipartRequestBody multipartRequestBody, final ByteBuf byteBuf) {
-        final MultipartRequestMeterStats multipartRequestMeterStats = MultipartRequestMeterStats
-            .class
-            .cast(multipartRequestBody);
-
+    public void serialize(final MultipartRequestMeterStats multipartRequestMeterStats, final ByteBuf byteBuf) {
         byteBuf.writeInt(MoreObjects
             .firstNonNull(multipartRequestMeterStats.getMeterId(), new MeterId(OFConstants.OFPM_ALL))
                 .getValue().intValue());
