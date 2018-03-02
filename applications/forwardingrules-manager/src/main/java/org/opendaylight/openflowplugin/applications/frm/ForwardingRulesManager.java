@@ -9,8 +9,10 @@
 package org.opendaylight.openflowplugin.applications.frm;
 
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
+import org.opendaylight.serviceutils.srm.ServiceRecoveryRegistry;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationListener;
 import org.opendaylight.openflowplugin.applications.frm.impl.FlowNodeConnectorInventoryTranslatorImpl;
+import org.opendaylight.openflowplugin.applications.frm.recovery.impl.OpenflowpluginServiceRecoveryHandler;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
@@ -171,4 +173,18 @@ public interface ForwardingRulesManager extends ConfigurationListener, AutoClose
      *         config file or False
      */
     boolean isBundleBasedReconciliationEnabled();
+
+    /**
+     * Method returns OpenflowpluginServicerecoveryHandler, for service recovery.
+     *
+     * @return OpenflowpluginServiceRecoveryHandler
+     */
+    OpenflowpluginServiceRecoveryHandler getOpenflowpluginServiceRecoveryHandler();
+
+    /**
+     * Method returns ServiceRecoveryRegistry for service registration.
+     *
+     * @return ServiceRecoveryRegistry
+     */
+    ServiceRecoveryRegistry getServiceRecoveryRegistry();
 }

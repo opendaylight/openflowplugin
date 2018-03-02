@@ -21,9 +21,11 @@ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.serviceutils.srm.ServiceRecoveryRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.applications.frm.impl.DeviceMastershipManager;
 import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
+import org.opendaylight.openflowplugin.applications.frm.recovery.impl.OpenflowpluginServiceRecoveryHandler;
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
@@ -59,6 +61,10 @@ public class MeterListenerTest extends FRMTest {
     private NotificationProviderService notificationService;
     @Mock
     private ReconciliationManager reconciliationManager;
+    @Mock
+    private OpenflowpluginServiceRecoveryHandler openflowpluginServiceRecoveryHandler;
+    @Mock
+    private ServiceRecoveryRegistry serviceRecoveryRegistry;
 
     @Before
     public void setUp() {
@@ -69,7 +75,9 @@ public class MeterListenerTest extends FRMTest {
                 clusterSingletonService,
                 notificationService,
                 getConfigurationService(),
-                reconciliationManager);
+                reconciliationManager,
+                openflowpluginServiceRecoveryHandler,
+                serviceRecoveryRegistry);
 
         forwardingRulesManager.start();
         // TODO consider tests rewrite (added because of complicated access)
