@@ -15,6 +15,10 @@
 
     <name>OpenDaylight :: Openflow Plugin :: Application - Southbound CLI</name>
 
+    <properties>
+        <genius.version>0.5.0-SNAPSHOT</genius.version>
+    </properties>
+
     <dependencies>
         <!-- feature dependencies -->
         <dependency>
@@ -29,6 +33,14 @@
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>southbound-cli</artifactId>
             <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opendaylight.genius</groupId>
+            <artifactId>odl-genius-srm</artifactId>
+            <version>${genius.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
         </dependency>
 
     </dependencies>
