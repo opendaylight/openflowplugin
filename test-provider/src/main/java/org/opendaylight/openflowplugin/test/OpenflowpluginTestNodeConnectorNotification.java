@@ -9,8 +9,6 @@ package org.opendaylight.openflowplugin.test;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.NotificationService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRemoved;
@@ -18,7 +16,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeCon
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.OpendaylightInventoryListener;
-import org.opendaylight.yangtools.concepts.Registration;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,26 +24,19 @@ public class OpenflowpluginTestNodeConnectorNotification {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowpluginTestNodeConnectorNotification.class);
 
-    private DataBroker dataBroker;
-    private ProviderContext pc;
-    private final BundleContext ctx;
     private final PortEventListener portEventListener = new PortEventListener();
-    private static NotificationService notificationService;
-    private Registration listenerReg;
+    private NotificationService notificationService;
 
     public OpenflowpluginTestNodeConnectorNotification(BundleContext ctx) {
-        this.ctx = ctx;
     }
 
     public void onSessionInitiated(ProviderContext session) {
-        pc = session;
         notificationService = session.getSALService(NotificationService.class);
         // For switch events
-        listenerReg = notificationService.registerNotificationListener(portEventListener);
-        dataBroker = session.getSALService(DataBroker.class);
+        notificationService.registerNotificationListener(portEventListener);
     }
 
-    final class PortEventListener implements OpendaylightInventoryListener {
+    private static final class PortEventListener implements OpendaylightInventoryListener {
 
         List<NodeUpdated> nodeUpdated = new ArrayList<>();
         List<NodeRemoved> nodeRemoved = new ArrayList<>();

@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.test;
 
+import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -590,7 +591,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
     }
 
     private void writeTableFeatures(final CommandInterpreter ci, TableFeatures tableFeatures) {
-        ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
+        ReadWriteTransaction modification = Preconditions.checkNotNull(dataBroker).newReadWriteTransaction();
 
         KeyedInstanceIdentifier<TableFeatures, TableFeaturesKey> path1 = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
