@@ -14,7 +14,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -29,7 +28,6 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderCo
 import org.opendaylight.controller.sal.binding.api.NotificationService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Dscp;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6FlowLabel;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
@@ -140,7 +138,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
@@ -188,7 +185,6 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
     private DataBroker dataBroker;
     private final BundleContext ctx;
-    private FlowBuilder testFlow;
     private static final String ORIGINAL_FLOW_NAME = "Foo";
     private static final String UPDATED_FLOW_NAME = "Bar";
     private static final String IPV4_PREFIX = "10.0.0.1/24";
@@ -196,7 +192,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     private static final String SRC_MAC_ADDRESS = "00:00:00:00:23:ae";
     private final SalFlowListener flowEventListener = new FlowEventListenerLoggingImpl();
     private final NodeErrorListener nodeErrorListener = new NodeErrorListenerLoggingImpl();
-    private static NotificationService notificationService;
+    private NotificationService notificationService;
 
     public OpenflowpluginTestCommandProvider(final BundleContext ctx) {
         this.ctx = ctx;
@@ -707,7 +703,6 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         flow.setKey(key);
         flow.setFlowName(ORIGINAL_FLOW_NAME + "X" + flowType);
-        testFlow = flow;
         return flow;
     }
 
@@ -751,7 +746,6 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         flow.setKey(key);
         flow.setFlowName(ORIGINAL_FLOW_NAME + "X" + flowType);
-        testFlow = flow;
         return flow;
     }
 
@@ -765,13 +759,17 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         flow.setTableId((short) 0);
         final FlowKey key = new FlowKey(new FlowId(Long.toString(id)));
         flow.setKey(key);
-        testFlow = flow;
         return flow;
     }
 
     private short getTableId(final String tableId) {
         final short TABLE_ID = 2;
         short table = TABLE_ID;
+
+        if (tableId == null) {
+            return table;
+        }
+
         try {
             table = Short.parseShort(tableId);
         } catch (NumberFormatException ex) {
@@ -2875,28 +2873,6 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return match;
     }
 
-    private static MatchBuilder createL3IPv4Match() {
-        final MatchBuilder match = new MatchBuilder();
-
-        final EthernetMatchBuilder eth = new EthernetMatchBuilder();
-        final EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-        ethTypeBuilder.setType(new EtherType(0x0800L));
-        eth.setEthernetType(ethTypeBuilder.build());
-        match.setEthernetMatch(eth.build());
-
-        final Ipv4MatchBuilder ipv4Match = new Ipv4MatchBuilder();
-        // ipv4 match
-        final Ipv4Prefix dstip = new Ipv4Prefix("200.71.9.52/10");
-        final Ipv4Prefix srcip = new Ipv4Prefix("100.1.1.1/8");
-        final Ipv4MatchBuilder ipv4match = new Ipv4MatchBuilder();
-        ipv4match.setIpv4Destination(dstip);
-        ipv4match.setIpv4Source(srcip);
-        match.setLayer3Match(ipv4match.build());
-
-        return match;
-
-    }
-
     private static MatchBuilder createL3IPv6Match() {
         final MatchBuilder match = new MatchBuilder();
 
@@ -2906,9 +2882,6 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         eth.setEthernetType(ethTypeBuilder.build());
         match.setEthernetMatch(eth.build());
 
-        final Ipv6Prefix dstip6 = new Ipv6Prefix("2002::2/64");
-        final Ipv6Prefix srcip6 = new Ipv6Prefix("2001:0:0:0:0:0:0:1/56");
-        final Ipv6Address ndtarget = new Ipv6Address("2001:db8:0:1:fd97:f9f0:a810:782e");
         final MacAddress ndsll = new MacAddress("c2:00:54:f5:00:00");
         final MacAddress ndtll = new MacAddress("00:0c:29:0e:4c:67");
         final Ipv6ExtHeaderBuilder nextheader = new Ipv6ExtHeaderBuilder();
@@ -3243,13 +3216,6 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         writeFlow(ci, tf, tn);
     }
 
-    private static NodeRef createNodeRef(final String string) {
-        final NodeKey key = new NodeKey(new NodeId(string));
-        final InstanceIdentifier<Node> path = InstanceIdentifier.create(Nodes.class).child(Node.class, key);
-
-        return new NodeRef(path);
-    }
-
     @Override
     public String getHelp() {
         return "No help";
@@ -3266,11 +3232,6 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         final String warmupIterationsStr = ci.nextArgument();
         final String threadCountStr = ci.nextArgument();
         final String warmUpStr = ci.nextArgument();
-
-        Collection<String> testResults = null;
-        if (testResults == null) {
-            testResults = new ArrayList<>();
-        }
 
         int numberOfSwtiches = 0;
         int numberOfFlows = 0;
@@ -3351,11 +3312,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         int numberOfSwitches;
         int numberOfFlows;
-        int testTime;
         CommandInterpreter ci;
-        int testFlowsAdded;
         int theadNumber;
-        Collection<String> testResults = null;
         int tableID = 0;
 
         TestFlowThread(final int numberOfSwtiches, final int numberOfFlows, final CommandInterpreter ci,
@@ -3394,10 +3352,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
                 }
             }
             final long endTime = System.currentTimeMillis();
-            final long timeInSeconds = Math.round((endTime - startTime) / 1000);
+            final long timeInSeconds = Math.round((endTime - startTime) / 1000.0F);
             if (timeInSeconds > 0) {
                 ci.println("Total flows added in Thread:" + this.theadNumber + ": Flows/Sec::"
-                    + Math.round(totalNumberOfFlows / timeInSeconds));
+                    + Math.round((float)totalNumberOfFlows / timeInSeconds));
             } else {
                 ci.println("Total flows added in Thread:" + this.theadNumber + ": Flows/Sec::" + totalNumberOfFlows);
             }
