@@ -19,7 +19,10 @@ import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+import org.opendaylight.genius.srm.RecoverableListener;
+import org.opendaylight.genius.srm.ServiceRecoveryRegistry;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
+import org.opendaylight.openflowplugin.applications.frm.recovery.impl.OpenflowpluginServiceRecoveryHandler;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -55,16 +58,30 @@ import org.slf4j.LoggerFactory;
  * methods: add, update and remove {@link Flow} processing for
  * {@link org.opendaylight.controller.md.sal.binding.api.DataTreeModification}.
  */
-public class FlowForwarder extends AbstractListeningCommiter<Flow> {
+public class FlowForwarder extends AbstractListeningCommiter<Flow>  implements RecoverableListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(FlowForwarder.class);
     private final DataBroker dataBroker;
     private ListenerRegistration<FlowForwarder> listenerRegistration;
 
-    public FlowForwarder(final ForwardingRulesManager manager, final DataBroker db) {
+    public FlowForwarder(final ForwardingRulesManager manager, final DataBroker db,
+                         final OpenflowpluginServiceRecoveryHandler openflowpluginServiceRecoveryHandler,
+                         final ServiceRecoveryRegistry serviceRecoveryRegistry) {
         super(manager);
         dataBroker = Preconditions.checkNotNull(db, "DataBroker can not be null!");
-        registrationListener(db);
+        registerListener();
+        serviceRecoveryRegistry.addRecoverableListener(openflowpluginServiceRecoveryHandler.buildServiceRegistryKey(),
+                this);
+    }
+
+    @Override
+    public void registerListener() {
+        this.registrationListener(dataBroker);
+    }
+
+    @Override
+    public  void deregisterListener() {
+        close();
     }
 
     @SuppressWarnings("IllegalCatch")
