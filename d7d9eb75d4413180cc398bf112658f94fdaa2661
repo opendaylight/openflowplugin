@@ -1,0 +1,129 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "232b6c48_44ed7382",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2018-03-02T15:55:32Z",
+      "side": 1,
+      "message": "\"Parameter must be non-null but is marked as nullable\" - code expects non-null but FutureCallback annotates as @Nullable but it should never be null.",
+      "revId": "d7d9eb75d4413180cc398bf112658f94fdaa2661",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d6fb0a4e_7ed53d96",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceManagerImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2018-03-02T15:55:32Z",
+      "side": 1,
+      "message": "\"Synchronization performed on util.concurrent instance\" - use different object for locking.",
+      "revId": "d7d9eb75d4413180cc398bf112658f94fdaa2661",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "acdb96bf_3b1daa0d",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/SimpleRatelimiter.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2018-03-02T15:55:32Z",
+      "side": 1,
+      "message": "\"Synchronization performed on util.concurrent instance\"",
+      "revId": "d7d9eb75d4413180cc398bf112658f94fdaa2661",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a6a1a7c_9d5cc328",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/mastership/MastershipChangeServiceManagerImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2018-03-02T15:55:32Z",
+      "side": 1,
+      "message": "This should be thread-safe.",
+      "revId": "d7d9eb75d4413180cc398bf112658f94fdaa2661",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a8cdf754_3890124a",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/mastership/MastershipChangeServiceManagerImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2018-03-02T15:55:32Z",
+      "side": 1,
+      "message": "Inline this to avoid \"Field not initialized in constructor but dereferenced without null check\" for masterChecker.",
+      "revId": "d7d9eb75d4413180cc398bf112658f94fdaa2661",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "09e38905_0e395ab0",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/deserialization/action/SetFieldActionDeserializer.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2018-03-02T15:55:32Z",
+      "side": 1,
+      "message": "Avoids \"Field not initialized in constructor but dereferenced without null check\".",
+      "range": {
+        "startLine": 39,
+        "startChar": 52,
+        "endLine": 39,
+        "endChar": 78
+      },
+      "revId": "d7d9eb75d4413180cc398bf112658f94fdaa2661",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "713c3618_f28c74c3",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/util/NodeConnectorRefToPortTranslator.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2018-03-02T15:55:32Z",
+      "side": 1,
+      "message": "Avoids \"Unchecked/unconfirmed cast of return value from method\"",
+      "revId": "d7d9eb75d4413180cc398bf112658f94fdaa2661",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

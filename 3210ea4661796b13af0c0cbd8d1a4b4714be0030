@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d7b69e16_fc14778c",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/deserialization/match/MatchDeserializer.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2018-03-02T15:55:32Z",
+      "side": 0,
+      "message": "\"Dead store to local variable\"",
+      "revId": "3210ea4661796b13af0c0cbd8d1a4b4714be0030",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d9c0c0be_067860fd",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/deserialization/messages/FlowMessageDeserializer.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2018-03-02T15:55:32Z",
+      "side": 0,
+      "message": "\"Check for sign of bitwise operation\"",
+      "revId": "3210ea4661796b13af0c0cbd8d1a4b4714be0030",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "43a45b98_d1595ceb",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/serialization/actions/GroupActionSerializer.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2018-03-02T15:55:32Z",
+      "side": 0,
+      "message": "\"Unchecked/unconfirmed cast\" - parameterized the Action type in the base class to avoid this.",
+      "revId": "3210ea4661796b13af0c0cbd8d1a4b4714be0030",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8046a370_b44a2983",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/serialization/multipart/MultipartRequestExperimenterSerializer.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2018-03-02T15:55:32Z",
+      "side": 0,
+      "message": "\"Unchecked/unconfirmed cast\" - since the class expects a MultipartRequestExperimenter, parameterize it that way.",
+      "revId": "3210ea4661796b13af0c0cbd8d1a4b4714be0030",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a92972ca_0162bda1",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/serialization/util/ActionUtil.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2018-03-02T15:55:32Z",
+      "side": 0,
+      "message": "\"MultipartRequestExperimenter\" - method expects a GeneralExtensionGrouping so declare he param as such.",
+      "revId": "3210ea4661796b13af0c0cbd8d1a4b4714be0030",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fdd16fa4_8237b97e",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsManagerImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2018-03-02T15:55:32Z",
+      "side": 0,
+      "message": "\"Method uses the same code for two branches\" - the parameters to StatisticsContextImpl are the same - the only difference is the parameterized type which doesn\u0027t matter.",
+      "revId": "3210ea4661796b13af0c0cbd8d1a4b4714be0030",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
