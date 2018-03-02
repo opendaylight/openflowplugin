@@ -10,15 +10,14 @@ package org.opendaylight.openflowplugin.impl.protocol.serialization.actions;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwTtlActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.ttl.action._case.SetNwTtlAction;
 
-public class SetNwTtlActionSerializer extends AbstractActionSerializer {
+public class SetNwTtlActionSerializer extends AbstractActionSerializer<SetNwTtlActionCase> {
     @Override
-    public void serialize(Action action, ByteBuf outBuffer) {
+    public void serialize(SetNwTtlActionCase action, ByteBuf outBuffer) {
         super.serialize(action, outBuffer);
-        final SetNwTtlAction setNwTtlAction = SetNwTtlActionCase.class.cast(action).getSetNwTtlAction();
+        final SetNwTtlAction setNwTtlAction = action.getSetNwTtlAction();
         outBuffer.writeByte(setNwTtlAction.getNwTtl());
         outBuffer.writeZero(ActionConstants.SET_NW_TTL_PADDING);
     }

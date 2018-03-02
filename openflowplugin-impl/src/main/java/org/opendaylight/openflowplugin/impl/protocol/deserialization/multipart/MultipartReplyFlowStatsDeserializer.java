@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
 
+import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -85,7 +86,8 @@ public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<Multi
                     .setPacketCount(new Counter64(new BigInteger(1, packetCount)))
                     .setByteCount(new Counter64(new BigInteger(1, byteCount)));
 
-            final OFDeserializer<Match> matchDeserializer = registry.getDeserializer(MATCH_KEY);
+            final OFDeserializer<Match> matchDeserializer =
+                    Preconditions.checkNotNull(registry).getDeserializer(MATCH_KEY);
             itemBuilder.setMatch(MatchUtil.transformMatch(matchDeserializer.deserialize(itemMessage),
                     org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match.class));
 
@@ -122,11 +124,11 @@ public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<Multi
     }
 
     private static FlowModFlags createFlowModFlagsFromBitmap(int input) {
-        final Boolean ofp_FF_SendFlowRem = (input & 1) > 0;
-        final Boolean ofp_FF_CheckOverlap = (input & 1 << 1) > 0;
-        final Boolean ofp_FF_ResetCounts = (input & 1 << 2) > 0;
-        final Boolean ofp_FF_NoPktCounts = (input & 1 << 3) > 0;
-        final Boolean ofp_FF_NoBytCounts = (input & 1 << 4) > 0;
+        final Boolean ofp_FF_SendFlowRem = (input & 1) != 0;
+        final Boolean ofp_FF_CheckOverlap = (input & 1 << 1) != 0;
+        final Boolean ofp_FF_ResetCounts = (input & 1 << 2) != 0;
+        final Boolean ofp_FF_NoPktCounts = (input & 1 << 3) != 0;
+        final Boolean ofp_FF_NoBytCounts = (input & 1 << 4) != 0;
         return new FlowModFlags(ofp_FF_CheckOverlap, ofp_FF_NoBytCounts, ofp_FF_NoPktCounts, ofp_FF_ResetCounts,
                 ofp_FF_SendFlowRem);
     }

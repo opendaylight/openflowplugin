@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.serialization.actions;
 
+import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
@@ -18,14 +19,14 @@ import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetFieldCase;
 
-public abstract class AbstractSetFieldActionSerializer extends AbstractActionSerializer implements
+public abstract class AbstractSetFieldActionSerializer extends AbstractActionSerializer<Action> implements
         SerializerRegistryInjector {
 
     private SerializerRegistry registry;
 
     @Override
     public void serialize(Action input, ByteBuf outBuffer) {
-        final OFSerializer<Action> serializer = registry
+        final OFSerializer<Action> serializer = Preconditions.checkNotNull(registry)
                 .getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, SetFieldCase.class));
 
         serializer.serialize(buildAction(input), outBuffer);

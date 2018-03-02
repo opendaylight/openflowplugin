@@ -11,7 +11,7 @@ package org.opendaylight.openflowplugin.impl.protocol.serialization.actions;
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 
-public class DropActionSerializer extends AbstractActionSerializer {
+public class DropActionSerializer extends AbstractActionSerializer<Action> {
 
     @Override
     public void serialize(Action action, ByteBuf outBuffer) {

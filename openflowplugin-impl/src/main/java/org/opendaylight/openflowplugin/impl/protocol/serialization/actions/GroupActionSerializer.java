@@ -10,15 +10,14 @@ package org.opendaylight.openflowplugin.impl.protocol.serialization.actions;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.group.action._case.GroupAction;
 
-public class GroupActionSerializer extends AbstractActionSerializer {
+public class GroupActionSerializer extends AbstractActionSerializer<GroupActionCase> {
     @Override
-    public void serialize(Action action, ByteBuf outBuffer) {
+    public void serialize(GroupActionCase action, ByteBuf outBuffer) {
         super.serialize(action, outBuffer);
-        final GroupAction groupAction = GroupActionCase.class.cast(action).getGroupAction();
+        final GroupAction groupAction = action.getGroupAction();
         outBuffer.writeInt(groupAction.getGroupId().intValue());
     }
 

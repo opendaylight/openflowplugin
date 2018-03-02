@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Future;
+import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -88,7 +89,7 @@ public class MultiLayerTableMultipartService extends AbstractTableMultipartServi
         class CallBackImpl implements FutureCallback<RpcResult<List<MultipartReply>>> {
             @Override
             @SuppressWarnings("checkstyle:IllegalCatch")
-            public void onSuccess(final RpcResult<List<MultipartReply>> result) {
+            public void onSuccess(@Nonnull final RpcResult<List<MultipartReply>> result) {
 
                 if (result.isSuccessful()) {
                     final List<MultipartReply> multipartReplies = result.getResult();
@@ -143,7 +144,7 @@ public class MultiLayerTableMultipartService extends AbstractTableMultipartServi
                 final MultipartReplyBody multipartReplyBody = multipartReply.getMultipartReplyBody();
                 if (multipartReplyBody instanceof MultipartReplyTableFeaturesCase) {
                     final MultipartReplyTableFeaturesCase tableFeaturesCase =
-                            ((MultipartReplyTableFeaturesCase) multipartReplyBody);
+                            (MultipartReplyTableFeaturesCase) multipartReplyBody;
                     final MultipartReplyTableFeatures salTableFeatures = tableFeaturesCase
                             .getMultipartReplyTableFeatures();
 

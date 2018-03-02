@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.messages;
 
+import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import java.math.BigInteger;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
@@ -46,8 +47,8 @@ public class PacketInMessageDeserializer implements OFDeserializer<PacketInMessa
                 .setXid(message.readUnsignedInt());
 
         // We are ignoring buffer id and total len as it is not specified in OpenFlowPlugin models
-        final long bufferId = message.readUnsignedInt();
-        final int totalLen = message.readUnsignedShort();
+        message.readUnsignedInt();
+        message.readUnsignedShort();
 
         packetInMessageBuilder
                 .setPacketInReason(PacketInUtil
@@ -61,7 +62,7 @@ public class PacketInMessageDeserializer implements OFDeserializer<PacketInMessa
         packetInMessageBuilder
                 .setFlowCookie(new FlowCookie(new BigInteger(1, cookie)));
 
-        final OFDeserializer<Match> matchDeserializer = registry.getDeserializer(MATCH_KEY);
+        final OFDeserializer<Match> matchDeserializer = Preconditions.checkNotNull(registry).getDeserializer(MATCH_KEY);
 
         packetInMessageBuilder.setMatch(MatchUtil.transformMatch(matchDeserializer.deserialize(message),
                 org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.in.message

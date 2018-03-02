@@ -13,10 +13,12 @@ import javax.annotation.concurrent.GuardedBy;
 
 abstract class SimpleRatelimiter {
     private final AtomicInteger counter = new AtomicInteger();
+    private final Object counterLock = new Object();
+    @GuardedBy("counterLock")
     private int lowWatermark;
-    private int lowWatermarkEffective;
-    private int highWatermark;
-    @GuardedBy("counter")
+    private volatile int lowWatermarkEffective;
+    private volatile int highWatermark;
+    @GuardedBy("counterLock")
     private volatile boolean limited;
 
     SimpleRatelimiter(final int lowWatermark, final int highWatermark) {
@@ -40,7 +42,7 @@ abstract class SimpleRatelimiter {
     boolean acquirePermit() {
         final int cnt = counter.incrementAndGet();
         if (cnt > highWatermark) {
-            synchronized (counter) {
+            synchronized (counterLock) {
                 final int recheck = counter.decrementAndGet();
                 if (recheck >= highWatermark && !limited) {
                     disableFlow();
@@ -56,7 +58,7 @@ abstract class SimpleRatelimiter {
     void releasePermit() {
         final int cnt = counter.decrementAndGet();
         if (cnt <= lowWatermarkEffective) {
-            synchronized (counter) {
+            synchronized (counterLock) {
                 final int recheck = counter.get();
                 if (recheck <= lowWatermarkEffective && limited) {
                     enableFlow();
@@ -67,15 +69,14 @@ abstract class SimpleRatelimiter {
         }
     }
 
-    void resetLowWaterMark() {
-        synchronized (counter) {
-            lowWatermarkEffective = lowWatermark;
-        }
+    @GuardedBy("counterLock")
+    private void resetLowWaterMark() {
+        lowWatermarkEffective = lowWatermark;
     }
 
     void adaptLowWaterMarkAndDisableFlow(int temporaryLowWaterMark) {
         if (temporaryLowWaterMark < highWatermark) {
-            synchronized (counter) {
+            synchronized (counterLock) {
                 lowWatermarkEffective = temporaryLowWaterMark;
                 if (!limited) {
                     disableFlow();
@@ -90,7 +91,7 @@ abstract class SimpleRatelimiter {
     }
 
     void changeWaterMarks(final int newLowWatermark, final int newHighWatermark) {
-        synchronized (counter) {
+        synchronized (counterLock) {
             lowWatermark = newLowWatermark;
             highWatermark = newHighWatermark;
             resetLowWaterMark();
