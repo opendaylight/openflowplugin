@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart;
 
+import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import java.util.Optional;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
@@ -20,25 +21,20 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.request.MultipartRequestBody;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.experimenter.core.message.ExperimenterMessageOfChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.multipart.request.multipart.request.body.MultipartRequestExperimenter;
 
-public class MultipartRequestExperimenterSerializer implements OFSerializer<MultipartRequestBody>,
+public class MultipartRequestExperimenterSerializer implements OFSerializer<MultipartRequestExperimenter>,
         SerializerRegistryInjector {
 
     private SerializerRegistry registry;
 
     @Override
     @SuppressWarnings("unchecked")
-    public void serialize(final MultipartRequestBody multipartRequestBody, final ByteBuf byteBuf) {
-        final MultipartRequestExperimenter multipartRequestExperimenter = MultipartRequestExperimenter
-                .class
-                .cast(multipartRequestBody);
-
+    public void serialize(final MultipartRequestExperimenter multipartRequestExperimenter, final ByteBuf byteBuf) {
         try {
-            final OFSerializer<ExperimenterMessageOfChoice> serializer = registry
+            final OFSerializer<ExperimenterMessageOfChoice> serializer = Preconditions.checkNotNull(registry)
                     .getSerializer(new MessageTypeKey<>(
                             EncodeConstants.OF13_VERSION_ID,
                             multipartRequestExperimenter.getExperimenterMessageOfChoice().getImplementedInterface()));
@@ -52,7 +48,7 @@ public class MultipartRequestExperimenterSerializer implements OFSerializer<Mult
                                     .getExperimenterMessageOfChoice().getImplementedInterface(),
                             OFConstants.OFP_VERSION_1_3)))
                     .ifPresent(converter -> {
-                        final OFSerializer<ExperimenterDataOfChoice> serializer = registry
+                        final OFSerializer<ExperimenterDataOfChoice> serializer = Preconditions.checkNotNull(registry)
                                 .getSerializer(ExperimenterSerializerKeyFactory
                                         .createMultipartRequestSerializerKey(
                                                 EncodeConstants.OF13_VERSION_ID,

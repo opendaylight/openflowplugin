@@ -10,15 +10,14 @@ package org.opendaylight.openflowplugin.impl.protocol.serialization.actions;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetQueueActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.queue.action._case.SetQueueAction;
 
-public class SetQueueActionSerializer extends AbstractActionSerializer {
+public class SetQueueActionSerializer extends AbstractActionSerializer<SetQueueActionCase> {
     @Override
-    public void serialize(Action action, ByteBuf outBuffer) {
+    public void serialize(SetQueueActionCase action, ByteBuf outBuffer) {
         super.serialize(action, outBuffer);
-        final SetQueueAction setQueueAction = SetQueueActionCase.class.cast(action).getSetQueueAction();
+        final SetQueueAction setQueueAction = action.getSetQueueAction();
         outBuffer.writeInt(setQueueAction.getQueueId().intValue());
     }
 

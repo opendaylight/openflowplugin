@@ -16,7 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
@@ -73,58 +73,43 @@ public final class FlowUtil {
      * Gather errors into collection and wrap it into {@link RpcResult} and propagate all {@link RpcError}.
      */
     public static final Function<RpcResult<List<BatchFailedFlowsOutput>>,
-                                 RpcResult<RemoveFlowsBatchOutput>> FLOW_REMOVE_TRANSFORM =
-        new Function<RpcResult<List<BatchFailedFlowsOutput>>, RpcResult<RemoveFlowsBatchOutput>>() {
-            @Nullable
-            @Override
-            public RpcResult<RemoveFlowsBatchOutput> apply(
-                    @Nullable final RpcResult<List<BatchFailedFlowsOutput>> batchFlowsCumulativeResult) {
+        RpcResult<RemoveFlowsBatchOutput>> FLOW_REMOVE_TRANSFORM =
+            batchFlowsCumulativeResult -> {
                 final RemoveFlowsBatchOutput batchOutput = new RemoveFlowsBatchOutputBuilder()
                         .setBatchFailedFlowsOutput(batchFlowsCumulativeResult.getResult()).build();
 
                 final RpcResultBuilder<RemoveFlowsBatchOutput> resultBld =
                         createCumulativeRpcResult(batchFlowsCumulativeResult, batchOutput);
                 return resultBld.build();
-            }
-        };
+            };
 
     /**
      * Gather errors into collection and wrap it into {@link RpcResult} and propagate all {@link RpcError}.
      */
     public static final Function<RpcResult<List<BatchFailedFlowsOutput>>,
-                                 RpcResult<AddFlowsBatchOutput>> FLOW_ADD_TRANSFORM =
-        new Function<RpcResult<List<BatchFailedFlowsOutput>>, RpcResult<AddFlowsBatchOutput>>() {
-            @Nullable
-            @Override
-            public RpcResult<AddFlowsBatchOutput> apply(
-                    @Nullable final RpcResult<List<BatchFailedFlowsOutput>> batchFlowsCumulativeResult) {
+        RpcResult<AddFlowsBatchOutput>> FLOW_ADD_TRANSFORM =
+            batchFlowsCumulativeResult -> {
                 final AddFlowsBatchOutput batchOutput = new AddFlowsBatchOutputBuilder()
                         .setBatchFailedFlowsOutput(batchFlowsCumulativeResult.getResult()).build();
 
                 final RpcResultBuilder<AddFlowsBatchOutput> resultBld =
                         createCumulativeRpcResult(batchFlowsCumulativeResult, batchOutput);
                 return resultBld.build();
-            }
-        };
+            };
 
     /**
      * Gather errors into collection and wrap it into {@link RpcResult} and propagate all {@link RpcError}.
      */
     public static final Function<RpcResult<List<BatchFailedFlowsOutput>>,
-                                 RpcResult<UpdateFlowsBatchOutput>> FLOW_UPDATE_TRANSFORM =
-        new Function<RpcResult<List<BatchFailedFlowsOutput>>, RpcResult<UpdateFlowsBatchOutput>>() {
-            @Nullable
-            @Override
-            public RpcResult<UpdateFlowsBatchOutput> apply(
-                    @Nullable final RpcResult<List<BatchFailedFlowsOutput>> batchFlowsCumulativeResult) {
+        RpcResult<UpdateFlowsBatchOutput>> FLOW_UPDATE_TRANSFORM =
+            batchFlowsCumulativeResult -> {
                 final UpdateFlowsBatchOutput batchOutput = new UpdateFlowsBatchOutputBuilder()
                         .setBatchFailedFlowsOutput(batchFlowsCumulativeResult.getResult()).build();
 
                 final RpcResultBuilder<UpdateFlowsBatchOutput> resultBld =
                         createCumulativeRpcResult(batchFlowsCumulativeResult, batchOutput);
                 return resultBld.build();
-            }
-        };
+            };
 
     private FlowUtil() {
         throw new IllegalStateException("This class should not be instantiated.");
@@ -163,25 +148,21 @@ public final class FlowUtil {
     @VisibleForTesting
     static <T extends BatchFlowOutputListGrouping>
         Function<Pair<RpcResult<T>, RpcResult<Void>>, RpcResult<T>> createComposingFunction() {
-        return new Function<Pair<RpcResult<T>, RpcResult<Void>>, RpcResult<T>>() {
-            @Nullable
-            @Override
-            public RpcResult<T> apply(@Nullable final Pair<RpcResult<T>, RpcResult<Void>> input) {
-                final RpcResultBuilder<T> resultBld;
-                if (input.getLeft().isSuccessful() && input.getRight().isSuccessful()) {
-                    resultBld = RpcResultBuilder.success();
-                } else {
-                    resultBld = RpcResultBuilder.failed();
-                }
-
-                final ArrayList<RpcError> rpcErrors = new ArrayList<>(input.getLeft().getErrors());
-                rpcErrors.addAll(input.getRight().getErrors());
-                resultBld.withRpcErrors(rpcErrors);
-
-                resultBld.withResult(input.getLeft().getResult());
-
-                return resultBld.build();
+        return input -> {
+            final RpcResultBuilder<T> resultBld;
+            if (input.getLeft().isSuccessful() && input.getRight().isSuccessful()) {
+                resultBld = RpcResultBuilder.success();
+            } else {
+                resultBld = RpcResultBuilder.failed();
             }
+
+            final ArrayList<RpcError> rpcErrors = new ArrayList<>(input.getLeft().getErrors());
+            rpcErrors.addAll(input.getRight().getErrors());
+            resultBld.withRpcErrors(rpcErrors);
+
+            resultBld.withResult(input.getLeft().getResult());
+
+            return resultBld.build();
         };
     }
 
@@ -224,43 +205,39 @@ public final class FlowUtil {
         }
 
         public Function<List<RpcResult<O>>, RpcResult<List<BatchFailedFlowsOutput>>> invoke() {
-            return new Function<List<RpcResult<O>>, RpcResult<List<BatchFailedFlowsOutput>>>() {
-                @Nullable
-                @Override
-                public RpcResult<List<BatchFailedFlowsOutput>> apply(@Nullable final List<RpcResult<O>> innerInput) {
-                    final int sizeOfFutures = innerInput.size();
-                    final int sizeOfInputBatch = inputBatchFlows.size();
-                    Preconditions.checkArgument(sizeOfFutures == sizeOfInputBatch,
-                            "wrong amount of returned futures: {} <> {}", sizeOfFutures, sizeOfInputBatch);
+            return (@Nonnull final List<RpcResult<O>> innerInput) -> {
+                final int sizeOfFutures = innerInput.size();
+                final int sizeOfInputBatch = inputBatchFlows.size();
+                Preconditions.checkArgument(sizeOfFutures == sizeOfInputBatch,
+                        "wrong amount of returned futures: {} <> {}", sizeOfFutures, sizeOfInputBatch);
 
-                    final ArrayList<BatchFailedFlowsOutput> batchFlows = new ArrayList<>(sizeOfFutures);
-                    final Iterator<? extends BatchFlowIdGrouping> batchFlowIterator = inputBatchFlows.iterator();
+                final ArrayList<BatchFailedFlowsOutput> batchFlows = new ArrayList<>(sizeOfFutures);
+                final Iterator<? extends BatchFlowIdGrouping> batchFlowIterator = inputBatchFlows.iterator();
 
-                    Collection<RpcError> flowErrors = new ArrayList<>(sizeOfFutures);
+                Collection<RpcError> flowErrors = new ArrayList<>(sizeOfFutures);
 
-                    int batchOrder = 0;
-                    for (RpcResult<O> flowModOutput : innerInput) {
-                        final FlowId flowId = batchFlowIterator.next().getFlowId();
+                int batchOrder = 0;
+                for (RpcResult<O> flowModOutput : innerInput) {
+                    final FlowId flowId = batchFlowIterator.next().getFlowId();
 
-                        if (!flowModOutput.isSuccessful()) {
-                            batchFlows.add(new BatchFailedFlowsOutputBuilder()
-                                    .setFlowId(flowId)
-                                    .setBatchOrder(batchOrder)
-                                    .build());
-                            flowErrors.addAll(flowModOutput.getErrors());
-                        }
-                        batchOrder++;
+                    if (!flowModOutput.isSuccessful()) {
+                        batchFlows.add(new BatchFailedFlowsOutputBuilder()
+                                .setFlowId(flowId)
+                                .setBatchOrder(batchOrder)
+                                .build());
+                        flowErrors.addAll(flowModOutput.getErrors());
                     }
-
-                    final RpcResultBuilder<List<BatchFailedFlowsOutput>> resultBuilder;
-                    if (!flowErrors.isEmpty()) {
-                        resultBuilder = RpcResultBuilder.<List<BatchFailedFlowsOutput>>failed()
-                                .withRpcErrors(flowErrors).withResult(batchFlows);
-                    } else {
-                        resultBuilder = SUCCESSFUL_FLOW_OUTPUT_RPC_RESULT;
-                    }
-                    return resultBuilder.build();
+                    batchOrder++;
                 }
+
+                final RpcResultBuilder<List<BatchFailedFlowsOutput>> resultBuilder;
+                if (!flowErrors.isEmpty()) {
+                    resultBuilder = RpcResultBuilder.<List<BatchFailedFlowsOutput>>failed()
+                            .withRpcErrors(flowErrors).withResult(batchFlows);
+                } else {
+                    resultBuilder = SUCCESSFUL_FLOW_OUTPUT_RPC_RESULT;
+                }
+                return resultBuilder.build();
             };
         }
     }

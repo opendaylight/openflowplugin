@@ -62,6 +62,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private final NotificationPublishService notificationPublishService;
     private final MessageSpy messageSpy;
     private final HashedWheelTimer hashedWheelTimer;
+    private final Object updatePacketInRateLimitersLock = new Object();
     private TranslatorLibrary translatorLibrary;
     private ExtensionConverterProvider extensionConverterProvider;
     private ScheduledThreadPoolExecutor spyPool;
@@ -128,6 +129,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
 
     }
 
+    @Override
     public DeviceContext createContext(@Nonnull final ConnectionContext connectionContext) {
 
         LOG.info("ConnectionEvent: Device connected to controller, Device:{}, NodeId:{}",
@@ -177,7 +179,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     private void updatePacketInRateLimiters() {
-        synchronized (deviceContexts) {
+        synchronized (updatePacketInRateLimitersLock) {
             final int deviceContextsSize = deviceContexts.size();
             if (deviceContextsSize > 0) {
                 long freshNotificationLimit = config.getGlobalNotificationQuota() / deviceContextsSize;
@@ -200,9 +202,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         if (LOG.isDebugEnabled()) {
             LOG.debug("Device context removed for node {}", deviceInfo);
         }
-        if (deviceContexts.size() > 0) {
-            this.updatePacketInRateLimiters();
-        }
+
+        this.updatePacketInRateLimiters();
     }
 
     @Override

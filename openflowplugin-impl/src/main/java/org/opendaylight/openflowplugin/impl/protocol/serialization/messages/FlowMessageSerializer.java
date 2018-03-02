@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl.protocol.serialization.messages;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -164,8 +165,8 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
      * @param outBuffer output buffer
      */
     private void writeMatch(final FlowMessage message, final ByteBuf outBuffer) {
-        registry.<Match, OFSerializer<Match>>getSerializer(new MessageTypeKey<>(message.getVersion(), Match.class))
-                .serialize(message.getMatch(), outBuffer);
+        Preconditions.checkNotNull(registry).<Match, OFSerializer<Match>>getSerializer(
+                new MessageTypeKey<>(message.getVersion(), Match.class)).serialize(message.getMatch(), outBuffer);
 
     }
 

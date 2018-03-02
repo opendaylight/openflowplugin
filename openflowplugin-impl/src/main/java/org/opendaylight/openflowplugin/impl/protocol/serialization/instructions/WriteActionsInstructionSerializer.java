@@ -11,17 +11,15 @@ package org.opendaylight.openflowplugin.impl.protocol.serialization.instructions
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteActionsCase;
 
-public class WriteActionsInstructionSerializer extends AbstractActionInstructionSerializer {
+public class WriteActionsInstructionSerializer extends AbstractActionInstructionSerializer<WriteActionsCase> {
 
     @Override
-    public void serialize(Instruction input, ByteBuf outBuffer) {
+    public void serialize(WriteActionsCase input, ByteBuf outBuffer) {
         int index = outBuffer.writerIndex();
         super.serialize(input, outBuffer);
-        writeActions(WriteActionsCase.class.cast(input).getWriteActions(),
-                EncodeConstants.OF13_VERSION_ID, outBuffer,index);
+        writeActions(input.getWriteActions(), EncodeConstants.OF13_VERSION_ID, outBuffer,index);
     }
 
     @Override

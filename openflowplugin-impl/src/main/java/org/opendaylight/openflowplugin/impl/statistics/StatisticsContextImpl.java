@@ -227,7 +227,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
             // write end timestamp to state snapshot container
             Futures.addCallback(newDataGathering, new FutureCallback<Boolean>() {
                 @Override
-                public void onSuccess(final Boolean result) {
+                public void onSuccess(@Nonnull final Boolean result) {
                     StatisticsGatheringUtils.markDeviceStateSnapshotEnd(deviceInfo, deviceContext, result);
                 }
 

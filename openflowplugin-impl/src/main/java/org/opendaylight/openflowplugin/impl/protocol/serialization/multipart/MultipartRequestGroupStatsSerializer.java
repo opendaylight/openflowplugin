@@ -14,18 +14,13 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.multipart.request.multipart.request.body.MultipartRequestGroupStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.request.MultipartRequestBody;
 
-public class MultipartRequestGroupStatsSerializer implements OFSerializer<MultipartRequestBody> {
+public class MultipartRequestGroupStatsSerializer implements OFSerializer<MultipartRequestGroupStats> {
 
     private static final byte PADDING_IN_MULTIPART_REQUEST_GROUP_BODY = 4;
 
     @Override
-    public void serialize(final MultipartRequestBody multipartRequestBody, final ByteBuf byteBuf) {
-        final MultipartRequestGroupStats multipartRequestGroupStats = MultipartRequestGroupStats
-            .class
-            .cast(multipartRequestBody);
-
+    public void serialize(final MultipartRequestGroupStats multipartRequestGroupStats, final ByteBuf byteBuf) {
         byteBuf.writeInt(MoreObjects
             .firstNonNull(multipartRequestGroupStats.getGroupId(), new GroupId(OFConstants.OFPG_ALL))
             .getValue().intValue());

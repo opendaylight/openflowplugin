@@ -13,16 +13,15 @@ import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputAction;
 
-public class OutputActionSerializer extends AbstractActionSerializer {
+public class OutputActionSerializer extends AbstractActionSerializer<OutputActionCase> {
 
     @Override
-    public void serialize(Action action, ByteBuf outBuffer) {
+    public void serialize(OutputActionCase action, ByteBuf outBuffer) {
         super.serialize(action, outBuffer);
-        final OutputAction outputAction = OutputActionCase.class.cast(action).getOutputAction();
+        final OutputAction outputAction = action.getOutputAction();
         Long value = InventoryDataServiceUtil.portNumberfromNodeConnectorId(
                 OpenflowVersion.OF13,
                 outputAction.getOutputNodeConnector().getValue());
