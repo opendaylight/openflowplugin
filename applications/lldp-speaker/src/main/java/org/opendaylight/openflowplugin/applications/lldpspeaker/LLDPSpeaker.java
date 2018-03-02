@@ -8,18 +8,12 @@
 
 package org.opendaylight.openflowplugin.applications.lldpspeaker;
 
-import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
@@ -28,7 +22,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInputBuilder;
@@ -41,43 +34,25 @@ import org.slf4j.LoggerFactory;
  * Objects of this class send LLDP frames over all flow-capable ports that can
  * be discovered through inventory.
  */
-public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoCloseable {
+public class LLDPSpeaker implements AutoCloseable, NodeConnectorEventsObserver, Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(LLDPSpeaker.class);
-
     private static final long LLDP_FLOOD_PERIOD = 5;
-    private static final ThreadFactory THREAD_FACTORY = new ThreadFactoryBuilder()
-            .setNameFormat("lldp-speaker-%d").setDaemon(true).build();
+    private long currentFloodPeriod = LLDP_FLOOD_PERIOD;
+
     private final PacketProcessingService packetProcessingService;
     private final ScheduledExecutorService scheduledExecutorService;
-    private final DeviceOwnershipStatusService deviceOwnershipStatusService;
-    private final Map<InstanceIdentifier<NodeConnector>, TransmitPacketInput> nodeConnectorMap =
-            new ConcurrentHashMap<>();
-    private final MacAddress addressDestionation;
-    private long currentFloodPeriod = LLDP_FLOOD_PERIOD;
+    private final Map<InstanceIdentifier<NodeConnector>, TransmitPacketInput> nodeConnectorMap = new
+            ConcurrentHashMap<>();
     private ScheduledFuture<?> scheduledSpeakerTask;
+    private final MacAddress addressDestionation;
     private volatile OperStatus operationalStatus = OperStatus.RUN;
 
-    public LLDPSpeaker(final PacketProcessingService packetProcessingService, final MacAddress addressDestionation,
-                       final EntityOwnershipService entityOwnershipService) {
-        this(packetProcessingService, Executors.newSingleThreadScheduledExecutor(THREAD_FACTORY), addressDestionation,
-                entityOwnershipService);
-    }
-
-    public LLDPSpeaker(final PacketProcessingService packetProcessingService,
-                       final ScheduledExecutorService scheduledExecutorService,
-                       final MacAddress addressDestionation,
-                       final EntityOwnershipService entityOwnershipService) {
-        this.addressDestionation = addressDestionation;
-        this.scheduledExecutorService = scheduledExecutorService;
-        this.deviceOwnershipStatusService = new DeviceOwnershipStatusService(entityOwnershipService);
-        scheduledSpeakerTask = this.scheduledExecutorService
-                .scheduleAtFixedRate(this, LLDP_FLOOD_PERIOD,LLDP_FLOOD_PERIOD, TimeUnit.SECONDS);
-        this.packetProcessingService = packetProcessingService;
-        LOG.info("LLDPSpeaker started, it will send LLDP frames each {} seconds", LLDP_FLOOD_PERIOD);
+    public LLDPSpeaker(final PacketProcessingService packetProcessingService, final MacAddress addressDestionation) {
+        this(packetProcessingService, Executors.newSingleThreadScheduledExecutor(), addressDestionation);
     }
 
     public void setOperationalStatus(final OperStatus operationalStatus) {
-        LOG.info("LLDP speaker operational status set to {}", operationalStatus);
+        LOG.info("Setting operational status to {}", operationalStatus);
         this.operationalStatus = operationalStatus;
         if (operationalStatus.equals(OperStatus.STANDBY)) {
             nodeConnectorMap.clear();
@@ -91,13 +66,22 @@ public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoC
     public void setLldpFloodInterval(long time) {
         this.currentFloodPeriod = time;
         scheduledSpeakerTask.cancel(false);
-        scheduledSpeakerTask = this.scheduledExecutorService
-                     .scheduleAtFixedRate(this, time, time, TimeUnit.SECONDS);
+        scheduledSpeakerTask = this.scheduledExecutorService.scheduleAtFixedRate(this, time, time, TimeUnit.SECONDS);
         LOG.info("LLDPSpeaker restarted, it will send LLDP frames each {} seconds", time);
     }
 
     public long getLldpFloodInterval() {
         return currentFloodPeriod;
+    }
+
+    public LLDPSpeaker(final PacketProcessingService packetProcessingService,
+                       final ScheduledExecutorService scheduledExecutorService, final MacAddress addressDestionation) {
+        this.addressDestionation = addressDestionation;
+        this.scheduledExecutorService = scheduledExecutorService;
+        scheduledSpeakerTask = this.scheduledExecutorService.scheduleAtFixedRate(this, LLDP_FLOOD_PERIOD,
+                LLDP_FLOOD_PERIOD, TimeUnit.SECONDS);
+        this.packetProcessingService = packetProcessingService;
+        LOG.info("LLDPSpeaker started, it will send LLDP frames each {} seconds", LLDP_FLOOD_PERIOD);
     }
 
     /**
@@ -106,12 +90,8 @@ public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoC
     @Override
     public void close() {
         nodeConnectorMap.clear();
-        if (scheduledExecutorService != null) {
-            scheduledExecutorService.shutdown();
-        }
-        if (scheduledSpeakerTask != null) {
-            scheduledSpeakerTask.cancel(true);
-        }
+        scheduledExecutorService.shutdown();
+        scheduledSpeakerTask.cancel(true);
         LOG.trace("LLDPSpeaker stopped sending LLDP frames.");
     }
 
@@ -121,21 +101,12 @@ public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoC
     @Override
     public void run() {
         if (OperStatus.RUN.equals(operationalStatus)) {
-            LOG.debug("Sending LLDP frames to nodes {}", Arrays.toString(deviceOwnershipStatusService
-                    .getOwnedNodes().toArray()));
-            LOG.debug("Sending LLDP frames to total {} ports", getOwnedPorts());
-            nodeConnectorMap.keySet().forEach(ncIID -> {
-                NodeConnectorId nodeConnectorId = InstanceIdentifier.keyOf(ncIID).getId();
-                NodeId nodeId = ncIID.firstKeyOf(Node.class, NodeKey.class).getId();
-                if (deviceOwnershipStatusService.isEntityOwned(nodeId.getValue())) {
-                    LOG.debug("Node is owned by this controller, sending LLDP packet through port {}",
-                            nodeConnectorId.getValue());
-                    packetProcessingService.transmitPacket(nodeConnectorMap.get(ncIID));
-                } else {
-                    LOG.trace("Node {} is not owned by this controller, so skip sending LLDP packet on port {}",
-                            nodeId.getValue(), nodeConnectorId.getValue());
-                }
-            });
+            LOG.debug("Sending LLDP frames to {} ports...", nodeConnectorMap.keySet().size());
+            for (InstanceIdentifier<NodeConnector> nodeConnectorInstanceId : nodeConnectorMap.keySet()) {
+                NodeConnectorId nodeConnectorId = InstanceIdentifier.keyOf(nodeConnectorInstanceId).getId();
+                LOG.trace("Sending LLDP through port {}", nodeConnectorId.getValue());
+                packetProcessingService.transmitPacket(nodeConnectorMap.get(nodeConnectorInstanceId));
+            }
         }
     }
 
@@ -151,7 +122,7 @@ public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoC
         // frames to
         // port, so first we check if we actually need to perform any action
         if (nodeConnectorMap.containsKey(nodeConnectorInstanceId)) {
-            LOG.debug("Port {} already in LLDPSpeaker.nodeConnectorMap, no need for additional processing",
+            LOG.trace("Port {} already in LLDPSpeaker.nodeConnectorMap, no need for additional processing",
                     nodeConnectorId.getValue());
             return;
         }
@@ -164,7 +135,7 @@ public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoC
 
         // No need to send LLDP frames on local ports
         if (outputPortNo == null) {
-            LOG.debug("Port {} is local, not sending LLDP frames through it", nodeConnectorId.getValue());
+            LOG.trace("Port {} is local, not sending LLDP frames through it", nodeConnectorId.getValue());
             return;
         }
 
@@ -174,9 +145,10 @@ public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoC
                 .setNode(new NodeRef(nodeInstanceId)).setPayload(LLDPUtil.buildLldpFrame(nodeId,
                         nodeConnectorId, srcMacAddress, outputPortNo, addressDestionation)).build();
 
-        // Save packet to node connector id -> packet map to transmit it periodically on the configured interval.
+        // Save packet to node connector id -> packet map to transmit it every 5
+        // seconds
         nodeConnectorMap.put(nodeConnectorInstanceId, packet);
-        LOG.debug("Port {} added to LLDPSpeaker.nodeConnectorMap", nodeConnectorId.getValue());
+        LOG.trace("Port {} added to LLDPSpeaker.nodeConnectorMap", nodeConnectorId.getValue());
 
         // Transmit packet for first time immediately
         packetProcessingService.transmitPacket(packet);
@@ -187,21 +159,9 @@ public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoC
      */
     @Override
     public void nodeConnectorRemoved(final InstanceIdentifier<NodeConnector> nodeConnectorInstanceId) {
-        Preconditions.checkNotNull(nodeConnectorInstanceId);
-
         nodeConnectorMap.remove(nodeConnectorInstanceId);
         NodeConnectorId nodeConnectorId = InstanceIdentifier.keyOf(nodeConnectorInstanceId).getId();
-        LOG.trace("Port removed from node-connector map : {}", nodeConnectorId.getValue());
+        LOG.trace("Port {} removed from LLDPSpeaker.nodeConnectorMap", nodeConnectorId.getValue());
     }
 
-    private int getOwnedPorts() {
-        AtomicInteger ownedPorts = new AtomicInteger();
-        nodeConnectorMap.keySet().forEach(ncIID -> {
-            NodeId nodeId = ncIID.firstKeyOf(Node.class, NodeKey.class).getId();
-            if (deviceOwnershipStatusService.isEntityOwned(nodeId.getValue())) {
-                ownedPorts.incrementAndGet();
-            }
-        });
-        return ownedPorts.get();
-    }
 }
