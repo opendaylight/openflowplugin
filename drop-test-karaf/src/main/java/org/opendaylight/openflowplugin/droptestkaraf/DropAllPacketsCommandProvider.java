@@ -21,7 +21,7 @@ public class DropAllPacketsCommandProvider extends OsgiCommandSupport {
     @Argument(index = 0, name = "on-off",
             description = "target state of drop responder",
             required = true, multiValued = false)
-    String targetStateArg = null;
+    String targetStateArg;
 
 
     @Override
