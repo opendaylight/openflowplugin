@@ -51,7 +51,7 @@ public final class ActionUtil {
             Optional.ofNullable(OFSessionUtil.getExtensionConvertorProvider())
                     .flatMap(provider ->
                             (GeneralExtensionGrouping.class.isInstance(action)
-                                    ? convertExtensionGrouping(provider, action, version)
+                                    ? convertExtensionGrouping(provider, (GeneralExtensionGrouping)action, version)
                                     : convertGenericAction(provider, action, version))
                                     .map(ofjAction -> {
                                         final OFSerializer<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common
@@ -90,7 +90,7 @@ public final class ActionUtil {
             Optional.ofNullable(OFSessionUtil.getExtensionConvertorProvider())
                     .flatMap(provider ->
                             (GeneralExtensionGrouping.class.isInstance(action)
-                                    ? convertExtensionGrouping(provider, action, version)
+                                    ? convertExtensionGrouping(provider, (GeneralExtensionGrouping)action, version)
                                     : convertGenericAction(provider, action, version))
                                     .map(ofjAction -> {
                                         final HeaderSerializer<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow
@@ -123,21 +123,21 @@ public final class ActionUtil {
      * to OpenFlowJava action
      *
      * @param provider extension converter provider
-     * @param action   OpenFlowPlugin action
+     * @param action   GeneralExtensionGrouping action
      * @param version  OpenFlow version
      * @return optional OpenFlowJava action
      */
     private static Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions
             .grouping.Action> convertExtensionGrouping(final ExtensionConverterProvider provider,
-                                                       final Action action,
+                                                       final GeneralExtensionGrouping action,
                                                        final short version) {
         final ConverterExtensionKey<? extends ExtensionKey> key =
-                new ConverterExtensionKey<>(GeneralExtensionGrouping.class.cast(action).getExtensionKey(), version);
+                new ConverterExtensionKey<>(action.getExtensionKey(), version);
 
         final ConvertorToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions
                 .grouping.Action> converter = provider.getConverter(key);
 
-        return Optional.ofNullable(converter).map(c -> c.convert(((GeneralExtensionGrouping) action).getExtension()));
+        return Optional.ofNullable(converter).map(c -> c.convert(action.getExtension()));
     }
 
     /**

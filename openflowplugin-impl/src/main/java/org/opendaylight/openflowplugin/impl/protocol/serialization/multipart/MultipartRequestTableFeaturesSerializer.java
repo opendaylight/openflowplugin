@@ -8,7 +8,9 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart;
 
+import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.Optional;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
@@ -17,23 +19,18 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegist
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.request.MultipartRequestBody;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.multipart.request.multipart.request.body.MultipartRequestTableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.TableFeaturePropType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.TableProperties;
 
-public class MultipartRequestTableFeaturesSerializer implements OFSerializer<MultipartRequestBody>,
+public class MultipartRequestTableFeaturesSerializer implements OFSerializer<MultipartRequestTableFeatures>,
         SerializerRegistryInjector {
 
     private static final byte PADDING_IN_MULTIPART_REQUEST_TABLE_FEATURES_BODY = 5;
     private SerializerRegistry registry;
 
     @Override
-    public void serialize(final MultipartRequestBody multipartRequestBody, final ByteBuf byteBuf) {
-        final MultipartRequestTableFeatures multipartRequestTableFeatures = MultipartRequestTableFeatures
-            .class
-            .cast(multipartRequestBody);
-
+    public void serialize(final MultipartRequestTableFeatures multipartRequestTableFeatures, final ByteBuf byteBuf) {
         Optional
             .ofNullable(multipartRequestTableFeatures.getTableFeatures())
             .ifPresent(tableFeatures -> tableFeatures
@@ -44,8 +41,8 @@ public class MultipartRequestTableFeaturesSerializer implements OFSerializer<Mul
                     byteBuf.writeShort(EncodeConstants.EMPTY_LENGTH);
                     byteBuf.writeByte(tableFeature.getTableId().byteValue());
                     byteBuf.writeZero(PADDING_IN_MULTIPART_REQUEST_TABLE_FEATURES_BODY);
-                    byteBuf.writeBytes(tableFeature.getName().getBytes());
-                    byteBuf.writeZero(32 - tableFeature.getName().getBytes().length);
+                    byteBuf.writeBytes(tableFeature.getName().getBytes(StandardCharsets.UTF_8));
+                    byteBuf.writeZero(32 - tableFeature.getName().getBytes(StandardCharsets.UTF_8).length);
                     byteBuf.writeLong(tableFeature.getMetadataMatch().longValue());
                     byteBuf.writeLong(tableFeature.getMetadataWrite().longValue());
                     byteBuf.writeInt(ByteBufUtils.fillBitMask(0, tableFeature.getConfig().isDEPRECATEDMASK()));
@@ -68,9 +65,10 @@ public class MultipartRequestTableFeaturesSerializer implements OFSerializer<Mul
                         .getTableFeaturePropType()
                         .getImplementedInterface();
 
-                    registry.<TableFeaturePropType, OFSerializer<TableFeaturePropType>>getSerializer(
+                    Preconditions.checkNotNull(registry)
+                        .<TableFeaturePropType, OFSerializer<TableFeaturePropType>>getSerializer(
                             new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, clazz))
-                        .serialize(property.getTableFeaturePropType(), byteBuf);
+                                .serialize(property.getTableFeaturePropType(), byteBuf);
                 }));
     }
 

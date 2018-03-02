@@ -9,8 +9,9 @@ package org.opendaylight.openflowplugin.impl.mastership;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.ListenableFuture;
-import java.util.ArrayList;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.MasterChecker;
@@ -24,7 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 
 public final class MastershipChangeServiceManagerImpl implements MastershipChangeServiceManager {
 
-    private final List<MastershipChangeService> serviceGroup = new ArrayList<>();
+    private final List<MastershipChangeService> serviceGroup = new CopyOnWriteArrayList<>();
     private ReconciliationFrameworkEvent rfService = null;
     private MasterChecker masterChecker;
 
@@ -35,7 +36,7 @@ public final class MastershipChangeServiceManagerImpl implements MastershipChang
                 new MastershipServiceDelegate(service, () -> serviceGroup.remove(service));
         serviceGroup.add(service);
         if (masterChecker != null && masterChecker.isAnyDeviceMastered()) {
-            fireBecomeOwnerAfterRegistration(service);
+            masterChecker.listOfMasteredDevices().forEach(service::onBecomeOwner);
         }
         return registration;
     }
@@ -62,6 +63,8 @@ public final class MastershipChangeServiceManagerImpl implements MastershipChang
     }
 
     @Override
+    // FB flags this for onDeviceDisconnected but unclear why - seems a false positive.
+    @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT")
     public void becomeSlaveOrDisconnect(@Nonnull final DeviceInfo deviceInfo) {
         if (rfService != null) {
             rfService.onDeviceDisconnected(deviceInfo);
@@ -81,15 +84,11 @@ public final class MastershipChangeServiceManagerImpl implements MastershipChang
 
     @Override
     public boolean isReconciliationFrameworkRegistered() {
-        return (rfService != null);
+        return rfService != null;
     }
 
     @VisibleForTesting
     int serviceGroupListSize() {
         return serviceGroup.size();
-    }
-
-    private void fireBecomeOwnerAfterRegistration(@Nonnull final MastershipChangeService service) {
-        masterChecker.listOfMasteredDevices().forEach(service::onBecomeOwner);
     }
 }

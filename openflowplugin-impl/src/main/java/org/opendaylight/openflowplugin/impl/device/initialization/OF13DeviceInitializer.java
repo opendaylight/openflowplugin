@@ -35,7 +35,6 @@ import org.opendaylight.openflowplugin.impl.util.DeviceInitializationUtil;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterFeatures;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -84,7 +83,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                         multipartWriterProvider, convertorExecutor));
 
                 return Futures.transform(
-                    (switchFeaturesMandatory ? Futures.allAsList(futures) : Futures.successfulAsList(futures)),
+                    switchFeaturesMandatory ? Futures.allAsList(futures) : Futures.successfulAsList(futures),
                     new Function<List<RpcResult<List<OfHeader>>>, Void>() {
                         @Nullable
                         @Override
@@ -139,7 +138,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                                        @Nullable final ConvertorExecutor convertorExecutor) {
         Futures.addCallback(future, new FutureCallback<RpcResult<List<OfHeader>>>() {
             @Override
-            public void onSuccess(final RpcResult<List<OfHeader>> result) {
+            public void onSuccess(@Nonnull final RpcResult<List<OfHeader>> result) {
                 if (Objects.nonNull(result.getResult())) {
                     LOG.info("Static node {} info: {} collected", deviceContext.getDeviceInfo(), type);
                     translateAndWriteResult(
@@ -241,55 +240,35 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                     new SingleLayerMultipartCollectorService(deviceContext, deviceContext);
 
             return Futures.transform(service.handleServiceCall(multipartType),
-                    new Function<RpcResult<List<MultipartReply>>, RpcResult<List<OfHeader>>>() {
-                        @Nonnull
-                        @Override
-                        public RpcResult<List<OfHeader>> apply(final RpcResult<List<MultipartReply>> input) {
-                            if (Objects.isNull(input.getResult()) && input.isSuccessful()) {
-                                final List<OfHeader> temp = null;
-                                return RpcResultBuilder.success(temp).build();
-                            }
+                input -> {
+                    if (Objects.isNull(input.getResult()) && input.isSuccessful()) {
+                        return RpcResultBuilder.<List<OfHeader>>success(null).build();
+                    }
 
-                            return input.isSuccessful()
-                                    ? RpcResultBuilder.success(input
+                    return input.isSuccessful()
+                            ? RpcResultBuilder.success(input
                                     .getResult()
                                     .stream()
                                     .map(OfHeader.class::cast)
                                     .collect(Collectors.toList()))
                                     .build()
-                                    : RpcResultBuilder.<List<OfHeader>>failed()
+                            : RpcResultBuilder.<List<OfHeader>>failed()
                                     .withRpcErrors(input.getErrors())
                                     .build();
-                        }
-                    }, MoreExecutors.directExecutor());
+                }, MoreExecutors.directExecutor());
         }
 
         final MultiLayerMultipartCollectorService service =
             new MultiLayerMultipartCollectorService(deviceContext, deviceContext);
 
-        return Futures.transform(service.handleServiceCall(multipartType), new Function<RpcResult<List<org
-                .opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply>>,
-                RpcResult<List<OfHeader>>>() {
-            @Nonnull
-            @Override
-            public RpcResult<List<OfHeader>> apply(final RpcResult<List<org.opendaylight.yang.gen.v1.urn.opendaylight
-                    .openflow.protocol.rev130731.MultipartReply>> input) {
-                if (Objects.isNull(input.getResult()) && input.isSuccessful()) {
-                    final List<OfHeader> temp = null;
-                    return RpcResultBuilder.success(temp).build();
-                }
-
-                return input.isSuccessful()
-                        ? RpcResultBuilder.success(input
-                        .getResult()
-                        .stream()
-                        .map(OfHeader.class::cast)
-                        .collect(Collectors.toList()))
-                        .build()
-                        : RpcResultBuilder.<List<OfHeader>>failed()
-                        .withRpcErrors(input.getErrors())
-                        .build();
+        return Futures.transform(service.handleServiceCall(multipartType), input -> {
+            if (Objects.isNull(input.getResult()) && input.isSuccessful()) {
+                return RpcResultBuilder.<List<OfHeader>>success(null).build();
             }
+
+            return input.isSuccessful() ? RpcResultBuilder
+                    .success(input.getResult().stream().map(OfHeader.class::cast).collect(Collectors.toList())).build()
+                    : RpcResultBuilder.<List<OfHeader>>failed().withRpcErrors(input.getErrors()).build();
         }, MoreExecutors.directExecutor());
     }
 

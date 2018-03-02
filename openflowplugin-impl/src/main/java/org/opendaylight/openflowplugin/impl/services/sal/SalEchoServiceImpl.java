@@ -7,13 +7,11 @@
  */
 package org.opendaylight.openflowplugin.impl.services.sal;
 
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.concurrent.Future;
-import javax.annotation.Nullable;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.impl.services.EchoService;
@@ -43,26 +41,20 @@ public final class SalEchoServiceImpl implements SalEchoService {
 
     private Future<RpcResult<SendEchoOutput>>
             transform(final ListenableFuture<RpcResult<EchoOutput>> rpcResultListenableFuture) {
-        return Futures.transform(rpcResultListenableFuture,
-                                 new Function<RpcResult<EchoOutput>,
-                                 RpcResult<SendEchoOutput>>() {
-                @Nullable
-                @Override
-                public RpcResult<SendEchoOutput> apply(@Nullable final RpcResult<EchoOutput> input) {
-                    Preconditions.checkNotNull(input, "echoOutput value is never expected to be NULL");
-                    final RpcResult<SendEchoOutput> rpcOutput;
-                    if (input.isSuccessful()) {
-                        final SendEchoOutput sendEchoOutput = new SendEchoOutputBuilder()
-                                .setData(input.getResult().getData())
-                                .build();
-                        rpcOutput = RpcResultBuilder.success(sendEchoOutput).build();
-                    } else {
-                        rpcOutput = RpcResultBuilder.<SendEchoOutput>failed()
-                                .withRpcErrors(input.getErrors())
-                                .build();
-                    }
-                    return rpcOutput;
-                }
-            }, MoreExecutors.directExecutor());
+        return Futures.transform(rpcResultListenableFuture, input -> {
+            Preconditions.checkNotNull(input, "echoOutput value is never expected to be NULL");
+            final RpcResult<SendEchoOutput> rpcOutput;
+            if (input.isSuccessful()) {
+                final SendEchoOutput sendEchoOutput = new SendEchoOutputBuilder()
+                        .setData(input.getResult().getData())
+                        .build();
+                rpcOutput = RpcResultBuilder.success(sendEchoOutput).build();
+            } else {
+                rpcOutput = RpcResultBuilder.<SendEchoOutput>failed()
+                        .withRpcErrors(input.getErrors())
+                        .build();
+            }
+            return rpcOutput;
+        }, MoreExecutors.directExecutor());
     }
 }

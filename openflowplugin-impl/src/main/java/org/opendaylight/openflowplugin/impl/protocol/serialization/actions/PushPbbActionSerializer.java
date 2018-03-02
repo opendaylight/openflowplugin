@@ -10,15 +10,14 @@ package org.opendaylight.openflowplugin.impl.protocol.serialization.actions;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushPbbActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.push.pbb.action._case.PushPbbAction;
 
-public class PushPbbActionSerializer extends AbstractActionSerializer {
+public class PushPbbActionSerializer extends AbstractActionSerializer<PushPbbActionCase> {
     @Override
-    public void serialize(Action action, ByteBuf outBuffer) {
+    public void serialize(PushPbbActionCase action, ByteBuf outBuffer) {
         super.serialize(action, outBuffer);
-        final PushPbbAction pushPbbAction = PushPbbActionCase.class.cast(action).getPushPbbAction();
+        final PushPbbAction pushPbbAction = action.getPushPbbAction();
         outBuffer.writeShort(pushPbbAction.getEthernetType());
         outBuffer.writeZero(ActionConstants.ETHERTYPE_ACTION_PADDING);
     }

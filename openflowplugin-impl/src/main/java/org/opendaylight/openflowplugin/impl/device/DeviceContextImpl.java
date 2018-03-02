@@ -12,6 +12,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.util.HashedWheelTimer;
 import java.util.Collection;
 import java.util.Collections;
@@ -456,6 +457,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
+    // The cast to PacketInMessage is safe as the implemented interface is verified before the cas tbut FB doesn't
+    // recognize it.
+    @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
     public boolean processAlienMessage(final OfHeader message) {
         final Class<? extends DataContainer> implementedInterface = message.getImplementedInterface();
 

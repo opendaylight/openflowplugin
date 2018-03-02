@@ -17,7 +17,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import javax.annotation.Nullable;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
@@ -49,19 +48,13 @@ public final class MeterUtil {
             RpcResultBuilder.success(Collections.<BatchFailedMetersOutput>emptyList());
 
     public static final Function<RpcResult<List<BatchFailedMetersOutput>>, RpcResult<AddMetersBatchOutput>>
-        METER_ADD_TRANSFORM =
-        new Function<RpcResult<List<BatchFailedMetersOutput>>, RpcResult<AddMetersBatchOutput>>() {
-            @Nullable
-            @Override
-            public RpcResult<AddMetersBatchOutput> apply(
-                    @Nullable final RpcResult<List<BatchFailedMetersOutput>> batchMetersCumulatedResult) {
-                final AddMetersBatchOutput batchOutput = new AddMetersBatchOutputBuilder()
-                        .setBatchFailedMetersOutput(batchMetersCumulatedResult.getResult()).build();
+        METER_ADD_TRANSFORM = batchMetersCumulatedResult -> {
+            final AddMetersBatchOutput batchOutput = new AddMetersBatchOutputBuilder()
+                    .setBatchFailedMetersOutput(batchMetersCumulatedResult.getResult()).build();
 
-                final RpcResultBuilder<AddMetersBatchOutput> resultBld =
-                        createCumulativeRpcResult(batchMetersCumulatedResult, batchOutput);
-                return resultBld.build();
-            }
+            final RpcResultBuilder<AddMetersBatchOutput> resultBld =
+                    createCumulativeRpcResult(batchMetersCumulatedResult, batchOutput);
+            return resultBld.build();
         };
     public static final Function<Pair<RpcResult<AddMetersBatchOutput>,
                                       RpcResult<Void>>,
@@ -70,19 +63,14 @@ public final class MeterUtil {
 
     public static final Function<RpcResult<List<BatchFailedMetersOutput>>, RpcResult<RemoveMetersBatchOutput>>
         METER_REMOVE_TRANSFORM =
-        new Function<RpcResult<List<BatchFailedMetersOutput>>, RpcResult<RemoveMetersBatchOutput>>() {
-            @Nullable
-            @Override
-            public RpcResult<RemoveMetersBatchOutput> apply(
-                    @Nullable final RpcResult<List<BatchFailedMetersOutput>> batchMetersCumulatedResult) {
+            batchMetersCumulatedResult -> {
                 final RemoveMetersBatchOutput batchOutput = new RemoveMetersBatchOutputBuilder()
                         .setBatchFailedMetersOutput(batchMetersCumulatedResult.getResult()).build();
 
                 final RpcResultBuilder<RemoveMetersBatchOutput> resultBld =
                         createCumulativeRpcResult(batchMetersCumulatedResult, batchOutput);
                 return resultBld.build();
-            }
-        };
+            };
     public static final Function<Pair<RpcResult<RemoveMetersBatchOutput>,
                                       RpcResult<Void>>,
                                       RpcResult<RemoveMetersBatchOutput>>
@@ -90,19 +78,14 @@ public final class MeterUtil {
 
     public static final Function<RpcResult<List<BatchFailedMetersOutput>>, RpcResult<UpdateMetersBatchOutput>>
         METER_UPDATE_TRANSFORM =
-        new Function<RpcResult<List<BatchFailedMetersOutput>>, RpcResult<UpdateMetersBatchOutput>>() {
-            @Nullable
-            @Override
-            public RpcResult<UpdateMetersBatchOutput> apply(
-                    @Nullable final RpcResult<List<BatchFailedMetersOutput>> batchMetersCumulatedResult) {
+            batchMetersCumulatedResult -> {
                 final UpdateMetersBatchOutput batchOutput = new UpdateMetersBatchOutputBuilder()
                         .setBatchFailedMetersOutput(batchMetersCumulatedResult.getResult()).build();
 
                 final RpcResultBuilder<UpdateMetersBatchOutput> resultBld =
                         createCumulativeRpcResult(batchMetersCumulatedResult, batchOutput);
                 return resultBld.build();
-            }
-        };
+            };
     public static final Function<Pair<RpcResult<UpdateMetersBatchOutput>,
                                       RpcResult<Void>>,
                                       RpcResult<UpdateMetersBatchOutput>>
@@ -151,25 +134,21 @@ public final class MeterUtil {
     @VisibleForTesting
     static <T extends BatchMeterOutputListGrouping>
         Function<Pair<RpcResult<T>, RpcResult<Void>>, RpcResult<T>> createComposingFunction() {
-        return new Function<Pair<RpcResult<T>, RpcResult<Void>>, RpcResult<T>>() {
-            @Nullable
-            @Override
-            public RpcResult<T> apply(@Nullable final Pair<RpcResult<T>, RpcResult<Void>> input) {
-                final RpcResultBuilder<T> resultBld;
-                if (input.getLeft().isSuccessful() && input.getRight().isSuccessful()) {
-                    resultBld = RpcResultBuilder.success();
-                } else {
-                    resultBld = RpcResultBuilder.failed();
-                }
-
-                final ArrayList<RpcError> rpcErrors = new ArrayList<>(input.getLeft().getErrors());
-                rpcErrors.addAll(input.getRight().getErrors());
-                resultBld.withRpcErrors(rpcErrors);
-
-                resultBld.withResult(input.getLeft().getResult());
-
-                return resultBld.build();
+        return input -> {
+            final RpcResultBuilder<T> resultBld;
+            if (input.getLeft().isSuccessful() && input.getRight().isSuccessful()) {
+                resultBld = RpcResultBuilder.success();
+            } else {
+                resultBld = RpcResultBuilder.failed();
             }
+
+            final ArrayList<RpcError> rpcErrors = new ArrayList<>(input.getLeft().getErrors());
+            rpcErrors.addAll(input.getRight().getErrors());
+            resultBld.withRpcErrors(rpcErrors);
+
+            resultBld.withResult(input.getLeft().getResult());
+
+            return resultBld.build();
         };
     }
 
@@ -208,43 +187,39 @@ public final class MeterUtil {
         }
 
         public Function<List<RpcResult<O>>, RpcResult<List<BatchFailedMetersOutput>>> invoke() {
-            return new Function<List<RpcResult<O>>, RpcResult<List<BatchFailedMetersOutput>>>() {
-                @Nullable
-                @Override
-                public RpcResult<List<BatchFailedMetersOutput>> apply(@Nullable final List<RpcResult<O>> innerInput) {
-                    final int sizeOfFutures = innerInput.size();
-                    Preconditions.checkArgument(sizeOfFutures == sizeOfInputBatch,
-                            "wrong amount of returned futures: {} <> {}", sizeOfFutures, sizeOfInputBatch);
+            return innerInput -> {
+                final int sizeOfFutures = innerInput.size();
+                Preconditions.checkArgument(sizeOfFutures == sizeOfInputBatch,
+                        "wrong amount of returned futures: {} <> {}", sizeOfFutures, sizeOfInputBatch);
 
-                    final List<BatchFailedMetersOutput> batchMeters = new ArrayList<>();
-                    final Iterator<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter>
-                            batchMeterIterator = inputBatchMeters.iterator();
+                final List<BatchFailedMetersOutput> batchMeters = new ArrayList<>();
+                final Iterator<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter>
+                        batchMeterIterator = inputBatchMeters.iterator();
 
-                    Collection<RpcError> meterErrors = new ArrayList<>(sizeOfFutures);
+                Collection<RpcError> meterErrors = new ArrayList<>(sizeOfFutures);
 
-                    int batchOrder = 0;
-                    for (RpcResult<O> meterModOutput : innerInput) {
-                        final MeterId meterId = batchMeterIterator.next().getMeterId();
+                int batchOrder = 0;
+                for (RpcResult<O> meterModOutput : innerInput) {
+                    final MeterId meterId = batchMeterIterator.next().getMeterId();
 
-                        if (!meterModOutput.isSuccessful()) {
-                            batchMeters.add(new BatchFailedMetersOutputBuilder()
-                                    .setBatchOrder(batchOrder)
-                                    .setMeterId(meterId)
-                                    .build());
-                            meterErrors.addAll(meterModOutput.getErrors());
-                        }
-                        batchOrder++;
+                    if (!meterModOutput.isSuccessful()) {
+                        batchMeters.add(new BatchFailedMetersOutputBuilder()
+                                .setBatchOrder(batchOrder)
+                                .setMeterId(meterId)
+                                .build());
+                        meterErrors.addAll(meterModOutput.getErrors());
                     }
-
-                    final RpcResultBuilder<List<BatchFailedMetersOutput>> resultBuilder;
-                    if (!meterErrors.isEmpty()) {
-                        resultBuilder = RpcResultBuilder.<List<BatchFailedMetersOutput>>failed()
-                                .withRpcErrors(meterErrors).withResult(batchMeters);
-                    } else {
-                        resultBuilder = SUCCESSFUL_METER_OUTPUT_RPC_RESULT;
-                    }
-                    return resultBuilder.build();
+                    batchOrder++;
                 }
+
+                final RpcResultBuilder<List<BatchFailedMetersOutput>> resultBuilder;
+                if (!meterErrors.isEmpty()) {
+                    resultBuilder = RpcResultBuilder.<List<BatchFailedMetersOutput>>failed()
+                            .withRpcErrors(meterErrors).withResult(batchMeters);
+                } else {
+                    resultBuilder = SUCCESSFUL_METER_OUTPUT_RPC_RESULT;
+                }
+                return resultBuilder.build();
             };
         }
     }

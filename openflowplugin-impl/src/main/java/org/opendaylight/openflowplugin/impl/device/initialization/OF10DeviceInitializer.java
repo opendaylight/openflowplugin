@@ -14,7 +14,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
-import java.util.List;
 import java.util.concurrent.Future;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -41,13 +40,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeCon
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.CapabilitiesV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsDataBuilder;
-import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -159,29 +156,14 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
                     new SingleLayerMultipartCollectorService(deviceContext, deviceContext);
 
             return Futures.transform(service.handleServiceCall(multipartType),
-                    new Function<RpcResult<List<MultipartReply>>, Boolean>() {
-                        @Nonnull
-                        @Override
-                        public Boolean apply(final RpcResult<List<MultipartReply>> input) {
-                            return input.isSuccessful();
-                        }
-                    }, MoreExecutors.directExecutor());
+                input -> input.isSuccessful(), MoreExecutors.directExecutor());
         }
 
         final MultiLayerMultipartCollectorService service =
                 new MultiLayerMultipartCollectorService(deviceContext, deviceContext);
 
         return Futures.transform(service.handleServiceCall(multipartType),
-                new Function<RpcResult<List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol
-                        .rev130731.MultipartReply>>, Boolean>() {
-                    @Nonnull
-                    @Override
-                    public Boolean apply(final RpcResult<List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow
-                            .protocol
-                            .rev130731.MultipartReply>> input) {
-                        return input.isSuccessful();
-                    }
-                }, MoreExecutors.directExecutor());
+            input -> input.isSuccessful(), MoreExecutors.directExecutor());
     }
 
 }

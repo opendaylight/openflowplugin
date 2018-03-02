@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.util;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Locale;
 import java.util.Objects;
 import javax.annotation.Nullable;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
@@ -245,7 +246,7 @@ public final class AddressNormalizationUtil {
             return null;
         }
 
-        return new MacAddress(macAddress.getValue().toLowerCase());
+        return new MacAddress(macAddress.getValue().toLowerCase(Locale.ROOT));
     }
 
     /**
