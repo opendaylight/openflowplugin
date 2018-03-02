@@ -75,7 +75,7 @@ public class ContextChainImpl implements ContextChain {
             LOG.info("Started clustering services for node {}", deviceInfo);
         } catch (final Exception ex) {
             LOG.warn("Not able to start clustering services for node {}", deviceInfo);
-            executorService.submit(() -> contextChainMastershipWatcher
+            executorService.execute(() -> contextChainMastershipWatcher
                     .onNotAbleToStartMastershipMandatory(deviceInfo, ex.toString()));
         }
     }
@@ -217,8 +217,8 @@ public class ContextChainImpl implements ContextChain {
 
     @Override
     public boolean addAuxiliaryConnection(@Nonnull ConnectionContext connectionContext) {
-        return (connectionContext.getFeatures().getAuxiliaryId() != 0)
-                && (!ConnectionContext.CONNECTION_STATE.RIP.equals(primaryConnection.getConnectionState()))
+        return connectionContext.getFeatures().getAuxiliaryId() != 0
+                && !ConnectionContext.CONNECTION_STATE.RIP.equals(primaryConnection.getConnectionState())
                 && auxiliaryConnections.add(connectionContext);
     }
 

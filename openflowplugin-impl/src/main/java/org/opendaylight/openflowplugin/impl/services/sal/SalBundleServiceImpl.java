@@ -18,6 +18,7 @@ import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
+import javax.annotation.Nonnull;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SalExperimenterMessageService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SendExperimenterInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesInput;
@@ -80,7 +81,7 @@ public class SalBundleServiceImpl implements SalBundleService {
         final SettableFuture<RpcResult<Void>> result = SettableFuture.create();
         Futures.addCallback(Futures.successfulAsList(partialResults), new FutureCallback<List<RpcResult<Void>>>() {
             @Override
-            public void onSuccess(List<RpcResult<Void>> results) {
+            public void onSuccess(@Nonnull List<RpcResult<Void>> results) {
                 final ArrayList<RpcError> errors = new ArrayList<>();
                 final RpcResultBuilder<Void> rpcResultBuilder;
                 for (RpcResult<Void> res : results) {

@@ -16,17 +16,12 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.queue.rev130925.QueueId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.request.MultipartRequestBody;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.multipart.request.multipart.request.body.MultipartRequestQueueStats;
 
-public class MultipartRequestQueueStatsSerializer implements OFSerializer<MultipartRequestBody> {
+public class MultipartRequestQueueStatsSerializer implements OFSerializer<MultipartRequestQueueStats> {
 
     @Override
-    public void serialize(final MultipartRequestBody multipartRequestBody, final ByteBuf byteBuf) {
-        final MultipartRequestQueueStats multipartRequestQueueStats = MultipartRequestQueueStats
-            .class
-            .cast(multipartRequestBody);
-
+    public void serialize(final MultipartRequestQueueStats multipartRequestQueueStats, final ByteBuf byteBuf) {
         if (Objects.isNull(multipartRequestQueueStats.getNodeConnectorId())) {
             byteBuf.writeInt(OFConstants.OFPP_ANY.intValue());
         } else {

@@ -19,7 +19,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.opendaylight.openflowplugin.api.ConnectionException;
 
 public class StatisticsPollingService extends AbstractScheduledService {
@@ -60,7 +59,7 @@ public class StatisticsPollingService extends AbstractScheduledService {
 
         Futures.addCallback(gatheringSupplier.get(), new FutureCallback<Boolean>() {
             @Override
-            public void onSuccess(@Nullable final Boolean result) {
+            public void onSuccess(@Nonnull final Boolean result) {
                 waitFuture.complete(result);
             }
 

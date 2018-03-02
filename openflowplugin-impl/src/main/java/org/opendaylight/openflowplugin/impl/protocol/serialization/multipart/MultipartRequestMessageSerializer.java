@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart;
 
+import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
@@ -53,7 +54,7 @@ public class MultipartRequestMessageSerializer extends AbstractMessageSerializer
         outBuffer.writeShort(ByteBufUtils.fillBitMask(0, message.isRequestMore()));
         outBuffer.writeZero(PADDING_IN_MULTIPART_REQUEST_MESSAGE);
 
-        final OFSerializer<MultipartRequestBody> serializer = registry
+        final OFSerializer<MultipartRequestBody> serializer = Preconditions.checkNotNull(registry)
             .getSerializer(new MessageTypeKey<>(
                 EncodeConstants.OF13_VERSION_ID,
                 multipartRequestBody.getImplementedInterface()));

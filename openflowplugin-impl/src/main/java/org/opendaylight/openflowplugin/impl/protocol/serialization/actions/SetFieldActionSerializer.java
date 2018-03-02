@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.serialization.actions;
 
+import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
@@ -15,16 +16,16 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegist
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetFieldCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 
-public class SetFieldActionSerializer extends AbstractActionSerializer implements SerializerRegistryInjector {
+public class SetFieldActionSerializer extends AbstractActionSerializer<SetFieldCase>
+        implements SerializerRegistryInjector {
     private SerializerRegistry registry;
 
     @Override
-    public void serialize(Action action, ByteBuf outBuffer) {
+    public void serialize(SetFieldCase action, ByteBuf outBuffer) {
         // Serialize field type and save position
         final int startIndex = outBuffer.writerIndex();
         outBuffer.writeShort(getType());
@@ -32,8 +33,8 @@ public class SetFieldActionSerializer extends AbstractActionSerializer implement
         outBuffer.writeShort(EncodeConstants.EMPTY_LENGTH);
 
         // Serialize match (using small workaround with serializeHeader method to serialize only match entries)
-        final SetField setField = SetFieldCase.class.cast(action).getSetField();
-        final HeaderSerializer<Match> serializer = registry
+        final SetField setField = action.getSetField();
+        final HeaderSerializer<Match> serializer = Preconditions.checkNotNull(registry)
                 .getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, Match.class));
         serializer.serializeHeader(setField, outBuffer);
 

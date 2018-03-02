@@ -12,6 +12,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.concurrent.Future;
+import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerMeterService;
@@ -74,7 +75,7 @@ public class SalMeterServiceImpl implements SalMeterService {
 
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<AddMeterOutput>>() {
             @Override
-            public void onSuccess(RpcResult<AddMeterOutput> result) {
+            public void onSuccess(@Nonnull RpcResult<AddMeterOutput> result) {
                 if (result.isSuccessful()) {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Meter add with id={} finished without error", input.getMeterId());
@@ -105,7 +106,7 @@ public class SalMeterServiceImpl implements SalMeterService {
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<UpdateMeterOutput>>() {
 
             @Override
-            public void onSuccess(RpcResult<UpdateMeterOutput> result) {
+            public void onSuccess(@Nonnull RpcResult<UpdateMeterOutput> result) {
                 if (result.isSuccessful()) {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Meter update with id={} finished without error",
@@ -136,7 +137,7 @@ public class SalMeterServiceImpl implements SalMeterService {
 
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<RemoveMeterOutput>>() {
             @Override
-            public void onSuccess(RpcResult<RemoveMeterOutput> result) {
+            public void onSuccess(@Nonnull RpcResult<RemoveMeterOutput> result) {
                 if (result.isSuccessful()) {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Meter remove with id={} finished without error", input.getMeterId());
