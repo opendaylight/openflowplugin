@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
 
+import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
@@ -32,7 +33,7 @@ public class MultipartReplyMessageDeserializer implements OFDeserializer<Multipa
         final boolean reqMore = (message.readUnsignedShort() & 0x01) != 0;
         message.skipBytes(PADDING_IN_MULTIPART_REPLY_HEADER);
 
-        final OFDeserializer<MultipartReplyBody> deserializer = registry
+        final OFDeserializer<MultipartReplyBody> deserializer = Preconditions.checkNotNull(registry)
             .getDeserializer(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID,
                         type, MultipartReplyBody.class));
 
