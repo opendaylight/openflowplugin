@@ -9,10 +9,12 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import com.google.common.base.Preconditions;
 import java.util.Collection;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
+import org.opendaylight.serviceutils.srm.RecoverableListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -23,13 +25,19 @@ import org.slf4j.LoggerFactory;
  * AbstractChangeListner implemented basic {@link org.opendaylight.controller.md.sal.binding.api.DataTreeModification}
  * processing for flow node subDataObject (flows, groups and meters).
  */
-public abstract class AbstractListeningCommiter<T extends DataObject> implements ForwardingRulesCommiter<T> {
+public abstract class AbstractListeningCommiter<T extends DataObject> implements ForwardingRulesCommiter<T>,
+        RecoverableListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractListeningCommiter.class);
     ForwardingRulesManager provider;
+    protected final DataBroker dataBroker;
 
-    public AbstractListeningCommiter(ForwardingRulesManager provider) {
+    public AbstractListeningCommiter(ForwardingRulesManager provider, final DataBroker dataBroker) {
         this.provider = Preconditions.checkNotNull(provider, "ForwardingRulesManager can not be null!");
+        this.dataBroker = Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
+        registerListener();
+        provider.getServiceRecoveryRegistry().addRecoverableListener(
+                provider.getOpenflowpluginServiceRecoveryHandler().buildServiceRegistryKey(), this);
     }
 
     @Override
@@ -102,5 +110,6 @@ public abstract class AbstractListeningCommiter<T extends DataObject> implements
         return provider.isNodeOwner(nodeIdent)
                 && (provider.isNodeActive(nodeIdent) || provider.checkNodeInOperationalDataStore(nodeIdent));
     }
+
 }
 

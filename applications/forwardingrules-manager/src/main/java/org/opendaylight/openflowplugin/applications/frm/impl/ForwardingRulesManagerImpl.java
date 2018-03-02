@@ -27,8 +27,10 @@ import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesProperty;
+import org.opendaylight.openflowplugin.applications.frm.recovery.impl.OpenflowpluginServiceRecoveryHandler;
 import org.opendaylight.openflowplugin.applications.reconciliation.NotificationRegistration;
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager;
+import org.opendaylight.serviceutils.srm.ServiceRecoveryRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
@@ -88,11 +90,17 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private boolean staleMarkingEnabled;
     private int reconciliationRetryCount;
     private boolean isBundleBasedReconciliationEnabled;
+    private final OpenflowpluginServiceRecoveryHandler openflowpluginServiceRecoveryHandler;
+    private final ServiceRecoveryRegistry serviceRecoveryRegistry;
 
     public ForwardingRulesManagerImpl(final DataBroker dataBroker, final RpcProviderRegistry rpcRegistry,
-            final ForwardingRulesManagerConfig config, final ClusterSingletonServiceProvider clusterSingletonService,
-            final NotificationProviderService notificationService, final ConfigurationService configurationService,
-            final ReconciliationManager reconciliationManager) {
+                                      final ForwardingRulesManagerConfig config,
+                                      final ClusterSingletonServiceProvider clusterSingletonService,
+                                      final NotificationProviderService notificationService,
+                                      final ConfigurationService configurationService,
+                                      final ReconciliationManager reconciliationManager,
+                                      final OpenflowpluginServiceRecoveryHandler openflowpluginServiceRecoveryHandler,
+                                      final ServiceRecoveryRegistry serviceRecoveryRegistry) {
         disableReconciliation = config.isDisableReconciliation();
         staleMarkingEnabled = config.isStaleMarkingEnabled();
         reconciliationRetryCount = config.getReconciliationRetryCount();
@@ -118,6 +126,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                 "RPC SalTableService not found.");
         this.salBundleService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalBundleService.class),
                 "RPC SalBundlService not found.");
+        this.openflowpluginServiceRecoveryHandler = openflowpluginServiceRecoveryHandler;
+        this.serviceRecoveryRegistry = serviceRecoveryRegistry;
     }
 
     @Override
@@ -271,6 +281,16 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     @Override
     public int getReconciliationRetryCount() {
         return reconciliationRetryCount;
+    }
+
+    @Override
+    public OpenflowpluginServiceRecoveryHandler getOpenflowpluginServiceRecoveryHandler() {
+        return openflowpluginServiceRecoveryHandler;
+    }
+
+    @Override
+    public ServiceRecoveryRegistry getServiceRecoveryRegistry() {
+        return serviceRecoveryRegistry;
     }
 
     @Override
