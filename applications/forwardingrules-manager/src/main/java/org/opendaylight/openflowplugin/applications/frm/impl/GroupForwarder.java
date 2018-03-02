@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
-import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -55,13 +54,15 @@ import org.slf4j.LoggerFactory;
 public class GroupForwarder extends AbstractListeningCommiter<Group> {
 
     private static final Logger LOG = LoggerFactory.getLogger(GroupForwarder.class);
-    private final DataBroker dataBroker;
     private ListenerRegistration<GroupForwarder> listenerRegistration;
 
-    @SuppressWarnings("IllegalCatch")
     public GroupForwarder(final ForwardingRulesManager manager, final DataBroker db) {
-        super(manager);
-        dataBroker = Preconditions.checkNotNull(db, "DataBroker can not be null!");
+        super(manager, db);
+    }
+
+    @SuppressWarnings("IllegalCatch")
+    @Override
+    public void registerListener() {
         final DataTreeIdentifier<Group> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION,
                 getWildCardPath());
 
@@ -69,12 +70,17 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
             SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(ForwardingRulesManagerImpl.STARTUP_LOOP_TICK,
                     ForwardingRulesManagerImpl.STARTUP_LOOP_MAX_RETRIES);
             listenerRegistration = looper
-                    .loopUntilNoException(() -> db.registerDataTreeChangeListener(treeId, GroupForwarder.this));
+                    .loopUntilNoException(() -> dataBroker.registerDataTreeChangeListener(treeId, GroupForwarder.this));
         } catch (final Exception e) {
             LOG.warn("FRM Group DataTreeChange listener registration fail!");
             LOG.debug("FRM Group DataTreeChange listener registration fail ..", e);
             throw new IllegalStateException("GroupForwarder startup fail! System needs restart.", e);
         }
+    }
+
+    @Override
+    public  void deregisterListener() {
+        close();
     }
 
     @Override
