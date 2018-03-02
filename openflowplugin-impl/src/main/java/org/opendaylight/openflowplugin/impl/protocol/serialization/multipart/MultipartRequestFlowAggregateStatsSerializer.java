@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
@@ -19,9 +20,8 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.multipart.request.multipart.request.body.MultipartRequestFlowAggregateStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.request.MultipartRequestBody;
 
-public class MultipartRequestFlowAggregateStatsSerializer implements OFSerializer<MultipartRequestBody>,
+public class MultipartRequestFlowAggregateStatsSerializer implements OFSerializer<MultipartRequestFlowAggregateStats>,
         SerializerRegistryInjector {
 
     private static final byte PADDING_IN_MULTIPART_REQUEST_FLOW_BODY_01 = 3;
@@ -29,11 +29,8 @@ public class MultipartRequestFlowAggregateStatsSerializer implements OFSerialize
     private SerializerRegistry registry;
 
     @Override
-    public void serialize(final MultipartRequestBody multipartRequestBody, final ByteBuf byteBuf) {
-        final MultipartRequestFlowAggregateStats multipartRequestFlowAggregateStats = MultipartRequestFlowAggregateStats
-                .class
-                .cast(multipartRequestBody);
-
+    public void serialize(final MultipartRequestFlowAggregateStats multipartRequestFlowAggregateStats,
+            final ByteBuf byteBuf) {
         byteBuf.writeByte(MoreObjects.firstNonNull(multipartRequestFlowAggregateStats.getTableId(),
                 OFConstants.OFPTT_ALL).byteValue());
         byteBuf.writeZero(PADDING_IN_MULTIPART_REQUEST_FLOW_BODY_01);
@@ -47,7 +44,7 @@ public class MultipartRequestFlowAggregateStatsSerializer implements OFSerialize
         byteBuf.writeLong(MoreObjects.firstNonNull(multipartRequestFlowAggregateStats.getCookieMask(),
                 new FlowCookie(OFConstants.DEFAULT_COOKIE_MASK)).getValue().longValue());
 
-        registry.<Match, OFSerializer<Match>>getSerializer(
+        Preconditions.checkNotNull(registry).<Match, OFSerializer<Match>>getSerializer(
                 new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, Match.class))
                 .serialize(multipartRequestFlowAggregateStats.getMatch(), byteBuf);
     }

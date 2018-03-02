@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.statistics;
 
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListeningExecutorService;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Future;
@@ -24,7 +25,6 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.ChangeStatisticsWorkModeInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutput;
@@ -47,7 +47,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     private final Semaphore workModeGuard = new Semaphore(1, true);
     private final BindingAwareBroker.RpcRegistration<StatisticsManagerControlService> controlServiceRegistration;
     private final ListeningExecutorService executorService;
-    private StatisticsWorkMode workMode = StatisticsWorkMode.COLLECTALL;
+    private final StatisticsWorkMode workMode = StatisticsWorkMode.COLLECTALL;
     private boolean isStatisticsFullyDisabled;
 
     public StatisticsManagerImpl(@Nonnull final OpenflowProviderConfig config,
@@ -98,32 +98,22 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     }
 
     @Override
+    // The 2 branches that instantiate StatisticsContextImpl differ only by
+    @SuppressFBWarnings("DB_DUPLICATE_BRANCHES")
     public StatisticsContext createContext(@Nonnull final DeviceContext deviceContext,
                                            final boolean useReconciliationFramework) {
         final MultipartWriterProvider statisticsWriterProvider = MultipartWriterProviderFactory
                 .createDefaultProvider(deviceContext);
 
-        final StatisticsContext statisticsContext =
-                deviceContext.canUseSingleLayerSerialization()
-                        ? new StatisticsContextImpl<MultipartReply>(
-                                deviceContext,
-                                converterExecutor,
-                                statisticsWriterProvider,
-                                executorService,
-                                !isStatisticsFullyDisabled && config.isIsStatisticsPollingOn(),
-                                useReconciliationFramework,
-                                config.getBasicTimerDelay().getValue(),
-                                config.getMaximumTimerDelay().getValue()) :
-                        new StatisticsContextImpl<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow
-                                .protocol.rev130731.MultipartReply>(
-                                deviceContext,
-                                converterExecutor,
-                                statisticsWriterProvider,
-                                executorService,
-                                !isStatisticsFullyDisabled && config.isIsStatisticsPollingOn(),
-                                useReconciliationFramework,
-                                config.getBasicTimerDelay().getValue(),
-                                config.getMaximumTimerDelay().getValue());
+        final StatisticsContext statisticsContext = new StatisticsContextImpl<>(
+                deviceContext,
+                converterExecutor,
+                statisticsWriterProvider,
+                executorService,
+                !isStatisticsFullyDisabled && config.isIsStatisticsPollingOn(),
+                useReconciliationFramework,
+                config.getBasicTimerDelay().getValue(),
+                config.getMaximumTimerDelay().getValue());
 
         contexts.put(deviceContext.getDeviceInfo(), statisticsContext);
         return statisticsContext;

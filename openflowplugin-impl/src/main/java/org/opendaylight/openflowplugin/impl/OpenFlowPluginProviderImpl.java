@@ -116,7 +116,7 @@ public class OpenFlowPluginProviderImpl implements
     private ConnectionManager connectionManager;
     private ListeningExecutorService executorService;
     private ContextChainHolderImpl contextChainHolder;
-    private OpenflowPluginDiagStatusProvider openflowPluginStatusMonitor;
+    private final OpenflowPluginDiagStatusProvider openflowPluginStatusMonitor;
 
     public static MessageIntelligenceAgency getMessageIntelligenceAgency() {
         return MESSAGE_INTELLIGENCE_AGENCY;
@@ -170,7 +170,7 @@ public class OpenFlowPluginProviderImpl implements
             return switchConnectionProvider.startup();
         }).collect(Collectors.toSet())), new FutureCallback<List<Boolean>>() {
             @Override
-            public void onSuccess(final List<Boolean> result) {
+            public void onSuccess(@Nonnull final List<Boolean> result) {
                 LOG.info("All switchConnectionProviders are up and running ({}).", result.size());
                 openflowPluginStatusMonitor.reportStatus(ServiceState.OPERATIONAL, "switch connections started");
             }
@@ -197,7 +197,7 @@ public class OpenFlowPluginProviderImpl implements
 
         Futures.addCallback(listListenableFuture, new FutureCallback<List<Boolean>>() {
             @Override
-            public void onSuccess(final List<Boolean> result) {
+            public void onSuccess(@Nonnull final List<Boolean> result) {
                 LOG.info("All switchConnectionProviders were successfully shut down ({}).", result.size());
             }
 

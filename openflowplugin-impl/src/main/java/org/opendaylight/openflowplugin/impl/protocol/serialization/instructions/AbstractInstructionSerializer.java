@@ -14,17 +14,17 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 
-public abstract class AbstractInstructionSerializer implements OFSerializer<Instruction>,
-        HeaderSerializer<Instruction> {
+public abstract class AbstractInstructionSerializer<T extends Instruction> implements OFSerializer<T>,
+        HeaderSerializer<T> {
 
     @Override
-    public void serialize(Instruction input, ByteBuf outBuffer) {
+    public void serialize(T input, ByteBuf outBuffer) {
         outBuffer.writeShort(getType());
         outBuffer.writeShort(getLength());
     }
 
     @Override
-    public void serializeHeader(Instruction input, ByteBuf outBuffer) {
+    public void serializeHeader(T input, ByteBuf outBuffer) {
         outBuffer.writeShort(getType());
         outBuffer.writeShort(InstructionConstants.INSTRUCTION_IDS_LENGTH);
     }

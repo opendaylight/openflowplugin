@@ -17,7 +17,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
@@ -50,19 +50,13 @@ public final class GroupUtil {
             RpcResultBuilder.success(Collections.<BatchFailedGroupsOutput>emptyList());
 
     public static final Function<RpcResult<List<BatchFailedGroupsOutput>>, RpcResult<AddGroupsBatchOutput>>
-        GROUP_ADD_TRANSFORM =
-        new Function<RpcResult<List<BatchFailedGroupsOutput>>, RpcResult<AddGroupsBatchOutput>>() {
-            @Nullable
-            @Override
-            public RpcResult<AddGroupsBatchOutput> apply(
-                    @Nullable final RpcResult<List<BatchFailedGroupsOutput>> batchGroupsCumulatedResult) {
-                final AddGroupsBatchOutput batchOutput = new AddGroupsBatchOutputBuilder()
-                        .setBatchFailedGroupsOutput(batchGroupsCumulatedResult.getResult()).build();
+        GROUP_ADD_TRANSFORM = (@Nonnull final RpcResult<List<BatchFailedGroupsOutput>> batchGroupsCumulatedResult) -> {
+            final AddGroupsBatchOutput batchOutput = new AddGroupsBatchOutputBuilder()
+                    .setBatchFailedGroupsOutput(batchGroupsCumulatedResult.getResult()).build();
 
-                final RpcResultBuilder<AddGroupsBatchOutput> resultBld =
-                        createCumulativeRpcResult(batchGroupsCumulatedResult, batchOutput);
-                return resultBld.build();
-            }
+            final RpcResultBuilder<AddGroupsBatchOutput> resultBld =
+                    createCumulativeRpcResult(batchGroupsCumulatedResult, batchOutput);
+            return resultBld.build();
         };
     public static final Function<Pair<RpcResult<AddGroupsBatchOutput>,
                                  RpcResult<Void>>,
@@ -71,19 +65,14 @@ public final class GroupUtil {
 
     public static final Function<RpcResult<List<BatchFailedGroupsOutput>>, RpcResult<RemoveGroupsBatchOutput>>
         GROUP_REMOVE_TRANSFORM =
-        new Function<RpcResult<List<BatchFailedGroupsOutput>>, RpcResult<RemoveGroupsBatchOutput>>() {
-            @Nullable
-            @Override
-            public RpcResult<RemoveGroupsBatchOutput> apply(
-                    @Nullable final RpcResult<List<BatchFailedGroupsOutput>> batchGroupsCumulatedResult) {
+            (@Nonnull final RpcResult<List<BatchFailedGroupsOutput>> batchGroupsCumulatedResult) -> {
                 final RemoveGroupsBatchOutput batchOutput = new RemoveGroupsBatchOutputBuilder()
                         .setBatchFailedGroupsOutput(batchGroupsCumulatedResult.getResult()).build();
 
                 final RpcResultBuilder<RemoveGroupsBatchOutput> resultBld =
                         createCumulativeRpcResult(batchGroupsCumulatedResult, batchOutput);
                 return resultBld.build();
-            }
-        };
+            };
     public static final Function<Pair<RpcResult<RemoveGroupsBatchOutput>,
                                       RpcResult<Void>>,
                                       RpcResult<RemoveGroupsBatchOutput>>
@@ -91,19 +80,14 @@ public final class GroupUtil {
 
     public static final Function<RpcResult<List<BatchFailedGroupsOutput>>, RpcResult<UpdateGroupsBatchOutput>>
         GROUP_UPDATE_TRANSFORM =
-        new Function<RpcResult<List<BatchFailedGroupsOutput>>, RpcResult<UpdateGroupsBatchOutput>>() {
-            @Nullable
-            @Override
-            public RpcResult<UpdateGroupsBatchOutput> apply(
-                    @Nullable final RpcResult<List<BatchFailedGroupsOutput>> batchGroupsCumulatedResult) {
+            (@Nonnull final RpcResult<List<BatchFailedGroupsOutput>> batchGroupsCumulatedResult) -> {
                 final UpdateGroupsBatchOutput batchOutput = new UpdateGroupsBatchOutputBuilder()
                         .setBatchFailedGroupsOutput(batchGroupsCumulatedResult.getResult()).build();
 
                 final RpcResultBuilder<UpdateGroupsBatchOutput> resultBld =
                         createCumulativeRpcResult(batchGroupsCumulatedResult, batchOutput);
                 return resultBld.build();
-            }
-        };
+            };
     public static final Function<Pair<RpcResult<UpdateGroupsBatchOutput>,
                                       RpcResult<Void>>,
                                       RpcResult<UpdateGroupsBatchOutput>>
@@ -183,25 +167,21 @@ public final class GroupUtil {
     @VisibleForTesting
     static <T extends BatchGroupOutputListGrouping> Function<Pair<RpcResult<T>, RpcResult<Void>>, RpcResult<T>>
         createComposingFunction() {
-        return new Function<Pair<RpcResult<T>, RpcResult<Void>>, RpcResult<T>>() {
-            @Nullable
-            @Override
-            public RpcResult<T> apply(@Nullable final Pair<RpcResult<T>, RpcResult<Void>> input) {
-                final RpcResultBuilder<T> resultBld;
-                if (input.getLeft().isSuccessful() && input.getRight().isSuccessful()) {
-                    resultBld = RpcResultBuilder.success();
-                } else {
-                    resultBld = RpcResultBuilder.failed();
-                }
-
-                final ArrayList<RpcError> rpcErrors = new ArrayList<>(input.getLeft().getErrors());
-                rpcErrors.addAll(input.getRight().getErrors());
-                resultBld.withRpcErrors(rpcErrors);
-
-                resultBld.withResult(input.getLeft().getResult());
-
-                return resultBld.build();
+        return (@Nonnull final Pair<RpcResult<T>, RpcResult<Void>> input) -> {
+            final RpcResultBuilder<T> resultBld;
+            if (input.getLeft().isSuccessful() && input.getRight().isSuccessful()) {
+                resultBld = RpcResultBuilder.success();
+            } else {
+                resultBld = RpcResultBuilder.failed();
             }
+
+            final ArrayList<RpcError> rpcErrors = new ArrayList<>(input.getLeft().getErrors());
+            rpcErrors.addAll(input.getRight().getErrors());
+            resultBld.withRpcErrors(rpcErrors);
+
+            resultBld.withResult(input.getLeft().getResult());
+
+            return resultBld.build();
         };
     }
 
@@ -238,43 +218,39 @@ public final class GroupUtil {
         }
 
         public Function<List<RpcResult<O>>, RpcResult<List<BatchFailedGroupsOutput>>> invoke() {
-            return new Function<List<RpcResult<O>>, RpcResult<List<BatchFailedGroupsOutput>>>() {
-                @Nullable
-                @Override
-                public RpcResult<List<BatchFailedGroupsOutput>> apply(@Nullable final List<RpcResult<O>> innerInput) {
-                    final int sizeOfFutures = innerInput.size();
-                    Preconditions.checkArgument(sizeOfFutures == sizeOfInputBatch,
-                            "wrong amount of returned futures: {} <> {}", sizeOfFutures, sizeOfInputBatch);
+            return innerInput -> {
+                final int sizeOfFutures = innerInput.size();
+                Preconditions.checkArgument(sizeOfFutures == sizeOfInputBatch,
+                        "wrong amount of returned futures: {} <> {}", sizeOfFutures, sizeOfInputBatch);
 
-                    final List<BatchFailedGroupsOutput> batchGroups = new ArrayList<>();
-                    final Iterator<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group>
-                            batchGroupIterator = inputBatchGroups.iterator();
+                final List<BatchFailedGroupsOutput> batchGroups = new ArrayList<>();
+                final Iterator<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group>
+                        batchGroupIterator = inputBatchGroups.iterator();
 
-                    Collection<RpcError> groupErrors = new ArrayList<>(sizeOfFutures);
+                Collection<RpcError> groupErrors = new ArrayList<>(sizeOfFutures);
 
-                    int batchOrder = 0;
-                    for (RpcResult<O> groupModOutput : innerInput) {
-                        final GroupId groupId = batchGroupIterator.next().getGroupId();
+                int batchOrder = 0;
+                for (RpcResult<O> groupModOutput : innerInput) {
+                    final GroupId groupId = batchGroupIterator.next().getGroupId();
 
-                        if (!groupModOutput.isSuccessful()) {
-                            batchGroups.add(new BatchFailedGroupsOutputBuilder()
-                                    .setGroupId(groupId)
-                                    .setBatchOrder(batchOrder)
-                                    .build());
-                            groupErrors.addAll(groupModOutput.getErrors());
-                        }
-                        batchOrder++;
+                    if (!groupModOutput.isSuccessful()) {
+                        batchGroups.add(new BatchFailedGroupsOutputBuilder()
+                                .setGroupId(groupId)
+                                .setBatchOrder(batchOrder)
+                                .build());
+                        groupErrors.addAll(groupModOutput.getErrors());
                     }
-
-                    final RpcResultBuilder<List<BatchFailedGroupsOutput>> resultBuilder;
-                    if (!groupErrors.isEmpty()) {
-                        resultBuilder = RpcResultBuilder.<List<BatchFailedGroupsOutput>>failed()
-                                .withRpcErrors(groupErrors).withResult(batchGroups);
-                    } else {
-                        resultBuilder = SUCCESSFUL_GROUP_OUTPUT_RPC_RESULT;
-                    }
-                    return resultBuilder.build();
+                    batchOrder++;
                 }
+
+                final RpcResultBuilder<List<BatchFailedGroupsOutput>> resultBuilder;
+                if (!groupErrors.isEmpty()) {
+                    resultBuilder = RpcResultBuilder.<List<BatchFailedGroupsOutput>>failed()
+                            .withRpcErrors(groupErrors).withResult(batchGroups);
+                } else {
+                    resultBuilder = SUCCESSFUL_GROUP_OUTPUT_RPC_RESULT;
+                }
+                return resultBuilder.build();
             };
         }
     }

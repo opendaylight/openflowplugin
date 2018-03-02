@@ -16,6 +16,7 @@ import java.math.BigInteger;
 import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -68,7 +69,7 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
                 handleServiceCall(roleRequestInputBuilder);
         Futures.addCallback(genIdListenableFuture, new FutureCallback<RpcResult<RoleRequestOutput>>() {
             @Override
-            public void onSuccess(final RpcResult<RoleRequestOutput> roleRequestOutputRpcResult) {
+            public void onSuccess(@Nonnull final RpcResult<RoleRequestOutput> roleRequestOutputRpcResult) {
                 if (roleRequestOutputRpcResult.isSuccessful()) {
                     final RoleRequestOutput roleRequestOutput = roleRequestOutputRpcResult.getResult();
                     if (roleRequestOutput != null) {
@@ -114,7 +115,7 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
         final SettableFuture<RpcResult<SetRoleOutput>> finalFuture = SettableFuture.create();
         Futures.addCallback(roleListenableFuture, new FutureCallback<RpcResult<RoleRequestOutput>>() {
             @Override
-            public void onSuccess(final RpcResult<RoleRequestOutput> roleRequestOutputRpcResult) {
+            public void onSuccess(@Nonnull final RpcResult<RoleRequestOutput> roleRequestOutputRpcResult) {
                 LOG.info("submitRoleChange onSuccess for device:{}, role:{}",
                         getDeviceInfo().getNodeId(), ofpRole);
                 final RoleRequestOutput roleRequestOutput = roleRequestOutputRpcResult.getResult();

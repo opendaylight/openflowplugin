@@ -12,7 +12,7 @@ import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 
-public class CopyTtlInActionSerializer extends AbstractActionSerializer {
+public class CopyTtlInActionSerializer extends AbstractActionSerializer<Action> {
     @Override
     public void serialize(Action action, ByteBuf outBuffer) {
         super.serialize(action, outBuffer);
