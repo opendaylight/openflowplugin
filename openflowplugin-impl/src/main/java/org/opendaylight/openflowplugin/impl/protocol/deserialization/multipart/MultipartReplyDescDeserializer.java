@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
 
 import io.netty.buffer.ByteBuf;
+import java.nio.charset.StandardCharsets;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.multipart.reply.multipart.reply.body.MultipartReplyDescBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
@@ -35,11 +36,11 @@ public class MultipartReplyDescDeserializer implements OFDeserializer<MultipartR
         message.readBytes(dpDescBytes);
 
         return new MultipartReplyDescBuilder()
-                .setManufacturer(new String(mfrDescBytes).trim())
-                .setHardware(new String(hwDescBytes).trim())
-                .setSoftware(new String(swDescBytes).trim())
-                .setSerialNumber(new String(serialNumBytes).trim())
-                .setDescription(new String(dpDescBytes).trim())
+                .setManufacturer(new String(mfrDescBytes, StandardCharsets.UTF_8).trim())
+                .setHardware(new String(hwDescBytes, StandardCharsets.UTF_8).trim())
+                .setSoftware(new String(swDescBytes, StandardCharsets.UTF_8).trim())
+                .setSerialNumber(new String(serialNumBytes, StandardCharsets.UTF_8).trim())
+                .setDescription(new String(dpDescBytes, StandardCharsets.UTF_8).trim())
                 .build();
     }
 

@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Future;
+import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -134,7 +135,7 @@ public class SalFlowServiceImpl implements SalFlowService {
 
                 Futures.addCallback(listListenableFuture, new FutureCallback<List<RpcResult<UpdateFlowOutput>>>() {
                     @Override
-                    public void onSuccess(final List<RpcResult<UpdateFlowOutput>> results) {
+                    public void onSuccess(@Nonnull final List<RpcResult<UpdateFlowOutput>> results) {
                         final ArrayList<RpcError> errors = new ArrayList();
                         for (RpcResult<UpdateFlowOutput> flowModResult : results) {
                             if (flowModResult == null) {
@@ -202,7 +203,7 @@ public class SalFlowServiceImpl implements SalFlowService {
         }
 
         @Override
-        public void onSuccess(final RpcResult<AddFlowOutput> rpcResult) {
+        public void onSuccess(@Nonnull final RpcResult<AddFlowOutput> rpcResult) {
             if (rpcResult.isSuccessful()) {
                 final FlowDescriptor flowDescriptor;
 
@@ -240,7 +241,7 @@ public class SalFlowServiceImpl implements SalFlowService {
         }
 
         @Override
-        public void onSuccess(final RpcResult<RemoveFlowOutput> result) {
+        public void onSuccess(@Nonnull final RpcResult<RemoveFlowOutput> result) {
             if (result.isSuccessful()) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Flow remove finished without error for flow={}", input);
@@ -270,7 +271,7 @@ public class SalFlowServiceImpl implements SalFlowService {
         }
 
         @Override
-        public void onSuccess(final RpcResult<UpdateFlowOutput> updateFlowOutputRpcResult) {
+        public void onSuccess(@Nonnull final RpcResult<UpdateFlowOutput> updateFlowOutputRpcResult) {
             final DeviceFlowRegistry deviceFlowRegistry = deviceContext.getDeviceFlowRegistry();
 
             final UpdatedFlow updated = input.getUpdatedFlow();

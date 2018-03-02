@@ -10,15 +10,14 @@ package org.opendaylight.openflowplugin.impl.protocol.serialization.instructions
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.MeterCase;
 
-public class MeterInstructionSerializer extends AbstractInstructionSerializer {
+public class MeterInstructionSerializer extends AbstractInstructionSerializer<MeterCase> {
 
     @Override
-    public void serialize(Instruction input, ByteBuf outBuffer) {
+    public void serialize(MeterCase input, ByteBuf outBuffer) {
         super.serialize(input, outBuffer);
-        outBuffer.writeInt(MeterCase.class.cast(input).getMeter().getMeterId().getValue().intValue());
+        outBuffer.writeInt(input.getMeter().getMeterId().getValue().intValue());
     }
 
     @Override

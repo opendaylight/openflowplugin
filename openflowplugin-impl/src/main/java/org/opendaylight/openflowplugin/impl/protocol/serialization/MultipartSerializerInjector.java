@@ -63,7 +63,8 @@ final class MultipartSerializerInjector {
      */
     static void injectSerializers(final SerializerExtensionProvider provider) {
         // Inject new message serializers here using injector created by createInjector method
-        final Function<Class<? extends MultipartRequestBody>, Consumer<OFSerializer<MultipartRequestBody>>> injector =
+        final Function<Class<? extends MultipartRequestBody>,
+            Consumer<OFSerializer<? extends MultipartRequestBody>>> injector =
                 createInjector(provider, EncodeConstants.OF13_VERSION_ID);
 
         MultipartMatchFieldSerializerInjector.injectSerializers(provider);
@@ -96,9 +97,9 @@ final class MultipartSerializerInjector {
      * @return injector
      */
     @VisibleForTesting
-    static Function<Class<? extends MultipartRequestBody>, Consumer<OFSerializer<MultipartRequestBody>>> createInjector(
-            final SerializerExtensionProvider provider,
-            final byte version) {
+    static Function<Class<? extends MultipartRequestBody>,
+            Consumer<OFSerializer<? extends MultipartRequestBody>>> createInjector(
+                    final SerializerExtensionProvider provider, final byte version) {
         return type -> serializer ->
                 provider.registerSerializer(
                         new MessageTypeKey<>(version, type),
