@@ -12,6 +12,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.concurrent.Future;
+import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerGroupService;
@@ -74,7 +75,7 @@ public class SalGroupServiceImpl implements SalGroupService {
 
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<AddGroupOutput>>() {
             @Override
-            public void onSuccess(RpcResult<AddGroupOutput> result) {
+            public void onSuccess(@Nonnull RpcResult<AddGroupOutput> result) {
                 if (result.isSuccessful()) {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Group add with id={} finished without error", input.getGroupId().getValue());
@@ -108,7 +109,7 @@ public class SalGroupServiceImpl implements SalGroupService {
 
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<UpdateGroupOutput>>() {
             @Override
-            public void onSuccess(RpcResult<UpdateGroupOutput> result) {
+            public void onSuccess(@Nonnull RpcResult<UpdateGroupOutput> result) {
                 if (result.isSuccessful()) {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Group update with original id={} finished without error",
@@ -139,7 +140,7 @@ public class SalGroupServiceImpl implements SalGroupService {
 
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<RemoveGroupOutput>>() {
             @Override
-            public void onSuccess(RpcResult<RemoveGroupOutput> result) {
+            public void onSuccess(@Nonnull RpcResult<RemoveGroupOutput> result) {
                 if (result.isSuccessful()) {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Group remove with id={} finished without error", input.getGroupId().getValue());

@@ -19,13 +19,13 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Ord
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.ActionList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 
-public abstract class AbstractActionInstructionSerializer extends AbstractInstructionSerializer implements
-        SerializerRegistryInjector {
+public abstract class AbstractActionInstructionSerializer<T extends Instruction>
+        extends AbstractInstructionSerializer<T> implements SerializerRegistryInjector {
 
     private SerializerRegistry registry;
 
     @Override
-    public void serialize(Instruction input, ByteBuf outBuffer) {
+    public void serialize(T input, ByteBuf outBuffer) {
         outBuffer.writeShort(getType());
     }
 

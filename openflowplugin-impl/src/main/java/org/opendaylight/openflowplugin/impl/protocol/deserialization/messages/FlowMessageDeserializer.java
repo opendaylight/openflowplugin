@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.messages;
 
+import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -65,7 +66,7 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
 
         message.skipBytes(PADDING);
 
-        final OFDeserializer<Match> matchDeserializer = registry.getDeserializer(MATCH_KEY);
+        final OFDeserializer<Match> matchDeserializer = Preconditions.checkNotNull(registry).getDeserializer(MATCH_KEY);
         builder.setMatch(new MatchBuilder(matchDeserializer.deserialize(message)).build());
 
         final int length = message.readableBytes();
@@ -81,13 +82,13 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
                 OFDeserializer<Instruction> deserializer = null;
 
                 if (InstructionConstants.APPLY_ACTIONS_TYPE == type) {
-                    deserializer = registry.getDeserializer(
+                    deserializer = Preconditions.checkNotNull(registry).getDeserializer(
                             new MessageCodeActionExperimenterKey(
                                 EncodeConstants.OF13_VERSION_ID, type, Instruction.class,
                                 ActionPath.INVENTORY_FLOWNODE_TABLE_APPLY_ACTIONS,
                                 null));
                 } else if (InstructionConstants.WRITE_ACTIONS_TYPE == type) {
-                    deserializer = registry.getDeserializer(
+                    deserializer = Preconditions.checkNotNull(registry).getDeserializer(
                             new MessageCodeActionExperimenterKey(
                                 EncodeConstants.OF13_VERSION_ID, type, Instruction.class,
                                 ActionPath.INVENTORY_FLOWNODE_TABLE_WRITE_ACTIONS,
@@ -100,7 +101,7 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
                                 + 2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
                     }
 
-                    deserializer = registry.getDeserializer(
+                    deserializer = Preconditions.checkNotNull(registry).getDeserializer(
                             new MessageCodeExperimenterKey(
                                 EncodeConstants.OF13_VERSION_ID, type, Instruction.class, expId));
                 }
@@ -123,11 +124,11 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
     }
 
     private static FlowModFlags createFlowModFlagsFromBitmap(int input) {
-        final Boolean ofp_FF_SendFlowRem = (input & 1 << 0) > 0;
-        final Boolean ofp_FF_CheckOverlap = (input & 1 << 1) > 0;
-        final Boolean ofp_FF_ResetCounts = (input & 1 << 2) > 0;
-        final Boolean ofp_FF_NoPktCounts = (input & 1 << 3) > 0;
-        final Boolean ofp_FF_NoBytCounts = (input & 1 << 4) > 0;
+        final Boolean ofp_FF_SendFlowRem = (input & 1 << 0) != 0;
+        final Boolean ofp_FF_CheckOverlap = (input & 1 << 1) != 0;
+        final Boolean ofp_FF_ResetCounts = (input & 1 << 2) != 0;
+        final Boolean ofp_FF_NoPktCounts = (input & 1 << 3) != 0;
+        final Boolean ofp_FF_NoBytCounts = (input & 1 << 4) != 0;
         return new FlowModFlags(ofp_FF_CheckOverlap, ofp_FF_NoBytCounts, ofp_FF_NoPktCounts, ofp_FF_ResetCounts,
                 ofp_FF_SendFlowRem);
     }

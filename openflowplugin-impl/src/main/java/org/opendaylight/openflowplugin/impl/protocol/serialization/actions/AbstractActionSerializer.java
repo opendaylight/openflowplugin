@@ -14,15 +14,15 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 
-public abstract class AbstractActionSerializer implements OFSerializer<Action>, HeaderSerializer<Action> {
+public abstract class AbstractActionSerializer<T extends Action> implements OFSerializer<T>, HeaderSerializer<T> {
     @Override
-    public void serialize(Action input, ByteBuf outBuffer) {
+    public void serialize(T input, ByteBuf outBuffer) {
         outBuffer.writeShort(getType());
         outBuffer.writeShort(getLength());
     }
 
     @Override
-    public void serializeHeader(Action input, ByteBuf outBuffer) {
+    public void serializeHeader(T input, ByteBuf outBuffer) {
         outBuffer.writeShort(getType());
         outBuffer.writeShort(ActionConstants.ACTION_IDS_LENGTH);
     }

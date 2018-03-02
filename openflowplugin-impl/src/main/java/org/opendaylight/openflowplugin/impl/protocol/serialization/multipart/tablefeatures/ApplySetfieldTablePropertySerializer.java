@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart.tablefeatures;
 
+import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
@@ -29,7 +30,7 @@ public class ApplySetfieldTablePropertySerializer extends AbstractTablePropertyS
         property
             .getApplySetfield()
             .getSetFieldMatch()
-            .forEach(setFieldMatch -> registry
+            .forEach(setFieldMatch -> Preconditions.checkNotNull(registry)
                 .<MatchField, OFSerializer<SetFieldMatch>>getSerializer(
                     new MessageTypeKey<>(
                         EncodeConstants.OF13_VERSION_ID,
