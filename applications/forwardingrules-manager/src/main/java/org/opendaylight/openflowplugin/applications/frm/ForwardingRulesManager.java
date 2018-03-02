@@ -12,6 +12,7 @@ import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationListener;
 import org.opendaylight.openflowplugin.applications.frm.impl.DevicesGroupRegistry;
 import org.opendaylight.openflowplugin.applications.frm.impl.FlowNodeConnectorInventoryTranslatorImpl;
+import org.opendaylight.serviceutils.srm.RecoverableListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
@@ -187,4 +188,9 @@ public interface ForwardingRulesManager extends ConfigurationListener, AutoClose
      */
     NodeConfigurator getNodeConfigurator();
 
+    /**
+     * Method for register RecoverableListener.
+     *
+     */
+    void addRecoverableListener(RecoverableListener recoverableListener);
 }
