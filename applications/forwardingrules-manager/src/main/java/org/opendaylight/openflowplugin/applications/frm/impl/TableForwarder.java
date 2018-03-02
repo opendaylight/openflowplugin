@@ -15,7 +15,10 @@ import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.genius.srm.RecoverableListener;
+import org.opendaylight.genius.srm.ServiceRecoveryRegistry;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
+import org.opendaylight.openflowplugin.applications.frm.recovery.impl.OpenflowpluginServiceRecoveryHandler;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -33,15 +36,26 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
+public class TableForwarder extends AbstractListeningCommiter<TableFeatures> implements RecoverableListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(TableForwarder.class);
     private ListenerRegistration<TableForwarder> listenerRegistration;
+    private final DataBroker dataBroker;
 
     @SuppressWarnings("IllegalCatch")
-    public TableForwarder(final ForwardingRulesManager manager, final DataBroker db) {
+    public TableForwarder(final ForwardingRulesManager manager, final DataBroker db,
+                          final OpenflowpluginServiceRecoveryHandler openflowpluginServiceRecoveryHandler,
+                          final ServiceRecoveryRegistry serviceRecoveryRegistry) {
         super(manager);
         Preconditions.checkNotNull(db, "DataBroker can not be null!");
+        this.dataBroker = db;
+        registerListener();
+        serviceRecoveryRegistry.addRecoverableListener(openflowpluginServiceRecoveryHandler.buildServiceRegistryKey(),
+                this);
+    }
+
+    @Override
+    public void registerListener() {
         final DataTreeIdentifier<TableFeatures> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION,
                 getWildCardPath());
 
@@ -49,12 +63,17 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
             SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(ForwardingRulesManagerImpl.STARTUP_LOOP_TICK,
                     ForwardingRulesManagerImpl.STARTUP_LOOP_MAX_RETRIES);
             listenerRegistration = looper
-                    .loopUntilNoException(() -> db.registerDataTreeChangeListener(treeId, TableForwarder.this));
+                    .loopUntilNoException(() -> dataBroker.registerDataTreeChangeListener(treeId, TableForwarder.this));
         } catch (final Exception e) {
             LOG.warn("FRM Table DataTreeChangeListener registration fail!");
             LOG.debug("FRM Table DataTreeChangeListener registration fail ..", e);
             throw new IllegalStateException("TableForwarder startup fail! System needs restart.", e);
         }
+    }
+
+    @Override
+    public  void deregisterListener() {
+        close();
     }
 
     @Override
