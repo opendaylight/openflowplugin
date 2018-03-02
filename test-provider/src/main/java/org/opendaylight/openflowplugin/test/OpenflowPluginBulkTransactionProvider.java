@@ -24,9 +24,7 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFaile
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.NotificationService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6FlowLabel;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.ControllerActionCaseBuilder;
@@ -90,7 +88,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
@@ -123,17 +120,15 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowPluginBulkTransactionProvider.class);
     private DataBroker dataBroker;
     private final BundleContext ctx;
-    private ProviderContext pc;
     private final String originalFlowName = "Foo";
     private final NodeErrorListener nodeErrorListener = new NodeErrorListenerLoggingImpl();
-    private static NotificationService notificationService;
+    private NotificationService notificationService;
 
     public OpenflowPluginBulkTransactionProvider(BundleContext ctx) {
         this.ctx = ctx;
     }
 
     public void onSessionInitiated(ProviderContext session) {
-        pc = session;
         notificationService = session.getSALService(NotificationService.class);
         notificationService.registerNotificationListener(nodeErrorListener);
         dataBroker = session.getSALService(DataBroker.class);
@@ -145,18 +140,10 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         if (nodeId == null) {
             nodeId = OpenflowpluginTestActivator.NODE_ID;
         }
-        NodeRef nodeOne = createNodeRef(nodeId);
         NodeBuilder builder = new NodeBuilder();
         builder.setId(new NodeId(nodeId));
         builder.setKey(new NodeKey(builder.getId()));
         return builder;
-    }
-
-    private static NodeRef createNodeRef(String string) {
-        NodeKey key = new NodeKey(new NodeId(string));
-        InstanceIdentifier<Node> path = InstanceIdentifier.create(Nodes.class).child(Node.class, key);
-
-        return new NodeRef(path);
     }
 
     @Override
@@ -435,6 +422,10 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
     private short getTableId(String tableId) {
         short table = 2;
+        if (tableId == null) {
+            return table;
+        }
+
         try {
             table = Short.parseShort(tableId);
         } catch (NumberFormatException ex) {
@@ -632,7 +623,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
                 tf3 = createTestFlow(tn, "f1000", "10");
                 break;
             default:
-                break;
+                throw new IllegalArgumentException("Invalid flowtype: " + flowtype);
         }
 
         InstanceIdentifier<Flow> path1 = InstanceIdentifier.create(Nodes.class).child(Node.class, tn.getKey())
@@ -1253,23 +1244,6 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         return match;
     }
 
-    private static MatchBuilder createMatch33() {
-
-        MatchBuilder match = new MatchBuilder();
-        Ipv4MatchBuilder ipv4Match = new Ipv4MatchBuilder();
-        Ipv4Prefix prefix = new Ipv4Prefix("10.0.0.10");
-        ipv4Match.setIpv4Source(prefix);
-        Ipv4Match i4m = ipv4Match.build();
-        match.setLayer3Match(i4m);
-
-        EthernetMatchBuilder eth = new EthernetMatchBuilder();
-        EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-        ethTypeBuilder.setType(new EtherType(0xfffeL));
-        eth.setEthernetType(ethTypeBuilder.build());
-        match.setEthernetMatch(eth.build());
-        return match;
-    }
-
     private static MatchBuilder createInphyportMatch(NodeId nodeId) {
         MatchBuilder match = new MatchBuilder();
         match.setInPort(new NodeConnectorId(nodeId + ":202"));
@@ -1315,9 +1289,6 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         eth.setEthernetType(ethTypeBuilder.build());
         match.setEthernetMatch(eth.build());
 
-        Ipv6Prefix dstip6 = new Ipv6Prefix("2002::2/64");
-        Ipv6Prefix srcip6 = new Ipv6Prefix("2001:0:0:0:0:0:0:1/56");
-        Ipv6Address ndtarget = new Ipv6Address("2001:db8:0:1:fd97:f9f0:a810:782e");
         Ipv6ExtHeaderBuilder nextheader = new Ipv6ExtHeaderBuilder();
         nextheader.setIpv6Exthdr(58);
         Ipv6LabelBuilder ipv6label = new Ipv6LabelBuilder();

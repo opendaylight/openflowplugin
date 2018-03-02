@@ -55,7 +55,6 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowpluginMeterTestCommandProvider.class);
     private DataBroker dataBroker;
-    private ProviderContext pc;
     private final BundleContext ctx;
     private Meter testMeter;
     private Meter testMeter1;
@@ -64,7 +63,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
     private final String originalMeterName = "Foo";
     private final String updatedMeterName = "Bar";
     private final MeterEventListener meterEventListener = new MeterEventListener();
-    private static NotificationService notificationService;
+    private NotificationService notificationService;
     private Registration listener1Reg;
 
     public OpenflowpluginMeterTestCommandProvider(BundleContext ctx) {
@@ -72,7 +71,6 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
     }
 
     public void onSessionInitiated(ProviderContext session) {
-        pc = session;
         dataBroker = session.getSALService(DataBroker.class);
         ctx.registerService(CommandProvider.class.getName(), this, null);
         notificationService = session.getSALService(NotificationService.class);
@@ -101,7 +99,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         return InstanceIdentifier.create(Nodes.class).child(Node.class, node.getKey());
     }
 
-    final class MeterEventListener implements SalMeterListener {
+    private static final class MeterEventListener implements SalMeterListener {
 
         @Override
         public void onMeterAdded(MeterAdded notification) {
