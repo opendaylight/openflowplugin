@@ -86,7 +86,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
@@ -101,7 +100,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.node.error.service.rev140410.NodeErrorListener;
-import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
@@ -110,29 +108,21 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("checkstyle:MethodName")
 public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvider {
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowPluginBulkGroupTransactionProvider.class);
-    private NodeBuilder testNode;
     private DataBroker dataBroker;
     private final BundleContext ctx;
-    private ProviderContext pc;
-    private FlowBuilder testFlow;
     private final String originalFlowName = "Foo";
     private final NodeErrorListener nodeErrorListener = new NodeErrorListenerLoggingImpl();
-    private Registration listener1Reg;
-    private Registration listener2Reg;
-    private Group testGroup;
-    private Group testGroup2;
     private Node testNode12;
     private final String originalGroupName = "Foo";
-    private static NotificationService notificationService;
+    private NotificationService notificationService;
 
     public OpenflowPluginBulkGroupTransactionProvider(BundleContext ctx) {
         this.ctx = ctx;
     }
 
     public void onSessionInitiated(ProviderContext session) {
-        pc = session;
         notificationService = session.getSALService(NotificationService.class);
-        listener2Reg = notificationService.registerNotificationListener(nodeErrorListener);
+        notificationService.registerNotificationListener(nodeErrorListener);
         dataBroker = session.getSALService(DataBroker.class);
         ctx.registerService(CommandProvider.class.getName(), this, null);
         createTestFlow(createTestNode(null), null, null);
@@ -142,26 +132,17 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         if (nodeId == null) {
             nodeId = OpenflowpluginTestActivator.NODE_ID;
         }
-        NodeRef nodeOne = createNodeRef(nodeId);
         NodeBuilder builder = new NodeBuilder();
         builder.setId(new NodeId(nodeId));
         builder.setKey(new NodeKey(builder.getId()));
-        testNode = builder;
         return builder;
     }
 
     private void createTestNode() {
-        NodeRef nodeOne = createNodeRef(OpenflowpluginTestActivator.NODE_ID);
         NodeBuilder builder = new NodeBuilder();
         builder.setId(new NodeId(OpenflowpluginTestActivator.NODE_ID));
         builder.setKey(new NodeKey(builder.getId()));
         testNode12 = builder.build();
-    }
-
-    private static NodeRef createNodeRef(String string) {
-        NodeKey key = new NodeKey(new NodeId(string));
-        InstanceIdentifier<Node> path = InstanceIdentifier.create(Nodes.class).child(Node.class, key);
-        return new NodeRef(path);
     }
 
     @Override
@@ -557,12 +538,15 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         flow.setKey(key);
         flow.setPriority(2);
         flow.setFlowName(originalFlowName + "X" + flowType);
-        testFlow = flow;
         return flow;
     }
 
     private short getTableId(String tableId) {
         short table = 2;
+        if (tableId == null) {
+            return table;
+        }
+
         try {
             table = Short.parseShort(tableId);
         } catch (NumberFormatException ex) {
@@ -612,7 +596,6 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
     }
 
     private void createUserNode(String nodeRef) {
-        NodeRef nodeOne = createNodeRef(nodeRef);
         NodeBuilder builder = new NodeBuilder();
         builder.setId(new NodeId(nodeRef));
         builder.setKey(new NodeKey(builder.getId()));
@@ -823,8 +806,6 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
                 bucket.setAction(createPopPbbAction());
                 break;
             case "a6":
-                bucket.setAction(createPushPbbAction());
-                break;
             case "a7":
                 bucket.setAction(createPushPbbAction());
                 break;
@@ -847,7 +828,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
                 break;
         }
 
-        if (groupmod == "add") {
+        if ("add".equals(groupmod)) {
             bucket.setWatchGroup((long) 14);
             bucket.setWatchPort((long) 1234);
             bucket.setWeight(50);
@@ -869,7 +850,6 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         value1.add(bucket.build());
         value.setBucket(value1);
         group.setBuckets(value.build());
-        testGroup = group.build();
         return group;
     }
 
