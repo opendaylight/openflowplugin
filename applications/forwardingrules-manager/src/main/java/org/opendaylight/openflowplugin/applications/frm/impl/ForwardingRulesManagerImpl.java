@@ -15,6 +15,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.Nonnull;
+import javax.inject.Inject;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
@@ -28,6 +29,9 @@ import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesProperty;
+import org.opendaylight.openflowplugin.applications.frm.recovery.impl.InterfaceServiceRecoveryHandler;
+import org.opendaylight.openflowplugin.applications.frm.recovery.impl.InterfaceServiceRecoveryHandlerBase;
+import org.opendaylight.genius.srm.ServiceRecoveryRegistry;
 import org.opendaylight.openflowplugin.applications.reconciliation.NotificationRegistration;
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -87,11 +91,14 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private boolean staleMarkingEnabled;
     private int reconciliationRetryCount;
     private boolean isBundleBasedReconciliationEnabled;
+    private final InterfaceServiceRecoveryHandlerBase interfaceServiceRecoveryHandler;
+    private final ServiceRecoveryRegistry serviceRecoveryRegistry;
 
     public ForwardingRulesManagerImpl(final DataBroker dataBroker, final RpcConsumerRegistry rpcRegistry,
-            final ForwardingRulesManagerConfig config, final ClusterSingletonServiceProvider clusterSingletonService,
-            final NotificationProviderService notificationService, final ConfigurationService configurationService,
-            final ReconciliationManager reconciliationManager) {
+                                      final ForwardingRulesManagerConfig config, final ClusterSingletonServiceProvider clusterSingletonService,
+                                      final NotificationProviderService notificationService, final ConfigurationService configurationService,
+                                      final ReconciliationManager reconciliationManager, InterfaceServiceRecoveryHandlerBase interfaceServiceRecoveryHandler,
+                                      final ServiceRecoveryRegistry serviceRecoveryRegistry) {
         disableReconciliation = config.isDisableReconciliation();
         staleMarkingEnabled = config.isStaleMarkingEnabled();
         reconciliationRetryCount = config.getReconciliationRetryCount();
@@ -116,6 +123,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                 "RPC SalTableService not found.");
         this.salBundleService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalBundleService.class),
                 "RPC SalBundlService not found.");
+        this.interfaceServiceRecoveryHandler = interfaceServiceRecoveryHandler;
+        this.serviceRecoveryRegistry = serviceRecoveryRegistry;
     }
 
     @Override
@@ -132,10 +141,10 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                 this.nodeListener, dataService);
         flowNodeConnectorInventoryTranslatorImpl = new FlowNodeConnectorInventoryTranslatorImpl(this, dataService);
 
-        this.flowListener = new FlowForwarder(this, dataService);
-        this.groupListener = new GroupForwarder(this, dataService);
-        this.meterListener = new MeterForwarder(this, dataService);
-        this.tableListener = new TableForwarder(this, dataService);
+        this.flowListener = new FlowForwarder(this, dataService, interfaceServiceRecoveryHandler, serviceRecoveryRegistry);
+        this.groupListener = new GroupForwarder(this, dataService, interfaceServiceRecoveryHandler, serviceRecoveryRegistry);
+        this.meterListener = new MeterForwarder(this, dataService, interfaceServiceRecoveryHandler, serviceRecoveryRegistry);
+        this.tableListener = new TableForwarder(this, dataService, interfaceServiceRecoveryHandler, serviceRecoveryRegistry);
         LOG.info("ForwardingRulesManager has started successfully.");
     }
 

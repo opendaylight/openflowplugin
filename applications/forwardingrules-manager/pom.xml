@@ -12,10 +12,29 @@
   <packaging>bundle</packaging>
 
   <dependencies>
+      <dependency>
+          <groupId>javax.inject</groupId>
+          <artifactId>javax.inject</artifactId>
+      </dependency>
     <dependency>
       <groupId>org.opendaylight.controller</groupId>
       <artifactId>sal-binding-api</artifactId>
     </dependency>
+      <dependency>
+          <groupId>org.opendaylight.genius</groupId>
+          <artifactId>srm-api</artifactId>
+          <version>0.5.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+          <groupId>org.opendaylight.genius</groupId>
+          <artifactId>srm-impl</artifactId>
+          <version>0.5.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+          <groupId>org.opendaylight.genius</groupId>
+          <artifactId>srm-shell</artifactId>
+          <version>0.5.0-SNAPSHOT</version>
+      </dependency>
     <dependency>
       <groupId>org.opendaylight.openflowplugin.model</groupId>
       <artifactId>model-flow-service</artifactId>
@@ -24,6 +43,15 @@
       <groupId>org.opendaylight.openflowplugin</groupId>
       <artifactId>openflowplugin-common</artifactId>
     </dependency>
+      <dependency>
+          <groupId>org.opendaylight.genius</groupId>
+          <artifactId>mdsalutil-api</artifactId>
+          <version>0.4.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+          <groupId>org.opendaylight.mdsal</groupId>
+          <artifactId>yang-binding</artifactId>
+      </dependency>
     <dependency>
       <groupId>org.opendaylight.yangtools</groupId>
       <artifactId>yang-common</artifactId>
@@ -69,6 +97,11 @@
     <dependency>
       <groupId>org.opendaylight.openflowplugin</groupId>
       <artifactId>openflowplugin-extension-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin.applications</groupId>
+      <artifactId>topology-manager</artifactId>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 

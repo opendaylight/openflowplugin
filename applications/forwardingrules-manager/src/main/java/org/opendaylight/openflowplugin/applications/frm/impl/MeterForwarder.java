@@ -18,7 +18,10 @@ import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+import org.opendaylight.genius.srm.RecoverableListener;
+import org.opendaylight.genius.srm.ServiceRecoveryRegistry;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
+import org.opendaylight.openflowplugin.applications.frm.recovery.impl.InterfaceServiceRecoveryHandlerBase;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -52,16 +55,25 @@ import org.slf4j.LoggerFactory;
  * {@link org.opendaylight.controller.md.sal.binding.api.DataTreeModification}.
  *
  */
-public class MeterForwarder extends AbstractListeningCommiter<Meter> {
+public class MeterForwarder extends AbstractListeningCommiter<Meter> implements RecoverableListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(MeterForwarder.class);
     private final DataBroker dataBroker;
     private ListenerRegistration<MeterForwarder> listenerRegistration;
 
     @SuppressWarnings("IllegalCatch")
-    public MeterForwarder(final ForwardingRulesManager manager, final DataBroker db) {
+    public MeterForwarder(final ForwardingRulesManager manager, final DataBroker db,
+                          final InterfaceServiceRecoveryHandlerBase interfaceServiceRecoveryHandler,
+                          final ServiceRecoveryRegistry serviceRecoveryRegistry) {
         super(manager);
         dataBroker = Preconditions.checkNotNull(db, "DataBroker can not be null!");
+        registerListener();
+        serviceRecoveryRegistry.addRecoverableListener(interfaceServiceRecoveryHandler.buildServiceRegistryKey(),
+                this);
+    }
+
+    @Override
+    public void registerListener() {
         final DataTreeIdentifier<Meter> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION,
                 getWildCardPath());
 
@@ -69,12 +81,17 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
             SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(ForwardingRulesManagerImpl.STARTUP_LOOP_TICK,
                     ForwardingRulesManagerImpl.STARTUP_LOOP_MAX_RETRIES);
             listenerRegistration = looper
-                    .loopUntilNoException(() -> db.registerDataTreeChangeListener(treeId, MeterForwarder.this));
+                    .loopUntilNoException(() -> dataBroker.registerDataTreeChangeListener(treeId, MeterForwarder.this));
         } catch (final Exception e) {
             LOG.warn("FRM Meter DataTreeChange listener registration fail!");
             LOG.debug("FRM Meter DataTreeChange listener registration fail ..", e);
             throw new IllegalStateException("MeterForwarder startup fail! System needs restart.", e);
         }
+    }
+
+    @Override
+    public  void deregisterListener() {
+        close();
     }
 
     @Override
