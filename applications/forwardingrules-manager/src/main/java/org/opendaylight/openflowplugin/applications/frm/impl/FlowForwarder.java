@@ -26,7 +26,6 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
 import org.opendaylight.openflowplugin.applications.frm.ActionType;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
-import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
@@ -84,29 +83,30 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     private static final Logger LOG = LoggerFactory.getLogger(FlowForwarder.class);
     private static final String GROUP_EXISTS_IN_DEVICE_ERROR = "GROUPEXISTS";
 
-    private final DataBroker dataBroker;
     private ListenerRegistration<FlowForwarder> listenerRegistration;
 
     public FlowForwarder(final ForwardingRulesManager manager, final DataBroker db) {
-        super(manager);
-        dataBroker = Preconditions.checkNotNull(db, "DataBroker can not be null!");
-        registrationListener(db);
+        super(manager, db);
     }
 
     @SuppressWarnings("IllegalCatch")
-    private void registrationListener(final DataBroker db) {
+    @Override
+    public void registerListener() {
         final DataTreeIdentifier<Flow> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION,
                 getWildCardPath());
         try {
-            SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(ForwardingRulesManagerImpl.STARTUP_LOOP_TICK,
-                    ForwardingRulesManagerImpl.STARTUP_LOOP_MAX_RETRIES);
-            listenerRegistration = looper
-                    .loopUntilNoException(() -> db.registerDataTreeChangeListener(treeId, FlowForwarder.this));
+            listenerRegistration = dataBroker.registerDataTreeChangeListener(treeId, FlowForwarder.this);
         } catch (final Exception e) {
             LOG.warn("FRM Flow DataTreeChange listener registration fail!");
             LOG.debug("FRM Flow DataTreeChange listener registration fail ..", e);
             throw new IllegalStateException("FlowForwarder startup fail! System needs restart.", e);
         }
+    }
+
+
+    @Override
+    public  void deregisterListener() {
+        close();
     }
 
     @Override
