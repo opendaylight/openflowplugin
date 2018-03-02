@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
-import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
 import java.util.Collections;
 import java.util.concurrent.Future;
@@ -40,23 +39,28 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
     private static final Logger LOG = LoggerFactory.getLogger(TableForwarder.class);
     private ListenerRegistration<TableForwarder> listenerRegistration;
 
-    @SuppressWarnings("IllegalCatch")
     public TableForwarder(final ForwardingRulesManager manager, final DataBroker db) {
-        super(manager);
-        Preconditions.checkNotNull(db, "DataBroker can not be null!");
+        super(manager, db);
+    }
+
+    @SuppressWarnings("IllegalCatch")
+    @Override
+    public void registerListener() {
         final DataTreeIdentifier<TableFeatures> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION,
                 getWildCardPath());
 
         try {
-            SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(ForwardingRulesManagerImpl.STARTUP_LOOP_TICK,
-                    ForwardingRulesManagerImpl.STARTUP_LOOP_MAX_RETRIES);
-            listenerRegistration = looper
-                    .loopUntilNoException(() -> db.registerDataTreeChangeListener(treeId, TableForwarder.this));
+            listenerRegistration = dataBroker.registerDataTreeChangeListener(treeId, TableForwarder.this);
         } catch (final Exception e) {
             LOG.warn("FRM Table DataTreeChangeListener registration fail!");
             LOG.debug("FRM Table DataTreeChangeListener registration fail ..", e);
             throw new IllegalStateException("TableForwarder startup fail! System needs restart.", e);
         }
+    }
+
+    @Override
+    public  void deregisterListener() {
+        close();
     }
 
     @Override

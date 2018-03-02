@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
-import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -56,26 +55,30 @@ import org.slf4j.LoggerFactory;
 public class MeterForwarder extends AbstractListeningCommiter<Meter> {
 
     private static final Logger LOG = LoggerFactory.getLogger(MeterForwarder.class);
-    private final DataBroker dataBroker;
     private ListenerRegistration<MeterForwarder> listenerRegistration;
 
-    @SuppressWarnings("IllegalCatch")
     public MeterForwarder(final ForwardingRulesManager manager, final DataBroker db) {
-        super(manager);
-        dataBroker = Preconditions.checkNotNull(db, "DataBroker can not be null!");
+        super(manager, db);
+    }
+
+    @SuppressWarnings("IllegalCatch")
+    @Override
+    public void registerListener() {
         final DataTreeIdentifier<Meter> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION,
                 getWildCardPath());
 
         try {
-            SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(ForwardingRulesManagerImpl.STARTUP_LOOP_TICK,
-                    ForwardingRulesManagerImpl.STARTUP_LOOP_MAX_RETRIES);
-            listenerRegistration = looper
-                    .loopUntilNoException(() -> db.registerDataTreeChangeListener(treeId, MeterForwarder.this));
+            listenerRegistration = dataBroker.registerDataTreeChangeListener(treeId, MeterForwarder.this);
         } catch (final Exception e) {
             LOG.warn("FRM Meter DataTreeChange listener registration fail!");
             LOG.debug("FRM Meter DataTreeChange listener registration fail ..", e);
             throw new IllegalStateException("MeterForwarder startup fail! System needs restart.", e);
         }
+    }
+
+    @Override
+    public  void deregisterListener() {
+        close();
     }
 
     @Override

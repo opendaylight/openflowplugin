@@ -59,29 +59,30 @@ import org.slf4j.LoggerFactory;
 public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 
     private static final Logger LOG = LoggerFactory.getLogger(FlowForwarder.class);
-    private final DataBroker dataBroker;
     private ListenerRegistration<FlowForwarder> listenerRegistration;
 
     public FlowForwarder(final ForwardingRulesManager manager, final DataBroker db) {
-        super(manager);
-        dataBroker = Preconditions.checkNotNull(db, "DataBroker can not be null!");
-        registrationListener(db);
+        super(manager, db);
     }
 
     @SuppressWarnings("IllegalCatch")
-    private void registrationListener(final DataBroker db) {
+    @Override
+    public void registerListener() {
         final DataTreeIdentifier<Flow> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION,
                 getWildCardPath());
         try {
-            SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(ForwardingRulesManagerImpl.STARTUP_LOOP_TICK,
-                    ForwardingRulesManagerImpl.STARTUP_LOOP_MAX_RETRIES);
-            listenerRegistration = looper
-                    .loopUntilNoException(() -> db.registerDataTreeChangeListener(treeId, FlowForwarder.this));
+            listenerRegistration = dataBroker.registerDataTreeChangeListener(treeId, FlowForwarder.this);
         } catch (final Exception e) {
             LOG.warn("FRM Flow DataTreeChange listener registration fail!");
             LOG.debug("FRM Flow DataTreeChange listener registration fail ..", e);
             throw new IllegalStateException("FlowForwarder startup fail! System needs restart.", e);
         }
+    }
+
+
+    @Override
+    public  void deregisterListener() {
+        close();
     }
 
     @Override
