@@ -43,6 +43,9 @@ module nicira-action {
     identity nxm-nx-conntrack {
         base ofaction:experimenter-action-sub-type;
     }
+        identity nxm-nx-ct-clear {
+        base ofaction:experimenter-action-sub-type;
+    }
     identity nxm-nx-learn {
         base ofaction:experimenter-action-sub-type;
     }
@@ -285,6 +288,14 @@ module nicira-action {
             }
         }
     }
+    
+    grouping ofj-nx-action-ct-clear-grouping {
+        container nx-action-ct-clear {
+            leaf experimenter-id {
+                type oft:experimenter-id;
+            }
+        }
+    }
 
     grouping ofpact-actions {
         description
@@ -490,6 +501,9 @@ module nicira-action {
         }
         case action-conntrack {
             uses ofj-nx-action-conntrack-grouping;
+        }
+        case action-ct-clear {
+            uses ofj-nx-action-ct-clear-grouping;
         }
         case action-learn {
             uses ofj-nx-action-learn-grouping;
