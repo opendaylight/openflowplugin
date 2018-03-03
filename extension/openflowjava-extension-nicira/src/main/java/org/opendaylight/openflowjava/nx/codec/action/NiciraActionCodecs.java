@@ -21,6 +21,7 @@ public interface NiciraActionCodecs {
     PushNshCodec PUSH_NSH_CODEC = new PushNshCodec();
     PopNshCodec POP_NSH_CODEC = new PopNshCodec();
     ConntrackCodec CONNTRACK_CODEC = new ConntrackCodec();
+    CtClearCodec CT_CLEAR_CODEC = new CtClearCodec();
     LearnCodec LEARN_CODEC = new LearnCodec();
     FinTimeoutCodec FIN_TIMEOUT_CODEC = new FinTimeoutCodec();
 }
