@@ -1,0 +1,84 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b07e4661_20087629",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/group/DeviceGroupRegistryImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-03-04T16:36:29Z",
+      "side": 1,
+      "message": "checkstyle -\u003e extra line",
+      "revId": "fe610638226ba5a486a2b55fc0d38faed9266667",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "19397b15_e0caa467",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/group/DeviceGroupRegistryImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-03-04T16:36:29Z",
+      "side": 1,
+      "message": "checkstyle -\u003e extraline",
+      "revId": "fe610638226ba5a486a2b55fc0d38faed9266667",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6904fd1d_1835ac9d",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/sal/SalGroupServiceImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-03-04T16:36:29Z",
+      "side": 1,
+      "message": "parameterized logging missing",
+      "range": {
+        "startLine": 78,
+        "startChar": 57,
+        "endLine": 78,
+        "endChar": 62
+      },
+      "revId": "fe610638226ba5a486a2b55fc0d38faed9266667",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "76d03379_605063df",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/sal/SalGroupServiceImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-03-04T16:36:29Z",
+      "side": 1,
+      "message": "why MoreExecutors removed?",
+      "range": {
+        "startLine": 93,
+        "startChar": 9,
+        "endLine": 93,
+        "endChar": 11
+      },
+      "revId": "fe610638226ba5a486a2b55fc0d38faed9266667",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
