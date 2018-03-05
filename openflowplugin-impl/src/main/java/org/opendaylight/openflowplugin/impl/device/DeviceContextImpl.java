@@ -397,6 +397,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                         .setMatch(MatchUtil.transformMatch(match,
                                 org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received
                                         .Match.class))
+                        .setFlowCookie(packetIn.getFlowCookie())
                         .build());
 
         if (NotificationPublishService.REJECTED.equals(offerNotification)) {
