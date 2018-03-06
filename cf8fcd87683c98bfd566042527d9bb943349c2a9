@@ -1,0 +1,159 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "49c27a49_91b7e44d",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/DeviceMastership.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-03-06T04:47:13Z",
+      "side": 1,
+      "message": "checkstyle: remove extra line",
+      "revId": "cf8fcd87683c98bfd566042527d9bb943349c2a9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e4e8844d_8a873b3f",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/DeviceMastership.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-03-06T04:47:13Z",
+      "side": 1,
+      "message": "import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;",
+      "range": {
+        "startLine": 15,
+        "startChar": 67,
+        "endLine": 15,
+        "endChar": 70
+      },
+      "revId": "cf8fcd87683c98bfd566042527d9bb943349c2a9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b28a07bb_5b0faf9d",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/DeviceMastership.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-03-06T04:47:13Z",
+      "side": 1,
+      "message": "private final RoutedRpcRegistration routedRpcReg;",
+      "range": {
+        "startLine": 40,
+        "startChar": 4,
+        "endLine": 40,
+        "endChar": 72
+      },
+      "revId": "cf8fcd87683c98bfd566042527d9bb943349c2a9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "48516c09_e0eeeaa7",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/DeviceMastership.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-03-06T04:47:13Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 42,
+        "startChar": 55,
+        "endLine": 42,
+        "endChar": 96
+      },
+      "revId": "cf8fcd87683c98bfd566042527d9bb943349c2a9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a9dd57e4_c3779ac4",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/DeviceMastership.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-03-06T04:47:13Z",
+      "side": 1,
+      "message": "cs: space",
+      "range": {
+        "startLine": 86,
+        "startChar": 46,
+        "endLine": 86,
+        "endChar": 48
+      },
+      "revId": "cf8fcd87683c98bfd566042527d9bb943349c2a9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1d2b1dea_5e736f44",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/DeviceMastership.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-03-06T04:47:13Z",
+      "side": 1,
+      "message": "cs space",
+      "range": {
+        "startLine": 91,
+        "startChar": 47,
+        "endLine": 91,
+        "endChar": 49
+      },
+      "revId": "cf8fcd87683c98bfd566042527d9bb943349c2a9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "44202b4b_dbc485d6",
+        "filename": "applications/southbound-cli/src/main/resources/org/opendaylight/blueprint/reconciliation-service.xml",
+        "patchSetId": 13
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-03-06T04:47:13Z",
+      "side": 1,
+      "message": "keep a general naming convention for this xml file as it not only contains reconciliation",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 5,
+        "endChar": 54
+      },
+      "revId": "cf8fcd87683c98bfd566042527d9bb943349c2a9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
