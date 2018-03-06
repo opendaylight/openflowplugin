@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4697c603_b2290ede",
+        "filename": "extension/openflowplugin-extension-api/src/main/java/org/opendaylight/openflowplugin/extension/api/GroupingLooseResolver.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-03-06T03:58:11Z",
+      "side": 1,
+      "message": "I will open a bug to track this.",
+      "revId": "64d904831f34c15e17df2b6adc4611c1b0fa6892",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
