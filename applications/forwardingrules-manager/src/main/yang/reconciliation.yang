@@ -10,7 +10,7 @@ module reconciliation {
         description "Initial revision of trigger based frm reconciliation";
     }
 
-    rpc init-reconciliation {
+    rpc reconcile-node {
         description "Executes an administrative reconciliation between the controller and node";
         input {
             uses "inv:node-context-ref";
