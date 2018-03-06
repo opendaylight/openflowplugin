@@ -30,9 +30,14 @@
                 <property name="dataBroker" ref="dataBroker" />
             </action>
         </command>
-        <command name="openflow/execReconciliation">
+        <command name="openflow/execreconciliation">
             <action class="org.opendaylight.openflowplugin.applications.southboundcli.cli.ExecReconciliation">
                 <property name="adminReconciliationService" ref="adminReconciliationService"/>
+            </action>
+        </command>
+        <command name="openflow/getAdminReconcileCount">
+            <action class="org.opendaylight.openflowplugin.applications.southboundcli.cli.AdminReconciliationCount">
+                <property name="dataBroker" ref="dataBroker"/>
             </action>
         </command>
     </command-bundle>
