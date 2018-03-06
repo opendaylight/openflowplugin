@@ -19,17 +19,17 @@ import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.commands.Option;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.AdminReconciliationService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.ExecReconciliationInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.ExecReconciliationInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.ExecReconciliationOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.ReconcileInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.ReconcileInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.ReconcileOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Command(scope = "openflow", name = "execreconciliation", description = "Launch an admin reconciliation")
-public class ExecReconciliation extends OsgiCommandSupport {
+@Command(scope = "openflow", name = "reconcile", description = "Launch an admin reconciliation")
+public class Reconcile extends OsgiCommandSupport {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ExecReconciliation.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Reconcile.class);
     private AdminReconciliationService adminReconciliationService;
 
     public void setAdminReconciliationService(AdminReconciliationService adminReconciliationService) {
@@ -44,23 +44,22 @@ public class ExecReconciliation extends OsgiCommandSupport {
 
     @Override
     protected Object doExecute() throws Exception {
-        LOG.info("execReconciliation: doExecute()");
         List<BigInteger> nodes = (nodeIds == null)
                 ? new ArrayList<>()
                 : nodeIds.stream().distinct().map(node -> BigInteger.valueOf(node)).collect(Collectors.toList());
         LOG.debug("Triggering admin reconciliation for node {}", nodes);
-        ExecReconciliationInput rpcInput = new ExecReconciliationInputBuilder().setNodes(nodes)
+        ReconcileInput rpcInput = new ReconcileInputBuilder().setNodes(nodes)
                 .setReconcileAllNodes(reconcileAllNodes).build();
-        Future<RpcResult<ExecReconciliationOutput>> rpcOutput = adminReconciliationService.execReconciliation(rpcInput);
+        Future<RpcResult<ReconcileOutput>> rpcOutput = adminReconciliationService.reconcile(rpcInput);
         try {
-            RpcResult<ExecReconciliationOutput> rpcResult = rpcOutput.get();
+            RpcResult<ReconcileOutput> rpcResult = rpcOutput.get();
             if (rpcResult.isSuccessful()) {
-                session.getConsole().println("execReconciliation successfully completed for the nodes");
+                session.getConsole().println("reconcile successfully completed for the nodes");
             } else {
-                LOG.error("execReconciliation fail with error {}", rpcResult.getErrors());
+                LOG.error("reconcile failed with error {}", rpcResult.getErrors());
             }
         } catch (ExecutionException e) {
-            LOG.error("Error occurred while invoking execReconciliation RPC for node {}", nodes, e);
+            LOG.error("Error occurred while invoking reconcile RPC for node {}", nodes, e);
         }
         return null;
     }

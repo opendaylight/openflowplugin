@@ -7,7 +7,28 @@ module admin-reconciliation {
         description "Initial revision for admin reconciliation";
     }
 
-    rpc exec-reconciliation {
+    container reconciliation-counter {
+        description "Number of administrative ordered reconciliation";
+        list reconcile-counter {
+            key node-id;
+            uses counter;
+        }
+    }
+
+    grouping counter {
+        leaf node-id {
+            type uint64;
+        }
+        leaf count {
+            type uint32;
+        }
+        leaf last-request-time {
+             description "Timestamp when admin reconcile was last requested";
+             type string;
+        }
+    }
+
+    rpc reconcile {
         description "Requests the execution of an administrative reconciliation between the controller and
                      one or several or all Nodes";
         input {
