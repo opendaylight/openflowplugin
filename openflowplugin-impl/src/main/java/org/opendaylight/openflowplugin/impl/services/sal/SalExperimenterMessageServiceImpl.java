@@ -61,14 +61,13 @@ public class SalExperimenterMessageServiceImpl extends AbstractVoidService<SendE
         if (messageConverter instanceof BundleMessageDataInjector) {
             ((BundleMessageDataInjector) messageConverter).setNode(input.getNode());
             ((BundleMessageDataInjector) messageConverter).setXid(xid.getValue());
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Flows and groups pushed to the node: {} with transaction id : {} are {}",
+                LOG.trace("Flow or group pushed to the node: {} with transaction id : {} is {}",
                         ((BundleAddMessageSal) input.getExperimenterMessageOfChoice())
                                 .getSalAddMessageData().getBundleInnerMessage(),
                         input.getNode().getValue().firstKeyOf(Node.class).getId(),
                         xid);
-            }
         }
+
 
         try {
             experimenterInputBld = new ExperimenterInputBuilder()
