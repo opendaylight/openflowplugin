@@ -8,14 +8,22 @@
 
 package org.opendaylight.openflowplugin.applications.southboundcli;
 
+import com.google.common.base.Optional;
 import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
+import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.applications.southboundcli.util.OFNode;
 import org.opendaylight.openflowplugin.applications.southboundcli.util.ShellUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -26,6 +34,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.AdminReconciliationService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.ExecReconciliationInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.ExecReconciliationOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.ReconciliationCounter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounterKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.InitReconciliationInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.InitReconciliationInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.InitReconciliationOutput;
@@ -42,6 +54,8 @@ public class AdminReconciliationServiceImpl implements AdminReconciliationServic
     private static final Logger LOG = LoggerFactory.getLogger(AdminReconciliationServiceImpl.class);
     private final DataBroker broker;
     private final ReconciliationService reconciliationService;
+    private final Long INITIAL_ID = 1L;
+    private int DS_MAX_RETRY = 8;
 
     public AdminReconciliationServiceImpl(DataBroker broker, ReconciliationService reconciliationService) {
         this.broker = broker;
@@ -78,6 +92,7 @@ public class AdminReconciliationServiceImpl implements AdminReconciliationServic
                 LOG.info("Executing admin reconciliation for node {}", nodeId);
                 System.out.println("Executing admin reconciliation for node " + nodeId);
                 BigInteger node = new BigInteger(String.valueOf(nodeId));
+                increaseNumberAdminReconcile(node);
                 NodeKey nodeKey = new NodeKey(new NodeId("openflow:" + nodeId));
                 InitReconciliationInput initReconInput = new InitReconciliationInputBuilder().
                         setNodeId(node).setNode(new NodeRef(InstanceIdentifier.builder(Nodes.class).
@@ -119,6 +134,38 @@ public class AdminReconciliationServiceImpl implements AdminReconciliationServic
                 ? new ArrayList<>()
                 : nodeList.stream().distinct().map(node -> node.getNodeId()).collect(Collectors.toList());
         return nodes;
+    }
+
+    public void increaseNumberAdminReconcile(BigInteger nodeId) {
+        Long counterValue;
+            InstanceIdentifier<ReconcileCounter> instanceIdentifier = InstanceIdentifier.builder(ReconciliationCounter.class)
+                    .child(ReconcileCounter.class, new ReconcileCounterKey(nodeId)).build();
+            ReconcileCounterBuilder counterBuilder = new ReconcileCounterBuilder()
+                    .setKey(new ReconcileCounterKey(nodeId)).setNodeId(nodeId).setNumberAdminReconciliation(INITIAL_ID);
+            ReadWriteTransaction tx = broker.newReadWriteTransaction();
+            Optional<ReconcileCounter> optional = readReconcileCounterFromDS(tx, instanceIdentifier, nodeId);
+            if (optional.isPresent()) {
+                ReconcileCounter count = optional.get();
+                counterValue = count.getNumberAdminReconciliation();
+                counterBuilder.setNumberAdminReconciliation(++counterValue);
+                LOG.info("The vale of counter value: {}",counterValue);
+            }
+            try {
+                tx.merge(LogicalDatastoreType.OPERATIONAL, instanceIdentifier, counterBuilder.build(), true);
+                tx.submit().checkedGet();
+            } catch (TransactionCommitFailedException e) {
+                LOG.error("Exception while processing node {}", nodeId, e);
+        }
+    }
+
+    private Optional<ReconcileCounter> readReconcileCounterFromDS (ReadWriteTransaction tx,
+                InstanceIdentifier<ReconcileCounter> instanceIdentifier, BigInteger nodeId){
+        try {
+            return tx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier).get();
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.error("Exception while processing node : {} {}", nodeId, e);
+        }
+        return Optional.absent();
     }
 }
 
