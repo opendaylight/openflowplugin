@@ -20,9 +20,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.InitReconciliationInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.InitReconciliationOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.InitReconciliationOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileNodeInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileNodeOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileNodeOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconciliationService;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -47,39 +47,39 @@ public class ReconciliationServiceImpl implements ReconciliationService {
     }
 
     @Override
-    public Future<RpcResult<InitReconciliationOutput>> initReconciliation(InitReconciliationInput input) {
-        LOG.debug("ReconciliationServiceImpl initReconciliation for node: {}",
+    public Future<RpcResult<ReconcileNodeOutput>> reconcileNode(ReconcileNodeInput input) {
+        LOG.debug("Triggering reconciliation for node: {}",
                 input.getNodeId().toString());
         Node nodeDpn = buildNode(input.getNodeId().longValue());
         InstanceIdentifier<FlowCapableNode> connectedNode = InstanceIdentifier.builder(Nodes.class)
                 .child(Node.class, nodeDpn.getKey()).augmentation(FlowCapableNode.class).build();
-        SettableFuture<RpcResult<InitReconciliationOutput>> rpcResult = SettableFuture.create();
+        SettableFuture<RpcResult<ReconcileNodeOutput>> rpcResult = SettableFuture.create();
         ListenableFuture<Boolean> futureResult = forwardingRulesManagerImpl
                 .getNodeListener().reconcileConfiguration(connectedNode);
         Futures.addCallback(futureResult, new ResultCallBack(futureResult, rpcResult));
-        LOG.debug("ReconciliationServiceImpl initReconciliation finished for node: {}",
+        LOG.debug("Completing reconciliation for node: {}",
                 input.getNodeId().toString());
         return rpcResult;
     }
 
     private static class ResultCallBack implements FutureCallback<Boolean> {
-        private final SettableFuture<RpcResult<InitReconciliationOutput>> futureResult;
+        private final SettableFuture<RpcResult<ReconcileNodeOutput>> futureResult;
 
         ResultCallBack(ListenableFuture<Boolean> rpcResult,
-                       SettableFuture<RpcResult<InitReconciliationOutput>> futureResult) {
+                       SettableFuture<RpcResult<ReconcileNodeOutput>> futureResult) {
             this.futureResult = futureResult;
         }
 
         @Override
         public void onSuccess(@Nullable Boolean result) {
-            InitReconciliationOutput output = new InitReconciliationOutputBuilder().setResult(result).build();
+            ReconcileNodeOutput output = new ReconcileNodeOutputBuilder().setResult(result).build();
             futureResult.set(RpcResultBuilder.success(output).build());
         }
 
         @Override
         public void onFailure(Throwable error) {
             LOG.error("initReconciliation failed", error);
-            InitReconciliationOutput output = new InitReconciliationOutputBuilder().setResult(false).build();
+            ReconcileNodeOutput output = new ReconcileNodeOutputBuilder().setResult(false).build();
             futureResult.set(RpcResultBuilder.success(output).build());
         }
     }
