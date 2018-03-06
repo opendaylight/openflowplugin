@@ -26,6 +26,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.ReconciliationCounter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounter;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -138,5 +140,22 @@ public final class ShellUtil {
             LOG.error("Error reading node {} from Inventory DS: {}", nodeId, e);
         }
         return ofNode;
+    }
+
+    public static List<ReconcileCounter> getAdminReconcileCount(final DataBroker dataBroker) {
+        ReadOnlyTransaction tx = dataBroker.newReadOnlyTransaction();
+        InstanceIdentifier<ReconciliationCounter> instanceIdentifier = InstanceIdentifier.builder(ReconciliationCounter.class).build();
+        List<ReconcileCounter> output = Collections.emptyList();
+        try {
+            CheckedFuture<Optional<ReconciliationCounter>, ReadFailedException> checkedFuture =
+                    tx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier);
+            Optional<ReconciliationCounter> result = checkedFuture.get();
+            if (result.isPresent()) {
+                output = result.get().getReconcileCounter();
+            }
+        } catch (ExecutionException | InterruptedException | NullPointerException e) {
+            LOG.error("Error reading nodes from Inventory DS", e);
+        }
+        return output;
     }
 }
