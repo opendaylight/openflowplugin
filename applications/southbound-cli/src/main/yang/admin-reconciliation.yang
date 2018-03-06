@@ -7,6 +7,23 @@ module admin-reconciliation {
         description "Initial revision for admin reconciliation";
     }
 
+    container reconciliation-counter {
+        description "Number of administrative ordered reconciliation";
+        list reconcile-counter {
+            key node-id;
+            uses counter;
+        }
+    }
+
+    grouping counter {
+        leaf node-id {
+            type uint64;
+        }
+        leaf number-admin-reconciliation {
+            type uint32;
+        }
+    }
+
     rpc exec-reconciliation {
 
         input {
