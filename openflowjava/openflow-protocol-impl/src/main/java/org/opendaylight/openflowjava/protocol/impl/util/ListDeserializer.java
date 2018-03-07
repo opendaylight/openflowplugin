@@ -49,6 +49,7 @@ public final class ListDeserializer {
             items = new ArrayList<>();
             int startIndex = input.readerIndex();
             while (input.readerIndex() - startIndex < length) {
+                LOG.info("deserializeList length = {}", length);
                 OFDeserializer<E> deserializer = registry.getDeserializer(keyMaker.make(input));
                 E item = deserializer.deserialize(input);
                 items.add(item);
