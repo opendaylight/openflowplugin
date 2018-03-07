@@ -68,6 +68,24 @@
       "revId": "6f4fafda23c428337a397cd92fe634474f53a287",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0c3d8635_c802ff9a",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/lifecycle/ContextChainHolderImpl.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 271,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-03-07T02:02:12Z",
+      "side": 1,
+      "message": "if you pass ContextChainMastershipState.MASTER_ON_DEVICE, it will set the mastership to true, you need to call ContextChainMastershipState.CHECK",
+      "parentUuid": "64a83f87_e4666e2f",
+      "revId": "6f4fafda23c428337a397cd92fe634474f53a287",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
