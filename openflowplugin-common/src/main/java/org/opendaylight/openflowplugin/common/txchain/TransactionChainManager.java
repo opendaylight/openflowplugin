@@ -184,7 +184,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                     LOG.error("Exception during INITIAL transaction submitting. ", ex);
                     return false;
                 }
-                initCommit = false;
+                initCommit = true;
                 return true;
             }
 
