@@ -332,7 +332,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                                 deviceInfo.getDatapathId(),
                                 portStatusMessage.getPortNo(),
                                 OpenflowVersion.get(deviceInfo.getVersion()))));
-
+        LOG.error("The received port name {} and the port reason {}", flowCapableNodeConnector.getName(),
+                 flowCapableNodeConnector.getReason());
         writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector, new NodeConnectorBuilder()
                 .setKey(iiToNodeConnector.getKey())
                 .addAugmentation(FlowCapableNodeConnectorStatisticsData.class, new
@@ -343,6 +344,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         if (PortReason.OFPPRDELETE.equals(portStatusMessage.getReason())) {
             addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector);
             submitTransaction();
+            LOG.error("Transaction is completed for node delete event with reason {} for port {}", flowCapableNodeConnector.getReason(),
+                     flowCapableNodeConnector.getName());
         }
     }
 
