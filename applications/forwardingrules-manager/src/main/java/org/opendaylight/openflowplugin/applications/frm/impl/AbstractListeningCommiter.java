@@ -11,6 +11,7 @@ import com.google.common.base.Preconditions;
 import java.util.Collection;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
+import org.opendaylight.infrautils.jobcoordinator.JobCoordinator;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -27,9 +28,11 @@ public abstract class AbstractListeningCommiter<T extends DataObject> implements
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractListeningCommiter.class);
     ForwardingRulesManager provider;
+    JobCoordinator jobCoordinator;
 
-    public AbstractListeningCommiter(ForwardingRulesManager provider) {
+    public AbstractListeningCommiter(ForwardingRulesManager provider, JobCoordinator jobCoordinator) {
         this.provider = Preconditions.checkNotNull(provider, "ForwardingRulesManager can not be null!");
+        this.jobCoordinator = jobCoordinator;
     }
 
     @Override
