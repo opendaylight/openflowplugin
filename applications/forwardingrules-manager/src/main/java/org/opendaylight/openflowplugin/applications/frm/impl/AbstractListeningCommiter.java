@@ -7,15 +7,26 @@
  */
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
+
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
+import org.opendaylight.infrautils.jobcoordinator.JobCoordinator;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,9 +38,11 @@ public abstract class AbstractListeningCommiter<T extends DataObject> implements
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractListeningCommiter.class);
     ForwardingRulesManager provider;
+    JobCoordinator jobCoordinator;
 
-    public AbstractListeningCommiter(ForwardingRulesManager provider) {
+    public AbstractListeningCommiter(ForwardingRulesManager provider, JobCoordinator jobCoordinator) {
         this.provider = Preconditions.checkNotNull(provider, "ForwardingRulesManager can not be null!");
+        this.jobCoordinator = jobCoordinator;
     }
 
     @Override
@@ -52,7 +65,7 @@ public abstract class AbstractListeningCommiter<T extends DataObject> implements
                         break;
                     case WRITE:
                         if (mod.getDataBefore() == null) {
-                            add(key, mod.getDataAfter(), nodeIdent);
+                            add(key, mod.getDataAfter(), nodeIdent, null);
                         } else {
                             update(key, mod.getDataBefore(), mod.getDataAfter(), nodeIdent);
                         }
@@ -101,6 +114,25 @@ public abstract class AbstractListeningCommiter<T extends DataObject> implements
         // trigger the event of new node connected.
         return provider.isNodeOwner(nodeIdent)
                 && (provider.isNodeActive(nodeIdent) || provider.checkNodeInOperationalDataStore(nodeIdent));
+    }
+
+    /**
+     * Creates a single rpc result of type Void honoring all partial rpc results.
+     *
+     * @param previousItemAction description for case when the triggering future contains failure
+     * @param <D>                type of rpc output (gathered in list)
+     * @return single rpc result of type Void honoring all partial rpc results
+     */
+    public static <D> Function<List<ListenableFuture<RpcResult<D>>>, ListenableFuture<RpcResult<D>>> createRpcResultCondenser(
+            final String previousItemAction) {
+        return input -> {
+            final RpcResultBuilder<Void> resultSink;
+            if (input != null) {
+                LOG.info("createRpcResultCondenser successfule with result {}", input);
+                return input.get(0);
+            }
+            return Futures.immediateFuture(null);
+        };
     }
 }
 

@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.applications.frm;
 
 import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.binding.api.ClusteredDataTreeChangeListener;
+import org.opendaylight.infrautils.jobcoordinator.SuccessCallable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -64,11 +65,11 @@ public interface ForwardingRulesCommiter<D extends DataObject>
      *            - new DataObject
      * @param nodeIdent
      *            Node InstanceIdentifier
-     * @return A future associated with RPC task. {@code null} is set to the future
-     *         if this method does not invoke RPC.
+     * @param successworker
+     *            - the action to be taken on success
      */
-    Future<? extends RpcResult<?>> add(InstanceIdentifier<D> identifier, D add,
-            InstanceIdentifier<FlowCapableNode> nodeIdent);
+    void add(InstanceIdentifier<D> identifier, D add,
+            InstanceIdentifier<FlowCapableNode> nodeIdent, SuccessCallable successworker);
 
     /**
      * Method creates stale-marked DataObject which is identified by

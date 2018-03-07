@@ -59,6 +59,13 @@
             <classifier>features</classifier>
         </dependency>
         <dependency>
+            <groupId>org.opendaylight.infrautils</groupId>
+            <artifactId>odl-infrautils-jobcoordinator</artifactId>
+            <version>${infrautils.version}</version>
+            <type>xml</type>
+            <classifier>features</classifier>
+        </dependency>
+        <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>odl-openflowplugin-nsf-model</artifactId>
             <classifier>features</classifier>

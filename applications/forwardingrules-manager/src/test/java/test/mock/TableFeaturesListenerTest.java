@@ -21,6 +21,7 @@ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.infrautils.jobcoordinator.JobCoordinator;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.applications.frm.impl.DeviceMastershipManager;
 import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
@@ -54,11 +55,14 @@ public class TableFeaturesListenerTest extends FRMTest {
     private NotificationProviderService notificationService;
     @Mock
     private ReconciliationManager reconciliationManager;
+    @Mock
+    private JobCoordinator jobCoordinator;
 
     @Before
     public void setUp() {
         forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock, getConfig(),
-                clusterSingletonService, notificationService, getConfigurationService(), reconciliationManager);
+                clusterSingletonService, notificationService, getConfigurationService(), reconciliationManager,
+                jobCoordinator);
 
         forwardingRulesManager.start();
         // TODO consider tests rewrite (added because of complicated access)

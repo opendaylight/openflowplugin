@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.infrautils.jobcoordinator.JobCoordinator;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager;
@@ -41,6 +42,8 @@ public class NodeListenerTest extends FRMTest {
     private NotificationProviderService notificationService;
     @Mock
     private ReconciliationManager reconciliationManager;
+    @Mock
+    private JobCoordinator jobCoordinator;
 
 
     @Before
@@ -52,7 +55,8 @@ public class NodeListenerTest extends FRMTest {
                 clusterSingletonService,
                 notificationService,
                 getConfigurationService(),
-                reconciliationManager);
+                reconciliationManager,
+                jobCoordinator);
 
         forwardingRulesManager.start();
     }

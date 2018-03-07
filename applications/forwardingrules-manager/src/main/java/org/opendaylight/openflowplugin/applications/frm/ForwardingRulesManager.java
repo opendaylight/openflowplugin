@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.applications.frm;
 
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationListener;
+import org.opendaylight.openflowplugin.applications.frm.impl.DevicesGroupRegistry;
 import org.opendaylight.openflowplugin.applications.frm.impl.FlowNodeConnectorInventoryTranslatorImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
@@ -99,6 +100,13 @@ public interface ForwardingRulesManager extends ConfigurationListener, AutoClose
      * @return salBundleService
      */
     SalBundleService getSalBundleService();
+
+    /**
+     * Devices Group Registry.
+     *
+     * @return devicesGroupRegistry
+     */
+    DevicesGroupRegistry getDevicesGroupRegistry();
 
     /**
      * Content definition method and prevent code duplicity in Reconcil.

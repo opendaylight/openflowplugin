@@ -10,6 +10,7 @@
   <reference id="clusterSingletonService" interface="org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider"/>
   <reference id="configurationService" interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService"/>
   <reference id="reconciliationservice" interface="org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager"/>
+  <reference id="jobCoordinator" interface="org.opendaylight.infrautils.jobcoordinator.JobCoordinator"/>
 
 
   <odl:clustered-app-config id="frmConfig"
@@ -24,6 +25,7 @@
     <argument ref="notificationService"/>
     <argument ref="configurationService"/>
     <argument ref="reconciliationservice"/>
+    <argument ref="jobCoordinator"/>
   </bean>
 
   <bean id="frmReconciliationService"
