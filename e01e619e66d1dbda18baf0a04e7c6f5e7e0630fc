@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "e761750b_fc3a60c2",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 372,
+      "author": {
+        "id": 7890
+      },
+      "writtenOn": "2018-03-07T04:24:28Z",
+      "side": 1,
+      "message": "I\u0027ll send a new patch with that validation. Makes sense.",
+      "parentUuid": "5b43807e_88d62b9a",
+      "revId": "e01e619e66d1dbda18baf0a04e7c6f5e7e0630fc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f5adf3f9_47b2ba13",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceManagerImpl.java",
         "patchSetId": 12
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "ca5427b4_64c6a93f",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceManagerImpl.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 7890
+      },
+      "writtenOn": "2018-03-07T04:24:28Z",
+      "side": 1,
+      "message": "Yes we do, using the ContextChainHolder we can make the following call:\n\ncontextChainHolder.getContextChain(deviceInfo);",
+      "parentUuid": "f5adf3f9_47b2ba13",
+      "revId": "e01e619e66d1dbda18baf0a04e7c6f5e7e0630fc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3cb9489b_2c0d74e6",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/lifecycle/ContextChainHolderImpl.java",
         "patchSetId": 12
@@ -47,6 +83,24 @@
       "writtenOn": "2018-03-07T03:27:33Z",
       "side": 1,
       "message": "this is also not required ?",
+      "revId": "e01e619e66d1dbda18baf0a04e7c6f5e7e0630fc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "545f5721_d8cc131b",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/lifecycle/ContextChainHolderImpl.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 7890
+      },
+      "writtenOn": "2018-03-07T04:24:28Z",
+      "side": 1,
+      "message": "Not, it\u0027s not. I gonna send a new patch.",
+      "parentUuid": "3cb9489b_2c0d74e6",
       "revId": "e01e619e66d1dbda18baf0a04e7c6f5e7e0630fc",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
