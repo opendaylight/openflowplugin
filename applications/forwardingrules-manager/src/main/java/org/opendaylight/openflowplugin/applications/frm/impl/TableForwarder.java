@@ -15,6 +15,7 @@ import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.infrautils.jobcoordinator.JobCoordinator;
 import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
@@ -41,8 +42,8 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
     private ListenerRegistration<TableForwarder> listenerRegistration;
 
     @SuppressWarnings("IllegalCatch")
-    public TableForwarder(final ForwardingRulesManager manager, final DataBroker db) {
-        super(manager);
+    public TableForwarder(final ForwardingRulesManager manager, final DataBroker db, JobCoordinator nodeConfigurator) {
+        super(manager, nodeConfigurator);
         Preconditions.checkNotNull(db, "DataBroker can not be null!");
         final DataTreeIdentifier<TableFeatures> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION,
                 getWildCardPath());

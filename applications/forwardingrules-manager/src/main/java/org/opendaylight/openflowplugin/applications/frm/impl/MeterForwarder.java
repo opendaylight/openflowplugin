@@ -18,6 +18,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+import org.opendaylight.infrautils.jobcoordinator.JobCoordinator;
 import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
@@ -31,7 +32,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterInputBuilder;
@@ -61,8 +61,8 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
     private ListenerRegistration<MeterForwarder> listenerRegistration;
 
     @SuppressWarnings("IllegalCatch")
-    public MeterForwarder(final ForwardingRulesManager manager, final DataBroker db) {
-        super(manager);
+    public MeterForwarder(final ForwardingRulesManager manager, final DataBroker db, JobCoordinator nodeConfigurator) {
+        super(manager, nodeConfigurator);
         dataBroker = Preconditions.checkNotNull(db, "DataBroker can not be null!");
         final DataTreeIdentifier<Meter> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION,
                 getWildCardPath());
@@ -138,7 +138,7 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
     }
 
     @Override
-    public Future<RpcResult<AddMeterOutput>> add(final InstanceIdentifier<Meter> identifier, final Meter addDataObj,
+    public Future<? extends RpcResult<?>> add(final InstanceIdentifier<Meter> identifier, final Meter addDataObj,
             final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
         final AddMeterInputBuilder builder = new AddMeterInputBuilder(addDataObj);

@@ -21,12 +21,10 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.infrautils.jobcoordinator.JobCoordinator;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
-import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
-import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
-import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
-import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesProperty;
+import org.opendaylight.openflowplugin.applications.frm.*;
 import org.opendaylight.openflowplugin.applications.reconciliation.NotificationRegistration;
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -81,6 +79,9 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private FlowNodeConnectorInventoryTranslatorImpl flowNodeConnectorInventoryTranslatorImpl;
     private DeviceMastershipManager deviceMastershipManager;
     private final ReconciliationManager reconciliationManager;
+    private DevicesGroupRegistry devicesGroupRegistry;
+    private final JobCoordinator jobCoordinator;
+
 
     private boolean disableReconciliation;
     private boolean staleMarkingEnabled;
@@ -90,7 +91,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     public ForwardingRulesManagerImpl(final DataBroker dataBroker, final RpcConsumerRegistry rpcRegistry,
             final ForwardingRulesManagerConfig config, final ClusterSingletonServiceProvider clusterSingletonService,
             final NotificationProviderService notificationService, final ConfigurationService configurationService,
-            final ReconciliationManager reconciliationManager) {
+            final ReconciliationManager reconciliationManager, final JobCoordinator jobCoordinator) {
         disableReconciliation = config.isDisableReconciliation();
         staleMarkingEnabled = config.isStaleMarkingEnabled();
         reconciliationRetryCount = config.getReconciliationRetryCount();
@@ -102,6 +103,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         this.notificationService = Preconditions.checkNotNull(notificationService,
                 "Notification publisher configurationService is" + " not available");
         this.reconciliationManager = reconciliationManager;
+        this.jobCoordinator = jobCoordinator;
 
         Preconditions.checkArgument(rpcRegistry != null, "RpcConsumerRegistry can not be null !");
 
@@ -130,11 +132,11 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         this.deviceMastershipManager = new DeviceMastershipManager(clusterSingletonServiceProvider, notificationService,
                 this.nodeListener, dataService);
         flowNodeConnectorInventoryTranslatorImpl = new FlowNodeConnectorInventoryTranslatorImpl(dataService);
-
-        this.flowListener = new FlowForwarder(this, dataService);
-        this.groupListener = new GroupForwarder(this, dataService);
-        this.meterListener = new MeterForwarder(this, dataService);
-        this.tableListener = new TableForwarder(this, dataService);
+        this.flowListener = new FlowForwarder(this, dataService, jobCoordinator);
+        this.groupListener = new GroupForwarder(this, dataService, jobCoordinator);
+        this.meterListener = new MeterForwarder(this, dataService, jobCoordinator);
+        this.tableListener = new TableForwarder(this, dataService, jobCoordinator);
+        this.devicesGroupRegistry = new DevicesGroupRegistry();
         LOG.info("ForwardingRulesManager has started successfully.");
     }
 
@@ -246,6 +248,11 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     @Override
     public ForwardingRulesCommiter<Meter> getMeterCommiter() {
         return meterListener;
+    }
+
+    @Override
+    public DevicesGroupRegistry getDevicesGroupRegistry() {
+        return this.devicesGroupRegistry;
     }
 
     @Override
