@@ -155,10 +155,6 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
             statListForCollecting.add(MultipartType.OFPMPTABLE);
         }
 
-        if (devState.isFlowStatisticsAvailable()) {
-            statListForCollecting.add(MultipartType.OFPMPFLOW);
-        }
-
         if (devState.isGroupAvailable()) {
             statListForCollecting.add(MultipartType.OFPMPGROUPDESC);
             statListForCollecting.add(MultipartType.OFPMPGROUP);
@@ -167,6 +163,10 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         if (devState.isMetersAvailable()) {
             statListForCollecting.add(MultipartType.OFPMPMETERCONFIG);
             statListForCollecting.add(MultipartType.OFPMPMETER);
+        }
+
+        if (devState.isFlowStatisticsAvailable()) {
+            statListForCollecting.add(MultipartType.OFPMPFLOW);
         }
 
         if (devState.isPortStatisticsAvailable()) {
