@@ -50,6 +50,24 @@
       "revId": "6f4fafda23c428337a397cd92fe634474f53a287",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "64a83f87_e4666e2f",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/lifecycle/ContextChainHolderImpl.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 271,
+      "author": {
+        "id": 7890
+      },
+      "writtenOn": "2018-03-07T01:46:27Z",
+      "side": 1,
+      "message": "I think we can replace this method for:\n\n@Override\npublic boolean isOwner(final DeviceInfo deviceInfo) {\n  return contextChainMap.get(deviceInfo)\n      .isMastered(ContextChainMastershipState.MASTER_ON_DEVICE, false);\n}\n\nAt this way we can reuse the contextChainMap.",
+      "parentUuid": "d193fed7_d20db11d",
+      "revId": "6f4fafda23c428337a397cd92fe634474f53a287",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
