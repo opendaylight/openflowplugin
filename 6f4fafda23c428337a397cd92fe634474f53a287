@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "14595774_62b3f641",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/lifecycle/ContextChainHolder.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-03-07T01:04:13Z",
+      "side": 1,
+      "message": "ContextChain interface already has a method called isMastered() we should use that method to check the ownership.",
+      "revId": "6f4fafda23c428337a397cd92fe634474f53a287",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "61fc6464_323fa5ea",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 300,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-03-07T01:04:13Z",
+      "side": 1,
+      "message": "use the method from ContextChain#isMastered.",
+      "revId": "6f4fafda23c428337a397cd92fe634474f53a287",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d193fed7_d20db11d",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/lifecycle/ContextChainHolderImpl.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 271,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-03-07T01:04:13Z",
+      "side": 1,
+      "message": "if you will use ContextChain#isMastered() you don\u0027t need this implementation.",
+      "revId": "6f4fafda23c428337a397cd92fe634474f53a287",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
