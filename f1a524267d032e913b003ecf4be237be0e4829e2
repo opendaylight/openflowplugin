@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "037aefdc_90e4ac27",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-03-07T05:15:21Z",
+      "side": 1,
+      "message": "you don\u0027t need to pass databroker here and it should be available via the instance variable dataBroker.\n\nYou can directly use it and remove extra methods.\n\nEx: GroupForwarder",
+      "range": {
+        "startLine": 88,
+        "startChar": 38,
+        "endLine": 88,
+        "endChar": 57
+      },
+      "revId": "f1a524267d032e913b003ecf4be237be0e4829e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "46a9c6dd_89c3e687",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/ForwardingRulesManagerImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-03-07T05:15:21Z",
+      "side": 1,
+      "message": "final",
+      "range": {
+        "startLine": 101,
+        "startChar": 36,
+        "endLine": 101,
+        "endChar": 44
+      },
+      "revId": "f1a524267d032e913b003ecf4be237be0e4829e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8dc60d3d_bb005b1f",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/GroupForwarder.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-03-07T05:15:21Z",
+      "side": 1,
+      "message": "you dont need to  pass these variables.\n\nprovide an api in FRM and use it here.\n\nmanager.getServiceRecoveryRegistry().addRecList(manager.getServiceRegisKey(), this)\n\nMove this code to AbstractListeningCommiter",
+      "range": {
+        "startLine": 64,
+        "startChar": 26,
+        "endLine": 65,
+        "endChar": 82
+      },
+      "revId": "f1a524267d032e913b003ecf4be237be0e4829e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8f0c2368_dfcd2bd0",
+        "filename": "applications/forwardingrules-manager/src/main/resources/org/opendaylight/blueprint/forwardingrules-manager.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-03-07T05:15:21Z",
+      "side": 1,
+      "message": "maintain proper indentation",
+      "range": {
+        "startLine": 15,
+        "startChar": 3,
+        "endLine": 16,
+        "endChar": 4
+      },
+      "revId": "f1a524267d032e913b003ecf4be237be0e4829e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
