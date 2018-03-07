@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9c509b98_914bace0",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/configuration/ConfigurationServiceFactoryImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-03-07T01:56:02Z",
+      "side": 1,
+      "message": "i think you need to call getPerCapabilityStatisticsConfig() here and use the value set for specific config knob? Currently it\u0027s using the isIsStatisticsPollingOn() for all the knobs.",
+      "revId": "03d30733f5e81f656fc32026c2079cda0be91f97",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
