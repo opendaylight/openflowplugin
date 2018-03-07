@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "b1f64b54_90e05300",
+        "filename": "openflowplugin-common/src/main/java/org/opendaylight/openflowplugin/common/txchain/TransactionChainManager.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 189,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-03-07T09:13:04Z",
+      "side": 1,
+      "message": "Instead of throwing generic Exception, it would be helpful to catch specific exception so that we don\u0027t disconnect the session in case of any other exception occurrence.",
+      "parentUuid": "37324a18_521e149b",
+      "range": {
+        "startLine": 189,
+        "startChar": 20,
+        "endLine": 189,
+        "endChar": 90
+      },
+      "revId": "534c4714611ece94f5d13e15a6dc2c2a70bb03e1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5c5cc520_289b3d1e",
         "filename": "openflowplugin-common/src/main/java/org/opendaylight/openflowplugin/common/txchain/TransactionChainManager.java",
         "patchSetId": 7
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "178c53c4_6685b656",
+        "filename": "openflowplugin-common/src/main/java/org/opendaylight/openflowplugin/common/txchain/TransactionChainManager.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-03-07T09:13:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5c5cc520_289b3d1e",
+      "range": {
+        "startLine": 177,
+        "startChar": 16,
+        "endLine": 190,
+        "endChar": 17
+      },
+      "revId": "534c4714611ece94f5d13e15a6dc2c2a70bb03e1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e08c9e5c_ea1fede3",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
         "patchSetId": 7
@@ -59,6 +107,30 @@
       "writtenOn": "2018-03-06T06:53:27Z",
       "side": 1,
       "message": "Task Exception is not being used? do we need this?",
+      "range": {
+        "startLine": 236,
+        "startChar": 8,
+        "endLine": 239,
+        "endChar": 9
+      },
+      "revId": "534c4714611ece94f5d13e15a6dc2c2a70bb03e1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6f8aa016_19fd2ad9",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 239,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-03-07T09:13:04Z",
+      "side": 1,
+      "message": "Instead of throwing generic Exception, it would be helpful to catch specific exception so that we don\u0027t disconnect the session in case of any other exception occurrence.",
+      "parentUuid": "e08c9e5c_ea1fede3",
       "range": {
         "startLine": 236,
         "startChar": 8,
