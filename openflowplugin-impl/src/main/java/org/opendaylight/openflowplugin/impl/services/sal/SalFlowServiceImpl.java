@@ -83,7 +83,7 @@ public class SalFlowServiceImpl implements SalFlowService {
     }
 
     @Override
-    public Future<RpcResult<AddFlowOutput>> addFlow(final AddFlowInput input) {
+    public Future<RpcResult<? extends RpcResult<?>>> addFlow(final AddFlowInput input) {
         final FlowRegistryKey flowRegistryKey =
                 FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), input);
         final ListenableFuture<RpcResult<AddFlowOutput>> future;
@@ -116,7 +116,7 @@ public class SalFlowServiceImpl implements SalFlowService {
     }
 
     @Override
-    public Future<RpcResult<UpdateFlowOutput>> updateFlow(final UpdateFlowInput input) {
+    public Future<RpcResult<? extends RpcResult<?>>> updateFlow(final UpdateFlowInput input) {
         final UpdatedFlow updated = input.getUpdatedFlow();
         final OriginalFlow original = input.getOriginalFlow();
 

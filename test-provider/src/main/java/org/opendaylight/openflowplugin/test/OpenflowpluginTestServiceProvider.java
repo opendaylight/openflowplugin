@@ -14,12 +14,10 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderCo
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -119,7 +117,7 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
      * service.rev130819.AddFlowInput)
      */
     @Override
-    public Future<RpcResult<AddFlowOutput>> addFlow(AddFlowInput input) {
+    public Future<RpcResult<? extends RpcResult<?>>> addFlow(AddFlowInput input) {
         String plus = "addFlow - " + input;
         OpenflowpluginTestServiceProvider.LOG.info(plus);
         return null;
@@ -151,7 +149,7 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
      * .service.rev130819.UpdateFlowInput)
      */
     @Override
-    public Future<RpcResult<UpdateFlowOutput>> updateFlow(UpdateFlowInput input) {
+    public Future<RpcResult<? extends RpcResult<?>>> updateFlow(UpdateFlowInput input) {
         String plus = "updateFlow - " + input;
         OpenflowpluginTestServiceProvider.LOG.info(plus);
         return null;

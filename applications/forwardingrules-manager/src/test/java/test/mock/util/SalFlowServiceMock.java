@@ -11,12 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 public class SalFlowServiceMock implements SalFlowService {
@@ -25,7 +23,7 @@ public class SalFlowServiceMock implements SalFlowService {
     private final List<UpdateFlowInput> updateFlowCalls = new ArrayList<>();
 
     @Override
-    public Future<RpcResult<AddFlowOutput>> addFlow(AddFlowInput input) {
+    public Future<RpcResult<? extends RpcResult<?>>> addFlow(AddFlowInput input) {
         addFlowCalls.add(input);
         return null;
     }
@@ -37,7 +35,7 @@ public class SalFlowServiceMock implements SalFlowService {
     }
 
     @Override
-    public Future<RpcResult<UpdateFlowOutput>> updateFlow(UpdateFlowInput input) {
+    public Future<RpcResult<? extends RpcResult<?>>> updateFlow(UpdateFlowInput input) {
         updateFlowCalls.add(input);
         return null;
     }

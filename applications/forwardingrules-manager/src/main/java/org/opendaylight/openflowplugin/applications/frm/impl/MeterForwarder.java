@@ -20,6 +20,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
+import org.opendaylight.openflowplugin.applications.frm.NodeConfigurator;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -61,8 +62,8 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
     private ListenerRegistration<MeterForwarder> listenerRegistration;
 
     @SuppressWarnings("IllegalCatch")
-    public MeterForwarder(final ForwardingRulesManager manager, final DataBroker db) {
-        super(manager);
+    public MeterForwarder(final ForwardingRulesManager manager, final DataBroker db, NodeConfigurator nodeConfigurator) {
+        super(manager, nodeConfigurator);
         dataBroker = Preconditions.checkNotNull(db, "DataBroker can not be null!");
         final DataTreeIdentifier<Meter> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION,
                 getWildCardPath());
