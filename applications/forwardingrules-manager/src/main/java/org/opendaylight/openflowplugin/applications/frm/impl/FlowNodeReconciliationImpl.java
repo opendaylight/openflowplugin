@@ -35,6 +35,8 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+
+import org.opendaylight.infrautils.jobcoordinator.SuccessCallable;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
@@ -56,6 +58,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlowKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.Buckets;
@@ -244,7 +247,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                             for (Meter meter : meters) {
                                 final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent = nodeIdentity
                                         .child(Meter.class, meter.key());
-                                provider.getMeterCommiter().add(meterIdent, meter, nodeIdentity);
+                                provider.getMeterCommiter().add(meterIdent, meter, nodeIdentity, null);
                             }
                         }
                         return Futures.immediateFuture(null);
@@ -442,7 +445,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 for (Meter meter : meters) {
                     final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent = nodeIdentity.child(Meter.class,
                             meter.key());
-                    provider.getMeterCommiter().add(meterIdent, meter, nodeIdentity);
+                    provider.getMeterCommiter().add(meterIdent, meter, nodeIdentity, null);
                 }
 
                 // Need to wait for all groups to be installed before adding
@@ -459,7 +462,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                     for (Flow flow : flows) {
                         final KeyedInstanceIdentifier<Flow, FlowKey> flowIdent = tableIdent.child(Flow.class,
                                 flow.key());
-                        provider.getFlowCommiter().add(flowIdent, flow, nodeIdentity);
+                        provider.getFlowCommiter().add(flowIdent, flow, nodeIdentity, null);
                     }
                 }
             }
@@ -480,27 +483,22 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         private void addGroup(Map<Long, ListenableFuture<?>> map, Group group) {
             KeyedInstanceIdentifier<Group, GroupKey> groupIdent = nodeIdentity.child(Group.class, group.key());
             final Long groupId = group.getGroupId().getValue();
-            ListenableFuture<?> future = JdkFutureAdapters
-                    .listenInPoolThread(provider.getGroupCommiter().add(groupIdent, group, nodeIdentity));
 
-            Futures.addCallback(future, new FutureCallback<Object>() {
+             class SuccessCallbackTask implements SuccessCallable<RpcResult<AddFlowOutput>> {
                 @Override
-                public void onSuccess(Object result) {
-                    if (LOG.isTraceEnabled()) {
-                        LOG.trace("add-group RPC completed: node={}, id={}",
-                                nodeIdentity.firstKeyOf(Node.class).getId().getValue(), groupId);
+                public List<ListenableFuture<RpcResult<AddFlowOutput>>> apply(List<ListenableFuture<RpcResult<AddFlowOutput>>> futures) {
+                    if (!futures.isEmpty() && futures != null) {
+                        LOG.info("Adding {} to the futures map", futures.get(0));
+                        map.put(groupId, futures.get(0));
                     }
+                    return Collections.emptyList();
                 }
+             }
 
-                @Override
-                public void onFailure(Throwable cause) {
-                    String msg = "add-group RPC failed: node=" + nodeIdentity.firstKeyOf(Node.class).getId().getValue()
-                            + ", id=" + groupId;
-                    LOG.debug(msg, cause);
-                }
-            }, MoreExecutors.directExecutor());
+            SuccessCallbackTask successCallable = new SuccessCallbackTask();
 
-            map.put(groupId, future);
+
+            provider.getGroupCommiter().add(groupIdent, group, nodeIdentity, successCallable);
         }
 
         /**
