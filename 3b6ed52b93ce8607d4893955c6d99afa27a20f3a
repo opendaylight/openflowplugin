@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "24297e3c_048188c4",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/sal/SalGroupServiceImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-03-08T09:51:32Z",
+      "side": 1,
+      "message": "\"Successfully\"",
+      "revId": "3b6ed52b93ce8607d4893955c6d99afa27a20f3a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d970ee12_695a1128",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsGatheringUtils.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-03-08T09:51:32Z",
+      "side": 1,
+      "message": "clean-up the registry after removing all the flows, so move the statement after below line.",
+      "revId": "3b6ed52b93ce8607d4893955c6d99afa27a20f3a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8541f4a2_c41dc9f6",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsGatheringUtils.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-03-08T09:51:32Z",
+      "side": 1,
+      "message": "remove tab.",
+      "revId": "3b6ed52b93ce8607d4893955c6d99afa27a20f3a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
