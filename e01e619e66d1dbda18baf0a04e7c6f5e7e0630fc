@@ -72,6 +72,24 @@
     },
     {
       "key": {
+        "uuid": "e3023b90_5f6d8a5d",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceManagerImpl.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-03-08T07:43:53Z",
+      "side": 1,
+      "message": "okay my bad, i thought you are passing it to DeviceManagerImpl() and then not passing it anywhere after that. Got confused because of the collapsed lines. Looks good.",
+      "parentUuid": "ca5427b4_64c6a93f",
+      "revId": "e01e619e66d1dbda18baf0a04e7c6f5e7e0630fc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3cb9489b_2c0d74e6",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/lifecycle/ContextChainHolderImpl.java",
         "patchSetId": 12
