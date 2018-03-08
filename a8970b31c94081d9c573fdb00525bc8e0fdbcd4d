@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4283e142_550bdd7f",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsGatheringUtils.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-03-08T06:46:03Z",
+      "side": 0,
+      "message": "so this call is removed, but i am not seeing processMarks is being called anywhere else.",
+      "range": {
+        "startLine": 135,
+        "startChar": 20,
+        "endLine": 135,
+        "endChar": 74
+      },
+      "revId": "a8970b31c94081d9c573fdb00525bc8e0fdbcd4d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
