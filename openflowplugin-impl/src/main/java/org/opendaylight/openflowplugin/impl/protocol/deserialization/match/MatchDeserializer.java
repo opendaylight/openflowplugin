@@ -49,13 +49,16 @@ public class MatchDeserializer implements OFDeserializer<Match>, HeaderDeseriali
         final MatchBuilder builder = new MatchBuilder();
 
         // OFP do not have any method to differentiate between OXM and standard match, so we do not care about type
-        inBuffer.readUnsignedShort();
+        LOG.error("type: {}", inBuffer.readUnsignedShort());
         final int length = inBuffer.readUnsignedShort();
 
         final int startIndex = inBuffer.readerIndex();
         final int entriesLength = length - 2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
 
-        while (inBuffer.readerIndex() - startIndex < entriesLength) {
+        LOG.error("length : {}, startIndex: {}, entriesLenght: {}", length, startIndex, entriesLength);
+        int index;
+        while ((index = inBuffer.readerIndex()) - startIndex < entriesLength) {
+            LOG.error("index: {}, startIndex: {}, diff: {}", index, startIndex, index-startIndex);
             deserializeEntry(inBuffer, builder);
         }
 
@@ -80,18 +83,24 @@ public class MatchDeserializer implements OFDeserializer<Match>, HeaderDeseriali
         if (inBuffer.readableBytes() <= 0) {
             return;
         }
-        int oxmClass = inBuffer.getUnsignedShort(inBuffer.readerIndex());
-        int oxmField = inBuffer.getUnsignedByte(inBuffer.readerIndex()
-                + EncodeConstants.SIZE_OF_SHORT_IN_BYTES) >>> 1;
+        int oxmClassReaderIndex = inBuffer.readerIndex();
+        int oxmClass = inBuffer.getUnsignedShort(oxmClassReaderIndex);
+        LOG.error("oxmClass value : {}, oxmReaderIndex: {}", oxmClass, oxmClassReaderIndex);
+        int oxmFieldReaderIndex = inBuffer.readerIndex();
+        int oxmField = inBuffer.getUnsignedByte( oxmFieldReaderIndex + EncodeConstants.SIZE_OF_SHORT_IN_BYTES) >>> 1;
+
+        LOG.error("oxmField value : {}, oxmFieldReaderIndex : {}", oxmField, oxmFieldReaderIndex);
 
         final MatchEntryDeserializerKey key = new MatchEntryDeserializerKey(
                 EncodeConstants.OF13_VERSION_ID, oxmClass, oxmField);
 
         if (oxmClass == EncodeConstants.EXPERIMENTER_VALUE) {
-            long expId = inBuffer.getUnsignedInt(inBuffer.readerIndex()
+            int expReaderIndex = inBuffer.readerIndex();
+            long expId = inBuffer.getUnsignedInt(expReaderIndex
                     + EncodeConstants.SIZE_OF_SHORT_IN_BYTES
                     + 2 * EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
 
+            LOG.error("exp reader index: {}", expReaderIndex);
             key.setExperimenterId(expId);
         }
 

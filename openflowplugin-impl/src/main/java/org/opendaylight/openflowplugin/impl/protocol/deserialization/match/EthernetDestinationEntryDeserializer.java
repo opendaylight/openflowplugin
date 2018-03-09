@@ -11,19 +11,24 @@ package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 import io.netty.buffer.ByteBuf;
 import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.match.OxmDeserializerHelper;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EthernetDestinationEntryDeserializer extends AbstractMatchEntryDeserializer {
-
+    private static final Logger LOG = LoggerFactory.getLogger(EthernetDestinationEntryDeserializer.class);
     @Override
     public void deserializeEntry(ByteBuf message, MatchBuilder builder) {
         final boolean hasMask = processHeader(message);
         final EthernetMatch ethernetMatch = builder.getEthernetMatch();
         final EthernetDestinationBuilder ethernetDestinationBuilder = new EthernetDestinationBuilder();
-        ethernetDestinationBuilder.setAddress(OxmDeserializerHelper.convertMacAddress(message));
+        MacAddress macAddress = OxmDeserializerHelper.convertMacAddress(message);
+        ethernetDestinationBuilder.setAddress(macAddress);
+        LOG.error("hasMask: {}, macAddress: {}", hasMask, macAddress);
 
         if (hasMask) {
             ethernetDestinationBuilder.setMask(OxmDeserializerHelper.convertMacAddress(message));

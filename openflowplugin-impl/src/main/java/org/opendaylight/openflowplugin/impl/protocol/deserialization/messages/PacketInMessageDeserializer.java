@@ -26,8 +26,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketInMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PacketInMessageDeserializer implements OFDeserializer<PacketInMessage>, DeserializerRegistryInjector {
+    private static final Logger LOG = LoggerFactory.getLogger(PacketInMessageDeserializer.class);
     private static final byte PADDING_IN_PACKET_IN_HEADER = 2;
     private static final MessageCodeKey MATCH_KEY = new MessageCodeMatchKey(EncodeConstants.OF13_VERSION_ID,
             EncodeConstants.EMPTY_VALUE, Match.class,
@@ -48,13 +51,16 @@ public class PacketInMessageDeserializer implements OFDeserializer<PacketInMessa
 
         // We are ignoring buffer id and total len as it is not specified in OpenFlowPlugin models
         message.readUnsignedInt();
-        message.readUnsignedShort();
+        LOG.error("Total Lenght: {}", message.readUnsignedShort());
+        Short packetInReason = message.readUnsignedByte();
+        Short tableId = message.readUnsignedByte();
+        LOG.error("PacketInReason: {}, TabelId: {}", packetInReason, tableId);
 
         packetInMessageBuilder
                 .setPacketInReason(PacketInUtil
                         .getMdSalPacketInReason(PacketInReason
-                                .forValue(message.readUnsignedByte())))
-                .setTableId(new TableId(message.readUnsignedByte()));
+                                .forValue(packetInReason)))
+                .setTableId(new TableId(tableId));
 
         final byte[] cookie = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
         message.readBytes(cookie);
