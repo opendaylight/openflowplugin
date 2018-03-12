@@ -233,7 +233,7 @@ public class OpenFlowPluginProviderImpl implements
                 convertorManager,
                 executorService);
 
-        roleManager = new RoleManagerImpl(hashedWheelTimer);
+        roleManager = new RoleManagerImpl(hashedWheelTimer, config);
 
         contextChainHolder = new ContextChainHolderImpl(
                 executorService,
@@ -250,6 +250,7 @@ public class OpenFlowPluginProviderImpl implements
         connectionManager.setDeviceConnectedHandler(contextChainHolder);
         connectionManager.setDeviceDisconnectedHandler(contextChainHolder);
 
+        deviceManager.setContextChainHolder(contextChainHolder);
         deviceManager.initialize();
         startSwitchConnections();
     }
