@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "c879afd9_f8c17f43",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/action/CtClearCodec.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 4269
+      },
+      "writtenOn": "2018-03-12T08:47:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cbff4e1e_55f7da43",
+      "range": {
+        "startLine": 22,
+        "startChar": 17,
+        "endLine": 22,
+        "endChar": 24
+      },
+      "revId": "042e9f2701b825b377cd25339709c76e2ab93f6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f1051b3a_10476001",
         "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/action/CtClearCodec.java",
         "patchSetId": 2
@@ -36,6 +60,30 @@
       "writtenOn": "2018-03-12T07:48:09Z",
       "side": 1,
       "message": "private static ?",
+      "range": {
+        "startLine": 25,
+        "startChar": 4,
+        "endLine": 26,
+        "endChar": 23
+      },
+      "revId": "042e9f2701b825b377cd25339709c76e2ab93f6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a2b64afc_2c0d7b6b",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/action/CtClearCodec.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 4269
+      },
+      "writtenOn": "2018-03-12T08:47:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f1051b3a_10476001",
       "range": {
         "startLine": 25,
         "startChar": 4,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "0ccfa8ff_c8a6dd1d",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/action/CtClearCodec.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 4269
+      },
+      "writtenOn": "2018-03-12T08:47:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7cc07f38_9ed44ed9",
+      "range": {
+        "startLine": 35,
+        "startChar": 8,
+        "endLine": 35,
+        "endChar": 71
+      },
+      "revId": "042e9f2701b825b377cd25339709c76e2ab93f6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7ff4a932_6f708dbc",
         "filename": "extension/openflowjava-extension-nicira/src/main/yang/nicira-action.yang",
         "patchSetId": 2
@@ -82,6 +154,30 @@
       "writtenOn": "2018-03-12T07:48:09Z",
       "side": 1,
       "message": "indentation",
+      "range": {
+        "startLine": 46,
+        "startChar": 4,
+        "endLine": 48,
+        "endChar": 5
+      },
+      "revId": "042e9f2701b825b377cd25339709c76e2ab93f6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f2e0c6d4_103e2a0d",
+        "filename": "extension/openflowjava-extension-nicira/src/main/yang/nicira-action.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 4269
+      },
+      "writtenOn": "2018-03-12T08:47:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7ff4a932_6f708dbc",
       "range": {
         "startLine": 46,
         "startChar": 4,
@@ -111,6 +207,24 @@
     },
     {
       "key": {
+        "uuid": "3c66c73f_1164e1b3",
+        "filename": "extension/openflowjava-extension-nicira/src/main/yang/nicira-action.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 291,
+      "author": {
+        "id": 4269
+      },
+      "writtenOn": "2018-03-12T08:47:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "931fb517_fbf3decc",
+      "revId": "042e9f2701b825b377cd25339709c76e2ab93f6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "61f8a972_6b751b76",
         "filename": "extension/openflowjava-extension-nicira/src/test/java/org/opendaylight/openflowjava/nx/codec/action/CtClearCodecTest.java",
         "patchSetId": 2
@@ -122,6 +236,30 @@
       "writtenOn": "2018-03-12T07:48:09Z",
       "side": 1,
       "message": "private final",
+      "range": {
+        "startLine": 29,
+        "startChar": 4,
+        "endLine": 31,
+        "endChar": 23
+      },
+      "revId": "042e9f2701b825b377cd25339709c76e2ab93f6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0c67cab8_cd0d3a58",
+        "filename": "extension/openflowjava-extension-nicira/src/test/java/org/opendaylight/openflowjava/nx/codec/action/CtClearCodecTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 4269
+      },
+      "writtenOn": "2018-03-12T08:47:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "61f8a972_6b751b76",
       "range": {
         "startLine": 29,
         "startChar": 4,
@@ -157,6 +295,30 @@
     },
     {
       "key": {
+        "uuid": "376c18cb_144dc31f",
+        "filename": "extension/openflowjava-extension-nicira/src/test/java/org/opendaylight/openflowjava/nx/codec/action/CtClearCodecTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 4269
+      },
+      "writtenOn": "2018-03-12T08:47:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e95380ed_8bd1a717",
+      "range": {
+        "startLine": 33,
+        "startChar": 4,
+        "endLine": 35,
+        "endChar": 8
+      },
+      "revId": "042e9f2701b825b377cd25339709c76e2ab93f6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ccfcd94f_4c4b28e0",
         "filename": "extension/openflowplugin-extension-nicira/src/main/java/org/opendaylight/openflowplugin/extension/vendor/nicira/NiciraExtensionProvider.java",
         "patchSetId": 2
@@ -168,6 +330,24 @@
       "writtenOn": "2018-03-12T07:48:09Z",
       "side": 1,
       "message": "cs: extra line",
+      "revId": "042e9f2701b825b377cd25339709c76e2ab93f6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "09c80cbe_253154b3",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/java/org/opendaylight/openflowplugin/extension/vendor/nicira/NiciraExtensionProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 4269
+      },
+      "writtenOn": "2018-03-12T08:47:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ccfcd94f_4c4b28e0",
       "revId": "042e9f2701b825b377cd25339709c76e2ab93f6b",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -197,6 +377,30 @@
     },
     {
       "key": {
+        "uuid": "b306c923_34624dfb",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/java/org/opendaylight/openflowplugin/extension/vendor/nicira/convertor/action/CtClearConvertor.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 4269
+      },
+      "writtenOn": "2018-03-12T08:47:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "29e4c359_4e13c99b",
+      "range": {
+        "startLine": 65,
+        "startChar": 8,
+        "endLine": 65,
+        "endChar": 96
+      },
+      "revId": "042e9f2701b825b377cd25339709c76e2ab93f6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a5136ebb_76cbed95",
         "filename": "extension/openflowplugin-extension-nicira/src/main/yang/openflowplugin-extension-nicira-action.yang",
         "patchSetId": 2
@@ -208,6 +412,24 @@
       "writtenOn": "2018-03-12T07:48:09Z",
       "side": 1,
       "message": "cs: remove tab spaces",
+      "revId": "042e9f2701b825b377cd25339709c76e2ab93f6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "78aba754_fa632484",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/yang/openflowplugin-extension-nicira-action.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 527,
+      "author": {
+        "id": 4269
+      },
+      "writtenOn": "2018-03-12T08:47:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a5136ebb_76cbed95",
       "revId": "042e9f2701b825b377cd25339709c76e2ab93f6b",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
