@@ -158,6 +158,11 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
 
     @GuardedBy("txLock")
     public boolean submitTransaction() {
+        return syncSubmitTransaction(true);
+    }
+
+    @GuardedBy("txLock")
+    public boolean syncSubmitTransaction(boolean addFutureCallback) {
         synchronized (txLock) {
             if (!submitIsEnabled) {
                 if (LOG.isTraceEnabled()) {
@@ -178,7 +183,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
             lastSubmittedFuture = submitFuture;
             writeTx = null;
 
-            if (initCommit) {
+            if (initCommit || !addFutureCallback) {
                 try {
                     submitFuture.get(5L, TimeUnit.SECONDS);
                 } catch (InterruptedException | ExecutionException | TimeoutException ex) {

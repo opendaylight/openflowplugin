@@ -259,6 +259,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
+    public boolean syncSubmitTransaction() {
+        return initialized.get() && transactionChainManager.syncSubmitTransaction(false);
+    }
+
+    @Override
     public ConnectionContext getPrimaryConnectionContext() {
         return primaryConnectionContext;
     }
@@ -323,7 +328,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         if (initialized.get()) {
             try {
                 writePortStatusMessage(portStatus);
-                submitTransaction();
             } catch (final Exception e) {
                 LOG.warn("Error processing port status message for port {} on device {}",
                         portStatus.getPortNo(), getDeviceInfo(), e);
@@ -351,10 +355,10 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                         FlowCapableNodeConnectorStatisticsDataBuilder().build())
                 .addAugmentation(FlowCapableNodeConnector.class, flowCapableNodeConnector)
                 .build());
-        submitTransaction();
+        syncSubmitTransaction();
         if (PortReason.OFPPRDELETE.equals(portStatusMessage.getReason())) {
             addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector);
-            submitTransaction();
+            syncSubmitTransaction();
         }
     }
 
