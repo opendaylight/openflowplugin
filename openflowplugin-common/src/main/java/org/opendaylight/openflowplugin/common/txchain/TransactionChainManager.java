@@ -158,6 +158,11 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
 
     @GuardedBy("txLock")
     public boolean submitTransaction() {
+        return submitTransaction(false);
+    }
+
+    @GuardedBy("txLock")
+    public boolean submitTransaction(boolean doSync) {
         synchronized (txLock) {
             if (!submitIsEnabled) {
                 if (LOG.isTraceEnabled()) {
@@ -178,11 +183,12 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
             lastSubmittedFuture = submitFuture;
             writeTx = null;
 
-            if (initCommit) {
+            if (initCommit || doSync) {
                 try {
                     submitFuture.get(5L, TimeUnit.SECONDS);
                 } catch (InterruptedException | ExecutionException | TimeoutException ex) {
-                    LOG.error("Exception during INITIAL transaction submitting. ", ex);
+                    LOG.error("Exception during INITIAL({}) || doSync({}) transaction submitting. ",
+                            initCommit, doSync, ex);
                     return false;
                 }
                 initCommit = false;
