@@ -10,6 +10,8 @@ package org.opendaylight.openflowplugin.applications.southboundcli;
 
 import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.openflowplugin.applications.southboundcli.alarm.AlarmAgent;
 import org.opendaylight.openflowplugin.applications.southboundcli.util.OFNode;
 import org.opendaylight.openflowplugin.applications.southboundcli.util.ShellUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -43,10 +46,13 @@ public class AdminReconciliationServiceImpl implements AdminReconciliationServic
     private static final Logger LOG = LoggerFactory.getLogger(AdminReconciliationServiceImpl.class);
     private final DataBroker broker;
     private final ReconciliationService reconciliationService;
+    private final AlarmAgent alarmAgent;
 
-    public AdminReconciliationServiceImpl(DataBroker broker, ReconciliationService reconciliationService) {
+    public AdminReconciliationServiceImpl(DataBroker broker, ReconciliationService reconciliationService,
+                                          final AlarmAgent alarmAgent) {
         this.broker = broker;
         this.reconciliationService = reconciliationService;
+        this.alarmAgent = alarmAgent;
     }
 
 
@@ -75,6 +81,7 @@ public class AdminReconciliationServiceImpl implements AdminReconciliationServic
                 return buildErrorResponse("Node(s) not found: " + String.join(", ", unresolvedNodes.toString()));
             }
             for (Long nodeId : nodesToReconcile) {
+                alarmAgent.raiseAdminReconciliationAlarm(nodeId);
                 LOG.info("Executing admin reconciliation for node {}", nodeId);
                 BigInteger node = new BigInteger(String.valueOf(nodeId));
                 NodeKey nodeKey = new NodeKey(new NodeId("openflow:" + nodeId));
@@ -90,6 +97,7 @@ public class AdminReconciliationServiceImpl implements AdminReconciliationServic
                     } else {
                         LOG.error("Reconciliation failed for node {} with error {}", nodeId, rpcResult.getErrors());
                     }
+		    //alarmAgent.clearAdminReconciliationAlarm(nodeIdentity, hosatname);
                 } catch (ExecutionException | InterruptedException e) {
                     LOG.error("Error occurred while invoking execReconciliation RPC for node {}", nodeId, e);
                 }
