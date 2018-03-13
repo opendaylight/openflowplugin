@@ -10,10 +10,14 @@
     <odl:rpc-service id="reconciliationService"
              interface="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconciliationService"/>
 
+    <bean id="alarmAgent"
+          class="org.opendaylight.openflowplugin.applications.southboundcli.alarm.AlarmAgent" init-method="start">
+    </bean>
     <bean id="adminReconciliationService"
           class="org.opendaylight.openflowplugin.applications.southboundcli.AdminReconciliationServiceImpl">
         <argument ref="dataBroker"/>
         <argument ref="reconciliationService"/>
+        <argument ref="alarmAgent"/>
     </bean>
 
     <odl:rpc-implementation ref="adminReconciliationService"/>
