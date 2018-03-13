@@ -22,6 +22,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+import org.opendaylight.openflowplugin.applications.southboundcli.alarm.AlarmAgent;
 import org.opendaylight.openflowplugin.applications.southboundcli.util.OFNode;
 import org.opendaylight.openflowplugin.applications.southboundcli.util.ShellUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -53,10 +54,13 @@ public class AdminReconciliationServiceImpl implements AdminReconciliationServic
     private final DataBroker broker;
     private final ReconciliationService reconciliationService;
     private final Long startCount = 1L;
+    private final AlarmAgent alarmAgent;
 
-    public AdminReconciliationServiceImpl(DataBroker broker, ReconciliationService reconciliationService) {
+    public AdminReconciliationServiceImpl(final DataBroker broker, final ReconciliationService reconciliationService,
+                                          final AlarmAgent alarmAgent) {
         this.broker = broker;
         this.reconciliationService = reconciliationService;
+        this.alarmAgent = alarmAgent;
     }
 
 
@@ -85,6 +89,7 @@ public class AdminReconciliationServiceImpl implements AdminReconciliationServic
                 return buildErrorResponse("Node(s) not found: " + String.join(", ", unresolvedNodes.toString()));
             }
             for (Long nodeId : nodesToReconcile) {
+                alarmAgent.raiseAdminReconciliationAlarm(nodeId);
                 LOG.info("Executing admin reconciliation for node {}", nodeId);
                 BigInteger node = new BigInteger(String.valueOf(nodeId));
                 NodeKey nodeKey = new NodeKey(new NodeId("openflow:" + nodeId));
@@ -105,6 +110,7 @@ public class AdminReconciliationServiceImpl implements AdminReconciliationServic
                 } catch (ExecutionException | InterruptedException e) {
                     LOG.error("Error occurred while invoking reconcile RPC for node {}", nodeId, e);
                 }
+                alarmAgent.clearAdminReconciliationAlarm(nodeId);
             }
         } else {
             return buildErrorResponse("No node found");
