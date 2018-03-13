@@ -33,6 +33,7 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainClosedException;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -208,6 +209,38 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                     }
                 }
             }, MoreExecutors.directExecutor());
+        }
+        return true;
+    }
+
+    public boolean submitTransactionSync() {
+        synchronized (txLock) {
+            if (!submitIsEnabled) {
+                if (LOG.isTraceEnabled()) {
+                    LOG.trace("transaction not committed - submit block issued");
+                }
+                return false;
+            }
+            if (Objects.isNull(writeTx)) {
+                if (LOG.isTraceEnabled()) {
+                    LOG.trace("nothing to commit - submit returns true");
+                }
+                return true;
+            }
+            Preconditions.checkState(TransactionChainManagerStatus.WORKING == transactionChainManagerStatus,
+                    "we have here Uncompleted Transaction for node {} and we are not MASTER",
+                    this.nodeId);
+            final ListenableFuture<Void> submitFuture = writeTx.submit();
+            lastSubmittedFuture = submitFuture;
+            writeTx = null;
+
+            try {
+                SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(500, 4);
+                looper.loopUntilNoException(() -> submitFuture.get(5L, TimeUnit.SECONDS));
+            } catch (Exception ex) {
+                LOG.error("Exception during transaction submitting. ", ex);
+                return false;
+            }
         }
         return true;
     }
