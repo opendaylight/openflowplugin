@@ -10,12 +10,15 @@ package org.opendaylight.openflowplugin.applications.southboundcli;
 
 import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.openflowplugin.applications.southboundcli.alarm.AlarmAgent;
 import org.opendaylight.openflowplugin.applications.southboundcli.util.OFNode;
 import org.opendaylight.openflowplugin.applications.southboundcli.util.ShellUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -42,10 +45,13 @@ public class AdminReconciliationServiceImpl implements AdminReconciliationServic
     private static final Logger LOG = LoggerFactory.getLogger(AdminReconciliationServiceImpl.class);
     private final DataBroker broker;
     private final ReconciliationService reconciliationService;
+    private final AlarmAgent alarmAgent;
 
-    public AdminReconciliationServiceImpl(DataBroker broker, ReconciliationService reconciliationService) {
+    public AdminReconciliationServiceImpl(DataBroker broker, ReconciliationService reconciliationService,
+                                          final AlarmAgent alarmAgent) {
         this.broker = broker;
         this.reconciliationService = reconciliationService;
+        this.alarmAgent = alarmAgent;
     }
 
 
@@ -75,8 +81,17 @@ public class AdminReconciliationServiceImpl implements AdminReconciliationServic
                 return buildErrorResponse("Node(s) not found: " + String.join(", ", unresolvedNodes.toString()));
             }
             for (Long nodeId : nodesToReconcile) {
-                LOG.info("Executing admin reconciliation for node {}", nodeId);
-                BigInteger node = new BigInteger(String.valueOf(nodeId));
+                InetAddress ia = null;
+                try {
+                    ia = InetAddress.getLocalHost();
+                }catch (UnknownHostException e){
+                    LOG.error("Error while reading hostname, could not find hostname");
+                }
+                String hostName = (ia!=null)?ia.getHostName():null;
+                String nodeIdentity = String.valueOf(nodeId);
+                alarmAgent.raiseAdminReconciliationAlarm(nodeIdentity, hostName);
+                LOG.info("Executing admin reconciliation for node {}", nodeIdentity);
+                BigInteger node = new BigInteger(nodeIdentity);
                 NodeKey nodeKey = new NodeKey(new NodeId("openflow:" + nodeId));
                 InitReconciliationInput initReconInput = new InitReconciliationInputBuilder().
                         setNodeId(node).setNode(new NodeRef(InstanceIdentifier.builder(Nodes.class).
@@ -89,6 +104,7 @@ public class AdminReconciliationServiceImpl implements AdminReconciliationServic
                     } else {
                         LOG.error("Reconciliation failed for node {} with error {}", nodeId, rpcResult.getErrors());
                     }
+                    //alarmAgent.clearAdminReconciliationAlarm(nodeIdentity, hostName);
                 } catch (Exception e) {
                     LOG.error("Error occurred while invoking execReconciliation RPC for node {}", nodeId, e);
                 }
@@ -112,9 +128,8 @@ public class AdminReconciliationServiceImpl implements AdminReconciliationServic
 
     public List<Long> getAllNodes() {
         List<OFNode> nodeList = ShellUtil.getAllNodes(broker);
-        List<Long> nodes = (nodeList == null)
-                ? new ArrayList<>()
-                : nodeList.stream().distinct().map(node -> node.getNodeId()).collect(Collectors.toList());
+        List<Long> nodes =
+                nodeList.stream().distinct().map(node -> node.getNodeId()).collect(Collectors.toList());
         return nodes;
     }
 }
