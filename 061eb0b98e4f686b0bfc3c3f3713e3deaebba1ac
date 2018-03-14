@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "5c8c5a72_3598b0cc",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/common/MultipartRequestInputFactoryTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-03-14T11:32:11Z",
+      "side": 1,
+      "message": "Done. Changed as you suggested",
+      "parentUuid": "59e5b677_c8841763",
+      "revId": "061eb0b98e4f686b0bfc3c3f3713e3deaebba1ac",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cbcc5d46_e6e44e85",
         "filename": "openflowplugin/src/test/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/PacketOutConvertorTest.java",
         "patchSetId": 2
@@ -30,6 +48,24 @@
       "writtenOn": "2018-03-14T10:17:09Z",
       "side": 1,
       "message": "I don\u0027t know what exact types these things are, but normally you should not require toString() here but compare the value?",
+      "revId": "061eb0b98e4f686b0bfc3c3f3713e3deaebba1ac",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "10a05c75_aeac878d",
+        "filename": "openflowplugin/src/test/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/PacketOutConvertorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-03-14T11:32:11Z",
+      "side": 1,
+      "message": "inPort is actually specified as string and getValue is returning Long. So, we need to cast it either way",
+      "parentUuid": "cbcc5d46_e6e44e85",
       "revId": "061eb0b98e4f686b0bfc3c3f3713e3deaebba1ac",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
