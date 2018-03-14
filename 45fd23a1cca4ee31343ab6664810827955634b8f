@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a6226ce1_752e48b2",
+        "filename": "openflowplugin/src/test/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/PacketOutConvertorTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 6592
+      },
+      "writtenOn": "2018-03-14T08:25:29Z",
+      "side": 1,
+      "message": "can this statement be changed to\nAssert.assertEquals(inPort , message               .getInPort().getValue().toString()); \nto avoid invoking toString on object instead invoke toString on value of port.",
+      "range": {
+        "startLine": 176,
+        "startChar": 15,
+        "endLine": 176,
+        "endChar": 27
+      },
+      "revId": "45fd23a1cca4ee31343ab6664810827955634b8f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
