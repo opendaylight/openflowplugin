@@ -22,6 +22,30 @@
       "revId": "45fd23a1cca4ee31343ab6664810827955634b8f",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3247a354_868ff601",
+        "filename": "openflowplugin/src/test/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/PacketOutConvertorTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-03-14T10:11:23Z",
+      "side": 1,
+      "message": "\u003d\u003d\u003e https://git.opendaylight.org/gerrit/#/c/69486/",
+      "parentUuid": "a6226ce1_752e48b2",
+      "range": {
+        "startLine": 176,
+        "startChar": 15,
+        "endLine": 176,
+        "endChar": 27
+      },
+      "revId": "45fd23a1cca4ee31343ab6664810827955634b8f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
