@@ -80,8 +80,8 @@ public class MultipartRequestInputFactoryTest {
         Assert.assertNull(mpRq.getMatchV10());
 
         final String EMPTY_MATCH_DUMP =
-                "Match [_type=class org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmMatchType, "
-                        + "augmentation=[]]";
+                "Match{_type=class org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmMatchType, "
+                        + "augmentation=[]}";
         Assert.assertEquals(EMPTY_MATCH_DUMP, String.valueOf(mpRq.getMatch()));
     }
 
@@ -259,7 +259,7 @@ public class MultipartRequestInputFactoryTest {
     private void checkEmptyBody(MultipartRequestBody mpRqBody, Class<? extends
             MultipartRequestBody> expectedMpRqBodyClass) throws Exception {
         Assert.assertTrue(expectedMpRqBodyClass.isAssignableFrom(mpRqBody.getImplementedInterface()));
-        final String expectedDump = expectedMpRqBodyClass.getSimpleName() + " [augmentation=[]]";
+        final String expectedDump = expectedMpRqBodyClass.getSimpleName() + "{augmentation=[]}";
         Assert.assertEquals(expectedDump, String.valueOf(mpRqBody));
     }
 }

@@ -173,7 +173,7 @@ public class PacketOutConvertorTest {
 
         Assert.assertEquals(transmitPacketInput.getBufferId(),
                 message.getBufferId());
-        Assert.assertEquals("PortNumber [_value=" + inPort + "]", message
+        Assert.assertEquals("PortNumber{_value=" + inPort + "}", message
                 .getInPort().toString());
         Assert.assertEquals((Object) version,
                 Short.valueOf(message.getVersion()));
