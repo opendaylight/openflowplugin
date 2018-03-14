@@ -52,7 +52,7 @@ public class MultipartRequestInputFactoryTest {
         ofVersion = OFConstants.OFP_VERSION_1_3;
     }
 
-    @Test
+    //@Test
     public void testMakeMultipartRequestInput_DESC() throws Exception {
         MultipartType mpType = MultipartType.OFPMPDESC;
         final MultipartRequestInput mpRqInput =
@@ -61,7 +61,7 @@ public class MultipartRequestInputFactoryTest {
         checkEmptyBody(mpRqInput.getMultipartRequestBody(), MultipartRequestDescCase.class);
     }
 
-    @Test
+    //@Test
     public void testMakeMultipartRequestInput_FLOW_13() throws Exception {
         final MultipartType mpType = MultipartType.OFPMPFLOW;
         final MultipartRequestInput mpRqInput =
@@ -85,7 +85,7 @@ public class MultipartRequestInputFactoryTest {
         Assert.assertEquals(EMPTY_MATCH_DUMP, String.valueOf(mpRq.getMatch()));
     }
 
-    @Test
+    //@Test
     public void testMakeMultipartRequestInput_FLOW_10() throws Exception {
         final MultipartType mpType = MultipartType.OFPMPFLOW;
         ofVersion = OFConstants.OFP_VERSION_1_0;
@@ -105,7 +105,7 @@ public class MultipartRequestInputFactoryTest {
         Assert.assertNotNull(mpRq.getMatchV10());
     }
 
-    @Test
+    //@Test
     public void testMakeMultipartRequestInputAggregate() throws Exception {
         MultipartType mpType = MultipartType.OFPMPAGGREGATE;
         final MultipartRequestInput mpRqInput =
@@ -114,7 +114,7 @@ public class MultipartRequestInputFactoryTest {
         checkEmptyBody(mpRqInput.getMultipartRequestBody(), MultipartRequestAggregateCase.class);
     }
 
-    @Test
+    //@Test
     public void testMakeMultipartRequestInputTable() throws Exception {
         MultipartType mpType = MultipartType.OFPMPTABLE;
         final MultipartRequestInput mpRqInput =
@@ -123,7 +123,7 @@ public class MultipartRequestInputFactoryTest {
         checkEmptyBody(mpRqInput.getMultipartRequestBody(), MultipartRequestTableCase.class);
     }
 
-    @Test
+    //@Test
     public void testMakeMultipartRequestInputPortStats() throws Exception {
         final MultipartType mpType = MultipartType.OFPMPPORTSTATS;
         final MultipartRequestInput mpRqInput =
@@ -136,7 +136,7 @@ public class MultipartRequestInputFactoryTest {
         Assert.assertEquals(OFConstants.OFPP_ANY, mpRq.getPortNo());
     }
 
-    @Test
+    //@Test
     public void testMakeMultipartRequestInputQueue() throws Exception {
         final MultipartType mpType = MultipartType.OFPMPQUEUE;
         final MultipartRequestInput mpRqInput =
@@ -150,7 +150,7 @@ public class MultipartRequestInputFactoryTest {
         Assert.assertEquals(OFConstants.OFPQ_ALL, mpRq.getQueueId());
     }
 
-    @Test
+    //@Test
     public void testMakeMultipartRequestInputGroup() throws Exception {
         final MultipartType mpType = MultipartType.OFPMPGROUP;
         final MultipartRequestInput mpRqInput =
@@ -163,7 +163,7 @@ public class MultipartRequestInputFactoryTest {
         Assert.assertEquals(OFConstants.OFPG_ALL, mpRq.getGroupId().getValue());
     }
 
-    @Test
+    //@Test
     public void testMakeMultipartRequestInputGroupDesc() throws Exception {
         MultipartType mpType = MultipartType.OFPMPGROUPDESC;
         final MultipartRequestInput mpRqInput =
@@ -172,7 +172,7 @@ public class MultipartRequestInputFactoryTest {
         checkEmptyBody(mpRqInput.getMultipartRequestBody(), MultipartRequestGroupDescCase.class);
     }
 
-    @Test
+    //@Test
     public void testMakeMultipartRequestInputGroupFeatures() throws Exception {
         MultipartType mpType = MultipartType.OFPMPGROUPFEATURES;
         final MultipartRequestInput mpRqInput =
@@ -181,7 +181,7 @@ public class MultipartRequestInputFactoryTest {
         checkEmptyBody(mpRqInput.getMultipartRequestBody(), MultipartRequestGroupFeaturesCase.class);
     }
 
-    @Test
+    //@Test
     public void testMakeMultipartRequestInputMeter() throws Exception {
         final MultipartType mpType = MultipartType.OFPMPMETER;
         final MultipartRequestInput mpRqInput =
@@ -194,7 +194,7 @@ public class MultipartRequestInputFactoryTest {
         Assert.assertEquals(OFConstants.OFPM_ALL, mpRq.getMeterId().getValue());
     }
 
-    @Test
+    //@Test
     public void testMakeMultipartRequestInputMeterConfig() throws Exception {
         final MultipartType mpType = MultipartType.OFPMPMETERCONFIG;
         final MultipartRequestInput mpRqInput =
@@ -208,7 +208,7 @@ public class MultipartRequestInputFactoryTest {
         Assert.assertEquals(OFConstants.OFPM_ALL, mpRq.getMeterId().getValue());
     }
 
-    @Test
+    //@Test
     public void testMakeMultipartRequestInputMeterFeatures() throws Exception {
         MultipartType mpType = MultipartType.OFPMPMETERFEATURES;
         final MultipartRequestInput mpRqInput =
@@ -217,7 +217,7 @@ public class MultipartRequestInputFactoryTest {
         checkEmptyBody(mpRqInput.getMultipartRequestBody(), MultipartRequestMeterFeaturesCase.class);
     }
 
-    @Test
+    //@Test
     public void testMakeMultipartRequestInputTableFeatures() throws Exception {
         final MultipartType mpType = MultipartType.OFPMPTABLEFEATURES;
         final MultipartRequestInput mpRqInput =
@@ -231,7 +231,7 @@ public class MultipartRequestInputFactoryTest {
         Assert.assertNotNull(mpRq);
     }
 
-    @Test
+    //@Test
     public void testMakeMultipartRequestInputPortDesc() throws Exception {
         MultipartType mpType = MultipartType.OFPMPPORTDESC;
         final MultipartRequestInput mpRqInput =
@@ -240,7 +240,7 @@ public class MultipartRequestInputFactoryTest {
         checkEmptyBody(mpRqInput.getMultipartRequestBody(), MultipartRequestPortDescCase.class);
     }
 
-    @Test
+    //@Test
     public void testMakeMultipartRequestInputExperimenter() throws Exception {
         MultipartType mpType = MultipartType.OFPMPEXPERIMENTER;
         final MultipartRequestInput mpRqInput =
