@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "59e5b677_c8841763",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/common/MultipartRequestInputFactoryTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-03-14T10:17:09Z",
+      "side": 1,
+      "message": "how about doing this \"strongly typed\" instead of \"string typed\" ? Assuming that the getType() returns a Class\u003c?\u003e you can simply do:\n\n  import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmMatchType;\n\n  Assert.assertEquals(OxmMatchType.class, mpRq.getMatch().getType());\n\n\nand just in case getType() does not return a Class\u003c?\u003e but some.. thing else (some YANG thing?) you could still do something like:\n\n  String EMPTY_MATCH_DUMP \u003d OxmMatchType.class.getName();\n\nbut the first is better, of course.",
+      "revId": "061eb0b98e4f686b0bfc3c3f3713e3deaebba1ac",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cbcc5d46_e6e44e85",
+        "filename": "openflowplugin/src/test/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/PacketOutConvertorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-03-14T10:17:09Z",
+      "side": 1,
+      "message": "I don\u0027t know what exact types these things are, but normally you should not require toString() here but compare the value?",
+      "revId": "061eb0b98e4f686b0bfc3c3f3713e3deaebba1ac",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
