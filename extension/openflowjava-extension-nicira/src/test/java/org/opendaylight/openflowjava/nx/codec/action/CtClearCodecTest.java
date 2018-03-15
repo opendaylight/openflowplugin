@@ -26,9 +26,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.ct.clear.grouping.NxActionCtClearBuilder;
 
 public class CtClearCodecTest {
-    private final int LENGTH = 16;
-    private final byte NX_CT_CLEAR_SUBTYPE = 43;
-    private final int PADDING = 6;
+    private final int length = 16;
+    private final byte nxCtClearSubType = 43;
+    private final int padding = 6;
 
     private CtClearCodec ctClearCodec;
     private ByteBuf buffer;
@@ -44,12 +44,12 @@ public class CtClearCodecTest {
     public void serializeTest() {
         action = createAction();
         ctClearCodec.serialize(action, buffer);
-        assertEquals(LENGTH, buffer.readableBytes());
+        assertEquals(length, buffer.readableBytes());
         assertEquals(EncodeConstants.EXPERIMENTER_VALUE, buffer.readUnsignedShort());
-        assertEquals(LENGTH, buffer.readUnsignedShort());
+        assertEquals(length, buffer.readUnsignedShort());
         assertEquals(NiciraConstants.NX_VENDOR_ID.intValue(), buffer.readUnsignedInt());
-        assertEquals(NX_CT_CLEAR_SUBTYPE, buffer.readUnsignedShort());
-        buffer.skipBytes(PADDING);
+        assertEquals(nxCtClearSubType, buffer.readUnsignedShort());
+        buffer.skipBytes(padding);
     }
 
 
@@ -61,7 +61,6 @@ public class CtClearCodecTest {
         ActionCtClear result = (ActionCtClear) action.getActionChoice();
         NxActionCtClear nxActionCtClear = result.getNxActionCtClear();
         assertNotNull(nxActionCtClear);
-
     }
 
     private Action createAction() {
@@ -79,9 +78,9 @@ public class CtClearCodecTest {
 
     private void createBuffer(ByteBuf message) {
         message.writeShort(EncodeConstants.EXPERIMENTER_VALUE);
-        message.writeShort(LENGTH);
+        message.writeShort(length);
         message.writeInt(NiciraConstants.NX_VENDOR_ID.intValue());
-        message.writeShort(NX_CT_CLEAR_SUBTYPE);
+        message.writeShort(nxCtClearSubType);
         message.writeZero(6);
     }
 }
