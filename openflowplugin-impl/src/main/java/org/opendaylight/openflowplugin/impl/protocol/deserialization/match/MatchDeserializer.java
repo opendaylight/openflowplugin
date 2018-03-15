@@ -55,6 +55,10 @@ public class MatchDeserializer implements OFDeserializer<Match>, HeaderDeseriali
         final int startIndex = inBuffer.readerIndex();
         final int entriesLength = length - 2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
 
+        LOG.info("Length : {} ", inBuffer.readUnsignedShort());
+        LOG.info("startIndex : {} ", inBuffer.readerIndex());
+        LOG.info("Length : {} ", inBuffer.readUnsignedShort());
+
         while ((inBuffer.readerIndex() - startIndex) < entriesLength) {
             deserializeEntry(inBuffer, builder);
         }
@@ -78,10 +82,14 @@ public class MatchDeserializer implements OFDeserializer<Match>, HeaderDeseriali
     @Override
     public void deserializeEntry(ByteBuf inBuffer, MatchBuilder builder) {
         if (inBuffer.readableBytes() <= 0) return;
+
         int oxmClass = inBuffer.getUnsignedShort(inBuffer.readerIndex());
+        LOG.info("readIndex before oxmClass :: {} ", inBuffer.readerIndex());
+        LOG.info("oxmClass :: {} ", inBuffer.getUnsignedShort(inBuffer.readerIndex()));
+        LOG.info("oxmClass after conversion:: {} ", oxmClass);
         int oxmField = inBuffer.getUnsignedByte(inBuffer.readerIndex()
                 + EncodeConstants.SIZE_OF_SHORT_IN_BYTES) >>> 1;
-
+        LOG.info("oxmField :: {} ", oxmField);
         final MatchEntryDeserializerKey key = new MatchEntryDeserializerKey(
                 EncodeConstants.OF13_VERSION_ID, oxmClass, oxmField);
 
