@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "eba1f709_f6739541",
+        "filename": "openflowplugin-common/src/main/java/org/opendaylight/openflowplugin/common/txchain/TransactionChainManager.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2018-03-16T12:25:50Z",
+      "side": 1,
+      "message": "The method was renamed to indicate it\u0027s synchronous yet had a flag that determines whether or not it\u0027s synchronous (although \u0027addFutureCallback\u0027 doesn\u0027t seem clear on that). That seems confusing to me. I would suggest either keep it as \u0027submitTransaction\u0027 and name the flag \u0027doAsync\u0027 or keep it as \u0027syncSubmitTransaction\u0027 but w/o the flag so it always does what the method name implies",
+      "revId": "5698d6984629698b6ac1a99759c239f7e1f36669",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
