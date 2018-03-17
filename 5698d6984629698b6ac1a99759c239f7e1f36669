@@ -16,6 +16,24 @@
       "revId": "5698d6984629698b6ac1a99759c239f7e1f36669",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "62b71cc6_ff841f43",
+        "filename": "openflowplugin-common/src/main/java/org/opendaylight/openflowplugin/common/txchain/TransactionChainManager.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-03-17T01:42:42Z",
+      "side": 1,
+      "message": "Done. Changed it to submitTransaction(doAsync)",
+      "parentUuid": "eba1f709_f6739541",
+      "revId": "5698d6984629698b6ac1a99759c239f7e1f36669",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
