@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "70ae7b38_0814e46c",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/device/TxFacade.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-03-20T12:37:38Z",
+      "side": 1,
+      "message": "I\u0027ll just admit that I have no idea what this change is all about, but this looks a bit weird - you\u0027re adding a new method hwere with identical JavaDoc - it would perhaps be worth to update the JavaDoc of both this and the previous existing method to clarify how they differ?  \n\nBTW: If the point is that submitTransaction() is async and this one is not, then I would perhaps just change the former to make it return a Future instead, which the caller can block on by get() ?",
+      "revId": "d317efb690a8a02ced350c41bf6c4382fa4afbb7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
