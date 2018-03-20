@@ -16,6 +16,24 @@
       "revId": "78bc332d0f9304d7d61d61b1ed8556433088a001",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bde551af_58ff0484",
+        "filename": "openflowplugin-common/src/main/java/org/opendaylight/openflowplugin/common/txchain/TransactionChainManager.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-03-20T11:08:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b1de18da_b4138dfc",
+      "revId": "78bc332d0f9304d7d61d61b1ed8556433088a001",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
