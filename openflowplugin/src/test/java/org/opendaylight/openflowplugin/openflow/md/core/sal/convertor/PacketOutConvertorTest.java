@@ -158,7 +158,7 @@ public class PacketOutConvertorTest {
 
         final TransmitPacketInput transmitPacketInput = transmitPacketInputBuilder.build();
 
-        short version = (short) 0x04;
+        Short version = (short) 0x04;
         byte[] datapathIdByte = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
         for (int i = 0; i < datapathIdByte.length; i++) {
             datapathIdByte[i] = 1;
@@ -171,19 +171,15 @@ public class PacketOutConvertorTest {
         data.setDatapathId(datapathId);
         PacketOutInput message = convert(transmitPacketInput, data);
 
-        Assert.assertEquals(transmitPacketInput.getBufferId(),
-                message.getBufferId());
-        Assert.assertEquals("PortNumber{_value=" + inPort + "}", message
-                .getInPort().toString());
-        Assert.assertEquals((Object) version,
-                Short.valueOf(message.getVersion()));
+        Assert.assertEquals(transmitPacketInput.getBufferId(), message.getBufferId());
+        Assert.assertEquals(Long.valueOf(inPort), message.getInPort().getValue());
+        Assert.assertEquals(version, message.getVersion());
         Assert.assertEquals(xid, message.getXid());
 
         ActionConvertorData actionConvertorData = new ActionConvertorData(version);
         actionConvertorData.setDatapathId(datapathId);
 
-        Optional<List<Action>> actionsOptional = convertorManager.convert(
-                actionList, actionConvertorData);
+        Optional<List<Action>> actionsOptional = convertorManager.convert(actionList, actionConvertorData);
 
         List<Action> actions = actionsOptional.orElse(Collections.emptyList());
         Assert.assertEquals(actions, message.getAction());
