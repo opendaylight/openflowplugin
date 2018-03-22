@@ -59,6 +59,7 @@ public final class DeviceInitializationUtil {
             tx.submit().get();
         } catch (ExecutionException | InterruptedException e) {
             LOG.error("Creation of node failed.", e);
+            tx.cancel();
             throw new IllegalStateException(e);
         }
     }
