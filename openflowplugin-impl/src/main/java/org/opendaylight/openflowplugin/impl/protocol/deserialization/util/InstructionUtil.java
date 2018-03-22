@@ -18,11 +18,15 @@ import org.opendaylight.openflowplugin.api.openflow.protocol.deserialization.Mes
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.key.MessageCodeActionExperimenterKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Utility class for action deserialization.
  */
 public final class InstructionUtil {
+
+    private static final Logger LOG = LoggerFactory.getLogger(InstructionUtil.class);
 
     private InstructionUtil() {
     }
@@ -40,7 +44,7 @@ public final class InstructionUtil {
                                               final DeserializerRegistry registry) {
         final int type = message.getUnsignedShort(message.readerIndex());
         final OFDeserializer<Instruction> deserializer;
-
+        LOG.info("readInstruction type : {} ", type);
         if (InstructionConstants.APPLY_ACTIONS_TYPE == type) {
             deserializer = registry.getDeserializer(
                     new MessageCodeActionExperimenterKey(
