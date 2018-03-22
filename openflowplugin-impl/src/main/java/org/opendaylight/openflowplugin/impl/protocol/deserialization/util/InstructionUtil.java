@@ -38,9 +38,9 @@ public final class InstructionUtil {
     public static Instruction readInstruction(final short version,
                                               final ByteBuf message,
                                               final DeserializerRegistry registry) {
-        final int type = message.getUnsignedShort(message.readerIndex());
+        int readerIndex = message.readerIndex();
+        final int type = message.getUnsignedShort(readerIndex);
         final OFDeserializer<Instruction> deserializer;
-
         if (InstructionConstants.APPLY_ACTIONS_TYPE == type) {
             deserializer = registry.getDeserializer(
                     new MessageCodeActionExperimenterKey(
@@ -61,7 +61,6 @@ public final class InstructionUtil {
             if (EncodeConstants.EXPERIMENTER_VALUE == type) {
                 expId = message.getUnsignedInt(message.readerIndex() + 2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
             }
-
             deserializer = registry.getDeserializer(
                     new MessageCodeExperimenterKey(
                             version, type, Instruction.class, expId));

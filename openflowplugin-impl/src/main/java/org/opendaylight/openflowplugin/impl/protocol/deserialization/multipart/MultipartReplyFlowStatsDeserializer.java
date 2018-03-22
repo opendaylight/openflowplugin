@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
 
+import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -84,19 +85,17 @@ public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<Multi
                     .setCookieMask(new FlowCookie(OFConstants.DEFAULT_COOKIE_MASK))
                     .setPacketCount(new Counter64(new BigInteger(1, packetCount)))
                     .setByteCount(new Counter64(new BigInteger(1, byteCount)));
-
-            final OFDeserializer<Match> matchDeserializer = registry.getDeserializer(MATCH_KEY);
+            final OFDeserializer<Match> matchDeserializer =
+                    Preconditions.checkNotNull(registry).getDeserializer(MATCH_KEY);
             itemBuilder.setMatch(MatchUtil.transformMatch(matchDeserializer.deserialize(itemMessage),
                     org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match.class));
 
             final int length = itemMessage.readableBytes();
-
             if (length > 0) {
                 final List<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list
                         .Instruction> instructions = new ArrayList<>();
                 final int startIndex = itemMessage.readerIndex();
                 int offset = 0;
-
                 while ((itemMessage.readerIndex() - startIndex) < length) {
                     instructions.add(new InstructionBuilder()
                             .setKey(new InstructionKey(offset))
