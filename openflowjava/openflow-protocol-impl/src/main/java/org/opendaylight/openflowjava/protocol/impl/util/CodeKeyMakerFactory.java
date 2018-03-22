@@ -16,6 +16,8 @@ import org.opendaylight.openflowjava.protocol.api.keys.InstructionDeserializerKe
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Factory for creating CodeKeyMaker instances.
@@ -23,6 +25,7 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
  * @author michal.polkorab
  */
 public final class CodeKeyMakerFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(CodeKeyMakerFactory.class);
 
     private CodeKeyMakerFactory() {
         //not called
@@ -35,8 +38,11 @@ public final class CodeKeyMakerFactory {
                 int oxmClass = input.getUnsignedShort(input.readerIndex());
                 int oxmField = input.getUnsignedByte(input.readerIndex()
                         + EncodeConstants.SIZE_OF_SHORT_IN_BYTES) >>> 1;
+                LOG.info("MatchEntryDeserializerKey variables = version={}, oxmclass={}, oxmfield={}",
+                        getVersion(), oxmClass, oxmField);
                 MatchEntryDeserializerKey key = new MatchEntryDeserializerKey(getVersion(),
                         oxmClass, oxmField);
+                LOG.info("MatchEntryDeserializerKey key= {}", key);
                 if (oxmClass == EncodeConstants.EXPERIMENTER_VALUE) {
                     long expId = input.getUnsignedInt(input.readerIndex() + EncodeConstants.SIZE_OF_SHORT_IN_BYTES
                             + 2 * EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
