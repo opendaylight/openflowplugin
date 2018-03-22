@@ -64,6 +64,7 @@ public class DeserializerRegistryImpl implements DeserializerRegistry {
     @Override
     @SuppressWarnings("unchecked")
     public <T extends OFGeneralDeserializer> T getDeserializer(MessageCodeKey key) {
+        LOG.info("getDeserializer key = {}", key);
         OFGeneralDeserializer deserializer = registry.get(key);
         if (deserializer == null) {
             throw new IllegalStateException("Deserializer for key: " + key
@@ -75,11 +76,13 @@ public class DeserializerRegistryImpl implements DeserializerRegistry {
     @Override
     public void registerDeserializer(MessageCodeKey key, OFGeneralDeserializer deserializer) {
         if (key == null || deserializer == null) {
-            throw new IllegalArgumentException("MessageCodeKey or Deserializer is null");
+            throw new IllegalArgumentException("MessageCodeKey = " + key + " or Deserializer = " +deserializer+"is " +
+                    "null");
         }
+        LOG.info("registerDeserializer :: key ={} -- deserializer = {} ", key, deserializer);
         OFGeneralDeserializer desInRegistry = registry.put(key, deserializer);
         if (desInRegistry != null) {
-            LOG.debug("Deserializer for key {} overwritten. Old deserializer: {}, new deserializer: {}", key,
+            LOG.info("Deserializer for key {} overwritten. Old deserializer: {}, new deserializer: {}", key,
                     desInRegistry.getClass().getName(), deserializer.getClass().getName());
         }
         if (deserializer instanceof DeserializerRegistryInjector) {
