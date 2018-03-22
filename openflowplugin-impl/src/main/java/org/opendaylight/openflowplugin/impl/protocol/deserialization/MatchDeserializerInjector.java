@@ -143,6 +143,8 @@ public final class MatchDeserializerInjector {
             basicInjector.apply(OxmMatchConstants.TUNNEL_ID).accept(new TunnelIdEntryDeserializer());
             experInjector.apply(EncodeConstants.ONF_EXPERIMENTER_ID).apply(EncodeConstants.ONFOXM_ET_TCP_FLAGS)
                     .accept(new TcpFlagsEntryDeserializer());
+            experInjector.apply(EncodeConstants.ONF_EXPERIMENTER_ID).apply(EncodeConstants.ONFOXM_ET_TCP_FLAGS)
+                    .accept(new TcpFlagsEntryDeserializer());
         }
     }
 
