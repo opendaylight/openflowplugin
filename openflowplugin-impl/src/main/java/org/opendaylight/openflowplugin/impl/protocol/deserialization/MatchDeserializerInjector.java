@@ -96,6 +96,11 @@ public final class MatchDeserializerInjector {
             final Function<Integer, Consumer<MatchEntryDeserializer>> basicInjector =
                     injector.apply(OxmMatchConstants.OPENFLOW_BASIC_CLASS).apply(null);
 
+            // Wrapped injector that uses OPENFLOW_BASIC_CLASS
+            final Function<Integer, Consumer<MatchEntryDeserializer>> nxmInjector =
+                    injector.apply(OxmMatchConstants.NXM_1_CLASS).apply(null);
+
+
             // Wrapped injector that uses EXPERIMENTER_CLASS
             final Function<Long, Function<Integer, Consumer<MatchEntryDeserializer>>> experInjector =
                     injector.apply(OxmMatchConstants.EXPERIMENTER_CLASS);
@@ -141,6 +146,50 @@ public final class MatchDeserializerInjector {
             basicInjector.apply(OxmMatchConstants.MPLS_TC).accept(new MplsTcEntryDeserializer());
             basicInjector.apply(OxmMatchConstants.PBB_ISID).accept(new PbbEntryDeserializer());
             basicInjector.apply(OxmMatchConstants.TUNNEL_ID).accept(new TunnelIdEntryDeserializer());
+            experInjector.apply(EncodeConstants.ONF_EXPERIMENTER_ID).apply(EncodeConstants.ONFOXM_ET_TCP_FLAGS)
+                    .accept(new TcpFlagsEntryDeserializer());
+
+            nxmInjector.apply(OxmMatchConstants.ARP_OP).accept(new ArpOpEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.ARP_SHA).accept(new ArpSourceHardwareAddressEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.ARP_THA).accept(new ArpTargetHardwareAddressEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.ARP_SPA).accept(new ArpSourceTransportAddressEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.ARP_TPA).accept(new ArpTargetTransportAddressEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.IN_PORT).accept(new InPortEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.IN_PHY_PORT).accept(new InPhyPortEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.METADATA).accept(new MetadataEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.ETH_DST).accept(new EthernetDestinationEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.ETH_SRC).accept(new EthernetSourceEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.ETH_TYPE).accept(new EthernetTypeEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.VLAN_PCP).accept(new VlanPcpEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.VLAN_VID).accept(new VlanVidEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.IP_DSCP).accept(new IpDscpEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.IP_ECN).accept(new IpEcnEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.IP_PROTO).accept(new IpProtoEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.TCP_SRC).accept(new TcpSourcePortEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.TCP_DST).accept(new TcpDestinationPortEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.UDP_SRC).accept(new UdpSourcePortEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.UDP_DST).accept(new UdpDestinationPortEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.SCTP_SRC).accept(new SctpSourcePortEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.SCTP_DST).accept(new SctpDestinationPortEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.ICMPV4_CODE).accept(new Icmpv4CodeEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.ICMPV4_TYPE).accept(new Icmpv4TypeEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.ICMPV6_CODE).accept(new Icmpv6CodeEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.ICMPV6_TYPE).accept(new Icmpv6TypeEntryDeserializer());
+            // TODO: How to differentiate between Ipv4 and Tunnel when both are serialized to same format?
+            nxmInjector.apply(OxmMatchConstants.IPV4_SRC).accept(new Ipv4SourceEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.IPV4_DST).accept(new Ipv4DestinationEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.IPV6_SRC).accept(new Ipv6SourceEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.IPV6_DST).accept(new Ipv6DestinationEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.IPV6_EXTHDR).accept(new Ipv6ExtHeaderEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.IPV6_FLABEL).accept(new Ipv6FlabelEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.IPV6_ND_SLL).accept(new Ipv6NdSllEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.IPV6_ND_TLL).accept(new Ipv6NdTllEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.IPV6_ND_TARGET).accept(new Ipv6NdTargetEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.MPLS_LABEL).accept(new MplsLabelEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.MPLS_BOS).accept(new MplsBosEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.MPLS_TC).accept(new MplsTcEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.PBB_ISID).accept(new PbbEntryDeserializer());
+            nxmInjector.apply(OxmMatchConstants.TUNNEL_ID).accept(new TunnelIdEntryDeserializer());
             experInjector.apply(EncodeConstants.ONF_EXPERIMENTER_ID).apply(EncodeConstants.ONFOXM_ET_TCP_FLAGS)
                     .accept(new TcpFlagsEntryDeserializer());
         }
