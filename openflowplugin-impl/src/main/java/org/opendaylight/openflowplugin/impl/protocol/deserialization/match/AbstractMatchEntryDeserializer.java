@@ -17,9 +17,11 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpC
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractMatchEntryDeserializer implements MatchEntryDeserializer {
-
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractMatchEntryDeserializer.class);
     /**
      * Processes match entry header and returns if it have mask, or not.
      * @param in input buffer
@@ -28,6 +30,7 @@ public abstract class AbstractMatchEntryDeserializer implements MatchEntryDeseri
     protected static boolean processHeader(ByteBuf in) {
         in.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES); // skip oxm_class
         boolean hasMask = (in.readUnsignedByte() & 1) != 0;
+        LOG.info("HasMask = {} ", hasMask);
         in.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES); // skip match entry length
         return hasMask;
     }
