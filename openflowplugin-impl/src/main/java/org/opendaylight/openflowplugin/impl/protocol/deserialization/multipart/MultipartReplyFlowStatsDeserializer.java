@@ -35,10 +35,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.statistics.types.rev130925.duration.DurationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<MultipartReplyBody>,
         DeserializerRegistryInjector {
 
+    private static final Logger LOG = LoggerFactory.getLogger(MultipartReplyFlowStatsDeserializer.class);
     private static final MessageCodeKey MATCH_KEY = new MessageCodeMatchKey(EncodeConstants.OF13_VERSION_ID,
             EncodeConstants.EMPTY_VALUE, Match.class,
             MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
@@ -84,20 +87,20 @@ public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<Multi
                     .setCookieMask(new FlowCookie(OFConstants.DEFAULT_COOKIE_MASK))
                     .setPacketCount(new Counter64(new BigInteger(1, packetCount)))
                     .setByteCount(new Counter64(new BigInteger(1, byteCount)));
-
+            LOG.info("itemMessage {} itemLength {} MultiPartReplyMessage", itemMessage, itemLength);
             final OFDeserializer<Match> matchDeserializer = registry.getDeserializer(MATCH_KEY);
             itemBuilder.setMatch(MatchUtil.transformMatch(matchDeserializer.deserialize(itemMessage),
                     org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match.class));
 
             final int length = itemMessage.readableBytes();
-
+            LOG.info("itemMessage.readableBytes() {}", length);
             if (length > 0) {
                 final List<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list
                         .Instruction> instructions = new ArrayList<>();
                 final int startIndex = itemMessage.readerIndex();
                 int offset = 0;
-
-                while (itemMessage.readerIndex() - startIndex < length) {
+                LOG.info("startIndex {} ", startIndex);
+                while ((itemMessage.readerIndex() - startIndex) < length) {
                     instructions.add(new InstructionBuilder()
                             .setKey(new InstructionKey(offset))
                             .setOrder(offset)
