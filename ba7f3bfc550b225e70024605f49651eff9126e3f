@@ -1,0 +1,188 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1de38fe2_2ce5b36d",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/AdminReconciliationServiceImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-03-22T05:59:51Z",
+      "side": 1,
+      "message": "final",
+      "range": {
+        "startLine": 58,
+        "startChar": 10,
+        "endLine": 58,
+        "endChar": 13
+      },
+      "revId": "ba7f3bfc550b225e70024605f49651eff9126e3f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cd37c5d4_4e160453",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/ShowNumberAdminReconcile.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-03-22T05:59:51Z",
+      "side": 1,
+      "message": "getAdminReconcileCount",
+      "range": {
+        "startLine": 22,
+        "startChar": 37,
+        "endLine": 22,
+        "endChar": 61
+      },
+      "revId": "ba7f3bfc550b225e70024605f49651eff9126e3f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "37ff4bb8_ef6fd875",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/ShowNumberAdminReconcile.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-03-22T05:59:51Z",
+      "side": 1,
+      "message": "AdminReconciliationCount",
+      "range": {
+        "startLine": 24,
+        "startChar": 13,
+        "endLine": 24,
+        "endChar": 37
+      },
+      "revId": "ba7f3bfc550b225e70024605f49651eff9126e3f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d443d055_369a17aa",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/ShowNumberAdminReconcile.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-03-22T05:59:51Z",
+      "side": 1,
+      "message": "you will NPE when the method adminReconcileCount returns null",
+      "range": {
+        "startLine": 38,
+        "startChar": 11,
+        "endLine": 38,
+        "endChar": 28
+      },
+      "revId": "ba7f3bfc550b225e70024605f49651eff9126e3f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "715312eb_c9b1b4c9",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/ShowNumberAdminReconcile.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-03-22T05:59:51Z",
+      "side": 1,
+      "message": "this check not required",
+      "range": {
+        "startLine": 40,
+        "startChar": 19,
+        "endLine": 40,
+        "endChar": 54
+      },
+      "revId": "ba7f3bfc550b225e70024605f49651eff9126e3f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6a0a03f8_557f40bb",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-03-22T05:59:51Z",
+      "side": 1,
+      "message": "emptyList",
+      "range": {
+        "startLine": 148,
+        "startChar": 39,
+        "endLine": 148,
+        "endChar": 45
+      },
+      "revId": "ba7f3bfc550b225e70024605f49651eff9126e3f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "54f53dbf_86f60e8b",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-03-22T05:59:51Z",
+      "side": 1,
+      "message": "if there is no admin resync triggered, then it will be empty right? \nand will return null",
+      "range": {
+        "startLine": 153,
+        "startChar": 12,
+        "endLine": 155,
+        "endChar": 13
+      },
+      "revId": "ba7f3bfc550b225e70024605f49651eff9126e3f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "449e40b2_d821296e",
+        "filename": "applications/southbound-cli/src/main/resources/org/opendaylight/blueprint/southbound-cli.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-03-22T05:59:51Z",
+      "side": 1,
+      "message": "getAdminReconcileCount",
+      "range": {
+        "startLine": 38,
+        "startChar": 32,
+        "endLine": 38,
+        "endChar": 56
+      },
+      "revId": "ba7f3bfc550b225e70024605f49651eff9126e3f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
