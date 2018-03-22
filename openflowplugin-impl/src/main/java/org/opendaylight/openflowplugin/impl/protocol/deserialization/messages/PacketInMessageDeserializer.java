@@ -25,8 +25,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketInMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PacketInMessageDeserializer implements OFDeserializer<PacketInMessage>, DeserializerRegistryInjector {
+    private static final Logger LOG = LoggerFactory.getLogger(PacketInMessageDeserializer.class);
     private static final byte PADDING_IN_PACKET_IN_HEADER = 2;
     private static final MessageCodeKey MATCH_KEY = new MessageCodeMatchKey(EncodeConstants.OF13_VERSION_ID,
             EncodeConstants.EMPTY_VALUE, Match.class,
@@ -60,9 +63,8 @@ public class PacketInMessageDeserializer implements OFDeserializer<PacketInMessa
 
         packetInMessageBuilder
                 .setFlowCookie(new FlowCookie(new BigInteger(1, cookie)));
-
         final OFDeserializer<Match> matchDeserializer = registry.getDeserializer(MATCH_KEY);
-
+        LOG.info("matchDeserializer = {}", matchDeserializer);
         packetInMessageBuilder.setMatch(MatchUtil.transformMatch(matchDeserializer.deserialize(message),
                 org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.in.message
                         .Match.class));
