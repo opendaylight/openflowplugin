@@ -9,11 +9,9 @@
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderDeserializer;
@@ -47,26 +45,30 @@ public class MatchDeserializer implements OFDeserializer<Match>, HeaderDeseriali
         if (inBuffer.readableBytes() <= 0) {
             return null;
         }
-
+        LOG.info("inbuffer {}", inBuffer);
         final MatchBuilder builder = new MatchBuilder();
 
         // OFP do not have any method to differentiate between OXM and standard match, so we do not care about type
-        final int type = inBuffer.readUnsignedShort();
+        inBuffer.readUnsignedShort();
         final int length = inBuffer.readUnsignedShort();
 
         final int startIndex = inBuffer.readerIndex();
         final int entriesLength = length - 2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
-
+        LOG.info("startIndex={}", startIndex);
+        LOG.info("length ={}", length);
         while ((inBuffer.readerIndex() - startIndex) < entriesLength) {
+            LOG.info("inside while loop");
+            LOG.info("entiresLength = {} ", entriesLength);
+            LOG.info("inBuffer :: ", inBuffer);
             deserializeEntry(inBuffer, builder);
         }
 
         int paddingRemainder = length % EncodeConstants.PADDING;
-
+        LOG.info("paddingreminder  {} ", paddingRemainder);
         if (paddingRemainder != 0) {
             inBuffer.skipBytes(EncodeConstants.PADDING - paddingRemainder);
         }
-
+        LOG.info("processed");
         return builder.build();
     }
 
@@ -85,10 +87,11 @@ public class MatchDeserializer implements OFDeserializer<Match>, HeaderDeseriali
         int oxmClass = inBuffer.getUnsignedShort(inBuffer.readerIndex());
         int oxmField = inBuffer.getUnsignedByte(inBuffer.readerIndex()
                 + EncodeConstants.SIZE_OF_SHORT_IN_BYTES) >>> 1;
-
+        LOG.info("oxmClass = {}", oxmClass);
+        LOG.info("oxmField = {}", oxmField);
         final MatchEntryDeserializerKey key = new MatchEntryDeserializerKey(
                 EncodeConstants.OF13_VERSION_ID, oxmClass, oxmField);
-
+        LOG.info("key = {}", key);
         if (oxmClass == EncodeConstants.EXPERIMENTER_VALUE) {
             long expId = inBuffer.getUnsignedInt(inBuffer.readerIndex()
                     + EncodeConstants.SIZE_OF_SHORT_IN_BYTES
@@ -98,11 +101,13 @@ public class MatchDeserializer implements OFDeserializer<Match>, HeaderDeseriali
         }
 
         final MatchEntryDeserializer entryDeserializer = entryRegistry.get(key);
-
+        LOG.info("entryDeserializer = {}", entryDeserializer);
         if (Objects.nonNull(entryDeserializer)) {
             entryDeserializer.deserializeEntry(inBuffer, builder);
         } else {
+            LOG.info("in else with key = {} ", key);
             final OFDeserializer<MatchEntry> deserializer = registry.getDeserializer(key);
+            LOG.info("deserializer = {}", deserializer);
             MatchExtensionHelper.injectExtension(EncodeConstants.OF13_VERSION_ID,
                     deserializer.deserialize(inBuffer), builder, matchPath);
         }
@@ -113,7 +118,7 @@ public class MatchDeserializer implements OFDeserializer<Match>, HeaderDeseriali
         if (Objects.isNull(key) || Objects.isNull(deserializer)) {
             throw new IllegalArgumentException("MatchEntryDeserializerKey or Deserializer is null");
         }
-
+        LOG.info("registerEntryDeserializer :: key = {} , deserializer = {}", key, deserializer);
         final MatchEntryDeserializer desInRegistry = entryRegistry.put(key, deserializer);
 
         if (desInRegistry != null) {
