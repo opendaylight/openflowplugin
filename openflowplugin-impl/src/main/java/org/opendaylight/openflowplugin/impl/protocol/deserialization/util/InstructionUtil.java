@@ -18,11 +18,15 @@ import org.opendaylight.openflowplugin.api.openflow.protocol.deserialization.Mes
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.key.MessageCodeActionExperimenterKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Utility class for action deserialization.
  */
 public final class InstructionUtil {
+
+    private static final Logger LOG = LoggerFactory.getLogger(InstructionUtil.class);
 
     private InstructionUtil() {
     }
@@ -38,16 +42,21 @@ public final class InstructionUtil {
     public static Instruction readInstruction(final short version,
                                               final ByteBuf message,
                                               final DeserializerRegistry registry) {
-        final int type = message.getUnsignedShort(message.readerIndex());
+        int readerIndex = message.readerIndex();
+        LOG.info("readerIndex = {} in readInstruction ", readerIndex);
+        LOG.info("message = {} in readInstruction ", message);
+        final int type = (int)message.getUnsignedInt(readerIndex);
         final OFDeserializer<Instruction> deserializer;
-
+        LOG.info("readInstruction type : {} ", type);
         if (InstructionConstants.APPLY_ACTIONS_TYPE == type) {
+            LOG.info("readInstruction type =APPLY_ACTIONS_TYPE ");
             deserializer = registry.getDeserializer(
                     new MessageCodeActionExperimenterKey(
                             version, type, Instruction.class,
                             ActionPath.FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS,
                             null));
         } else if (InstructionConstants.WRITE_ACTIONS_TYPE == type) {
+            LOG.info("readInstruction type =WRITE_ACTIONS_TYPE ");
             deserializer = registry.getDeserializer(
                     new MessageCodeActionExperimenterKey(
                             version, type, Instruction.class,
@@ -59,7 +68,6 @@ public final class InstructionUtil {
             if (EncodeConstants.EXPERIMENTER_VALUE == type) {
                 expId = message.getUnsignedInt(message.readerIndex() + 2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
             }
-
             deserializer = registry.getDeserializer(
                     new MessageCodeExperimenterKey(
                             version, type, Instruction.class, expId));
