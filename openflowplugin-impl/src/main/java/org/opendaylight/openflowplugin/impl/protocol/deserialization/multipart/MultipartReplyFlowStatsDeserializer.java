@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
 
+import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -35,10 +36,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.statistics.types.rev130925.duration.DurationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<MultipartReplyBody>,
         DeserializerRegistryInjector {
 
+    private static final Logger LOG = LoggerFactory.getLogger(MultipartReplyFlowStatsDeserializer.class);
     private static final MessageCodeKey MATCH_KEY = new MessageCodeMatchKey(EncodeConstants.OF13_VERSION_ID,
             EncodeConstants.EMPTY_VALUE, Match.class,
             MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
@@ -84,19 +88,22 @@ public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<Multi
                     .setCookieMask(new FlowCookie(OFConstants.DEFAULT_COOKIE_MASK))
                     .setPacketCount(new Counter64(new BigInteger(1, packetCount)))
                     .setByteCount(new Counter64(new BigInteger(1, byteCount)));
-
-            final OFDeserializer<Match> matchDeserializer = registry.getDeserializer(MATCH_KEY);
+            LOG.info("itemMessage {} itemLength {} MultiPartReplyMessage", itemMessage, itemLength);
+            final OFDeserializer<Match> matchDeserializer =
+                    Preconditions.checkNotNull(registry).getDeserializer(MATCH_KEY);
+            LOG.info("matchDeserializer -> {} ",matchDeserializer);
             itemBuilder.setMatch(MatchUtil.transformMatch(matchDeserializer.deserialize(itemMessage),
                     org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match.class));
 
             final int length = itemMessage.readableBytes();
-
+            LOG.info("itemMessage.readableBytes() {}", length);
             if (length > 0) {
                 final List<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list
                         .Instruction> instructions = new ArrayList<>();
                 final int startIndex = itemMessage.readerIndex();
                 int offset = 0;
-
+                LOG.info("startIndex {} ", startIndex);
+                LOG.info("itemMessage :: {} ", itemMessage);
                 while ((itemMessage.readerIndex() - startIndex) < length) {
                     instructions.add(new InstructionBuilder()
                             .setKey(new InstructionKey(offset))
