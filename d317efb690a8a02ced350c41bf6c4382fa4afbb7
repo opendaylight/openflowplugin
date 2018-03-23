@@ -16,6 +16,24 @@
       "revId": "d317efb690a8a02ced350c41bf6c4382fa4afbb7",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b30ba65d_7fe8d387",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/device/TxFacade.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-03-23T05:44:46Z",
+      "side": 1,
+      "message": "I have updated the javadoc for this method.\n\nThere are so many conditions are checked inside the submitTransaction method and returns boolean depends on the condition. And the caller code makes decision based on the boolean results, if we return Future then other conditions wont met and all the caller has to determine the boolean value based on the Future return by the submitTransaction.",
+      "parentUuid": "70ae7b38_0814e46c",
+      "revId": "d317efb690a8a02ced350c41bf6c4382fa4afbb7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
