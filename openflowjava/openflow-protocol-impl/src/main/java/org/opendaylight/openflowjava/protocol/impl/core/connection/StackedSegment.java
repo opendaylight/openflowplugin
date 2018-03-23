@@ -12,6 +12,7 @@ import com.google.common.base.FinalizableSoftReference;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.lang.ref.Reference;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import org.opendaylight.openflowjava.protocol.api.connection.DeviceRequestFailedException;
@@ -160,6 +161,8 @@ final class StackedSegment {
         return entry;
     }
 
+    @SuppressFBWarnings(value = "NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS",
+            justification = "Unrecognised NullableDecl")
     private void completeRequests(final int toOffset) {
         for (int i = lastBarrierOffset + 1; i < toOffset; ++i) {
             final OutboundQueueEntry entry = entries[i];

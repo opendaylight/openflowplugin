@@ -9,6 +9,7 @@
 package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
 import com.google.common.util.concurrent.FutureCallback;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.channel.Channel;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
@@ -49,6 +50,8 @@ public class StackedOutboundQueueNoBarrier extends AbstractStackedOutboundQueue 
     }
 
     @Override
+    @SuppressFBWarnings(value = "NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS",
+            justification = "Unrecognised NullableDecl")
     int writeEntries(@Nonnull final Channel channel, final long now) {
         // Local cache
         StackedSegment segment = firstSegment;

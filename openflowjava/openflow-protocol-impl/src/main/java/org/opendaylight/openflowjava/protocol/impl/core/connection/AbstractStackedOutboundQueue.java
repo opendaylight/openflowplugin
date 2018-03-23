@@ -11,6 +11,7 @@ package org.opendaylight.openflowjava.protocol.impl.core.connection;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import com.google.common.util.concurrent.FutureCallback;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.channel.Channel;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -125,6 +126,8 @@ abstract class AbstractStackedOutboundQueue implements OutboundQueue {
      * @param now time stamp
      * @return Number of entries written out
      */
+    @SuppressFBWarnings(value = "NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS",
+            justification = "Unrecognised NullableDecl")
     int writeEntries(@Nonnull final Channel channel, final long now) {
         // Local cache
         StackedSegment segment = firstSegment;

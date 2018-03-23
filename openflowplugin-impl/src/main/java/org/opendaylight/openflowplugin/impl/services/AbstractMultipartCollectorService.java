@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.impl.services;
 
 import com.google.common.util.concurrent.FutureCallback;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -34,6 +35,8 @@ public abstract class AbstractMultipartCollectorService<T extends OfHeader>
 
         return new FutureCallback<OfHeader>() {
             @Override
+            @SuppressFBWarnings(value = "NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE",
+                    justification = "Unrecognised NullableDecl")
             public void onSuccess(@Nullable final OfHeader result) {
                 callback.onSuccess(result);
             }
