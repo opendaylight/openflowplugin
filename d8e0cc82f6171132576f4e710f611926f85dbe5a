@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ab2a4f72_8f586428",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/device/TxFacade.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-03-25T22:33:14Z",
+      "side": 1,
+      "message": "I\u0027m not sure if returning a boolean here really make sense...  If it\u0027s a synchronous blocking operation, then this will always have submitted?  Looking at the implementation, it seems to return false in case of internal errors?  This looks like questionable exception handling to me.  I won\u0027t -1 it again though, and just abstain from voting, as you have added the JavaDoc and addressed my initial point, so I don\u0027t want to stand in the way if OFP commiters are OK to merge this.",
+      "range": {
+        "startLine": 49,
+        "startChar": 37,
+        "endLine": 49,
+        "endChar": 38
+      },
+      "revId": "d8e0cc82f6171132576f4e710f611926f85dbe5a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
