@@ -24,6 +24,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.opendaylight.mdsal.common.api.TransactionChainClosedException;
@@ -54,7 +55,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsContextImpl.class);
     private static final String CONNECTION_CLOSED = "Connection closed.";
 
-    private final Collection<RequestContext<?>> requestContexts = new HashSet<>();
+    private final Collection<RequestContext<?>> requestContexts = ConcurrentHashMap.newKeySet();
     private final DeviceContext deviceContext;
     private final DeviceState devState;
     private final ListeningExecutorService executorService;
