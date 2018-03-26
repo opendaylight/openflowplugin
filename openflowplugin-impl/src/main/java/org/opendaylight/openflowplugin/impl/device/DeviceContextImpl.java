@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -144,7 +145,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final HashedWheelTimer hashedWheelTimer;
     private final DeviceState deviceState;
     private final DataBroker dataBroker;
-    private final Collection<RequestContext<?>> requestContexts = new HashSet<>();
+    private final Collection<RequestContext<?>> requestContexts = ConcurrentHashMap.newKeySet();
     private final MessageSpy messageSpy;
     private final MessageTranslator<PortGrouping, FlowCapableNodeConnector> portStatusTranslator;
     private final MessageTranslator<PacketInMessage, PacketReceived> packetInTranslator;

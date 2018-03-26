@@ -81,7 +81,7 @@ public class ContextChainImpl implements ContextChain {
             LOG.info("Started clustering services for node {}", deviceInfo);
         } catch (final Exception ex) {
             LOG.warn("Not able to start clustering services for node {}", deviceInfo);
-            executorService.submit(() -> mastershipChangeListener
+            executorService.execute(() -> mastershipChangeListener
                     .onNotAbleToStartMastershipMandatory(deviceInfo, ex.getMessage()));
         }
     }
