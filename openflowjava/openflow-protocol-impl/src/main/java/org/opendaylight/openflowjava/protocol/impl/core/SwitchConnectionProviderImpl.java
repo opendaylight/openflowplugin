@@ -130,6 +130,7 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
         factory.setSerializationFactory(serializationFactory);
         factory.setDeserializationFactory(deserializationFactory);
         factory.setUseBarrier(connConfig.useBarrier());
+        factory.setChannelOutboundQueueSize(connConfig.getChannelOutboundQueueSize());
         final TransportProtocol transportProtocol = (TransportProtocol) connConfig.getTransferProtocol();
 
         // Check if Epoll native transport is available.
