@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
@@ -54,7 +56,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsContextImpl.class);
     private static final String CONNECTION_CLOSED = "Connection closed.";
 
-    private final Collection<RequestContext<?>> requestContexts = new HashSet<>();
+    private final Collection<RequestContext<?>> requestContexts = ConcurrentHashMap.newKeySet();
     private final DeviceContext deviceContext;
     private final DeviceState devState;
     private final boolean isStatisticsPollingOn;
