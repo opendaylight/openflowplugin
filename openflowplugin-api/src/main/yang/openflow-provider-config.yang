@@ -193,6 +193,14 @@ module openflow-provider-config {
                 not owning the device.";
             type boolean;
             default "false";
+	}
+
+        leaf dpn-rate-limit-per-min {
+            description "To limit the number of datapath nodes connecting to odl controller
+            instance per minute. Default value 0 indicates that the datapath node rate
+            limiter will be disabled.";
+            type uint16;
+            default 0;
         }
     }
 }
