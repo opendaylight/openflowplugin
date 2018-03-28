@@ -179,4 +179,9 @@ public class OpenFlowProviderConfigImpl implements OpenflowProviderConfig {
         return OpenflowProviderConfig.class;
     }
 
+    @Override
+    public Integer getDpnRateLimitPerMin() {
+        return service.getProperty(ConfigurationProperty.DPN_RATE_LIMIT_PER_MIN.toString(), Integer::valueOf);
+    }
+
 }

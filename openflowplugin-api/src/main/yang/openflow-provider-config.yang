@@ -193,6 +193,12 @@ module openflow-provider-config {
                 not owning the device.";
             type boolean;
             default "false";
+	}
+
+        leaf dpn-rate-limit-per-min {
+            description "To limit number of DPNs to be connected per minute";
+            type uint16;
+            default 120;
         }
     }
 }
