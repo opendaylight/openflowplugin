@@ -15,6 +15,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Future;
@@ -24,6 +25,7 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ErrorHandler;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeListener;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeManager;
+import org.opendaylight.openflowplugin.impl.common.DpnRateLimiter;
 import org.opendaylight.openflowplugin.impl.util.MessageFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
@@ -57,6 +59,8 @@ public class HandshakeManagerImpl implements HandshakeManager {
 
     private boolean useVersionBitmap; // not final just for unit test
 
+    private final DpnRateLimiter dpnRateLimiter;
+
     /**
      * Constructor.
      *
@@ -68,13 +72,15 @@ public class HandshakeManagerImpl implements HandshakeManager {
      * @param useVersionBitmap  should use negotiation bit map
      */
     public HandshakeManagerImpl(ConnectionAdapter connectionAdapter, Short highestVersion, List<Short> versionOrder,
-            ErrorHandler errorHandler, HandshakeListener handshakeListener, boolean useVersionBitmap) {
+                                ErrorHandler errorHandler, HandshakeListener handshakeListener,
+                                boolean useVersionBitmap, DpnRateLimiter dpnRateLimiter) {
         this.highestVersion = highestVersion;
         this.versionOrder = versionOrder;
         this.connectionAdapter = connectionAdapter;
         this.errorHandler = errorHandler;
         this.handshakeListener = handshakeListener;
         this.useVersionBitmap = useVersionBitmap;
+        this.dpnRateLimiter = dpnRateLimiter;
     }
 
     @Override
@@ -385,6 +391,12 @@ public class HandshakeManagerImpl implements HandshakeManager {
                         LOG.trace("features are back");
                         if (rpcFeatures.isSuccessful()) {
                             GetFeaturesOutput featureOutput = rpcFeatures.getResult();
+                            BigInteger dpnID = featureOutput.getDatapathId();
+                            if (!dpnRateLimiter.tryAquire()) {
+                                LOG.debug("Permit not acquired for dpn {}, disconnecting the same.", dpnID);
+                                connectionAdapter.disconnect();
+                                return;
+                            }
 
                             LOG.debug("obtained features: datapathId={}", featureOutput.getDatapathId());
                             LOG.debug("obtained features: auxiliaryId={}", featureOutput.getAuxiliaryId());
