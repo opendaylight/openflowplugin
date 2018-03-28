@@ -55,6 +55,8 @@ public class HandshakeManagerImpl implements HandshakeManager {
 
     private boolean useVersionBitmap; // not final just for unit test
 
+    private final DeviceConnectionRateLimiter deviceConnectionRateLimiter;
+
     /**
      * Constructor.
      *
@@ -66,13 +68,15 @@ public class HandshakeManagerImpl implements HandshakeManager {
      * @param useVersionBitmap  should use negotiation bit map
      */
     public HandshakeManagerImpl(ConnectionAdapter connectionAdapter, Short highestVersion, List<Short> versionOrder,
-            ErrorHandler errorHandler, HandshakeListener handshakeListener, boolean useVersionBitmap) {
+                                ErrorHandler errorHandler, HandshakeListener handshakeListener,
+                                boolean useVersionBitmap, DeviceConnectionRateLimiter deviceConnectionRateLimiter) {
         this.highestVersion = highestVersion;
         this.versionOrder = versionOrder;
         this.connectionAdapter = connectionAdapter;
         this.errorHandler = errorHandler;
         this.handshakeListener = handshakeListener;
         this.useVersionBitmap = useVersionBitmap;
+        this.deviceConnectionRateLimiter = deviceConnectionRateLimiter;
     }
 
     @Override
@@ -383,6 +387,12 @@ public class HandshakeManagerImpl implements HandshakeManager {
                         LOG.trace("features are back");
                         if (rpcFeatures.isSuccessful()) {
                             GetFeaturesOutput featureOutput = rpcFeatures.getResult();
+                            if (!deviceConnectionRateLimiter.tryAquire()) {
+                                LOG.warn("Openflowplugin hit the device connection rate limit threshold. Denying"
+                                                + " the connection from device {}", featureOutput.getDatapathId());
+                                connectionAdapter.disconnect();
+                                return;
+                            }
 
                             LOG.debug("obtained features: datapathId={}", featureOutput.getDatapathId());
                             LOG.debug("obtained features: auxiliaryId={}", featureOutput.getAuxiliaryId());
