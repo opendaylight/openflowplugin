@@ -94,6 +94,8 @@ public class ConfigurationServiceFactoryImpl implements ConfigurationServiceFact
                             providerConfig.getThreadPoolMaxThreads().getValue().toString())
                     .put(ConfigurationProperty.THREAD_POOL_TIMEOUT.toString(),
                             providerConfig.getThreadPoolTimeout().toString())
+                    .put(ConfigurationProperty.DEVICE_CONNECTION_RATE_LIMIT_PER_MIN.toString(),
+                            providerConfig.getDeviceConnectionRateLimitPerMin().toString())
                     .build());
 
             LOG.info("Loading configuration from '{}' configuration file", OFConstants.CONFIG_FILE_ID);
