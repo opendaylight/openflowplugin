@@ -24,6 +24,7 @@ import org.opendaylight.openflowplugin.impl.connection.listener.ConnectionReadyL
 import org.opendaylight.openflowplugin.impl.connection.listener.HandshakeListenerImpl;
 import org.opendaylight.openflowplugin.impl.connection.listener.OpenflowProtocolListenerInitialImpl;
 import org.opendaylight.openflowplugin.impl.connection.listener.SystemNotificationsListenerImpl;
+import org.opendaylight.openflowplugin.openflow.md.core.DeviceConnectionRateLimiter;
 import org.opendaylight.openflowplugin.openflow.md.core.ErrorHandlerSimpleImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.HandshakeManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
@@ -39,11 +40,13 @@ public class ConnectionManagerImpl implements ConnectionManager {
     private DeviceConnectedHandler deviceConnectedHandler;
     private final OpenflowProviderConfig config;
     private final ExecutorService executorService;
+    private final DeviceConnectionRateLimiter deviceConnectionRateLimiter;
     private DeviceDisconnectedHandler deviceDisconnectedHandler;
 
     public ConnectionManagerImpl(final OpenflowProviderConfig config, final ExecutorService executorService) {
         this.config = config;
         this.executorService = executorService;
+        this.deviceConnectionRateLimiter = new DeviceConnectionRateLimiter(config);
     }
 
     @Override
@@ -80,7 +83,8 @@ public class ConnectionManagerImpl implements ConnectionManager {
                                                     final HandshakeListener handshakeListener) {
         HandshakeManagerImpl handshakeManager = new HandshakeManagerImpl(connectionAdapter,
                 OFConstants.VERSION_ORDER.get(0),
-                OFConstants.VERSION_ORDER, new ErrorHandlerSimpleImpl(), handshakeListener, BITMAP_NEGOTIATION_ENABLED);
+                OFConstants.VERSION_ORDER, new ErrorHandlerSimpleImpl(), handshakeListener, BITMAP_NEGOTIATION_ENABLED,
+                deviceConnectionRateLimiter);
 
         return handshakeManager;
     }
