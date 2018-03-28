@@ -20,6 +20,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnec
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeListener;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeManager;
+import org.opendaylight.openflowplugin.impl.common.DeviceConnectionRateLimiter;
 import org.opendaylight.openflowplugin.impl.connection.listener.ConnectionReadyListenerImpl;
 import org.opendaylight.openflowplugin.impl.connection.listener.HandshakeListenerImpl;
 import org.opendaylight.openflowplugin.impl.connection.listener.OpenflowProtocolListenerInitialImpl;
@@ -37,11 +38,13 @@ public class ConnectionManagerImpl implements ConnectionManager {
     private DeviceConnectedHandler deviceConnectedHandler;
     private final OpenflowProviderConfig config;
     private final ExecutorService executorService;
+    private final DeviceConnectionRateLimiter deviceConnectionRateLimiter;
     private DeviceDisconnectedHandler deviceDisconnectedHandler;
 
     public ConnectionManagerImpl(final OpenflowProviderConfig config, final ExecutorService executorService) {
         this.config = config;
         this.executorService = executorService;
+        this.deviceConnectionRateLimiter = new DeviceConnectionRateLimiter(config);
     }
 
     @Override
@@ -78,7 +81,8 @@ public class ConnectionManagerImpl implements ConnectionManager {
                                                     final HandshakeListener handshakeListener) {
         HandshakeManagerImpl handshakeManager = new HandshakeManagerImpl(connectionAdapter,
                 OFConstants.VERSION_ORDER.get(0),
-                OFConstants.VERSION_ORDER, new ErrorHandlerSimpleImpl(), handshakeListener, BITMAP_NEGOTIATION_ENABLED);
+                OFConstants.VERSION_ORDER, new ErrorHandlerSimpleImpl(), handshakeListener, BITMAP_NEGOTIATION_ENABLED,
+                deviceConnectionRateLimiter);
 
         return handshakeManager;
     }
