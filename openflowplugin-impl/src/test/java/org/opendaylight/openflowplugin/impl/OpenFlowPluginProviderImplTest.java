@@ -85,6 +85,7 @@ public class OpenFlowPluginProviderImplTest {
     private static final long THREAD_POOL_TIMEOUT = 60;
     private static final long BASIC_TIMER_DELAY = 1L;
     private static final boolean USE_SINGLE_LAYER_SERIALIZATION = false;
+    private static final int DPN_RATE_LIMIT_PER_MIN = 0;
 
     @Before
     public void setUp() throws Exception {
@@ -109,6 +110,8 @@ public class OpenFlowPluginProviderImplTest {
                 .thenReturn(GLOBAL_NOTIFICATION_QUOTA);
         when(configurationService.getProperty(eq(ConfigurationProperty.BASIC_TIMER_DELAY.toString()), any()))
                 .thenReturn(BASIC_TIMER_DELAY);
+        when(configurationService.getProperty(eq(ConfigurationProperty.DPN_RATE_LIMIT_PER_MIN.toString()), any()))
+                .thenReturn(DPN_RATE_LIMIT_PER_MIN);
     }
 
     @Test
