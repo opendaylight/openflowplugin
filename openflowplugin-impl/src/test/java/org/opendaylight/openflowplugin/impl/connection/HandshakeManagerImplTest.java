@@ -25,6 +25,7 @@ import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ErrorHandler;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeListener;
+import org.opendaylight.openflowplugin.impl.common.DpnRateLimiter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.HelloElementType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
@@ -33,6 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.Elements;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.ElementsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfigBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
@@ -54,19 +56,25 @@ public class HandshakeManagerImplTest {
     @Mock
     private HandshakeListener handshakeListener;
 
+    private DpnRateLimiter dpnRateLimiter;
+
     private RpcResult<GetFeaturesOutput> resultFeatures;
 
     private final long helloXid = 42L;
 
     private int expectedErrors = 0;
 
+    private static final int DPN_RATE_LIMIT_PER_MIN = 120;
+
     /**
      * invoked before every test method.
      */
     @Before
     public void setUp() {
+        dpnRateLimiter = new DpnRateLimiter(new OpenflowProviderConfigBuilder()
+                .setDpnRateLimitPerMin(DPN_RATE_LIMIT_PER_MIN).build());
         handshakeManager = new HandshakeManagerImpl(adapter, OFConstants.OFP_VERSION_1_3, OFConstants.VERSION_ORDER,
-                errorHandler, handshakeListener, false);
+                errorHandler, handshakeListener, false, dpnRateLimiter);
 
         resultFeatures = RpcResultBuilder.success(new GetFeaturesOutputBuilder().build()).build();
 
