@@ -61,6 +61,7 @@ public class ConnectionManagerImplTest {
     private ArgumentCaptor<OpenflowProtocolListener> ofpListenerAC;
 
     private static final long ECHO_REPLY_TIMEOUT = 500;
+    private static final int DPN_RATE_LIMIT_PER_MIN = 120;
 
     @Before
     public void setUp() {
@@ -70,6 +71,7 @@ public class ConnectionManagerImplTest {
 
         connectionManagerImpl = new ConnectionManagerImpl(new OpenflowProviderConfigBuilder()
                 .setEchoReplyTimeout(new NonZeroUint32Type(ECHO_REPLY_TIMEOUT))
+                .setDpnRateLimitPerMin(DPN_RATE_LIMIT_PER_MIN)
                 .build(), threadPool);
 
         connectionManagerImpl.setDeviceConnectedHandler(deviceConnectedHandler);
