@@ -179,4 +179,10 @@ public class OpenFlowProviderConfigImpl implements OpenflowProviderConfig {
         return OpenflowProviderConfig.class;
     }
 
+    @Override
+    public Integer getDeviceConnectionRateLimitPerMin() {
+        return service.getProperty(ConfigurationProperty.DEVICE_CONNECTION_RATE_LIMIT_PER_MIN.toString(),
+                Integer::valueOf);
+    }
+
 }
