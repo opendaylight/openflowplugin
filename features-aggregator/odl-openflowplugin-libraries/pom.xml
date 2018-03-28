@@ -18,6 +18,13 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.opendaylight.odlparent</groupId>
+            <artifactId>odl-guava-23</artifactId>
+            <type>xml</type>
+            <classifier>features</classifier>
+        </dependency>
+
+        <dependency>
             <groupId>org.opendaylight.openflowplugin.libraries</groupId>
             <artifactId>liblldp</artifactId>
             <version>${project.version}</version>
