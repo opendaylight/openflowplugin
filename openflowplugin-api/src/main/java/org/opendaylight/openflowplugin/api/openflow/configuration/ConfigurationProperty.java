@@ -111,7 +111,11 @@ public enum ConfigurationProperty {
     /**
      * Enable or disable equal role functionality.
      */
-    ENABLE_EQUAL_ROLE;
+    ENABLE_EQUAL_ROLE,
+    /**
+     * Device connection rate limit property type.
+     */
+    DEVICE_CONNECTION_RATE_LIMIT_PER_MIN;
 
     private static final Map<String, ConfigurationProperty> KEY_VALUE_MAP;
 
