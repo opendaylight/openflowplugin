@@ -27,6 +27,7 @@ import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesProperty;
+import org.opendaylight.openflowplugin.applications.frm.arbitratorreconciliation.ArbitratorReconciliationManager;
 import org.opendaylight.openflowplugin.applications.reconciliation.NotificationRegistration;
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -83,6 +84,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private FlowNodeConnectorInventoryTranslatorImpl flowNodeConnectorInventoryTranslatorImpl;
     private DeviceMastershipManager deviceMastershipManager;
     private final ReconciliationManager reconciliationManager;
+    private ArbitratorReconciliationManager arbitratorReconciliationManager;
 
     private boolean disableReconciliation;
     private boolean staleMarkingEnabled;
@@ -92,7 +94,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     public ForwardingRulesManagerImpl(final DataBroker dataBroker, final RpcProviderRegistry rpcRegistry,
             final ForwardingRulesManagerConfig config, final ClusterSingletonServiceProvider clusterSingletonService,
             final NotificationProviderService notificationService, final ConfigurationService configurationService,
-            final ReconciliationManager reconciliationManager) {
+            final ReconciliationManager reconciliationManager,
+            final ArbitratorReconciliationManager arbitratorReconciliationManager) {
         disableReconciliation = config.isDisableReconciliation();
         staleMarkingEnabled = config.isStaleMarkingEnabled();
         reconciliationRetryCount = config.getReconciliationRetryCount();
@@ -104,6 +107,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         this.notificationService = Preconditions.checkNotNull(notificationService,
                 "Notification publisher configurationService is" + " not available");
         this.reconciliationManager = reconciliationManager;
+        this.arbitratorReconciliationManager = Preconditions.checkNotNull(arbitratorReconciliationManager,
+                "ArbitratorReconciliationManager can not be null!");
         this.rpcRegistry = rpcRegistry;
 
         Preconditions.checkArgument(rpcRegistry != null, "RpcProviderRegistry can not be null !");
