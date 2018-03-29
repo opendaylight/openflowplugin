@@ -19,6 +19,7 @@
         <mdsal.version>1.8.0-SNAPSHOT</mdsal.version>
         <lldp.version>0.15.0-SNAPSHOT</lldp.version>
         <infrautils.version>1.4.0-SNAPSHOT</infrautils.version>
+        <serviceutils.version>0.2.0-SNAPSHOT</serviceutils.version>
     </properties>
 
     <dependencyManagement>
@@ -55,6 +56,13 @@
             <groupId>org.opendaylight.infrautils</groupId>
             <artifactId>odl-infrautils-diagstatus</artifactId>
             <version>${infrautils.version}</version>
+            <type>xml</type>
+            <classifier>features</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.serviceutils</groupId>
+            <artifactId>odl-serviceutils-tools</artifactId>
+            <version>${serviceutils.version}</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
