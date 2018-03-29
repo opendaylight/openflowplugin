@@ -70,6 +70,7 @@ public class FlowListenerTest extends FRMTest {
     @Mock
     private ReconciliationManager reconciliationManager;
 
+
     @Before
     public void setUp() {
         forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock, getConfig(),
