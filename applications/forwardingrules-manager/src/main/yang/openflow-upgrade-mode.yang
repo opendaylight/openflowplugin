@@ -1,0 +1,20 @@
+module openflow-upgrade {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:openflow:upgrade";
+    prefix "openflow-upgrade";
+
+    description
+        "Flag to determine whether upgrade is in progress";
+
+    revision "2018-03-28" {
+        description
+            "Initial proposal.";
+    }
+
+    container upgrade-progress {
+        leaf upgrade-in-progress {
+            description "Is upgrade in process.";
+            type boolean;
+        }
+    }
+}
