@@ -171,4 +171,5 @@ public interface ForwardingRulesManager extends ConfigurationListener, AutoClose
      *         config file or False
      */
     boolean isBundleBasedReconciliationEnabled();
+
 }
