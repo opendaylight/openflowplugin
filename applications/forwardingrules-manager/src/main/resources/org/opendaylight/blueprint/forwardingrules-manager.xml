@@ -10,7 +10,8 @@
   <reference id="clusterSingletonService" interface="org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider"/>
   <reference id="configurationService" interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService"/>
   <reference id="reconciliationservice" interface="org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager"/>
-
+  <odl:rpc-service id="vpnRpcService"
+                   interface="org.opendaylight.yang.gen.v1.urn.opendaylight.netvirt.vpn.rpc.rev160201.VpnRpcService" />
 
   <odl:clustered-app-config id="frmConfig"
       binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfig"/>
@@ -24,6 +25,7 @@
     <argument ref="notificationService"/>
     <argument ref="configurationService"/>
     <argument ref="reconciliationservice"/>
+    <argument ref="arbitratorReconciliationManager"/>
   </bean>
 
   <bean id="reconciliationService"
