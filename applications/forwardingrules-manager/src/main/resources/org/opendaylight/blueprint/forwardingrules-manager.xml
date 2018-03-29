@@ -15,6 +15,18 @@
   <odl:clustered-app-config id="frmConfig"
       binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfig"/>
 
+  <bean id="upgradeManager"
+        class="org.opendaylight.openflowplugin.applications.frm.nodereconciliation.impl.UpgradeManagerImpl"
+        init-method="start" destroy-method="close">
+    <argument ref="dataBroker"/>
+    <argument ref="rpcRegistry"/>
+    <argument ref="reconciliationservice"/>
+  </bean>
+
+  <service ref="upgradeManager"
+           interface="org.opendaylight.openflowplugin.applications.frm.nodereconciliation.api.UpgradeManager"
+           odl:type="default"/>
+
   <bean id="frmManager" class="org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl"
           init-method="start" destroy-method="close">
     <argument ref="dataBroker"/>
@@ -24,6 +36,7 @@
     <argument ref="notificationService"/>
     <argument ref="configurationService"/>
     <argument ref="reconciliationservice"/>
+    <argument ref="upgradeManager"/>
   </bean>
 
   <bean id="reconciliationService"
@@ -33,5 +46,11 @@
   <service ref="reconciliationService"
            interface="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconciliationService"
            odl:type="default"/>
+
+  <bean id="openflowUpgradeService" class="org.opendaylight.openflowplugin.applications.frm.nodereconciliation.impl.OpenflowUpgradeServiceImpl">
+    <argument ref="upgradeManager"/>
+  </bean>
+
+  <odl:routed-rpc-implementation ref="openflowUpgradeService"/>
 
 </blueprint>
