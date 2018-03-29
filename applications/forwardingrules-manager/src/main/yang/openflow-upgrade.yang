@@ -1,0 +1,34 @@
+module openflow-upgrade {
+    namespace "urn:opendaylight:params:xml:ns:yang:openflowplugin:app:openflow-upgrade:service";
+    prefix openflow-upgrade;
+
+    description
+        "Flag to determine whether upgrade is in progress";
+
+     revision "2018-02-27" {
+            description "Initial proposal";
+        }
+
+    container upgrade-progress {
+        leaf upgrade-in-progress {
+            description "Is upgrade in process.";
+            type boolean;
+        }
+    }
+
+     rpc finish-upgrade-reconciliation {
+                description "Stops the upgrade reconciliation of a node";
+                input {
+                    leaf node {
+                        description "Node for which the upgrade reconciliation has to be stopped";
+                        type uint64;
+                    }
+                }
+
+                output {
+                     leaf result {
+                         type boolean;
+                     }
+                }
+     }
+}
