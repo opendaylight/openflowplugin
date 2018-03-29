@@ -1,0 +1,3 @@
+<arbitrator-config xmlns="urn:opendaylight:params:xml:ns:yang:openflowplugin:app:arbitrator-reconcile:service">
+    <arbitrator-reconcile-enabled>false</arbitrator-reconcile-enabled>
+</arbitrator-config>

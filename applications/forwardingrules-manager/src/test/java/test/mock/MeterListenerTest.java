@@ -22,6 +22,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.openflowplugin.applications.frm.arbitratorreconciliation.ArbitratorReconciliationManager;
 import org.opendaylight.openflowplugin.applications.frm.impl.DeviceMastershipManager;
 import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager;
@@ -59,6 +60,8 @@ public class MeterListenerTest extends FRMTest {
     private NotificationProviderService notificationService;
     @Mock
     private ReconciliationManager reconciliationManager;
+    @Mock
+    private ArbitratorReconciliationManager arbitratorReconciliationManager;
 
     @Before
     public void setUp() {
@@ -69,7 +72,7 @@ public class MeterListenerTest extends FRMTest {
                 clusterSingletonService,
                 notificationService,
                 getConfigurationService(),
-                reconciliationManager);
+                reconciliationManager, arbitratorReconciliationManager);
 
         forwardingRulesManager.start();
         // TODO consider tests rewrite (added because of complicated access)

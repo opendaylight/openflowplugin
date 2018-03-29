@@ -1,0 +1,38 @@
+module arbitrator-reconcile {
+    namespace "urn:opendaylight:params:xml:ns:yang:openflowplugin:app:arbitrator-reconcile:service";
+    prefix arbitrator-reconcile;
+
+    import opendaylight-inventory {prefix inv; revision-date "2013-08-19";}
+
+    description
+        "Flag to determine whether arbitrator reconciliation is enabled";
+
+     revision "2018-02-27" {
+            description "Initial proposal";
+        }
+
+    container arbitrator-config {
+        leaf arbitrator-reconcile-enabled {
+            description "Is arbitrator reconciliation in process.";
+            type boolean;
+            default false;
+        }
+    }
+
+     rpc commit-bundle-node {
+                description "Commits the active available bundle in openflowplugin";
+                input {
+                    uses "inv:node-context-ref";
+                    leaf node-id {
+                        description "Node for which the commit bundle to be executed";
+                        type uint64;
+                    }
+                }
+
+                output {
+                     leaf result {
+                         type boolean;
+                     }
+                }
+     }
+}
