@@ -114,6 +114,13 @@
             <type>cfg</type>
             <classifier>config</classifier>
         </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
+            <artifactId>forwardingrules-manager</artifactId>
+            <version>${project.version}</version>
+            <type>xml</type>
+            <classifier>config</classifier>
+        </dependency>
     </dependencies>
 
 </project>
