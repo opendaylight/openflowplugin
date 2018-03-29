@@ -10,48 +10,35 @@
     </parent>
 
     <groupId>org.opendaylight.openflowplugin</groupId>
-    <artifactId>odl-openflowplugin-flow-services</artifactId>
+    <artifactId>odl-openflowplugin-app-upgrade-manager</artifactId>
     <packaging>feature</packaging>
     <version>0.7.0-SNAPSHOT</version>
 
-    <name>OpenDaylight :: Openflow Plugin :: Flow Services</name>
+    <name>OpenDaylight :: Openflow Plugin :: Application - Upgrade Manager</name>
 
     <dependencies>
+        <!-- feature dependencies -->
         <dependency>
-            <groupId>org.opendaylight.openflowplugin</groupId>
-            <artifactId>odl-openflowplugin-app-config-pusher</artifactId>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>odl-openflowplugin-southbound</artifactId>
             <version>${project.version}</version>
             <classifier>features</classifier>
             <type>xml</type>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowplugin</groupId>
-            <artifactId>odl-openflowplugin-app-topology</artifactId>
-            <version>${project.version}</version>
-            <classifier>features</classifier>
-            <type>xml</type>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowplugin</groupId>
-            <artifactId>odl-openflowplugin-app-forwardingrules-manager</artifactId>
-            <version>${project.version}</version>
-            <classifier>features</classifier>
-            <type>xml</type>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowplugin</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>odl-openflowplugin-app-reconciliation-framework</artifactId>
             <version>${project.version}</version>
             <classifier>features</classifier>
             <type>xml</type>
         </dependency>
+
         <dependency>
-            <groupId>org.opendaylight.openflowplugin</groupId>
-            <artifactId>odl-openflowplugin-app-upgrade-manager</artifactId>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
+            <artifactId>upgrade-manager</artifactId>
             <version>${project.version}</version>
-            <classifier>features</classifier>
-            <type>xml</type>
         </dependency>
+
     </dependencies>
 
 </project>
