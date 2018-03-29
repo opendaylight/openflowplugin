@@ -1,0 +1,32 @@
+module openflow-upgrade-mode {
+	yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:openflow:upgrade:mode";
+    prefix "openflow-upgrade-mode";
+
+    description
+        "Upgrade mode";
+
+    revision "2018-03-28" {
+        description
+            "Initial proposal.";
+    }
+
+ typedef mode {
+      type enumeration {
+          enum AUTONOMOUS {
+          description "Start upgrade.";
+          }
+          enum ARBITRARY {
+          description "End upgrade.";
+          }
+      }
+      default "AUTONOMOUS";
+   }
+
+container openflow-upgrade-mode {
+    leaf upgrade-mode {
+        description "Upgrade mode.";
+        type mode ;
+    }
+}
+}
