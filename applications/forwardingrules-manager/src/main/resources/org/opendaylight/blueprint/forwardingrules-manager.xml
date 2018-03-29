@@ -15,6 +15,24 @@
   <odl:clustered-app-config id="frmConfig"
       binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfig"/>
 
+  <odl:clustered-app-config id="arbitratorConfig"
+                            binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.ArbitratorConfig"
+                            default-config-file-name="openflowplugin-arbitrator-reconcile-config.xml">
+  </odl:clustered-app-config>
+
+  <bean id="arbitratorReconciliationManager"
+        class="org.opendaylight.openflowplugin.applications.frm.arbitratorreconciliation.impl.ArbitratorReconciliationManagerImpl"
+        init-method="start" destroy-method="close">
+    <argument ref="dataBroker"/>
+    <argument ref="rpcRegistry"/>
+    <argument ref="reconciliationservice"/>
+    <argument ref="arbitratorConfig"/>
+  </bean>
+
+  <service ref="arbitratorReconciliationManager"
+           interface="org.opendaylight.openflowplugin.applications.frm.arbitratorreconciliation.ArbitratorReconciliationManager"
+           odl:type="default"/>
+
   <bean id="frmManager" class="org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl"
           init-method="start" destroy-method="close">
     <argument ref="dataBroker"/>
@@ -24,6 +42,7 @@
     <argument ref="notificationService"/>
     <argument ref="configurationService"/>
     <argument ref="reconciliationservice"/>
+    <argument ref="arbitratorReconciliationManager"/>
   </bean>
 
   <bean id="reconciliationService"
@@ -32,6 +51,14 @@
   </bean>
   <service ref="reconciliationService"
            interface="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconciliationService"
+           odl:type="default"/>
+
+  <bean id="openflowArbitratorService"
+        class="org.opendaylight.openflowplugin.applications.frm.arbitratorreconciliation.impl.ArbitratorReconcileServiceImpl">
+    <argument ref="arbitratorReconciliationManager"/>
+  </bean>
+  <service ref="openflowArbitratorService"
+           interface="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.ArbitratorReconcileService"
            odl:type="default"/>
 
 </blueprint>
