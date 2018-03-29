@@ -33,6 +33,7 @@
         <module>odl-openflowplugin-app-reconciliation-framework</module>
         <module>odl-openflowplugin-app-southbound-cli</module>
         <module>odl-openflowplugin-libraries</module>
+        <module>odl-openflowplugin-app-arbitratorreconciliation</module>
     </modules>
 
 </project>
