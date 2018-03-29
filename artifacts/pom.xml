@@ -219,6 +219,13 @@
                 <type>xml</type>
                 <classifier>legacyConfig</classifier>
             </dependency>
+            <dependency>
+                <groupId>${project.groupId}.applications</groupId>
+                <artifactId>forwardingrules-manager</artifactId>
+                <version>${project.version}</version>
+                <type>xml</type>
+                <classifier>config</classifier>
+            </dependency>
             <!-- features -->
             <dependency>
                 <groupId>${project.groupId}</groupId>
