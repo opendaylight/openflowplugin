@@ -47,6 +47,11 @@ public class OpenflowPluginDiagStatusProvider implements ServiceStatusProvider {
         });
     }
 
+    public void reportStatus(ServiceState serviceState, Throwable throwable) {
+        LOG.debug("reporting status as {} for {}", serviceState, OPENFLOW_SERVICE_NAME);
+        diagStatusService.report(new ServiceDescriptor(OPENFLOW_SERVICE_NAME, throwable));
+    }
+
     public void reportStatus(ServiceState serviceState, String description) {
         LOG.debug("reporting status as {} for {}", serviceState, OPENFLOW_SERVICE_NAME);
         diagStatusService.report(new ServiceDescriptor(OPENFLOW_SERVICE_NAME, serviceState, description));

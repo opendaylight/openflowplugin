@@ -178,7 +178,7 @@ public class OpenFlowPluginProviderImpl implements
             @Override
             public void onFailure(@Nonnull final Throwable throwable) {
                 LOG.warn("Some switchConnectionProviders failed to start.", throwable);
-                openflowPluginStatusMonitor.reportStatus(ServiceState.ERROR, "some switch connections failed to start");
+                openflowPluginStatusMonitor.reportStatus(ServiceState.ERROR, throwable);
             }
         }, MoreExecutors.directExecutor());
     }
