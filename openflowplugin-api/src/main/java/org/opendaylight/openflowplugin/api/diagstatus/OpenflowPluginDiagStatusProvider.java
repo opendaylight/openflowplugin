@@ -48,6 +48,12 @@ public class OpenflowPluginDiagStatusProvider implements ServiceStatusProvider {
         });
     }
 
+    public void reportStatus(ServiceState serviceState, Exception ex) {
+        LOG.debug("reporting status as {} for {}", serviceState, OPENFLOW_SERVICE_NAME);
+        serviceDescriptor = new ServiceDescriptor(OPENFLOW_SERVICE_NAME, ex);
+        diagStatusService.report(serviceDescriptor);
+    }
+
     public void reportStatus(ServiceState serviceState, String description) {
         LOG.debug("reporting status as {} for {}", serviceState, OPENFLOW_SERVICE_NAME);
         serviceDescriptor = new ServiceDescriptor(OPENFLOW_SERVICE_NAME, serviceState, description);
@@ -62,8 +68,8 @@ public class OpenflowPluginDiagStatusProvider implements ServiceStatusProvider {
                     && getApplicationNetworkState(OF_PORT_11, legacyInetAddress)) {
                 return serviceDescriptor;
             } else {
-                serviceDescriptor = new ServiceDescriptor(OPENFLOW_SERVICE_NAME, ServiceState.ERROR,
-                        "OF::PORTS:: 6653 and 6633 are not up yet");
+                serviceDescriptor = new ServiceDescriptor(OPENFLOW_SERVICE_NAME,
+                        new IOException("OF::PORTS:: 6653 and 6633 are not up yet"));
                 return serviceDescriptor;
             }
         }
