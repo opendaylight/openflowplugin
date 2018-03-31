@@ -164,7 +164,7 @@ public class FlowStatsResponseConvertorTest {
         return instructionsOptional.get();
     }
 
-    private static final class MockActionBase extends ActionBase {
+    private interface MockActionBase extends ActionBase {
         // for testing purposes
     }
 }

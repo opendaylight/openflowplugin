@@ -171,7 +171,7 @@ public class TypeKeyMakerFactoryTest {
         Assert.assertEquals("Wrong key", comparationKey, key);
     }
 
-    private class OxmMatchFieldClass extends MatchField {
+    private interface OxmMatchFieldClass extends MatchField {
         // only for testing purposes
     }
 }

@@ -50,11 +50,11 @@ public class SetFieldExtensionTest {
                 eqGroup.getExtension(setField2).get().getExtensionList().get(0).getExtensionKey());
     }
 
-    private static class ZVendorExt1 extends ExtensionKey {
+    private interface ZVendorExt1 extends ExtensionKey {
         // nobody
     }
 
-    private static class ZVendorExt2 extends ExtensionKey {
+    private interface ZVendorExt2 extends ExtensionKey {
         // nobody
     }
 }

@@ -93,15 +93,15 @@ public class MatchExtensionHelperTest {
         return matchEntries;
     }
 
-    private static final class MockOxmClassBase extends OxmClassBase {
+    private interface MockOxmClassBase extends OxmClassBase {
 
     }
 
-    private static final class MockMatchField extends MatchField {
+    private interface MockMatchField extends MatchField {
 
     }
 
-    private final class MockExtensionKey extends ExtensionKey {
+    private interface MockExtensionKey extends ExtensionKey {
 
     }
 

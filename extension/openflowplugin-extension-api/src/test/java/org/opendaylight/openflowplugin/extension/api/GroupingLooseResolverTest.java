@@ -54,11 +54,11 @@ public class GroupingLooseResolverTest {
                 eqGroup.getExtension(match2).get().getExtensionList().get(0).getExtensionKey());
     }
 
-    private static class JoachimTheBig extends ExtensionKey {
+    private interface JoachimTheBig extends ExtensionKey {
         // nobody
     }
 
-    private static class JoachimTheTiny extends ExtensionKey {
+    private interface JoachimTheTiny extends ExtensionKey {
         // nobody
     }
 

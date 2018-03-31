@@ -99,7 +99,7 @@ public class ExtensionConverterManagerImplTest {
         Assert.assertEquals(extConvertorFromOFJava, manager.getActionConverter(keyFromOFJava));
     }
 
-    private static class ExpSubType extends ExperimenterActionSubType {
+    private interface ExpSubType extends ExperimenterActionSubType {
         // NOOP
     }
 

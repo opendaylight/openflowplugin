@@ -385,7 +385,7 @@ public class OF13MatchSerializerTest {
         ((OF13MatchSerializer) matchSerializer).serializeMatchEntries(entries, out);
     }
 
-    private class OxmMatchFieldClass extends MatchField {
+    private interface OxmMatchFieldClass extends MatchField {
         // only for testing purposes
     }
 }

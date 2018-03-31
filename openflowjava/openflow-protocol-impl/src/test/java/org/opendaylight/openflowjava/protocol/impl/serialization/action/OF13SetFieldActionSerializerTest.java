@@ -92,7 +92,7 @@ public class OF13SetFieldActionSerializerTest {
         Assert.assertEquals("Wrong - bad lenght", lenght, out.readUnsignedShort());
     }
 
-    private class OxmMatchFieldClass extends MatchField {
+    private interface OxmMatchFieldClass extends MatchField {
         // only for testing purposes
     }
 }

@@ -269,7 +269,7 @@ public class SwitchConnectionProviderImpl02Test {
         provider.registerDeserializer(key18, deserializer);
     }
 
-    private static class TestSubType extends ExperimenterActionSubType {
+    private interface TestSubType extends ExperimenterActionSubType {
         // empty class - only used in test for comparation
     }
 }

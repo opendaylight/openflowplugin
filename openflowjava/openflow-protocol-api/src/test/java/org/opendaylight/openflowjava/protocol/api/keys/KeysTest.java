@@ -81,7 +81,7 @@ public class KeysTest {
         Assert.assertEquals(matchKey.hashCode(), matchKey2.hashCode());
     }
 
-    private static class ExpSubType extends ExperimenterActionSubType {
+    private interface ExpSubType extends ExperimenterActionSubType {
         // empty class - only used in test for comparation
     }
 

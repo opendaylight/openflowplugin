@@ -65,11 +65,11 @@ public class ExperimenterActionSerializerKeyTest {
     }
 
 
-    private static class TestSubType extends ExperimenterActionSubType {
+    private interface TestSubType extends ExperimenterActionSubType {
         // empty class - only used in test for comparation
     }
 
-    private static class TestSubType2 extends ExperimenterActionSubType {
+    private interface TestSubType2 extends ExperimenterActionSubType {
         // empty class - only used in test for comparation
     }
 
