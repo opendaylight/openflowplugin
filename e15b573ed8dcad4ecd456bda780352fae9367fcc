@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4eb50bc2_333579e4",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 2264
+      },
+      "writtenOn": "2018-03-31T04:57:30Z",
+      "side": 1,
+      "message": "i choose IOException, but maybe there is something better?",
+      "range": {
+        "startLine": 37,
+        "startChar": 81,
+        "endLine": 37,
+        "endChar": 92
+      },
+      "revId": "e15b573ed8dcad4ecd456bda780352fae9367fcc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    }
+  ]
+}
