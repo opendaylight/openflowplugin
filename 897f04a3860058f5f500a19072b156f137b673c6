@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "198a0228_d4e7db69",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/common/DpnRateLimiter.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-04-02T05:02:08Z",
+      "side": 1,
+      "message": "2018",
+      "range": {
+        "startLine": 2,
+        "startChar": 19,
+        "endLine": 2,
+        "endChar": 21
+      },
+      "revId": "897f04a3860058f5f500a19072b156f137b673c6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "522412a9_707d5241",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/HandshakeManagerImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 394,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-04-02T05:02:08Z",
+      "side": 1,
+      "message": "you don\u0027t need declare variable here.. just use featureOuput.getDatapathId() in log statement and make it in error level",
+      "range": {
+        "startLine": 394,
+        "startChar": 28,
+        "endLine": 394,
+        "endChar": 77
+      },
+      "revId": "897f04a3860058f5f500a19072b156f137b673c6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
