@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "568436a7_4e92429a",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 2264
+      },
+      "writtenOn": "2018-04-02T17:50:48Z",
+      "side": 1,
+      "message": "isn\u0027t that what we get in he description?\n\nbtw, check my comment in the related infrautils patch to\nsee what this looks like in a failure scenario:\n\nhttps://git.opendaylight.org/gerrit/#/c/70220/",
+      "parentUuid": "6949f832_409adbbc",
+      "revId": "e15b573ed8dcad4ecd456bda780352fae9367fcc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4eb50bc2_333579e4",
         "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
         "patchSetId": 1
