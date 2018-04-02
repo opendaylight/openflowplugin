@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "6949f832_409adbbc",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 817
+      },
+      "writtenOn": "2018-04-02T06:37:25Z",
+      "side": 1,
+      "message": "My understanding was that we will throw the actual exception, so that there is some information to understand why openflowplugin service is not UP. I am not able to find that information here.",
+      "revId": "e15b573ed8dcad4ecd456bda780352fae9367fcc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4eb50bc2_333579e4",
         "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
         "patchSetId": 1
