@@ -1,0 +1,157 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c6029694_6aca1e97",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/deserialization/DeserializationFactory.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-03T16:32:41Z",
+      "side": 1,
+      "message": "please remove this log, as it can flood the logs with rawbytes and mostly it\u0027s unusable.",
+      "revId": "817b453be4649cadf81609959cc40ee97dd13e12",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5231c017_6ba371d7",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/deserialization/DeserializerRegistryImpl.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-03T16:32:41Z",
+      "side": 1,
+      "message": "Move this log statement just before return statement and rephrase it to \"Found deserializer for key {}\", key. Also change the log level for DEBUG.",
+      "revId": "817b453be4649cadf81609959cc40ee97dd13e12",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0927cb43_d3bf1f83",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/deserialization/DeserializerRegistryImpl.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-03T16:32:41Z",
+      "side": 1,
+      "message": "deserializer is already null, so no point in building string with null object here.\nyou can do something like \nString element \u003d key\u003d\u003dnull? \"Key\" : \"Deserializer\";\nthrow new IllegalArgumentException(element + \" is null\").\n\nOr you can check for specific element and throw separate exception with appropriate message.",
+      "revId": "817b453be4649cadf81609959cc40ee97dd13e12",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a9487c5_db59063c",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/deserialization/DeserializerRegistryImpl.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-03T16:32:41Z",
+      "side": 1,
+      "message": "Please do not use method name in the logs. Rephrase it to \"Register Deserializer for key : {} , Deserializer : {}\"",
+      "revId": "817b453be4649cadf81609959cc40ee97dd13e12",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2927a27e_d0876222",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/util/CodeKeyMakerFactory.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-03T16:32:41Z",
+      "side": 1,
+      "message": "please rephrase these logs without method name and change the level to DEBUG.",
+      "revId": "817b453be4649cadf81609959cc40ee97dd13e12",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "50212859_186c3c68",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/util/ListDeserializer.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-03T16:32:41Z",
+      "side": 1,
+      "message": "move this log out of while loop and change the log level to TRACE.",
+      "revId": "817b453be4649cadf81609959cc40ee97dd13e12",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1185a7e7_e754bacf",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/deserialization/match/AbstractMatchEntryDeserializer.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-03T16:32:41Z",
+      "side": 1,
+      "message": "If you really need this log, change it\u0027s level to TRACE. I would suggest to not use it here.",
+      "revId": "817b453be4649cadf81609959cc40ee97dd13e12",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4f564c2c_13e357a5",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/deserialization/match/InPortEntryDeserializer.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-03T16:32:41Z",
+      "side": 1,
+      "message": "please remove this log or use proper log message.",
+      "revId": "817b453be4649cadf81609959cc40ee97dd13e12",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8c60c8b8_4f5e154e",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/deserialization/match/MatchDeserializer.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-03T16:32:41Z",
+      "side": 1,
+      "message": "logging need to be cleaned up here and need to be move to debug/trave level.",
+      "revId": "817b453be4649cadf81609959cc40ee97dd13e12",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
