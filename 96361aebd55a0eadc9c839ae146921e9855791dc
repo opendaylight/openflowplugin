@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c6a13967_3d676147",
+        "filename": "openflowplugin-api/src/main/yang/openflow-provider-config.yang",
+        "patchSetId": 9
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-04-03T05:24:37Z",
+      "side": 1,
+      "message": "tab space",
+      "range": {
+        "startLine": 196,
+        "startChar": 0,
+        "endLine": 196,
+        "endChar": 1
+      },
+      "revId": "96361aebd55a0eadc9c839ae146921e9855791dc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d5e193bd_27db4f11",
+        "filename": "openflowplugin-api/src/main/yang/openflow-provider-config.yang",
+        "patchSetId": 9
+      },
+      "lineNbr": 199,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-04-03T05:24:37Z",
+      "side": 1,
+      "message": "To limit number of datapath nodes connected to odl controller instance per minute. Default value 0 indicates the datapath node rate limiter will be disabled.",
+      "range": {
+        "startLine": 199,
+        "startChar": 25,
+        "endLine": 199,
+        "endChar": 75
+      },
+      "revId": "96361aebd55a0eadc9c839ae146921e9855791dc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5e756f32_94892001",
+        "filename": "openflowplugin-api/src/main/yang/openflow-provider-config.yang",
+        "patchSetId": 9
+      },
+      "lineNbr": 201,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-04-03T05:24:37Z",
+      "side": 1,
+      "message": "keep 0, so rate limiter will be disabled by default",
+      "range": {
+        "startLine": 201,
+        "startChar": 11,
+        "endLine": 201,
+        "endChar": 24
+      },
+      "revId": "96361aebd55a0eadc9c839ae146921e9855791dc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4ca83e37_9e867dda",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
+        "patchSetId": 9
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-04-03T05:24:37Z",
+      "side": 1,
+      "message": "0 and give details explanation",
+      "range": {
+        "startLine": 128,
+        "startChar": 24,
+        "endLine": 128,
+        "endChar": 28
+      },
+      "revId": "96361aebd55a0eadc9c839ae146921e9855791dc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
