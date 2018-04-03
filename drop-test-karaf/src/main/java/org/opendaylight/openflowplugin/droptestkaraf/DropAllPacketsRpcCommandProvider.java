@@ -9,29 +9,25 @@
 package org.opendaylight.openflowplugin.droptestkaraf;
 
 import java.io.PrintStream;
-
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.testcommon.DropTestRpcProvider;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 
-import com.google.common.base.Preconditions;
-
-@Command(scope = "drop-test", name = "dropAllPacketsRpc", description="drop packet responder involving SalFlowService")
+@Command(scope = "drop-test", name = "dropAllPacketsRpc",
+         description = "drop packet responder involving SalFlowService")
 public class DropAllPacketsRpcCommandProvider extends OsgiCommandSupport {
 
-    @Argument(index = 0, name = "on-off", 
-            description = "target state of drop responder", 
+    @Argument(index = 0, name = "on-off",
+            description = "target state of drop responder",
             required = true, multiValued = false)
     String targetStateArg = null;
-    
+
     @Override
     protected Object doExecute() throws Exception {
         PrintStream out = session.getConsole();
         final DropTestRpcProvider provider = DropTestProviderImpl.getDropRpcProvider();
-        
+
         if ("on".equalsIgnoreCase(targetStateArg)) {
             if (! provider.isActive()) {
                 provider.start();
@@ -71,5 +67,5 @@ public class DropAllPacketsRpcCommandProvider extends OsgiCommandSupport {
 //            ci.println("Session not initiated, try again in a few seconds");
 //        }
 //    }
-   
+
 }
