@@ -22,6 +22,30 @@
       "revId": "d8e0cc82f6171132576f4e710f611926f85dbe5a",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "830fb6a6_5d422909",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/device/TxFacade.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-03T17:08:52Z",
+      "side": 1,
+      "message": "I believe the reason it was implemented in this way was, because rest of the plugin don\u0027t take any specific action on any specific failure/exception, so they were expecting that it\u0027s written to data store or not. If not, plugin will disconnect the switch or will attempt retry. Also i believe the other reason was they want to contain the handling in the TransactionChainManager itself, so rest  of the code don\u0027t have to take care of the specific error handling. This actually gets more dirty because some of the events from openflowplugin need to be ordered in a way that it keeps the same order for the DataChange notification. Now we ended up with a class that\u0027s handling Async/Sync both and resulted in what we have today. So definitely it can be designed better, so i will open a ticket for it to handle it properly, rather then addressing in this patch? Make sense?",
+      "parentUuid": "ab2a4f72_8f586428",
+      "range": {
+        "startLine": 49,
+        "startChar": 37,
+        "endLine": 49,
+        "endChar": 38
+      },
+      "revId": "d8e0cc82f6171132576f4e710f611926f85dbe5a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
