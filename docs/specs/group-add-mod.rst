@@ -46,29 +46,30 @@ Use Cases
 a. Normal group provisioning via FRM: ADD/UPDATE group should send new command OFPGC_ADD_OR_MOD.
 
 b. Reconciliation of groups should send OFPGC_ADD_OR_MOD. Current implementation of openflowplugin will
-   always send group add OFPGC_ADD irrespective of the state of the switch.
+   always send group add OFPGC_ADD irrespective of the state of the switch. This results in failure with
+   GROUP_ALREADY_EXISTS error.
 
 Proposed change
 ---------------
 The implementation of OFPGC_ADD_OR_MOD command is specific to OVS2.6 and above and the same can be extended
 to other openflow switch based on the group command support by them.
 
-New configuration parameter will be introduced in openflowplugin.cfg file, which can be modified by users
-to enable the GROUP ADD MOD support.
+New configuration parameter will be introduced in default-openflow-connection-config.xml and
+legacy-openflow-connection-config.xml, which can be modified by users to enable the GROUP ADD MOD support.
 
 .. code-block:: none
    :caption: openflowplugin.cfg
 
-   # GROUP ADD MOD Support for OVS2.6 and above
-   # group-add-mod-supported=false
+   <group-add-mod-enabled>false</group-add-mod-enabled>
 
-By default the group-add-mod-supported flag will be kept as false, which means existing group commands
+By default the group-add-mod-enabled flag will be kept as false, which means existing group mod commands
 OFPGC_ADD/OFPGC_MODIFY will be used.
 
-GroupConverter will use the above flag to determine which group command should be sent out for add/update group.
-The changes will be done for both single layer and multilayer serialization.
+GroupMessageSerializer will use the above flag to determine which group command should be set for group add/update.
+The above class is applicable for single layer serialization and the for multi-layer serialization changes will be
+done in openflowjava GroupModInputMessageFactory java classs.
 
-When flag is enabled, openflowplugin will always send OFPGC_ADD_OR_MOD for both group add and modify.
+When flag is enabled, openflowplugin will always send OFPGC_ADD_OR_MOD (32768) for both group add and modify.
 
 Pipeline changes
 ----------------
@@ -77,34 +78,16 @@ None
 Yang changes
 ------------
 
-Below yang changes is required to add new command support under typedef group-mod-command.
-New command OFPGC_ADD_OR_MOD will be added with value as 32768.
+Below yang changes will be done in order to provide configuration support for group-add-mod-enabled field.
 
 .. code-block:: none
-   :caption: openflow-types.yang
+   :caption: openflow-switch-connection-config.yang
 
-    typedef group-mod-command {
-        /* ofp_group_mod_command */
-        type enumeration {
-            enum OFPGC_ADD {
-              value 0;
-              description "New group.";
-            }
-            enum OFPGC_MODIFY {
-              value 1;
-              description "Modify all matching groups.";
-            }
-            enum OFPGC_DELETE {
-              value 2;
-              description "Delete all matching groups.";
-            }
-            enum OFPGC_ADD_OR_MOD {
-              /* Hexa value for OFPGC_ADD_OR_MOD = 0x8000 */
-              value 32768;
-              description "Create new or modify existing group.";
-            }
-        }
-    }
+       leaf group-add-mod-enabled {
+            description "Group Add Mod Enabled";
+            type boolean;
+            default false;
+       }
 
 Configuration impact
 --------------------
@@ -138,13 +121,20 @@ Usage
 =====
 No external rpc/api will be provided. The implementation is internal to openflowplugin.
 
+User can enable OFPGC_ADD_OR_MOD by changing the value to true in below files,
+
+.. code-block:: none
+   :caption: openflow-switch-connection-config.yang
+
+        default-openflow-connection-config.xml  <group-add-mod-enabled>false</group-add-mod-enabled>
+        legacy-openflow-connection-config.xml   <group-add-mod-enabled>false</group-add-mod-enabled>
+
 REST API
 --------
 No new REST API is being added.
 
 CLI
 ---
-
 No new CLI being added.
 
 Implementation
