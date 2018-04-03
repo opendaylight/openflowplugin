@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c9f5c337_2473c620",
+        "filename": "openflowplugin-common/src/main/java/org/opendaylight/openflowplugin/common/txchain/TransactionChainManager.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-03T16:11:19Z",
+      "side": 1,
+      "message": "Check for isCancelled() and isDone(), so it does not loop unnecessary.",
+      "revId": "3b4764d2d3340f3781d03cadcdb7a593430b50b9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0446dfaa_3a14f9da",
+        "filename": "openflowplugin-common/src/main/java/org/opendaylight/openflowplugin/common/txchain/TransactionChainManager.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-03T16:11:19Z",
+      "side": 1,
+      "message": "do not capture the generic exception. Capture specific exception. InterruptedException | ExecutionException | TimeoutException, if there is any other exception, throw it, because ideally it should not throw any other exception. If we hit any other exception, we need to see why it\u0027s been thrown and how to handle it properly.",
+      "revId": "3b4764d2d3340f3781d03cadcdb7a593430b50b9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e21e21d3_f6c961bf",
+        "filename": "openflowplugin-common/src/main/java/org/opendaylight/openflowplugin/common/txchain/TransactionChainManager.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 296,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-03T16:11:19Z",
+      "side": 1,
+      "message": "please rephrase it to \"Transaction submit is enabled for {}\"",
+      "revId": "3b4764d2d3340f3781d03cadcdb7a593430b50b9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
