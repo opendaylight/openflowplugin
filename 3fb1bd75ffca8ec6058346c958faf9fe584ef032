@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "33678668_6be746ca",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 256,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-03T16:42:41Z",
+      "side": 1,
+      "message": "it\u0027s bit confusing as the API is syncSubmitTransaction() but then in the submitTransaction() you are using doAsync. Given that default behavior is async, lets explictly say if it\u0027s sync transaction. So in my opinion, it would be better to pass true in submitTransaction and in the method code, take it as a \"doSyn\".",
+      "revId": "3fb1bd75ffca8ec6058346c958faf9fe584ef032",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
