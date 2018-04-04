@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "5d0420da_6d79cd81",
+        "filename": "openflowplugin-common/src/main/java/org/opendaylight/openflowplugin/common/txchain/TransactionChainManager.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-04-04T09:24:14Z",
+      "side": 1,
+      "message": "The SimpleTaskRetryLooper would return as soon as the result is available. So it would be excecuted only once in case it is already done/cancelled.",
+      "parentUuid": "c9f5c337_2473c620",
+      "revId": "3b4764d2d3340f3781d03cadcdb7a593430b50b9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0446dfaa_3a14f9da",
         "filename": "openflowplugin-common/src/main/java/org/opendaylight/openflowplugin/common/txchain/TransactionChainManager.java",
         "patchSetId": 11
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "990d373f_d4b3762d",
+        "filename": "openflowplugin-common/src/main/java/org/opendaylight/openflowplugin/common/txchain/TransactionChainManager.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-04-04T09:24:14Z",
+      "side": 1,
+      "message": "This is changed to catch the Exception because the SimpleTaskRetryLooper is would throw Exception after the retry attempts. The \"SimpleTaskRetryLooper\" is being used in multiple places so making it throw some other exception might require changes in other places.",
+      "parentUuid": "0446dfaa_3a14f9da",
+      "revId": "3b4764d2d3340f3781d03cadcdb7a593430b50b9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e21e21d3_f6c961bf",
         "filename": "openflowplugin-common/src/main/java/org/opendaylight/openflowplugin/common/txchain/TransactionChainManager.java",
         "patchSetId": 11
@@ -47,6 +83,24 @@
       "writtenOn": "2018-04-03T16:11:19Z",
       "side": 1,
       "message": "please rephrase it to \"Transaction submit is enabled for {}\"",
+      "revId": "3b4764d2d3340f3781d03cadcdb7a593430b50b9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d5d48f5d_d28e6717",
+        "filename": "openflowplugin-common/src/main/java/org/opendaylight/openflowplugin/common/txchain/TransactionChainManager.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 296,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-04-04T09:24:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e21e21d3_f6c961bf",
       "revId": "3b4764d2d3340f3781d03cadcdb7a593430b50b9",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
