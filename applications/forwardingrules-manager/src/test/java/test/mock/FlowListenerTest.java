@@ -26,6 +26,7 @@ import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvid
 import org.opendaylight.openflowplugin.applications.frm.impl.DeviceMastershipManager;
 import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager;
+import org.opendaylight.openflowplugin.applications.upgrademanager.api.UpgradeManager;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Dscp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
@@ -69,11 +70,13 @@ public class FlowListenerTest extends FRMTest {
     private NotificationProviderService notificationService;
     @Mock
     private ReconciliationManager reconciliationManager;
+    @Mock
+    private UpgradeManager upgradeManager;
 
     @Before
     public void setUp() {
         forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock, getConfig(),
-                clusterSingletonService, notificationService, getConfigurationService(), reconciliationManager);
+                clusterSingletonService, notificationService, getConfigurationService(), reconciliationManager, upgradeManager);
 
         forwardingRulesManager.start();
         // TODO consider tests rewrite (added because of complicated access)
