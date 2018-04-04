@@ -1,9 +1,8 @@
 Openflowplugin Design Specifications
 ====================================
 
-Starting from Nitrogen, Openflowplugin uses RST format Design Specification document for
-all new features. These specifications are perfect way to understand various
-Openflowplugin features.
+Starting from Nitrogen, Openflowplugin uses RST format Design Specification document for all new features.
+These specifications are perfect way to understand various Openflowplugin features.
 
 Contents:
 
@@ -12,3 +11,4 @@ Contents:
 
    reconciliation-framework
    group-add-mod
+   bundle-reconciliation
