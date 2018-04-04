@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.applications.frm.nodereconciliation.impl
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -17,6 +18,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -129,11 +131,25 @@ public class UpgradeManagerImpl implements ClusteredDataTreeChangeListener<Upgra
                 .setNode(nodeRef).setBundleId(bundleId)
                 .setFlags(BUNDLE_FLAGS)
                 .setType(BundleControlType.ONFBCTCOMMITREQUEST).build();
-        return JdkFutureAdapters
+        ListenableFuture<RpcResult<Void>> rpcResult = JdkFutureAdapters
                 .listenInPoolThread(salBundleService.controlBundle(commitBundleInput));
+        Futures.addCallback(rpcResult, new CommitActiveBundleCallback(node),
+                MoreExecutors.directExecutor());
+        return rpcResult;
     }
 
     @Override
+    public List<ListenableFuture<RpcResult<Void>>> commitAllActiveBundles() {
+        List<ListenableFuture<RpcResult<Void>>> rpcResults = new ArrayList();
+        for (Iterator<Map.Entry<InstanceIdentifier<FlowCapableNode>, BundleId>>
+             iter = bundleIdMap.entrySet().iterator(); iter.hasNext(); ) {
+            Map.Entry<InstanceIdentifier<FlowCapableNode>, BundleId> entry = iter.next();
+            InstanceIdentifier<FlowCapableNode> nodeIdentity = entry.getKey();
+            rpcResults.add(commitActiveBundle(nodeIdentity));
+        }
+        return rpcResults;
+    }
+
     public BundleId closeActiveBundle(InstanceIdentifier<FlowCapableNode> node) {
         return bundleIdMap.remove(node);
     }
@@ -305,6 +321,30 @@ public class UpgradeManagerImpl implements ClusteredDataTreeChangeListener<Upgra
                 return false;
             }
         }
+    }
+
+    public final class CommitActiveBundleCallback implements FutureCallback<RpcResult<?>> {
+        private final InstanceIdentifier<FlowCapableNode> nodeIdentity;
+
+        private CommitActiveBundleCallback(final InstanceIdentifier<FlowCapableNode> nodeIdentity) {
+            this.nodeIdentity = nodeIdentity;
+        }
+
+        @Override
+        public void onSuccess(RpcResult<?> rpcResult) {
+            LOG.debug("Completed upgrade reconciliation for device:{}", getDpnIdFromFlowCapableNode(nodeIdentity));
+            closeActiveBundle(nodeIdentity);
+        }
+
+        @Override
+        public void onFailure(Throwable throwable) {
+            LOG.error("Error {} while performing Upgrade reconciliation for device {}", throwable,
+                    getDpnIdFromFlowCapableNode(nodeIdentity));
+        }
+    }
+
+    private Long getDpnIdFromFlowCapableNode(InstanceIdentifier<FlowCapableNode> nodeIdentity) {
+        return getDpnIdFromNodeName(nodeIdentity.firstKeyOf(Node.class, NodeKey.class).getId().getValue());
     }
 
     private Long getDpnIdFromNodeName(String nodeName) {

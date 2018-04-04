@@ -10,15 +10,35 @@
   <reference id="clusterSingletonService" interface="org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider"/>
   <reference id="configurationService" interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService"/>
   <reference id="reconciliationservice" interface="org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager"/>
+  <reference id="upgradeManager" interface="org.opendaylight.openflowplugin.applications.frm.nodereconciliation.api.UpgradeManager" availability="optional"/>
 
 
   <odl:clustered-app-config id="frmConfig"
       binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfig"/>
 
+  <!--<bean id="upgradeManager"-->
+        <!--class="org.opendaylight.openflowplugin.applications.frm.nodereconciliation.impl.UpgradeManagerImpl"-->
+        <!--init-method="start" destroy-method="close">-->
+    <!--<argument ref="dataBroker"/>-->
+    <!--<argument ref="rpcRegistry"/>-->
+    <!--<argument ref="reconciliationService"/>-->
+  <!--</bean>-->
+
+  <!--<service ref="upgradeManager"-->
+           <!--interface="org.opendaylight.openflowplugin.applications.frm.nodereconciliation.api.UpgradeManager"-->
+           <!--odl:type="default"/>-->
+
+
+  <bean id="finishUpgradeService" class="org.opendaylight.openflowplugin.applications.frm.nodereconciliation.impl.FinishUpgradeReconciliationImpl">
+    <argument ref="upgradeManager"/>
+  </bean>
+
+  <odl:rpc-implementation ref="finishUpgradeService"/>
+
   <bean id="frmManager" class="org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl"
           init-method="start" destroy-method="close">
     <argument ref="dataBroker"/>
-    <argument ref="rpcRegistry"/>
+    <argument ref="rpcRegistry"/>f
     <argument ref="frmConfig"/>
     <argument ref="clusterSingletonService"/>
     <argument ref="notificationService"/>

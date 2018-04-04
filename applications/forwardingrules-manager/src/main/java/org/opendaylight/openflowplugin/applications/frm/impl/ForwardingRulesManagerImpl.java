@@ -27,6 +27,8 @@ import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesProperty;
+import org.opendaylight.openflowplugin.applications.frm.nodereconciliation.api.UpgradeManager;
+import org.opendaylight.openflowplugin.applications.frm.nodereconciliation.impl.UpgradeManagerImpl;
 import org.opendaylight.openflowplugin.applications.reconciliation.NotificationRegistration;
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -83,6 +85,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private FlowNodeConnectorInventoryTranslatorImpl flowNodeConnectorInventoryTranslatorImpl;
     private DeviceMastershipManager deviceMastershipManager;
     private final ReconciliationManager reconciliationManager;
+    private UpgradeManager upgradeManager;
 
     private boolean disableReconciliation;
     private boolean staleMarkingEnabled;
@@ -105,7 +108,6 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                 "Notification publisher configurationService is" + " not available");
         this.reconciliationManager = reconciliationManager;
         this.rpcRegistry = rpcRegistry;
-
         Preconditions.checkArgument(rpcRegistry != null, "RpcProviderRegistry can not be null !");
 
         this.salFlowService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalFlowService.class),
@@ -124,6 +126,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     public void start() {
         this.nodeListener = new FlowNodeReconciliationImpl(this, dataService, SERVICE_NAME, FRM_RECONCILIATION_PRIORITY,
                 ResultState.DONOTHING);
+        this.upgradeManager = new UpgradeManagerImpl(dataService, rpcRegistry, reconciliationManager);
         if (this.isReconciliationDisabled()) {
             LOG.debug("Reconciliation is disabled by user");
         } else {
@@ -256,6 +259,10 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     @Override
     public ForwardingRulesCommiter<TableFeatures> getTableFeaturesCommiter() {
         return tableListener;
+    }
+
+    public UpgradeManager getUpgradeManager() {
+        return upgradeManager;
     }
 
     @Override
