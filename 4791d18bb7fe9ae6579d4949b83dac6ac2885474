@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "df7dda03_5539541e",
+        "filename": "applications/forwardingrules-manager/src/main/yang/reconciliation.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-04T16:51:34Z",
+      "side": 1,
+      "message": "please add more description about the behavior or the RPC.\n\nAre we assuming that once user call this RPC, RPC will be blocked, till the reconciliation of the device is done ? Or do we want to provide RPC that says \"stage-reconciliation\" and \"commit-reconciliation\"? This will give a clear lifecyle for the specific device\u0027s reconciliation? Thoughts?",
+      "revId": "4791d18bb7fe9ae6579d4949b83dac6ac2885474",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b5a6cddd_f78941c7",
+        "filename": "applications/southbound-cli/src/main/yang/admin-reconciliation.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-04T16:51:34Z",
+      "side": 1,
+      "message": "reconcile-all-nodes is subjective to when you call it. Does this mean, that any node that connects after this call at anytime will be reconciled ? How do user know what all nodes are reconciled ? How do we flag if reconciliation of any specific node fails ? Also we need to specify a state in this yang model, that says that plugin is currently reconciling the switches. Also reconciling large number of devices can take time, and this RPC can timeout if fired through restconf etc. So i think we should keep this rpc per switch level. And we should have a container in operational data store if this yang model, that list all the devices that are reconciled, with the timestamp.",
+      "range": {
+        "startLine": 18,
+        "startChar": 12,
+        "endLine": 23,
+        "endChar": 13
+      },
+      "revId": "4791d18bb7fe9ae6579d4949b83dac6ac2885474",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
