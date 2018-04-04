@@ -48,6 +48,37 @@ public class OpenFlowProviderConfigImpl implements OpenflowProviderConfig {
     }
 
     @Override
+    public Boolean isIsTableStatisticsPollingOn() {
+        return service.getProperty(ConfigurationProperty.IS_TABLE_STATISTICS_POLLING_ON.toString(), Boolean::valueOf);
+    }
+
+    @Override
+    public Boolean isIsFlowStatisticsPollingOn() {
+        return service.getProperty(ConfigurationProperty.IS_FLOW_STATISTICS_POLLING_ON.toString(), Boolean::valueOf);
+    }
+
+    @Override
+    public Boolean isIsGroupStatisticsPollingOn() {
+        return service.getProperty(ConfigurationProperty.IS_GROUP_STATISTICS_POLLING_ON.toString(), Boolean::valueOf);
+    }
+
+    @Override
+    public Boolean isIsMeterStatisticsPollingOn() {
+        return service.getProperty(ConfigurationProperty.IS_METER_STATISTICS_POLLING_ON.toString(), Boolean::valueOf);
+    }
+
+    @Override
+    public Boolean isIsQueueStatisticsPollingOn() {
+        return service.getProperty(ConfigurationProperty.IS_QUEUE_STATISTICS_POLLING_ON.toString(), Boolean::valueOf);
+    }
+
+    @Override
+    public Boolean isIsPortStatisticsPollingOn() {
+        return service.getProperty(ConfigurationProperty.IS_PORT_STATISTICS_POLLING_ON.toString(), Boolean::valueOf);
+    }
+
+
+    @Override
     public Boolean isIsStatisticsRpcEnabled() {
         return service.getProperty(ConfigurationProperty.IS_STATISTICS_RPC_ENABLED.toString(), Boolean::valueOf);
     }
