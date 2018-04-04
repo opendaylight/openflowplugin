@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3d3d9ca1_9911b5a3",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 10
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-04T16:56:27Z",
+      "side": 1,
+      "message": "how does this CLI command works in clustered environment?",
+      "revId": "8c357872d437b4026c76a0cec16ac71c5e7dffb8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
