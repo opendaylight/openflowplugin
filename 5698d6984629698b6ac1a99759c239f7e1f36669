@@ -52,6 +52,24 @@
       "revId": "5698d6984629698b6ac1a99759c239f7e1f36669",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "70654f8e_c7999cce",
+        "filename": "openflowplugin-common/src/main/java/org/opendaylight/openflowplugin/common/txchain/TransactionChainManager.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-04-04T11:23:39Z",
+      "side": 1,
+      "message": "Didn\u0027t separate the code as i want to reuse the code.\n\nWe can separate the logic if needed.",
+      "parentUuid": "2b7fea57_f5c82ba1",
+      "revId": "5698d6984629698b6ac1a99759c239f7e1f36669",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
