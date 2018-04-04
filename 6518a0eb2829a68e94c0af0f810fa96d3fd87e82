@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "572d3429_ca79b939",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 10
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-04T17:01:53Z",
+      "side": 1,
+      "message": "In my opinion, If user does not set any value for the property, it should not be enforcing any upper limit. Also i believe this is one time configuration that use will do at boot time and won\u0027t change till you change the configuration and restart the controller?",
+      "revId": "6518a0eb2829a68e94c0af0f810fa96d3fd87e82",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
