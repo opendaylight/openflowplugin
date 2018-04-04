@@ -142,10 +142,10 @@ Implementation
 Assignee(s)
 -----------
 Primary assignee:
-  D Arunprakash <d.arunprakash@ericsson.com>
+  Arunprakash D<d.arunprakash@ericsson.com>
 
 Other contributors:
-  Gobinath Suganthan <gobinath@ericsson.com
+  Gobinath Suganthan <gobinath@ericsson.com>
 
 Work Items
 ----------

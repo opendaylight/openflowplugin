@@ -227,7 +227,7 @@ Implementation
 Assignee(s)
 -----------
 Primary assignee:
- - Prasanna Huddar(prasanna.k.huddar@ericsson.com)
+ - Prasanna Huddar (prasanna.k.huddar@ericsson.com)
  - Arunprakash D (d.arunprakash@ericsson.com)
  - Gobinath Suganthan (gobinath@ericsson.com)
 
