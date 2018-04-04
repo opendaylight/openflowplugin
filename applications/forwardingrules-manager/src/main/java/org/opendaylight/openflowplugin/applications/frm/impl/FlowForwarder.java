@@ -171,6 +171,9 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 
         Future<RpcResult<AddFlowOutput>> future;
         final TableKey tableKey = identifier.firstKeyOf(Table.class, TableKey.class);
+        if (provider.isUpgrade()) {
+
+        }
         if (tableIdValidationPrecondition(tableKey, addDataObj)) {
             final AddFlowInputBuilder builder = new AddFlowInputBuilder(addDataObj);
 
