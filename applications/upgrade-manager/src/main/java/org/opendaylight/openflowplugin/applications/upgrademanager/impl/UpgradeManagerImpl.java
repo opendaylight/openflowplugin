@@ -75,7 +75,7 @@ public class UpgradeManagerImpl implements ClusteredDataTreeChangeListener<Openf
         private static final AtomicLong BUNDLE_ID = new AtomicLong();
         private static final BundleFlags BUNDLE_FLAGS = new BundleFlags(true, true);
         private static final int UPGRADEMANAGER_RECONCILIATION_PRIORITY = Integer
-                .getInteger("upgrademgr.reconciliation.priority", 0);
+                .getInteger("upgrademgr.reconciliation.priority", 1);
         private final SalBundleService salBundleService;
         private final DataBroker dataBroker;
         private final ReconciliationManager reconciliationManager;
@@ -179,6 +179,9 @@ public class UpgradeManagerImpl implements ClusteredDataTreeChangeListener<Openf
                                                                                 "Completing Upgrade reconciliation for device ID:{}",
                                                                                 dpnId);
                                                                 } else {
+                                                                        LOG.debug(
+                                                                                "Upgrade reconciliation failed for device ID:{} with result {} and errors {}",
+                                                                                dpnId, commitBundleFuture.get().getResult(), commitBundleFuture.get().getErrors());
                                                                 }
                                                         } catch (InterruptedException | ExecutionException e) {
                                                                 LOG.error(
@@ -314,14 +317,14 @@ public class UpgradeManagerImpl implements ClusteredDataTreeChangeListener<Openf
                         trans.close();
                         try {
                                 if (addBundleMessagesFuture.get().isSuccessful()) {
-                                        LOG.debug("Completing Upgrade reconciliation for device ID:{}", dpnId);
+                                        LOG.debug("Pushing bundles for device ID:{}", dpnId);
                                         bundleIdMap.put(nodeIdentity, bundleIdValue);
                                         return true;
                                 } else {
                                         return false;
                                 }
                         } catch (InterruptedException | ExecutionException e) {
-                                LOG.error("Error while doing Upgrade reconciliation for device ID:{}",
+                                LOG.error("Error while pushing bundles for device ID:{}",
                                         nodeIdentity);
                                 return false;
                         }

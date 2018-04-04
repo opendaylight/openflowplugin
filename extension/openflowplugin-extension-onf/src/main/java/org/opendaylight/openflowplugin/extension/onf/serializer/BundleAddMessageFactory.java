@@ -25,11 +25,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.add.message.grouping.bundle.inner.message.BundlePortModCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.common.grouping.BundleProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleAddMessageOnf;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Translates BundleAddMessage messages (OpenFlow v1.3 extension #230).
  */
 public class BundleAddMessageFactory extends AbstractBundleMessageFactory<BundleAddMessageOnf> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(BundleAddMessageFactory.class);
 
     @Override
     public void serialize(BundleAddMessageOnf input, ByteBuf outBuffer) {
@@ -41,6 +45,9 @@ public class BundleAddMessageFactory extends AbstractBundleMessageFactory<Bundle
         final BundleInnerMessage message = input.getOnfAddMessageGroupingData().getBundleInnerMessage();
         serializeInnerMessage(message, outBuffer);
         int msgLength = outBuffer.writerIndex() - msgStart;
+
+        LOG.trace("The add bundle message {} with bundleId {}", input,
+                input.getOnfAddMessageGroupingData().getBundleId().getValue().intValue());
 
         List<BundleProperty> bundleProperties = input.getOnfAddMessageGroupingData().getBundleProperty();
         if (bundleProperties != null && !bundleProperties.isEmpty()) {

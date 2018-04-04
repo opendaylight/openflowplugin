@@ -40,6 +40,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -58,11 +59,13 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
     private static final Logger LOG = LoggerFactory.getLogger(GroupForwarder.class);
     private final DataBroker dataBroker;
     private ListenerRegistration<GroupForwarder> listenerRegistration;
+    private BundleGroupForwarder bundleGroupForwarder;
 
     @SuppressWarnings("IllegalCatch")
     public GroupForwarder(final ForwardingRulesManager manager, final DataBroker db) {
         super(manager);
         dataBroker = Preconditions.checkNotNull(db, "DataBroker can not be null!");
+        this.bundleGroupForwarder = new BundleGroupForwarder();
         final DataTreeIdentifier<Group> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION,
                 getWildCardPath());
 
@@ -130,28 +133,41 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         final Group updatedGroup = update;
         final UpdateGroupInputBuilder builder = new UpdateGroupInputBuilder();
 
-        builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-        builder.setGroupRef(new GroupRef(identifier));
-        builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
-        builder.setUpdatedGroup(new UpdatedGroupBuilder(updatedGroup).build());
-        builder.setOriginalGroup(new OriginalGroupBuilder(originalGroup).build());
+        BundleId bundleId = provider
+                .getUpgradeManager().getActiveBundle(nodeIdent);
+        if (bundleId != null) {
+            bundleGroupForwarder.update(identifier, original, update, nodeIdent, provider, bundleId);
+        } else {
+            builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
+            builder.setGroupRef(new GroupRef(identifier));
+            builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
+            builder.setUpdatedGroup(new UpdatedGroupBuilder(updatedGroup).build());
+            builder.setOriginalGroup(new OriginalGroupBuilder(originalGroup).build());
 
-        final Future<RpcResult<UpdateGroupOutput>> resultFuture =
-                this.provider.getSalGroupService().updateGroup(builder.build());
-        JdkFutures.addErrorLogging(resultFuture, LOG, "updateGroup");
+            final Future<RpcResult<UpdateGroupOutput>> resultFuture =
+                    this.provider.getSalGroupService().updateGroup(builder.build());
+            JdkFutures.addErrorLogging(resultFuture, LOG, "updateGroup");
+        }
+
     }
 
     @Override
-    public Future<RpcResult<AddGroupOutput>> add(final InstanceIdentifier<Group> identifier, final Group addDataObj,
+    public Future<? extends RpcResult<?>> add(final InstanceIdentifier<Group> identifier, final Group addDataObj,
             final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
         final Group group = addDataObj;
         final AddGroupInputBuilder builder = new AddGroupInputBuilder(group);
 
-        builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-        builder.setGroupRef(new GroupRef(identifier));
-        builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
-        return this.provider.getSalGroupService().addGroup(builder.build());
+        BundleId bundleId = provider
+                .getUpgradeManager().getActiveBundle(nodeIdent);
+        if (bundleId != null) {
+            return bundleGroupForwarder.add(identifier, addDataObj, nodeIdent, provider, bundleId);
+        } else {
+            builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
+            builder.setGroupRef(new GroupRef(identifier));
+            builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
+            return this.provider.getSalGroupService().addGroup(builder.build());
+        }
     }
 
     @Override

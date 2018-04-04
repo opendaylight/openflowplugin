@@ -29,6 +29,7 @@ import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesProperty;
 import org.opendaylight.openflowplugin.applications.reconciliation.NotificationRegistration;
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager;
+import org.opendaylight.openflowplugin.applications.upgrademanager.api.UpgradeManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
@@ -81,6 +82,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private FlowNodeConnectorInventoryTranslatorImpl flowNodeConnectorInventoryTranslatorImpl;
     private DeviceMastershipManager deviceMastershipManager;
     private final ReconciliationManager reconciliationManager;
+    private final UpgradeManager upgradeManager;
 
     private boolean disableReconciliation;
     private boolean staleMarkingEnabled;
@@ -90,7 +92,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     public ForwardingRulesManagerImpl(final DataBroker dataBroker, final RpcConsumerRegistry rpcRegistry,
             final ForwardingRulesManagerConfig config, final ClusterSingletonServiceProvider clusterSingletonService,
             final NotificationProviderService notificationService, final ConfigurationService configurationService,
-            final ReconciliationManager reconciliationManager) {
+            final ReconciliationManager reconciliationManager, final UpgradeManager upgradeManager) {
         disableReconciliation = config.isDisableReconciliation();
         staleMarkingEnabled = config.isStaleMarkingEnabled();
         reconciliationRetryCount = config.getReconciliationRetryCount();
@@ -102,6 +104,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         this.notificationService = Preconditions.checkNotNull(notificationService,
                 "Notification publisher configurationService is" + " not available");
         this.reconciliationManager = reconciliationManager;
+        this.upgradeManager = Preconditions.checkNotNull(upgradeManager, "UpgradeManager can not be null!");
 
         Preconditions.checkArgument(rpcRegistry != null, "RpcConsumerRegistry can not be null !");
 
@@ -251,6 +254,10 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     @Override
     public ForwardingRulesCommiter<TableFeatures> getTableFeaturesCommiter() {
         return tableListener;
+    }
+
+    public UpgradeManager getUpgradeManager() {
+        return upgradeManager;
     }
 
     @Override
