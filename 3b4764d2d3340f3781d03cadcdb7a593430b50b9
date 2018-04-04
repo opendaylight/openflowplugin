@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "df1aa006_31ff6534",
+        "filename": "openflowplugin-common/src/main/java/org/opendaylight/openflowplugin/common/txchain/TransactionChainManager.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-04T16:33:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5d0420da_6d79cd81",
+      "revId": "3b4764d2d3340f3781d03cadcdb7a593430b50b9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0446dfaa_3a14f9da",
         "filename": "openflowplugin-common/src/main/java/org/opendaylight/openflowplugin/common/txchain/TransactionChainManager.java",
         "patchSetId": 11
@@ -66,6 +84,24 @@
       "side": 1,
       "message": "This is changed to catch the Exception because the SimpleTaskRetryLooper is would throw Exception after the retry attempts. The \"SimpleTaskRetryLooper\" is being used in multiple places so making it throw some other exception might require changes in other places.",
       "parentUuid": "0446dfaa_3a14f9da",
+      "revId": "3b4764d2d3340f3781d03cadcdb7a593430b50b9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "600f03d7_96530547",
+        "filename": "openflowplugin-common/src/main/java/org/opendaylight/openflowplugin/common/txchain/TransactionChainManager.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-04T16:33:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "990d373f_d4b3762d",
       "revId": "3b4764d2d3340f3781d03cadcdb7a593430b50b9",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
