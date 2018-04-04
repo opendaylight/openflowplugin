@@ -24,4 +24,10 @@
         interface="org.opendaylight.openflowplugin.applications.frm.nodereconciliation.api.UpgradeManager"
         odl:type="default" />
 
+    <odl:rpc-service id="finishUpgradeService" interface="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.upgrade.rev180328.OpenflowUpgradeService"/>
+
+    <bean id="finishUpgradeReconciliationImpl" class="org.opendaylight.openflowplugin.applications.frm.nodereconciliation.impl">
+        <argument ref="upgradeManager"/>
+    </bean>
+
 </blueprint>
