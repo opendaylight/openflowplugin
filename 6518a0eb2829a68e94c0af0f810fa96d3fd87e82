@@ -16,6 +16,24 @@
       "revId": "6518a0eb2829a68e94c0af0f810fa96d3fd87e82",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2030871c_6b94da88",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 10
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-04-05T04:56:24Z",
+      "side": 1,
+      "message": "Its the exact same comment i have given to Somashekhar and he has changed it in the code level but failed to update the commit message. Will update the same.\n\nYes, restart of controller required for new rate limiter to come into effect",
+      "parentUuid": "572d3429_ca79b939",
+      "revId": "6518a0eb2829a68e94c0af0f810fa96d3fd87e82",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
