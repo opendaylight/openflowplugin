@@ -34,6 +34,24 @@
       "revId": "8c357872d437b4026c76a0cec16ac71c5e7dffb8",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6fad5397_33224013",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 10
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-04-05T05:30:48Z",
+      "side": 1,
+      "message": "JMX notification will be received by the listener on node local and it can either display or forward it further for centralized processing.",
+      "parentUuid": "4518e849_becba26a",
+      "revId": "8c357872d437b4026c76a0cec16ac71c5e7dffb8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
