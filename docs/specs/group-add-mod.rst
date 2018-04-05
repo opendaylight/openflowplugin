@@ -83,11 +83,11 @@ Below yang changes will be done in order to provide configuration support for gr
 .. code-block:: none
    :caption: openflow-switch-connection-config.yang
 
-       leaf group-add-mod-enabled {
-            description "Group Add Mod Enabled";
-            type boolean;
-            default false;
-       }
+   leaf group-add-mod-enabled {
+        description "Group Add Mod Enabled";
+        type boolean;
+        default false;
+   }
 
 Configuration impact
 --------------------
@@ -126,8 +126,8 @@ User can enable OFPGC_ADD_OR_MOD by changing the value to true in below files,
 .. code-block:: none
    :caption: default(legacy)-openflow-connection-config.xml
 
-        default-openflow-connection-config.xml  <group-add-mod-enabled>false</group-add-mod-enabled>
-        legacy-openflow-connection-config.xml   <group-add-mod-enabled>false</group-add-mod-enabled>
+   default-openflow-connection-config.xml  <group-add-mod-enabled>false</group-add-mod-enabled>
+   legacy-openflow-connection-config.xml   <group-add-mod-enabled>false</group-add-mod-enabled>
 
 REST API
 --------
@@ -142,10 +142,10 @@ Implementation
 Assignee(s)
 -----------
 Primary assignee:
-  D Arunprakash <d.arunprakash@ericsson.com>
+  Arunprakash D <d.arunprakash@ericsson.com>
 
 Other contributors:
-  Gobinath Suganthan <gobinath@ericsson.com
+  Gobinath Suganthan <gobinath@ericsson.com>
 
 Work Items
 ----------
