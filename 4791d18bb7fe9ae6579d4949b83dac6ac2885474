@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "54c2ea82_f40a89c0",
+        "filename": "applications/forwardingrules-manager/src/main/yang/reconciliation.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-04-05T05:14:28Z",
+      "side": 1,
+      "message": "Sure. Will add description. \n\nThis RPC is not a blocking call. It will return immediately with a future and the user can take action based on the future results.",
+      "parentUuid": "df7dda03_5539541e",
+      "revId": "4791d18bb7fe9ae6579d4949b83dac6ac2885474",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b5a6cddd_f78941c7",
         "filename": "applications/southbound-cli/src/main/yang/admin-reconciliation.yang",
         "patchSetId": 1
@@ -30,6 +48,30 @@
       "writtenOn": "2018-04-04T16:51:34Z",
       "side": 1,
       "message": "reconcile-all-nodes is subjective to when you call it. Does this mean, that any node that connects after this call at anytime will be reconciled ? How do user know what all nodes are reconciled ? How do we flag if reconciliation of any specific node fails ? Also we need to specify a state in this yang model, that says that plugin is currently reconciling the switches. Also reconciling large number of devices can take time, and this RPC can timeout if fired through restconf etc. So i think we should keep this rpc per switch level. And we should have a container in operational data store if this yang model, that list all the devices that are reconciled, with the timestamp.",
+      "range": {
+        "startLine": 18,
+        "startChar": 12,
+        "endLine": 23,
+        "endChar": 13
+      },
+      "revId": "4791d18bb7fe9ae6579d4949b83dac6ac2885474",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6f156540_b864d2b4",
+        "filename": "applications/southbound-cli/src/main/yang/admin-reconciliation.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-04-05T05:14:28Z",
+      "side": 1,
+      "message": "reconcile-all-nodes is an extra option provided by this cli for the user to reconcile all the connected openflow switch. This option will read the list of openflow switch from the operational inventory and do reconciliation. This is no where related to the normal reconciliation which triggered after switch connects.\n\nThere is an another routed RPC which is exposed per switch level, which exists in FRM.\n\nThis is an additional RPC for CLI has been provided, so user can trigger reconciliation for multiple switches.\n\nCurrently we have added a counter for the number of reconciliation triggered by user. We can add timestamp as well along with that.",
+      "parentUuid": "b5a6cddd_f78941c7",
       "range": {
         "startLine": 18,
         "startChar": 12,
