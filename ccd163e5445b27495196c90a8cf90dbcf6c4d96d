@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "b909f036_d6197a6d",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/configuration/ConfigurationProperty.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2018-04-06T07:55:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "84976357_5d20f794",
+      "revId": "ccd163e5445b27495196c90a8cf90dbcf6c4d96d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e08c5b80_12b75ba1",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/common/DpnRateLimiter.java",
         "patchSetId": 12
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "7752f5e6_aef3063c",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/common/DpnRateLimiter.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2018-04-06T07:55:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e08c5b80_12b75ba1",
+      "revId": "ccd163e5445b27495196c90a8cf90dbcf6c4d96d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "968cd43d_6fb88be4",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/ConnectionManagerImpl.java",
         "patchSetId": 12
@@ -47,6 +83,24 @@
       "writtenOn": "2018-04-05T17:57:13Z",
       "side": 1,
       "message": "move it before deviceDisconnectedHandler.",
+      "revId": "ccd163e5445b27495196c90a8cf90dbcf6c4d96d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f5a7fb5b_87605632",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/ConnectionManagerImpl.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2018-04-06T07:55:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "968cd43d_6fb88be4",
       "revId": "ccd163e5445b27495196c90a8cf90dbcf6c4d96d",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -76,6 +130,30 @@
     },
     {
       "key": {
+        "uuid": "bdf889b6_956949be",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/HandshakeManagerImpl.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 394,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2018-04-06T07:55:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dc807a5a_966105b2",
+      "range": {
+        "startLine": 394,
+        "startChar": 93,
+        "endLine": 394,
+        "endChar": 97
+      },
+      "revId": "ccd163e5445b27495196c90a8cf90dbcf6c4d96d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d7c39c23_b56bd1a4",
         "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/configuration/OpenFlowProviderConfigImplTest.java",
         "patchSetId": 12
@@ -87,6 +165,30 @@
       "writtenOn": "2018-04-05T17:57:13Z",
       "side": 1,
       "message": "getDonRateLimitPerMin() --\u003e getDpnRateLimitPerMin()?",
+      "range": {
+        "startLine": 175,
+        "startChar": 16,
+        "endLine": 175,
+        "endChar": 39
+      },
+      "revId": "ccd163e5445b27495196c90a8cf90dbcf6c4d96d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0839ffb7_d2485601",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/configuration/OpenFlowProviderConfigImplTest.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2018-04-06T07:55:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d7c39c23_b56bd1a4",
       "range": {
         "startLine": 175,
         "startChar": 16,
