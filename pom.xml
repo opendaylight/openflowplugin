@@ -29,7 +29,6 @@
       <module>openflowplugin-impl</module>
       <module>openflowplugin-common</module>
       <module>extension</module>
-      <module>distribution/karaf</module>
       <module>openflowplugin-controller-config</module>
       <module>openflowplugin-blueprint-config-he</module>
       <module>openflowplugin-blueprint-config</module>
@@ -46,4 +45,16 @@
       <module>applications</module>
       <module>model</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>karaf</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>distribution/karaf</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>
