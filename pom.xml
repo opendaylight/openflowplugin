@@ -30,7 +30,6 @@
         <module>openflowplugin-impl</module>
         <module>openflowplugin-common</module>
         <module>extension</module>
-        <module>distribution/karaf</module>
         <module>openflowplugin-blueprint-config</module>
         <!-- <module>openflowplugin-it</module> -->
         <module>test-provider</module>
@@ -41,4 +40,16 @@
         <module>model</module>
         <module>samples</module>
     </modules>
+
+    <profiles>
+        <profile>
+            <id>karaf</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>distribution/karaf</module>
+            </modules>
+        </profile>
+    </profiles>
 </project>
