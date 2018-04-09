@@ -50,7 +50,8 @@ public final class MultipartWriterProviderFactory {
         provider.register(MultipartType.OFPMPMETER, new MeterStatsMultipartWriter(deviceContext, instanceIdentifier));
         provider.register(MultipartType.OFPMPPORTSTATS, new PortStatsMultipartWriter(deviceContext,
                 instanceIdentifier, deviceContext.getPrimaryConnectionContext().getFeatures()));
-        provider.register(MultipartType.OFPMPQUEUE, new QueueStatsMultipartWriter(deviceContext, instanceIdentifier));
+        provider.register(MultipartType.OFPMPQUEUE, new QueueStatsMultipartWriter(deviceContext,
+                instanceIdentifier, deviceContext.getPrimaryConnectionContext().getFeatures()));
         provider.register(MultipartType.OFPMPFLOW, new FlowStatsMultipartWriter(deviceContext, instanceIdentifier,
                 deviceContext, deviceContext.getDeviceInfo().getVersion()));
         provider.register(MultipartType.OFPMPGROUPDESC, new GroupDescMultipartWriter(deviceContext,
