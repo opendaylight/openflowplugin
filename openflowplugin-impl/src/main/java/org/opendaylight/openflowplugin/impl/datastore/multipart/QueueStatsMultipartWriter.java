@@ -9,13 +9,17 @@
 package org.opendaylight.openflowplugin.impl.datastore.multipart;
 
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
+import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.queues.Queue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.queues.QueueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.queues.QueueKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.FlowCapableNodeConnectorQueueStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.FlowCapableNodeConnectorQueueStatisticsDataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.QueueIdAndStatisticsMap;
@@ -24,8 +28,14 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class QueueStatsMultipartWriter extends AbstractMultipartWriter<QueueIdAndStatisticsMap> {
 
-    public QueueStatsMultipartWriter(final TxFacade txFacade, final InstanceIdentifier<Node> instanceIdentifier) {
+    private final FeaturesReply features;
+
+
+    public QueueStatsMultipartWriter(final TxFacade txFacade,
+                                     final InstanceIdentifier<Node> instanceIdentifier,
+                                     final FeaturesReply features) {
         super(txFacade, instanceIdentifier);
+        this.features = features;
     }
 
     @Override
@@ -35,23 +45,36 @@ public class QueueStatsMultipartWriter extends AbstractMultipartWriter<QueueIdAn
 
     @Override
     public void storeStatistics(final QueueIdAndStatisticsMap statistics, final boolean withParents) {
+        final OpenflowVersion openflowVersion = OpenflowVersion.get(features.getVersion());
+
         statistics.getQueueIdAndStatisticsMap()
-            .forEach(stat -> writeToTransaction(
-                getInstanceIdentifier()
-                    .child(NodeConnector.class, new NodeConnectorKey(stat.getNodeConnectorId()))
-                    .augmentation(FlowCapableNodeConnector.class)
-                    .child(Queue.class, new QueueKey(stat.getQueueId())),
-                new QueueBuilder()
-                    .setKey(new QueueKey(stat.getQueueId()))
-                    .setQueueId(stat.getQueueId())
-                    .addAugmentation(
-                        FlowCapableNodeConnectorQueueStatisticsData.class,
-                        new FlowCapableNodeConnectorQueueStatisticsDataBuilder()
-                            .setFlowCapableNodeConnectorQueueStatistics(
-                                new FlowCapableNodeConnectorQueueStatisticsBuilder(stat).build())
-                            .build())
-                    .build(),
-                withParents));
+            .forEach((stat) -> {
+                final Long port = InventoryDataServiceUtil
+                        .portNumberfromNodeConnectorId(openflowVersion, stat.getNodeConnectorId());
+                final NodeConnectorId id = InventoryDataServiceUtil
+                        .nodeConnectorIdfromDatapathPortNo(
+                                features.getDatapathId(),
+                                port,
+                                OpenflowVersion.get(features.getVersion()));
+
+                writeToTransaction(
+                        getInstanceIdentifier()
+                                .child(NodeConnector.class, new NodeConnectorKey(id))
+                                .augmentation(FlowCapableNodeConnector.class)
+                                .child(Queue.class, new QueueKey(stat.getQueueId())),
+                        new QueueBuilder()
+                                .setKey(new QueueKey(stat.getQueueId()))
+                                .setQueueId(stat.getQueueId())
+                                .addAugmentation(
+                                        FlowCapableNodeConnectorQueueStatisticsData.class,
+                                        new FlowCapableNodeConnectorQueueStatisticsDataBuilder()
+                                                .setFlowCapableNodeConnectorQueueStatistics(
+                                                        new FlowCapableNodeConnectorQueueStatisticsBuilder(stat)
+                                                                .build())
+                                                .build())
+                                .build(),
+                        withParents);
+            });
     }
 
 }
