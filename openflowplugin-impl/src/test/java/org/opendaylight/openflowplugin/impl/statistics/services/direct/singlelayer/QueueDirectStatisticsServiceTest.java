@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
+import org.junit.Test;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.AbstractDirectStatisticsServiceTest;
@@ -89,10 +90,25 @@ public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         assertEquals(map.getNodeConnectorId().getValue(), PORT_NO.toString());
     }
 
+    @Test
+    public void testStoreStatisticsBarePortNo() throws Exception {
+        final QueueIdAndStatisticsMap map = mock(QueueIdAndStatisticsMap.class);
+        when(map.getQueueId()).thenReturn(new QueueId(QUEUE_NO));
+        when(map.getNodeConnectorId()).thenReturn(new NodeConnectorId("1"));
+
+        final List<QueueIdAndStatisticsMap> maps = Collections.singletonList(map);
+        final GetQueueStatisticsOutput output = mock(GetQueueStatisticsOutput.class);
+        when(output.getQueueIdAndStatisticsMap()).thenReturn(maps);
+
+        multipartWriterProvider.lookup(MultipartType.OFPMPQUEUE).get().write(output, true);
+        verify(deviceContext).writeToTransactionWithParentsSlow(eq(LogicalDatastoreType.OPERATIONAL), any(), any());
+    }
+
     @Override
     public void testStoreStatistics() throws Exception {
         final QueueIdAndStatisticsMap map = mock(QueueIdAndStatisticsMap.class);
         when(map.getQueueId()).thenReturn(new QueueId(QUEUE_NO));
+        when(map.getNodeConnectorId()).thenReturn(new NodeConnectorId("openflow:1:1"));
 
         final List<QueueIdAndStatisticsMap> maps = Collections.singletonList(map);
         final GetQueueStatisticsOutput output = mock(GetQueueStatisticsOutput.class);
