@@ -18,12 +18,12 @@ import static org.mockito.Mockito.when;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import org.junit.Test;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.AbstractDirectStatisticsServiceTest;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetQueueStatisticsInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetQueueStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.queue.rev130925.QueueId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
@@ -34,7 +34,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.queue._case.multipart.reply.queue.QueueStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestQueueCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.queue._case.MultipartRequestQueue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMap;
 
 public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsServiceTest {
     static final Long QUEUE_NO = 1L;
@@ -90,10 +89,25 @@ public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         assertEquals(map.getNodeConnectorId(), nodeConnectorId);
     }
 
+    @Test
+    public void testStoreStatisticsBarePortNo() throws Exception {
+        final QueueIdAndStatisticsMap map = mock(QueueIdAndStatisticsMap.class);
+        when(map.getQueueId()).thenReturn(new QueueId(QUEUE_NO));
+        when(map.getNodeConnectorId()).thenReturn(new NodeConnectorId("1"));
+
+        final List<QueueIdAndStatisticsMap> maps = Collections.singletonList(map);
+        final GetQueueStatisticsOutput output = mock(GetQueueStatisticsOutput.class);
+        when(output.getQueueIdAndStatisticsMap()).thenReturn(maps);
+
+        multipartWriterProvider.lookup(MultipartType.OFPMPQUEUE).get().write(output, true);
+        verify(deviceContext).writeToTransactionWithParentsSlow(eq(LogicalDatastoreType.OPERATIONAL), any(), any());
+    }
+
     @Override
     public void testStoreStatistics() throws Exception {
         final QueueIdAndStatisticsMap map = mock(QueueIdAndStatisticsMap.class);
         when(map.getQueueId()).thenReturn(new QueueId(QUEUE_NO));
+        when(map.getNodeConnectorId()).thenReturn(new NodeConnectorId("openflow:1:1"));
 
         final List<QueueIdAndStatisticsMap> maps = Arrays.asList(map);
         final GetQueueStatisticsOutput output = mock(GetQueueStatisticsOutput.class);
