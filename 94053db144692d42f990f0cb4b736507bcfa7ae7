@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "46d0de78_db2c4fcd",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-04-10T11:12:09Z",
+      "side": 1,
+      "message": "not only for bundle resync.. \n\nLogs added to know the bundle messages going via bundle experimenter messages",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 12
+      },
+      "revId": "94053db144692d42f990f0cb4b736507bcfa7ae7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f4a0687f_2dcbc61a",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/sal/SalExperimenterMessageServiceImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-04-10T11:12:09Z",
+      "side": 1,
+      "message": "maintain proper spacing",
+      "range": {
+        "startLine": 38,
+        "startChar": 31,
+        "endLine": 38,
+        "endChar": 38
+      },
+      "revId": "94053db144692d42f990f0cb4b736507bcfa7ae7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e0b7f21c_66d30c65",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/sal/SalExperimenterMessageServiceImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-04-10T11:12:09Z",
+      "side": 1,
+      "message": "Flows and groups pushed to the node: {} with transaction id : {} are {}",
+      "range": {
+        "startLine": 65,
+        "startChar": 27,
+        "endLine": 65,
+        "endChar": 125
+      },
+      "revId": "94053db144692d42f990f0cb4b736507bcfa7ae7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
