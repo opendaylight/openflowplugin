@@ -37,7 +37,7 @@ module openflow-switch-connection-config {
         leaf channel-outbound-queue-size {
             description "Channel outbound queue size";
             type uint16;
-        }
+            default 1024;        }
 
         leaf address {
             description "address of local listening interface";
