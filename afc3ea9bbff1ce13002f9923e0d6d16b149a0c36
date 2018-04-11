@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c9c7e6a7_d596b65b",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/AdminReconciliationServiceImpl.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-04-11T09:18:53Z",
+      "side": 1,
+      "message": "increaseAdminReconcileCount",
+      "range": {
+        "startLine": 129,
+        "startChar": 16,
+        "endLine": 129,
+        "endChar": 44
+      },
+      "revId": "afc3ea9bbff1ce13002f9923e0d6d16b149a0c36",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e95d87ca_f1a71ad5",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/AdminReconciliationCount.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-04-11T09:18:53Z",
+      "side": 1,
+      "message": "usage ??",
+      "range": {
+        "startLine": 35,
+        "startChar": 7,
+        "endLine": 35,
+        "endChar": 51
+      },
+      "revId": "afc3ea9bbff1ce13002f9923e0d6d16b149a0c36",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9da33637_5575a46c",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/AdminReconciliationCount.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-04-11T09:18:53Z",
+      "side": 1,
+      "message": "not triggered for any of the node",
+      "range": {
+        "startLine": 38,
+        "startChar": 63,
+        "endLine": 38,
+        "endChar": 74
+      },
+      "revId": "afc3ea9bbff1ce13002f9923e0d6d16b149a0c36",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a1853c3_ab589595",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/util/ShellUtil.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-04-11T09:18:53Z",
+      "side": 1,
+      "message": "reconciliation counter from datastore",
+      "range": {
+        "startLine": 158,
+        "startChar": 37,
+        "endLine": 158,
+        "endChar": 42
+      },
+      "revId": "afc3ea9bbff1ce13002f9923e0d6d16b149a0c36",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e8aefbef_35ede077",
+        "filename": "applications/southbound-cli/src/main/yang/admin-reconciliation.yang",
+        "patchSetId": 12
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-04-11T09:18:53Z",
+      "side": 1,
+      "message": "admin-reconciliation-count",
+      "range": {
+        "startLine": 22,
+        "startChar": 13,
+        "endLine": 22,
+        "endChar": 40
+      },
+      "revId": "afc3ea9bbff1ce13002f9923e0d6d16b149a0c36",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
