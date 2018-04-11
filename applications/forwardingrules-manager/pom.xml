@@ -43,7 +43,7 @@
     <dependency>
       <groupId>org.opendaylight.openflowplugin.applications</groupId>
       <artifactId>reconciliation-framework</artifactId>
-      <version>0.6.1-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.infrautils</groupId>
