@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bac9093a_4a7c6853",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/sal/SalExperimenterMessageServiceImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-04-11T05:59:02Z",
+      "side": 1,
+      "message": "extra semicolon",
+      "range": {
+        "startLine": 38,
+        "startChar": 103,
+        "endLine": 38,
+        "endChar": 105
+      },
+      "revId": "cd91fd169404e0602c46a540707408d890b16721",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
