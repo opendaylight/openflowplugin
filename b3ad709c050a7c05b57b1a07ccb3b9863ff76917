@@ -2,6 +2,103 @@
   "comments": [
     {
       "key": {
+        "uuid": "5c37932a_0997e05a",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/ReconciliationServiceImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-12T17:44:39Z",
+      "side": 1,
+      "message": "i believe there are already some utility methods that can be used here.",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 47,
+        "endChar": 5
+      },
+      "revId": "b3ad709c050a7c05b57b1a07ccb3b9863ff76917",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8ef2da90_c6c9540b",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/ReconciliationServiceImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-12T17:44:39Z",
+      "side": 1,
+      "message": "please fix the logs, don\u0027t use method names etc in the log. Given that there are no repetitive log strings in the same class.",
+      "revId": "b3ad709c050a7c05b57b1a07ccb3b9863ff76917",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3651bede_033a8a14",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/ReconciliationServiceImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-12T17:44:39Z",
+      "side": 1,
+      "message": "also looks like we don\u0027t support \"all\" nodes reconciliation? or it\u0027s probably something taken care in the CLI command processing ?",
+      "revId": "b3ad709c050a7c05b57b1a07ccb3b9863ff76917",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2ecfa632_5ed0a822",
+        "filename": "applications/forwardingrules-manager/src/main/yang/reconciliation.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-12T17:44:39Z",
+      "side": 1,
+      "message": "i think we should change this to \"reconcile\" as well.",
+      "revId": "b3ad709c050a7c05b57b1a07ccb3b9863ff76917",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a5d7c3d4_0edb7fd5",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/AdminReconciliationServiceImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-12T17:44:39Z",
+      "side": 1,
+      "message": "I think we should call reconcile RPC for all the nodes and then cache all the futures and send the rpc response if any of the future fails ? That will make this command bit fast and devices will be reconcile faster.",
+      "range": {
+        "startLine": 86,
+        "startChar": 1,
+        "endLine": 95,
+        "endChar": 17
+      },
+      "revId": "b3ad709c050a7c05b57b1a07ccb3b9863ff76917",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "900db840_fe4ecd3e",
         "filename": "applications/southbound-cli/src/main/yang/admin-reconciliation.yang",
         "patchSetId": 2
