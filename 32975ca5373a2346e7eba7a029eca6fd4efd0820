@@ -1,0 +1,140 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5c06163f_b2d9064d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 15
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-12T18:06:20Z",
+      "side": 1,
+      "message": "what is the lifecycle of this counter? Will this counter reset once device disconnect? when will you remove counter for any specific node? If it\u0027s on disconnection than i believe these counters are available till device is connected. I think we need to clarify the lifecycle in the yang model discription",
+      "revId": "32975ca5373a2346e7eba7a029eca6fd4efd0820",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "57fe5e82_6c531f5c",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/AdminReconciliationCount.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-12T18:06:20Z",
+      "side": 1,
+      "message": "make it final.",
+      "revId": "32975ca5373a2346e7eba7a029eca6fd4efd0820",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7f60f3fc_3547a8e4",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/AdminReconciliationCount.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-12T18:06:20Z",
+      "side": 1,
+      "message": "make it final.",
+      "revId": "32975ca5373a2346e7eba7a029eca6fd4efd0820",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a29af04_2216eb37",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/AdminReconciliationCount.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-12T18:06:20Z",
+      "side": 1,
+      "message": "make it final.",
+      "revId": "32975ca5373a2346e7eba7a029eca6fd4efd0820",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d16b0215_18ed3322",
+        "filename": "applications/southbound-cli/src/main/yang/admin-reconciliation.yang",
+        "patchSetId": 15
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-12T18:06:20Z",
+      "side": 1,
+      "message": "please change it to \"reconciliation-count\" \"admin\" is implicit from the model name.",
+      "revId": "32975ca5373a2346e7eba7a029eca6fd4efd0820",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a4dd31f8_4c8ef42b",
+        "filename": "applications/southbound-cli/src/main/yang/admin-reconciliation.yang",
+        "patchSetId": 15
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-12T18:06:20Z",
+      "side": 1,
+      "message": "last-request-time is more clear?",
+      "revId": "32975ca5373a2346e7eba7a029eca6fd4efd0820",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "13bdf548_126dddc2",
+        "filename": "applications/southbound-cli/src/main/yang/admin-reconciliation.yang",
+        "patchSetId": 15
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-12T18:06:20Z",
+      "side": 1,
+      "message": "change it to \"Timestamp when admin reconcile was last requested\".",
+      "revId": "32975ca5373a2346e7eba7a029eca6fd4efd0820",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4f5aaa99_3d17f6f5",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/sal/SalExperimenterMessageServiceImpl.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-12T18:06:20Z",
+      "side": 1,
+      "message": "you don\u0027t need to use LOG.isTraceEnabled(), becuase if you are using log messages like the one below, variables are computed if trace is really enabled, otherwise it\u0027s no-op. So remove the if condition.",
+      "revId": "32975ca5373a2346e7eba7a029eca6fd4efd0820",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
