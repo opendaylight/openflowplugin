@@ -45,6 +45,12 @@ public interface TxFacade {
     boolean submitTransaction();
 
     /**
+     * Method submits Transaction to DataStore and wait till completes by doing get on tx future.
+     * @return transaction is submitted successfully
+     */
+    boolean syncSubmitTransaction();
+
+    /**
      * Method exposes transaction created for device
      * represented by this context. This read only transaction has a fresh dataStore snapshot.
      * There is a possibility to get different data set from  DataStore
