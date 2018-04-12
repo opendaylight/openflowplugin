@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a98e1223_4365d5a4",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/deserialization/match/MatchDeserializer.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-12T16:38:58Z",
+      "side": 1,
+      "message": "this log is not required.",
+      "revId": "5e422f6236336e9912799821f90cfbe4dad052d2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "86597d6a_329cde22",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/deserialization/match/MatchDeserializer.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-12T16:38:58Z",
+      "side": 1,
+      "message": "move the log to if condition and log it saying Deserializer for the key {} found.\nAlso put another log in else block saying injecting deserializer for key :{}",
+      "revId": "5e422f6236336e9912799821f90cfbe4dad052d2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9b0e7549_eb25af6a",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/deserialization/match/MatchDeserializer.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-12T16:38:58Z",
+      "side": 1,
+      "message": "please rephrase it to \"Register Deserializer for key {} : deserializer :{}",
+      "revId": "5e422f6236336e9912799821f90cfbe4dad052d2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
