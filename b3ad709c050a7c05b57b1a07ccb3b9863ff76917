@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "900db840_fe4ecd3e",
+        "filename": "applications/southbound-cli/src/main/yang/admin-reconciliation.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-12T17:36:40Z",
+      "side": 1,
+      "message": "Arun, if possible please rename it to exec-reconciliation to \"reconcile\". It\u0027s short and probably more clear from cli perspective like \"reconcile node-1\" or \"reconcile all-nodes\"\n\nAlso for the leaf reconcile-all-nodes, you should mention what will happen in case of one or more nodes reconciliation is failed, what error user will see in output?",
+      "revId": "b3ad709c050a7c05b57b1a07ccb3b9863ff76917",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
