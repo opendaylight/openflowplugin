@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7fa4d9c0_f02c8a9d",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/HandshakeManagerImpl.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 394,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-12T16:28:56Z",
+      "side": 1,
+      "message": "please change the log level to WARN, because otherwise user won\u0027t understand why device is rejected from controller.\nAlso good to rephrase it saying \"OpenFlow plugin hit the device connection rate limit threshold. Denying the connection from device {}\".",
+      "revId": "fe3563c5b350ac2ba9063eb1da36eeef87db4177",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
