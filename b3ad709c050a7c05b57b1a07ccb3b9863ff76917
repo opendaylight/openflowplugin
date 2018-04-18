@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "0e61eb00_969cc641",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/ReconciliationServiceImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 6839
+      },
+      "writtenOn": "2018-04-18T09:37:09Z",
+      "side": 1,
+      "message": "I didn\u0027t find the utility methods so didn\u0027t change this part.",
+      "parentUuid": "5c37932a_0997e05a",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 47,
+        "endChar": 5
+      },
+      "revId": "b3ad709c050a7c05b57b1a07ccb3b9863ff76917",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8ef2da90_c6c9540b",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/ReconciliationServiceImpl.java",
         "patchSetId": 2
@@ -36,6 +60,24 @@
       "writtenOn": "2018-04-12T17:44:39Z",
       "side": 1,
       "message": "please fix the logs, don\u0027t use method names etc in the log. Given that there are no repetitive log strings in the same class.",
+      "revId": "b3ad709c050a7c05b57b1a07ccb3b9863ff76917",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3550c1c4_c9d207d7",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/ReconciliationServiceImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 6839
+      },
+      "writtenOn": "2018-04-18T09:37:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8ef2da90_c6c9540b",
       "revId": "b3ad709c050a7c05b57b1a07ccb3b9863ff76917",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -59,6 +101,24 @@
     },
     {
       "key": {
+        "uuid": "3fd03e10_a2b767c8",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/ReconciliationServiceImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 6839
+      },
+      "writtenOn": "2018-04-18T09:37:09Z",
+      "side": 1,
+      "message": "We are supporting  reconciliation of all nodes through cli.",
+      "parentUuid": "3651bede_033a8a14",
+      "revId": "b3ad709c050a7c05b57b1a07ccb3b9863ff76917",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2ecfa632_5ed0a822",
         "filename": "applications/forwardingrules-manager/src/main/yang/reconciliation.yang",
         "patchSetId": 2
@@ -70,6 +130,24 @@
       "writtenOn": "2018-04-12T17:44:39Z",
       "side": 1,
       "message": "i think we should change this to \"reconcile\" as well.",
+      "revId": "b3ad709c050a7c05b57b1a07ccb3b9863ff76917",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2a4b6eb4_f16a78c9",
+        "filename": "applications/forwardingrules-manager/src/main/yang/reconciliation.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 6839
+      },
+      "writtenOn": "2018-04-18T09:37:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2ecfa632_5ed0a822",
       "revId": "b3ad709c050a7c05b57b1a07ccb3b9863ff76917",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -99,6 +177,30 @@
     },
     {
       "key": {
+        "uuid": "7fb46dd1_a664aafa",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/AdminReconciliationServiceImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 6839
+      },
+      "writtenOn": "2018-04-18T09:37:09Z",
+      "side": 1,
+      "message": "This will be taken care as part of an another enhancement activity, OPNFLWPLUG-1000",
+      "parentUuid": "a5d7c3d4_0edb7fd5",
+      "range": {
+        "startLine": 86,
+        "startChar": 1,
+        "endLine": 95,
+        "endChar": 17
+      },
+      "revId": "b3ad709c050a7c05b57b1a07ccb3b9863ff76917",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "900db840_fe4ecd3e",
         "filename": "applications/southbound-cli/src/main/yang/admin-reconciliation.yang",
         "patchSetId": 2
@@ -110,6 +212,24 @@
       "writtenOn": "2018-04-12T17:36:40Z",
       "side": 1,
       "message": "Arun, if possible please rename it to exec-reconciliation to \"reconcile\". It\u0027s short and probably more clear from cli perspective like \"reconcile node-1\" or \"reconcile all-nodes\"\n\nAlso for the leaf reconcile-all-nodes, you should mention what will happen in case of one or more nodes reconciliation is failed, what error user will see in output?",
+      "revId": "b3ad709c050a7c05b57b1a07ccb3b9863ff76917",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "068687bb_295f5d04",
+        "filename": "applications/southbound-cli/src/main/yang/admin-reconciliation.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 6839
+      },
+      "writtenOn": "2018-04-18T09:37:09Z",
+      "side": 1,
+      "message": "Rename to reconcile is done.\n\nWe have provided an option of reconcile all nodes but the user gets an output on the CLI whether reconcile is success or failure for all nodes together and not on single node basis.As of now, logging is done for identifying for which node reconcile is being success or failed.\n\nThe enhancement activity for this will be taken care as a part of OPNFLWPLUG-1000.",
+      "parentUuid": "900db840_fe4ecd3e",
       "revId": "b3ad709c050a7c05b57b1a07ccb3b9863ff76917",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
