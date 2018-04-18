@@ -43,6 +43,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRe
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -61,10 +62,12 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     private static final Logger LOG = LoggerFactory.getLogger(FlowForwarder.class);
     private final DataBroker dataBroker;
     private ListenerRegistration<FlowForwarder> listenerRegistration;
+    private final BundleFlowForwarder bundleFlowForwarder;
 
     public FlowForwarder(final ForwardingRulesManager manager, final DataBroker db) {
         super(manager);
         dataBroker = Preconditions.checkNotNull(db, "DataBroker can not be null!");
+        bundleFlowForwarder = new BundleFlowForwarder(manager);
         registrationListener(db);
     }
 
@@ -98,19 +101,24 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 
         final TableKey tableKey = identifier.firstKeyOf(Table.class, TableKey.class);
         if (tableIdValidationPrecondition(tableKey, removeDataObj)) {
-            final RemoveFlowInputBuilder builder = new RemoveFlowInputBuilder(removeDataObj);
-            builder.setFlowRef(new FlowRef(identifier));
-            builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-            builder.setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey)));
+            BundleId bundleId = getActiveBundle(nodeIdent);
+            if (bundleId != null) {
+                bundleFlowForwarder.remove(identifier, removeDataObj, nodeIdent, bundleId);
+            } else {
+                final RemoveFlowInputBuilder builder = new RemoveFlowInputBuilder(removeDataObj);
+                builder.setFlowRef(new FlowRef(identifier));
+                builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
+                builder.setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey)));
 
-            // This method is called only when a given flow object has been
-            // removed from datastore. So FRM always needs to set strict flag
-            // into remove-flow input so that only a flow entry associated with
-            // a given flow object is removed.
-            builder.setTransactionUri(new Uri(provider.getNewTransactionId())).setStrict(Boolean.TRUE);
-            final Future<RpcResult<RemoveFlowOutput>> resultFuture =
-                    provider.getSalFlowService().removeFlow(builder.build());
-            JdkFutures.addErrorLogging(resultFuture, LOG, "removeFlow");
+                // This method is called only when a given flow object has been
+                // removed from datastore. So FRM always needs to set strict flag
+                // into remove-flow input so that only a flow entry associated with
+                // a given flow object is removed.
+                builder.setTransactionUri(new Uri(provider.getNewTransactionId())).setStrict(Boolean.TRUE);
+                final Future<RpcResult<RemoveFlowOutput>> resultFuture =
+                        provider.getSalFlowService().removeFlow(builder.build());
+                JdkFutures.addErrorLogging(resultFuture, LOG, "removeFlow");
+            }
         }
     }
 
@@ -145,39 +153,49 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 
         final TableKey tableKey = identifier.firstKeyOf(Table.class, TableKey.class);
         if (tableIdValidationPrecondition(tableKey, update)) {
-            final UpdateFlowInputBuilder builder = new UpdateFlowInputBuilder();
+            BundleId bundleId = getActiveBundle(nodeIdent);
+            if (bundleId != null) {
+                bundleFlowForwarder.update(identifier, original, update, nodeIdent, bundleId);
+            } else {
+                final UpdateFlowInputBuilder builder = new UpdateFlowInputBuilder();
 
-            builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-            builder.setFlowRef(new FlowRef(identifier));
-            builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
+                builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
+                builder.setFlowRef(new FlowRef(identifier));
+                builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
 
-            // This method is called only when a given flow object in datastore
-            // has been updated. So FRM always needs to set strict flag into
-            // update-flow input so that only a flow entry associated with
-            // a given flow object is updated.
-            builder.setUpdatedFlow(new UpdatedFlowBuilder(update).setStrict(Boolean.TRUE).build());
-            builder.setOriginalFlow(new OriginalFlowBuilder(original).setStrict(Boolean.TRUE).build());
+                // This method is called only when a given flow object in datastore
+                // has been updated. So FRM always needs to set strict flag into
+                // update-flow input so that only a flow entry associated with
+                // a given flow object is updated.
+                builder.setUpdatedFlow(new UpdatedFlowBuilder(update).setStrict(Boolean.TRUE).build());
+                builder.setOriginalFlow(new OriginalFlowBuilder(original).setStrict(Boolean.TRUE).build());
 
-            final Future<RpcResult<UpdateFlowOutput>> resultFuture =
-                    provider.getSalFlowService().updateFlow(builder.build());
-            JdkFutures.addErrorLogging(resultFuture, LOG, "updateFlow");
+                final Future<RpcResult<UpdateFlowOutput>> resultFuture =
+                        provider.getSalFlowService().updateFlow(builder.build());
+                JdkFutures.addErrorLogging(resultFuture, LOG, "updateFlow");
+            }
         }
     }
 
     @Override
-    public Future<RpcResult<AddFlowOutput>> add(final InstanceIdentifier<Flow> identifier, final Flow addDataObj,
+    public Future<? extends RpcResult<?>> add(final InstanceIdentifier<Flow> identifier, final Flow addDataObj,
             final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
         Future<RpcResult<AddFlowOutput>> future;
         final TableKey tableKey = identifier.firstKeyOf(Table.class, TableKey.class);
         if (tableIdValidationPrecondition(tableKey, addDataObj)) {
-            final AddFlowInputBuilder builder = new AddFlowInputBuilder(addDataObj);
+            BundleId bundleId = getActiveBundle(nodeIdent);
+            if (bundleId != null) {
+                return bundleFlowForwarder.add(identifier, addDataObj, nodeIdent, bundleId);
+            } else {
+                final AddFlowInputBuilder builder = new AddFlowInputBuilder(addDataObj);
 
-            builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-            builder.setFlowRef(new FlowRef(identifier));
-            builder.setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey)));
-            builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
-            future = provider.getSalFlowService().addFlow(builder.build());
+                builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
+                builder.setFlowRef(new FlowRef(identifier));
+                builder.setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey)));
+                builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
+                future = provider.getSalFlowService().addFlow(builder.build());
+            }
         } else {
             future = Futures.<RpcResult<AddFlowOutput>>immediateFuture(null);
         }
