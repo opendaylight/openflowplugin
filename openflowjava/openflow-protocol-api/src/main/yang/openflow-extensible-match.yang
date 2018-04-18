@@ -66,6 +66,10 @@
         base match-field;
         description "OXM field for Metadata passed between tables.";
     }
+    identity packet_type {
+        base match-field;
+        description "OXM field for Packet type.";
+    }
     identity eth_dst {
         base match-field;
         description "OXM field for Ethernet destination address.";
@@ -278,6 +282,13 @@
                     }
                     leaf mask {
                         type binary;
+                    }
+                }
+            }
+            case packet-type-case {
+                container packet-type {
+                    leaf packet-type {
+                        type uint32;
                     }
                 }
             }

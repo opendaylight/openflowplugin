@@ -39,6 +39,7 @@ import org.opendaylight.openflowjava.protocol.impl.serialization.match.OxmMetada
 import org.opendaylight.openflowjava.protocol.impl.serialization.match.OxmMplsBosSerializer;
 import org.opendaylight.openflowjava.protocol.impl.serialization.match.OxmMplsLabelSerializer;
 import org.opendaylight.openflowjava.protocol.impl.serialization.match.OxmMplsTcSerializer;
+import org.opendaylight.openflowjava.protocol.impl.serialization.match.OxmPacketTypeSerializer;
 import org.opendaylight.openflowjava.protocol.impl.serialization.match.OxmPbbIsidSerializer;
 import org.opendaylight.openflowjava.protocol.impl.serialization.match.OxmSctpDstSerializer;
 import org.opendaylight.openflowjava.protocol.impl.serialization.match.OxmSctpSrcSerializer;
@@ -83,6 +84,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Mpls
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MplsLabel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MplsTc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.PacketType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.PbbIsid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.SctpDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.SctpSrc;
@@ -117,6 +119,7 @@ public final class MatchEntriesInitializer {
         helper.registerSerializer(InPort.class, new OxmInPortSerializer());
         helper.registerSerializer(InPhyPort.class, new OxmInPhyPortSerializer());
         helper.registerSerializer(Metadata.class, new OxmMetadataSerializer());
+        helper.registerSerializer(PacketType.class, new OxmPacketTypeSerializer());
         helper.registerSerializer(EthDst.class, new OxmEthDstSerializer());
         helper.registerSerializer(EthSrc.class, new OxmEthSrcSerializer());
         helper.registerSerializer(EthType.class, new OxmEthTypeSerializer());

@@ -44,6 +44,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.case
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases.OfToSalMplsBosCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases.OfToSalMplsLabelCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases.OfToSalMplsTcCase;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases.OfToSalPacketTypeCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases.OfToSalPbbIsidCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases.OfToSalSctpDstCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases.OfToSalSctpSrcCase;
@@ -102,6 +103,7 @@ public class MatchResponseConvertor extends Convertor<MatchEntriesGrouping, Matc
             .addCase(new OfToSalInPortCase())
             .addCase(new OfToSalInPhyPortCase())
             .addCase(new OfToSalMetadataCase())
+            .addCase(new OfToSalPacketTypeCase())
             .addCase(new OfToSalEthSrcCase())
             .addCase(new OfToSalEthDstCase())
             .addCase(new OfToSalEthTypeCase())
