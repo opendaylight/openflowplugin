@@ -13,7 +13,9 @@ import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
+import org.opendaylight.openflowplugin.applications.frm.arbitratorreconciliation.ArbitratorReconciliationManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -26,10 +28,12 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractListeningCommiter<T extends DataObject> implements ForwardingRulesCommiter<T> {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractListeningCommiter.class);
-    ForwardingRulesManager provider;
+    final ForwardingRulesManager provider;
+    final ArbitratorReconciliationManager arbitratorReconciliationManager;
 
     public AbstractListeningCommiter(ForwardingRulesManager provider) {
         this.provider = Preconditions.checkNotNull(provider, "ForwardingRulesManager can not be null!");
+        arbitratorReconciliationManager = provider.getArbitratorReconciliationManager();
     }
 
     @Override
@@ -101,6 +105,10 @@ public abstract class AbstractListeningCommiter<T extends DataObject> implements
         // trigger the event of new node connected.
         return provider.isNodeOwner(nodeIdent)
                 && (provider.isNodeActive(nodeIdent) || provider.checkNodeInOperationalDataStore(nodeIdent));
+    }
+
+    BundleId getActiveBundle(InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        return provider.getArbitratorReconciliationManager().getActiveBundle(nodeIdent);
     }
 }
 
