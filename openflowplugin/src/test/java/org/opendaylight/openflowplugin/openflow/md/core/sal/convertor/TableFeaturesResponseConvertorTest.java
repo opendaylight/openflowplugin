@@ -18,7 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ActionRelatedTableFeatureProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ActionRelatedTableFeaturePropertyBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.InstructionRelatedTableFeatureProperty;
@@ -784,7 +784,7 @@ public class TableFeaturesResponseConvertorTest {
         final SetNwSrcActionBuilder setNwSrcActionBuilder;
         setNwSrcCaseBuilder = new SetNwSrcCaseBuilder();
         setNwSrcActionBuilder = new SetNwSrcActionBuilder();
-        setNwSrcActionBuilder.setIpAddress(new Ipv4Address("1.2.3.4"));
+        setNwSrcActionBuilder.setIpAddress(new Ipv4AddressNoZone("1.2.3.4"));
         setNwSrcCaseBuilder.setSetNwSrcAction(setNwSrcActionBuilder.build());
         return setNwSrcCaseBuilder.build();
     }
@@ -854,7 +854,7 @@ public class TableFeaturesResponseConvertorTest {
     }
 
 
-    private List<TableFeatures> convert(MultipartReplyTableFeatures features) {
+    private List<TableFeatures> convert(final MultipartReplyTableFeatures features) {
         Optional<List<TableFeatures>> listOptional =
                 convertorManager.convert(features, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
         return listOptional.orElse(Collections.emptyList());

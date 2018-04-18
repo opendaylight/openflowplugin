@@ -17,7 +17,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializerRegistryImpl;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowWildcardsV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10;
@@ -64,8 +64,8 @@ public class OF10MatchDeserializerTest {
         Assert.assertEquals("Wrong dl-type", 8, match.getDlType().intValue());
         Assert.assertEquals("Wrong nw-tos", 7, match.getNwTos().shortValue());
         Assert.assertEquals("Wrong nw-proto", 6, match.getNwProto().shortValue());
-        Assert.assertEquals("Wrong nw-src", new Ipv4Address("16.17.18.19"), match.getNwSrc());
-        Assert.assertEquals("Wrong nw-dst", new Ipv4Address("1.2.3.4"), match.getNwDst());
+        Assert.assertEquals("Wrong nw-src", new Ipv4AddressNoZone("16.17.18.19"), match.getNwSrc());
+        Assert.assertEquals("Wrong nw-dst", new Ipv4AddressNoZone("1.2.3.4"), match.getNwDst());
         Assert.assertEquals("Wrong tp-src", 20560, match.getTpSrc().shortValue());
         Assert.assertEquals("Wrong tp-dst", 8224, match.getTpDst().shortValue());
     }
@@ -92,8 +92,8 @@ public class OF10MatchDeserializerTest {
         Assert.assertEquals("Wrong dl-type", 8, match.getDlType().intValue());
         Assert.assertEquals("Wrong nw-tos", 7, match.getNwTos().shortValue());
         Assert.assertEquals("Wrong nw-proto", 6, match.getNwProto().shortValue());
-        Assert.assertEquals("Wrong nw-src", new Ipv4Address("16.17.18.19"), match.getNwSrc());
-        Assert.assertEquals("Wrong nw-dst", new Ipv4Address("1.2.3.4"), match.getNwDst());
+        Assert.assertEquals("Wrong nw-src", new Ipv4AddressNoZone("16.17.18.19"), match.getNwSrc());
+        Assert.assertEquals("Wrong nw-dst", new Ipv4AddressNoZone("1.2.3.4"), match.getNwDst());
         Assert.assertEquals("Wrong tp-src", 20560, match.getTpSrc().shortValue());
         Assert.assertEquals("Wrong tp-dst", 8224, match.getTpDst().shortValue());
     }

@@ -18,7 +18,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Con
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorUtil;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv4Dst;
@@ -50,7 +50,7 @@ public class SalToOfIpv4MatchCase extends ConvertorCase<Ipv4Match, List<MatchEnt
             Ipv4SrcBuilder ipv4SrcBuilder = new Ipv4SrcBuilder();
 
             Iterator<String> addressParts = IpConversionUtil.splitToParts(ipv4Prefix);
-            Ipv4Address ipv4Address = new Ipv4Address(addressParts.next());
+            Ipv4AddressNoZone ipv4Address = new Ipv4AddressNoZone(addressParts.next());
             ipv4SrcBuilder.setIpv4Address(ipv4Address);
             boolean hasMask = false;
             byte[] mask = MatchConvertorUtil.extractIpv4Mask(addressParts);
@@ -77,7 +77,7 @@ public class SalToOfIpv4MatchCase extends ConvertorCase<Ipv4Match, List<MatchEnt
             Ipv4DstBuilder ipv4DstBuilder = new Ipv4DstBuilder();
 
             Iterator<String> addressParts = IpConversionUtil.splitToParts(ipv4Prefix);
-            Ipv4Address ipv4Address = new Ipv4Address(addressParts.next());
+            Ipv4AddressNoZone ipv4Address = new Ipv4AddressNoZone(addressParts.next());
             ipv4DstBuilder.setIpv4Address(ipv4Address);
             boolean hasMask = false;
             byte[] mask = MatchConvertorUtil.extractIpv4Mask(addressParts);

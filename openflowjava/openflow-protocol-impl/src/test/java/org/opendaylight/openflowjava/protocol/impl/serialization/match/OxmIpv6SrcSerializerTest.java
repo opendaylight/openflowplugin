@@ -17,7 +17,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6Src;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
@@ -81,7 +81,7 @@ public class OxmIpv6SrcSerializerTest {
         final MatchEntryBuilder builder = prepareHeader(hasMask);
         Ipv6SrcCaseBuilder caseBuilder = new Ipv6SrcCaseBuilder();
         Ipv6SrcBuilder srcBuilder = new Ipv6SrcBuilder();
-        srcBuilder.setIpv6Address(new Ipv6Address(value));
+        srcBuilder.setIpv6Address(new Ipv6AddressNoZone(value));
         if (hasMask) {
             srcBuilder.setMask(new byte[]{15, 15, 0, 0});
         }

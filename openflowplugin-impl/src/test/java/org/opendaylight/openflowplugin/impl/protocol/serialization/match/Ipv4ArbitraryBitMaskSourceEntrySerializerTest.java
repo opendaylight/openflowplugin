@@ -13,7 +13,7 @@ import static org.junit.Assert.assertArrayEquals;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DottedQuad;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
@@ -23,7 +23,7 @@ public class Ipv4ArbitraryBitMaskSourceEntrySerializerTest extends AbstractMatch
 
     @Test
     public void testSerialize() throws Exception {
-        final Ipv4Address ipv4Address = new Ipv4Address("192.168.10.0");
+        final Ipv4AddressNoZone ipv4Address = new Ipv4AddressNoZone("192.168.10.0");
         final DottedQuad ipv4mask = new DottedQuad("255.255.255.0");
 
         final Match ipv4abmMatch = new MatchBuilder()

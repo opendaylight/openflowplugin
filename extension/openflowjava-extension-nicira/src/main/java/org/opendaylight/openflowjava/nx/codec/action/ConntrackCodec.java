@@ -17,7 +17,7 @@ import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraActionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IetfInetUtil;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.NxActionNatRangePresent;
@@ -133,13 +133,13 @@ public class ConntrackCodec extends AbstractActionCodec {
                     if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEIPV4MIN.getIntValue())) {
                         if (null != natAction.getIpAddressMin()) {
                             outBuffer.writeBytes(IetfInetUtil.INSTANCE.ipv4AddressBytes(natAction
-                                    .getIpAddressMin().getIpv4Address()));
+                                    .getIpAddressMin().getIpv4AddressNoZone()));
                         }
                     }
                     if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEIPV4MAX.getIntValue())) {
                         if (null != natAction.getIpAddressMax()) {
                             outBuffer.writeBytes(IetfInetUtil.INSTANCE.ipv4AddressBytes(natAction
-                                    .getIpAddressMax().getIpv4Address()));
+                                    .getIpAddressMax().getIpv4AddressNoZone()));
                         }
                     }
                     if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEPROTOMIN.getIntValue())) {
@@ -221,11 +221,11 @@ public class ConntrackCodec extends AbstractActionCodec {
                 nxActionNatBuilder.setRangePresent(rangePresent);
                 if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEIPV4MIN.getIntValue())) {
                     InetAddress address = InetAddresses.fromInteger((int)message.readUnsignedInt());
-                    nxActionNatBuilder.setIpAddressMin(new IpAddress(address.getHostAddress().toCharArray()));
+                    nxActionNatBuilder.setIpAddressMin(new IpAddressNoZone(address.getHostAddress().toCharArray()));
                 }
                 if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEIPV4MAX.getIntValue())) {
                     InetAddress address = InetAddresses.fromInteger((int)message.readUnsignedInt());
-                    nxActionNatBuilder.setIpAddressMax(new IpAddress(address.getHostAddress().toCharArray()));
+                    nxActionNatBuilder.setIpAddressMax(new IpAddressNoZone(address.getHostAddress().toCharArray()));
                 }
                 if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEPROTOMIN.getIntValue())) {
                     nxActionNatBuilder.setPortMin(message.readUnsignedShort());

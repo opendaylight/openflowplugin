@@ -13,12 +13,12 @@ module opendaylight-arbitrary-bitmask-fields {
 
         leaf ipv4-source-address-no-mask {
             description "IPv4 source address with no mask.";
-            type inet:ipv4-address;
+            type inet:ipv4-address-no-zone;
         }
 
         leaf ipv4-destination-address-no-mask {
             description "IPv4 destination address with no mask.";
-            type inet:ipv4-address;
+            type inet:ipv4-address-no-zone;
         }
 
         leaf ipv4-source-arbitrary-bitmask {

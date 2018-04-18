@@ -352,7 +352,7 @@
             case ipv4-src-case {
                 container ipv4-src {
                     leaf ipv4-address {
-                        type inet:ipv4-address;
+                        type inet:ipv4-address-no-zone;
                     }
                     leaf mask {
                         type binary;
@@ -362,7 +362,7 @@
             case ipv4-dst-case {
                 container ipv4-dst {
                     leaf ipv4-address {
-                        type inet:ipv4-address;
+                        type inet:ipv4-address-no-zone;
                     }
                     leaf mask {
                         type binary;
@@ -435,7 +435,7 @@
             case arp-spa-case {
                 container arp-spa {
                     leaf ipv4-address {
-                        type inet:ipv4-address;
+                        type inet:ipv4-address-no-zone;
                     }
                     leaf mask {
                         type binary;
@@ -445,7 +445,7 @@
             case arp-tpa-case {
                 container arp-tpa {
                     leaf ipv4-address {
-                        type inet:ipv4-address;
+                        type inet:ipv4-address-no-zone;
                     }
                     leaf mask {
                         type binary;
@@ -475,7 +475,7 @@
             case ipv6-src-case {
                 container ipv6-src {
                     leaf ipv6-address {
-                        type inet:ipv6-address;
+                        type inet:ipv6-address-no-zone;
                     }
                     leaf mask {
                         type binary;
@@ -485,7 +485,7 @@
             case ipv6-dst-case {
                 container ipv6-dst {
                     leaf ipv6-address {
-                        type inet:ipv6-address;
+                        type inet:ipv6-address-no-zone;
                     }
                     leaf mask {
                         type binary;
@@ -519,7 +519,7 @@
             case ipv6-nd-target-case {
                 container ipv6-nd-target {
                     leaf ipv6-address {
-                        type inet:ipv6-address;
+                        type inet:ipv6-address-no-zone;
                     }
                 }
             }
@@ -643,11 +643,11 @@
             }
             leaf nw-src {
                 description "IP source address.";
-                type inet:ipv4-address;
+                type inet:ipv4-address-no-zone;
             }
             leaf nw-dst {
                 description "IP destination address.";
-                type inet:ipv4-address;
+                type inet:ipv4-address-no-zone;
             }
             leaf tp-src {
                 description "TCP/UDP source port.";

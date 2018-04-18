@@ -22,8 +22,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IetfInetUtil;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4AddressNoZone;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.IetfYangUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -377,16 +377,16 @@ public abstract class ByteBufUtils {
         return sb.toString();
     }
 
-    public static Ipv4Address readIetfIpv4Address(final ByteBuf buf) {
+    public static Ipv4AddressNoZone readIetfIpv4Address(final ByteBuf buf) {
         final byte[] tmp = new byte[4];
         buf.readBytes(tmp);
-        return new Ipv4Address(IetfInetUtil.INSTANCE.ipv4AddressFor(tmp));
+        return IetfInetUtil.INSTANCE.ipv4AddressFor(tmp);
     }
 
-    public static Ipv6Address readIetfIpv6Address(final ByteBuf buf) {
+    public static Ipv6AddressNoZone readIetfIpv6Address(final ByteBuf buf) {
         final byte[] tmp = new byte[16];
         buf.readBytes(tmp);
-        return new Ipv6Address(IetfInetUtil.INSTANCE.ipv6AddressFor(tmp));
+        return IetfInetUtil.INSTANCE.ipv6AddressFor(tmp);
     }
 
     public static MacAddress readIetfMacAddress(final ByteBuf buf) {

@@ -42,7 +42,7 @@ module openflow-switch-connection-config {
 
         leaf address {
             description "address of local listening interface";
-            type ietf-inet:ip-address;
+            type ietf-inet:ip-address-no-zone;
         }
 
         leaf use-barrier {

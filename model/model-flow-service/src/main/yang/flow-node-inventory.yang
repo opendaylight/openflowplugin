@@ -148,7 +148,7 @@ module flow-node-inventory {
         description "Additional ip address info referring to device interface which connects to controller";
         leaf ip-address {
             description "IP address of a flow capable node.";
-            type inet:ip-address;
+            type inet:ip-address-no-zone;
         }
     }
 

@@ -151,7 +151,7 @@ module openflowplugin-extension-nicira-match {
     }
     grouping ipv4-address-grouping {
         leaf ipv4-address {
-            type inet:ipv4-address;
+            type inet:ipv4-address-no-zone;
         }
     }
     grouping mac-address-grouping {
@@ -246,7 +246,7 @@ module openflowplugin-extension-nicira-match {
     grouping nxm-of-udp-dst-grouping {
         container nxm-of-udp-dst {
             leaf port {
-                        type inet:port-number;
+                type inet:port-number;
             }
             leaf mask {
                type uint16;

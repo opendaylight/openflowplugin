@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IetfInetUtil;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchBuilder;
@@ -23,7 +23,7 @@ public class Ipv6NdTargetEntrySerializerTest extends AbstractMatchEntrySerialize
 
     @Test
     public void testSerialize() throws Exception {
-        final Ipv6Address ipv6NdTarget = new Ipv6Address("2001:db8::");
+        final Ipv6AddressNoZone ipv6NdTarget = new Ipv6AddressNoZone("2001:db8::");
 
         final Match ipv6NdTargetMatch = new MatchBuilder()
                 .setLayer3Match(new Ipv6MatchBuilder()

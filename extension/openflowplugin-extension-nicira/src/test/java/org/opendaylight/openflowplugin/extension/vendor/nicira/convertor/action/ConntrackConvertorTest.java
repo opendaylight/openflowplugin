@@ -14,7 +14,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionConntrack;
@@ -53,8 +53,8 @@ public class ConntrackConvertorTest {
         final NxActionNatBuilder nxActionNatBuilder = new NxActionNatBuilder()
                 .setFlags(1)
                 .setRangePresent(2)
-                .setIpAddressMin(new IpAddress("192.168.0.0".toCharArray()))
-                .setIpAddressMin(new IpAddress("192.168.10.0".toCharArray()))
+                .setIpAddressMin(new IpAddressNoZone("192.168.0.0".toCharArray()))
+                .setIpAddressMin(new IpAddressNoZone("192.168.10.0".toCharArray()))
                 .setPortMin(3000)
                 .setPortMax(4000);
         final CtActionsBuilder ctActionsBuilder = new CtActionsBuilder().setOfpactActions(new NxActionNatCaseBuilder()
@@ -93,10 +93,10 @@ public class ConntrackConvertorTest {
             .getNxActionNat();
         Assert.assertEquals(natactionCase.getFlags(), nataction.getFlags());
         Assert.assertEquals(natactionCase.getRangePresent(), nataction.getRangePresent());
-        Assert.assertEquals(natactionCase.getIpAddressMin().getIpv4Address().getValue(), nataction.getIpAddressMin()
-            .getIpv4Address().getValue());
-        Assert.assertEquals(natactionCase.getIpAddressMin().getIpv4Address().getValue(), nataction.getIpAddressMin()
-            .getIpv4Address().getValue());
+        Assert.assertEquals(natactionCase.getIpAddressMin().getIpv4AddressNoZone().getValue(),
+            nataction.getIpAddressMin().getIpv4AddressNoZone().getValue());
+        Assert.assertEquals(natactionCase.getIpAddressMin().getIpv4AddressNoZone().getValue(),
+            nataction.getIpAddressMin().getIpv4AddressNoZone().getValue());
         Assert.assertEquals(natactionCase.getPortMin(), nataction.getPortMin());
         Assert.assertEquals(natactionCase.getPortMax(), nataction.getPortMax());
 
@@ -111,8 +111,8 @@ public class ConntrackConvertorTest {
             .NxActionNatBuilder()
             .setFlags(1)
             .setRangePresent(2)
-            .setIpAddressMin(new IpAddress("192.168.0.0".toCharArray()))
-            .setIpAddressMax(new IpAddress("192.168.10.0".toCharArray()))
+            .setIpAddressMin(new IpAddressNoZone("192.168.0.0".toCharArray()))
+            .setIpAddressMax(new IpAddressNoZone("192.168.10.0".toCharArray()))
             .setPortMin(3000)
             .setPortMax(4000);
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack.grouping
@@ -165,8 +165,8 @@ public class ConntrackConvertorTest {
                .getNxConntrack().getCtActions().get(0).getOfpactActions()).getNxActionNat();
         Assert.assertEquals(1, natActionCase.getFlags().shortValue());
         Assert.assertEquals(2, natActionCase.getRangePresent().intValue());
-        Assert.assertEquals("192.168.0.0", natActionCase.getIpAddressMin().getIpv4Address().getValue());
-        Assert.assertEquals("192.168.10.0", natActionCase.getIpAddressMax().getIpv4Address().getValue());
+        Assert.assertEquals("192.168.0.0", natActionCase.getIpAddressMin().getIpv4AddressNoZone().getValue());
+        Assert.assertEquals("192.168.10.0", natActionCase.getIpAddressMax().getIpv4AddressNoZone().getValue());
         Assert.assertEquals(3000, natActionCase.getPortMin().shortValue());
         Assert.assertEquals(4000, natActionCase.getPortMax().shortValue());
 
@@ -183,8 +183,8 @@ public class ConntrackConvertorTest {
                 .getNxConntrack().getCtActions().get(0).getOfpactActions()).getNxActionNat();
         Assert.assertEquals(1, natActionCase1.getFlags().shortValue());
         Assert.assertEquals(2, natActionCase1.getRangePresent().intValue());
-        Assert.assertEquals("192.168.0.0", natActionCase1.getIpAddressMin().getIpv4Address().getValue());
-        Assert.assertEquals("192.168.10.0", natActionCase1.getIpAddressMax().getIpv4Address().getValue());
+        Assert.assertEquals("192.168.0.0", natActionCase1.getIpAddressMin().getIpv4AddressNoZone().getValue());
+        Assert.assertEquals("192.168.10.0", natActionCase1.getIpAddressMax().getIpv4AddressNoZone().getValue());
         Assert.assertEquals(3000, natActionCase1.getPortMin().shortValue());
         Assert.assertEquals(4000, natActionCase1.getPortMax().shortValue());
 
@@ -201,8 +201,8 @@ public class ConntrackConvertorTest {
                 .getNxConntrack().getCtActions().get(0).getOfpactActions()).getNxActionNat();
         Assert.assertEquals(1, natActionCase2.getFlags().shortValue());
         Assert.assertEquals(2, natActionCase2.getRangePresent().intValue());
-        Assert.assertEquals("192.168.0.0", natActionCase2.getIpAddressMin().getIpv4Address().getValue());
-        Assert.assertEquals("192.168.10.0", natActionCase2.getIpAddressMax().getIpv4Address().getValue());
+        Assert.assertEquals("192.168.0.0", natActionCase2.getIpAddressMin().getIpv4AddressNoZone().getValue());
+        Assert.assertEquals("192.168.10.0", natActionCase2.getIpAddressMax().getIpv4AddressNoZone().getValue());
         Assert.assertEquals(3000, natActionCase2.getPortMin().shortValue());
         Assert.assertEquals(4000, natActionCase2.getPortMax().shortValue());
 
@@ -210,8 +210,8 @@ public class ConntrackConvertorTest {
                 .getNxConntrack().getCtActions().get(0).getOfpactActions()).getNxActionNat();
         Assert.assertEquals(1, natActionCase3.getFlags().shortValue());
         Assert.assertEquals(2, natActionCase3.getRangePresent().intValue());
-        Assert.assertEquals("192.168.0.0", natActionCase3.getIpAddressMin().getIpv4Address().getValue());
-        Assert.assertEquals("192.168.10.0", natActionCase3.getIpAddressMax().getIpv4Address().getValue());
+        Assert.assertEquals("192.168.0.0", natActionCase3.getIpAddressMin().getIpv4AddressNoZone().getValue());
+        Assert.assertEquals("192.168.10.0", natActionCase3.getIpAddressMax().getIpv4AddressNoZone().getValue());
         Assert.assertEquals(3000, natActionCase3.getPortMin().shortValue());
         Assert.assertEquals(4000, natActionCase3.getPortMax().shortValue());
 

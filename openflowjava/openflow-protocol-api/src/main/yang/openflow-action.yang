@@ -163,14 +163,14 @@
             case set-nw-src-case {
                 container set-nw-src-action {
                     leaf ip-address {
-                        type inet:ipv4-address;
+                        type inet:ipv4-address-no-zone;
                     }
                 }
             }
             case set-nw-dst-case {
                 container set-nw-dst-action {
                     leaf ip-address {
-                        type inet:ipv4-address;
+                        type inet:ipv4-address-no-zone;
                     }
                 }
             }

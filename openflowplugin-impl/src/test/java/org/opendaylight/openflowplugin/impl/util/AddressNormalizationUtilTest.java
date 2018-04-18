@@ -15,6 +15,7 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DottedQuad;
@@ -71,7 +72,7 @@ public class AddressNormalizationUtilTest {
     @Test
     public void normalizeIpv6AddressWithoutMask() throws Exception {
         final Ipv6Address left = new Ipv6Address("1E3D:5678:9ABC::");
-        final Ipv6Address right = new Ipv6Address("1e3d:5678:9abc:0:0:0:0:0");
+        final Ipv6AddressNoZone right = new Ipv6AddressNoZone("1e3d:5678:9abc:0:0:0:0:0");
 
         assertEquals(
                 right,

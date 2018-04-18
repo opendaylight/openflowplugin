@@ -19,7 +19,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Con
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorUtil;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpSourceHardwareAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpTargetHardwareAddress;
@@ -75,7 +75,7 @@ public class SalToOfArpMatchCase extends ConvertorCase<ArpMatch, List<MatchEntry
             ArpSpaBuilder arpSpaBuilder = new ArpSpaBuilder();
 
             Iterator<String> addressParts = IpConversionUtil.splitToParts(ipv4Prefix);
-            Ipv4Address ipv4Address = new Ipv4Address(addressParts.next());
+            Ipv4AddressNoZone ipv4Address = new Ipv4AddressNoZone(addressParts.next());
             arpSpaBuilder.setIpv4Address(ipv4Address);
             boolean hasMask = false;
             byte[] mask = MatchConvertorUtil.extractIpv4Mask(addressParts);
@@ -100,7 +100,7 @@ public class SalToOfArpMatchCase extends ConvertorCase<ArpMatch, List<MatchEntry
             ArpTpaBuilder arpTpaBuilder = new ArpTpaBuilder();
 
             Iterator<String> addressParts = IpConversionUtil.splitToParts(ipv4Prefix);
-            Ipv4Address ipv4Address = new Ipv4Address(addressParts.next());
+            Ipv4AddressNoZone ipv4Address = new Ipv4AddressNoZone(addressParts.next());
             arpTpaBuilder.setIpv4Address(ipv4Address);
             boolean hasMask = false;
             byte[] mask = MatchConvertorUtil.extractIpv4Mask(addressParts);

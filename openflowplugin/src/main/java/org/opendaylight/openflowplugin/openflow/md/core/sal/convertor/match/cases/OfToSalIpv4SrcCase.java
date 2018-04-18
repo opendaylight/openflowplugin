@@ -16,6 +16,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Con
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.data.MatchResponseConvertorData;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DottedQuad;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
@@ -52,7 +53,7 @@ public class OfToSalIpv4SrcCase extends ConvertorCase<Ipv4SrcCase, MatchBuilder,
             ipv4MatchArbitraryBitMaskBuilder.setIpv4SourceArbitraryBitmask(mask);
         }
 
-        ipv4MatchArbitraryBitMaskBuilder.setIpv4SourceAddressNoMask(new Ipv4Address(ipv4AddressStr));
+        ipv4MatchArbitraryBitMaskBuilder.setIpv4SourceAddressNoMask(new Ipv4AddressNoZone(ipv4AddressStr));
     }
 
     private static void setDstIpv4MatchArbitraryBitMaskBuilderFields(
@@ -62,7 +63,7 @@ public class OfToSalIpv4SrcCase extends ConvertorCase<Ipv4SrcCase, MatchBuilder,
             ipv4MatchArbitraryBitMaskBuilder.setIpv4DestinationArbitraryBitmask(mask);
         }
 
-        ipv4MatchArbitraryBitMaskBuilder.setIpv4DestinationAddressNoMask(new Ipv4Address(ipv4AddressStr));
+        ipv4MatchArbitraryBitMaskBuilder.setIpv4DestinationAddressNoMask(new Ipv4AddressNoZone(ipv4AddressStr));
     }
 
     @Override

@@ -15,7 +15,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorE
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.data.MatchResponseConvertorData;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Prefix;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchArbitraryBitMaskBuilder;
@@ -47,7 +47,7 @@ public class OfToSalIpv6DstCase extends ConvertorCase<Ipv6DstCase, MatchBuilder,
 
                 if (ipv6MatchBuilder.getIpv6Source() != null) {
                     Ipv6Prefix ipv6PrefixSourceAddress = ipv6MatchBuilder.getIpv6Source();
-                    Ipv6Address ipv6SrcAddress = IpConversionUtil.extractIpv6Address(ipv6PrefixSourceAddress);
+                    Ipv6AddressNoZone ipv6SrcAddress = IpConversionUtil.extractIpv6Address(ipv6PrefixSourceAddress);
                     Ipv6ArbitraryMask srcIpv6Arbitrary = IpConversionUtil.compressedIpv6MaskFormat(
                             IpConversionUtil.extractIpv6AddressMask(ipv6PrefixSourceAddress));
                     setSrcIpv6MatchArbitraryBitMaskBuilderFields(ipv6MatchArbitraryBitMaskBuilder,
@@ -55,7 +55,7 @@ public class OfToSalIpv6DstCase extends ConvertorCase<Ipv6DstCase, MatchBuilder,
                 }
                 Ipv6ArbitraryMask dstIpv6ArbitraryMask = IpConversionUtil.compressedIpv6MaskFormat(
                         IpConversionUtil.createIpv6ArbitraryBitMask(mask));
-                Ipv6Address stringIpv6DstAddress =
+                Ipv6AddressNoZone stringIpv6DstAddress =
                         IpConversionUtil.compressedIpv6AddressFormat(ipv6Dst.getIpv6Address());
                 setDstIpv6MatchArbitraryBitMaskBuilderFields(ipv6MatchArbitraryBitMaskBuilder,
                         dstIpv6ArbitraryMask, stringIpv6DstAddress);
@@ -78,13 +78,13 @@ public class OfToSalIpv6DstCase extends ConvertorCase<Ipv6DstCase, MatchBuilder,
                         */
                 Ipv6ArbitraryMask dstIpv6ArbitraryMask = IpConversionUtil.compressedIpv6MaskFormat(
                         IpConversionUtil.createIpv6ArbitraryBitMask(mask));
-                Ipv6Address stringIpv6DstAddress =
+                Ipv6AddressNoZone stringIpv6DstAddress =
                         IpConversionUtil.compressedIpv6AddressFormat(ipv6Dst.getIpv6Address());
                 setDstIpv6MatchArbitraryBitMaskBuilderFields(ipv6MatchArbitraryBitMaskBuilder,
                         dstIpv6ArbitraryMask, stringIpv6DstAddress);
                 matchBuilder.setLayer3Match(ipv6MatchArbitraryBitMaskBuilder.build());
             } else {
-                Ipv6Address stringIpv6DstAddress =
+                Ipv6AddressNoZone stringIpv6DstAddress =
                         IpConversionUtil.compressedIpv6AddressFormat(ipv6Dst.getIpv6Address());
                 setIpv6MatchBuilderFields(ipv6MatchBuilder, mask, stringIpv6DstAddress);
                 matchBuilder.setLayer3Match(ipv6MatchBuilder.build());
@@ -95,7 +95,7 @@ public class OfToSalIpv6DstCase extends ConvertorCase<Ipv6DstCase, MatchBuilder,
     }
 
     private static void setIpv6MatchBuilderFields(final Ipv6MatchBuilder builder, final byte[] mask,
-            final Ipv6Address prefix) {
+            final Ipv6AddressNoZone prefix) {
         Ipv6Prefix ipv6Prefix;
         if (mask != null) {
             ipv6Prefix = IpConversionUtil.createPrefix(prefix, mask);
@@ -107,7 +107,7 @@ public class OfToSalIpv6DstCase extends ConvertorCase<Ipv6DstCase, MatchBuilder,
 
     private static void setSrcIpv6MatchArbitraryBitMaskBuilderFields(final Ipv6MatchArbitraryBitMaskBuilder builder,
                                                                      final Ipv6ArbitraryMask mask,
-                                                                     final Ipv6Address ipv6Address) {
+                                                                     final Ipv6AddressNoZone ipv6Address) {
         if (mask != null) {
             builder.setIpv6SourceArbitraryBitmask(mask);
         }
@@ -116,7 +116,7 @@ public class OfToSalIpv6DstCase extends ConvertorCase<Ipv6DstCase, MatchBuilder,
 
     private static void setDstIpv6MatchArbitraryBitMaskBuilderFields(final Ipv6MatchArbitraryBitMaskBuilder builder,
                                                                      final Ipv6ArbitraryMask mask,
-                                                                     final Ipv6Address ipv6Address) {
+                                                                     final Ipv6AddressNoZone ipv6Address) {
         if (mask != null) {
             builder.setIpv6DestinationArbitraryBitmask(mask);
         }

@@ -17,7 +17,7 @@ import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionResolvers;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetFieldBuilder;
@@ -40,7 +40,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 public final class MatchUtil {
 
     private static final MacAddress ZERO_MAC_ADDRESS = new MacAddress("00:00:00:00:00:00");
-    private static final Ipv4Address ZERO_IPV4_ADDRESS = new Ipv4Address("0.0.0.0");
+    private static final Ipv4AddressNoZone ZERO_IPV4_ADDRESS = new Ipv4AddressNoZone("0.0.0.0");
 
     private static final Map<Class<? extends Match>, Function<Match, Match>> TRANSFORMERS = ImmutableMap
             .<Class<? extends Match>, Function<Match, Match>>builder()
