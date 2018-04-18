@@ -8,14 +8,25 @@
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import com.google.common.base.Preconditions;
+
+import java.math.BigInteger;
 import java.util.Collection;
+import java.util.concurrent.ExecutionException;
+
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.GetActiveBundleInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.GetActiveBundleOutput;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +37,9 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractListeningCommiter<T extends DataObject> implements ForwardingRulesCommiter<T> {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractListeningCommiter.class);
-    ForwardingRulesManager provider;
+    private static final String SEPARATOR = ":";
+
+    final ForwardingRulesManager provider;
 
     public AbstractListeningCommiter(ForwardingRulesManager provider) {
         this.provider = Preconditions.checkNotNull(provider, "ForwardingRulesManager can not be null!");
@@ -101,6 +114,33 @@ public abstract class AbstractListeningCommiter<T extends DataObject> implements
         // trigger the event of new node connected.
         return provider.isNodeOwner(nodeIdent)
                 && (provider.isNodeActive(nodeIdent) || provider.checkNodeInOperationalDataStore(nodeIdent));
+    }
+
+    BundleId getActiveBundle(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        GetActiveBundleInputBuilder input = new GetActiveBundleInputBuilder();
+        String nodeId = nodeIdent.firstKeyOf(Node.class, NodeKey.class).getId().getValue();
+        BigInteger dpId = getDpnIdFromNodeName(nodeId);
+        final NodeRef nodeRef = new NodeRef(nodeIdent.firstIdentifierOf(Node.class));
+        input.setNodeId(dpId);
+        input.setNode(nodeRef);
+        RpcResult<GetActiveBundleOutput> result = null;
+        try {
+            result = provider.getArbitratorReconciliationManager()
+                    .getActiveBundle(input.build()).get();
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.error("Error {} while retrieving active bundle present for node {}", dpId , e);
+        }
+        if (!result.isSuccessful()) {
+            LOG.trace("Error while retrieving active bundle present for node {}", dpId);
+        } else {
+            return result.getResult().getResult();
+        }
+        return null;
+    }
+
+    public BigInteger getDpnIdFromNodeName(String nodeName) {
+        String dpId = nodeName.substring(nodeName.lastIndexOf(SEPARATOR) + 1);
+        return new BigInteger(dpId);
     }
 }
 
