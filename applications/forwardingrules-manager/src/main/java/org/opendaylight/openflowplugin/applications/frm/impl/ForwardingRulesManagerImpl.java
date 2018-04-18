@@ -264,6 +264,11 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     }
 
     @Override
+    public ArbitratorReconciliationManager getArbitratorReconciliationManager() {
+        return arbitratorReconciliationManager;
+    }
+
+    @Override
     public boolean isReconciliationDisabled() {
         return disableReconciliation;
     }
