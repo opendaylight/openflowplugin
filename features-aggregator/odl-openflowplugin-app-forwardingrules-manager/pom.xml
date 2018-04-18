@@ -24,7 +24,11 @@
             <classifier>features</classifier>
             <type>xml</type>
         </dependency>
-
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
+            <artifactId>arbitratorreconciliation-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>forwardingrules-manager</artifactId>

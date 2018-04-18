@@ -88,7 +88,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
     private static final AtomicLong BUNDLE_ID = new AtomicLong();
     private static final BundleFlags BUNDLE_FLAGS = new BundleFlags(true, true);
     private static final int ARBITRATOR_RECONCILIATION_PRIORITY = Integer
-            .getInteger("arbitrator.reconciliation.manager.priority", 1/*default*/);
+            .getInteger("arbitrator.reconciliation.manager.priority", 0/*default*/);
     private static final String SERVICE_NAME = "ArbitratorReconciliationManager";
     private static final String SEPARATOR = ":";
 
