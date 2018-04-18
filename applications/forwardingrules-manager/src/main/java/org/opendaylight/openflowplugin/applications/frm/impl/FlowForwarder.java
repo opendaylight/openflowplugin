@@ -7,6 +7,13 @@
  */
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
+import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.buildGroupInstanceIdentifier;
+import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getActiveBundle;
+import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getFlowId;
+import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getNodeIdFromNodeIdentifier;
+import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.isFlowDependentOnGroup;
+import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.isGroupExistsOnDevice;
+
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
@@ -14,8 +21,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
-import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -23,11 +28,8 @@ import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
-import org.opendaylight.openflowplugin.applications.frm.ActionType;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -48,20 +50,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Upda
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
@@ -84,9 +82,11 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     private static final String GROUP_EXISTS_IN_DEVICE_ERROR = "GROUPEXISTS";
 
     private ListenerRegistration<FlowForwarder> listenerRegistration;
+    private final BundleFlowForwarder bundleFlowForwarder;
 
     public FlowForwarder(final ForwardingRulesManager manager, final DataBroker db) {
         super(manager, db);
+        bundleFlowForwarder = new BundleFlowForwarder(manager);
     }
 
     @SuppressWarnings("IllegalCatch")
@@ -123,19 +123,24 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 
         final TableKey tableKey = identifier.firstKeyOf(Table.class, TableKey.class);
         if (tableIdValidationPrecondition(tableKey, removeDataObj)) {
-            final RemoveFlowInputBuilder builder = new RemoveFlowInputBuilder(removeDataObj);
-            builder.setFlowRef(new FlowRef(identifier));
-            builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-            builder.setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey)));
+            BundleId bundleId = getActiveBundle(nodeIdent, provider);
+            if (bundleId != null) {
+                bundleFlowForwarder.remove(identifier, removeDataObj, nodeIdent, bundleId);
+            } else {
+                final RemoveFlowInputBuilder builder = new RemoveFlowInputBuilder(removeDataObj);
+                builder.setFlowRef(new FlowRef(identifier));
+                builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
+                builder.setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey)));
 
-            // This method is called only when a given flow object has been
-            // removed from datastore. So FRM always needs to set strict flag
-            // into remove-flow input so that only a flow entry associated with
-            // a given flow object is removed.
-            builder.setTransactionUri(new Uri(provider.getNewTransactionId())).setStrict(Boolean.TRUE);
-            final Future<RpcResult<RemoveFlowOutput>> resultFuture =
-                    provider.getSalFlowService().removeFlow(builder.build());
-            JdkFutures.addErrorLogging(resultFuture, LOG, "removeFlow");
+                // This method is called only when a given flow object has been
+                // removed from datastore. So FRM always needs to set strict flag
+                // into remove-flow input so that only a flow entry associated with
+                // a given flow object is removed.
+                builder.setTransactionUri(new Uri(provider.getNewTransactionId())).setStrict(Boolean.TRUE);
+                final Future<RpcResult<RemoveFlowOutput>> resultFuture =
+                        provider.getSalFlowService().removeFlow(builder.build());
+                JdkFutures.addErrorLogging(resultFuture, LOG, "removeFlow");
+            }
         }
     }
 
@@ -170,87 +175,97 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 
         final TableKey tableKey = identifier.firstKeyOf(Table.class, TableKey.class);
         if (tableIdValidationPrecondition(tableKey, update)) {
-            final UpdateFlowInputBuilder builder = new UpdateFlowInputBuilder();
-            final NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
+            BundleId bundleId = getActiveBundle(nodeIdent, provider);
+            if (bundleId != null) {
+                bundleFlowForwarder.update(identifier, original, update, nodeIdent, bundleId);
+            } else {
+                final NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
+                nodeConfigurator.enqueueJob(nodeId.getValue(), () -> {
+                    final UpdateFlowInputBuilder builder = new UpdateFlowInputBuilder();
+                    builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
+                    builder.setFlowRef(new FlowRef(identifier));
+                    builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
 
-            builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-            builder.setFlowRef(new FlowRef(identifier));
-            builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
+                    // This method is called only when a given flow object in datastore
+                    // has been updated. So FRM always needs to set strict flag into
+                    // update-flow input so that only a flow entry associated with
+                    // a given flow object is updated.
+                    builder.setUpdatedFlow(new UpdatedFlowBuilder(update).setStrict(Boolean.TRUE).build());
+                    builder.setOriginalFlow(new OriginalFlowBuilder(original).setStrict(Boolean.TRUE).build());
 
-            // This method is called only when a given flow object in datastore
-            // has been updated. So FRM always needs to set strict flag into
-            // update-flow input so that only a flow entry associated with
-            // a given flow object is updated.
-            builder.setUpdatedFlow(new UpdatedFlowBuilder(update).setStrict(Boolean.TRUE).build());
-            builder.setOriginalFlow(new OriginalFlowBuilder(original).setStrict(Boolean.TRUE).build());
-
-            nodeConfigurator.enqueueJob(nodeId.getValue(), () -> {
-                Long groupId = isFlowDependentOnGroup(update);
-                ListenableFuture<RpcResult<UpdateFlowOutput>> future = Futures.immediateFuture(null);
-                if (groupId != null) {
-                    LOG.trace("The flow {} is dependent on group {}. Checking if the group is already present",
-                            getFlowId(new FlowRef(identifier)), groupId);
-                    if (isGroupExistsOnDevice(nodeIdent, groupId)) {
-                        LOG.trace("The dependent group {} is already programmed. Updating the flow {}", groupId,
+                    Long groupId = isFlowDependentOnGroup(update);
+                    ListenableFuture<RpcResult<UpdateFlowOutput>> future = Futures.immediateFuture(null);
+                    if (groupId != null) {
+                        LOG.trace("The flow {} is dependent on group {}. Checking if the group is already present",
+                                getFlowId(new FlowRef(identifier)), groupId);
+                        if (isGroupExistsOnDevice(nodeIdent, groupId, provider)) {
+                            LOG.trace("The dependent group {} is already programmed. Updating the flow {}", groupId,
+                                    getFlowId(new FlowRef(identifier)));
+                            future = provider.getSalFlowService().updateFlow(builder.build());
+                            JdkFutures.addErrorLogging(future, LOG, "updateFlow");
+                        } else {
+                            LOG.trace("The dependent group {} isn't programmed yet. Pushing the group", groupId);
+                            ListenableFuture<RpcResult<AddGroupOutput>> groupFuture = pushDependentGroup(nodeIdent,
+                                    groupId);
+                            Futures.addCallback(groupFuture,
+                                    new UpdateFlowCallBack(builder.build(), nodeId, future, groupId),
+                                    MoreExecutors.directExecutor());
+                        }
+                    } else {
+                        LOG.trace("The flow {} is not dependent on any group. Updating the flow",
                                 getFlowId(new FlowRef(identifier)));
                         future = provider.getSalFlowService().updateFlow(builder.build());
                         JdkFutures.addErrorLogging(future, LOG, "updateFlow");
-                    } else {
-                        LOG.trace("The dependent group {} isn't programmed yet. Pushing the group", groupId);
-                        ListenableFuture<RpcResult<AddGroupOutput>> groupFuture = pushDependentGroup(nodeIdent,
-                                groupId);
-                        Futures.addCallback(groupFuture,
-                                new UpdateFlowCallBack(builder.build(), nodeId, future, groupId),
-                                MoreExecutors.directExecutor());
                     }
-                } else {
-                    LOG.trace("The flow {} is not dependent on any group. Updating the flow",
-                            getFlowId(new FlowRef(identifier)));
-                    future = provider.getSalFlowService().updateFlow(builder.build());
-                    JdkFutures.addErrorLogging(future, LOG, "updateFlow");
-                }
-                return future;
-            });
+                    return future;
+                });
+            }
         }
     }
 
     @Override
-    public Future<RpcResult<AddFlowOutput>> add(final InstanceIdentifier<Flow> identifier, final Flow addDataObj,
+    public Future<? extends RpcResult<?>> add(final InstanceIdentifier<Flow> identifier, final Flow addDataObj,
             final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
         final TableKey tableKey = identifier.firstKeyOf(Table.class, TableKey.class);
         if (tableIdValidationPrecondition(tableKey, addDataObj)) {
-            final AddFlowInputBuilder builder = new AddFlowInputBuilder(addDataObj);
-            final NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
+            BundleId bundleId = getActiveBundle(nodeIdent, provider);
+            if (bundleId != null) {
+                return bundleFlowForwarder.add(identifier, addDataObj, nodeIdent, bundleId);
+            } else {
+                final NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
+                nodeConfigurator.enqueueJob(nodeId.getValue(), () -> {
+                    final AddFlowInputBuilder builder = new AddFlowInputBuilder(addDataObj);
 
-            builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-            builder.setFlowRef(new FlowRef(identifier));
-            builder.setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey)));
-            builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
-            nodeConfigurator.enqueueJob(nodeId.getValue(), () -> {
-                Long groupId = isFlowDependentOnGroup(addDataObj);
-                ListenableFuture<RpcResult<AddFlowOutput>> future = SettableFuture.create();
-                if (groupId != null) {
-                    LOG.trace("The flow {} is dependent on group {}. Checking if the group is already present",
-                            getFlowId(new FlowRef(identifier)), groupId);
-                    if (isGroupExistsOnDevice(nodeIdent, groupId)) {
-                        LOG.trace("The dependent group {} is already programmed. Adding the flow {}", groupId,
+                    builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
+                    builder.setFlowRef(new FlowRef(identifier));
+                    builder.setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey)));
+                    builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
+                    Long groupId = isFlowDependentOnGroup(addDataObj);
+                    ListenableFuture<RpcResult<AddFlowOutput>> future = SettableFuture.create();
+                    if (groupId != null) {
+                        LOG.trace("The flow {} is dependent on group {}. Checking if the group is already present",
+                                getFlowId(new FlowRef(identifier)), groupId);
+                        if (isGroupExistsOnDevice(nodeIdent, groupId, provider)) {
+                            LOG.trace("The dependent group {} is already programmed. Adding the flow {}", groupId,
+                                    getFlowId(new FlowRef(identifier)));
+                            future = provider.getSalFlowService().addFlow(builder.build());
+                        } else {
+                            LOG.trace("The dependent group {} isn't programmed yet. Pushing the group", groupId);
+                            ListenableFuture<RpcResult<AddGroupOutput>> groupFuture = pushDependentGroup(nodeIdent,
+                                    groupId);
+                            Futures.addCallback(groupFuture, new AddFlowCallBack(builder.build(), nodeId, future,
+                                            groupId),
+                                    MoreExecutors.directExecutor());
+                        }
+                    } else {
+                        LOG.trace("The flow {} is not dependent on any group. Adding the flow",
                                 getFlowId(new FlowRef(identifier)));
                         future = provider.getSalFlowService().addFlow(builder.build());
-                    } else {
-                        LOG.trace("The dependent group {} isn't programmed yet. Pushing the group", groupId);
-                        ListenableFuture<RpcResult<AddGroupOutput>> groupFuture = pushDependentGroup(nodeIdent,
-                                groupId);
-                        Futures.addCallback(groupFuture, new AddFlowCallBack(builder.build(), nodeId, future, groupId),
-                                MoreExecutors.directExecutor());
                     }
-                } else {
-                    LOG.trace("The flow {} is not dependent on any group. Adding the flow",
-                            getFlowId(new FlowRef(identifier)));
-                    future = provider.getSalFlowService().addFlow(builder.build());
-                }
-                return future;
-            });
+                    return future;
+                });
+            }
         }
         return Futures.immediateFuture(null);
     }
@@ -350,41 +365,6 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                             "Error while reading group " + groupId + " from inventory").build());
         }
         return resultFuture;
-    }
-
-    private Long isFlowDependentOnGroup(final Flow flow) {
-        LOG.debug("Check if flow {} is dependent on group", flow);
-        if (flow.getInstructions() != null) {
-            List<Instruction> instructions = flow.getInstructions().getInstruction();
-            for (Instruction instruction : instructions) {
-                List<Action> actions = Collections.emptyList();
-                if (instruction.getInstruction().getImplementedInterface()
-                        .equals(ActionType.APPLY_ACTION.getActionType())) {
-                    actions = ((ApplyActionsCase) (instruction.getInstruction())).getApplyActions().getAction();
-                }
-                for (Action action : actions) {
-                    if (action.getAction().getImplementedInterface()
-                            .equals(ActionType.GROUP_ACTION.getActionType())) {
-                        return ((GroupActionCase) action.getAction()).getGroupAction().getGroupId();
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    private boolean isGroupExistsOnDevice(final InstanceIdentifier<FlowCapableNode> nodeIdent, final Long groupId) {
-        NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
-        return provider.getDevicesGroupRegistry().isGroupPresent(nodeId, groupId);
-    }
-
-    private InstanceIdentifier<Group> buildGroupInstanceIdentifier(final InstanceIdentifier<FlowCapableNode> nodeIdent,
-            final Long groupId) {
-        NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
-        InstanceIdentifier<Group> groupInstanceId = InstanceIdentifier.builder(Nodes.class)
-                .child(Node.class, new NodeKey(nodeId)).augmentation(FlowCapableNode.class)
-                .child(Group.class, new GroupKey(new GroupId(groupId))).build();
-        return groupInstanceId;
     }
 
     private final class AddFlowCallBack implements FutureCallback<RpcResult<AddGroupOutput>> {
