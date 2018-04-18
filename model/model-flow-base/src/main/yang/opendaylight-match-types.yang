@@ -33,6 +33,25 @@ module opendaylight-match-types {
         }
     }
 
+    grouping "packet-type" {
+        container packet-type {
+            presence "Match field is active and set";
+            description "Outermost header type of the packet.";
+
+            leaf namespace {
+                description "Header namespace.";
+                mandatory true;
+                type uint16;
+            }
+
+            leaf type {
+                description "Header type.";
+                mandatory true;
+                type uint16;
+            }
+        }
+    }
+
      /** Match Groupings **/
     grouping "ethernet-match-fields" {
         container ethernet-source {
@@ -305,6 +324,8 @@ module opendaylight-match-types {
         container "metadata" {
             uses of-metadata;
         }
+
+        uses packet-type;
 
         container "tunnel" {
             leaf tunnel-id {
