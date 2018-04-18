@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fb0933ad_b6606246",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 15
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-18T17:01:31Z",
+      "side": 1,
+      "message": "In clustered environment, only a controller that is owner of the device will be updating it\u0027s local bean with the alarm? Or is it that this alarm will be raised on all the controller instances ? Given that device can be connected to all the controllers ?",
+      "revId": "3f153c132b76efbdecdf7d067ef903537b5a90bf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "515b20d5_26e22401",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/AdminReconciliationServiceImpl.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-18T17:01:31Z",
+      "side": 1,
+      "message": "make parameters final.",
+      "revId": "3f153c132b76efbdecdf7d067ef903537b5a90bf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4ac11947_ea6d3744",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/alarm/ReconciliationAlarmMBean.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-18T17:01:31Z",
+      "side": 1,
+      "message": "please add java docs for the methods as it\u0027s public interface.",
+      "revId": "3f153c132b76efbdecdf7d067ef903537b5a90bf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
