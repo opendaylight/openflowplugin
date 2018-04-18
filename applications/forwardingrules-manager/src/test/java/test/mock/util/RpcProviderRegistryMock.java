@@ -15,6 +15,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalF
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.ArbitratorReconcileService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -52,6 +53,8 @@ public class RpcProviderRegistryMock implements RpcProviderRegistry {
             return (T) new SalTableServiceMock();
         } else if (serviceInterface.equals(SalBundleService.class)) {
             return (T) new SalBundleServiceMock();
+        } else if (serviceInterface.equals(ArbitratorReconcileService.class)) {
+            return (T) new ArbitratorReconcileServiceMock();
         } else {
             return null;
         }
