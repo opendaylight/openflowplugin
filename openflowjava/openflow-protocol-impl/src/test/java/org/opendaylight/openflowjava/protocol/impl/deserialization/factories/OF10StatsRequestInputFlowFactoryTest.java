@@ -18,6 +18,7 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowWildcardsV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
@@ -71,8 +72,8 @@ public class OF10StatsRequestInputFlowFactoryTest {
         matchBuilder.setDlType(54);
         matchBuilder.setNwTos((short) 55);
         matchBuilder.setNwProto((short) 56);
-        matchBuilder.setNwSrc(new Ipv4Address("10.0.0.1"));
-        matchBuilder.setNwDst(new Ipv4Address("10.0.0.2"));
+        matchBuilder.setNwSrc(new Ipv4AddressNoZone("10.0.0.1"));
+        matchBuilder.setNwDst(new Ipv4AddressNoZone("10.0.0.2"));
         matchBuilder.setTpSrc(57);
         matchBuilder.setTpDst(58);
         flowBuilder.setMatchV10(matchBuilder.build());
