@@ -37,6 +37,23 @@
     },
     {
       "key": {
+        "uuid": "40c4a07b_291dd575",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/AdminReconciliationServiceImpl.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-18T16:47:36Z",
+      "side": 1,
+      "message": "i think you should move this call in the if() block, otherwise even if the reconciliation fails it\u0027s going to increment the counter? If the intention is to count both pass and fail, then we should have 2 counters that tracks it separately.",
+      "revId": "32975ca5373a2346e7eba7a029eca6fd4efd0820",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "57fe5e82_6c531f5c",
         "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/AdminReconciliationCount.java",
         "patchSetId": 15
@@ -66,6 +83,41 @@
       "side": 1,
       "message": "Can\u0027t make it final as the variable is passed through blueprint.",
       "parentUuid": "57fe5e82_6c531f5c",
+      "revId": "32975ca5373a2346e7eba7a029eca6fd4efd0820",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cb1a37fd_5afb0e58",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/AdminReconciliationCount.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-18T16:47:36Z",
+      "side": 1,
+      "message": "yup my bad",
+      "parentUuid": "14b019a9_26b98f31",
+      "revId": "32975ca5373a2346e7eba7a029eca6fd4efd0820",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6d41474a_6b9974b5",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/AdminReconciliationCount.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-18T16:47:36Z",
+      "side": 1,
+      "message": "this is confusing log. Basically it didn\u0027t find any connected node in operational, which is different than not triggered for any node, because the later means nodes are connected but reconciliation was not triggered because of some reason. Please rephrase it to \"Admin reconciliation is not triggered as not connected device found.\"",
       "revId": "32975ca5373a2346e7eba7a029eca6fd4efd0820",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
