@@ -14,7 +14,7 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwDstActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.Address;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv4;
@@ -41,7 +41,7 @@ public class SalToOfSetNwDstActionV10Case extends ConvertorCase<SetNwDstActionCa
 
             String ipAddress = ((Ipv4) address).getIpv4Address().getValue();
             ipAddress = ipAddress.substring(0, ipAddress.indexOf("/"));
-            Ipv4Address result = new Ipv4Address(ipAddress);
+            Ipv4AddressNoZone result = new Ipv4AddressNoZone(ipAddress);
             SetNwDstCaseBuilder setNwDstCaseBuilder = new SetNwDstCaseBuilder();
             SetNwDstActionBuilder setNwDstActionBuilder = new SetNwDstActionBuilder();
             setNwDstActionBuilder.setIpAddress(result);

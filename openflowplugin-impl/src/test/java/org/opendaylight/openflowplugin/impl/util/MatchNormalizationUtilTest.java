@@ -13,9 +13,9 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DottedQuad;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
@@ -121,7 +121,7 @@ public class MatchNormalizationUtilTest {
 
     @Test
     public void normalizeIpv4MatchArbitraryBitMask() {
-        final Ipv4Address leftAddress = new Ipv4Address("192.168.72.1");
+        final Ipv4AddressNoZone leftAddress = new Ipv4AddressNoZone("192.168.72.1");
         final DottedQuad leftMask = new DottedQuad("255.255.0.0");
         final Ipv4Prefix right = new Ipv4Prefix("192.168.0.0/16");
 
@@ -143,8 +143,8 @@ public class MatchNormalizationUtilTest {
         final Ipv6Prefix rightPrefix = new Ipv6Prefix("1e3d:5600:0:0:0:0:0:0/24");
         final MacAddress leftMac = new MacAddress("01:23:45:AB:CD:EF");
         final MacAddress rightMac = new MacAddress("01:23:45:ab:cd:ef");
-        final Ipv6Address leftAddress = new Ipv6Address("1E3D:5678:9ABC::");
-        final Ipv6Address rightAddress = new Ipv6Address("1e3d:5678:9abc:0:0:0:0:0");
+        final Ipv6AddressNoZone leftAddress = new Ipv6AddressNoZone("1E3D:5678:9ABC::");
+        final Ipv6AddressNoZone rightAddress = new Ipv6AddressNoZone("1e3d:5678:9abc:0:0:0:0:0");
 
         final MatchBuilder matchBuilder = MatchNormalizationUtil.normalizeIpv6Match(new MatchBuilder()
                 .setLayer3Match(new Ipv6MatchBuilder()
@@ -164,7 +164,7 @@ public class MatchNormalizationUtilTest {
 
     @Test
     public void normalizeIpv6MatchArbitraryBitMask() {
-        final Ipv6Address leftAddress = new Ipv6Address("1E3D:5678:9ABC::");
+        final Ipv6AddressNoZone leftAddress = new Ipv6AddressNoZone("1E3D:5678:9ABC::");
         final Ipv6ArbitraryMask leftMask = new Ipv6ArbitraryMask("FFFF:FF00::");
         final Ipv6Prefix right = new Ipv6Prefix("1e3d:5600:0:0:0:0:0:0/24");
 

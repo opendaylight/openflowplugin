@@ -15,7 +15,7 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.match.OxmDeserializerHelper;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchArbitraryBitMask;
@@ -27,7 +27,7 @@ public class Ipv4DestinationEntryDeserializer extends AbstractMatchEntryDeserial
     @Override
     public void deserializeEntry(ByteBuf message, MatchBuilder builder) {
         final boolean hasMask = processHeader(message);
-        final Ipv4Address address = ByteBufUtils.readIetfIpv4Address(message);
+        final Ipv4AddressNoZone address = ByteBufUtils.readIetfIpv4Address(message);
 
         if (hasMask) {
             final byte[] mask = OxmDeserializerHelper.convertMask(message, EncodeConstants.GROUPS_IN_IPV4_ADDRESS);
@@ -42,8 +42,8 @@ public class Ipv4DestinationEntryDeserializer extends AbstractMatchEntryDeserial
         }
     }
 
-    private static void setPrefixMatch(final MatchBuilder builder, final Ipv4Address address, @Nullable final byte[]
-            mask) {
+    private static void setPrefixMatch(final MatchBuilder builder, final Ipv4AddressNoZone address,
+            @Nullable final byte[] mask) {
         if (Objects.isNull(builder.getLayer3Match())) {
             builder.setLayer3Match(new Ipv4MatchBuilder()
                     .setIpv4Destination(IpConversionUtil.createPrefix(address, mask))
@@ -58,7 +58,7 @@ public class Ipv4DestinationEntryDeserializer extends AbstractMatchEntryDeserial
         }
     }
 
-    private static void setArbitraryMatch(final MatchBuilder builder, final Ipv4Address address,
+    private static void setArbitraryMatch(final MatchBuilder builder, final Ipv4AddressNoZone address,
                                           final byte[] mask) {
         if (Objects.isNull(builder.getLayer3Match())) {
             builder.setLayer3Match(new Ipv4MatchArbitraryBitMaskBuilder()

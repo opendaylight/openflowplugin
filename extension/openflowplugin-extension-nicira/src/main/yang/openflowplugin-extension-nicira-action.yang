@@ -543,10 +543,10 @@ bits specified from the register.";
                         type uint16;
                     }
                     leaf ip-address-min {
-                        type inet:ip-address;
+                        type inet:ip-address-no-zone;
                     }
                     leaf ip-address-max {
-                        type inet:ip-address;
+                        type inet:ip-address-no-zone;
                     }
                     leaf port-min {
                         type uint16;

@@ -14,7 +14,7 @@ import static org.junit.Assert.assertTrue;
 import java.math.BigInteger;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlowBuilder;
@@ -37,7 +37,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public class FlowCreatorUtilTest {
 
     private static final MacAddress MAC_ADDRESS = new MacAddress("00:00:00:00:00:00");
-    private static final Ipv4Address IPV_4_ADDRESS = new Ipv4Address("0.0.0.0");
+    private static final Ipv4AddressNoZone IPV_4_ADDRESS = new Ipv4AddressNoZone("0.0.0.0");
 
     /**
      * Test method for
@@ -171,7 +171,7 @@ public class FlowCreatorUtilTest {
                 canModifyFlowTest(false, originalBuilder, updatedBuilder, ver);
 
                 updatedBuilder.setCookieMask(cookieMask);
-                final boolean expected = (of13.equals(ver) && !Boolean.TRUE.equals(strict));
+                final boolean expected = of13.equals(ver) && !Boolean.TRUE.equals(strict);
                 canModifyFlowTest(expected, originalBuilder, updatedBuilder, ver);
             }
         }
@@ -213,11 +213,11 @@ public class FlowCreatorUtilTest {
                 assertEquals(expected, FlowCreatorUtil.equalsFlowModFlags(f, flags));
             }
 
-            final boolean overlap = (bit == 0);
-            final boolean noByte = (bit == 1);
-            final boolean noPacket = (bit == 2);
-            final boolean reset = (bit == 3);
-            final boolean flowRem = (bit == 4);
+            final boolean overlap = bit == 0;
+            final boolean noByte = bit == 1;
+            final boolean noPacket = bit == 2;
+            final boolean reset = bit == 3;
+            final boolean flowRem = bit == 4;
             FlowModFlags flowModFlags = new FlowModFlags(overlap, noByte, noPacket, reset, flowRem);
             assertTrue(FlowCreatorUtil.equalsFlowModFlags(flags, flowModFlags));
             assertTrue(FlowCreatorUtil.equalsFlowModFlags(flowModFlags, flags));

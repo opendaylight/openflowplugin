@@ -12,6 +12,7 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.ListIterator;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4AddressNoZone;
 
 /**
  * IP conversion utilities.
@@ -40,7 +41,7 @@ public final class IpConverter {
         return result & 0xFFFFFFFF;
     }
 
-    public static Ipv4Address longToIpv4Address(long ip) {
+    public static Ipv4AddressNoZone longToIpv4Address(long ip) {
         long tmpIp = ip;
         StringBuilder sb = new StringBuilder(15);
         for (int i = 0; i < 4; i++) {
@@ -50,7 +51,7 @@ public final class IpConverter {
             }
             tmpIp >>= 8;
         }
-        return new Ipv4Address(sb.toString());
+        return new Ipv4AddressNoZone(sb.toString());
     }
 
 }

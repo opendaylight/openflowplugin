@@ -18,7 +18,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpC
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.ActionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
@@ -59,7 +59,7 @@ public class MatchV10Convertor extends Convertor<Match, MatchV10, VersionConvert
     /**
      * default IPv4.
      */
-    private static final Ipv4Address ZERO_IPV4 = new Ipv4Address("0.0.0.0");
+    private static final Ipv4AddressNoZone ZERO_IPV4 = new Ipv4AddressNoZone("0.0.0.0");
 
     /*
      * The value 0xffff (OFP_VLAN_NONE) is used to indicate
@@ -132,7 +132,7 @@ public class MatchV10Convertor extends Convertor<Match, MatchV10, VersionConvert
         if (ipv4.getIpv4Destination() != null) {
             Iterator<String> addressParts = IpConversionUtil.PREFIX_SPLITTER.split(
                     ipv4.getIpv4Destination().getValue()).iterator();
-            Ipv4Address ipv4Address = new Ipv4Address(addressParts.next());
+            Ipv4AddressNoZone ipv4Address = new Ipv4AddressNoZone(addressParts.next());
             Integer prefix = buildPrefix(addressParts);
             matchBuilder.setNwDst(ipv4Address);
             matchBuilder.setNwDstMask(prefix.shortValue());
@@ -151,7 +151,7 @@ public class MatchV10Convertor extends Convertor<Match, MatchV10, VersionConvert
         if (ipv4.getIpv4Source() != null) {
             Iterator<String> addressParts = IpConversionUtil.PREFIX_SPLITTER.split(
                     ipv4.getIpv4Source().getValue()).iterator();
-            Ipv4Address ipv4Address = new Ipv4Address(addressParts.next());
+            Ipv4AddressNoZone ipv4Address = new Ipv4AddressNoZone(addressParts.next());
             int prefix = buildPrefix(addressParts);
 
             matchBuilder.setNwSrc(ipv4Address);

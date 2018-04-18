@@ -21,6 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DottedQuad;
@@ -104,10 +105,10 @@ public final class AddressNormalizationUtil {
      * @return normalized Ipv6 address
      */
     @Nullable
-    public static Ipv6Address normalizeIpv6AddressWithoutMask(@Nullable final Ipv6Address ipv6Address) {
+    public static Ipv6AddressNoZone normalizeIpv6AddressWithoutMask(@Nullable final Ipv6Address ipv6Address) {
         final Ipv6Prefix ipv6Prefix = normalizeIpv6Arbitrary(ipv6Address, null);
         return Objects.nonNull(ipv6Prefix)
-                ? new Ipv6Address(ipv6Prefix.getValue().split(PREFIX_SEPARATOR)[0])
+                ? new Ipv6AddressNoZone(ipv6Prefix.getValue().split(PREFIX_SEPARATOR)[0])
                 : null;
     }
 

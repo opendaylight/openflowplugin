@@ -17,7 +17,7 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
@@ -66,8 +66,8 @@ public class MatchV10ResponseConvertorTest {
         builder.setDlType(15);
         builder.setNwTos((short) 16);
         builder.setNwProto((short) 6);
-        builder.setNwSrc(new Ipv4Address("1.1.1.2"));
-        builder.setNwDst(new Ipv4Address("32.16.8.1"));
+        builder.setNwSrc(new Ipv4AddressNoZone("1.1.1.2"));
+        builder.setNwDst(new Ipv4AddressNoZone("32.16.8.1"));
         builder.setTpSrc(2048);
         builder.setTpDst(4096);
         MatchV10 match = builder.build();
@@ -119,8 +119,8 @@ public class MatchV10ResponseConvertorTest {
         builder.setDlType(15);
         builder.setNwTos((short) 14);
         builder.setNwProto((short) 6);
-        builder.setNwSrc(new Ipv4Address("1.1.1.2"));
-        builder.setNwDst(new Ipv4Address("32.16.8.1"));
+        builder.setNwSrc(new Ipv4AddressNoZone("1.1.1.2"));
+        builder.setNwDst(new Ipv4AddressNoZone("32.16.8.1"));
         builder.setTpSrc(2048);
         builder.setTpDst(4096);
         MatchV10 match = builder.build();
@@ -820,7 +820,7 @@ public class MatchV10ResponseConvertorTest {
                             null, salMatch.getIcmpv4Match());
     }
 
-    private MatchBuilder convert(MatchV10 match, VersionDatapathIdConvertorData data) {
+    private MatchBuilder convert(final MatchV10 match, final VersionDatapathIdConvertorData data) {
         final Optional<MatchBuilder> salMatchOptional = convertorManager.convert(match, data);
 
         return salMatchOptional.orElse(new MatchBuilder());

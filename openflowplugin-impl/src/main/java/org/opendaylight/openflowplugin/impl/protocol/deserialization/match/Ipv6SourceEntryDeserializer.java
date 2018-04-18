@@ -14,7 +14,7 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.match.OxmDeserializerHelper;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchArbitraryBitMask;
@@ -26,7 +26,7 @@ public class Ipv6SourceEntryDeserializer extends AbstractMatchEntryDeserializer 
     @Override
     public void deserializeEntry(ByteBuf message, MatchBuilder builder) {
         final boolean hasMask = processHeader(message);
-        final Ipv6Address address = ByteBufUtils.readIetfIpv6Address(message);
+        final Ipv6AddressNoZone address = ByteBufUtils.readIetfIpv6Address(message);
 
         if (hasMask) {
             final byte[] mask = OxmDeserializerHelper.convertMask(message, EncodeConstants
@@ -42,7 +42,7 @@ public class Ipv6SourceEntryDeserializer extends AbstractMatchEntryDeserializer 
         }
     }
 
-    private static void setPrefixMatch(final MatchBuilder builder, final Ipv6Address address, final byte[] mask) {
+    private static void setPrefixMatch(final MatchBuilder builder, final Ipv6AddressNoZone address, final byte[] mask) {
         if (Objects.isNull(builder.getLayer3Match())) {
             builder.setLayer3Match(new Ipv6MatchBuilder()
                     .setIpv6Source(IpConversionUtil.createPrefix(address, mask))
@@ -57,7 +57,7 @@ public class Ipv6SourceEntryDeserializer extends AbstractMatchEntryDeserializer 
         }
     }
 
-    private static void setArbitraryMatch(final MatchBuilder builder, final Ipv6Address address,
+    private static void setArbitraryMatch(final MatchBuilder builder, final Ipv6AddressNoZone address,
                                           final byte[] mask) {
         if (Objects.isNull(builder.getLayer3Match())) {
             builder.setLayer3Match(new Ipv6MatchArbitraryBitMaskBuilder()

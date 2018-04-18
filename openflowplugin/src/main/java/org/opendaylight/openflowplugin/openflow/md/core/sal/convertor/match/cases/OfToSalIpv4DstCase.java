@@ -15,7 +15,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorE
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.data.MatchResponseConvertorData;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DottedQuad;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
@@ -33,13 +33,13 @@ public class OfToSalIpv4DstCase extends ConvertorCase<Ipv4DstCase, MatchBuilder,
             final String ipv4PrefixStr) {
         final Ipv4Prefix ipv4Prefix;
         if (mask != null) {
-            ipv4Prefix = IpConversionUtil.createPrefix(new Ipv4Address(ipv4PrefixStr), mask);
+            ipv4Prefix = IpConversionUtil.createPrefix(new Ipv4AddressNoZone(ipv4PrefixStr), mask);
         } else {
             //Openflow Spec : 1.3.2
             //An all-one-bits oxm_mask is equivalent to specifying 0 for oxm_hasmask and omitting oxm_mask.
             // So when user specify 32 as a mast, switch omit that mast and we get null as a mask in flow
             // statistics response.
-            ipv4Prefix = IpConversionUtil.createPrefix(new Ipv4Address(ipv4PrefixStr));
+            ipv4Prefix = IpConversionUtil.createPrefix(new Ipv4AddressNoZone(ipv4PrefixStr));
         }
 
         ipv4MatchBuilder.setIpv4Destination(ipv4Prefix);
@@ -52,7 +52,7 @@ public class OfToSalIpv4DstCase extends ConvertorCase<Ipv4DstCase, MatchBuilder,
             ipv4MatchArbitraryBitMaskBuilder.setIpv4SourceArbitraryBitmask(mask);
         }
 
-        ipv4MatchArbitraryBitMaskBuilder.setIpv4SourceAddressNoMask(new Ipv4Address(ipv4AddressStr));
+        ipv4MatchArbitraryBitMaskBuilder.setIpv4SourceAddressNoMask(new Ipv4AddressNoZone(ipv4AddressStr));
     }
 
     private static void setDstIpv4MatchArbitraryBitMaskBuilderFields(
@@ -62,7 +62,7 @@ public class OfToSalIpv4DstCase extends ConvertorCase<Ipv4DstCase, MatchBuilder,
             ipv4MatchArbitraryBitMaskBuilder.setIpv4DestinationArbitraryBitmask(mask);
         }
 
-        ipv4MatchArbitraryBitMaskBuilder.setIpv4DestinationAddressNoMask(new Ipv4Address(ipv4AddressStr));
+        ipv4MatchArbitraryBitMaskBuilder.setIpv4DestinationAddressNoMask(new Ipv4AddressNoZone(ipv4AddressStr));
     }
 
     @Override
@@ -83,7 +83,7 @@ public class OfToSalIpv4DstCase extends ConvertorCase<Ipv4DstCase, MatchBuilder,
                 // Needs to convert ipv4src to ipv4MatchArbitrary.
                 if (ipv4MatchBuilder.getIpv4Source() != null) {
                     Ipv4Prefix ipv4PrefixSourceAddress = ipv4MatchBuilder.getIpv4Source();
-                    Ipv4Address ipv4SourceAddress = IpConversionUtil.extractIpv4Address(ipv4PrefixSourceAddress);
+                    Ipv4AddressNoZone ipv4SourceAddress = IpConversionUtil.extractIpv4Address(ipv4PrefixSourceAddress);
                     DottedQuad srcDottedQuad = IpConversionUtil.extractIpv4AddressMask(ipv4PrefixSourceAddress);
                     setSrcIpv4MatchArbitraryBitMaskBuilderFields(ipv4MatchArbitraryBitMaskBuilder,
                             srcDottedQuad, ipv4SourceAddress.getValue());

@@ -14,7 +14,7 @@ import org.opendaylight.openflowplugin.extension.api.ExtensionAugment;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.CodecPreconditionException;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.IpConverter;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm0Class;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.of.match.arp.spa.grouping.ArpSpaValuesBuilder;
@@ -48,7 +48,7 @@ public class ArpSpaConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
     @Override
     public ExtensionAugment<? extends Augmentation<Extension>> convert(MatchEntry input, MatchPath path) {
         ArpSpaCaseValue arpSpaCaseValue = (ArpSpaCaseValue) input.getMatchEntryValue();
-        Ipv4Address ipv4Address = IpConverter.longToIpv4Address(arpSpaCaseValue.getArpSpaValues().getValue());
+        Ipv4AddressNoZone ipv4Address = IpConverter.longToIpv4Address(arpSpaCaseValue.getArpSpaValues().getValue());
         return resolveAugmentation(new NxmOfArpSpaBuilder().setIpv4Address(ipv4Address).build(), path,
                 NxmOfArpSpaKey.class);
     }

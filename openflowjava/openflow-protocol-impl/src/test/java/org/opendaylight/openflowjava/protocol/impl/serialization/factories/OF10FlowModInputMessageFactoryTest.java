@@ -23,7 +23,7 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetNwDstCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetTpSrcCaseBuilder;
@@ -79,8 +79,8 @@ public class OF10FlowModInputMessageFactoryTest {
         matchBuilder.setDlType(42);
         matchBuilder.setNwTos((short) 4);
         matchBuilder.setNwProto((short) 7);
-        matchBuilder.setNwSrc(new Ipv4Address("8.8.8.8"));
-        matchBuilder.setNwDst(new Ipv4Address("16.16.16.16"));
+        matchBuilder.setNwSrc(new Ipv4AddressNoZone("8.8.8.8"));
+        matchBuilder.setNwDst(new Ipv4AddressNoZone("16.16.16.16"));
         matchBuilder.setTpSrc(6653);
         matchBuilder.setTpDst(6633);
         builder.setMatchV10(matchBuilder.build());
@@ -97,7 +97,7 @@ public class OF10FlowModInputMessageFactoryTest {
         ActionBuilder actionBuilder = new ActionBuilder();
         SetNwDstCaseBuilder nwDstCaseBuilder = new SetNwDstCaseBuilder();
         SetNwDstActionBuilder nwDstBuilder = new SetNwDstActionBuilder();
-        nwDstBuilder.setIpAddress(new Ipv4Address("2.2.2.2"));
+        nwDstBuilder.setIpAddress(new Ipv4AddressNoZone("2.2.2.2"));
         nwDstCaseBuilder.setSetNwDstAction(nwDstBuilder.build());
         actionBuilder.setActionChoice(nwDstCaseBuilder.build());
         actions.add(actionBuilder.build());

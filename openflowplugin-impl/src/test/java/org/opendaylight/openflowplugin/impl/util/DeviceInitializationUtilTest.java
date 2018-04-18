@@ -32,7 +32,7 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IetfInetUtil;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.flow.node.SwitchFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -102,8 +102,8 @@ public class DeviceInitializationUtilTest {
 
     @Test
     public void getIpAddress() throws Exception {
-        final IpAddress ipAddress = DeviceInitializationUtil.getIpAddress(connectionContext, NODE_II);
-        assertEquals(ipAddress, IetfInetUtil.INSTANCE.ipAddressFor(INET_SOCKET_ADDRESS.getAddress()));
+        final IpAddressNoZone ipAddress = DeviceInitializationUtil.getIpAddress(connectionContext, NODE_II);
+        assertEquals(ipAddress, IetfInetUtil.INSTANCE.ipAddressNoZoneFor(INET_SOCKET_ADDRESS.getAddress()));
     }
 
     @Test
