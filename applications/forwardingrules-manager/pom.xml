@@ -89,6 +89,11 @@
       <artifactId>awaitility</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+    <groupId>org.opendaylight.openflowplugin.applications</groupId>
+      <artifactId>arbitratorreconciliation-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <build>

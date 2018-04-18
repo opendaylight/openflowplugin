@@ -43,6 +43,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.ArbitratorReconcileService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.FrmReconciliationService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
@@ -65,7 +66,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
 
     static final int STARTUP_LOOP_TICK = 500;
     static final int STARTUP_LOOP_MAX_RETRIES = 8;
-    private static final int FRM_RECONCILIATION_PRIORITY = Integer.getInteger("frm.reconciliation.priority", 0);
+    private static final int FRM_RECONCILIATION_PRIORITY = Integer.getInteger("frm.reconciliation.priority", 1);
     private static final String SERVICE_NAME = "FRM";
 
     private final AtomicLong txNum = new AtomicLong();
@@ -90,7 +91,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private final ReconciliationManager reconciliationManager;
     private DevicesGroupRegistry devicesGroupRegistry;
     private NodeConfigurator nodeConfigurator;
-
+    private ArbitratorReconcileService arbitratorReconciliationManager;
     private boolean disableReconciliation;
     private boolean staleMarkingEnabled;
     private int reconciliationRetryCount;
@@ -135,6 +136,9 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                 "Openflow service recovery handler cannot be null");
         this.serviceRecoveryRegistry = Preconditions.checkNotNull(serviceRecoveryRegistry,
                 "Service recovery registry cannot be null");
+        this.arbitratorReconciliationManager = Preconditions
+                .checkNotNull(rpcRegistry.getRpcService(ArbitratorReconcileService.class),
+                        "ArbitratorReconciliationManager can not be null!");
     }
 
     @Override
@@ -281,6 +285,11 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     @Override
     public ForwardingRulesCommiter<TableFeatures> getTableFeaturesCommiter() {
         return tableListener;
+    }
+
+    @Override
+    public ArbitratorReconcileService getArbitratorReconciliationManager() {
+        return arbitratorReconciliationManager;
     }
 
     @Override
