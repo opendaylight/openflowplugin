@@ -114,6 +114,29 @@
       "revId": "706ea9a8ed5dc9cb89b8036a6168f0156f0df9a3",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "49d580a2_282a9fd3",
+        "filename": "applications/southbound-cli/src/main/yang/admin-reconciliation.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-04-18T08:43:57Z",
+      "side": 1,
+      "message": "just keep count..",
+      "range": {
+        "startLine": 22,
+        "startChar": 13,
+        "endLine": 22,
+        "endChar": 28
+      },
+      "revId": "706ea9a8ed5dc9cb89b8036a6168f0156f0df9a3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
