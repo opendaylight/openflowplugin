@@ -38,6 +38,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.ArbitratorReconcileService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.FrmReconciliationService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
@@ -83,6 +84,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private FlowNodeConnectorInventoryTranslatorImpl flowNodeConnectorInventoryTranslatorImpl;
     private DeviceMastershipManager deviceMastershipManager;
     private final ReconciliationManager reconciliationManager;
+    private ArbitratorReconcileService arbitratorReconciliationManager;
 
     private boolean disableReconciliation;
     private boolean staleMarkingEnabled;
@@ -118,6 +120,9 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                 "RPC SalTableService not found.");
         this.salBundleService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalBundleService.class),
                 "RPC SalBundlService not found.");
+        this.arbitratorReconciliationManager = Preconditions
+                .checkNotNull(rpcRegistry.getRpcService(ArbitratorReconcileService.class),
+                        "ArbitratorReconciliationManager can not be null!");
     }
 
     @Override
@@ -256,6 +261,11 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     @Override
     public ForwardingRulesCommiter<TableFeatures> getTableFeaturesCommiter() {
         return tableListener;
+    }
+
+    @Override
+    public ArbitratorReconcileService getArbitratorReconciliationManager() {
+        return arbitratorReconciliationManager;
     }
 
     @Override
