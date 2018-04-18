@@ -59,6 +59,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Mpls
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MplsTc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmMatchType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.PacketType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.PbbIsid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.SctpDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.SctpSrc;
@@ -101,6 +102,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.MplsBosCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.MplsLabelCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.MplsTcCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.PacketTypeCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.PbbIsidCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.SctpDstCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.SctpSrcCaseBuilder;
@@ -141,6 +143,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.mpls.bos._case.MplsBosBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.mpls.label._case.MplsLabelBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.mpls.tc._case.MplsTcBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.packet.type._case.PacketTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.pbb.isid._case.PbbIsidBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.sctp.dst._case.SctpDstBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.sctp.src._case.SctpSrcBuilder;
@@ -622,6 +625,16 @@ public class OF13MatchSerializer02Test {
         ipv6ExthdrCaseBuilder.setIpv6Exthdr(ipv6ExthdrBuilder.build());
         entryBuilder.setMatchEntryValue(ipv6ExthdrCaseBuilder.build());
         entries.add(entryBuilder.build());
+        entryBuilder = new MatchEntryBuilder();
+        entryBuilder.setOxmClass(OpenflowBasicClass.class);
+        entryBuilder.setOxmMatchField(PacketType.class);
+        entryBuilder.setHasMask(false);
+        PacketTypeCaseBuilder packetTypeCaseBuilder = new PacketTypeCaseBuilder();
+        PacketTypeBuilder packetTypeBuilder = new PacketTypeBuilder();
+        packetTypeBuilder.setPacketType(0x1894fL);
+        packetTypeCaseBuilder.setPacketType(packetTypeBuilder.build());
+        entryBuilder.setMatchEntryValue(packetTypeCaseBuilder.build());
+        entries.add(entryBuilder.build());
 
 
         builder.setMatchEntry(entries);
@@ -631,7 +644,7 @@ public class OF13MatchSerializer02Test {
         matchSerializer.serialize(match, out);
 
         Assert.assertEquals("Wrong match type", 1, out.readUnsignedShort());
-        Assert.assertEquals("Wrong match length", 424, out.readUnsignedShort());
+        Assert.assertEquals("Wrong match length", 432, out.readUnsignedShort());
         Assert.assertEquals("Wrong match entry class", 0x8000, out.readUnsignedShort());
         Assert.assertEquals("Wrong match entry field & hasMask", 0, out.readUnsignedByte());
         Assert.assertEquals("Wrong match entry length", 4, out.readUnsignedByte());
@@ -859,6 +872,11 @@ public class OF13MatchSerializer02Test {
         array = new byte[2];
         out.readBytes(array);
         Assert.assertArrayEquals("Wrong match entry value", new byte[]{0,2}, array);
+        Assert.assertEquals("Wrong match entry class", 0x8000, out.readUnsignedShort());
+        Assert.assertEquals("Wrong match entry field & hasMask", 0x58, out.readUnsignedByte());
+        Assert.assertEquals("Wrong match entry length", 4, out.readUnsignedByte());
+        Assert.assertEquals("Wrong match entry value", 1, out.readUnsignedShort());
+        Assert.assertEquals("Wrong match entry mask", 0x894f, out.readUnsignedShort());
         Assert.assertTrue("Wrong padding", out.readableBytes() == 0);
     }
 

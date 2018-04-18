@@ -57,6 +57,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Mpls
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MplsTc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmMatchType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.PacketType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.PbbIsid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.SctpDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.SctpSrc;
@@ -98,6 +99,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.MplsBosCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.MplsLabelCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.MplsTcCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.PacketTypeCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.PbbIsidCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.SctpDstCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.SctpSrcCase;
@@ -169,7 +171,7 @@ public class MatchDeserializerTest {
      */
     @Test
     public void testMatch() {
-        ByteBuf buffer = ByteBufUtils.hexStringToByteBuf("00 01 01 A8 "
+        ByteBuf buffer = ByteBufUtils.hexStringToByteBuf("00 01 01 B0 "
                 + "80 00 00 04 00 00 00 01 "
                 + "80 00 02 04 00 00 00 02 "
                 + "80 00 05 10 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 "
@@ -211,11 +213,12 @@ public class MatchDeserializerTest {
                 + "80 00 48 01 01 "
                 + "80 00 4B 06 00 00 02 00 00 01 "
                 + "80 00 4D 10 00 00 00 00 00 00 00 07 00 00 00 00 00 00 00 FF "
-                + "80 00 4F 04 00 00 03 04");
+                + "80 00 4F 04 00 00 03 04 "
+                + "80 00 58 04 00 01 89 4f");
 
         Match match = matchDeserializer.deserialize(buffer);
         Assert.assertEquals("Wrong match type", OxmMatchType.class, match.getType());
-        Assert.assertEquals("Wrong match entries size", 40, match.getMatchEntry().size());
+        Assert.assertEquals("Wrong match entries size", 41, match.getMatchEntry().size());
         List<MatchEntry> entries = match.getMatchEntry();
         MatchEntry entry0 = entries.get(0);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry0.getOxmClass());
@@ -494,6 +497,12 @@ public class MatchDeserializerTest {
         Assert.assertArrayEquals("Wrong entry mask", ByteBufUtils.hexStringToBytes("03 04"),
                 ((Ipv6ExthdrCase) entry39.getMatchEntryValue()).getIpv6Exthdr().getMask());
         Assert.assertTrue("Unread data", buffer.readableBytes() == 0);
+        MatchEntry entry40 = entries.get(40);
+        Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry40.getOxmClass());
+        Assert.assertEquals("Wrong entry field", PacketType.class, entry40.getOxmMatchField());
+        Assert.assertEquals("Wrong entry hasMask", false, entry40.isHasMask());
+        Assert.assertEquals("Wrong entry value", 0x1894f,
+                ((PacketTypeCase) entry40.getMatchEntryValue()).getPacketType().getPacketType().longValue());
     }
 
     /**

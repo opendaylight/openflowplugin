@@ -64,6 +64,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Mpls
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MplsTc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmMatchType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.PacketType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.PbbIsid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.SctpDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.SctpSrc;
@@ -105,6 +106,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.MplsBosCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.MplsLabelCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.MplsTcCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.PacketTypeCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.PbbIsidCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.SctpDstCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.SctpSrcCaseBuilder;
@@ -144,6 +146,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.mpls.bos._case.MplsBosBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.mpls.label._case.MplsLabelBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.mpls.tc._case.MplsTcBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.packet.type._case.PacketTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.pbb.isid._case.PbbIsidBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.sctp.dst._case.SctpDstBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.sctp.src._case.SctpSrcBuilder;
@@ -216,6 +219,7 @@ public class MatchResponseConvertor2Test {
         Assert.assertEquals("Wrong match entries", null, builtMatch.getLayer3Match());
         Assert.assertEquals("Wrong match entries", null, builtMatch.getLayer4Match());
         Assert.assertEquals("Wrong match entries", null, builtMatch.getMetadata());
+        Assert.assertEquals("Wrong match entries", null, builtMatch.getPacketTypeMatch());
         Assert.assertEquals("Wrong match entries", null, builtMatch.getProtocolMatchFields());
         Assert.assertEquals("Wrong match entries", null, builtMatch.getVlanMatch());
         Assert.assertEquals("Wrong match entries", null, builtMatch.getTunnel());
@@ -265,6 +269,17 @@ public class MatchResponseConvertor2Test {
         metadataBuilder.setMetadata(new byte[]{0, 1, 2, 3, 4, 5, 6, 7});
         metadataCaseBuilder.setMetadata(metadataBuilder.build());
         entriesBuilder.setMatchEntryValue(metadataCaseBuilder.build());
+        entries.add(entriesBuilder.build());
+
+        entriesBuilder = new MatchEntryBuilder();
+        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmMatchField(PacketType.class);
+        entriesBuilder.setHasMask(false);
+        final PacketTypeCaseBuilder packetTypeCaseBuilder = new PacketTypeCaseBuilder();
+        final PacketTypeBuilder packetTypeBuilder = new PacketTypeBuilder();
+        packetTypeBuilder.setPacketType(0x1894fL);
+        packetTypeCaseBuilder.setPacketType(packetTypeBuilder.build());
+        entriesBuilder.setMatchEntryValue(packetTypeCaseBuilder.build());
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
@@ -527,6 +542,7 @@ public class MatchResponseConvertor2Test {
         Assert.assertEquals("Wrong in phy port", "openflow:42:2", builtMatch.getInPhyPort().getValue());
         Assert.assertEquals("Wrong metadata", new BigInteger(1, new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 }),
                 builtMatch.getMetadata().getMetadata());
+        Assert.assertEquals("Wrong packet type", 0x1894f, builtMatch.getPacketTypeMatch().getPacketType().longValue());
         Assert.assertEquals("Wrong eth dst", new MacAddress("00:00:00:00:00:01"),
                 builtMatch.getEthernetMatch().getEthernetDestination().getAddress());
         Assert.assertEquals("Wrong eth src", new MacAddress("00:00:00:00:00:02"),

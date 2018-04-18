@@ -50,6 +50,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Layer3Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Layer4Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.PacketTypeMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.ProtocolMatchFields;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.TcpFlagsMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatch;
@@ -101,6 +102,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.MplsBosCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.MplsLabelCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.MplsTcCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.PacketTypeCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.PbbIsidCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.TunnelIdCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.VlanVidCaseBuilder;
@@ -118,6 +120,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.mpls.bos._case.MplsBosBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.mpls.label._case.MplsLabelBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.mpls.tc._case.MplsTcBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.packet.type._case.PacketTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.pbb.isid._case.PbbIsidBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.tunnel.id._case.TunnelIdBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.vlan.vid._case.VlanVidBuilder;
@@ -240,6 +243,24 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
         metadataCaseBuilder.setMetadata(metadataBuilder.build());
         matchEntryBuilder.setMatchEntryValue(metadataCaseBuilder.build());
         matchEntryBuilder.setHasMask(hasmask);
+        matchEntryList.add(matchEntryBuilder.build());
+    }
+
+    private static void packetTypeMatch(final List<MatchEntry> matchEntryList, final PacketTypeMatch packetTypeMatch) {
+        if (packetTypeMatch == null) {
+            return;
+        }
+
+        MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
+        matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
+        matchEntryBuilder.setOxmMatchField(
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.PacketType.class);
+        matchEntryBuilder.setHasMask(false);
+        PacketTypeCaseBuilder packetTypeCaseBuilder = new PacketTypeCaseBuilder();
+        PacketTypeBuilder packetTypeBuilder = new PacketTypeBuilder();
+        packetTypeBuilder.setPacketType(packetTypeMatch.getPacketType());
+        packetTypeCaseBuilder.setPacketType(packetTypeBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(packetTypeCaseBuilder.build());
         matchEntryList.add(matchEntryBuilder.build());
     }
 
@@ -634,6 +655,7 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
         inPortMatch(result, source.getInPort());
         inPhyPortMatch(result, source.getInPhyPort());
         metadataMatch(result, source.getMetadata());
+        packetTypeMatch(result, source.getPacketTypeMatch());
         ethernetMatch(result, source.getEthernetMatch());
         vlanMatch(result, source.getVlanMatch());
         ipMatch(result, source.getIpMatch());

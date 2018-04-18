@@ -40,6 +40,7 @@ import org.opendaylight.openflowjava.protocol.impl.deserialization.match.OxmMeta
 import org.opendaylight.openflowjava.protocol.impl.deserialization.match.OxmMplsBosDeserializer;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.match.OxmMplsLabelDeserializer;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.match.OxmMplsTcDeserializer;
+import org.opendaylight.openflowjava.protocol.impl.deserialization.match.OxmPacketTypeDeserializer;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.match.OxmPbbIsidDeserializer;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.match.OxmSctpDstDeserializer;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.match.OxmSctpSrcDeserializer;
@@ -75,6 +76,7 @@ public final class MatchEntryDeserializerInitializer {
         helper.register(OxmMatchConstants.IN_PORT, new OxmInPortDeserializer());
         helper.register(OxmMatchConstants.IN_PHY_PORT, new OxmInPhyPortDeserializer());
         helper.register(OxmMatchConstants.METADATA, new OxmMetadataDeserializer());
+        helper.register(OxmMatchConstants.PACKET_TYPE, new OxmPacketTypeDeserializer());
         helper.register(OxmMatchConstants.ETH_DST, new OxmEthDstDeserializer());
         helper.register(OxmMatchConstants.ETH_SRC, new OxmEthSrcDeserializer());
         helper.register(OxmMatchConstants.ETH_TYPE, new OxmEthTypeDeserializer());
