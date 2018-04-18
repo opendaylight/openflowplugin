@@ -33,6 +33,16 @@ module opendaylight-match-types {
         }
     }
 
+    grouping packet-type-fields {
+        leaf packet-type {
+            description
+              "Outermost header type of a packet. It's a 4 byte
+                value, the 2 most significant bytes are the
+                namespace and the next 2 bytes are the type.";
+            type uint32;
+        }
+    }
+
      /** Match Groupings **/
     grouping "ethernet-match-fields" {
         container ethernet-source {
@@ -300,6 +310,10 @@ module opendaylight-match-types {
 
         leaf in-phy-port {
             type inv:node-connector-id;
+        }
+
+        container packet-type-match {
+            uses packet-type-fields;
         }
 
         container "metadata" {
